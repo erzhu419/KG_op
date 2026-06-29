@@ -1,0 +1,58 @@
+AVB-safe pilot diagnostic, compared with previous AVB-lite pilot
+
+Raw summary:
+          problem            method  hv_mean  igd_mean  cvr_mean  n_nd_mean  rank_sum
+    RCZDT-Curve2D   GPR-KG-AVB-lite 1.197258  0.128887  0.000000   1.333333       3.0
+    RCZDT-Curve2D GPR-KG-pooled-pre 1.169541  0.168229  0.000000   1.666667       5.0
+    RCZDT-Curve2D    GPR-KG-oracleV 1.046446  0.229958  0.000000   1.666667       9.0
+    RCZDT-Curve2D        GPR-KG-AVB 1.070665  0.196875  0.222222   2.000000      12.0
+    RCZDT-Curve2D   GPR-KG-AVB-safe 0.877782  0.350118  0.000000   1.000000      13.0
+    RCZDT-Curve2D       GPR-KG-VEPM 0.926408  0.276641  0.166667   1.333333      15.0
+RCZDT-MisalignedV       GPR-KG-VEPM 1.106221  0.309590  0.383333   3.666667       5.0
+RCZDT-MisalignedV GPR-KG-pooled-pre 1.218180  0.251120  0.555556   3.000000       6.0
+RCZDT-MisalignedV    GPR-KG-oracleV 1.082067  0.372556  0.533333   3.000000       9.0
+RCZDT-MisalignedV        GPR-KG-AVB 0.910935  0.488356  0.472222   2.666667      13.0
+RCZDT-MisalignedV   GPR-KG-AVB-lite 0.995396  0.455271  0.750000   2.666667      14.0
+RCZDT-MisalignedV   GPR-KG-AVB-safe 0.958481  0.501811  0.722222   3.000000      16.0
+      RCZDT-StepV    GPR-KG-oracleV 0.844973  0.363894  0.277778   3.666667       3.0
+      RCZDT-StepV   GPR-KG-AVB-safe 0.843792  0.430437  0.555556   3.000000      10.0
+      RCZDT-StepV   GPR-KG-AVB-lite 0.727315  0.455614  0.333333   1.666667      11.0
+      RCZDT-StepV GPR-KG-pooled-pre 0.754280  0.454728  0.527778   3.333333      11.0
+      RCZDT-StepV       GPR-KG-VEPM 0.402902  0.625958  0.277778   2.000000      13.0
+      RCZDT-StepV        GPR-KG-AVB 0.672665  0.565199  0.500000   1.333333      14.0
+
+Feasible-only summary:
+          problem            method  hv_feas_mean  igd_feas_mean  cvr_mean  n_feas_nd_mean  rank_sum
+    RCZDT-Curve2D   GPR-KG-AVB-lite      1.197258       0.128887  0.000000        1.333333       3.0
+    RCZDT-Curve2D GPR-KG-pooled-pre      1.169541       0.168229  0.000000        1.666667       5.0
+    RCZDT-Curve2D    GPR-KG-oracleV      1.046446       0.229958  0.000000        1.666667       9.0
+    RCZDT-Curve2D        GPR-KG-AVB      1.053252       0.197154  0.222222        1.333333      12.0
+    RCZDT-Curve2D   GPR-KG-AVB-safe      0.877782       0.350118  0.000000        1.000000      13.0
+    RCZDT-Curve2D       GPR-KG-VEPM      0.915083       0.276641  0.166667        1.000000      15.0
+RCZDT-MisalignedV       GPR-KG-VEPM      0.789675       0.333453  0.383333        2.000000       6.0
+RCZDT-MisalignedV GPR-KG-pooled-pre      1.078654       0.258264  0.555556        1.333333       6.0
+RCZDT-MisalignedV    GPR-KG-oracleV      0.816266       0.398820  0.533333        1.333333       8.0
+RCZDT-MisalignedV        GPR-KG-AVB      0.534968       0.764412  0.472222        1.000000      10.0
+RCZDT-MisalignedV   GPR-KG-AVB-safe      0.477910            inf  0.722222        1.000000      15.0
+RCZDT-MisalignedV   GPR-KG-AVB-lite      0.213003            inf  0.750000        0.666667      17.0
+      RCZDT-StepV    GPR-KG-oracleV      0.719192       0.363894  0.277778        2.666667       3.0
+      RCZDT-StepV GPR-KG-pooled-pre      0.659192       0.454728  0.527778        1.666667       9.0
+      RCZDT-StepV       GPR-KG-VEPM      0.330486       0.641684  0.277778        1.333333      10.0
+      RCZDT-StepV   GPR-KG-AVB-lite      0.466974            inf  0.333333        1.000000      11.0
+      RCZDT-StepV   GPR-KG-AVB-safe      0.404476       0.562248  0.555556        1.333333      13.0
+      RCZDT-StepV        GPR-KG-AVB      0.259983            inf  0.500000        0.666667      15.0
+
+Paired safe deltas: positive HV delta favors safe; positive other_minus_safe_igd/CVR means safe has lower IGD/CVR.
+          problem             other  safe_minus_other_hv  other_minus_safe_igd  other_minus_safe_cvr  safe_minus_other_hv_feas  other_minus_safe_igd_feas
+    RCZDT-Curve2D   GPR-KG-AVB-lite            -0.319476             -0.221232              0.000000                 -0.319476                  -0.221232
+    RCZDT-Curve2D       GPR-KG-VEPM            -0.048625             -0.073477              0.166667                 -0.037301                  -0.073477
+    RCZDT-Curve2D GPR-KG-pooled-pre            -0.291759             -0.181889              0.000000                 -0.291759                  -0.181889
+    RCZDT-Curve2D    GPR-KG-oracleV            -0.168664             -0.120161              0.000000                 -0.168664                  -0.120161
+RCZDT-MisalignedV   GPR-KG-AVB-lite            -0.036915             -0.046540              0.027778                  0.264908                   0.739483
+RCZDT-MisalignedV       GPR-KG-VEPM            -0.147740             -0.192221             -0.338889                 -0.311765                  -0.175164
+RCZDT-MisalignedV GPR-KG-pooled-pre            -0.259699             -0.250691             -0.166667                 -0.600744                  -0.270583
+RCZDT-MisalignedV    GPR-KG-oracleV            -0.123587             -0.129255             -0.188889                 -0.338356                  -0.202151
+      RCZDT-StepV   GPR-KG-AVB-lite             0.116476              0.025177             -0.222222                 -0.062499                  -0.208925
+      RCZDT-StepV       GPR-KG-VEPM             0.440890              0.195521             -0.277778                  0.073990                   0.079436
+      RCZDT-StepV GPR-KG-pooled-pre             0.089512              0.024291             -0.027778                 -0.254716                  -0.107520
+      RCZDT-StepV    GPR-KG-oracleV            -0.001181             -0.066544             -0.277778                 -0.314716                  -0.198354

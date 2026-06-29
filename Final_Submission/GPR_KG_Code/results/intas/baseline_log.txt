@@ -1,0 +1,21 @@
+Error: The busStop '332' is not known in vehicle 'N18_frequency1'.
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "E:\从Dell移动到X1\科研同行\谭真\OR投稿\Final_Submission\GPR_KG_Code\experiments\intas\compute_baseline.py", line 101, in <module>
+    compute_and_save()
+    ~~~~~~~~~~~~~~~~^^
+  File "E:\从Dell移动到X1\科研同行\谭真\OR投稿\Final_Submission\GPR_KG_Code\experiments\intas\compute_baseline.py", line 60, in compute_and_save
+    y    = simulate(var_map, default_x, rf,
+                    T0=1.0, A0=1.0, E0=1.0, seed=seed)
+  File "E:\从Dell移动到X1\科研同行\谭真\OR投稿\Final_Submission\GPR_KG_Code\experiments\intas\sumo_sim.py", line 144, in simulate
+    traci.start(sumo_cmd)
+    ~~~~~~~~~~~^^^^^^^^^^
+  File "D:\miniconda3\Lib\site-packages\libsumo\__init__.py", line 232, in start
+    version = simulation.start(cmd)
+  File "D:\miniconda3\Lib\site-packages\libsumo\libsumo.py", line 3682, in start
+    return _libsumo.simulation_start(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+libsumo.libsumo.TraCIException: Invalid stop definition in vehicle 'N18_frequency1'.
+
+Computing baseline with 50 replications (real Ingolstadt signal plan)...

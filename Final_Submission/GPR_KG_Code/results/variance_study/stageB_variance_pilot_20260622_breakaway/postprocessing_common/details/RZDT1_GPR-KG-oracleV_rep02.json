@@ -1,0 +1,108 @@
+{
+  "problem": "RZDT1",
+  "rep": 2,
+  "method": "GPR-KG-oracleV",
+  "pool_sizes": {
+    "common_generic": 2498,
+    "common_axis": 2584
+  },
+  "sample_metrics": {
+    "hv_final": 0.8937373374020431,
+    "igd_final": 0.4825784696154854,
+    "cvr_final": 0.0,
+    "n_pareto_solutions": 2
+  },
+  "recommendations": {
+    "common_generic_k1.0": {
+      "candidate_pool_size": 2498,
+      "posterior_feasible_count": 1094,
+      "true_feasible_count": 1023,
+      "posterior_nd_count": 11,
+      "pareto_solutions": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          1,
+          0,
+          4
+        ]
+      ],
+      "pareto_objectives_true": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          0.04,
+          0.9015497689027102
+        ]
+      ],
+      "hv_final": 0.8937373374020431,
+      "igd_final": 0.4825784696154854,
+      "cvr_final": 0.0,
+      "n_pareto_solutions": 2,
+      "tpos_hits": 1,
+      "feas_precision": 0.819926873857404,
+      "feas_recall": 0.8768328445747801,
+      "feas_f1": 0.8474256022673595
+    },
+    "common_axis_k1.0": {
+      "candidate_pool_size": 2584,
+      "posterior_feasible_count": 1097,
+      "true_feasible_count": 1038,
+      "posterior_nd_count": 13,
+      "pareto_solutions": [
+        [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          5,
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "pareto_objectives_true": [
+        [
+          0.0,
+          1.0
+        ],
+        [
+          0.04,
+          0.8
+        ],
+        [
+          0.05,
+          0.7763932022500211
+        ]
+      ],
+      "hv_final": 1.0762298567374693,
+      "igd_final": 0.3959282869596284,
+      "cvr_final": 0.0,
+      "n_pareto_solutions": 3,
+      "tpos_hits": 3,
+      "feas_precision": 0.8204193254329991,
+      "feas_recall": 0.8670520231213873,
+      "feas_f1": 0.8430913348946136
+    }
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "problem": "RZDT2_VC",
+  "method": "GPR-KG-pooled-pre",
+  "method_base": "GPR-KG",
+  "variance_mode": "pooled_pre",
+  "rep": 0,
+  "seed": 7100,
+  "N": 13,
+  "n0": 12,
+  "d": 5,
+  "sigma": 0.04,
+  "alpha": 0.05,
+  "tau": 0.0,
+  "restored_from_checkpoint": false,
+  "initial_design": "common_random",
+  "initial_samples": [
+    [
+      80,
+      8,
+      10,
+      47,
+      23
+    ],
+    [
+      81,
+      93,
+      71,
+      94,
+      92
+    ],
+    [
+      47,
+      1,
+      57,
+      72,
+      11
+    ],
+    [
+      89,
+      97,
+      10,
+      58,
+      65
+    ],
+    [
+      96,
+      22,
+      22,
+      2,
+      2
+    ],
+    [
+      88,
+      90,
+      12,
+      7,
+      5
+    ],
+    [
+      82,
+      42,
+      17,
+      0,
+      53
+    ],
+    [
+      97,
+      72,
+      23,
+      89,
+      45
+    ],
+    [
+      91,
+      5,
+      62,
+      9,
+      15
+    ],
+    [
+      87,
+      67,
+      78,
+      95,
+      61
+    ],
+    [
+      63,
+      4,
+      92,
+      91,
+      100
+    ],
+    [
+      34,
+      68,
+      80,
+      89,
+      89
+    ]
+  ],
+  "parameters": {
+    "K1": 50,
+    "K2": 2,
+    "lambda_i": 0.1,
+    "prior_var": 100.0,
+    "w_vepm": 1.0,
+    "n_thr": 20,
+    "partition_features": "auto",
+    "use_boundary_initial_design": true,
+    "use_archive_candidates": false,
+    "archive_neighbor_radius": 0,
+    "kg_selection_tiebreak": "crowding_distance",
+    "variance_shrinkage_rho0": 0.0,
+    "variance_floor": 1e-08
+  },
+  "algorithm_overrides": {
+    "variance_surrogate": "none",
+    "variance_surrogate_rho0": 0.0,
+    "variance_surrogate_alpha": 0.001,
+    "variance_surrogate_min_samples": 20,
+    "variance_surrogate_only_constraint": false,
+    "variance_surrogate_clip_low": 0.5,
+    "variance_surrogate_clip_high": 2.0,
+    "variance_mode": "pooled_pre",
+    "partition_features": "auto",
+    "partition_features_resolved": [
+      0
+    ],
+    "vepm_n_features": 2,
+    "vepm_partitions": 4,
+    "replication_policy": "none",
+    "replication_max_per_solution": 3,
+    "replication_score_threshold": 0.0005,
+    "replication_boundary_scale": 1.0
+  },
+  "checkpoint_path": "GPR_KG_Code\\results\\variance_study\\local_partition_auto_smoke_20260623_v2\\RZDT2_VC\\GPR-KG-pooled-pre_rep00\\checkpoint.pkl",
+  "snapshot_jsonl_path": "GPR_KG_Code\\results\\variance_study\\local_partition_auto_smoke_20260623_v2\\RZDT2_VC\\GPR-KG-pooled-pre_rep00\\iteration_snapshots.jsonl"
+}

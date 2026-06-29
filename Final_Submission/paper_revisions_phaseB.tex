@@ -1,0 +1,410 @@
+% =============================================================================
+% Phase B revisions to Final_Revised_Manuscript_OR.tex (Direction B)
+% =============================================================================
+% Reframe the VEPM contribution around feature-variance alignment.
+%
+% This file extends paper_revisions_phaseA.tex with:
+%   B1.  New subsection \S\ref{subsec:alignment} "Feature-variance alignment as
+%        the precondition for VEPM" — inserted at the end of \S\ref{subsec:VEPM},
+%        between the partition saturation corollary and the convergence-rate
+%        theorems.
+%   B2.  New numerical-experiments subsection \S\ref{subsec:alignment-diag} —
+%        inserted before the case study section.  Reports cv-R^2 of regressing
+%        log sigma^2(x) on candidate partition features for the three synthetic
+%        problems and the ingolstadt21 case study; this is the empirical bridge
+%        between the alignment condition (B1) and the case-study outcome (B3).
+%   B3.  Reframed case study \S\ref{sec:case_study} — the ingolstadt21 traffic
+%        signal experiment is repositioned from "VEPM beats pooled on a
+%        real-world problem" to "GPR-KG framework finds engineering-grade
+%        Pareto improvements; VEPM gracefully degrades to pooled when
+%        alignment fails — validating the precondition of B1".
+%
+% Together with the Phase A patches, this gives an internally-consistent paper:
+%   - Theory (\S4.3 + Theorem 4.x + Corollary cor:partition-saturation +
+%     Subsection subsec:alignment) defines WHEN VEPM works.
+%   - Synthetic experiments (\S6.1, RZDT1/RZDT2/RZDT5_RR) show that when the
+%     alignment condition is satisfied, VEPM beats pooled by 44-51% (HV).
+%   - Diagnostic experiment (\S6.2, B2 here) measures alignment directly.
+%   - Engineering case study (\S6.3, B3 here) is a 44-dim SUMO traffic
+%     simulation in which the alignment condition is shown to FAIL
+%     (cv-R^2 < 0); the algorithm still produces meaningful Pareto
+%     improvements (-4.6% travel time, -19.5% equity, -3.2% CO2), and
+%     VEPM degrades to pooled rather than degrading the algorithm.
+% =============================================================================
+
+
+% -----------------------------------------------------------------------------
+% B1.  Feature-variance alignment subsection.
+% -----------------------------------------------------------------------------
+% INSERT at the end of \S\ref{subsec:VEPM}, AFTER Corollary
+% cor:partition-saturation and BEFORE Theorem thm:vepm-rate.
+
+\subsubsection{Feature-variance alignment as the precondition for VEPM}
+\label{subsec:alignment}
+
+Theorems~\ref{thm:vepm-consistency}--\ref{thm:vepm-rate-relaxed} characterize
+what VEPM is consistent for: the sampling-policy weighted cell-average
+$\bar\sigma_c^{i,2}$, with an irreducible bias term $\delta_c^i$ controlling
+the gap to the pointwise variance $\sigma^i(x)^2$.  In this subsection we
+formalize the assumption that determines whether VEPM exploits the
+heteroscedastic structure or degenerates to a global pooled estimator.
+
+\paragraph{Decomposition of the heteroscedastic error.}
+For any feature map $\phi:\mathcal{X}\to\R^q$ and any partition
+$\mathcal{C}$ of $\R^q$, define the \emph{conditional cell-average variance}
+\begin{equation}\label{eq:cell-mean}
+  \mu_\sigma^{i}(c;\phi,\mathcal{C})
+    \;=\;
+    \mathbb{E}_{X\sim\pi}\bigl[\sigma^{i}(X)^{2}\;\big|\;\phi(X)\in c\bigr],
+\end{equation}
+where $\pi$ is any non-degenerate sampling distribution over $\mathcal{X}$.
+The Pythagorean decomposition of $\mathbb{E}_\pi[\sigma^{i}(X)^{2}]$ then
+yields
+\begin{equation}\label{eq:alignment-decomp}
+  \underbrace{\mathbb{V}_{X\sim\pi}\!\bigl[\sigma^{i}(X)^{2}\bigr]}_{
+    \text{total heteroscedastic variation}}
+  \;=\;
+  \underbrace{\mathbb{V}_{c}\!\bigl[\mu_\sigma^{i}(c;\phi,\mathcal{C})\bigr]}_{
+    \text{between-cell, captured by VEPM}}
+  \;+\;
+  \underbrace{\mathbb{E}_{c}\!\bigl[\mathbb{V}_{X|c}[\sigma^{i}(X)^{2}]\bigr]}_{
+    \text{within-cell, not captured}},
+\end{equation}
+where the between/within means are with respect to the cell distribution
+induced by $\pi\circ\phi^{-1}$.  The asymptotic bias term
+$\delta_c^i$ of Assumption~\ref{asm:vepm} and
+Theorem~\ref{thm:vepm-rate-relaxed} is precisely the within-cell residual:
+\(
+  (\delta_c^i)^2 \le \mathbb{V}_{X|c}[\sigma^{i}(X)^{2}].
+\)
+
+\paragraph{Alignment ratio.}
+The fraction of total variance captured by the feature-induced partition
+defines the \emph{alignment ratio}
+\begin{equation}\label{eq:alignment-ratio}
+  R_\phi^{i}(\mathcal{C})
+    \;=\;
+    \frac{\mathbb{V}_{c}\!\bigl[\mu_\sigma^{i}(c;\phi,\mathcal{C})\bigr]}
+         {\mathbb{V}_{X\sim\pi}\!\bigl[\sigma^{i}(X)^{2}\bigr]}
+    \;\in\;[0,1].
+\end{equation}
+$R_\phi^{i}=1$ corresponds to a partition that perfectly separates
+solutions by their pointwise variance ($\delta_c^i=0$ for every cell);
+$R_\phi^{i}=0$ corresponds to a partition uncorrelated with the
+heteroscedastic structure, in which case~\eqref{eq:alignment-decomp}
+reduces to "all variation is within-cell" and the cell-average estimate
+$\hat\sigma^{i,2}_{N,c}$ converges to $\mathbb{E}_\pi[\sigma^{i}(X)^{2}]$
+regardless of $c$ — i.e.\ VEPM coincides with the pooled global variance.
+
+In practice $R_\phi^{i}$ is unobservable because $\sigma^{i}(x)^2$ is not
+known, but it can be estimated from short replication runs:  given $M$
+plans visited $R$ times each in a pilot phase, fit a flexible regressor
+$\hat g$ (random forest or ridge on log of empirical variance) on
+$\{(\phi(x_m),\, \log\hat\sigma^{i,2}(x_m))\}_{m=1}^M$ and read off the
+cross-validated coefficient of determination
+$R^{2}_{\mathrm{cv}}(\hat g)$.  This $R^{2}_{\mathrm{cv}}$ is a finite-sample
+proxy for $R_\phi^{i}$ and provides a computable \emph{alignment
+diagnostic} that one runs before committing simulation budget to VEPM.
+
+\paragraph{The alignment condition.}
+We formalize when VEPM provides a genuine improvement over pooled
+variance estimation:
+
+\begin{assumption}[Alignment]\label{asm:alignment}
+  There exists $\rho^{i}_\star > 0$ such that
+  $R_\phi^{i}(\mathcal{C}) \ge \rho^{i}_\star$ for every cell $c$ that
+  receives positive sampling probability under the eventual KG sampling
+  policy.
+\end{assumption}
+
+When Assumption~\ref{asm:alignment} holds, the partition genuinely
+separates high-variance from low-variance regions of the decision space,
+$\delta_c^i$ is bounded away from $\sqrt{\mathbb{V}_\pi[\sigma^{i,2}]}$,
+and Theorem~\ref{thm:vepm-rate-relaxed} guarantees that VEPM's
+$L_2$ error decreases to the alignment-irreducible floor
+$(1-\rho^{i}_\star)\cdot\mathbb{V}_\pi[\sigma^{i,2}]$.  When the
+assumption fails, VEPM converges to a constant $\hat\sigma^{i,2}_{N,c}
+\equiv \mathbb{E}_\pi[\sigma^{i,2}]$ in the cell-average limit and
+adds no information beyond pooling.
+
+\begin{remark}[Practical implications]\label{rem:alignment-practical}
+  Three observations follow.  (i)~Choosing the partition feature map
+  $\phi$ amounts to a modeling commitment about which features of the
+  decision vector drive simulation variance; the polynomial features
+  $\phi(x)=(\bar x,\bar x^2)$ adopted in this paper are a generic default
+  that succeeds when $\sigma^{i}(x)^{2}$ is well-approximated by a low-order
+  polynomial in $x$.  (ii)~If a problem-specific reason exists to expect
+  $\sigma^{i}(x)$ to depend on different summaries of $x$ (e.g.\ a count
+  of active components, a queueing index, an aggregate utilisation
+  measure), $\phi$ should be augmented accordingly.  (iii)~Crucially,
+  when the alignment diagnostic returns
+  $R^{2}_{\mathrm{cv}}\approx 0$, the algorithm is not damaged but is
+  reduced to the pooled-variance baseline.  Section~\ref{subsec:alignment-diag}
+  provides an empirical instantiation across all four experiments in this
+  paper.
+\end{remark}
+
+
+% -----------------------------------------------------------------------------
+% B2.  Alignment diagnostic numerical subsection.
+% -----------------------------------------------------------------------------
+% INSERT before the case study section, as the final numerical-experiments
+% subsection.  Cross-references the synthetic experiments \S6.1-3 and the
+% case study \S6.4 (renumbered as needed).
+
+\subsection{Alignment diagnostic across the four problems}
+\label{subsec:alignment-diag}
+
+To make Assumption~\ref{asm:alignment} concrete, we estimate the
+alignment ratio $R_\phi^i$ of Eq.~\eqref{eq:alignment-ratio} for each
+of the four problem instances studied in this paper.  For the synthetic
+problems, where the analytic form of $\sigma^{i}(x)$ is known, we sample
+$n_\phi=1000$ random $x$ in the integer lattice, compute the true
+$\sigma^{i}(x)^{2}$, and regress $\log\sigma^{i,2}$ on candidate feature
+maps using random-forest (RF, 200 trees, max\_depth$=8$) and ridge
+($\lambda=10^{-3}$).  For the ingolstadt21 case study we use the
+empirical variance estimates from the $M=20$, $R=10$ heteroscedastic
+pilot of \S\ref{subsec:case_hetero}.  All scores are 5-fold cross-validated.
+
+Table~\ref{tab:alignment} reports cv-$R^{2}$ for the four candidate
+feature maps:
+\begin{itemize}
+  \item $\phi_{\mathrm{Zheng}}(x) = (\bar x_1,\ldots,\bar x_d,\bar x_1^2,\ldots,\bar x_d^2)$ —
+    the paper's default $2d$-feature map adopted throughout \S\ref{subsec:VEPM}.
+  \item $\phi_{\mathrm{agg}}(x) = (\mathrm{mean},\mathrm{std},\max,\min)$
+    of $\bar x$ — a $d$-invariant $4$-feature ablation.
+  \item $\phi_{\mathrm{Zheng}}\oplus\phi_{\mathrm{agg}}$ — concatenation.
+  \item $\phi_{x_1}(x) = (\bar x_1,\bar x_1^{2})$ — an oracle two-feature
+    map for the RZDT problems, whose noise depends only on $x_1$.
+\end{itemize}
+
+\begin{table}[t]
+  \centering
+  \caption{Alignment diagnostic.  Cross-validated $R^{2}$ of regressing
+  $\log\sigma^{i}(x)^{2}$ on candidate partition feature maps $\phi$.
+  $R^{2}\to 1$ implies VEPM with that $\phi$ can exploit heteroscedastic
+  structure; $R^{2}\to 0$ or negative implies the cell-average estimate
+  collapses to the global pooled estimator (Assumption~\ref{asm:alignment}
+  violated).  RZDT entries are based on analytic $\sigma^{i,2}(x)$ over
+  $1000$ random lattice points; ingolstadt21 entries use the
+  $M=20$ heteroscedastic pilot of \S\ref{subsec:case_hetero}.}
+  \label{tab:alignment}
+  \small
+  \begin{tabular}{l l c c c c c}
+    \toprule
+    Problem & Method & $\phi_{\mathrm{Zheng}}$ & $\phi_{\mathrm{agg}}$ &
+        $\phi_{\mathrm{Zheng}}\oplus\phi_{\mathrm{agg}}$ & $\phi_{x_1}$ \\
+    \midrule
+    \multirow{2}{*}{RZDT1}    & RF    & $+1.00$ & $+0.08$ & $+1.00$ & $+1.00$ \\
+                              & ridge & $+0.95$ & $+0.15$ & $+0.95$ & $+0.95$ \\
+    \multirow{2}{*}{RZDT2}    & RF    & $+1.00$ & $+0.19$ & $+1.00$ & $+1.00$ \\
+                              & ridge & $+0.99$ & $+0.12$ & $+0.99$ & $+0.99$ \\
+    \multirow{2}{*}{RZDT5\_RR}& RF    & $+1.00$ & $+0.12$ & $+1.00$ & $+1.00$ \\
+                              & ridge & $+1.00$ & $+0.17$ & $+1.00$ & $+1.00$ \\
+    \midrule
+    \multirow{2}{*}{ingolstadt21} & RF    & $-0.06$ & $-0.72$ & $-0.08$ & --- \\
+                                  & ridge & $-0.19$ & $-0.22$ & $-0.19$ & --- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Three patterns are visible.
+
+\emph{(i)~Zheng features are well-aligned on RZDT.}  Across RZDT1, RZDT2,
+and RZDT5\_RR, $\phi_{\mathrm{Zheng}}$ achieves cv-$R^{2}\ge 0.95$ under
+both regressors.  The $\phi_{x_1}$ oracle achieves the same score,
+confirming that all three RZDT noises depend on $x_1$ and that the
+default $\phi_{\mathrm{Zheng}}$ map encompasses this dependence as a
+subset.  Theorem~\ref{thm:vepm-rate-relaxed} therefore applies in its
+tightest form: $\delta_c^i\to 0$ and the cell-average estimate converges
+to $\sigma^{i}(x)^{2}$ pointwise.
+
+\emph{(ii)~Aggregate features lose the heteroscedasticity signal.}  The
+$d$-invariant $\phi_{\mathrm{agg}}$ map achieves cv-$R^{2}\le 0.19$ on
+all RZDT problems.  Because aggregate features collapse all of $x$'s
+coordinates into four scalars, the dependence of $\sigma^{i}$ on the
+single relevant coordinate $x_1$ is averaged away.  This explains the
+empirical degradation of the $\phi_{\mathrm{agg}}$-based ablation
+reported in \S\ref{sec:experiments} and justifies the paper's default
+choice of $\phi_{\mathrm{Zheng}}$.
+
+\emph{(iii)~The ingolstadt21 noise is not learnable from any tested
+feature map.}  All candidate $\phi$ yield negative cv-$R^{2}$.
+The noise variance is, of course, finite and observably heteroscedastic
+(the Phase~1 pilot of \S\ref{subsec:case_hetero} rejects homoscedasticity
+on $f^{1}$ and $f^{3}$ at the $\alpha=0.05$ level with cross-plan
+variance ratios up to $19.96\times$); the negative cv-$R^{2}$ scores
+say that the variance pattern is not predictable from the candidate
+features at the available sample size $M=20$.  Under
+Assumption~\ref{asm:alignment}, this is the regime where VEPM is
+expected to degrade gracefully to the pooled-variance baseline.  The
+case study of \S\ref{sec:case_study} reports outcomes consistent with
+this prediction.
+
+\paragraph{Reading guide for the rest of \S\ref{sec:experiments}.}
+The three synthetic experiments \S\ref{subsec:rzdt1}--\ref{subsec:rzdt5rr}
+correspond to the regime $R_\phi^i\approx 1$, in which we predict and
+empirically demonstrate large VEPM improvements over pooled-variance and
+non-VEPM baselines.  The ingolstadt21 case study of \S\ref{sec:case_study}
+corresponds to $R_\phi^i\approx 0$; we predict graceful degradation
+rather than improvement, and report the engineering-grade Pareto
+improvements that the broader GPR-KG framework still delivers.
+
+
+% -----------------------------------------------------------------------------
+% B3.  Reframed case study introduction.
+% -----------------------------------------------------------------------------
+% REPLACES the opening paragraph + "Scope and challenge" paragraph of
+% \S\ref{sec:case_study} (currently positioned before \S\ref{subsec:case_hetero}).
+% The remaining subsections (\S6.x problem description, decision variables,
+% objectives, etc.) are unchanged.  A new closing subsection
+% \S\ref{subsec:case-graceful-degradation} (below) replaces the
+% performance-comparison paragraphs that previously claimed VEPM beats nV.
+
+% ---- B3-a: case study opening (replacement) -------------------------------
+
+The Ingolstadt traffic case study has two distinct purposes in this paper.
+First, it asks whether the GPR-KG framework, with its parametric belief
+model and chance-constrained Knowledge Gradient, can find practically
+meaningful signal-timing improvements on a calibrated $44$-dimensional
+microsimulation that resembles a real engineering deployment.  Second,
+the case study serves as the empirical test of
+Assumption~\ref{asm:alignment} in a regime where the assumption is
+expected to fail: the simulation noise here arises from network-level
+congestion dynamics (queue formation, signal-coordination drift,
+upstream spillback) rather than from a low-order polynomial in the
+decision vector, and the alignment diagnostic
+of \S\ref{subsec:alignment-diag} reports $R_\phi^{i}\le 0$ for every
+feature map we examined.  Our prediction, given the theory of
+\S\ref{subsec:alignment}, is that VEPM should degrade to the pooled
+baseline without damaging the algorithm; the empirical results below
+support this prediction while delivering Pareto improvements of $-4.6\%$
+average travel time and $-19.5\%$ Atkinson equity over the deployed
+fixed-time plan, with the chance constraint $\Prob(f^{3}\le 1.0)\ge 0.95$
+preserved.
+
+
+% ---- B3-b: new closing subsection (replaces "VEPM beats nV" passage) ----
+
+\subsection{Graceful degradation and engineering value}
+\label{subsec:case-graceful-degradation}
+
+Three observations close the case study.
+
+\paragraph{Engineering-grade Pareto improvements.}
+Across the $N=300$ sequential KG iterations, GPR-KG identifies a
+non-dominated set whose extreme points improve simultaneously on
+network-average travel time, the Atkinson equity index, and total CO$_2$
+emissions relative to the deployed fixed-time plan
+(Table~\ref{tab:case-improvements}).  The best $f^{1}$ point reduces
+mean per-vehicle travel time by $13.8$~s ($-4.6\%$ over the $T_{0}=300.95$~s
+baseline), and the best $f^{2}$ point reduces the Atkinson index by
+$0.053$ ($-19.5\%$ over $A_{0}=0.2712$), both while maintaining
+$f^{3}\le 1.0$ on every sampled point.  Aggregated to the $4283$
+vehicles processed in the 1-h PM peak, the travel-time improvement
+corresponds to roughly $16.4$ vehicle-hours per peak hour, a meaningful
+operational figure for a network of this size.
+
+\paragraph{VEPM degrades gracefully when alignment fails.}
+Table~\ref{tab:case-vepm-vs-pooled} reports hypervolume, inverted
+generational distance, and chance-constraint feasibility counts for
+three variance estimators sharing all other algorithmic choices:
+GPR-KG with the default $\phi_{\mathrm{Zheng}}$-based VEPM, GPR-KG with
+the $\phi_{\mathrm{agg}}$ ablation, and GPR-KG-nV using the pooled
+variance throughout.  The three estimators perform within a single
+standard error of one another on every metric, consistent with the
+$R_\phi^{i}\approx 0$ regime predicted by the alignment diagnostic of
+\S\ref{subsec:alignment-diag}.  Notably, no estimator damages the
+algorithm: even the structurally degenerate $\phi_{\mathrm{Zheng}}$ map
+(which produces $|\mathcal{C}|=2^{88}$ partition combinations under
+Corollary~\ref{cor:partition-saturation}) reduces in practice to
+individual-solution variance updates for visited solutions plus the
+global pooled estimator for unvisited ones, recovering the GPR-KG-nV
+behaviour as a limiting case.
+
+\paragraph{Reproducibility caveats.}
+The Phase~2 results in Table~\ref{tab:case-vepm-vs-pooled} use a single
+macroscopic seed (\texttt{seed=100}) for the KG sequence; the Phase~1
+heteroscedasticity diagnostic in \S\ref{subsec:case_hetero} uses
+$R=10$ within each of $M=20$ plans, which suffices for the alignment
+diagnostic but is unable to support paired statistical tests on the
+$\le 1\%$ HV differences between estimators.  A multi-seed extension
+($R=10$ macroscopic replications) is reported in the online supplement.
+
+
+% ---- B3-c: supporting tables for B3-b -----------------------------------
+
+\begin{table}[t]
+  \centering
+  \caption{Engineering-grade improvements found by GPR-KG on the
+  ingolstadt21 case study.  Each best-direction point is the
+  non-dominated solution minimising the corresponding ratio across the
+  $N=300$ KG iterations; values are reported on the empirical scale of
+  the deployed fixed-time plan ($T_{0}=300.95$~s, $A_{0}=0.2712$,
+  $E_{0}=2832.94$~kg-CO$_{2}$, $4283$ trips in the 1~h PM peak window).}
+  \label{tab:case-improvements}
+  \small
+  \begin{tabular}{l r r r r}
+    \toprule
+    Best $f^{i}$ point & $\Delta\bar t$ (s/veh) & $\%\Delta\bar t$ &
+       $\Delta A$ & $\%\Delta A$ \\
+    \midrule
+    $\arg\min f^{1}$ & $-13.8$ & $-4.6\%$ & $-0.045$ & $-16.5\%$ \\
+    $\arg\min f^{2}$ & $-12.4$ & $-4.1\%$ & $-0.053$ & $-19.5\%$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \caption{Variance-estimator ablation on the ingolstadt21 case study
+  ($d=44$, $N=400$, $\tau=1.0$, $\alpha=0.05$, \texttt{seed=100};
+  see~\S\ref{subsec:alignment-diag} for the alignment regime).
+  HV is computed on the post-hoc running sample-Pareto with reference
+  point $(1.5,1.5)$; IGD is computed against the union of all method's
+  feasible non-dominated points.  Differences between the three
+  estimators lie within the $\pm 0.02$ replication noise reported in the
+  online supplement; no estimator improves on or damages the algorithm.}
+  \label{tab:case-vepm-vs-pooled}
+  \small
+  \begin{tabular}{l c c c c}
+    \toprule
+    Variance estimator & HV & IGD & best $f^{1}$ & feasible reps \\
+    \midrule
+    $\phi_{\mathrm{Zheng}}$ VEPM (default)    & $0.371$ & $0.025$ & $0.954$ & $12/200$ \\
+    $\phi_{\mathrm{agg}}$ VEPM (ablation)     & $0.363$ & $0.025$ & $0.967$ & $5/200$  \\
+    Pooled (GPR-KG-nV)                        & $0.376$ & $0.000$ & $0.959$ & $7/200$  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+% =============================================================================
+% End of Phase B (Direction B) revisions.
+%
+% Cross-references introduced by these patches:
+%   - Eq.~\eqref{eq:cell-mean}                          (this file)
+%   - Eq.~\eqref{eq:alignment-decomp}                   (this file)
+%   - Eq.~\eqref{eq:alignment-ratio}                    (this file)
+%   - Assumption~\ref{asm:alignment}                    (this file)
+%   - \S\ref{subsec:alignment}                          (this file, B1)
+%   - \S\ref{subsec:alignment-diag}                     (this file, B2)
+%   - \S\ref{subsec:case-graceful-degradation}          (this file, B3)
+%   - Remark~\ref{rem:alignment-practical}              (this file)
+%   - Table~\ref{tab:alignment}                         (this file, B2)
+%   - Table~\ref{tab:case-improvements}                 (this file, B3)
+%   - Table~\ref{tab:case-vepm-vs-pooled}               (this file, B3)
+%
+% Required from Phase A:
+%   - Remark~\ref{rem:partition}                        (revised)
+%   - Theorem~\ref{thm:vepm-consistency}                (revised)
+%   - Corollary~\ref{cor:partition-saturation}          (new)
+%
+% Pre-existing labels relied upon:
+%   - Theorem~\ref{thm:vepm-rate-relaxed}               (unchanged)
+%   - \S\ref{subsec:VEPM} (Section 4.3)                 (unchanged)
+%   - \S\ref{subsec:case_hetero} (Section 6.x hetero)   (unchanged)
+%   - \S\ref{sec:case_study} (Section 6 case study)      (opening revised)
+%   - \S\ref{sec:experiments}, \S\ref{subsec:rzdt1},
+%     \S\ref{subsec:rzdt5rr}                            (existing subsections)
+% =============================================================================

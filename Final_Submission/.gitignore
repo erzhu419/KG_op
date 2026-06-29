@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.ipynb_checkpoints/
+
+# LaTeX build artefacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.dvi
+*.ps
+*.brf
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+
+# Local-only diagnostic artefacts
+*.tmp
+*.bak
+*.partial.tmp
+
+# Server-pulled raw process outputs (huge, can re-pull from server)
+results/intas/snapshots/
+
+# Stale / superseded LaTeX drafts (keep main, drop dated copies)
+Final_Revised_Manuscript_OR_RZDT346_*.tex
+
+# Local smoke-test and server-deployment scratch files
+GPR_KG_Code/results/local_validation/
+cpu2_*.py
+cpu2_updated_results_*/
+local_launch_server3112080*.ps1
+server_check_updated_rzdt_params.py
+server_diag_updated_rzdt.ps1
+server_launch_updated_rzdt*.ps1
+server_run_updated_rzdt_wait.ps1
+server_run_theory_compat_pilot*.py
+server_run_theory_compat_pilot*.ps1
+server_run_targeted_pilot*.py
+server_run_targeted_pilot*.ps1
+server311_launch_gprkgnv_full.py
+server311_run_gprkgnv_full.bat
+server311_run_theory_compat_pilot.py
+server311_pilot_results/
+server311_targeted_results/
+server311_common_random_*/
+server311_common_random_full_*.zip
+server311_structured_baselines_full_*/
+server311_hvs_*/
+server311_hvs_*.zip
+/results/
+server_test_*.ps1

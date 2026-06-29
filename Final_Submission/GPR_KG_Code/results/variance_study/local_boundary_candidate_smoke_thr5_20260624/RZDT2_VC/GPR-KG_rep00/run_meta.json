@@ -1,0 +1,173 @@
+{
+  "problem": "RZDT2_VC",
+  "method": "GPR-KG",
+  "method_base": "GPR-KG",
+  "variance_mode": "vepm",
+  "rep": 0,
+  "seed": 1401,
+  "N": 35,
+  "n0": 15,
+  "d": 5,
+  "sigma": 0.04,
+  "alpha": 0.05,
+  "tau": 0.0,
+  "restored_from_checkpoint": false,
+  "initial_design": "common_random",
+  "initial_samples": [
+    [
+      66,
+      63,
+      41,
+      49,
+      48
+    ],
+    [
+      66,
+      37,
+      56,
+      56,
+      69
+    ],
+    [
+      15,
+      85,
+      23,
+      34,
+      75
+    ],
+    [
+      3,
+      23,
+      77,
+      32,
+      69
+    ],
+    [
+      70,
+      100,
+      28,
+      52,
+      28
+    ],
+    [
+      51,
+      2,
+      97,
+      7,
+      34
+    ],
+    [
+      8,
+      48,
+      38,
+      14,
+      31
+    ],
+    [
+      71,
+      5,
+      53,
+      72,
+      68
+    ],
+    [
+      24,
+      77,
+      89,
+      28,
+      8
+    ],
+    [
+      16,
+      61,
+      2,
+      1,
+      54
+    ],
+    [
+      75,
+      2,
+      52,
+      9,
+      0
+    ],
+    [
+      41,
+      9,
+      45,
+      62,
+      14
+    ],
+    [
+      11,
+      61,
+      19,
+      51,
+      47
+    ],
+    [
+      12,
+      21,
+      82,
+      57,
+      82
+    ],
+    [
+      52,
+      48,
+      48,
+      81,
+      53
+    ]
+  ],
+  "parameters": {
+    "K1": 50,
+    "K2": 2,
+    "lambda_i": 0.1,
+    "prior_var": 100.0,
+    "w_vepm": 1.0,
+    "n_thr": 20,
+    "partition_features": "auto",
+    "use_boundary_initial_design": true,
+    "use_archive_candidates": false,
+    "archive_neighbor_radius": 0,
+    "kg_selection_tiebreak": "crowding_distance",
+    "variance_shrinkage_rho0": 0.0,
+    "variance_floor": 1e-08,
+    "robust_vepm": false,
+    "vepm_residual_clip_factor": null,
+    "vepm_new_point_weight": 1.0,
+    "vepm_partition_weight_floor": 0.0
+  },
+  "algorithm_overrides": {
+    "variance_surrogate": "none",
+    "variance_surrogate_rho0": 0.0,
+    "variance_surrogate_alpha": 0.001,
+    "variance_surrogate_min_samples": 20,
+    "variance_surrogate_only_constraint": false,
+    "variance_surrogate_clip_low": 0.5,
+    "variance_surrogate_clip_high": 2.0,
+    "robust_vepm": true,
+    "vepm_residual_clip_factor": 16.0,
+    "vepm_new_point_weight": 0.2,
+    "vepm_partition_weight_floor": 0.0,
+    "variance_mode": "vepm",
+    "partition_features": "auto",
+    "partition_features_resolved": [
+      0
+    ],
+    "vepm_n_features": 2,
+    "vepm_partitions": 4,
+    "replication_policy": "none",
+    "replication_max_per_solution": 3,
+    "replication_score_threshold": 0.0005,
+    "replication_boundary_scale": 1.0,
+    "replication_budget_fraction": 1.0,
+    "boundary_candidate_policy": "chance_margin",
+    "boundary_candidate_count": 30,
+    "boundary_candidate_pool_size": 300,
+    "boundary_candidate_margin_scale": 1.0
+  },
+  "checkpoint_path": "GPR_KG_Code\\results\\variance_study\\local_boundary_candidate_smoke_thr5_20260624\\RZDT2_VC\\GPR-KG_rep00\\checkpoint.pkl",
+  "snapshot_jsonl_path": "GPR_KG_Code\\results\\variance_study\\local_boundary_candidate_smoke_thr5_20260624\\RZDT2_VC\\GPR-KG_rep00\\iteration_snapshots.jsonl"
+}

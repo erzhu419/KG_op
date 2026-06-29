@@ -1,0 +1,29 @@
+{
+  "problem": "RZDT5_RR",
+  "method": "GPR-KG-nV",
+  "rep": 6,
+  "seed": 1006,
+  "N": 150,
+  "n0": 30,
+  "d": 5,
+  "sigma": 0.04,
+  "alpha": 0.05,
+  "tau": 0.0,
+  "restored_from_checkpoint": false,
+  "parameters": {
+    "K1": 50,
+    "K2": 2,
+    "lambda_i": 0.1,
+    "prior_var": 100.0,
+    "w_vepm": 1.0,
+    "n_thr": 20,
+    "use_boundary_initial_design": true,
+    "use_archive_candidates": false,
+    "archive_neighbor_radius": 0,
+    "kg_selection_tiebreak": "crowding_distance",
+    "variance_shrinkage_rho0": 0.0,
+    "variance_floor": 1e-08
+  },
+  "checkpoint_path": "results\\rzdt_checkpointed\\structured_nv_full_20260520\\RZDT5_RR\\GPR-KG-nV_rep06\\checkpoint.pkl",
+  "snapshot_jsonl_path": "results\\rzdt_checkpointed\\structured_nv_full_20260520\\RZDT5_RR\\GPR-KG-nV_rep06\\iteration_snapshots.jsonl"
+}

@@ -1,0 +1,235 @@
+% =============================================================================
+% Phase A revisions to Final_Revised_Manuscript_OR.tex
+% =============================================================================
+% Three patches:
+%   A1.  Replacement Remark for \ref{rem:partition} (Partition granularity).
+%   A2.  Revised statement of Theorem \ref{thm:vepm-consistency}.
+%   A3.  New Corollary on the partition-saturation regime (insert after
+%        Theorem \ref{thm:vepm-rate-relaxed}).
+%
+% Rationale (private to authors, do not include in submission):
+%   - Original Remark overclaims "1024 partitions are manageable for d=5,
+%     N=150"; under uniform occupancy the expected per-partition count is
+%     0.15, so most partitions are empty.  Empirically, VEPM advantage
+%     decays from +44%/+51% on d=2 (RZDT1/2) to +2% on d=5 (RZDT5) and
+%     vanishes on the d=44 traffic case study (single seed).  The
+%     consistency theorem is a *cell-average* result, not a *pointwise*
+%     one, and it requires N_c -> infinity, which is structurally
+%     unattainable when |C| >> N.
+%   - The new Corollary makes the high-d degeneracy explicit and motivates
+%     the controlled-K replacement scheme (introduced in a separate patch
+%     by Phase B).
+% =============================================================================
+
+
+% -----------------------------------------------------------------------------
+% A1.  Replacement for the "Partition granularity" remark.
+% -----------------------------------------------------------------------------
+% REPLACES the existing \begin{remark}[Partition granularity]\label{rem:partition}
+% ...\end{remark} block.
+
+\begin{remark}[Partition granularity and the budget--cardinality regime]
+  \label{rem:partition}
+  The total number of partition combinations is $|\mathcal{C}| = 2^{2d}$,
+  which grows exponentially in~$d$.  The qualitative behaviour of VEPM
+  therefore divides into two regimes determined by the ratio of
+  cardinality to budget.
+
+  \emph{Information-rich regime} ($|\mathcal{C}| \ll N$).  When the
+  partition is small enough that each combination is visited multiple
+  times under the sampling policy, the common estimate
+  $\hat{\sigma}^{i,2}_{n,c}$ from~\eqref{eq:VEPM_common} pools several
+  empirical squared residuals and is updated online by the sample-count
+  weighted average~\eqref{eq:VEPM_rec_b}/\eqref{eq:VEPM_rec_d}.  This is
+  the regime in which the consistency
+  result of Theorem~\ref{thm:vepm-consistency} delivers its full content,
+  and where empirically VEPM markedly outperforms a pooled-variance
+  ablation: on the synthetic RZDT1/RZDT2 ($d=2$, $|\mathcal{C}|=16$,
+  $N=150$, expected occupancy $\approx9.4$) we observe HV improvements of
+  $44$\,\% and $51$\,\% over the pooled-variance variant.
+
+  \emph{Saturation regime} ($|\mathcal{C}| \gtrsim N$).  When
+  $|\mathcal{C}|/N \to \infty$ along a problem family, the expected
+  occupancy $N/|\mathcal{C}|$ vanishes; under any non-degenerate sampling
+  policy, almost every partition combination is either unsampled or
+  singleton.  In this regime the partition-level pooling
+  in~\eqref{eq:VEPM_rec_b} contributes negligibly: most queried
+  $\hat{\sigma}^{i,2}_n(x)$ values are returned by the
+  \emph{initialization fallback} rather than by online updates from
+  partition neighbours.  Accordingly, the cell-average
+  consistency in Theorem~\ref{thm:vepm-consistency} loses
+  empirical bite, since the conditioning event $\{N_{c}\to\infty\}$ holds
+  for vanishingly few combinations.  This degeneracy is formalised in
+  Corollary~\ref{cor:partition-saturation}.
+
+  Three additional observations are useful in interpreting the partition
+  scheme.  First, the joint use of $\bar{x}_j$ and $\bar{x}_j^{2}$ as
+  features captures both location-based and curvature-based variance
+  heterogeneity, but the two are partially redundant on
+  $\bar{x}_j\in[0,1]$: the conditions $\bar{x}_j>0.5$ and
+  $\bar{x}_j^{2}>0.5\Leftrightarrow\bar{x}_j>\sqrt{0.5}\approx0.707$
+  yield only three distinct one-dimensional sub-intervals, so the
+  effective number of populated combinations is at most $3^{d}$ rather
+  than $4^{d}$.  Second, the threshold $0.5$ is a default choice that is
+  agnostic about where variance heterogeneity is concentrated; a
+  data-adaptive threshold (\S\ref{subsec:medoid-K-partition}) is in
+  general preferable.  Third, partition granularity affects only the
+  variance estimate $\hat{\sigma}^{i,2}_n(x)$; the parametric mean
+  belief~\eqref{eq:posterior_mean} is unaffected and continues to
+  enable Pareto front identification through the shared coefficient
+  vector $\beta^{i}$.
+
+  These observations motivate the controlled-cardinality partition
+  introduced in~\S\ref{subsec:medoid-K-partition}, in which $K=K_{N}$
+  grows slowly with $N$ ($K_{N}/N\to 0$) so that the information-rich
+  regime is preserved across the entire range of problem dimensions
+  considered in our experiments.
+\end{remark}
+
+
+% -----------------------------------------------------------------------------
+% A2.  Revised statement of the VEPM consistency theorem.
+% -----------------------------------------------------------------------------
+% REPLACES \begin{theorem}[VEPM Consistency]\label{thm:vepm-consistency}
+% ... \end{theorem}.  The proof in App.~\ref{app:proof_VEPM} is unchanged
+% in substance; only the statement and the post-statement remarks change
+% to make the cell-average vs.\ pointwise distinction explicit.
+
+\begin{theorem}[VEPM cell-average consistency]
+  \label{thm:vepm-consistency}
+  Fix a partition $\mathcal{C}$, an evaluation index $i\in\{1,2,3\}$ and
+  a partition combination $c\in\mathcal{C}$.  Suppose Assumptions
+  \ref{asm:gaussian}--\ref{asm:vepm} hold and that, along the sequence of
+  algorithmic stages, the within-partition sample count satisfies
+  $N_{c}\to\infty$ almost surely.  Define the sampling-policy weighted
+  cell-average true variance
+  \[
+    \bar{\sigma}_{c}^{i,2}
+      \;=\;
+      \lim_{N\to\infty}\;
+      \frac{\sum_{x'\in\mathcal{S}_{N,c}} n_{x'}\, \sigma^{i}(x')^{2}}
+           {\sum_{x'\in\mathcal{S}_{N,c}} n_{x'}}.
+  \]
+  Then
+  \[
+    \hat{\sigma}_{N,c}^{i,2} \;\xrightarrow{a.s.}\; \bar{\sigma}_{c}^{i,2}
+    \qquad\text{as } N\to\infty.
+  \]
+  Moreover, for every $x$ with $c(x)=c$,
+  $|\bar{\sigma}_{c}^{i,2} - \sigma^{i}(x)^{2}| \le \delta_{c}^{i}$,
+  where $\delta_{c}^{i}\ge 0$ is the within-partition variance variation
+  from Assumption~\ref{asm:vepm}.  When $\delta_{c}^{i}=0$ (within-cell
+  homoscedasticity), the limit equals the true point variance
+  $\sigma_{c}^{i,2}$ and the VEPM estimate is therefore strongly
+  consistent for $\sigma^{i}(x)^{2}$ at every $x$ with $c(x)=c$.
+\end{theorem}
+
+\noindent\emph{Scope of Theorem~\ref{thm:vepm-consistency}.}  The
+theorem is a \emph{cell-average} consistency result for any cell with
+unbounded within-cell sample count.  Two qualifications matter for
+finite-budget practice:
+
+\begin{enumerate}
+  \item \emph{Pointwise vs.\ cell-average.}  The limit
+  $\bar{\sigma}_{c}^{i,2}$ is a sampling-policy weighted mean of the
+  true variances at solutions visited inside cell~$c$; it equals the
+  pointwise variance $\sigma^{i}(x)^{2}$ only when within-cell
+  heterogeneity vanishes ($\delta_{c}^{i}=0$).  Pointwise consistency
+  requires a refining partition sequence
+  $\{\mathcal{C}_{N}\}_{N\ge 1}$ with cell diameter
+  $\operatorname{diam}(c_{N}(x))\to 0$ and within-cell sample count
+  $N_{c_{N}(x)}\to\infty$, so that both the bias term
+  $\delta_{c}^{i}$ and the variance term in
+  Theorem~\ref{thm:vepm-rate-relaxed} vanish jointly.
+
+  \item \emph{Cell visitation.}  The hypothesis $N_{c}\to\infty$ holds
+  along a typical sample path only for cells that are visited with
+  positive probability under the sampling policy at every stage.  When
+  $|\mathcal{C}|$ grows faster than~$N$ (Corollary
+  \ref{cor:partition-saturation}), this condition fails for almost all
+  cells, so the theorem says nothing about them and the algorithm
+  reverts to the initialization fallback for those cells.
+\end{enumerate}
+
+% -----------------------------------------------------------------------------
+% A3.  New corollary on the partition-saturation regime.
+% -----------------------------------------------------------------------------
+% INSERT after \begin{theorem}[VEPM Convergence Rate under Heterogeneity]
+% ... \end{theorem}\label{thm:vepm-rate-relaxed}.
+
+\begin{corollary}[VEPM in the partition-saturation regime]
+  \label{cor:partition-saturation}
+  Consider a sequence of problem instances indexed by~$d_{m}$ with
+  partition cardinalities $K_{m}=|\mathcal{C}_{m}|$ and total simulation
+  budgets $N_{m}$.  Suppose
+  \(N_{m}/K_{m}\to 0\) as $m\to\infty$, and that the sampling policy is
+  not concentrated on a vanishing fraction of cells, in the sense that
+  the maximum per-cell sample count satisfies
+  \(\max_{c\in\mathcal{C}_{m}} N_{c}/N_{m}\to 0\) almost surely.
+  Then for any solution $x_m$ that has not been individually sampled
+  ($x_m\notin \mathcal{X}_{N_m}$),
+  \[
+    \hat{\sigma}_{N_{m},c(x_m)}^{i,2}
+    \;=\;
+    \begin{cases}
+      \hat{\sigma}_{0}^{i,2}\!\bigl(c(x_m)\bigr) &
+        \text{if cell $c(x_m)$ has been visited at least once},\\[4pt]
+      \hat{\sigma}_{\mathrm{global},N_{m}}^{i,2} &
+        \text{if cell $c(x_m)$ is unvisited at stage~$N_{m}$,}
+    \end{cases}
+  \]
+  with probability tending to one, where
+  $\hat{\sigma}_{0}^{i,2}(c)$ is the pre-sampling
+  initial estimate for cell $c$ and $\hat{\sigma}_{\mathrm{global},N}^{i,2}$
+  is the global pooled estimator computed from all observations up to
+  stage~$N$.
+  In particular, the partition-level common estimate
+  $\hat{\sigma}_{N_{m},c(x_m)}^{i,2}$ remains essentially frozen at its
+  initialization across the main loop, so the conclusion of
+  Theorem~\ref{thm:vepm-consistency} provides no operational guidance for
+  unsampled solutions.
+\end{corollary}
+
+\begin{proof}[Proof sketch]
+  Under $\max_{c} N_{c}/N\to 0$, the indicator that cell $c$ has been
+  re-visited beyond its first sample is asymptotically zero with
+  probability one for every fixed cell sequence.  Because the recursive
+  update~\eqref{eq:VEPM_rec_b}/\eqref{eq:VEPM_rec_d} only modifies
+  $\hat{\sigma}^{i,2}_{n,c}$ when a new individual estimate
+  $\hat{\sigma}^{i,2}_{n+1}(x^n)$ is added to the running average over
+  $\mathcal{S}_{n,c}$, a single-sample cell carries
+  $\hat{\sigma}^{i,2}_{n,c}=\hat{\sigma}^{i,2}_{n,c}(x^n)$, which by
+  Eq.~\eqref{eq:VEPM_rec_c} reduces to a $w_{i}$-weighted average of the
+  initial estimate $\hat{\sigma}^{i,2}_{0}(c)$ and a single residual term;
+  for unvisited $x$ the lookup
+  in~\eqref{eq:VEPM_assign} is by definition the initialization
+  $\hat{\sigma}^{i,2}_{0}(c)$.  When a cell is entirely unvisited the
+  algorithm's variance lookup falls through to the global pooled
+  estimator $\hat{\sigma}_{\mathrm{global},N}^{i,2}$ defined in
+  Algorithm~\ref{alg:gpr-kg}, line 8.  The full argument is given in
+  Appendix~\ref{app:proof_VEPM}.
+\end{proof}
+
+\noindent\emph{Practical implications.}  Corollary
+\ref{cor:partition-saturation} formalises the empirical phenomenon
+observed in~\S\ref{sec:experiments}: on the high-dimensional InTAS
+case study with $d=44$ and $|\mathcal{C}|=2^{88}$, the saturation
+regime applies and the VEPM common estimate at a fixed reference plan
+remains constant across $300$ KG iterations.  This motivates the
+controlled-cardinality variant of \S\ref{subsec:medoid-K-partition},
+which keeps the partition in the information-rich regime by tying
+$K_{N}$ to the budget via $K_{N}=\lceil\sqrt{N}\rceil$, so that the
+expected occupancy $N/K_{N}\to\infty$ and Theorem
+\ref{thm:vepm-consistency} retains operational content.
+
+% =============================================================================
+% End of Phase A revisions.
+%
+% Required cross-references introduced by these patches:
+%   - \S\ref{subsec:medoid-K-partition}                  (Phase B, new)
+%   - Corollary~\ref{cor:partition-saturation}           (this file)
+%   - Theorem~\ref{thm:vepm-rate-relaxed}                (already exists)
+%   - Eq.~\eqref{eq:VEPM_rec_b}/\eqref{eq:VEPM_rec_d}     (already exist)
+%   - Eq.~\eqref{eq:VEPM_assign}                         (already exists)
+%   - Algorithm~\ref{alg:gpr-kg} line 8                  (already exists)
+% =============================================================================

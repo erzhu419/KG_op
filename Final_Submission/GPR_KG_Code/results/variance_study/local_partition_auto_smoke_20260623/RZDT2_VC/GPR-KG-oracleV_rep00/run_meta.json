@@ -1,0 +1,133 @@
+{
+  "problem": "RZDT2_VC",
+  "method": "GPR-KG-oracleV",
+  "method_base": "GPR-KG",
+  "variance_mode": "oracle",
+  "rep": 0,
+  "seed": 7000,
+  "N": 13,
+  "n0": 12,
+  "d": 5,
+  "sigma": 0.04,
+  "alpha": 0.05,
+  "tau": 0.0,
+  "restored_from_checkpoint": false,
+  "initial_design": "common_random",
+  "initial_samples": [
+    [
+      1,
+      63,
+      97,
+      31,
+      7
+    ],
+    [
+      21,
+      3,
+      94,
+      39,
+      11
+    ],
+    [
+      21,
+      56,
+      95,
+      39,
+      99
+    ],
+    [
+      90,
+      10,
+      45,
+      41,
+      86
+    ],
+    [
+      54,
+      100,
+      2,
+      32,
+      5
+    ],
+    [
+      10,
+      45,
+      0,
+      0,
+      0
+    ],
+    [
+      48,
+      81,
+      92,
+      12,
+      30
+    ],
+    [
+      30,
+      61,
+      6,
+      33,
+      5
+    ],
+    [
+      61,
+      64,
+      100,
+      7,
+      42
+    ],
+    [
+      97,
+      9,
+      63,
+      29,
+      89
+    ],
+    [
+      36,
+      58,
+      18,
+      27,
+      47
+    ],
+    [
+      8,
+      38,
+      64,
+      89,
+      0
+    ]
+  ],
+  "parameters": {
+    "K1": 50,
+    "K2": 2,
+    "lambda_i": 0.1,
+    "prior_var": 100.0,
+    "w_vepm": 1.0,
+    "n_thr": 20,
+    "partition_features": "auto",
+    "use_boundary_initial_design": true,
+    "use_archive_candidates": false,
+    "archive_neighbor_radius": 0,
+    "kg_selection_tiebreak": "crowding_distance",
+    "variance_shrinkage_rho0": 0.0,
+    "variance_floor": 1e-08
+  },
+  "algorithm_overrides": {
+    "variance_surrogate": "none",
+    "variance_surrogate_rho0": 0.0,
+    "variance_surrogate_alpha": 0.001,
+    "variance_surrogate_min_samples": 20,
+    "variance_surrogate_only_constraint": false,
+    "variance_surrogate_clip_low": 0.5,
+    "variance_surrogate_clip_high": 2.0,
+    "variance_mode": "oracle",
+    "replication_policy": "none",
+    "replication_max_per_solution": 3,
+    "replication_score_threshold": 0.0005,
+    "replication_boundary_scale": 1.0
+  },
+  "checkpoint_path": "GPR_KG_Code\\results\\variance_study\\local_partition_auto_smoke_20260623\\RZDT2_VC\\GPR-KG-oracleV_rep00\\checkpoint.pkl",
+  "snapshot_jsonl_path": "GPR_KG_Code\\results\\variance_study\\local_partition_auto_smoke_20260623\\RZDT2_VC\\GPR-KG-oracleV_rep00\\iteration_snapshots.jsonl"
+}

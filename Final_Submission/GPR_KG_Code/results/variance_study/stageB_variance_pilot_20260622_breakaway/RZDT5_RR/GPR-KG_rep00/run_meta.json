@@ -1,0 +1,258 @@
+{
+  "problem": "RZDT5_RR",
+  "method": "GPR-KG",
+  "method_base": "GPR-KG",
+  "variance_mode": "vepm",
+  "rep": 0,
+  "seed": 1000,
+  "N": 80,
+  "n0": 30,
+  "d": 5,
+  "sigma": 0.04,
+  "alpha": 0.05,
+  "tau": 0.0,
+  "restored_from_checkpoint": false,
+  "initial_design": "common_random",
+  "initial_samples": [
+    [
+      51,
+      23,
+      7,
+      0,
+      30
+    ],
+    [
+      92,
+      1,
+      0,
+      25,
+      45
+    ],
+    [
+      40,
+      41,
+      28,
+      27,
+      36
+    ],
+    [
+      60,
+      45,
+      47,
+      42,
+      41
+    ],
+    [
+      100,
+      20,
+      50,
+      30,
+      41
+    ],
+    [
+      88,
+      50,
+      30,
+      28,
+      30
+    ],
+    [
+      77,
+      18,
+      28,
+      21,
+      29
+    ],
+    [
+      10,
+      30,
+      14,
+      5,
+      12
+    ],
+    [
+      11,
+      11,
+      32,
+      50,
+      21
+    ],
+    [
+      26,
+      36,
+      7,
+      16,
+      23
+    ],
+    [
+      92,
+      43,
+      49,
+      0,
+      31
+    ],
+    [
+      30,
+      45,
+      18,
+      1,
+      11
+    ],
+    [
+      46,
+      27,
+      47,
+      23,
+      15
+    ],
+    [
+      17,
+      5,
+      29,
+      11,
+      12
+    ],
+    [
+      5,
+      24,
+      8,
+      18,
+      2
+    ],
+    [
+      77,
+      41,
+      6,
+      10,
+      42
+    ],
+    [
+      35,
+      47,
+      20,
+      1,
+      32
+    ],
+    [
+      25,
+      17,
+      40,
+      8,
+      48
+    ],
+    [
+      2,
+      11,
+      9,
+      13,
+      19
+    ],
+    [
+      78,
+      47,
+      9,
+      6,
+      18
+    ],
+    [
+      85,
+      27,
+      21,
+      41,
+      22
+    ],
+    [
+      76,
+      27,
+      27,
+      22,
+      36
+    ],
+    [
+      91,
+      29,
+      8,
+      33,
+      3
+    ],
+    [
+      77,
+      31,
+      45,
+      45,
+      7
+    ],
+    [
+      18,
+      0,
+      36,
+      29,
+      46
+    ],
+    [
+      84,
+      17,
+      22,
+      37,
+      30
+    ],
+    [
+      45,
+      1,
+      20,
+      49,
+      39
+    ],
+    [
+      36,
+      21,
+      48,
+      34,
+      25
+    ],
+    [
+      30,
+      23,
+      32,
+      12,
+      11
+    ],
+    [
+      8,
+      32,
+      19,
+      32,
+      20
+    ]
+  ],
+  "parameters": {
+    "K1": 50,
+    "K2": 2,
+    "lambda_i": 0.1,
+    "prior_var": 100.0,
+    "w_vepm": 1.0,
+    "n_thr": 20,
+    "use_boundary_initial_design": true,
+    "use_archive_candidates": true,
+    "archive_neighbor_radius": 1,
+    "kg_selection_tiebreak": "posterior_quality",
+    "variance_shrinkage_rho0": 0.25,
+    "variance_floor": 1e-06
+  },
+  "algorithm_overrides": {
+    "variance_surrogate": "none",
+    "variance_surrogate_rho0": 0.0,
+    "variance_surrogate_alpha": 0.001,
+    "variance_surrogate_min_samples": 20,
+    "variance_surrogate_only_constraint": false,
+    "variance_surrogate_clip_low": 0.5,
+    "variance_surrogate_clip_high": 2.0,
+    "variance_mode": "vepm",
+    "replication_policy": "none",
+    "replication_max_per_solution": 3,
+    "replication_score_threshold": 0.0005,
+    "replication_boundary_scale": 1.0
+  },
+  "checkpoint_path": "results\\variance_study\\stageB_variance_pilot_20260622_breakaway\\RZDT5_RR\\GPR-KG_rep00\\checkpoint.pkl",
+  "snapshot_jsonl_path": "results\\variance_study\\stageB_variance_pilot_20260622_breakaway\\RZDT5_RR\\GPR-KG_rep00\\iteration_snapshots.jsonl"
+}

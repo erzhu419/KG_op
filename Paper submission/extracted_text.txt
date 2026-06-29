@@ -1,0 +1,623 @@
+A probabilistically constrained bi-objective simulation-based stochastic optimization framework for urban transportation problems
+(author information)
+Abstract
+This study proposes a simulation-based optimization (SO) method to solve stochastic constrained bi-objective urban transportation problems, whose bi-objectives and constraint can only be evaluated based on computationally expensive stochastic traffic simulators. It presents a parametric belief based Gaussian process regression to estimate the expected bi-objective values as well as the quantile of the constraint function value. A computationally efficient approximate knowledge gradient sampling policy is designed for searching the feasible non-dominated solutions. We propose a convenient variance estimation parametric model (VEPM) defined on the feature space, which is particularly helpful in learning the quantile of the constraint for judging feasibility. The proposed SO method achieves satisfactory results for a set of synthetic numerical test problems with the effectiveness of the VEMP scheme validated. We also evaluate the performance of the algorithms for a real-word network-wide traffic signal timing problem which takes the expected relative traffic efficiency and relative equity as two objectives and has a probabilistic constraint on the relative vehicular emissions, considering random perturbation of traffic volumes on the road network. By comparing the performance of various choices of parametric belief models, we conclude that including only linear and squared terms of the decision variables as the basis functions leads to the best performance with little compromise in computational cost. Compared to the field implemented signal plan, the signal plans found by our algorithm with this belief model achieve an average reduction of 15% and 9% for the expected delay and equity measures, respectively. Besides, almost all these solutions meet the probabilistic constraint for the relative traffic emissions, which is, in contrast, notably violated by the field implemented signal plan. The proposed SO method is promising for solving complex multi-criteria transportation problems with large solution spaces and can be applied to other similar bi-objective probabilistically constrained black-box problems. 
+Keywords: bi-objectives; probabilistic constraint; traffic network signal timing; simulation-based optimization; knowledge gradient sampling policy.
+1 Introduction
+1.1 Background and motivation
+Decision problems in urban transportation systems can have huge socio-economic impact, which need careful analysis in various levels of resolution and an efficient optimization framework. In general, these systems are complex (e.g., dynamic, stochastic, non-linear) and difficult to model analytically, which precludes the use of traditional optimization methods. A powerful alternative is simulation-enabled approach. Recently, a variety of commercial or open-source traffic simulation tools have been developed, providing us a more flexible and comprehensive way to capture the intricate interactions between the demand and the supply components of the mobility networks. In current practices, there are widely applied traffic simulators such as microscopic ones (e.g., VISSIM, PARAMICS, SUMO) and macroscopic ones (e.g., VISUM, DTALITE, DYNUST). The former focuses on simulating traffic flow dynamics by detailed modeling of driver behavior, while the latter focuses on flow distributions on larger networks with only aggregate traffic flow model on each link. These microscopic and macroscopic traffic simulators can provide estimates of traffic network performance under various system uncertainties (e.g., random traffic volume inputs, random driving and routing behaviors, etc.). These tools are therefore often used to evaluate and compare a set of predetermined solutions (e.g., traffic facility locations or network design plans) in the context of what-if analysis or sensitivity analysis for better decision-making. 
+However, when the number of feasible or candidate solutions becomes large, it is impractical or prohibitive to simulate all of them. This is common in urban transportation problems which involve computationally expensive calibrated traffic simulation model and high dimensional decision variables. For example, the network signal timing problem needs to optimize the green times of all the phases at all the intersections in the network (Osorio and Bierlaire 2013, Zheng et al. 2019a, 2019b, 2022), leading to a huge number of feasible solutions, which generally grows exponentially in problem dimension (Li et al., 2015). Simple enumeration is even less applicable when simulations are stochastic, as each simulation run only gives a noisy observation of the underlying quality of a solution. For such problems with large number of alternatives and measurement noises, research framework of simulation-based optimization (SO) was proposed, which designs algorithms that seek good solutions quickly. SO has been an increasingly hot research topic; see comprehensive reviews in Tekin and Sabuncuoglu (2004), Fu et al.  (2005), Amaran et al. (2016), and Rojas-Gonzalez and Van Nieuwenhuyse (2020).
+In addition to the abovementioned challenges, urban transportation problems often involve multiple performance measures or criteria (Zheng et al., 2019a, 2019b, 2021, 2022), such as traffic efficiency, safety, environmental impact and equity. Some of these performance measures are the primary objectives to be optimized, such as the total travel time on the network, whereas others have to satisfy some control targets such as the total traffic emissions on the network. Moreover, these performance measures are typically stochastic with very limited prior information about their distributions, making the problem harder. So, there is an urgent need for novel algorithms tackling stochastic constrained multi-objective problems arising in urban transportation systems. As an attempt to address this need, this study will focus problems in the following form:
+               (1)
+Functions  to  are three scalar-valued stochastic performance measures output from the traffic simulator, which depend on the decision vector  and the random parameter vector  in the traffic simulator. Suppose  lies in a known compact set , and  has a known distribution  with bounded support . Depending on what underlying system stochasticity needs to be captured for the problem,  can contain uncertain parameters in traffic demand, driving behavior, routing behavior, etc.  and  denote the expectation and the probability with respect to , respectively. The constraint means the probability that  is over the limit  is at most , where and  are predetermined scalars. Problem (1) is therefore to find the nondominated solutions in terms of their expected  and  values with their  values satisfy the probabilistic constraint.
+The main purpose of this study is to propose a novel SO methodology which can tackle problem (1) effectively. We will test the proposed method using both synthetic problems and a real-world traffic network signal timing problem which considers uncertainty and involves large discrete decision space. 
+1.2 Method overview and our contribution
+Generally, there are three different ways to solve SO problems: direct-search methods, stochastic gradient methods and metamodel methods (Osorio and Bierlaire 2013). Note functions  to  in problem (1) are all stochastic and based on costly traffic simulations. Thus, an ideal SO algorithm should make full use of the information given by the simulation observations, inferring useful information globally with a local observation. In this regard, direct-search and stochastic gradient methods are not the best choice, since accurate estimation of search directions or gradients is sample-intensive and only provides local information. Thus, in our algorithm design, we focus on metamodels to approximate the expectations in the objectives and the probability function in the constraint of problem (1). The metamodels are iteratively fitted using the simulated observations and provide improved prediction of the underlying performance measures globally to guide the search of the feasible Pareto optimal solutions. In fact, metamodel-guided sampling policies have been studied extensively in the SO literature, e.g., kriging model with expected improvement (EI) sampling (Forrester and Keane 2009), radial basis function (RBF) model with scoring criterion search (Regis 2011, Müller et al. 2013, 2014), polynomials with trust-region search (Osorio and Bierlaire 2013, Ryu and Kim 2014), Gaussian process regression (GPR) with Bayesian optimization (BO) (e.g., Scott et al. 2011), etc. Naturally, the applicability and the performance of the algorithm rely on what combination of metamodels and sampling policies is used. We propose parametric-GPR-based approximate knowledge gradient (KG) sampling policy for tackling problem (1), which is the main contribution of this study.
+BO is a powerful SO framework which starts with a prior belief (i.e., estimates of the function values and the uncertainties) on the solutions, selects the new sample which maximizes the value of the measurement, and then uses the new observation to update the posterior belief. The value of measurement is called the acquisition function defined by the sampling policy. In particular, the KG policy defines acquisition function as the expected improvement in the best posterior mean (known as the KG-factor). KG policy has theoretical convergence guarantee and performs well in practice (e.g., Negoescu et al. 2011, Tan and Gao 2016, Wu and Frazier 2016). GPR is commonly used in BO due to neat posterior update of the Gaussian process, and many popular metamodels have similar essence as GPR, such as various kriging models that estimate spatial correlations (Forrester and Keane 2009), and the Gaussian Markov random fields which restrict GPR to have certain dependence structure among the solutions (Semelhago et al. 2021). Advantages of the GPR-based KG policy include: 1) convenient KG-factor computation with explicit modeling of possible correlations among solutions (Frazier 2009); 2) flexibility in parameterizing the prior as linear combinations of any basis functions (or features) of the solution (Ryzhov and Powell 2009); and 3) available techniques for accelerating the computation of the sampling decision when solution space is large (Ryzhov and Powell 2009, Tan and Gao 2016). We design parametric GPR models for  to  with problem-specific feature vector, which makes computation affordable by maintaining posteriors only on model coefficients and the sampled solutions rather than on all the solutions. In addition, we extend the GPR based KG policy to multiobjective setting by combining the posterior distribution and the deterministic multiobjective solvers in generating candidate samples for the next iteration. 
+Our second contribution is on the design of a novel updating scheme for learning unknown and heterogeneous variances of the solutions. In urban transportation problems, the variance of the same performance measure can vary notably for different solutions, as observed, for example, in Osorio and Bierlaire (2013), Tan and Gao (2016), and Chen et al. (2019). This necessitates effective learning of the variances especially considering the fact that most solutions will not be sampled under limited budget. In our approach, we divide the feature space of the solutions into grids, and then estimate the variance of any unsampled solution x by the average of those of the sampled solutions whose features fall into the same grid as x. This grid-based learning approach is similar to that proposed by Salemi et al. (2019), with a key difference that they defined grids directly on the solution space, which can be costly to manage when the problem dimension grows. Our variance estimation approach enables cheap approximation of the KG-factor, which is a research focus of the KG policy (Qu et al. 2015, Zhang and Song 2017) since exact Bayesian inferences is impossible with single observation under a multivariate Gaussian prior. Also note that our approach for learning under measurement noises is quite different from those proposed for cases with relatively small number of alternatives, e.g., sample average approximation (Kim et al. 2015), simulation allocation rule such as optimal computing budget allocation (OCBA) (Chen et al. 2000, Fu et al. 2007, Chen et al. 2008), etc., where each alternative is sampled for multiple times and variances are typically assumed known.
+Finally, this study enriches the BO literature by addressing both bi-objectives and constraint which are all noisy. Along this line, some existing works studied multi-objective BO problems with simple constraints (Galuzio et al. 2020) or constraints that can be expensive to evaluate (Feliot et al. 2017). Although these studies proposed interesting sampling policies that are shown to be effective, they only considered deterministic objectives and constraints. On the other hand, other studies have investigated BO problems with noisy constraints and single objectives (Gelbart et al. 2014, Gramacy 2016, Letham et al. 2019). They applied a GP prior directly on all the solutions and implicitly assumed known noise distributions, which are not applicable to problems with large solution spaces and unknown variances. In contrast, our parametric GPR model and the variance updating scheme enable learning under noises for high-dimensional problems. Furthermore, these studies adopted the EI policy and multiplied the acquisition function for the unconstrained case by the probability of feasibility conditional on the posterior, leading to cumbersome computation. However, we do not add this complexity since unlike the EI policy, the KG policy can choose an unsampled decision for final implementation. So, our approach is more tractable and can have faster fitting of the proposed parametric GPR model by allowing broader exploration, thus identifying promising solutions faster. Note that the probabilistic constraint in problem (1) is equivalent to restricting the -quantile of  to be at least . In a related work, Wang et al. (2022) also used Gaussian process models in optimizing quantiles. Based on a similar Gaussian assumption, we can conveniently predict feasibility using the mean and variance estimates of . We demonstrate the effectiveness of our approach using both test problems and a real-world urban transportation problem.
+The remainder of the paper is organized as follows. We present a literature review of the related SO methods in Section 2. A network-wide signal timing problem under uncertainties (NSTPU) is formulated in Section 3 as an application of model (1). In Section 4, we design parametric GPR-based KG sampling policy (named GPR-KG) for NSTPU. We apply the proposed method to some synthetic numerical test problems and a real-world signal timing problem and discuss the results in Section 5. Finally, some important findings are drawn in Section 6. 
+2 Literature review
+In this section, we will first review the metamodel-based stochastic SO methods for simulation-based problems that include single/multiple objectives and are with/without nontrivial constraints (i.e., simulation-based constraints or probabilistic constraints). One notable stream of the SO literature adopts the BO approach which maintains some probabilistic beliefs of the underlying objective values over the solution space, based on which different sampling policies (also known as infill strategies) are designed. We will also briefly review relevant studies on a popular BO algorithm -- the KG policy, which is the basis of our solution approach designed for solving problem (1). 
+ 
+2.1 Stochastic SO methods
+For stochastic SO, the expectations of simulated performance measures with respect to some parameters involved in stochastic simulation are often considered as optimization objectives (meaning of this sentence is not clear). In this condition, the stochastic noises in response need to be carefully considered in surrogate model and sampling policy. For example, stochastic kriging (Ankenman et al. 2010), Bayesian kriging (Deng et al. 2012, Ng and Yin 2012), Bayesian stochastic kriging (Chen et al. 2019) and stochastic cokriging model (Chen et al. 2017) were proposed to account for various types of simulation noises. Moreover, Huang et al. (2006) proposed sequential kriging optimization (SKO) with the nugget effect GP as the surrogate model and an augmented EI as the infill strategy for problems with homoscedastic noises. For responses with heterogeneous noises, Picheny et al. (2013) put forward an extension of EI based on the ordinary kriging model (named expected quantile improvement (EQI)) to consider the known noise levels at both the already observed design points and the future candidates. Quan et al. (2013) and Pedrielli et al. (2020) proposed the two-stage sequential optimization (TSSO) and the extended TSSO (eTSSO), respectively, in which the stochastic kriging is applied as the surrogate model, the EI criterion as the infill strategy and the OCBA (Chen et al., 2000) technique to decide the number of replications at design points. Salemi et al. (2019) used a Gaussian Markov random field (GMRF) to learn the response curve of an objective function and designed a complete expected improvement (CEI) criterion considering the uncertainty in the output from a stochastic simulation, which are particularly well suited to solve large scale discrete SO problems. Later, Semelhago et al. (2021) proposed a rapid Gaussian Markov Improvement Algorithm (rGMIA), which combines infrequent evaluations of a full conditional distribution for global inference, with rapid learning on a smaller subset of promising solutions to dramatically reduce the computational costs for significantly larger problems. Fan and Hu (2018) presented an adaptive search algorithm called surrogate-based promising area search (SPAS), which employs a shrinking ball method to estimate the solution performance and a surrogate model fitted iteratively with the performance estimates to guide the establishment of a promising area for sampling in the next iteration. In addition, regarding stochastic SO with multiple objectives, Forrester and Keane (2009) introduced regressing kriging to deal with homoscedastic noisy data and multiobjective EI as the infill strategy. Zheng et al. (2019a) put forward a bi-objective stochastic simulation-based optimization (BOSSO) method, which introduces regressing kriging models to smooth the simulation noises, an adaptive selector to determine samples in the local trust-region to be evaluated by simulation, and a decision maker’s non-interactive role to impact the search direction and trust-region. Later, Zheng and Li (2023) extended the SPAS algorithm to bi-objective setting and generated a biobjective surrogate-based promising area search (BOSPAS) algorithm.
+Previous single- or multi-objective stochastic SO algorithms are usually applicable to stochastic simulation-based problems with bound constraints (also called box constraints) and so the surrogate models are only used to approximate the expensive objective functions. To address (single- or multi-objective) SO problems with expensive constraints, some relevant works are introduced as follows. Regis (2011) presented Constrained Local Metric Stochastic RBF (ConstrLMSRBF) algorithm to handle problems with expensive black-box objectives and inequality constraints. Müller et al. (2013) introduced a surrogate optimization-mixed integer (SO-MI) algorithm to address expensive mixed-integer black-box global optimization problems that may have expensive constraints. Later, Müller et al. (2014) proposed a surrogate optimization-integer (SO-I) algorithm (a variant of SO-MI) to solve purely integer optimization problems that have expensive black-box objective functions and constraints. In above methods, RBF is applied as the surrogate models for the objective and constraint functions and the scoring criterion is employed to select the promising samples. After that, Müller and Woodbury (2017) put forward a global optimization with surrogate approximation of constraints (GOSAC) algorithm to address problems with expensive black-box constraints, cheap objective functions and continuous, integer or mixed-integer variables. For a given budget of expensive constraint evaluations, GOSAC finds better feasible solutions more efficiently compared with other algorithms. Feliot et al. (2017) proposed a Bayesian Multi-Objective Optimization (BMOO) method, which uses the Gaussian process as a prior model for the expensive-to-evaluate functions and an expected hyper-volume improvement sampling criterion that handles objectives and constraints in a unified way. The BMOO method is applicable to address the problem of derivative-free (single- or multi-objective) optimization subject to computationally expensive objectives and constraints under limited number of evaluations. However, the black-box constraints of above SO problems are usually evaluated by expensive deterministic simulations, and do not consider their stochastic performance.
+As is known, the mean of the response is a widely used performance measure in a stochastic system, while it is not able to evaluate the possible variability or describe the entire distribution adequately. In this condition, the quantile has become increasingly popular and of great interest in many fields to provide more thorough profiles of the response distribution (Longerstaey and Martin, 1996, Wipplinger 2007, Cope et al. 2009). In risk management, quantile, also termed value at risk, is one of the primary risk measures to quantify and interpret the risk that one stochastic system may face. So, the surrogate models for quantiles have been developed extensively, e.g., quantile regression (QR) model, stochastic kriging model, and stochastic cokriging model (Koenker and Hallock 2001, Chen 2009, Dabo-Niang and Thiam 2010, Chen and Kim 2016, Xie et al. 2018, Wang et al. 2022), based on which some optimization algorithms can be integrated for quantile optimization. Moreover, as aforementioned, the stochasticity inherent in the simulation evaluation tool that commonly exists in various engineering fields would result in stochastic evaluation values of the constraint functions. Therefore, it is necessary and more challenging to account for the stochastic performance about the constraints. In this study, as formulated by the model (1), besides of using the expectations on two stochastic performance measures as bi-objectives, we set a probabilistic constraint about another performance measure evaluated by stochastic simulation, which can be treated as the inverse solution of the corresponding quantile function. That is, the probabilistic constraint is a way to control the risk that the stochastic traffic system may face in terms of this performance measure. Some recent studies have proposed BO methods in dealing with single-objective probabilistically constrained problems (Gelbart et al. 2014, Gramacy 2016, Letham et al. 2019). These studies attached GP priors directly on the objective and constraint of each solution and proposed EI-based sampling policies, which are not applicable to problems that involve large number of feasible decisions and multiple objectives. In contrast, our study will build a new BO approach which aims at efficient learning of the mean performances of the two objective functions as well as the quantile of the constraint function, and the key challenge is that these three functions are all defined on a high-dimensional discrete decision space.
+2.2 The knowledge gradient (KG) policy
+Note that some of the aforementioned SO methods (mainly for the single-objective problems) are good examples of the BO approach (e.g., Salemi et al. 2019, Letham et al. 2019). As noted earlier, the BO approach has two fundamental components: the belief model describing subjective probability distribution over the solutions as well as the sampling policy based on the acquisition function defined for the solutions. While the GP is the most-commonly adopted belief model in BO, the options for sampling policies are more diversified. In particular, many studies adopt the KG policy for the sampling decisions in BO, whose main advantages are mentioned in Section 1. The KG policy chooses the next solution (or alternative) to be sampled which has the largest KG-factor, i.e., the expected improvement in the best posterior mean conditional on all previous samples. Such a methodology was shown to be effective and empirically efficient for many SO applications compared to many other approaches. The KG policy was firstly introduced in Gupta and Miescke (1996) for the independent belief case, where the unknown mean of the performance of each solution has an independent prior distribution. Frazier (2008) proved serval key properties of the KG policy such as asymptotic optimality and Frazier (2009) derived a more general KG policy for correlated beliefs, where the prior mean vector follows a multi-variate Gaussian distribution. Parallel-KG policy that samples alternatives in batches was also developed for the independent prior case (Wu and Frazier 2016), which was shown to outperform other batch BO algorithms.  
+KG policies that incorporate different belief models were further developed, which either learn the parameters of a structured functional form assumed for the underlying mean (e.g., Negoescu et al. 2011), or learn the discrete distributions over a finite set of candidate functionals with known parameters (Chen et al. 2015). For problems with large number of alternatives, KG policies with parameterized beliefs enable affordable computation by maintaining beliefs only on those hyper-parameters or features of the decision vector rather than on each alternative. For example, linear-belief based KG policies were effectively applied to the drug discovery problem (Negoescu 2011) and the traffic network tolling problem (Tan and Gao, 2016). Approximation schemes of the KG policy have also been proposed to accelerate the algorithm by computing the KG-factor only for a subset of altevrnatives at each iteration. One intuitive and effective approach in choosing the subset is by Monte-Carlo (MC) sampling based on the posterior distributions of the mean performance (Ryzhov and Powell 2009) or of the hyper-parameters in the belief model (Tan and Gao 2016). KG policies have also been extended to continuous solution space by various approximation strategies (e.g., Scott et al. 2011, Wu and Frazier 2017, Balandat 2020, Pearce et al. 2020) for scalability and efficiency considerations, interested reader can refer to a recent brief review by Ungredda et al. (2022).   
+However, those methods found in most KG literature are not readily applicable to the type of problems this study focuses on. Firstly, probabilistic constraints for simulation-based quantities have not been addressed in previous studies on KG policy. Secondly, most of these studies only focused on single performance measure. Although some literature considered multi-objective KG problem under an online multi-armed bandit setting, each performance measure was assumed independent across different alternatives (Yahyaa 2014). Thirdly, previous studies on the KG policy either assumed a known variance of the performance measure (e.g., Gupta and Miescke 1996, Frazier 2008, Frazier 2009), or proposed local updating equation for the variance estimate for each sampled alternative (e.g., Tan and Gao 2016, Wang et al. 2022), or designed approximate formulae for updating the posterior variance vector of all the alternatives under the multi-variate Gaussian framework (e.g., Qu et al. 2015, Zhang 2016). While the local updating approach neglects the possible similarities in variances of two close solutions, the approximate global posterior updating formula cannot be easily adapted to the setting with parameterized beliefs (thus is not applicable to problems with large solution space). Note that this unknown variance would make it more difficult to deal with the probability constraint as mentioned in the first point. 
+We will design a KG-based SO approach with parameterized GP belief and unknown variances that is applicable to problems with more than one performance measures as well as a probability constraint on another stochastic performance measure. As explained earlier, such a problem setting is commonly seen in urban transportation optimization problems and makes those problems challenging to solve, thus a reliable and efficient SO-based solution approach is highly needed. One contribution that may be of separate interest is that we proposed an updating scheme of variance estimates which not only accounts for possible similarities between the different solutions and can be easily implemented for the cases with parameterized beliefs as well. Such an updating scheme is shown effective especially when a probabilistic constraint is considered, in which case one wants to estimate the distribution of the constrained quantity as accurate as possible under limited simulation budget. Although the KG-based SO method proposed in this study is designed for discrete decision problems due to the nature of the signal timing problem, it can also be generalized to continuous or mixed-integer decision problems by extending the techniques used in the literature mentioned earlier.     
+3 Network-wide Signal Timing Problem under Uncertainties (NSTPU)
+3.1 Problem statement 
+Urban signalized intersections are not only the bottleneck of traffic efficiency and dense area of vehicular emissions, but also influence the equity of right-of-way in the urban road network. In this condition, traffic efficiency is set as an evaluation indicator rather than the only indicator, when designing the traffic control system. Specifically, the traffic equity has been considered in various traffic control problems, such as temporal and spatial inequities of ramp metering control (Levinson and Zhang 2006), aggregated and non-aggregated equity indices of corridor control (Ma and Zhang 2008), spatial equity index of dynamic ramp control (Meng and Khoo 2010), travel time-based Atkinson index of network-wide traffic signal timing plan (Zheng et al. 2019a). Meanwhile, traffic signal control plan substantially affects the driving modes of vehicles which would result in various intensities of vehicular emissions. More specifically, vehicular emissions tend to decrease when the vehicle is accelerating, cruising, decelerating and idling (Unal et al. 2003), and increase considerably if vehicle stops are introduced (Rakha and Ding 2003). Thus, apart from traffic efficiency, vehicular emissions on signalized traffic networks are greatly influenced by the traffic signal control plan. In this condition, traffic signal control optimization provides an alternative way to mitigate urban vehicular emissions. For example, Stevanovic et al. (2009) applied network-wide traffic signal control SO to reduce total delay, fuel consumption and CO2 emissions. Osorio and Nanduri (2015a, 2015b) applied a combined surrogate model of functional component and physical component in the regional traffic signal timing SO to reduce a weighted index of average travel time and high-resolution vehicular emissions. Zhang et al. (2013) proposed a bi-objective signal timing SO model to minimize total delay and mean excess exposure to traffic emissions and a genetic algorithm-based solution method. Zheng et al. (2019b) used the BOSSO method to solve a network-wide signal timing optimization problem whose objectives are total delay and a linear combination of four pollutants’ emissions.
+Due to the conflicting nature between traffic efficiency and equity (Kotsialos and Papageorgiou 2004, Zhang and Levinson 2004, Kesten et al. 2013, Zheng et al. 2019a), we take these two as bi-objectives in this study, and denote them as D and A, respectively. Meanwhile, we set vehicular emissions as another evaluation measure E subject to probabilistic constraint, that is, E must be no higher than a certain threshold value with a prespecified high probability. The uncertainty we consider in this study is the relative perturbation on the calibrated nominal traffic volume inputs to the network, and we denote this random perturbation level by , representing the ratio of the traffic volume to its nominal value. We assume  follows a known probability density function  with positive support. Let  denote an integer valued decision vector that specifies a network-wide signal timing plan. Then, the network-wide signal timing problem under uncertainties (NSTPU) can be formulated as model (1) by letting  and  (D, A and E are evaluated by the approach in Zheng 2019a and Zheng 2019b, which is also given in the online supplement). In the NSTPU, we let be the box constraint on  with  and  being the lower and upper bounds, respectively, n is the dimension of x that depends on the operation needs of the intersections and the scale of the urban road network. The random perturbation level  represent the uncertainty in the traffic demand and follows a known distribution .  is the maximum acceptable level of vehicular emissions which cannot be violated with probability higher than  (e.g.,. So, the NSTPU can be expressed as:
+                 (2a)
+Since  is the set of green signal timings (measures in seconds) of all signal phases (typically 2 to 6 phases for a typical signalized intersection) in the urban road network, the NSTPU has a large solution space. Let  be the total number of feasible signal timing plans, then  is a very large number. Another difficulty of the NSTPU lies in the fact that functions , , and  are unknown and in general so complicated that can only be estimated through network traffic simulations. We propose a simulation-based optimization approach for solving problem (2a) by sequentially learning the means  and the probability .  
+3.2 The BO framework for the NSTPU
+Suppose we are allowed to conduct a total of N simulations, each simulation chooses a solution  for evaluation, the evaluation is noisy with an independent random realization of the uncertain parameter drawn from . We denote  the solution selected for the n-th simulation, and  the corresponding evaluation indices computed based on the simulation output. Each simulation gives us a noisy sample of each of the three evaluation indices of the chosen solution, based on which we update our estimates for the underlying mean and variance of each evaluation index. Note that since there is noise in measuring each sample, a specific solution may be sampled for multiple times, i.e.,  for some . We denote the samples up to stage n by  and observations up to stage n by , for . In the rest of the paper, we will use the notation , , , and , respectively, to represent posterior probability distribution function, probabilities, expectations, and covariances conditional on  and , with respect to uncertainty . In particular, , , , and  represent our priors of corresponding quantities when no sample has been taken, and , , , and  are our posteriors of corresponding quantities after the simulation budget is exhausted. For notational brevity, we also denote random variables ,  and , with randomness . With this notation, the BO approach approximates (2a) by the following problem: 
+                    (2b)
+In the rest of the paper, we will propose a tractable BO method based on the Gaussian process regression for problem (2b) in the next subsection. If no separate note, the following notational rule is used throughout: italic normal symbols are scalars, italic script symbols are sets, lower-case bold symbols are column vectors, uppercase bold symbols are matrices; the evaluation index and sampling stage appear as superscripts, while subscript indicates either the solution-dependence or the entry of the very vector or matrix. All the proofs are given in the online supplement.
+3.3 Gaussian process regression (GPR) for NSTPU 
+Under random traffic volume perturbation, the evaluation indices are also random, whose exact distributions are generally unknown a priori due to the complicated underlying traffic network system and limited historical data. For each , we assume that ,  and  follow Gaussian distributions:
+                              (3a)
+                              (3b)
+                              (3c)          
+where  and  are the unknown mean and variance of the evaluation index i for solution x, . The key purpose of the simulation is to learn these quantities with the goal of solving optimization problem (2b). For convenience, we define the mean vector  for each evaluation index . We take a Bayesian viewpoint for the estimation process of , . We start with some prior distribution of , , then we update the posterior distribution  based on  and  for  one after another. For computational tractability, for each  we choose  to be a K-dimensional normal distribution with mean  and covariance matrix . Now we utilize the following useful two results to approximate problem (2b).  
+Lemma 1. For  and , given ,,  and , the posterior distribution  is also Gaussian whose mean  and covariance  are, respectively, 
+                     (4a) 
+                        (4b)
+where  is a unit vector whose entry corresponds to solution  is 1;is the entry of  that corresponds to ;  is the diagonal entry of matrix  that corresponds to .
+Lemma 2. Given , the constraint in (2b) is equivalent to the following:
+                        (5)
+where  follows the definition in Lemma 1,  is the cumulative density function of the standard normal distribution and  is the corresponding quantile function. 
+Remark 1. Note that (4) and (5) cannot be applied yet, as the variance  is assumed unknown in our problem. Furthermore, the exact Bayesian learning for multivariate Gaussian with both unknown mean and covariance is intractable when only scalar observation is available (Qu et al. 2015, Zhang 2016). In light of this, we update the variance estimates separately using a novel parametric sequential learning scheme. Though this approach updates the posterior approximately, it is convenient and also efficient in the sense that it explicitly accounts for possible correlations of the noise over the solution space so that the variance estimates of those unsampled solutions can be updated (a key difference with the approach by Tan and Gao (2016), where the variance update is only possible for sampled solutions). This approach will be detailed in Section 4.2 and its effectiveness will be shown in Section 5 using experiments. 
+Based on Remark 1, we denote  our estimate of the sample variance of evaluation index i of solution  at stage n, then replacing  by  in (4), and  by  in (5), problem (2b) can be solved as:   
+              (6)
+4 Parametric GPR and the sampling algorithm for NSTPU
+It is generally not convenient to work with a high dimensional Gaussian distribution in the learning algorithm for sampling decisions (e.g., the one that we will discuss in Section 4.3). For NSTPU, we note that the number of signal timing plan (i.e., K) can be very large. For example, consider a traffic network with only three intersections, each has only two phases whose green time ranges from 21 to 40 seconds, then we have , a number that is already prohibitive for normal computation. To this end, we seek proper parametric belief model to make the learning problem feasible. Specifically,
+4.1 Parametric belief on the mean vector
+We assume that the underlying mean of any solution x is a linear combination of a set of basis functions (or features) of x plus a deviation term, i.e., we have 
+                     (7a)
+where  is the j-th deterministic basis function for evaluation index i, and  is the number of basis functions used for evaluation index i. The scalar  represents the marginal contribution of the basis function value  to the mean of evaluation index i of solution , .  is the deviation term. Thus, (7a) assumes that the underlying mean of each evaluation index for a certain solution can be written as a linear combination of the basis functions of the solution plus a specific deviation term. Define vectors  and , and let  be a K-by- matrix such that the j-th entry of its row corresponding to solution x is . We also denote  as the row of matrix that corresponds to solution x, i.e., . Then (7a) can be expressed in matrix form:
+                        (7b)
+Remark 2. Our model allows flexible choices of the basis functions . For a typical example,  is a polynomial of the coordinates of . Clearly, the higher the order of the polynomial, more terms have to be included in the belief model, though it may lead to a better fit. Note that the size of the coefficient vector  grows exponentially in the dimension  if a full polynomial model is used (i.e., those with all cross-multiplication terms), a higher order polynomial model can result in significantly more computational cost. As noted by (Osorio and Bierlaire 2013), a quadratic model can provide decent approximation for traffic network problems, so we also adopt quadratic polynomials for the belief model in NSTPU. In Section 5, we will compare various quadratic models with different number of terms so as to shed lights on the trade-off between computational cost and effectiveness in learning.
+For , we use a -dimensional Gaussian distribution for the prior of the coefficient vector , , with mean  and covariance matrix ; and we use a -dimensional Gaussian distribution for the prior of vector , , with zero mean and covariance matrix , where >0 is a scalar and I is a -by- identity matrix (i.e., our prior of the deviation terms of different solutions are independent and identically distributed). Now we define for each a stage-n coefficient vector , which contains vector  as well as the deviation terms  for all the distinct solutions x sampled up to stage n. Following this definition, we have , so the prior distribution of  is also  Then, based on Lemma 1, we can verify the following result for the updating equations. 
+Proposition 1. For  and , given ,,  and , the posterior distribution  is also Gaussian with mean  and covariance , respectively, as:
+                 (8a)
+                           (8b)
+where vector  and matrix  are defined in following way: if  was sampled before stage n (i.e.,  has been included in vector ), then  and ; otherwise, we set: ,  is a row vector that has a commensurate dimension with  and has value  in its j-th entry () and zeros elsewhere except that a 1 at the entry whose index is the same with that of the entry in  corresponding to the deviation term  if any. For instance, suppose the last entry of  corresponds to , then .
+The updating equation (8) is similar with (4), but now instead of maintaining beliefs on the original mean vector , we only have to update the posterior distribution for parameter which is typically much shorter than even though the size of  generally grows with sampling stage n as new solutions are being sampled, since normally we have . Similar as in Remark 1, we will apply (8) by plugging in the estimate of , the construction of such an estimate is the focus of the next subsection. 
+4.2 Parametric update of the sample variances
+Note that the estimate of the variance at stage , , will be used in place of  when applying (8) However, in problems such as NSTPU, the sampling budget N is typically much smaller than the total number of solutions K, making it challenging to for variance estimation. It is very likely that the sample to be taken at stage n, , has never been sampled before, leading to a poor estimate  and thus a poor estimate of . Therefore, we propose a variance estimation parametric model (VEPM) which captures possible similarities in the variability of the solutions based on a straightforward feature partition scheme. Specifically, denote  the domain of  on  and partition  into a set of  disjoint subsets,, with . Let  be the set of all different combinations of such sets over . Define such that if  lies in the -th partition of , then . E.g., if , , , and  lie in the 2nd, the 2nd, and the 1st partition of , , and , respectively, then .
+For each evaluation index , and for each possible partition combination , we start with some initial variance estimate, , and denote  the average of the variance estimates of those solution that have been sampled by stage n and has partition combination , i.e., 
+                          (9a)
+where  is the times x has been sampled up to stage n, and  is the number of distinct solutions with partition combination  that have been sampled by stage n.  is used as the stage-n variance estimate for each unsampled solution  that has . While, the variance estimate of the sampled solution at stage , , is set as the weighted average of the initial estimate (before  was sampled) and the squared deviation of each sample observation of  from its posterior mean up to stage n, i.e., 
+                   (9b)
+where  is a given positive weight for the initial variance estimate of evaluation index i of any solution before being sampled, and  is the stage at which the l-th sample of x is collected. The variance estimate of any solution  that has a different combination index with  stays unchanged.
+Lemma 3. For each , given initial values , , and , , the variance estimation procedure described above is amount to implementing (10a)~(10d) iteratively at each stage  (other quantities stay unchanged from stage  to ):
+                         (10a)
+                            (10b)
+                                    (10c)
+                                (10d)
+Thus, after the sample  is measured at stage n, we just need to update, for each evaluation index i, the variance estimate of , , and the common variance estimate for all the unsampled solutions which have the same partition combination with , . Besides being convenient, we will see in the following subsection that this variance updating approach also helps us solve problem (6) efficiently.
+4.3 Decomposing the posterior problem   
+Using the parametric models introduced above, the posterior problem (6) can be reformulated as
+                (11)
+At the first glance, problem (11) seems nontrivial as the constraint has a solution specific righthand side. However, we note that Lemma 3 ensures that the posterior variance estimate  is common for those x’s that have not been sampled by stage N and have the same partition combination for evaluation index . Therefore, we can solve problem (6) by decomposing (11) into a set of easier problems.
+Proposition 2. Given , denote  the set of Pareto optimal solutions to the following problem:
+            (12)
+Let  be the set of sampled solutions that are feasible a posteriori. Then the set of Pareto optimal solutions to problem (11), denoted by , is:
+.   (13)
+Remark 3. Proposition 2 implies that problem (11) can be solved by solving problem (12) for  times (each with a distinct ) and comparing the Pareto fronts achieved with the bi-objective values of those feasible sampled solutions in posterior, i.e., those in . Though exponential in  (the number of features),  is manageable if the number of partitions, , is small for each dimension  and not too many features are included, which is usually the case in practice. Clearly, the difficulty of problem (12) depends on the complexity of the basis functions . For example, if each  is simply a linear function and  are all connected, then  can be characterized relatively easily. In general, we can approach problem (12) by well-established heuristics such as NSGA-II (Deb et al. 2002) to at least find  approximately.  
+4.4 The Knowledge Gradient (KG)-based sampling policy 
+In this subsection, we will tailor the GPR-based Knowledge Gradient (GPR-KG) sampling policy to problem (6) considering the parametric model introduced in Section 4.1 and 4.2. The entire solution procedure is laid out as follows (see details in Algorithm 1 in Appendix A). Given predetermined scalars  and , we go through the following steps at each sampling stage : 
+   1) Generate a set of candidate solutions denoted by , which is the union of two separately generated sets, i.e., .  is a random selection of  solutions in , and each solution in  is either in or near the Pareto optimal set  of problem (11) (i.e., problem (11) where superscript N is replaced by ). If , we simply set ; otherwise we generate another  new solutions each by firstly choosing an x uniformly at random from  and then sampling a solution from Gaussian distribution  and rounding it to the nearest integer solution in, here  is a given covariance matrix. This step is given by Algorithm 2 in Appendix A. 
+   2) Compute the Knowledge Gradient (KG) factor associated with evaluation indices  for each , denoted by .  is defined as the expected improvement in the best posterior mean of evaluation index i among all the candidate solutions in  if  is sampled conditional on all the historical sampling decisions  and observations :
+Lemma 4. Define vector  as a function of x whose entry corresponding to  is , then  is a Gaussian distribution with mean and covariance, respectively, as: 
+                   (14a)
+              (14b)    
+It follows from (14) that  is just the distribution of a norm random vector . Thus, we can use Algorithms 3 and 4 in Appendix A to compute , with the similar idea as in Negoescu et al. (2011) and Tan and Gao (2016) derived from Frazier (2009),
+   3) Pick the sampling decision  as any solution in  with nondominant KG factors for two evaluation indices , i.e., , where  is defined in (15). Note that this way of selecting the sample given the KG values is essentially the ‘Pareto-KG’ approach (Yahyaa 2014). 
+.        (15)
+   4) Simulate the signal plan  and observe the traffic flow output, then compute the evaluation indices . Update posterior beliefs on model parameters  by (9), and update the variance estimates by (10). 
+   5) If , we solve problem (11) and obtain the Pareto optimal solution set , from which an optimizer is selected for final implementation. 
+Remark 4. In Step-3, flexible rules can be used to choose  from , e.g., we can pick the one with the largest crowding distance (i.e., the normalized sum of its distances to its adjacent solutions in  with respect to each objective function). Similarly, in Step-5, certain rule such as the crowding distance-based one can be applied for selecting the final implementation plan if .
+Now, we have an asymptotic result regarding the SO algorithm proposed above, though not as strong as those for the single-objective case, it still provides nice guarantee for finding the true Pareto optimal solutions of problem (6) when approaches infinity and an exact bi-objective solver is available. 
+Theorem 1. If (3) holds and Step1~5 are implemented for , then problem (11) converges to problem (2b) (i.e., every parameter of (11) converges to that in (6)) almost surely as  approaches infinity. 
+5 Numerical experiments
+This section aims to validate the performance of GPR-KG proposed in the last section in addressing the bi-objective stochastic discrete optimization problem with a probabilistic constraint. First, the GPR-KG algorithm is tested for three synthetic constrained bi-objective stochastic discrete optimization problems, whose theoretical Pareto optimal solutions are known. Then, it is applied to address a real-field NSTPU problem, whose objectives and constraint are all evaluated by costly stochastic traffic simulation.
+5.1 Test problems
+By introducing stochastic noises and probabilistic constraints and discretizing decision variables, the revised versions of ZDT1, ZDT2 and ZDT5 (Zitzler et al. 2000) are treated as the benchmark problems, and renamed as RZDT1, RZDT2 and RZDT5, respectively. Specifically, white noises are added to each objective function and constraint function and the bi-objectives and constraint are expressed by their expectation and probabilistic counterparts. The formulations of RZDT1, RZDT2 and RZDT5 are given in Appendix B. Obviously, incorporating noises veils the true expected values of the bi-objectives as well as the probability of violating the constraint, which makes the problems more challenging to solve.
+To solve these three revised problems, the critical parameters of the GPR-KG algorithm are set as: the simulation budget , the number of pre-samples , the weight for the initial variance estimate , the number of random candidate samples , and the number of candidate samples generated by solving the current posterior parametric belief model . Moreover, three priori parametric belief models are built to estimate the underlying mean values of bi-objectives and the constraint function of any decision x. Specifically, for each of the functions , we choose the parametric belief model to be encoded by a linear combination of  basis functions: , . For each basis function, we divide its domain into two equal-sized partitions, and so there are a total of 22d = 4d combinations of the feature partitions. We set the initial variance estimate of each partition as , .
+Numerical results in Fig. 1 illustrate that the bi-objective values of most learned solutions lie on or close to the theoretical Pareto front (c.f., blue triangles), but those for a few other learned solutions (c.f., gray triangles) lie on the left boundary of the bi-objective domain, which seem to deviate from the theoretical Pareto front. This because the posterior parametric belief models can accurately approximate  which is composed of the linear term related to , and then guide more search on the left-side region (i.e., when ), where  for RZDT1, RZDT2 and RZDT5 all are close to its lowest value 0. This indicates the good performance of GPR-KG in addressing the bi-objective stochastic discrete optimization problem with a probabilistic constraint at the cost of limited computational resources. Specifically, in the iterative process, the bi-objective points of iterative solutions usually scatter in the regions close to the theoretical Pareto front, and some of them fortunately locate on it, which helps the parametric belief models to learn the information about theoretical Pareto front. However, there are also some bi-objective points of iterative solutions that are distant from the theoretical Pareto front or even infeasible (c.f., gray asterisks). This generally results from the following two causes. That is, the candidate solutions selected by the KG factor at each iterate might be from the set generated by sampling randomly (i.e.,  in section 4.3), and so may contain the dominated or infeasible solutions; the early posterior parametric belief models fitted with limited observations might be less accurate, which causes a high probability of not finding the bi-objective points closed to the theoretical Pareto front and not complying with the probabilistic constraint. 
+(a)                                      (b)
+   
+                    (c)  
+Fig. 1 Bi-objective points of iterative solutions and finally learned solutions by GPR-KG for (a) RZDT1, (b) RZDT2 and (c) RZDT5. Note: the iterative solutions represent the solutions selected from the set of candidate solutions (i.e.,  in section 4.3) by the corresponding bi-objective KG factors. The learned solutions represent the finally optimized solutions generated with the posterior parametric belief models and the posterior variance estimations when GPR-KG terminates. The bi-objective points of all solutions are evaluated by real (or nominal) objective and constraint functions without stochastic noises.
+Meanwhile, a reliable performance indicator named inverted generational distance (IGD) (Zitzler et al. 2003) is introduced to quantify the closeness of the generated non-dominated front to a set of reference points and its diversity. It is formulated as , where  is the set of reference points in the theoretical Pareto front,  is the set of bi-objective points of optimized (or iterative) solutions generated by GPR-KG and  denotes the cardinality of a set. Obviously, the smaller IGD means the better convergence and diversity of the optimized (or iterative) solutions. During the iteration process of GPR-KG, we obtain the iterative non-dominated solutions by the posterior parametric belief models and their posterior variance estimates at each iteration and then compute the corresponding IGD value. Moreover, to mitigate the impact of randomness, we carry out 10 independent runs of GPR-KG for RZDT1, RZDT2 and RZDT5, respectively, so as to calculate the corresponding average IGD values.
+Numerical results in Fig. 2 show that the average IGD values decrease rapidly in the early few iterations, then the decline decelerates and finally reaches a very small level. This indicates the good convergence performance of the GPR-KG. Meanwhile, results in Table 1 indicate that the learned Pareto optimal solutions by GPR-KG at the cost of 111 function evaluations cover most or almost all theoretical Pareto optimal solutions, and their final IGD values are 0.055, 0.022 and 0.005 for RZDT1, RZDT2 and RZDT5, respectively. These results further validate the good convergence, diversity and efficiency of GPR-KG in dealing with the bi-objective stochastic discrete optimization problems with probabilistic constraints.
+  
+(a)                        (b)                        (c)
+Fig. 2 Average IGD over 10 independent runs of GPR-KG for (a) RZDT1, (b) RZDT2 and (c) RZDT5.
+Table 1 Detailed average results over 10 independent runs of GPR-KG.
+Test problem
+# FEs.
+# TPOS.
+Avg. # LPOS.
+Avg. IGD
+Avg. Comp. time
+RZDT1
+111
+32
+18.5
+0.055
+About 50 min
+RZDT2
+111
+32
+16.3
+0.103
+About 50 min
+RZDT5
+111
+12
+11.1
+0.005
+About 50 min
+Note: # FEs. denotes the number of function evaluations for each run of GPR-KG, and # TPOS. is the number of theoretical Pareto optimal solutions. Avg. # LPOS., Avg. # IGD and Avg. Comp. time represent the average number of learned Pareto optimal solutions, the average IGD value and the average running time over 10 independent runs of GPR-KG, respectively.
+Moreover, we also use the iterative non-dominated solutions as the testing set to evaluate the estimation (prediction) errors of the current posterior parametric belief models with respect to bi-objectives and probabilistic constraint during the iteration process. These errors are measured by Root Mean Square Errors (RMSEs) based on the estimated (predicted) and real (nominal) bi-objective and constraint function values. Fig. 3 apparently shows that average RMSEs are relatively high in the early few iterations, and then decrease rapidly to reach a small and stable level. This implies the accuracy of the posterior parametric beliefs and variance estimates improve as the iteration goes on (i.e., the number of accumulative evaluated samples increases). Specifically, after 50 iterations, average RMSE of  reaches 0.021, 0.022 and 0.018 for RZDT1, RZDT2 and RZDT5, respectively; that of  reaches 0.227, 0.123 and 0.159 for RZDT1, RZDT2 and RZDT5, respectively; and that of  reaches 0.009, 0.006 and 0.025 for RZDT1, RZDT2 and RZDT5, respectively. So, the fitted posterior parametric belief models after 50 iterations can already well approximate the two objectives and the probabilistic constraint.
+   (a)                       (b)                       (c)
+Fig. 3 Average estimation (prediction) errors of the current posterior parametric belief models with respect to (a) , (b)  and (c) , over 10 independent runs of the GPR-KG algorithm for solving RZDT1, RZDT2 and RZDT5. Note:  and  denote the expectations of two objective values (i.e.,  and ), respectively, and  represents the estimation of constraint value under the probability of  (i.e., ), where , .
+In addition, we evaluate by 100 times the stochastic constraint function value (i.e., ) of each iterative non-dominated solutions  and regard it as infeasible if  more than five times. Numerical results in Fig. 4 illustrate that average number of infeasible solutions in the iterative non-dominated solutions is relatively high in the early few iterations, and then decreases rapidly to zero. This validates the good capability of GPR-KG in dealing with the probabilistic constraint.
+  
+ (a)                       (b)                     (c)
+Fig. 4 Average number of infeasible solutions in the iterative non-dominated solutions over 10 independent runs of the GPR-KG algorithm for solving (a) RZDT1, (b) RZDT2 and (c) RZDT5.
+Finally, we verify the effectiveness of the proposed VEPM by comparing the results with and without this variance updating scheme. Recall that our algorithm GPR-KG with VEPM will estimate the variances of those unsampled solutions based on the similarity of their features with those of the sampled ones. While, we restrict the algorithm GPR-KG without VEPM to only update variance estimates for those sampled solutions but no extrapolation to those of the unsampled solutions. Fig. 5(a) shows that for each of the three test problems, the posterior variance estimate of a randomly selected unsampled solution which lies on the theoretical Pareto front approaches the true variance when the VEPM is used, while it stays unchanged when VEPM is not used. As a result, we can see from Fig. 5(b-d) that for all the three test problems, the algorithm with VEPM identifies notably more points on the theoretical Pareto front than the algorithm without VEPM. In these cases, VEPM helps the algorithm overcome the initial over-estimates of the variances and thus improving the conservativeness in finding feasible nondominated solutions. 
+ 
+(a)                                         (b)
+(c)                                         (d)
+Fig. 5 Performance comparison of GPR-KG with VEPM and GPR-KG without VEPM in terms of (a) variance estimate for points in (b-d) during the iteration process, and the bi-objective points of learned Pareto optimal solutions for (b) RZDT1, (c) RZDT2 and (d) RZDT5. Note: all selected points for variance estimate in (b-d) lie on the theoretical Pareto front and are not in the set of iterative solutions after GPR-KG with VEPM and GPR-KG without VEPM terminate.
+5.2 Network-wide signal timing problem
+5.2.1 Simulation setup
+Signalized intersection plays an important role in the network-wide traffic efficiency, traffic equity and vehicular emissions. Network-wide signal timing optimization considering multi-criteria is also a hot and difficult topic to study. This application employs the microscopic traffic simulator VISSIM as an evaluation tool of network-wide signal timing plan, due to its flexibility in designing any type of traffic element, and capability of capturing the complicated relationship between the signal timing plan and multiple evaluation indices. Meanwhile, the COM interface in VISSIM also allows the inter-process communication and data exchange between VISSIM and other compatible computational software (e.g., MATLAB). So, we first construct the SO platform by integrating VISSIM with MATLAB through the COM interface. Then, an urban road network in Changsha, China is modelled by VISSIM as the experimental scenario, which consists of 15 signalized intersections, 5 non-signalized intersections, 29 entries, 24 exits and 31 road links (c.f., Fig. 6). The detailed calibration process and results about the traffic simulation model can refer to Zheng et al. (2019a, 2019b). In the SO platform, given a specific network-wide signal timing plan, the calibrated traffic simulator will output individual vehicular information after completing the simulation run, which can be used to calculate three traffic evaluation indices D, A and E.
+The decision vector x consists of the signal timings of 47 phases in this regional urban road network (c.f., Table 2). The perturbed network inflow vector is expressed by , where VI1 ×29 is the calibrated network inflow vector of 29 entries in this network (Zheng et al. 2019a, 2019b) and can be treated as the nominal network inflow vector.  and  are set for the probabilistic constraint. During the numerical experiment, 100 pre-sample simulation evaluations are used for fitting the initial parametric belief and  simulations are allocated to evaluate the infilled signal control plans in latter iterations. Other parameters of the GPR-KG algorithm are set as follows: weight for initial variance estimate , the number of random candidate samples , the number of random draws in posterior coefficient vector for generating candidate samples , and the initial variance estimates of each partition as , .
+ 
+                                  (b)
+Fig. 6 Study site, (a) a regional urban road network in Changsha, China, and (b) its VISSIM model.
+Table 2 Signal phases in the regional urban road network
+SI 1
+SI 2
+SI 3
+SI 4
+①
+②
+         
+①
+②
+③
+④
+①
+②
+①
+②
+SI 5
+SI 6
+SI 7
+SI 8
+①
+②
+③
+①
+②
+③
+④
+⑤
+①
+②
+③
+①
+②
+③
+④
+SI 9
+SI 10
+SI 11
+SI 12
+①
+②
+③
+④
+①
+②
+③
+①
+②
+①
+②
+③
+SI 13
+SI 14
+SI 15
+①
+②
+①
+②
+③
+④
+①
+②
+③
+④
+Note: SI i denotes the i-th signalized intersection in Fig.6
+For estimating the mean values, we mainly choose the basis functions in the belief models to be the linear and quadratic terms of the decision variables. The features selected for variance prediction (i.e., VEPM) is simply the linear terms of the decision variables, and we divide the solution space based on bi-partition of the domain of each dimension. These two strategies are similar as those applied in section 5.1. To reduce the computational burden, we mainly consider the basis functions or features associated with intersections on the two main roads (i.e., Furong Middle Rd, and Shaoshan Rd c.f., Fig. 6(b)). More specifically, we mainly select the signal phases for five intersections numbered 2, 6, 8, 12 and 14 along the abovementioned two main roads to form the parametric models. We consider that these signal phases may play a more important role in affecting the three traffic indices (i.e., D, A and E) compared to the others. Note that all these intersections have four phases, thus the relevant decision variables (i.e., green times) are four times the number of intersections selected. For example, if the abovementioned five intersections are all selected, then there are totally 20 critical green times of signal phases, and thus 40 particular basis functions need to be built for estimating the mean values, while 20 features are for equal-sized bi-partitions of their respective domains and forming 220 combinations of these partitions, i.e., 
+We test mainly three GPR-KG algorithms differed in term of which intersections are considered in the parametric model of the mean values: the algorithm that considers small number of intersections (one from Furong Middle Rd and the other from Shaoshan Rd), medium number of intersections (all the five on Furong Middle Rd and Shaoshan Rd), and large number of intersections (all the fifteen intersections on the network), named GPR-KG-s, GPR-KG-m, GPR-KG-l, respectively. All these three algorithms adopt quadratic polynomials with no cross-multiplication terms as the belief model. To test the impact of cross-multiplication terms, we also extend GPR-KG-m to include the full set of second order cross-multiplication terms in the quadratic polynomial as the belief model, this new algorithm is named GPR-KG-c. Details of the settings of these algorithms are given in Table 3. Note that all these four algorithms adopt the same VEPM scheme which is based on the partition of the solution domain considering the decision dimensions associated with intersections 2, 6, 8, 12 and 14. We do not include more dimensions in the partition to avoid out-of-memory, since this partition already contains  pieces. Our experiments are carried out on a PC with Intel Xeon 2.0 GHz, the results will be discussed in the next subsection. 
+ 
+ Table 3 GPR-KG algorithms with different parametric models
+Algorithm 
+Features of the parametric belief models for the mean values
+Intersections included
+# linear terms
+# squared terms
+#cross terms
+Tot. # terms
+GPR-KG-s
+6, 8
+8
+8
+0
+16
+GPR-KG-m
+2, 6, 8, 12, 14
+20
+20
+0
+40
+GPR-KG-l
+all 15 intersections
+60
+60
+0
+120
+GPR-KG-c
+2, 6, 8, 12, 14
+20
+20
+190*
+230
+*The number of cross-multiplication terms is 20×19/2 = 190
+5.2.2 Results and discussion
+We first evaluate the filed-implemented signal control plan by 100 independent simulations. The frequency histograms of the D, A and E values of this benchmark solution are shown in Fig.7, where the Gaussian distributions are also fitted. We observe that though Gaussian distributions cannot perfectly describe the underlying distributions, they are able to describe the major variability of the three indices. 
+     
+(a)                                        (b)
+   (c)
+Fig. 7 Frequency histograms of (a) D, (b) A and (c) E values of the filed-implemented signal control plan based on 100 independent simulations. Note: in (a),  and  are the sample mean and standard deviation of D, respectively; in (b),  and  are the sample mean and standard deviation of A, respectively; in (c)  is the estimate of 95% quantile of E approximated by the 95th largest sample.
+To validate the learning process if our algorithm, we compare those iterative samples generated during the run of the algorithm with the set of learned non-dominated solutions (LNSs) finally output by the algorithm, i.e., those feasible non-dominated solutions computed based on the final posterior belief. Fig. 8 shows that the iterative solutions are quite dispersed in terms of their D, A and E values, which indicates the extensive exploration capability of the GPR-KG algorithms in the domain of the three evaluation indices. More importantly, nearly all the iterative signal control plans have their sampled bi-objective values (relative total delay D and equity measure A) dominated by the posterior mean bi-objective values of the LNSs, under either of the four algorithms. We also observe that a significant portion of the iterative solutions (mainly those of the early iterative solutions) have their sampled relative emission level E notably higher than 0.9. On the other hand, the LNSs output by all four algorithms have their posterior E values notably lower than 0.9, which verifies that our algorithm can deal with the constraint on E as expected. Hence, we have verified the significant progress made by our algorithms by exploring the solution space and updating the posteriors iteratively. 
+  
+(a)                                               (b)
+(c)                                               (d)
+Fig.8 D, E and A values of iterative and learned non-dominated signal control plans by (a) GPR-KG-s, (b) GPR-KG-m, (c) GPR-KG-l, (d) GPR-KG-c. Note: LNSs represents the learned non-dominated solutions. The points of three evaluation indices (D, A, E) of iterative solutions in this figure are evaluated by simulation evaluations, and those for LNSs are evaluated by parametric models.
+In addition, we compare the LNSs over different algorithms by re-evaluating their mean A and D values for each LNS by averaging 20 independent random simulation samples. Then those non-dominated solutions among the set of LNSs for each algorithm are identified based on their sample means of A and D values, and the corresponding Pareto front can be found. Fig.9 (a) shows that overall, the LNSs have better values by using a belief model that covers more intersections. Fig.9 (b) shows that the Pareto front of the LNSs by GPR-KG-l is the best, while that by GPR-KG-s is the worst. Interestingly, out of the six non-dominate solutions among all those LNSs found by all the four algorithms (which form the ‘final Pareto front’), four are output by GPR-KG-l, and one by GPR-KG-m and the other by GPR-KG-c.                                                                                                                                                                                                                                                 
+(a)
+(b)
+Fig. 9 Comparison of the results when GPR-KG algorithm is applied to problem (6) with different parametric models. (a) D, E and A values of LNSs. (b) Pareto fronts for LNSs. Note: in (a) and (b), the tri-objective points of all solutions are mean values evaluated by simulation evaluations over 5 runs.
+To compare the four algorithms more rigorously, Table 4 reports the following results for each algorithm: 1) some basic statistics of the three evaluation indices of the LNSs such as the average and variance of the sample means of A, D and E values as well as the average and variance of the estimated 95%-quantile E values; 2) the percentage improvement of the mean of A and D values and 95%-quantile E values of the LNSs compared to those of the filed-implemented signal timing plan; 3) the approximate IGD values of each set of LNSs by comparing their sample average A and D values with those on the final Pareto front, and 4) the computational time for making sampling decisions. 
+Table 4 Test results for four GPR-KG algorithms with various belief models
+Algorithm
+ GPR-KG-s
+GPR-KG-m
+GPR-KG-l
+GPR-KG-c
+, , 
+0.984, 0.942, 0.860
+0.880, 0.890, 0.828
+0.849, 0.870, 0.794
+0.877, 0.904, 0.818
+, , 
+0.002, 0.001, 0.001
+0.001, 0.001, 0.001
+0.001, 0.001, 0.001
+0.002, 0.001, 0.001
+, 
+0.973, 0.0013
+0.899, 0.0011
+0.864, 0.0003
+0.894, 0.0006
+, , 
+0.897, 0.982, 1.055
+0.835, 0.899, 0.956
+0.816, 0.833, 0.887
+0.788, 0.865, 0.953
+, , 
+0.876, 0.939, 1.013
+0.828, 0.878, 0.995
+0.819, 0.868, 0.931
+0.846, 0.899, 0.968
+, , 
+0.893, 0.970, 1.044
+0.837, 0.897, 0.967
+0.821, 0.863, 0.907
+0.842, 0.892, 0.953
+, 
+1.5%↓, 1.2%↓
+11.9%↓, 6.6%↓
+15.0%↓, 8.7%↓
+12.2%↓, 5.1%↓
+14.7%↓
+21.2%↓
+24.3%↓
+21.6%↓
+IGD
+0.101
+0.023
+0.008
+0.037
+Computational time
+about 27 hours
+about 27 hours
+about 30 hours
+about 65 hours
+Note:  (), () and () denote the average (variance) of the expected D, A and E values of LNSs shown in Fig. 8(a).  () [],  () [] and  () [] represent the minimum (medium) [maximum] expected D, A values and 95%-quantile E values among the LNSs, respectively. Here the expected D, A and E values of each LNS are estimated by sample means over 20 independent simulation evaluations, while the 95%-quantile E value of each LNS is estimated by the 19-th largest sample value. ,  and  represent the percentage changes of ,  and , respectively, of the LNSs compared to the filed-implemented signal timing plan. IGD is computed for the set of LNSs based on the final Pareto front in Fig. 8(a). The computational time is the time spent on a total of N = 300 sampling decisions (the simulation time is excluded, which is about 15 hours). 
+We can see from Table 4 that, in terms of the two expected objective values A and D, the improvement from GPR-KG-s to GPR-KG-m is more significant than that from GPR-KG-s to GPR-KG-l. Besides, extending GPR-KG-m to GPR-KG-c by adding cross-terms of those selected decision dimensions in the belief model does not improve the performance, with IGD even increased by 0.014. On the other hand, though the average  estimates of the LNSs of all four algorithms expect for GPR-KG-s are less than , GPR-KG-l is most reliable in generating LNSs that satisfy the probabilistic constraint as it has the lowest  value. In fact, only 2 out of 22 LNSs obtained by GPR-KG-l have their  estimates slightly over , while 27 out of 30, 15 out of 35, and 14 out of 37 of the LNSs obtained by GPR-KG-s, GPR-KG-m, and GPR-KG-c, respectively, have their  estimates higher than 0.9. Interestingly, the absolute deviation between the quantile estimates of E by Gaussian assumption and those by the order statistics are relatively small (within 0.01 to 0.05 among the LNSs) under all four algorithms, implying that Gaussian assumption for E is rather reasonable. Hence, in this case a small improvement in mean estimate can lead to significantly more accurate feasibility prediction, which explains why the LNSs generated by GPR-KG-l have the highest feasibility rate. Meanwhile, we note in Table 4 that the computational times of GPR-KG-m and GPR-KG-s are similar, and that of GPR-KG-l is only about 11% higher. However, the computational time of GPR-KG-c is significantly higher. Therefore, in view of the trade-off between computational cost and solution quality, we conclude that a belief model considering only the linear and squared terms associated with all the intersections should be sufficient. 
+ 
+For each algorithm, we further generate the empirical cumulative density function (CDF) of D, A and E values of the LNSs using 100 independent samples each with a randomly selected LNS. The empirical CDF of D, A and E values of the field-implemented signal control plan are also generated by 100 independent simulation evaluations. These CDFs are plotted in Fig. 10. For each evaluation index, the CDFs of the signal plans found by either of our algorithms appear to be notably better than that of the field-implemented plan. Among all four algorithms tested, GPR-KG-l is most desirable and achieves slightly better performance compared to GPR-KG-m and notably outperforms GPR-KG-s in terms of all three evaluation indices. Compared to the solutions by GPR-KG-m, those by GPR-KG-c have very similar D and E distributions but are slightly worse in the distribution of A value. These observations are consistent with those discussed earlier. Meanwhile, Fig. 9 gives direct comparison of various quantiles of D, A and E values between different signal plans, which can lead to useful interpretations. For example, it is about at least 70% (80%) probable that any randomly selected signal plan found by GPR-KG-l achieves a lower relative total delay (relative traffic equity) than the field-implemented plan. Therefore, the effectiveness of GPR-KG algorithms and the trade-off in choosing the belief model are illustrated again. 
+    
+             (a)                      (b)                       (c)  
+Fig. 10 Empirical CDFs of (a) relative total delay, (b) relative traffic equity and (c) relative vehicular emission for nine comparison solutions. 
+6 Conclusion
+We have proposed an SO approach for bi-objective stochastic optimization problems with probabilistic constraints and applied it to a nontrivial traffic network control problem which involves a very large number of feasible solutions. The challenges of these type of problems lie in effective learning of both the mean values of the two objectives as well as the quantile of the constraint function, particularly when the decision space is large. Therefore, we designed a flexible parametric GPR based posterior distribution over the feasible solutions and proposed an efficient approximate knowledge gradient sampling policy. The parametric belief model is flexible enough such that domain knowledge can be used to specify any feature vector associated with the solution. Moreover, we have proposed a convenient feature-based iterative variance updating scheme VEMP, aiming at fast learning of the variability distributions over the large solutions space under limited simulation budget. This variance updating scheme is based on grid divisions on the domain of the feature vector and deals with sampled and unsampled solutions separately such that the sampling policy has theoretical convergence guarantee.
+Our experiments on a set of synthetic test problems validate the effectiveness of the proposed algorithm in finding the non-dominated feasible solutions. In all the three problems tested, the Pareto front found by our algorithm reasonably covers the theoretical one, though a higher initial variance estimate may lead to fewer solutions, mainly due to a more conservative posterior probabilistic constraint. However, we verify that the proposed VEMP scheme can facilitate variance learning and significantly remedy the inaccuracy in the initial variance estimate. The proposed algorithm is also successfully applied to a real-world traffic network signal timing problem which involves relative total delay and traffic equity as two stochastic objectives and a probabilistic constraint on the relative vehicular emission. Compared to field-implemented signal plan, the set of solutions that finally found by our algorithm can reduce 14.1~18.3% and 2.3~11.2% for the expected values of the two objectives, respectively. Unlike the field implemented signal plan, the solutions found by our algorithm all satisfy the probabilistic constraint, with the 95%-quantile emission level cut by more than 24%. The trade-off between the complexity of the parametric belief model and computational effort is also discussed. Therefore, the proposed SO approach is promising in solving probabilistically constrained bi-objective stochastic optimization problems. Although the simple quadratic model was shown effective for our problem, one meaningful future exploration might be designing adaptive feature selection method that can tailor the belief model to different problem domains. 
+Appendix A: Pseudo-codes of algorithms. 
+Algorithm 1: GPR-KG algorithm for solving bi-objective probabilistic constrained SO problemsInputs:, , , , ; , , ,, , {, , , ,; , ; Output:  1:   [ ] %Each row stores a sampled solution  and the number of times it has been sampled,  can also be initialized by  pre-samples (used for setting ,  and )2:  for  to  do3:    generate  by Algorithm 24:    for  to  do5:      k-th element in 6:      if  any row (first  entries) of  % has not been sampled7:         , for 8:         9:      else10:        , for 11:         %add 1 to the last entry of the row corresponds to x12:     end if13:   end for14:   compute  by Algorithm 315:    , for 16:   simulate solution  and observe 17:   compute  by (9a)　and  by (9b), for 18:   compute by (10a) and  by (10b) with , for 19: end for20: solve problem (11) by the approach given in Remark 3 and obtain  defined in (13)    Algorithm 1: GPR-KG algorithm for solving bi-objective probabilistic constrained SO problemsInputs:, , , , ; , , ,, , {, , , ,; , ; Output:  1:   [ ] %Each row stores a sampled solution  and the number of times it has been sampled,  can also be initialized by  pre-samples (used for setting ,  and )2:  for  to  do3:    generate  by Algorithm 24:    for  to  do5:      k-th element in 6:      if  any row (first  entries) of  % has not been sampled7:         , for 8:         9:      else10:        , for 11:         %add 1 to the last entry of the row corresponds to x12:     end if13:   end for14:   compute  by Algorithm 315:    , for 16:   simulate solution  and observe 17:   compute  by (9a)　and  by (9b), for 18:   compute by (10a) and  by (10b) with , for 19: end for20: solve problem (11) by the approach given in Remark 3 and obtain  defined in (13)    
+Algorithm 1: GPR-KG algorithm for solving bi-objective probabilistic constrained SO problems
+Inputs:, , , , ; , , ,, , {, , , ,; , ; Output:  
+1:   [ ] %Each row stores a sampled solution  and the number of times it has been sampled,  can also be initialized by  pre-samples (used for setting ,  and )
+2:  for  to  do
+3:    generate  by Algorithm 2
+4:    for  to  do
+5:      k-th element in 
+6:      if  any row (first  entries) of  % has not been sampled
+7:         , for 
+8:         
+9:      else
+10:        , for 
+11:         %add 1 to the last entry of the row corresponds to x
+12:     end if
+13:   end for
+14:   compute  by Algorithm 3
+15:    , for 
+16:   simulate solution  and observe 
+17:   compute  by (9a)　and  by (9b), for 
+18:   compute by (10a) and  by (10b) with , for 
+19: end for
+20: solve problem (11) by the approach given in Remark 3 and obtain  defined in (13)    
+Algorithm 1: GPR-KG algorithm for solving bi-objective probabilistic constrained SO problems
+Inputs:, , , , ; , , ,, , {, , , ,; , ; Output:  
+1:   [ ] %Each row stores a sampled solution  and the number of times it has been sampled,  can also be initialized by  pre-samples (used for setting ,  and )
+2:  for  to  do
+3:    generate  by Algorithm 2
+4:    for  to  do
+5:      k-th element in 
+6:      if  any row (first  entries) of  % has not been sampled
+7:         , for 
+8:         
+9:      else
+10:        , for 
+11:         %add 1 to the last entry of the row corresponds to x
+12:     end if
+13:   end for
+14:   compute  by Algorithm 3
+15:    , for 
+16:   simulate solution  and observe 
+17:   compute  by (9a)　and  by (9b), for 
+18:   compute by (10a) and  by (10b) with , for 
+19: end for
+20: solve problem (11) by the approach given in Remark 3 and obtain  defined in (13)    
+Algorithm 2: Parametric belief-based candidate sample set generation Inputs: , , , ,;  Output: 1:     Ø2:   for  to  do3:    pick an integer vector x randomly from  4:    if   5:        6:    end if7:   end for8:   solve problem (11) ( replaced by ) using the approach in Remark 3 and obtain 9:   if 10:      11:  else12:    for  to  do13:      select a solution x randomly from 14:      draw  and round it to an integer vector15:        16:      if   17:          18:      end if19:    end for20:  end ifAlgorithm 2: Parametric belief-based candidate sample set generation Inputs: , , , ,;  Output: 1:     Ø2:   for  to  do3:    pick an integer vector x randomly from  4:    if   5:        6:    end if7:   end for8:   solve problem (11) ( replaced by ) using the approach in Remark 3 and obtain 9:   if 10:      11:  else12:    for  to  do13:      select a solution x randomly from 14:      draw  and round it to an integer vector15:        16:      if   17:          18:      end if19:    end for20:  end if
+Algorithm 2: Parametric belief-based candidate sample set generation 
+Inputs: , , , ,;  Output: 
+1:     Ø
+2:   for  to  do
+3:    pick an integer vector x randomly from  
+4:    if   
+5:        
+6:    end if
+7:   end for
+8:   solve problem (11) ( replaced by ) using the approach in Remark 3 and obtain 
+9:   if 
+10:      
+11:  else
+12:    for  to  do
+13:      select a solution x randomly from 
+14:      draw  and round it to an integer vector
+15:        
+16:      if   
+17:          
+18:      end if
+19:    end for
+20:  end if
+Algorithm 2: Parametric belief-based candidate sample set generation 
+Inputs: , , , ,;  Output: 
+1:     Ø
+2:   for  to  do
+3:    pick an integer vector x randomly from  
+4:    if   
+5:        
+6:    end if
+7:   end for
+8:   solve problem (11) ( replaced by ) using the approach in Remark 3 and obtain 
+9:   if 
+10:      
+11:  else
+12:    for  to  do
+13:      select a solution x randomly from 
+14:      draw  and round it to an integer vector
+15:        
+16:      if   
+17:          
+18:      end if
+19:    end for
+20:  end if
+Algorithm 3: KG-based sampling decisionInputs: , , , , , , ;  Output: 1:   [ ] % a -by-3 matrix 2:  Ø % defined in (15)3:   for  to  do4:      -th element in 5:    for i = 1 to 2 do %the two objectives6:       compute using Algorithm 47:    end for  8:   k-th row of  9:   end for 10: sort the rows of  in nondecreasing order of its 2nd column11: for k =1 to  do12:  if k  or  13:      k-th element in 14:      15:  end if16: end for17:   an element in  %pick one arbitrarily or by certain ruleAlgorithm 3: KG-based sampling decisionInputs: , , , , , , ;  Output: 1:   [ ] % a -by-3 matrix 2:  Ø % defined in (15)3:   for  to  do4:      -th element in 5:    for i = 1 to 2 do %the two objectives6:       compute using Algorithm 47:    end for  8:   k-th row of  9:   end for 10: sort the rows of  in nondecreasing order of its 2nd column11: for k =1 to  do12:  if k  or  13:      k-th element in 14:      15:  end if16: end for17:   an element in  %pick one arbitrarily or by certain rule
+Algorithm 3: KG-based sampling decision
+Inputs: , , , , , , ;  Output: 
+1:   [ ] % a -by-3 matrix 
+2:  Ø % defined in (15)
+3:   for  to  do
+4:      -th element in 
+5:    for i = 1 to 2 do %the two objectives
+6:       compute using Algorithm 4
+7:    end for  
+8:   k-th row of  
+9:   end for 
+10: sort the rows of  in nondecreasing order of its 2nd column
+11: for k =1 to  do
+12:  if k  or  
+13:      k-th element in 
+14:      
+15:  end if
+16: end for
+17:   an element in  %pick one arbitrarily or by certain rule
+Algorithm 3: KG-based sampling decision
+Inputs: , , , , , , ;  Output: 
+1:   [ ] % a -by-3 matrix 
+2:  Ø % defined in (15)
+3:   for  to  do
+4:      -th element in 
+5:    for i = 1 to 2 do %the two objectives
+6:       compute using Algorithm 4
+7:    end for  
+8:   k-th row of  
+9:   end for 
+10: sort the rows of  in nondecreasing order of its 2nd column
+11: for k =1 to  do
+12:  if k  or  
+13:      k-th element in 
+14:      
+15:  end if
+16: end for
+17:   an element in  %pick one arbitrarily or by certain rule
+Algorithm 4: Computation of the KG factor of solution  at stage Inputs: ,, , , , , , ; Output: 1:  index each element in  by 1 to 2:    the index of solution 3:   [ ] %a -by-dim() matrix 4:  for  to 5:     -th element in 6:    k-th row of   7:  end for8:    9:  if  any row (first  entries) of  % has not been sampled10:          % add a column vector  to the right11:         12: end if13: p  14: q  /15: sort the pairs  so that  are in non-decreasing order, and ties in q are broken so that  if 16:  remove each pair j in  if  studyate intger p alternatives in each iteration 17:  J  the number of remaining pairs 18:  , 19:  for j =1 to J-1 do20:     21:  end for22:  remove each triplet  in  if 23:    the number of remaining triplets 24:   Algorithm 4: Computation of the KG factor of solution  at stage Inputs: ,, , , , , , ; Output: 1:  index each element in  by 1 to 2:    the index of solution 3:   [ ] %a -by-dim() matrix 4:  for  to 5:     -th element in 6:    k-th row of   7:  end for8:    9:  if  any row (first  entries) of  % has not been sampled10:          % add a column vector  to the right11:         12: end if13: p  14: q  /15: sort the pairs  so that  are in non-decreasing order, and ties in q are broken so that  if 16:  remove each pair j in  if  studyate intger p alternatives in each iteration 17:  J  the number of remaining pairs 18:  , 19:  for j =1 to J-1 do20:     21:  end for22:  remove each triplet  in  if 23:    the number of remaining triplets 24:   
+Algorithm 4: Computation of the KG factor of solution  at stage 
+Inputs: ,, , , , , , ; Output: 
+1:  index each element in  by 1 to 
+2:    the index of solution 
+3:   [ ] %a -by-dim() matrix 
+4:  for  to 
+5:     -th element in 
+6:    k-th row of   
+7:  end for
+8:    
+9:  if  any row (first  entries) of  % has not been sampled
+10:          % add a column vector  to the right
+11:         
+12: end if
+13: p  
+14: q  /
+15: sort the pairs  so that  are in non-decreasing order, and ties in q are broken so that  if 
+16:  remove each pair j in  if  studyate intger p alternatives in each iteration 
+17:  J  the number of remaining pairs 
+18:  , 
+19:  for j =1 to J-1 do
+20:     
+21:  end for
+22:  remove each triplet  in  if 
+23:    the number of remaining triplets 
+24:   
+Algorithm 4: Computation of the KG factor of solution  at stage 
+Inputs: ,, , , , , , ; Output: 
+1:  index each element in  by 1 to 
+2:    the index of solution 
+3:   [ ] %a -by-dim() matrix 
+4:  for  to 
+5:     -th element in 
+6:    k-th row of   
+7:  end for
+8:    
+9:  if  any row (first  entries) of  % has not been sampled
+10:          % add a column vector  to the right
+11:         
+12: end if
+13: p  
+14: q  /
+15: sort the pairs  so that  are in non-decreasing order, and ties in q are broken so that  if 
+16:  remove each pair j in  if  studyate intger p alternatives in each iteration 
+17:  J  the number of remaining pairs 
+18:  , 
+19:  for j =1 to J-1 do
+20:     
+21:  end for
+22:  remove each triplet  in  if 
+23:    the number of remaining triplets 
+24:   
+Appendix B: Three test problems
+The three test problems all take form (1) but differ in functions , as defined below.
+1) In revised ZDT1 (RZDT1):
+ 
+2) In revised ZDT2 (RZDT2):
+ 
+3) In revised ZDT5 (RZDT5):
+   
+The decision vector . For RZDT1 and RZDT2, . For RZDT5, , . For all benchmark problems, the white noise is , and . Then, the theoretical Pareto optimal solutions of RZDT1 and RZDT2 are , and , and those of RZDT5 are , and . Here, the dimension d is set as 5.
+References
+Amaran S, Sahinidis NV, Sharda B, Bury SJ (2016) Simulation optimization: a review of algorithms and applications. Annals of Operations Research, 240(1): 351-380.
+Ankenman B, Nelson BL, Staum J (2010) Stochastic kriging for simulation metamodeling. Oper. Res. 58(2):371-382.
+Balandat M, Karrer B, Jiang DR, Daulton S, Letham B, Wilson AG, Bakshy E (2020) BOTORCH: A framework for efficient Monte-Carlo Bayesian optimization. Advances in Neural Information Processing Systems, 33: 21524-21538.
+Chen CH, Lin J, Yücesan E, Chick SE (2000) Simulation budget allocation for further enhancing the efficiency of ordinal optimization. Discrete Event Dynamic Systems, 10(3): 251-270.
+Chen CH, He D, Fu M, Lee LH (2008) Efficient simulation budget allocation for selecting an optimal subset. INFORMS Journal on Computing, 20(4): 579-595.
+Chen EJ (2009) Metamodels for estimating quantiles of systems with one controllable parameter. Simulation, 85(5): 307-317.
+Chen X, Hemmati S, Yang F (2017) Stochastic co-kriging for steady state simulation metamodeling. Page EH, Wainer G, Chan V, D' Ambroglio A, Zacharewicz, Mustafee N, eds. Proc. 2017 Winter Simulation Conf. (IEEE, Piscataway, NJ), 1750-1761.
+Chen X, Kim KK (2016) Efficient VaR and CVaR measurement via stochastic kriging. INFORMS J. Comput. 28(4): 629-644.
+Chen X, He X, Xiong C, Zhu Z, Zhang L (2019) A bayesian stochastic kriging optimization model dealing with heteroscedastic simulation noise for freeway traffic management. Transportation Science, 53(2): 545-565.
+Chen S, Reyes KG, Cupta MK, McAlpine MC, Powell WB (2015) Optimal learning in experimental design using the knowledge gradient policy with application to characterizing nanoemulsion stability. SIAM/ASA Journal on Uncertainty Quantification, 3(1): 320-345. 
+Cope EW, Mignola G, Antonini G, Ugoccioni R (2009) Challenges in measuring operational risk from loss data. J. Oper. Risk. 4(4): 3-27.
+Dabo-Niang S, Thiam B (2010) Robust quantile estimation and prediction for spatial processes. Statist. Probab. Lett. 80(17): 1447-1458.
+Deb K, Pratap A, Agarwal S, Meyarivan T (2002) A fast and elitist multiobjective genetic algorithm: NSGA-II. IEEE transactions on evolutionary computation, 6(2): 182-197.
+Deng H, ShaoW, Ma Y,Wei Z (2012) Bayesian metamodeling for computer experiments using the Gaussian Kriging models. Quality Reliability Engrg. Internat. 28(4): 455-466.
+Fan Q, Hu J, (2018) Surrogate-based promising area search for Lipschitz continuous simulation optimization. INFORMS Journal on Computing, 30(4): 677-693.
+Feliot P, Bect J, Vazquez E, (2017) A Bayesian approach to constrained single- and multi-objective optimization. Journal of Global Optimization, 67: 97-133.
+Forrester AIJ, Keane AJ (2009) Recent advances in surrogate-based optimization. Progress in Aerospace Sciences. 45(1): 50-79.
+Frazier PI, Powell WB, Dayanik S (2008) A Knowledge-Gradient Policy for Sequential Information Collection. SIAM Journal on Control and Optimization, 47(5): 2410-2439.
+Frazier PI, Powell W, Dayanik S (2009) The knowledge-gradient policy for correlated normal beliefs. INFORMS journal on Computing, 21(4): 599-613.
+Fu, M. C., Glover, F. W., & April, J. (2005). Simulation optimization: a review, new developments, and applications. In Proceedings of the Winter Simulation Conference.
+Fu MC, Hu JQ, Chen CH, Xiong X (2007) Simulation allocation for determining the best design in the presence of correlated sampling. INFORMS Journal on Computing, 19(1): 101-111.
+Galuzio PP, de Vasconcelos Segundo EH, Coelho L dos S, Mariani VC, (2020) MOBOpt-multi-objective Bayesian optimization, SoftwareX, 12: 100520. 
+Gelbart MA, Snoek J, Adams RP (2014) Bayesian optimization with unknown constraints. In Proceedings of the 30th Conference on Uncertainty in Artificial Intelligence, 250-259.
+Gramacy RB, Gray GA, Digabel SL, Lee HKH, Ranjan P, Wells G, Wild SM (2016) Modeling an Augmented Lagrangian for Blackbox Constrained Optimization. Technometrics, 58(1): 1-11. 
+Gupta SS, Miescke KJ (1996) Bayesian look ahead one-stage sampling allocations for selection of the best population. Journal of statistical planning and inference, 54(2): 229-244.
+Kennedy MC, O’Hagan A (2000) Predicting the output from a complex computer code when fast approximations are available. Biometrika, 87(1): 1–13.
+Kesten AS, Ergün M, Yai T, (2013) An analysis on efficiency and equity of fixed-time ramp metering. J. Transport. Technol. 3 (2A): 48-56.
+Kim S. Pasupathy R, Henderson SG (2015) A guide to sample average approximation. Handbook of simulation optimization, 207-243.
+Koenker R, Hallock KF (2001) Quantile regression. Journal of economic perspectives, 15(4): 143-156.
+Kotsialos A, Papageorgiou M (2004) Efficiency and equity properties of network-wide ramp metering with AMOC. Transport. Res. Part C, 12(6): 401-420.
+Letham B, Karrer B, Ottoni G, Bakshy E. (2019) Constrained Bayesian Optimization with Noisy Experiments. Bayesian Anal. 14(2): 495-519  
+Levinson D, Zhang L, (2006) Ramp meters on trial: evidence from the Twin Cities metering holiday. Transport. Res. Part A, 40 (10): 810-828.
+Li HB, Lee LH, Chew EP, Lendermann P, (2015) MO-COMPASS: A fast convergent search algorithm for multi-objective discrete optimization via simulation, IIE Transactions, 47: 1153-1169.
+Longerstaey J, Martin S (1996) Riskmetrics technical document (Morgan Guaranty Trust Company of New York, New York).
+Ma JT, Zhang MH, (2008) An Efficiency-Equity Solution to the Integrated Corridor Control Problem. Institute of Transportation Studies. University of California Davis, Research Report: UCD-ITS-RR-08-51.
+Meng Q, Khoo HL, (2010) A Pareto-optimization approach for a fair ramp metering. Transport. Res. Part C, 18(4): 489-506.
+Müller J, Shoemaker CA, Piché R, (2013) SO-MI: a surrogate model algorithm for computationally expensive nonlinear mixed-integer black-box global optimization problems, Computers & Operations Research, 40: 1383-1400.
+Müller J, Shoemaker CA, Piché R, (2014) SO-I: a surrogate model algorithm for expensive nonlinear integer programming problems including global optimization applications, Journal of Global Optimization, 59: 865-889.
+Müller J, Woodbury JD, (2017) GOSAC: global optimization with surrogate approximation of constraints, Journal of Global Optimization, 69: 117-136.
+Ng SH, Yin J (2012) Bayesian kriging analysis and design for stochastic simulations. ACM Trans. Modeling Comput. Simulation (TOMACS), 22(3): 1-26.
+Negoescu DM, Frazier PI, Powell WB (2011) The knowledge-gradient algorithm for sequencing experiments in drug discovery. INFORMS Journal on Computing, 23(3): 346-363.
+Osorio C, Bierlaire M, (2013) A simulation-based optimization framework for urban transportation problems. Operations Research, 61(6): 1333-1345.
+Osorio, C., Nanduri, K., 2015a. Energy-efficient urban traffic management: a microscopic simulation-based approach. Transport. Sci. 49 (3), 637–651.
+Osorio C, Nanduri K, (2015b) Urban transportation emissions mitigation: coupling high-resolution vehicular emissions and traffic models for traffic signal optimization. Transport. Res. B, 81: 520-538.
+Panis L, Broekx S, Liu R, (2006) Modeling instantaneous traffic emission and the influence of traffic speed limits. Sci. Total Environ. 371: 270–285.
+Pearce M, Klaise J, Groves M, (2020) Practical Bayesian optimization of objectives with conditioning variables. In arXiv preprint arXiv: 2002.09996 [stat.ML].
+Huang D, Allen TT, Notz WI, Zeng N (2006) Global optimization of stochastic black-box systems via sequential kriging meta-models. J. Global Optim. 34(3): 441-466.
+Pedrielli G, Wang S, Ng SH (2020) An extended two-stage sequential optimization approach: Properties and performance. Eur. J. Oper. Res. 287(3): 929-945.
+Picheny V, Ginsbourger D, Richet Y, Caplin G (2013) Quantile-based optimization of noisy computer experiments with tunable precision. Technometrics 55(1): 2-13.
+Qu H, Ryzhov IO, Fu MC, Ding Z (2015) Sequential Selection with Unknown Correlation Structures. Operations Research, 63(4): 931-948.
+Quan N, Yin J, Ng SH, Lee LH (2013) Simulation optimization via kriging: A sequential search using expected improvement with computing budget constraints. IIE Trans. 45(7): 763-780.
+Rakha H, Ding Y, (2003) Impacts of stops on vehicle fuel consumption and emissions. ASCE J. Transp. Eng. 129(1): 23-32.
+Regis RG, (2011) Stochastic radial basis function algorithms for large-scale optimization involving expensive black-box objective and constraint functions, Computers & Operations Research, 38: 837-853. 
+Regis RG, Shoemaker CA, (2007) A stochastic radial basis function method for the global optimization of expensive functions, INFORMS Journal on Computing, 19(4): 497-509. 
+Rojas-Gonzalez S, Van Nieuwenhuyse I (2020) A survey on kriging-based infill algorithms for multiobjective simulation optimization. Computers & Operations Research, 116: 104869.
+Ryu J, Kim S, (2014) A derivative-free trust-region method for bi-objective optimization, SIAM Journal on Optimization, 24(1): 334-362.
+Ryzhov IO, Powell W (2009) A Monte Carlo knowledge gradient method for learning abatement potential of emissions reduction technologies. In Proceedings of the 2009 Winter Simulation Conference (WSC), 1492-1502.
+Salemi PL, Song E, Nelson BL, Staum J, (2019) Gaussian Markov random fields for discrete optimization via simulation: Framework and algorithms. Operations Research, 67(1): 250-266.
+Semelhago M, Nelson BL, Song E, Wächter A (2021) Rapid discrete optimization via simulation with Gaussian Markov random fields. INFORMS Journal on Computing, 33(3): 915-930.
+Scott W, Frazier P, Powell W (2011) The correlated knowledge gradient for simulation optimization of continuous parameters using gaussian process regression. SIAM Journal on Optimization, 21(3): 996-1026.
+Stevanovic A, Stevanovic J, Zhang K, Batterman S, (2009) Optimizing traffic control to reduce fuel consumption and vehicular emissions. Integrated approach with VISSIM, CMEM, and VISGAOST. Transp. Res. Rec. 2128: 105-113.
+Tan Z, Gao HO (2016) Bayesian ranking and selection model for the Second-best Network Pricing Problem. In 2016 Winter Simulation Conference (WSC) 2487-2498.
+Tekin E, Sabuncuoglu I (2004) Simulation optimization: A comprehensive review on theory and applications. IIE transactions, 36(11): 1067-1081.
+Ungredda J, Pearce M, Branke J (2022) Efficient computation of the Knowledge Gradient for Bayesian Optimization. In: arXiv preprint arXiv:2209.15367v1.
+Unal A, Rouphail NM, Frey HC, (2003) Effect of arterial signalization and level of service on measured vehicle emissions. Transp. Res. Rec. 1842: 47-56.
+Wang S, Ng SH, Haskell WB (2022) A multilevel simulation optimization approach for quantile functions. INFORMS Journal on Computing, 34(1): 569-585.
+Wipplinger E (2007) Philippe Jorion: Value at risk: The new benchmark for managing financial risk. Financial Markets Portfolio Management 21(3): 397-398.
+Wu J, Frazier P (2016) The parallel knowledge gradient method for batch Bayesian optimization. Advances in neural information processing systems, 29.
+Wu J, Frazier P (2017) Discretization-free knowledge gradient methods for bayesian optimization. In: arXiv preprint arXiv:1707.06541.
+Xie W, Wang B, Zhang Q (2018) Metamodel-assisted risk analysis for stochastic simulation with input uncertainty. Johnson B, Jain S, Rose O, Rabe R, Skoogh A, Mustafee N, Juan AA, eds. Proc. 2018 Winter Simulation Conf. (IEEE Press, Piscataway, NJ), 1766-1777.
+Yahyaa, S. Q., Drugan, M. M., Manderick B. (2014) Knowledge Gradient for Multi-objective Multi-armed Bandit Algorithms. Proceedings of the 6th International Conference on Agents and Artificial Intelligence (ICAART 2014), 74-83. 
+Zhang L, Levinson D, (2004). Optimal freeway ramp control without origin-destination information. Transp. Res. B, 38(10): 869-887.
+Zhang L, Yin Y, Chen S, (2013) Robust signal timing optimization with environmental concerns. Transp. Res. C, 29: 55-71.
+Zhang Q, Song Y (2017) Moment-Matching-Based Conjugacy Approximation for Bayesian Ranking and Selection. ACM Transactions on Modeling and Computer Simulation. 27(4): 26.
+Zheng L, Xue X, Xu C, Ran B, (2019a) A stochastic simulation-based optimization method for equitable and efficient network-wide signal timing under uncertainties. Transp. Res. B, 122: 287-308.
+Zheng L, Xu C, Jin PJ, Ran B, (2019b) Network-wide signal timing stochastic simulation optimization with environmental concerns. Applied Soft Computing Journal, 77: 678-687.
+Zheng L, Yang Y, Xue X, Li X, Xu C (2021) Towards network-wide safe and efficient traffic signal timing optimization based on costly stochastic simulation. Physica A: Statistical Mechanics and its Applications, 571: 125851.
+Zheng L, Bao J, Xu C, Tan Z (2022) Bi-objective robust simulation-based optimization for unconstrained problems. European Journal of Operational Research, 299(1): 249-262.
+Zheng L, Li X (2023) Simulation-based optimization method for arterial signal control considering traffic safety and efficiency under uncertainties. Computer-aided Civil and Infrastructure Engineering, 38(5): 640-659. 
+Zitzler E, Deb K, Thiele L (2000) Comparison of multiobjective evolutionary algorithms: Empirical results. Evolutionary Cmputation, 8(2): 173-195.
