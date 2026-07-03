@@ -117,6 +117,19 @@ installed, the benchmark can either fall back to the lite baselines
 Use small `--botorch_raw_samples`, `--botorch_num_restarts`, and
 `--saas_warmup_steps` values for smoke tests; increase them for paper runs.
 
+Multi-problem SOTA suite:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_sota_suite.py \
+  --problems RegimeRZDT1,RZDT2,StatePolicyRZDT1 \
+  --N 20 --n0 5 \
+  --n_seeds 20 \
+  --baselines sobol,random,botorch_turbo,botorch_scbo,botorch_saasbo \
+  --jobs 10 \
+  --worker_torch_threads 1 \
+  --out_prefix sota_real_n20_s20
+```
+
 HVD calibration diagnostic:
 
 ```bash

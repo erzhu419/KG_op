@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ProcessPoolExecutor, as_completed
 import json
+import os
 from pathlib import Path
 import statistics
 import sys
@@ -182,6 +184,29 @@ def run_baseline(args, seed, method):
     return row_from_result(method, seed, args, result)
 
 
+def _worker_init(torch_threads):
+    threads = max(1, int(torch_threads))
+    os.environ["OMP_NUM_THREADS"] = str(threads)
+    os.environ["MKL_NUM_THREADS"] = str(threads)
+    os.environ["OPENBLAS_NUM_THREADS"] = str(threads)
+    os.environ["NUMEXPR_NUM_THREADS"] = str(threads)
+    try:
+        import torch
+        torch.set_num_threads(threads)
+        torch.set_num_interop_threads(1)
+    except Exception:
+        pass
+
+
+def _run_variant_task(args_dict, name, method, seed):
+    args = argparse.Namespace(**args_dict)
+    if name == "olhkg":
+        return run_olhkg(args, seed, use_sc=False)
+    if name == "olhkg_sc":
+        return run_olhkg(args, seed, use_sc=True)
+    return run_baseline(args, seed, method)
+
+
 def summarize(rows):
     grouped = {}
     for row in rows:
@@ -234,7 +259,6 @@ def run_benchmark(args):
     seeds = parse_csv(args.seeds, int)
     if not seeds:
         seeds = list(range(args.seed_start, args.seed_start + args.n_seeds))
-    rows = []
     variants = []
     if args.include_olhkg:
         variants.append(("olhkg", None))
@@ -242,15 +266,42 @@ def run_benchmark(args):
         variants.append(("olhkg_sc", None))
     for method in parse_csv(args.baselines):
         variants.append((method, method))
-    for name, method in variants:
-        for seed in seeds:
+    tasks = [
+        (name, method, seed)
+        for name, method in variants
+        for seed in seeds
+    ]
+    rows = []
+    jobs = max(1, int(getattr(args, "jobs", 1)))
+    if jobs == 1:
+        for name, method, seed in tasks:
             print(f"[sota] variant={name} seed={seed}", flush=True)
-            if name == "olhkg":
-                rows.append(run_olhkg(args, seed, use_sc=False))
-            elif name == "olhkg_sc":
-                rows.append(run_olhkg(args, seed, use_sc=True))
-            else:
-                rows.append(run_baseline(args, seed, method))
+            rows.append(_run_variant_task(vars(args), name, method, seed))
+    else:
+        print(f"[sota] running {len(tasks)} tasks with jobs={jobs}", flush=True)
+        args_dict = vars(args)
+        completed = 0
+        with ProcessPoolExecutor(
+            max_workers=jobs,
+            initializer=_worker_init,
+            initargs=(getattr(args, "worker_torch_threads", 1),),
+        ) as executor:
+            future_map = {
+                executor.submit(_run_variant_task, args_dict, name, method, seed):
+                (name, seed)
+                for name, method, seed in tasks
+            }
+            for future in as_completed(future_map):
+                name, seed = future_map[future]
+                row = future.result()
+                rows.append(row)
+                completed += 1
+                print(
+                    f"[sota] done {completed}/{len(tasks)} "
+                    f"variant={name} seed={seed}",
+                    flush=True,
+                )
+    rows.sort(key=lambda row: (str(row["variant"]), int(row["seed"])))
     summaries = summarize(rows)
     return {
         "schema_version": 1,
@@ -335,6 +386,8 @@ def main():
     parser.add_argument("--seeds", default="")
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=5)
+    parser.add_argument("--jobs", type=int, default=1)
+    parser.add_argument("--worker_torch_threads", type=int, default=1)
     parser.add_argument("--out_dir", default=str(ROOT / "profiles"))
     parser.add_argument("--out_prefix", default="")
     args = parser.parse_args()
