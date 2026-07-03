@@ -202,11 +202,78 @@ class RegimeRZDT1(RZDT1):
         return self.sigma_level * multipliers[self.risk_class(x)]
 
 
+class StatePolicyRZDT1(TestProblem):
+    """State-policy synthetic with a feasible occupancy pocket.
+
+    The objective and chance constraint depend on a low-dimensional occupancy
+    summary, not only on the first decision coordinate.  This gives SC coupling
+    a controlled benchmark where covering new policy states can reveal a good
+    feasible region that raw axis-only RZDT tests do not emphasize.
+    """
+
+    problem_name = "StatePolicyRZDT1"
+    variance_features = (0, 1)
+    recommended_partition_features = (0, 1)
+
+    def _policy_state(self, x):
+        t = self.normalize(x)
+        u = float(t[0])
+        tail = t[1:] if self.d > 1 else np.array([0.0])
+        q = float(np.mean(tail))
+        spread = float(np.std(tail))
+        return u, q, spread
+
+    def true_objectives(self, x):
+        u, q, spread = self._policy_state(x)
+        t = self.normalize(x)
+        tail = t[1:] if self.d > 1 else np.array([q])
+        tail_loss = float(np.mean((tail - 0.70) ** 2))
+        state_loss = (
+            2.2 * (u - 0.25) ** 2
+            + 5.0 * tail_loss
+            + 0.05 * spread ** 2
+        )
+        f1 = 0.35 + state_loss
+        f2 = 0.35 + state_loss + 0.08 * (u + 0.5 * q)
+        tail_pocket = float(np.mean(((tail - 0.70) / 0.28) ** 2))
+        pocket = ((u - 0.25) / 0.28) ** 2 + tail_pocket
+        f3 = 0.12 * (pocket - 1.5) + 0.02 * spread
+        return float(f1), float(f2), float(f3)
+
+    def sigma_func(self, x, f_val=0.0):
+        if not self.heteroscedastic:
+            return self.sigma_level
+        u, q, spread = self._policy_state(x)
+        q_gap = min(abs(q - 0.70) / 0.70, 1.0)
+        return self.sigma_level * (
+            0.35 + 1.4 * q_gap + 0.8 * np.sin(np.pi * u) ** 2 + 0.8 * spread
+        )
+
+    def risk_class(self, x):
+        _, q, _ = self._policy_state(x)
+        if q < 0.45:
+            return 0
+        if q < 0.80:
+            return 1
+        return 2
+
+    def all_axis_solutions(self):
+        lo, hi = self.int_bounds()
+        rows = []
+        for x0 in range(int(lo[0]), int(hi[0]) + 1):
+            for q in range(int(lo[0]), int(hi[0]) + 1, 5):
+                x = [x0]
+                x.extend([q] * (self.d - 1))
+                rows.append(tuple(x))
+        return rows
+
+
 PROBLEM_REGISTRY = {
     "RZDT1": RZDT1,
     "RZDT2": RZDT2,
     "RZDT5_RR": RZDT5RR,
     "RegimeRZDT1": RegimeRZDT1,
+    "StatePolicyRZDT1": StatePolicyRZDT1,
 }
 
 

@@ -23,6 +23,11 @@ score while keeping the stable raw quadratic GPR mean basis.  Pass
 mean model; this is more fragile in very small-budget runs.
 The default `--lambda_coupling` is intentionally light (`0.05`) so coverage
 guidance cannot swamp objective KG and feasibility learning.
+Coverage coupling is also gated by a conservative posterior chance margin:
+`--coupling_safety_z 0.5` and `--coupling_gate_temperature 0.25` keep state
+coverage rewards concentrated in regions that the constraint model considers
+confidently feasible.  This matters on RZDT2-like problems where global novelty
+can otherwise pull the search into the high-risk middle of the domain.
 
 Workflow:
 
@@ -53,12 +58,36 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_quality.py \
   --n0 5 \
   --K1 15 \
   --K2 1 \
+  --problem RegimeRZDT1 \
   --n_seeds 5
 ```
 
 This benchmark writes JSON plus row/summary CSV files under
 `SC-OLH-KG/profiles/`.  It compares optimization quality across variance modes
 and optional SC coupling; wall time is included only as a diagnostic column.
+For SC coupling evidence, run both a monotone/regime problem and a concave
+boundary problem:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_quality.py \
+  --problem RegimeRZDT1 \
+  --N 20 --n0 5 --K1 15 --K2 1 \
+  --n_seeds 20 \
+  --modes orthogonal \
+  --sc_modes orthogonal
+
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_quality.py \
+  --problem RZDT2 \
+  --N 20 --n0 5 --K1 15 --K2 1 \
+  --n_seeds 20 \
+  --modes orthogonal \
+  --sc_modes orthogonal
+```
+
+`StatePolicyRZDT1` is a harder synthetic for policy-state occupancy structure.
+It is useful as a stress test, but not yet a default success criterion: at
+`N=20,n0=5` all current variants can miss feasible recommendations, while
+`N=30,n0=8` starts to separate pooled and orthogonal HVD behavior.
 
 HVD calibration diagnostic:
 

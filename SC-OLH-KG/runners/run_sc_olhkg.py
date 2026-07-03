@@ -28,6 +28,8 @@ def main():
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
+    parser.add_argument("--coupling_safety_z", type=float, default=0.5)
+    parser.add_argument("--coupling_gate_temperature", type=float, default=0.25)
     parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument("--verbose", action="store_true")
@@ -45,6 +47,8 @@ def main():
         lambda_feas=args.lambda_feas,
         lambda_var=args.lambda_var,
         lambda_coupling=args.lambda_coupling,
+        coupling_safety_z=args.coupling_safety_z,
+        coupling_gate_temperature=args.coupling_gate_temperature,
         use_state_coupling=True,
         use_state_basis=args.use_state_basis,
         seed=args.seed,

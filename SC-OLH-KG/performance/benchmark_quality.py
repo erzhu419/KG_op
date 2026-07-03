@@ -123,6 +123,8 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         lambda_feas=args.lambda_feas,
         lambda_var=args.lambda_var,
         lambda_coupling=args.lambda_coupling if use_state_coupling else 0.0,
+        coupling_safety_z=args.coupling_safety_z,
+        coupling_gate_temperature=args.coupling_gate_temperature,
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
         eval_pool_size=args.eval_pool_size,
@@ -299,6 +301,8 @@ def run_benchmark(args):
             "lambda_feas": args.lambda_feas,
             "lambda_var": args.lambda_var,
             "lambda_coupling": args.lambda_coupling,
+            "coupling_safety_z": args.coupling_safety_z,
+            "coupling_gate_temperature": args.coupling_gate_temperature,
             "use_state_basis": args.use_state_basis,
             "seeds": seeds,
             "modes": parse_csv(args.modes),
@@ -413,6 +417,8 @@ def main():
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
+    parser.add_argument("--coupling_safety_z", type=float, default=0.5)
+    parser.add_argument("--coupling_gate_temperature", type=float, default=0.25)
     parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
     parser.add_argument("--sc_modes", default="orthogonal")

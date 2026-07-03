@@ -72,6 +72,8 @@ class ScalarizedProblem:
         return self.base.is_truly_feasible(x)
 
     def all_axis_solutions(self):
+        if hasattr(self.base, "all_axis_solutions"):
+            return self.base.all_axis_solutions()
         lo, hi = self.int_bounds()
         return [tuple([x1] + [lo[j] for j in range(1, self.d)])
                 for x1 in range(lo[0], hi[0] + 1)]

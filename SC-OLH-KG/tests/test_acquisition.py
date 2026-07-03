@@ -67,6 +67,22 @@ class AcquisitionTests(unittest.TestCase):
         got = OLHKGAcquisition.chance_margin(mu, variance, tau, alpha)
         self.assertAlmostEqual(got, expected, places=12)
 
+    def test_coupling_gate_penalizes_risky_chance_margins(self):
+        acq = OLHKGAcquisition(
+            lambda_coupling=0.05,
+            coupling_safety_z=0.5,
+            coupling_gate_temperature=0.25,
+        )
+        details = [
+            {"chance_margin": -0.2, "variance_g": 0.01},
+            {"chance_margin": 0.0, "variance_g": 0.01},
+            {"chance_margin": 0.2, "variance_g": 0.01},
+        ]
+        gate = acq.coupling_feasibility_gate(details)
+        self.assertGreater(float(gate[0]), 0.99)
+        self.assertLess(float(gate[1]), 0.2)
+        self.assertLess(float(gate[2]), 1e-3)
+
 
 if __name__ == "__main__":
     unittest.main()

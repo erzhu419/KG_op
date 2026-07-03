@@ -40,6 +40,8 @@ class SingleOLHKGConfig:
     lambda_feas: float = 0.25
     lambda_var: float = 0.25
     lambda_coupling: float = 0.0
+    coupling_safety_z: float = 0.5
+    coupling_gate_temperature: float = 0.25
     use_state_coupling: bool = False
     use_state_basis: bool = False
     eval_pool_size: int = 500
@@ -86,6 +88,8 @@ class SingleOLHKGAlgorithm:
             lambda_feas=self.config.lambda_feas,
             lambda_var=self.config.lambda_var,
             lambda_coupling=self.config.lambda_coupling,
+            coupling_safety_z=self.config.coupling_safety_z,
+            coupling_gate_temperature=self.config.coupling_gate_temperature,
             encoder=self.encoder,
         )
 
@@ -267,6 +271,8 @@ class SingleOLHKGAlgorithm:
             row["kg_coupling_selected"] = float(score["kg_coupling"][selected_idx])
             row["kg_coupling_raw_selected"] = float(
                 score["kg_coupling_raw"][selected_idx])
+            row["kg_coupling_gate_selected"] = float(
+                score["kg_coupling_gate"][selected_idx])
 
             x_arr = np.asarray(x_selected, dtype=int)
             mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]

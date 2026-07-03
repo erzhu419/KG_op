@@ -33,12 +33,16 @@ class OLHKGAcquisition:
         lambda_var=0.25,
         lambda_coupling=0.0,
         boundary_scale=1.0,
+        coupling_safety_z=0.5,
+        coupling_gate_temperature=0.25,
         encoder=None,
     ):
         self.lambda_feas = float(lambda_feas)
         self.lambda_var = float(lambda_var)
         self.lambda_coupling = float(lambda_coupling)
         self.boundary_scale = max(float(boundary_scale), 1e-8)
+        self.coupling_safety_z = float(coupling_safety_z)
+        self.coupling_gate_temperature = max(float(coupling_gate_temperature), 1e-8)
         self.encoder = encoder
 
     @staticmethod
@@ -91,6 +95,21 @@ class OLHKGAcquisition:
             return np.zeros(len(candidates), dtype=float)
         return self.encoder.propagation_scores(candidates, observed)
 
+    def coupling_feasibility_gate(self, feasibility_details):
+        if not feasibility_details:
+            return np.zeros(0, dtype=float)
+        margins = np.array([
+            float(item["chance_margin"]) for item in feasibility_details
+        ], dtype=float)
+        variance = np.array([
+            float(item["variance_g"]) for item in feasibility_details
+        ], dtype=float)
+        sig = np.sqrt(np.maximum(variance, 1e-12))
+        guarded_margin = margins + self.coupling_safety_z * sig
+        scaled = -guarded_margin / (self.coupling_gate_temperature * sig)
+        scaled = np.clip(scaled, -60.0, 60.0)
+        return 1.0 / (1.0 + np.exp(-scaled))
+
     def score(
         self,
         candidates,
@@ -109,6 +128,7 @@ class OLHKGAcquisition:
                 "kg_var": np.zeros(0, dtype=float),
                 "kg_coupling": np.zeros(0, dtype=float),
                 "kg_coupling_raw": np.zeros(0, dtype=float),
+                "kg_coupling_gate": np.zeros(0, dtype=float),
                 "feasibility_details": [],
             }
         if hasattr(variance_model, "predict_variance_many"):
@@ -123,6 +143,7 @@ class OLHKGAcquisition:
             candidates, con_gpr, variance_model, problem)
         kg_var = self.variance_scores(candidates, variance_model, problem, 1)
         kg_coupling_raw = self.coupling_scores(candidates, observed or [])
+        kg_coupling_gate = self.coupling_feasibility_gate(feas_details)
         aux_active = (
             abs(self.lambda_feas) > 0.0
             or abs(self.lambda_var) > 0.0
@@ -131,7 +152,7 @@ class OLHKGAcquisition:
         kg_obj_scaled = safe_normalize(kg_obj) if aux_active else kg_obj
         if abs(self.lambda_coupling) > 0.0:
             relevance = safe_normalize(kg_obj_scaled + kg_feas + 0.5 * kg_var)
-            kg_coupling = kg_coupling_raw * relevance
+            kg_coupling = kg_coupling_raw * relevance * kg_coupling_gate
         else:
             kg_coupling = kg_coupling_raw
         total = (
@@ -148,5 +169,6 @@ class OLHKGAcquisition:
             "kg_var": kg_var,
             "kg_coupling": kg_coupling,
             "kg_coupling_raw": kg_coupling_raw,
+            "kg_coupling_gate": kg_coupling_gate,
             "feasibility_details": feas_details,
         }
