@@ -92,6 +92,9 @@ def build_config(args):
         posterior_pool_size=args.posterior_pool_size,
         posterior_keep=args.posterior_keep,
         structured_candidate_count=args.structured_candidate_count,
+        state_candidate_count=args.state_candidate_count,
+        state_inverse_pool_size=args.state_inverse_pool_size,
+        state_inverse_neighbors=args.state_inverse_neighbors,
         n_thr=args.n_thr,
         variance_mode=args.variance_mode,
         lambda_feas=args.lambda_feas,
@@ -267,6 +270,9 @@ def run_diagnostic(args):
             "K1": args.K1,
             "K2": args.K2,
             "structured_candidate_count": args.structured_candidate_count,
+            "state_candidate_count": args.state_candidate_count,
+            "state_inverse_pool_size": args.state_inverse_pool_size,
+            "state_inverse_neighbors": args.state_inverse_neighbors,
             "use_state_coupling": args.use_state_coupling,
             "use_state_basis": args.use_state_basis,
             "lambda_feas": args.lambda_feas,
@@ -333,7 +339,10 @@ def main():
     parser.add_argument("--K2", type=int, default=1)
     parser.add_argument("--posterior_pool_size", type=int, default=300)
     parser.add_argument("--posterior_keep", type=int, default=15)
-    parser.add_argument("--structured_candidate_count", type=int, default=-1)
+    parser.add_argument("--structured_candidate_count", type=int, default=0)
+    parser.add_argument("--state_candidate_count", type=int, default=-1)
+    parser.add_argument("--state_inverse_pool_size", type=int, default=500)
+    parser.add_argument("--state_inverse_neighbors", type=int, default=2)
     parser.add_argument("--n_thr", type=int, default=5)
     parser.add_argument("--eval_pool_size", type=int, default=500)
     parser.add_argument("--variance_mode", default="orthogonal",

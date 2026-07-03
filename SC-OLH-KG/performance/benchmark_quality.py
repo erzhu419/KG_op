@@ -119,6 +119,9 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         posterior_pool_size=args.posterior_pool_size,
         posterior_keep=args.posterior_keep,
         structured_candidate_count=args.structured_candidate_count,
+        state_candidate_count=args.state_candidate_count,
+        state_inverse_pool_size=args.state_inverse_pool_size,
+        state_inverse_neighbors=args.state_inverse_neighbors,
         n_thr=args.n_thr,
         variance_mode=variance_mode,
         lambda_feas=args.lambda_feas,
@@ -298,6 +301,9 @@ def run_benchmark(args):
             "posterior_pool_size": args.posterior_pool_size,
             "posterior_keep": args.posterior_keep,
             "structured_candidate_count": args.structured_candidate_count,
+            "state_candidate_count": args.state_candidate_count,
+            "state_inverse_pool_size": args.state_inverse_pool_size,
+            "state_inverse_neighbors": args.state_inverse_neighbors,
             "n_thr": args.n_thr,
             "eval_pool_size": args.eval_pool_size,
             "lambda_feas": args.lambda_feas,
@@ -414,7 +420,10 @@ def main():
     parser.add_argument("--K2", type=int, default=0)
     parser.add_argument("--posterior_pool_size", type=int, default=300)
     parser.add_argument("--posterior_keep", type=int, default=15)
-    parser.add_argument("--structured_candidate_count", type=int, default=-1)
+    parser.add_argument("--structured_candidate_count", type=int, default=0)
+    parser.add_argument("--state_candidate_count", type=int, default=-1)
+    parser.add_argument("--state_inverse_pool_size", type=int, default=500)
+    parser.add_argument("--state_inverse_neighbors", type=int, default=2)
     parser.add_argument("--n_thr", type=int, default=5)
     parser.add_argument("--eval_pool_size", type=int, default=500)
     parser.add_argument("--lambda_feas", type=float, default=0.25)

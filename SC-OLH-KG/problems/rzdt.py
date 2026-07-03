@@ -285,6 +285,36 @@ class StatePolicyRZDT1(TestProblem):
         order = rng.permutation(len(rows))
         return [rows[int(idx)] for idx in order[: max(0, int(n))]]
 
+    def state_anchor_points(self, n=10, rng=None):
+        rng = rng or np.random.default_rng()
+        anchors = []
+        u_vals = np.array([0.05, 0.15, 0.30, 0.40, 0.55, 0.75, 0.95])
+        q_vals = np.array([0.50, 0.60, 0.70, 0.80, 0.90])
+        for u in u_vals:
+            for q in q_vals:
+                anchors.append(np.array([u, q], dtype=float))
+        order = rng.permutation(len(anchors))
+        return [anchors[int(idx)] for idx in order[: max(0, int(n))]]
+
+    def inverse_state_anchor(self, anchor, rng=None, n=1):
+        rng = rng or np.random.default_rng()
+        anchor = np.asarray(anchor, dtype=float)
+        u = float(anchor[0])
+        q = float(anchor[1]) if len(anchor) > 1 else 0.5
+        lo, hi = self.int_bounds()
+        rows = []
+        for _ in range(max(1, int(n))):
+            u_j = int(np.round(self.L * np.clip(u + rng.normal(0.0, 0.035), 0.0, 1.0)))
+            q_j = int(np.round(self.L * np.clip(q + rng.normal(0.0, 0.035), 0.0, 1.0)))
+            x = [int(np.clip(u_j, lo[0], hi[0]))]
+            for j in range(1, self.d):
+                tail = q_j
+                if j == 1 and rng.random() < 0.35:
+                    tail = int(np.round(q_j + rng.normal(0.0, 5.0)))
+                x.append(int(np.clip(tail, lo[j], hi[j])))
+            rows.append(tuple(x))
+        return rows
+
     def initial_samples(self, n=5, rng=None):
         del rng
         anchors = [

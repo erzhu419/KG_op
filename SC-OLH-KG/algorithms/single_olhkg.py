@@ -34,7 +34,10 @@ class SingleOLHKGConfig:
     K2: int = 0
     posterior_pool_size: int = 300
     posterior_keep: int = 15
-    structured_candidate_count: int = -1
+    structured_candidate_count: int = 0
+    state_candidate_count: int = -1
+    state_inverse_pool_size: int = 500
+    state_inverse_neighbors: int = 2
     n_thr: int = 5
     lambda_i: float = 0.1
     prior_var: float = 10.0
@@ -153,18 +156,38 @@ class SingleOLHKGAlgorithm:
 
     def _generate_candidates(self, iteration):
         candidates = []
-        candidates.extend(latin_hypercube_candidates(
-            self.problem, self.config.K1, self.rng))
+        sources = {}
+
+        def add(rows, source):
+            for row in rows:
+                x_tuple = tuple(int(v) for v in row)
+                if x_tuple not in sources:
+                    candidates.append(x_tuple)
+                    sources[x_tuple] = source
+
+        add(latin_hypercube_candidates(
+            self.problem, self.config.K1, self.rng), "lhs")
         if hasattr(self.problem, "structured_candidates"):
             n_structured = int(self.config.structured_candidate_count)
             if n_structured < 0:
                 n_structured = max(5, self.config.K1 // 2)
-            candidates.extend(structured_candidates(
-                self.problem, n_structured, self.rng))
-        candidates.extend(random_candidates(
-            self.problem, max(5, self.config.K1 // 5), self.rng))
+            add(structured_candidates(
+                self.problem, n_structured, self.rng), "structured")
+        if self.config.use_state_coupling and self.encoder is not None:
+            n_state = int(self.config.state_candidate_count)
+            if n_state < 0:
+                n_state = max(5, self.config.K1)
+            add(self.encoder.state_space_candidates(
+                n_anchors=n_state,
+                inverse_pool_size=self.config.state_inverse_pool_size,
+                inverse_neighbors=self.config.state_inverse_neighbors,
+                rng=self.rng,
+                observed=[x for x, _ in self.history],
+            ), "state")
+        add(random_candidates(
+            self.problem, max(5, self.config.K1 // 5), self.rng), "random")
         use_constraint = iteration > self.config.n_thr
-        candidates.extend(posterior_sample_candidates(
+        add(posterior_sample_candidates(
             self.problem,
             self.gpr,
             n_batches=self.config.K2,
@@ -175,10 +198,10 @@ class SingleOLHKGAlgorithm:
             variance_lookup=self._variance_lookup,
             tau=self.problem.tau,
             alpha_z=norm.ppf(1 - self.problem.alpha),
-        ))
+        ), "posterior")
         if not candidates:
-            candidates.append(self.problem.sample_random(self.rng))
-        return unique_candidates(candidates)
+            add([self.problem.sample_random(self.rng)], "random")
+        return candidates, sources
 
     def _recommendation_pool(self):
         pool = set(x for x, _ in self.history)
@@ -260,7 +283,7 @@ class SingleOLHKGAlgorithm:
             row.update({f"rec_{k}": v for k, v in rec_details.items()})
 
             t0 = time.time()
-            candidates = self._generate_candidates(iteration)
+            candidates, candidate_sources = self._generate_candidates(iteration)
             row["t_candidate_gen"] = time.time() - t0
             row["n_candidates"] = len(candidates)
 
@@ -271,12 +294,14 @@ class SingleOLHKGAlgorithm:
                 self.gpr[1],
                 self.variance_model,
                 self.problem,
-                observed=[x for x, _ in self.history],
+                observed=self.history,
             )
             selected_idx = int(np.argmax(score["total"]))
             x_selected = candidates[selected_idx]
             row["t_kg_compute"] = time.time() - t0
             row["x_selected"] = list(map(int, x_selected))
+            row["candidate_source_selected"] = candidate_sources.get(
+                tuple(x_selected), "unknown")
             row["score_selected"] = float(score["total"][selected_idx])
             row["kg_obj_selected"] = float(score["kg_obj"][selected_idx])
             row["kg_obj_scaled_selected"] = float(score["kg_obj_scaled"][selected_idx])

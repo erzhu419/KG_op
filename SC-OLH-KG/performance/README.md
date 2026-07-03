@@ -90,6 +90,26 @@ residual-variance cap so HVD does not confuse early mean-model bias with
 simulation noise.  At `N=20,n0=5`, orthogonal HVD should now recover feasible
 recommendations reliably; SC coupling remains a separate improvement target
 because the current gated coupling is usually neutral on this benchmark.
+When `use_state_coupling=True`, SC now also adds candidates generated in a
+state/meta space: anchors are proposed in state space, then inverted back into
+raw parameter vectors.  The selected candidate source is logged as
+`candidate_source_selected`.  `--structured_candidate_count` defaults to `0`
+so these problem-specific anchors do not leak into the raw OLH-KG baseline;
+SC uses `--state_candidate_count` for meta-space search.
+
+SOTA/strong-baseline benchmark:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_sota.py \
+  --problem StatePolicyRZDT1 \
+  --N 20 --n0 5 \
+  --n_seeds 5 \
+  --baselines sobol,random,turbo_lite,scbo_lite
+```
+
+`turbo_lite` and `scbo_lite` are dependency-light trust-region baselines, not
+exact BoTorch TuRBO/SCBO.  They give a reproducible local comparison until
+BoTorch/GPyTorch adapters are added.
 
 HVD calibration diagnostic:
 

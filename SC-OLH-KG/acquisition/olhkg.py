@@ -93,6 +93,8 @@ class OLHKGAcquisition:
     def coupling_scores(self, candidates, observed):
         if self.encoder is None:
             return np.zeros(len(candidates), dtype=float)
+        if hasattr(self.encoder, "coupling_scores"):
+            return self.encoder.coupling_scores(candidates, observed)
         return self.encoder.propagation_scores(candidates, observed)
 
     def coupling_feasibility_gate(self, feasibility_details):

@@ -62,6 +62,38 @@ class StateEncoderTests(unittest.TestCase):
         self.assertNotIn((24, 70, 70, 70, 70), samples)
         self.assertNotIn((25, 70, 70, 70, 70), samples)
 
+    def test_state_space_candidates_invert_meta_anchors(self):
+        base = StatePolicyRZDT1(d=5, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        encoder = SyntheticPolicyStateEncoder(problem)
+        candidates = encoder.state_space_candidates(
+            n_anchors=12,
+            inverse_neighbors=2,
+            rng=np.random.default_rng(1),
+        )
+        self.assertGreaterEqual(len(candidates), 12)
+        tail_spreads = [
+            np.std(problem.normalize(x)[1:])
+            for x in candidates
+        ]
+        self.assertLess(float(np.median(tail_spreads)), 0.08)
+
+    def test_coupling_scores_prefer_promising_feasible_states(self):
+        base = StatePolicyRZDT1(d=5, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        encoder = SyntheticPolicyStateEncoder(problem)
+        good = (20, 70, 70, 70, 70)
+        far = (90, 0, 0, 0, 0)
+        history = [
+            (good, np.array([0.4, -0.2], dtype=float)),
+            (far, np.array([1.5, 0.5], dtype=float)),
+        ]
+        scores = encoder.coupling_scores(
+            [(21, 70, 70, 70, 70), (90, 0, 0, 0, 0)],
+            history,
+        )
+        self.assertGreater(float(scores[0]), float(scores[1]))
+
 
 if __name__ == "__main__":
     unittest.main()

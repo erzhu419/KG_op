@@ -88,6 +88,16 @@ class ScalarizedProblem:
             return self.base.initial_samples(n=n, rng=rng)
         return []
 
+    def state_anchor_points(self, n=10, rng=None):
+        if hasattr(self.base, "state_anchor_points"):
+            return self.base.state_anchor_points(n=n, rng=rng)
+        return []
+
+    def inverse_state_anchor(self, anchor, rng=None, n=1):
+        if hasattr(self.base, "inverse_state_anchor"):
+            return self.base.inverse_state_anchor(anchor, rng=rng, n=n)
+        return []
+
     def hvd_residual_variance_cap(self, output_index=0):
         if hasattr(self.base, "hvd_residual_variance_cap"):
             return self.base.hvd_residual_variance_cap(output_index=output_index)
