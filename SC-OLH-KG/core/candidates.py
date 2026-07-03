@@ -12,15 +12,21 @@ def boundary_solutions(problem):
     lo = np.asarray(lo, dtype=int)
     hi = np.asarray(hi, dtype=int)
     center = np.round((lo + hi) / 2.0).astype(int)
-    seeds = {tuple(lo), tuple(hi), tuple(center)}
+    rows = [tuple(lo), tuple(hi), tuple(center)]
     for j in range(problem.d):
         x_hi = lo.copy()
         x_hi[j] = hi[j]
-        seeds.add(tuple(x_hi))
+        rows.append(tuple(x_hi))
+        x_q1 = lo.copy()
+        x_q1[j] = np.round(lo[j] + 0.25 * (hi[j] - lo[j])).astype(int)
+        rows.append(tuple(x_q1))
         x_mid = lo.copy()
         x_mid[j] = center[j]
-        seeds.add(tuple(x_mid))
-    return list(seeds)
+        rows.append(tuple(x_mid))
+        x_q3 = lo.copy()
+        x_q3[j] = np.round(lo[j] + 0.75 * (hi[j] - lo[j])).astype(int)
+        rows.append(tuple(x_q3))
+    return unique_candidates(rows)
 
 
 def latin_hypercube_candidates(problem, n, rng=None):
@@ -49,6 +55,19 @@ def structured_candidates(problem, n, rng=None):
         tuple(int(v) for v in x)
         for x in problem.structured_candidates(n=int(n), rng=rng)
     ]
+
+
+def axis_candidates(problem, n, rng=None):
+    """Evenly spaced anchors from a problem-provided axis grid."""
+    del rng
+    if n <= 0 or not hasattr(problem, "all_axis_solutions"):
+        return []
+    rows = [tuple(int(v) for v in x) for x in problem.all_axis_solutions()]
+    rows = unique_candidates(rows)
+    if len(rows) <= int(n):
+        return rows
+    idx = np.linspace(0, len(rows) - 1, int(n))
+    return [rows[int(round(i))] for i in idx]
 
 
 def posterior_sample_candidates(

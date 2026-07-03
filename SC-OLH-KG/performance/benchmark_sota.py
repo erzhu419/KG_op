@@ -110,6 +110,7 @@ def run_olhkg(args, seed, use_sc):
         K2=args.K2,
         posterior_pool_size=args.posterior_pool_size,
         posterior_keep=args.posterior_keep,
+        axis_candidate_count=args.axis_candidate_count,
         structured_candidate_count=args.structured_candidate_count,
         state_candidate_count=args.state_candidate_count,
         state_inverse_pool_size=args.state_inverse_pool_size,
@@ -118,6 +119,8 @@ def run_olhkg(args, seed, use_sc):
         lambda_feas=args.lambda_feas,
         lambda_var=args.lambda_var,
         lambda_coupling=args.lambda_coupling if use_sc else 0.0,
+        recommendation_safety_z=args.recommendation_safety_z,
+        recommendation_noise_floor_scale=args.recommendation_noise_floor_scale,
         use_state_coupling=use_sc,
         seed=seed,
     )
@@ -355,6 +358,7 @@ def main():
     parser.add_argument("--K2", type=int, default=1)
     parser.add_argument("--posterior_pool_size", type=int, default=300)
     parser.add_argument("--posterior_keep", type=int, default=15)
+    parser.add_argument("--axis_candidate_count", type=int, default=-1)
     parser.add_argument("--structured_candidate_count", type=int, default=0)
     parser.add_argument("--state_candidate_count", type=int, default=-1)
     parser.add_argument("--state_inverse_pool_size", type=int, default=500)
@@ -363,6 +367,8 @@ def main():
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
+    parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
+    parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--baselines", default="sobol,random,turbo_lite,scbo_lite")
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
     parser.add_argument("--tr_radius_init", type=float, default=0.35)

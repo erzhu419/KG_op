@@ -23,6 +23,7 @@ def main():
     parser.add_argument("--n0", type=int, default=8)
     parser.add_argument("--K1", type=int, default=25)
     parser.add_argument("--K2", type=int, default=0)
+    parser.add_argument("--axis_candidate_count", type=int, default=-1)
     parser.add_argument("--structured_candidate_count", type=int, default=0)
     parser.add_argument("--state_candidate_count", type=int, default=-1)
     parser.add_argument("--state_inverse_pool_size", type=int, default=500)
@@ -34,6 +35,8 @@ def main():
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
     parser.add_argument("--coupling_safety_z", type=float, default=0.5)
     parser.add_argument("--coupling_gate_temperature", type=float, default=0.25)
+    parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
+    parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument("--verbose", action="store_true")
@@ -47,6 +50,7 @@ def main():
         n0=args.n0,
         K1=args.K1,
         K2=args.K2,
+        axis_candidate_count=args.axis_candidate_count,
         structured_candidate_count=args.structured_candidate_count,
         state_candidate_count=args.state_candidate_count,
         state_inverse_pool_size=args.state_inverse_pool_size,
@@ -57,6 +61,8 @@ def main():
         lambda_coupling=args.lambda_coupling,
         coupling_safety_z=args.coupling_safety_z,
         coupling_gate_temperature=args.coupling_gate_temperature,
+        recommendation_safety_z=args.recommendation_safety_z,
+        recommendation_noise_floor_scale=args.recommendation_noise_floor_scale,
         use_state_coupling=True,
         use_state_basis=args.use_state_basis,
         seed=args.seed,

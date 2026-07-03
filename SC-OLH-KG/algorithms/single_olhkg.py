@@ -10,6 +10,7 @@ from scipy.stats import norm
 
 from acquisition.olhkg import OLHKGAcquisition
 from core.candidates import (
+    axis_candidates,
     boundary_solutions,
     latin_hypercube_candidates,
     posterior_sample_candidates,
@@ -34,6 +35,7 @@ class SingleOLHKGConfig:
     K2: int = 0
     posterior_pool_size: int = 300
     posterior_keep: int = 15
+    axis_candidate_count: int = -1
     structured_candidate_count: int = 0
     state_candidate_count: int = -1
     state_inverse_pool_size: int = 500
@@ -47,6 +49,8 @@ class SingleOLHKGConfig:
     lambda_coupling: float = 0.0
     coupling_safety_z: float = 0.5
     coupling_gate_temperature: float = 0.25
+    recommendation_safety_z: float = 0.5
+    recommendation_noise_floor_scale: float = 1.0
     use_state_coupling: bool = False
     use_state_basis: bool = False
     eval_pool_size: int = 500
@@ -167,6 +171,10 @@ class SingleOLHKGAlgorithm:
 
         add(latin_hypercube_candidates(
             self.problem, self.config.K1, self.rng), "lhs")
+        n_axis = int(self.config.axis_candidate_count)
+        if n_axis < 0:
+            n_axis = 5
+        add(axis_candidates(self.problem, n_axis, self.rng), "axis")
         if hasattr(self.problem, "structured_candidates"):
             n_structured = int(self.config.structured_candidate_count)
             if n_structured < 0:
@@ -212,6 +220,28 @@ class SingleOLHKGAlgorithm:
                 pool.add(tuple(x))
         return list(pool)
 
+    def _observed_nominal_incumbent(self):
+        z = norm.ppf(1 - self.problem.alpha)
+        sigma_floor = float(getattr(self.problem, "sigma_level", 0.0))
+        margin_limit = -0.5 * sigma_floor
+        best = None
+        for x, ys in self.observations.items():
+            y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
+            margin = float(y_bar[1] + z * sigma_floor - self.problem.tau)
+            if margin > margin_limit:
+                continue
+            item = (float(y_bar[0]), margin, tuple(int(v) for v in x))
+            if best is None or item < best:
+                best = item
+        if best is None:
+            return None
+        obj, margin, x = best
+        return {
+            "x": x,
+            "empirical_objective": float(obj),
+            "empirical_chance_margin": float(margin),
+        }
+
     def _solve_posterior_recommendation(self):
         pool = self._recommendation_pool()
         mu_obj = self.gpr[0].posterior_mean_many(pool)
@@ -220,17 +250,59 @@ class SingleOLHKGAlgorithm:
         v_con = self.variance_model.predict_certification_variance_many(
             1, pool, self.problem)
         margins = mu_con + z * np.sqrt(np.maximum(v_con, 1e-12)) - self.problem.tau
-        feasible = margins <= 0.0
+        sig_con = np.sqrt(np.maximum(v_con, 1e-12))
+        nominal_floor = (
+            self.config.recommendation_noise_floor_scale
+            * float(getattr(self.problem, "sigma_level", 0.0))
+        )
+        safety_buffer = np.maximum(
+            self.config.recommendation_safety_z * sig_con,
+            nominal_floor,
+        )
+        robust_margins = margins + safety_buffer
+        feasible = robust_margins <= 0.0
         if np.any(feasible):
             local = int(np.argmin(np.where(feasible, mu_obj, np.inf)))
         else:
-            local = int(np.argmin(margins))
+            scaled_obj = mu_obj - float(np.min(mu_obj))
+            obj_span = float(np.max(scaled_obj))
+            if obj_span > 1e-12:
+                scaled_obj = scaled_obj / obj_span
+            scaled_margin = np.maximum(robust_margins, 0.0)
+            margin_span = float(np.max(scaled_margin))
+            if margin_span > 1e-12:
+                scaled_margin = scaled_margin / margin_span
+            local = int(np.argmin(scaled_obj + 2.0 * scaled_margin))
+        used_observed_incumbent = False
+        observed_incumbent = self._observed_nominal_incumbent()
+        if (
+            observed_incumbent is not None
+            and observed_incumbent["empirical_objective"] <= float(mu_obj[local])
+        ):
+            try:
+                local = pool.index(observed_incumbent["x"])
+                used_observed_incumbent = True
+            except ValueError:
+                pass
         x_best = tuple(int(v) for v in pool[local])
         return x_best, {
             "posterior_mu_obj": float(mu_obj[local]),
             "posterior_mu_con": float(mu_con[local]),
             "posterior_variance_con": float(v_con[local]),
             "posterior_chance_margin": float(margins[local]),
+            "posterior_robust_chance_margin": float(robust_margins[local]),
+            "recommendation_safety_z": float(self.config.recommendation_safety_z),
+            "recommendation_noise_floor_scale": float(
+                self.config.recommendation_noise_floor_scale),
+            "observed_incumbent_used": bool(used_observed_incumbent),
+            "observed_incumbent_objective": (
+                None if observed_incumbent is None
+                else float(observed_incumbent["empirical_objective"])
+            ),
+            "observed_incumbent_chance_margin": (
+                None if observed_incumbent is None
+                else float(observed_incumbent["empirical_chance_margin"])
+            ),
             "posterior_feasible": bool(feasible[local]),
             "n_pool": int(len(pool)),
             "n_posterior_feasible": int(np.sum(feasible)),
