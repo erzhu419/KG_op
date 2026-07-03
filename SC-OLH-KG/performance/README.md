@@ -104,12 +104,18 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_sota.py \
   --problem StatePolicyRZDT1 \
   --N 20 --n0 5 \
   --n_seeds 5 \
-  --baselines sobol,random,turbo_lite,scbo_lite
+  --baselines sobol,random,turbo_lite,scbo_lite,botorch_turbo,botorch_scbo,botorch_saasbo
 ```
 
 `turbo_lite` and `scbo_lite` are dependency-light trust-region baselines, not
-exact BoTorch TuRBO/SCBO.  They give a reproducible local comparison until
-BoTorch/GPyTorch adapters are added.
+exact BoTorch TuRBO/SCBO.  `botorch_turbo`, `botorch_scbo`, and
+`botorch_saasbo` use the real BoTorch/GPyTorch stack: BoTorch GP models,
+BoTorch acquisition functions, and `optimize_acqf`.  The aliases `turbo`,
+`scbo`, and `saasbo` map to those BoTorch variants.  If BoTorch is not
+installed, the benchmark can either fall back to the lite baselines
+(`--botorch_fallback lite`) or fail loudly (`--botorch_fallback error`).
+Use small `--botorch_raw_samples`, `--botorch_num_restarts`, and
+`--saas_warmup_steps` values for smoke tests; increase them for paper runs.
 
 HVD calibration diagnostic:
 

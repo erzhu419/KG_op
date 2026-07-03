@@ -1,10 +1,4 @@
-"""Compare OLH-KG variants with strong lightweight baselines.
-
-The local environment does not include BoTorch/GPyTorch, so `turbo_lite` and
-`scbo_lite` are dependency-light trust-region baselines rather than exact
-published implementations.  They are useful for budget-matched regression
-tests and can be replaced by external adapters later.
-"""
+"""Compare OLH-KG variants with lightweight and real BoTorch baselines."""
 
 from __future__ import annotations
 
@@ -22,9 +16,22 @@ sys.path.insert(0, str(ROOT))
 
 from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
 from baselines.baseline_algorithms import BaselineConfig, SequentialBaseline  # noqa: E402
+from baselines.botorch_adapters import (  # noqa: E402
+    BoTorchBaseline,
+    BoTorchBaselineConfig,
+    fallback_method,
+    is_botorch_available,
+)
 from benchmark_quality import json_safe, nested_get, parse_csv, parse_weights, write_csv  # noqa: E402
 from problems.rzdt import make_problem  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
+
+
+BOTORCH_ALIASES = {
+    "turbo": "botorch_turbo",
+    "scbo": "botorch_scbo",
+    "saasbo": "botorch_saasbo",
+}
 
 
 def finite(values):
@@ -86,6 +93,9 @@ def row_from_result(variant, seed, args, result):
         "wall_time_sec": float(result["total_time_sec"]),
         "n_simulations": int(result["n_simulations"]),
         "n_distinct_solutions": int(result["n_distinct_solutions"]),
+        "backend": result.get("backend", "lite"),
+        "botorch_fit_failures": int(result.get("botorch_fit_failures", 0)),
+        "botorch_candidate_failures": int(result.get("botorch_candidate_failures", 0)),
     }
 
 
@@ -115,6 +125,51 @@ def run_olhkg(args, seed, use_sc):
 
 def run_baseline(args, seed, method):
     problem = make_wrapped_problem(args)
+    method = BOTORCH_ALIASES.get(method, method)
+    if method.startswith("botorch_"):
+        if not is_botorch_available():
+            if args.botorch_fallback == "error":
+                raise RuntimeError(
+                    f"{method} requested but BoTorch is not importable; "
+                    "install botorch/gpytorch or use --botorch_fallback lite"
+                )
+            lite_method = fallback_method(method)
+            config = BaselineConfig(
+                N=args.N,
+                n0=args.n0,
+                seed=seed,
+                method=lite_method,
+                batch_candidates=args.baseline_batch_candidates,
+                tr_radius_init=args.tr_radius_init,
+            )
+            result = SequentialBaseline(problem, config).run()
+            result["method"] = method
+            result["backend"] = f"fallback:{lite_method}"
+            return row_from_result(method, seed, args, result)
+        config = BoTorchBaselineConfig(
+            N=args.N,
+            n0=args.n0,
+            seed=seed,
+            method=method,
+            batch_candidates=args.baseline_batch_candidates,
+            tr_radius_init=args.tr_radius_init,
+            tr_radius_min=args.tr_radius_min,
+            tr_radius_max=args.tr_radius_max,
+            tr_success_tolerance=args.tr_success_tolerance,
+            tr_failure_tolerance=args.tr_failure_tolerance,
+            raw_samples=args.botorch_raw_samples,
+            num_restarts=args.botorch_num_restarts,
+            maxiter=args.botorch_maxiter,
+            timeout_sec=args.botorch_timeout_sec,
+            saas_warmup_steps=args.saas_warmup_steps,
+            saas_num_samples=args.saas_num_samples,
+            saas_thinning=args.saas_thinning,
+            saas_max_tree_depth=args.saas_max_tree_depth,
+            saas_mc_samples=args.saas_mc_samples,
+            saas_constrained=not args.saas_unconstrained,
+        )
+        result = BoTorchBaseline(problem, config).run()
+        return row_from_result(method, seed, args, result)
     config = BaselineConfig(
         N=args.N,
         n0=args.n0,
@@ -260,6 +315,21 @@ def main():
     parser.add_argument("--baselines", default="sobol,random,turbo_lite,scbo_lite")
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
     parser.add_argument("--tr_radius_init", type=float, default=0.35)
+    parser.add_argument("--tr_radius_min", type=float, default=0.04)
+    parser.add_argument("--tr_radius_max", type=float, default=0.8)
+    parser.add_argument("--tr_success_tolerance", type=int, default=3)
+    parser.add_argument("--tr_failure_tolerance", type=int, default=5)
+    parser.add_argument("--botorch_fallback", choices=("lite", "error"), default="lite")
+    parser.add_argument("--botorch_raw_samples", type=int, default=64)
+    parser.add_argument("--botorch_num_restarts", type=int, default=5)
+    parser.add_argument("--botorch_maxiter", type=int, default=50)
+    parser.add_argument("--botorch_timeout_sec", type=float, default=None)
+    parser.add_argument("--saas_warmup_steps", type=int, default=16)
+    parser.add_argument("--saas_num_samples", type=int, default=16)
+    parser.add_argument("--saas_thinning", type=int, default=1)
+    parser.add_argument("--saas_max_tree_depth", type=int, default=4)
+    parser.add_argument("--saas_mc_samples", type=int, default=64)
+    parser.add_argument("--saas_unconstrained", action="store_true")
     parser.add_argument("--include_olhkg", action="store_true", default=True)
     parser.add_argument("--include_sc", action="store_true", default=True)
     parser.add_argument("--seeds", default="")
