@@ -41,6 +41,16 @@ def random_candidates(problem, n, rng=None):
     return [problem.sample_random(rng) for _ in range(max(0, int(n)))]
 
 
+def structured_candidates(problem, n, rng=None):
+    """Problem-provided candidate anchors for structured synthetic domains."""
+    if n <= 0 or not hasattr(problem, "structured_candidates"):
+        return []
+    return [
+        tuple(int(v) for v in x)
+        for x in problem.structured_candidates(n=int(n), rng=rng)
+    ]
+
+
 def posterior_sample_candidates(
     problem,
     gpr_models,

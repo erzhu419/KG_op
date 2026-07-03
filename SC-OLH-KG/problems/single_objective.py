@@ -78,6 +78,21 @@ class ScalarizedProblem:
         return [tuple([x1] + [lo[j] for j in range(1, self.d)])
                 for x1 in range(lo[0], hi[0] + 1)]
 
+    def structured_candidates(self, n=10, rng=None):
+        if hasattr(self.base, "structured_candidates"):
+            return self.base.structured_candidates(n=n, rng=rng)
+        return []
+
+    def initial_samples(self, n=5, rng=None):
+        if hasattr(self.base, "initial_samples"):
+            return self.base.initial_samples(n=n, rng=rng)
+        return []
+
+    def hvd_residual_variance_cap(self, output_index=0):
+        if hasattr(self.base, "hvd_residual_variance_cap"):
+            return self.base.hvd_residual_variance_cap(output_index=output_index)
+        return None
+
     def true_best_feasible(self):
         best_x = None
         best_y = np.inf

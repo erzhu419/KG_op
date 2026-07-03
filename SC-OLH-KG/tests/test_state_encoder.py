@@ -2,6 +2,8 @@ import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -42,6 +44,23 @@ class StateEncoderTests(unittest.TestCase):
         self.assertTrue(10 <= best_x[0] <= 40)
         tail_mean = sum(best_x[1:]) / max(len(best_x) - 1, 1)
         self.assertTrue(55 <= tail_mean <= 85)
+
+    def test_state_policy_structured_candidates_cover_low_spread_pocket(self):
+        base = StatePolicyRZDT1(d=5, L=100, sigma=0.04)
+        candidates = base.structured_candidates(n=42, rng=np.random.default_rng(0))
+        self.assertIn((25, 70, 70, 70, 70), candidates)
+        self.assertNotEqual(
+            base.risk_class((25, 70, 70, 70, 70)),
+            base.risk_class((25, 100, 100, 50, 30)),
+        )
+
+    def test_state_policy_initial_samples_cover_structure_without_true_best(self):
+        base = StatePolicyRZDT1(d=5, L=100, sigma=0.04)
+        samples = base.initial_samples(n=5)
+        self.assertIn((0, 70, 70, 70, 70), samples)
+        self.assertIn((50, 70, 70, 70, 70), samples)
+        self.assertNotIn((24, 70, 70, 70, 70), samples)
+        self.assertNotIn((25, 70, 70, 70, 70), samples)
 
 
 if __name__ == "__main__":

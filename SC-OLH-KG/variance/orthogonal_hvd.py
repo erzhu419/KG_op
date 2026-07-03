@@ -108,6 +108,18 @@ class OrthogonalHVD:
             rows.append(self._features(x, problem))
         return np.vstack(rows) if rows else np.empty((0, 1), dtype=float)
 
+    def _residual_variance_cap(self, i, problem=None):
+        problem = problem or self._last_problem
+        if problem is None or not hasattr(problem, "hvd_residual_variance_cap"):
+            return None
+        cap = problem.hvd_residual_variance_cap(output_index=int(i))
+        if cap is None:
+            return None
+        cap = float(cap)
+        if not np.isfinite(cap) or cap <= 0.0:
+            return None
+        return max(cap, self.floor)
+
     def _orthogonal_active(self, i):
         """Whether smooth orthogonal variance is allowed for this output.
 
@@ -176,11 +188,13 @@ class OrthogonalHVD:
         if not recs:
             self.global_var[i] = max(self.global_var.get(i, 0.01), self.floor)
             return
-        vals = np.array([max(v, self.floor) for _, v in recs], dtype=float)
+        raw_vals = np.array([max(v, self.floor) for _, v in recs], dtype=float)
+        cap = self._residual_variance_cap(i, problem)
+        vals = np.minimum(raw_vals, cap) if cap is not None else raw_vals
         self.global_var[i] = float(max(np.mean(vals), self.floor))
 
         by_class = defaultdict(list)
-        for x, v in recs:
+        for (x, _), v in zip(recs, vals):
             by_class[self.risk_class(x, problem)].append(max(v, self.floor))
         self.class_var[i] = {}
         self.class_count[i] = {}
@@ -439,4 +453,8 @@ class OrthogonalHVD:
             "activation_min_records": int(self.config.activation_min_records),
             "certification_kappa": float(self.config.certification_kappa),
             "certification_uses_class_floor": bool(self.mode in ("orthogonal", "factor")),
+            "residual_variance_cap": {
+                str(i): self._residual_variance_cap(i)
+                for i in range(self.n_outputs)
+            },
         }

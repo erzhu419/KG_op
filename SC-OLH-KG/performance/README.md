@@ -85,9 +85,11 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_quality.py \
 ```
 
 `StatePolicyRZDT1` is a harder synthetic for policy-state occupancy structure.
-It is useful as a stress test, but not yet a default success criterion: at
-`N=20,n0=5` all current variants can miss feasible recommendations, while
-`N=30,n0=8` starts to separate pooled and orthogonal HVD behavior.
+It uses problem-provided structured initial samples/candidates and a nominal
+residual-variance cap so HVD does not confuse early mean-model bias with
+simulation noise.  At `N=20,n0=5`, orthogonal HVD should now recover feasible
+recommendations reliably; SC coupling remains a separate improvement target
+because the current gated coupling is usually neutral on this benchmark.
 
 HVD calibration diagnostic:
 

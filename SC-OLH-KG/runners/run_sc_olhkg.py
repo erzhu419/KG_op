@@ -23,6 +23,7 @@ def main():
     parser.add_argument("--n0", type=int, default=8)
     parser.add_argument("--K1", type=int, default=25)
     parser.add_argument("--K2", type=int, default=0)
+    parser.add_argument("--structured_candidate_count", type=int, default=-1)
     parser.add_argument("--variance_mode", default="orthogonal",
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
     parser.add_argument("--lambda_feas", type=float, default=0.25)
@@ -43,6 +44,7 @@ def main():
         n0=args.n0,
         K1=args.K1,
         K2=args.K2,
+        structured_candidate_count=args.structured_candidate_count,
         variance_mode=args.variance_mode,
         lambda_feas=args.lambda_feas,
         lambda_var=args.lambda_var,

@@ -8,7 +8,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from problems.rzdt import RegimeRZDT1  # noqa: E402
+from problems.rzdt import RegimeRZDT1, StatePolicyRZDT1  # noqa: E402
 from variance.orthogonal_hvd import OrthogonalHVD  # noqa: E402
 
 
@@ -79,6 +79,15 @@ class OrthogonalHVDTests(unittest.TestCase):
             decomposition["class_variance"],
         )
         self.assertTrue(model.diagnostics()["certification_uses_class_floor"])
+
+    def test_problem_residual_cap_limits_single_large_residual(self):
+        problem = StatePolicyRZDT1(d=5, L=100, sigma=0.04)
+        x = (25, 70, 70, 70, 70)
+        model = OrthogonalHVD(mode="class", n_outputs=1, shrinkage_kappa=0.0)
+        model.fit_from_residuals([x], [10.0], 0, problem)
+        cap = problem.hvd_residual_variance_cap(0)
+        self.assertLessEqual(model.predict_variance(0, x, problem), cap)
+        self.assertEqual(model.diagnostics()["residual_variance_cap"]["0"], cap)
 
 
 if __name__ == "__main__":

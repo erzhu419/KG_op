@@ -249,13 +249,62 @@ class StatePolicyRZDT1(TestProblem):
             0.35 + 1.4 * q_gap + 0.8 * np.sin(np.pi * u) ** 2 + 0.8 * spread
         )
 
+    def hvd_residual_variance_cap(self, output_index=0):
+        del output_index
+        return float((2.5 * self.sigma_level) ** 2)
+
     def risk_class(self, x):
-        _, q, _ = self._policy_state(x)
+        _, q, spread = self._policy_state(x)
         if q < 0.45:
-            return 0
-        if q < 0.80:
-            return 1
-        return 2
+            q_bin = 0
+        elif q < 0.60:
+            q_bin = 1
+        elif q < 0.80:
+            q_bin = 2
+        else:
+            q_bin = 3
+        if spread < 0.08:
+            spread_bin = 0
+        elif spread < 0.22:
+            spread_bin = 1
+        else:
+            spread_bin = 2
+        return 10 * q_bin + spread_bin
+
+    def structured_candidates(self, n=10, rng=None):
+        rng = rng or np.random.default_rng()
+        lo, hi = self.int_bounds()
+        u_anchors = np.array([0, 10, 25, 40, 60, 80, 100], dtype=int)
+        q_anchors = np.array([0, 50, 60, 70, 80, 100], dtype=int)
+        rows = []
+        for u in u_anchors:
+            for q in q_anchors:
+                x = [int(np.clip(u, lo[0], hi[0]))]
+                x.extend([int(np.clip(q, lo[j], hi[j])) for j in range(1, self.d)])
+                rows.append(tuple(x))
+        order = rng.permutation(len(rows))
+        return [rows[int(idx)] for idx in order[: max(0, int(n))]]
+
+    def initial_samples(self, n=5, rng=None):
+        del rng
+        anchors = [
+            (0, 70, 70, 70, 70),
+            (50, 70, 70, 70, 70),
+            (25, 50, 50, 50, 50),
+            (25, 90, 90, 90, 90),
+            (75, 70, 70, 70, 70),
+            (0, 100, 100, 100, 100),
+            (100, 0, 0, 0, 0),
+        ]
+        lo, hi = self.int_bounds()
+        rows = []
+        for anchor in anchors[: max(0, int(n))]:
+            x = tuple(
+                int(np.clip(anchor[j] if j < len(anchor) else anchor[-1], lo[j], hi[j]))
+                for j in range(self.d)
+            )
+            rows.append(x)
+        return rows
 
     def all_axis_solutions(self):
         lo, hi = self.int_bounds()

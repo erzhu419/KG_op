@@ -14,6 +14,7 @@ from core.candidates import (
     latin_hypercube_candidates,
     posterior_sample_candidates,
     random_candidates,
+    structured_candidates,
     unique_candidates,
 )
 from core.gpr import ParametricGPR
@@ -33,6 +34,7 @@ class SingleOLHKGConfig:
     K2: int = 0
     posterior_pool_size: int = 300
     posterior_keep: int = 15
+    structured_candidate_count: int = -1
     n_thr: int = 5
     lambda_i: float = 0.1
     prior_var: float = 10.0
@@ -101,6 +103,12 @@ class SingleOLHKGAlgorithm:
 
     def _initial_samples(self):
         samples = []
+        if hasattr(self.problem, "initial_samples"):
+            samples.extend(self.problem.initial_samples(
+                n=self.config.n0,
+                rng=self.rng,
+            ))
+            samples = unique_candidates(samples)
         for x in boundary_solutions(self.problem):
             if len(samples) >= self.config.n0:
                 break
@@ -147,6 +155,12 @@ class SingleOLHKGAlgorithm:
         candidates = []
         candidates.extend(latin_hypercube_candidates(
             self.problem, self.config.K1, self.rng))
+        if hasattr(self.problem, "structured_candidates"):
+            n_structured = int(self.config.structured_candidate_count)
+            if n_structured < 0:
+                n_structured = max(5, self.config.K1 // 2)
+            candidates.extend(structured_candidates(
+                self.problem, n_structured, self.rng))
         candidates.extend(random_candidates(
             self.problem, max(5, self.config.K1 // 5), self.rng))
         use_constraint = iteration > self.config.n_thr

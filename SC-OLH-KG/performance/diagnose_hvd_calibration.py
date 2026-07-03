@@ -91,6 +91,7 @@ def build_config(args):
         K2=args.K2,
         posterior_pool_size=args.posterior_pool_size,
         posterior_keep=args.posterior_keep,
+        structured_candidate_count=args.structured_candidate_count,
         n_thr=args.n_thr,
         variance_mode=args.variance_mode,
         lambda_feas=args.lambda_feas,
@@ -265,6 +266,7 @@ def run_diagnostic(args):
             "n0": args.n0,
             "K1": args.K1,
             "K2": args.K2,
+            "structured_candidate_count": args.structured_candidate_count,
             "use_state_coupling": args.use_state_coupling,
             "use_state_basis": args.use_state_basis,
             "lambda_feas": args.lambda_feas,
@@ -331,6 +333,7 @@ def main():
     parser.add_argument("--K2", type=int, default=1)
     parser.add_argument("--posterior_pool_size", type=int, default=300)
     parser.add_argument("--posterior_keep", type=int, default=15)
+    parser.add_argument("--structured_candidate_count", type=int, default=-1)
     parser.add_argument("--n_thr", type=int, default=5)
     parser.add_argument("--eval_pool_size", type=int, default=500)
     parser.add_argument("--variance_mode", default="orthogonal",
