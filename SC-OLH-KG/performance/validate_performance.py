@@ -451,7 +451,7 @@ def main():
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
-    parser.add_argument("--lambda_coupling", type=float, default=0.15)
+    parser.add_argument("--lambda_coupling", type=float, default=0.05)
     parser.add_argument("--max_wall_slowdown", "--max_wall_ratio", dest="max_wall_slowdown",
                         type=float, default=1.25)
     parser.add_argument("--max_regret_delta", type=float, default=0.0)

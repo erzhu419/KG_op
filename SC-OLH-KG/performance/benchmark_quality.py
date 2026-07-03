@@ -412,7 +412,7 @@ def main():
     parser.add_argument("--eval_pool_size", type=int, default=500)
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
-    parser.add_argument("--lambda_coupling", type=float, default=0.15)
+    parser.add_argument("--lambda_coupling", type=float, default=0.05)
     parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
     parser.add_argument("--sc_modes", default="orthogonal")

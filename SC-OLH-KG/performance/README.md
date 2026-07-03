@@ -21,6 +21,8 @@ The default SC runner uses the state encoder for the coupling acquisition
 score while keeping the stable raw quadratic GPR mean basis.  Pass
 `--use_state_basis` only when explicitly testing occupancy features inside the
 mean model; this is more fragile in very small-budget runs.
+The default `--lambda_coupling` is intentionally light (`0.05`) so coverage
+guidance cannot swamp objective KG and feasibility learning.
 
 Workflow:
 

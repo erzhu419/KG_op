@@ -265,6 +265,8 @@ class SingleOLHKGAlgorithm:
             row["kg_feas_selected"] = float(score["kg_feas"][selected_idx])
             row["kg_var_selected"] = float(score["kg_var"][selected_idx])
             row["kg_coupling_selected"] = float(score["kg_coupling"][selected_idx])
+            row["kg_coupling_raw_selected"] = float(
+                score["kg_coupling_raw"][selected_idx])
 
             x_arr = np.asarray(x_selected, dtype=int)
             mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]

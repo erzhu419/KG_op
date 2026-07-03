@@ -46,20 +46,30 @@ class SyntheticPolicyStateEncoder:
         return float(np.exp(-0.5 * (dist / max(self.lengthscale, 1e-8)) ** 2))
 
     def propagation_scores(self, candidates, observed):
-        """How much one sample could propagate through occupancy similarity."""
+        """Occupancy coverage score for state-coupled exploration.
+
+        The early prototype rewarded similarity to already observed states,
+        which made the coupling term largely redundant.  SC exploration should
+        instead favor candidates whose occupancy proxy is under-covered by the
+        current sample set.
+        """
         if not candidates:
             return np.zeros(0, dtype=float)
         if not observed:
             return np.ones(len(candidates), dtype=float)
-        obs = [tuple(o) for o in observed]
-        scores = []
-        for x in candidates:
-            vals = [self.kernel(x, y) for y in obs]
-            scores.append(float(np.mean(vals) + np.max(vals)))
-        scores = np.asarray(scores, dtype=float)
-        if np.max(scores) > 0:
-            scores = scores / np.max(scores)
-        return scores
+        cand = np.vstack([self.occupancy(x) for x in candidates])
+        obs = np.vstack([self.occupancy(tuple(o)) for o in observed])
+        diff = cand[:, None, :] - obs[None, :, :]
+        dist2 = np.sum(diff ** 2, axis=2)
+        scale = max(self.lengthscale, 1e-8) ** 2
+        similarity = np.exp(-0.5 * dist2 / scale)
+        max_similarity = np.max(similarity, axis=1)
+        scores = 1.0 - np.clip(max_similarity, 0.0, 1.0)
+        hi = float(np.max(scores))
+        lo = float(np.min(scores))
+        if hi - lo <= 1e-14:
+            return np.zeros_like(scores)
+        return (scores - lo) / (hi - lo)
 
 
 class StateCoupledFeatureMap:

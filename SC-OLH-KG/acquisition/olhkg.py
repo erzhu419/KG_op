@@ -104,9 +104,11 @@ class OLHKGAcquisition:
             return {
                 "total": np.zeros(0, dtype=float),
                 "kg_obj": np.zeros(0, dtype=float),
+                "kg_obj_scaled": np.zeros(0, dtype=float),
                 "kg_feas": np.zeros(0, dtype=float),
                 "kg_var": np.zeros(0, dtype=float),
                 "kg_coupling": np.zeros(0, dtype=float),
+                "kg_coupling_raw": np.zeros(0, dtype=float),
                 "feasibility_details": [],
             }
         if hasattr(variance_model, "predict_variance_many"):
@@ -120,13 +122,18 @@ class OLHKGAcquisition:
         kg_feas, feas_details = self.feasibility_scores(
             candidates, con_gpr, variance_model, problem)
         kg_var = self.variance_scores(candidates, variance_model, problem, 1)
-        kg_coupling = self.coupling_scores(candidates, observed or [])
+        kg_coupling_raw = self.coupling_scores(candidates, observed or [])
         aux_active = (
             abs(self.lambda_feas) > 0.0
             or abs(self.lambda_var) > 0.0
             or abs(self.lambda_coupling) > 0.0
         )
         kg_obj_scaled = safe_normalize(kg_obj) if aux_active else kg_obj
+        if abs(self.lambda_coupling) > 0.0:
+            relevance = safe_normalize(kg_obj_scaled + kg_feas + 0.5 * kg_var)
+            kg_coupling = kg_coupling_raw * relevance
+        else:
+            kg_coupling = kg_coupling_raw
         total = (
             kg_obj_scaled
             + self.lambda_feas * kg_feas
@@ -140,5 +147,6 @@ class OLHKGAcquisition:
             "kg_feas": kg_feas,
             "kg_var": kg_var,
             "kg_coupling": kg_coupling,
+            "kg_coupling_raw": kg_coupling_raw,
             "feasibility_details": feas_details,
         }
