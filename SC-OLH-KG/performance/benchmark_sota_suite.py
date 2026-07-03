@@ -50,6 +50,8 @@ def _problem_args(args, problem):
         "recommendation_safety_z": args.recommendation_safety_z,
         "recommendation_noise_floor_scale": args.recommendation_noise_floor_scale,
         "recommendation_infeasible_penalty": args.recommendation_infeasible_penalty,
+        "disable_recommendation_calibration": args.disable_recommendation_calibration,
+        "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
         "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
         "baselines": args.baselines,
         "baseline_batch_candidates": args.baseline_batch_candidates,
@@ -175,6 +177,8 @@ def main():
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
+    parser.add_argument("--disable_recommendation_calibration", action="store_true")
+    parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument(
         "--baselines",
@@ -190,7 +194,7 @@ def main():
     parser.add_argument("--botorch_raw_samples", type=int, default=64)
     parser.add_argument("--botorch_num_restarts", type=int, default=5)
     parser.add_argument("--botorch_maxiter", type=int, default=50)
-    parser.add_argument("--botorch_timeout_sec", type=float, default=None)
+    parser.add_argument("--botorch_timeout_sec", type=float, default=30.0)
     parser.add_argument("--saas_warmup_steps", type=int, default=16)
     parser.add_argument("--saas_num_samples", type=int, default=16)
     parser.add_argument("--saas_thinning", type=int, default=1)

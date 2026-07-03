@@ -148,6 +148,40 @@ class RZDT2(TestProblem):
         return self.sigma_level * (0.5 + 2.5 * np.sin(np.pi * u) ** 2)
 
 
+class HyperbolicAxisFeatureMap:
+    """Feature map for RZDT5-style fronts with `g(x_tail) / (x1 + 1)`.
+
+    The default quadratic basis cannot represent the steep reciprocal term near
+    the low-risk boundary, which makes the posterior overvalue x1 around 25.
+    These features are still problem-structure only; they do not inspect true
+    objective values or the feasible set.
+    """
+
+    def __init__(self, problem):
+        self.problem = problem
+        self.feature_dim = 2 * int(problem.d) + 4
+
+    def features(self, x):
+        z = np.asarray(self.problem.normalize(x), dtype=float)
+        raw = np.asarray(x, dtype=float)
+        lo, hi = self.problem.int_bounds()
+        denom = max(float(raw[0] - lo[0] + 1.0), 1.0)
+        inv = 1.0 / denom
+        tail_sum = float(np.sum(z[1:])) if len(z) > 1 else 0.0
+        x0_span = max(float(hi[0] - lo[0]), 1.0)
+        x0_log = np.log1p(max(float(raw[0] - lo[0]), 0.0)) / np.log1p(x0_span)
+        return np.concatenate([
+            z,
+            z ** 2,
+            np.array([
+                inv,
+                tail_sum * inv,
+                (1.0 + tail_sum) * inv,
+                x0_log,
+            ], dtype=float),
+        ])
+
+
 class RZDT5RR(TestProblem):
     """Enlarged-grid hyperbolic front from the current repo."""
 
@@ -184,6 +218,17 @@ class RZDT5RR(TestProblem):
             return self.sigma_level
         u = float(self.normalize(x)[0])
         return self.sigma_level * (0.3 + 2.0 * u ** 2)
+
+    def surrogate_basis_map(self):
+        return HyperbolicAxisFeatureMap(self)
+
+    def recommendation_refinement_candidates(self):
+        lo, hi = self.int_bounds()
+        upper = min(int(hi[0]), int(lo[0]) + 30)
+        return [
+            tuple([x1] + [int(lo[j]) for j in range(1, self.d)])
+            for x1 in range(int(lo[0]), upper + 1)
+        ]
 
 
 class PaperRZDT1(RZDT1):

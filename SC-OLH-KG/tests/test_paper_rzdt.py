@@ -2,6 +2,8 @@ import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -32,6 +34,41 @@ class PaperRZDTTests(unittest.TestCase):
         self.assertTrue(SingleOLHKGConfig().recommendation_axis_oracle)
         self.assertTrue(hasattr(problem, "all_axis_solutions"))
         self.assertFalse(SingleOLHKGConfig(recommendation_axis_oracle=False).recommendation_axis_oracle)
+
+    def test_paper_rzdt5_exposes_hyperbolic_surrogate_basis(self):
+        problem = ScalarizedProblem(make_problem("PaperRZDT5_RR", d=5, L=100, sigma=0.04))
+        basis = problem.surrogate_basis_map()
+        self.assertIsNotNone(basis)
+        refinement = problem.recommendation_refinement_candidates()
+        self.assertIn((9, 0, 0, 0, 0), refinement)
+        self.assertIn((10, 0, 0, 0, 0), refinement)
+        train = [
+            (0, 0, 0, 0, 0),
+            (5, 0, 0, 0, 0),
+            (9, 0, 0, 0, 0),
+            (10, 0, 0, 0, 0),
+            (14, 0, 0, 0, 0),
+            (25, 0, 0, 0, 0),
+            (50, 0, 0, 0, 0),
+            (100, 0, 0, 0, 0),
+            (9, 10, 0, 0, 0),
+            (25, 10, 0, 0, 0),
+            (9, 0, 10, 0, 0),
+            (25, 0, 10, 0, 0),
+            (9, 0, 0, 10, 0),
+            (25, 0, 0, 10, 0),
+            (9, 0, 0, 0, 10),
+        ]
+        Phi = np.vstack([
+            np.concatenate([[1.0], basis.features(x)])
+            for x in train
+        ])
+        y = np.array([problem.true_objective(x) for x in train], dtype=float)
+        beta = np.linalg.lstsq(Phi, y, rcond=None)[0]
+        pred_9 = float(np.concatenate([[1.0], basis.features((9, 0, 0, 0, 0))]) @ beta)
+        pred_25 = float(np.concatenate([[1.0], basis.features((25, 0, 0, 0, 0))]) @ beta)
+        self.assertLess(pred_9, pred_25)
+        self.assertAlmostEqual(pred_9, problem.true_objective((9, 0, 0, 0, 0)), places=8)
 
 
 if __name__ == "__main__":

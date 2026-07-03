@@ -9,7 +9,9 @@ functions, and `optimize_acqf` for budget-matched SOTA comparisons.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from contextlib import contextmanager
 import math
+import signal
 import time
 import warnings
 
@@ -62,6 +64,34 @@ def is_botorch_available():
     """Return whether the real BoTorch backend can be used."""
 
     return BOTORCH_IMPORT_ERROR is None
+
+
+class _CandidateTimeout(TimeoutError):
+    pass
+
+
+@contextmanager
+def _wall_time_limit(seconds):
+    """Raise during long BoTorch candidate generation on POSIX platforms."""
+    if seconds is None or float(seconds) <= 0.0 or not hasattr(signal, "SIGALRM"):
+        yield
+        return
+    old_handler = signal.getsignal(signal.SIGALRM)
+    old_timer = signal.setitimer(signal.ITIMER_REAL, 0.0)
+
+    def _raise_timeout(signum, frame):
+        del signum, frame
+        raise _CandidateTimeout(f"BoTorch candidate timed out after {seconds}s")
+
+    signal.signal(signal.SIGALRM, _raise_timeout)
+    signal.setitimer(signal.ITIMER_REAL, float(seconds))
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0.0)
+        signal.signal(signal.SIGALRM, old_handler)
+        if old_timer[0] > 0.0:
+            signal.setitimer(signal.ITIMER_REAL, old_timer[0], old_timer[1])
 
 
 @dataclass
@@ -359,43 +389,44 @@ class BoTorchBaseline:
             )
 
     def _saas_candidate(self):
-        train_X, train_obj, train_con = self._training_tensors()
-        sampler = SobolQMCNormalSampler(
-            sample_shape=torch.Size([max(8, int(self.config.saas_mc_samples))]),
-            seed=int(self.rng.integers(1, 2**31 - 1)),
-        )
         try:
-            if self.config.saas_constrained:
-                obj_model = self._fit_saas_single(train_X, train_obj)
-                con_model = self._fit_saas_single(train_X, train_con)
-                model = ModelListGP(obj_model, con_model)
-                feasible = train_con.squeeze(-1) <= 0.0
-                constraints = [lambda samples: samples[..., 1]]
-                if bool(feasible.any()):
-                    best_f = train_obj.squeeze(-1)[feasible].max()
-                    objective = GenericMCObjective(
-                        lambda samples, X=None: samples[..., 0])
+            with _wall_time_limit(self.config.timeout_sec):
+                train_X, train_obj, train_con = self._training_tensors()
+                sampler = SobolQMCNormalSampler(
+                    sample_shape=torch.Size([max(8, int(self.config.saas_mc_samples))]),
+                    seed=int(self.rng.integers(1, 2**31 - 1)),
+                )
+                if self.config.saas_constrained:
+                    obj_model = self._fit_saas_single(train_X, train_obj)
+                    con_model = self._fit_saas_single(train_X, train_con)
+                    model = ModelListGP(obj_model, con_model)
+                    feasible = train_con.squeeze(-1) <= 0.0
+                    constraints = [lambda samples: samples[..., 1]]
+                    if bool(feasible.any()):
+                        best_f = train_obj.squeeze(-1)[feasible].max()
+                        objective = GenericMCObjective(
+                            lambda samples, X=None: samples[..., 0])
+                        acqf = qLogExpectedImprovement(
+                            model=model,
+                            best_f=best_f,
+                            sampler=sampler,
+                            objective=objective,
+                            constraints=constraints,
+                        )
+                    else:
+                        acqf = qLogProbabilityOfFeasibility(
+                            model=model,
+                            constraints=constraints,
+                            sampler=sampler,
+                        )
+                else:
+                    model = self._fit_saas_single(train_X, train_obj)
                     acqf = qLogExpectedImprovement(
                         model=model,
-                        best_f=best_f,
-                        sampler=sampler,
-                        objective=objective,
-                        constraints=constraints,
-                    )
-                else:
-                    acqf = qLogProbabilityOfFeasibility(
-                        model=model,
-                        constraints=constraints,
+                        best_f=train_obj.max(),
                         sampler=sampler,
                     )
-            else:
-                model = self._fit_saas_single(train_X, train_obj)
-                acqf = qLogExpectedImprovement(
-                    model=model,
-                    best_f=train_obj.max(),
-                    sampler=sampler,
-                )
-            return self._optimize_acqf(acqf, self._global_bounds())
+                return self._optimize_acqf(acqf, self._global_bounds())
         except Exception:
             self._last_fit_failures += 1
             bounds = self._global_bounds()

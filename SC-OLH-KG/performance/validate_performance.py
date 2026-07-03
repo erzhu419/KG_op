@@ -201,6 +201,8 @@ def run_single_once(args, seed, use_state_coupling=False):
         coupling_safety_z=args.coupling_safety_z,
         coupling_gate_temperature=args.coupling_gate_temperature,
         recommendation_infeasible_penalty=args.recommendation_infeasible_penalty,
+        recommendation_calibration=not args.disable_recommendation_calibration,
+        recommendation_calibration_ridge=args.recommendation_calibration_ridge,
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
         seed=seed,
@@ -468,6 +470,8 @@ def main():
     parser.add_argument("--coupling_safety_z", type=float, default=0.5)
     parser.add_argument("--coupling_gate_temperature", type=float, default=0.25)
     parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
+    parser.add_argument("--disable_recommendation_calibration", action="store_true")
+    parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--max_wall_slowdown", "--max_wall_ratio", dest="max_wall_slowdown",
                         type=float, default=1.25)
     parser.add_argument("--max_regret_delta", type=float, default=0.0)

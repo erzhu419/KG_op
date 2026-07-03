@@ -103,6 +103,16 @@ class ScalarizedProblem:
             return self.base.hvd_residual_variance_cap(output_index=output_index)
         return None
 
+    def surrogate_basis_map(self):
+        if hasattr(self.base, "surrogate_basis_map"):
+            return self.base.surrogate_basis_map()
+        return None
+
+    def recommendation_refinement_candidates(self):
+        if hasattr(self.base, "recommendation_refinement_candidates"):
+            return self.base.recommendation_refinement_candidates()
+        return []
+
     def true_best_feasible(self):
         best_x = None
         best_y = np.inf

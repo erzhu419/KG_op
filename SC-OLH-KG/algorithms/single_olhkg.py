@@ -54,6 +54,9 @@ class SingleOLHKGConfig:
     recommendation_safety_z: float = 0.5
     recommendation_noise_floor_scale: float = 1.0
     recommendation_infeasible_penalty: float = 5.0
+    recommendation_calibration: bool = True
+    recommendation_calibration_ridge: float = 1e-6
+    recommendation_calibration_min_obs: int = 8
     recommendation_axis_oracle: bool = True
     recommendation_axis_candidate_count: int = -1
     use_state_coupling: bool = False
@@ -176,6 +179,11 @@ class SingleOLHKGAlgorithm:
             return n_axis
         return self._axis_candidate_count()
 
+    def _recommendation_refinement_candidates(self):
+        if not hasattr(self.problem, "recommendation_refinement_candidates"):
+            return []
+        return unique_candidates(self.problem.recommendation_refinement_candidates())
+
     def _generate_candidates(self, iteration):
         candidates = []
         sources = {}
@@ -243,6 +251,8 @@ class SingleOLHKGAlgorithm:
                 pool.add(tuple(x))
             for x in axis_candidates(self.problem, n_axis, self.rng):
                 pool.add(tuple(x))
+        for x in self._recommendation_refinement_candidates():
+            pool.add(tuple(x))
         return list(pool)
 
     def _observed_nominal_incumbent(self):
@@ -266,6 +276,53 @@ class SingleOLHKGAlgorithm:
             "empirical_objective": float(obj),
             "empirical_chance_margin": float(margin),
         }
+
+    def _calibrated_recommendation_index(self, pool, robust_margins):
+        if not self.config.recommendation_calibration:
+            return None
+        if not hasattr(self.problem, "surrogate_basis_map"):
+            return None
+        basis = self.problem.surrogate_basis_map()
+        if basis is None:
+            return None
+        refinement = self._recommendation_refinement_candidates()
+        if not refinement:
+            return None
+        if len(self.observations) < int(self.config.recommendation_calibration_min_obs):
+            return None
+
+        train_x = []
+        train_y = []
+        for x, ys in self.observations.items():
+            train_x.append(tuple(int(v) for v in x))
+            train_y.append(float(np.mean(np.asarray(ys, dtype=float), axis=0)[0]))
+        Phi = np.vstack([
+            np.concatenate([[1.0], np.asarray(basis.features(x), dtype=float)])
+            for x in train_x
+        ])
+        y = np.asarray(train_y, dtype=float)
+        ridge = max(float(self.config.recommendation_calibration_ridge), 0.0)
+        penalty = ridge * np.eye(Phi.shape[1], dtype=float)
+        penalty[0, 0] = 0.0
+        try:
+            beta = np.linalg.solve(Phi.T @ Phi + penalty, Phi.T @ y)
+        except np.linalg.LinAlgError:
+            beta = np.linalg.lstsq(Phi.T @ Phi + penalty, Phi.T @ y, rcond=None)[0]
+
+        pool_index = {tuple(int(v) for v in x): i for i, x in enumerate(pool)}
+        candidate_indices = [
+            pool_index[x]
+            for x in refinement
+            if x in pool_index and robust_margins[pool_index[x]] <= 0.0
+        ]
+        if not candidate_indices:
+            return None
+        Phi_cand = np.vstack([
+            np.concatenate([[1.0], np.asarray(basis.features(pool[i]), dtype=float)])
+            for i in candidate_indices
+        ])
+        pred = Phi_cand @ beta
+        return int(candidate_indices[int(np.argmin(pred))])
 
     def _solve_posterior_recommendation(self):
         pool = self._recommendation_pool()
@@ -318,6 +375,11 @@ class SingleOLHKGAlgorithm:
                     observed_incumbent_rejected = True
             except ValueError:
                 pass
+        calibrated_recommendation_used = False
+        calibrated_idx = self._calibrated_recommendation_index(pool, robust_margins)
+        if calibrated_idx is not None:
+            local = calibrated_idx
+            calibrated_recommendation_used = True
         x_best = tuple(int(v) for v in pool[local])
         return x_best, {
             "posterior_mu_obj": float(mu_obj[local]),
@@ -330,6 +392,8 @@ class SingleOLHKGAlgorithm:
                 self.config.recommendation_noise_floor_scale),
             "recommendation_infeasible_penalty": float(
                 self.config.recommendation_infeasible_penalty),
+            "recommendation_calibration": bool(self.config.recommendation_calibration),
+            "calibrated_recommendation_used": bool(calibrated_recommendation_used),
             "observed_incumbent_used": bool(used_observed_incumbent),
             "observed_incumbent_rejected": bool(observed_incumbent_rejected),
             "observed_incumbent_objective": (
