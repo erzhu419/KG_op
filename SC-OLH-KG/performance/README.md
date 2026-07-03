@@ -17,6 +17,10 @@ Faster wall time alone is not a valid algorithmic improvement.
 SC feasibility is recorded by default, but is only a hard gate when
 `--require-sc-feasible` is passed because SC coupling is a separate improvement
 stage from the primary single-objective OLH-KG baseline.
+The default SC runner uses the state encoder for the coupling acquisition
+score while keeping the stable raw quadratic GPR mean basis.  Pass
+`--use_state_basis` only when explicitly testing occupancy features inside the
+mean model; this is more fragile in very small-budget runs.
 
 Workflow:
 

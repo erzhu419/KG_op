@@ -124,6 +124,7 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         lambda_var=args.lambda_var,
         lambda_coupling=args.lambda_coupling if use_state_coupling else 0.0,
         use_state_coupling=use_state_coupling,
+        use_state_basis=bool(use_state_coupling and args.use_state_basis),
         eval_pool_size=args.eval_pool_size,
         seed=seed,
     )
@@ -139,6 +140,7 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         "variant": variant,
         "variance_mode": variance_mode,
         "use_state_coupling": bool(use_state_coupling),
+        "use_state_basis": bool(use_state_coupling and args.use_state_basis),
         "seed": int(seed),
         "problem": args.problem,
         "N": int(args.N),
@@ -175,6 +177,7 @@ def summarize_variant(rows):
         "variant": rows[0]["variant"],
         "variance_mode": rows[0]["variance_mode"],
         "use_state_coupling": rows[0]["use_state_coupling"],
+        "use_state_basis": rows[0].get("use_state_basis", False),
         "n_runs": int(n),
         "true_feasible_rate": mean_bool(row["true_feasible"] for row in rows),
         "posterior_feasible_rate": mean_bool(row["posterior_feasible"] for row in rows),
@@ -296,6 +299,7 @@ def run_benchmark(args):
             "lambda_feas": args.lambda_feas,
             "lambda_var": args.lambda_var,
             "lambda_coupling": args.lambda_coupling,
+            "use_state_basis": args.use_state_basis,
             "seeds": seeds,
             "modes": parse_csv(args.modes),
             "sc_modes": parse_csv(args.sc_modes),
@@ -311,6 +315,7 @@ def flatten_summary(summary):
         "variant": summary["variant"],
         "variance_mode": summary["variance_mode"],
         "use_state_coupling": summary["use_state_coupling"],
+        "use_state_basis": summary.get("use_state_basis", False),
         "n_runs": summary["n_runs"],
         "true_feasible_rate": summary["true_feasible_rate"],
         "posterior_feasible_rate": summary["posterior_feasible_rate"],
@@ -408,9 +413,10 @@ def main():
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_coupling", type=float, default=0.15)
+    parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
     parser.add_argument("--sc_modes", default="orthogonal")
-    parser.add_argument("--baseline_variant", default="pooled")
+    parser.add_argument("--baseline_variant", default="orthogonal")
     parser.add_argument("--seeds", default="")
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=10)

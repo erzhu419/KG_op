@@ -97,6 +97,7 @@ def build_config(args):
         lambda_var=args.lambda_var,
         lambda_coupling=args.lambda_coupling if args.use_state_coupling else 0.0,
         use_state_coupling=args.use_state_coupling,
+        use_state_basis=args.use_state_basis,
         eval_pool_size=args.eval_pool_size,
         seed=args.seed,
     )
@@ -263,6 +264,7 @@ def run_diagnostic(args):
             "K1": args.K1,
             "K2": args.K2,
             "use_state_coupling": args.use_state_coupling,
+            "use_state_basis": args.use_state_basis,
             "lambda_feas": args.lambda_feas,
             "lambda_var": args.lambda_var,
             "lambda_coupling": args.lambda_coupling,
@@ -333,6 +335,7 @@ def main():
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_coupling", type=float, default=0.15)
     parser.add_argument("--use-state-coupling", action="store_true")
+    parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--seed", type=int, default=4)
     parser.add_argument("--boundary_window", type=float, default=0.08)
     parser.add_argument("--out_dir", default=str(ROOT / "profiles"))

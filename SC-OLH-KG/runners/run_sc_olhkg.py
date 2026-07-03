@@ -28,6 +28,7 @@ def main():
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_coupling", type=float, default=0.15)
+    parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--out", default=None)
@@ -45,6 +46,7 @@ def main():
         lambda_var=args.lambda_var,
         lambda_coupling=args.lambda_coupling,
         use_state_coupling=True,
+        use_state_basis=args.use_state_basis,
         seed=args.seed,
     )
     alg = SingleOLHKGAlgorithm(problem, config)

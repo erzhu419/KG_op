@@ -194,6 +194,7 @@ def run_single_once(args, seed, use_state_coupling=False):
         lambda_var=args.lambda_var,
         lambda_coupling=args.lambda_coupling if use_state_coupling else 0.0,
         use_state_coupling=use_state_coupling,
+        use_state_basis=bool(use_state_coupling and args.use_state_basis),
         seed=seed,
     )
     alg = SingleOLHKGAlgorithm(problem, config)
@@ -379,6 +380,7 @@ def build_validation(args):
             "max_regret_delta": args.max_regret_delta,
             "max_objective_delta": args.max_objective_delta,
             "require_sc_feasible": args.require_sc_feasible,
+            "use_state_basis": args.use_state_basis,
             "variance_mode": args.variance_mode,
             "candidate_problem": args.candidate_problem,
             "legacy_problem": args.legacy_problem,
@@ -455,6 +457,7 @@ def main():
     parser.add_argument("--max_regret_delta", type=float, default=0.0)
     parser.add_argument("--max_objective_delta", type=float, default=0.0)
     parser.add_argument("--require-sc-feasible", action="store_true")
+    parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--always-run-legacy", action="store_true")
     parser.add_argument("--promote-if-pass", action="store_true")
     parser.add_argument("--out", default=None)

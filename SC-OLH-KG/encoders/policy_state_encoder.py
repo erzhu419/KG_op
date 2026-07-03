@@ -69,20 +69,15 @@ class StateCoupledFeatureMap:
     GPR basis adds an intercept outside this object.
     """
 
-    def __init__(self, problem, encoder=None, include_quadratic=True):
+    def __init__(self, problem, encoder=None, state_scale=0.2):
         self.problem = problem
         self.encoder = encoder or SyntheticPolicyStateEncoder(problem)
-        self.include_quadratic = bool(include_quadratic)
+        self.state_scale = float(state_scale)
         d = int(problem.d)
         rho_d = int(self.encoder.feature_dim)
-        self.feature_dim = d + rho_d
-        if self.include_quadratic:
-            self.feature_dim += d + rho_d
+        self.feature_dim = 2 * d + rho_d
 
     def features(self, x):
         z = np.asarray(self.problem.normalize(x), dtype=float)
-        rho = self.encoder.occupancy(x)
-        base = np.concatenate([z, rho])
-        if self.include_quadratic:
-            base = np.concatenate([base, base ** 2])
-        return base
+        rho = self.state_scale * self.encoder.occupancy(x)
+        return np.concatenate([z, z ** 2, rho])

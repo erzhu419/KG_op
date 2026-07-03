@@ -19,6 +19,7 @@ those directories are ignored by git.
 python3 SC-OLH-KG/runners/profile_current.py --N 12 --n0 5 --K1 10 --K2 1
 python3 SC-OLH-KG/runners/run_single_olhkg.py --N 30 --n0 8 --K1 25 --K2 0
 python3 SC-OLH-KG/runners/run_sc_olhkg.py --N 30 --n0 8 --K1 25 --K2 0
+python3 SC-OLH-KG/runners/run_sc_olhkg.py --N 30 --n0 8 --K1 25 --K2 0 --use_state_basis
 python3 SC-OLH-KG/runners/run_olh_biobj_smoke.py --N 20 --n0 6 --K1 20
 python3 SC-OLH-KG/performance/benchmark_quality.py --N 20 --n0 5 --K1 15 --K2 1 --n_seeds 5
 python3 SC-OLH-KG/performance/diagnose_hvd_calibration.py --variance_mode orthogonal --seed 4

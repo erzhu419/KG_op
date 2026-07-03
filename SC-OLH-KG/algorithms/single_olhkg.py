@@ -41,6 +41,7 @@ class SingleOLHKGConfig:
     lambda_var: float = 0.25
     lambda_coupling: float = 0.0
     use_state_coupling: bool = False
+    use_state_basis: bool = False
     eval_pool_size: int = 500
     seed: int = 123
 
@@ -55,12 +56,16 @@ class SingleOLHKGAlgorithm:
 
         self.encoder = (
             SyntheticPolicyStateEncoder(problem)
-            if self.config.use_state_coupling or self.config.lambda_coupling > 0
+            if (
+                self.config.use_state_coupling
+                or self.config.use_state_basis
+                or self.config.lambda_coupling > 0
+            )
             else None
         )
         basis_map = (
             StateCoupledFeatureMap(problem, self.encoder)
-            if self.config.use_state_coupling else None
+            if self.config.use_state_basis else None
         )
         self.gpr = [
             ParametricGPR(
