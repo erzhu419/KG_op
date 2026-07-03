@@ -1,0 +1,317 @@
+"""Single-objective chance-constrained OLH-KG / SC-OLH-KG algorithm."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, asdict
+import time
+
+import numpy as np
+from scipy.stats import norm
+
+from acquisition.olhkg import OLHKGAcquisition
+from core.candidates import (
+    boundary_solutions,
+    latin_hypercube_candidates,
+    posterior_sample_candidates,
+    random_candidates,
+    unique_candidates,
+)
+from core.gpr import ParametricGPR
+from core.metrics import summarize_stage_times
+from encoders.policy_state_encoder import (
+    StateCoupledFeatureMap,
+    SyntheticPolicyStateEncoder,
+)
+from variance.orthogonal_hvd import OrthogonalHVD
+
+
+@dataclass
+class SingleOLHKGConfig:
+    N: int = 30
+    n0: int = 8
+    K1: int = 25
+    K2: int = 0
+    posterior_pool_size: int = 300
+    posterior_keep: int = 15
+    n_thr: int = 5
+    lambda_i: float = 0.1
+    prior_var: float = 10.0
+    variance_mode: str = "class"
+    lambda_feas: float = 0.25
+    lambda_var: float = 0.25
+    lambda_coupling: float = 0.0
+    use_state_coupling: bool = False
+    eval_pool_size: int = 500
+    seed: int = 123
+
+
+class SingleOLHKGAlgorithm:
+    """Minimal but complete single-objective OLH-KG implementation."""
+
+    def __init__(self, problem, config: SingleOLHKGConfig | None = None):
+        self.problem = problem
+        self.config = config or SingleOLHKGConfig()
+        self.rng = np.random.default_rng(self.config.seed)
+
+        self.encoder = (
+            SyntheticPolicyStateEncoder(problem)
+            if self.config.use_state_coupling or self.config.lambda_coupling > 0
+            else None
+        )
+        basis_map = (
+            StateCoupledFeatureMap(problem, self.encoder)
+            if self.config.use_state_coupling else None
+        )
+        self.gpr = [
+            ParametricGPR(
+                problem.d,
+                self.config.lambda_i,
+                self.config.prior_var,
+                normalize_func=problem.normalize,
+                basis_map=basis_map,
+            )
+            for _ in range(2)
+        ]
+        self.variance_model = OrthogonalHVD(
+            mode=self.config.variance_mode,
+            n_outputs=2,
+            floor=1e-8,
+        )
+        self.acquisition = OLHKGAcquisition(
+            lambda_feas=self.config.lambda_feas,
+            lambda_var=self.config.lambda_var,
+            lambda_coupling=self.config.lambda_coupling,
+            encoder=self.encoder,
+        )
+
+        self.observations: dict[tuple[int, ...], list[np.ndarray]] = {}
+        self.history: list[tuple[tuple[int, ...], np.ndarray]] = []
+        self.iteration_log: list[dict] = []
+        self.pre_sampling_log: dict | None = None
+        self.final_log: dict | None = None
+
+    def _initial_samples(self):
+        samples = []
+        for x in boundary_solutions(self.problem):
+            if len(samples) >= self.config.n0:
+                break
+            samples.append(tuple(x))
+        while len(set(samples)) < self.config.n0:
+            samples.append(self.problem.sample_random(self.rng))
+            samples = unique_candidates(samples)
+        return unique_candidates(samples)[: self.config.n0]
+
+    def _simulate_and_store(self, x):
+        y = self.problem.simulate(x, self.rng)
+        x_tuple = tuple(int(v) for v in x)
+        self.observations.setdefault(x_tuple, []).append(y)
+        self.history.append((x_tuple, y))
+        return y
+
+    def _fit_initial_belief(self, samples):
+        for x in samples:
+            self._simulate_and_store(x)
+
+        Phi = self.gpr[0].basis_matrix(samples)
+        for i in range(2):
+            y_i = np.array([self.observations[x][0][i] for x in samples], dtype=float)
+            try:
+                beta = np.linalg.lstsq(Phi, y_i, rcond=None)[0]
+            except np.linalg.LinAlgError:
+                beta = np.zeros(Phi.shape[1], dtype=float)
+            resid = y_i - Phi @ beta
+            lambda_data = max(float(np.var(resid)), 1e-6)
+            prior_var = max(float(np.var(beta)), 1e-6)
+            self.gpr[i].set_parametric_prior(beta, lambda_data, prior_var)
+
+        for x in samples:
+            for model in self.gpr:
+                model.dimension_augment(x)
+
+        self.variance_model.initialize(
+            samples, self.observations, self.gpr, self.problem)
+
+    def _variance_lookup(self, i, x):
+        return self.variance_model.predict_variance(i, x, self.problem)
+
+    def _generate_candidates(self, iteration):
+        candidates = []
+        candidates.extend(latin_hypercube_candidates(
+            self.problem, self.config.K1, self.rng))
+        candidates.extend(random_candidates(
+            self.problem, max(5, self.config.K1 // 5), self.rng))
+        use_constraint = iteration > self.config.n_thr
+        candidates.extend(posterior_sample_candidates(
+            self.problem,
+            self.gpr,
+            n_batches=self.config.K2,
+            pool_size=self.config.posterior_pool_size,
+            keep_per_batch=self.config.posterior_keep,
+            rng=self.rng,
+            use_constraint=use_constraint,
+            variance_lookup=self._variance_lookup,
+            tau=self.problem.tau,
+            alpha_z=norm.ppf(1 - self.problem.alpha),
+        ))
+        if not candidates:
+            candidates.append(self.problem.sample_random(self.rng))
+        return unique_candidates(candidates)
+
+    def _recommendation_pool(self):
+        pool = set(x for x, _ in self.history)
+        for x in random_candidates(self.problem, self.config.eval_pool_size, self.rng):
+            pool.add(tuple(x))
+        if hasattr(self.problem, "all_axis_solutions"):
+            for x in self.problem.all_axis_solutions():
+                pool.add(tuple(x))
+        return list(pool)
+
+    def _solve_posterior_recommendation(self):
+        pool = self._recommendation_pool()
+        mu_obj = self.gpr[0].posterior_mean_many(pool)
+        mu_con = self.gpr[1].posterior_mean_many(pool)
+        z = norm.ppf(1 - self.problem.alpha)
+        v_con = np.array([
+            self.variance_model.predict_variance(1, x, self.problem)
+            for x in pool
+        ], dtype=float)
+        margins = mu_con + z * np.sqrt(np.maximum(v_con, 1e-12)) - self.problem.tau
+        feasible = margins <= 0.0
+        if np.any(feasible):
+            local = int(np.argmin(np.where(feasible, mu_obj, np.inf)))
+        else:
+            local = int(np.argmin(margins))
+        x_best = tuple(int(v) for v in pool[local])
+        return x_best, {
+            "posterior_mu_obj": float(mu_obj[local]),
+            "posterior_mu_con": float(mu_con[local]),
+            "posterior_variance_con": float(v_con[local]),
+            "posterior_chance_margin": float(margins[local]),
+            "posterior_feasible": bool(feasible[local]),
+            "n_pool": int(len(pool)),
+            "n_posterior_feasible": int(np.sum(feasible)),
+        }
+
+    def _evaluate_recommendation(self, x_best):
+        true_obj = self.problem.true_objective(x_best)
+        true_con = self.problem.true_constraint_mean(x_best)
+        true_sig = self.problem.true_sigma(x_best)
+        true_margin = (
+            true_con
+            + norm.ppf(1 - self.problem.alpha) * true_sig[1]
+            - self.problem.tau
+        )
+        true_best_x, true_best_obj = self.problem.true_best_feasible()
+        regret = true_obj - true_best_obj if np.isfinite(true_best_obj) else np.nan
+        return {
+            "x_recommended": list(map(int, x_best)),
+            "true_objective": float(true_obj),
+            "true_constraint_mean": float(true_con),
+            "true_constraint_sigma": float(true_sig[1]),
+            "true_chance_margin": float(true_margin),
+            "true_feasible": bool(true_margin <= 0.0),
+            "true_best_x": None if true_best_x is None else list(map(int, true_best_x)),
+            "true_best_objective": float(true_best_obj),
+            "simple_regret": float(regret),
+        }
+
+    def run(self, verbose=False):
+        t_start = time.time()
+        samples = self._initial_samples()
+        t0 = time.time()
+        self._fit_initial_belief(samples)
+        self.pre_sampling_log = {
+            "n0": self.config.n0,
+            "samples": [list(map(int, x)) for x in samples],
+            "time_sec": float(time.time() - t0),
+            "variance": self.variance_model.diagnostics(),
+        }
+
+        for n in range(self.config.n0, self.config.N):
+            iteration = n - self.config.n0
+            row = {"iteration": iteration, "stage": n}
+            t_iter = time.time()
+
+            t0 = time.time()
+            rec_x, rec_details = self._solve_posterior_recommendation()
+            row["t_posterior_solve"] = time.time() - t0
+            row["recommendation_before"] = list(map(int, rec_x))
+            row.update({f"rec_{k}": v for k, v in rec_details.items()})
+
+            t0 = time.time()
+            candidates = self._generate_candidates(iteration)
+            row["t_candidate_gen"] = time.time() - t0
+            row["n_candidates"] = len(candidates)
+
+            t0 = time.time()
+            score = self.acquisition.score(
+                candidates,
+                self.gpr[0],
+                self.gpr[1],
+                self.variance_model,
+                self.problem,
+                observed=[x for x, _ in self.history],
+            )
+            selected_idx = int(np.argmax(score["total"]))
+            x_selected = candidates[selected_idx]
+            row["t_kg_compute"] = time.time() - t0
+            row["x_selected"] = list(map(int, x_selected))
+            row["score_selected"] = float(score["total"][selected_idx])
+            row["kg_obj_selected"] = float(score["kg_obj"][selected_idx])
+            row["kg_feas_selected"] = float(score["kg_feas"][selected_idx])
+            row["kg_var_selected"] = float(score["kg_var"][selected_idx])
+            row["kg_coupling_selected"] = float(score["kg_coupling"][selected_idx])
+
+            x_arr = np.asarray(x_selected, dtype=int)
+            mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]
+            sigma2_before = [
+                self.variance_model.predict_variance(i, x_arr, self.problem)
+                for i in range(2)
+            ]
+            row["mu_before"] = [float(v) for v in mu_before]
+            row["sigma2_before"] = [float(v) for v in sigma2_before]
+
+            t0 = time.time()
+            y = self._simulate_and_store(x_selected)
+            row["t_simulate"] = time.time() - t0
+            row["Y_observed"] = [float(v) for v in y]
+
+            t0 = time.time()
+            for i in range(2):
+                self.gpr[i].update(x_arr, y[i], sigma2_before[i])
+            hvd_details = []
+            for i in range(2):
+                hvd_details.append(self.variance_model.update(
+                    i, x_arr, y[i], mu_before[i], self.gpr[i], self.problem))
+            row["t_update"] = time.time() - t0
+            row["hvd_update"] = hvd_details
+            row["n_visited"] = len(self.gpr[0].sampled_set)
+
+            t0 = time.time()
+            if iteration % 5 == 0 or n == self.config.N - 1:
+                rec_x_after, rec_after = self._solve_posterior_recommendation()
+                eval_after = self._evaluate_recommendation(rec_x_after)
+                row["recommendation_after"] = list(map(int, rec_x_after))
+                row["eval"] = {**rec_after, **eval_after}
+            row["t_eval"] = time.time() - t0
+            row["t_total"] = time.time() - t_iter
+            self.iteration_log.append(row)
+            if verbose:
+                print(
+                    f"iter={iteration:03d} x={x_selected} "
+                    f"score={row['score_selected']:.4g}"
+                )
+
+        final_x, final_post = self._solve_posterior_recommendation()
+        final_eval = self._evaluate_recommendation(final_x)
+        self.final_log = {
+            **final_post,
+            **final_eval,
+            "total_time_sec": float(time.time() - t_start),
+            "n_simulations": int(len(self.history)),
+            "n_distinct_solutions": int(len(self.gpr[0].sampled_set)),
+            "stage_times": summarize_stage_times(self.iteration_log),
+            "variance": self.variance_model.diagnostics(),
+            "config": asdict(self.config),
+        }
+        return self.final_log
