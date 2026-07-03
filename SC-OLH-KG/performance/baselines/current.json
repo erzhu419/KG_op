@@ -1,48 +1,48 @@
 {
   "schema_version": 1,
-  "created_at": "2026-07-03T21:07:42",
+  "created_at": "2026-07-03T21:15:54",
   "baseline_policy": "This file is updated only after performance validation passes. Future candidates must improve against promoted_candidate.",
   "promoted_candidate": {
     "name": "single_olhkg",
-    "primary_wall_time_sec": 0.3447195291519165,
+    "primary_wall_time_sec": 0.2748887538909912,
     "metrics": {
       "name": "single_olhkg",
-      "wall_time_sec": 0.3447195291519165,
+      "wall_time_sec": 0.2748887538909912,
       "wall_time_sec_runs": [
-        0.3460378646850586,
-        0.3434011936187744
+        0.27291369438171387,
+        0.27686381340026855
       ],
       "runs": 2,
       "stage_times": {
         "t_posterior_solve": {
-          "total": 0.08045554161071777,
-          "mean": 0.011493648801531111,
-          "share": 0.2470015502786549
+          "total": 0.09135794639587402,
+          "mean": 0.013051135199410575,
+          "share": 0.3563034664881351
         },
         "t_candidate_gen": {
-          "total": 0.02770400047302246,
-          "mean": 0.003957714353288923,
-          "share": 0.08505232739425826
+          "total": 0.01683807373046875,
+          "mean": 0.0024054391043526785,
+          "share": 0.0656698653574351
         },
         "t_kg_compute": {
-          "total": 0.1641402244567871,
-          "mean": 0.02344860349382673,
-          "share": 0.5039166860634487
+          "total": 0.09011626243591309,
+          "mean": 0.012873751776559013,
+          "share": 0.3514607974410474
         },
         "t_simulate": {
-          "total": 0.00039696693420410156,
-          "mean": 5.670956202915737e-05,
-          "share": 0.001218703475171387
+          "total": 0.00035691261291503906,
+          "mean": 5.098751613071987e-05,
+          "share": 0.0013919883954474448
         },
         "t_update": {
-          "total": 0.001689910888671875,
-          "mean": 0.00024141584123883928,
-          "share": 0.005188090229438313
+          "total": 0.0016231536865234375,
+          "mean": 0.00023187909807477678,
+          "share": 0.006330432195194525
         },
         "t_eval": {
-          "total": 0.05134224891662598,
-          "mean": 0.007334606988089425,
-          "share": 0.15762264255902844
+          "total": 0.05611252784729004,
+          "mean": 0.00801607540675572,
+          "share": 0.21884345012274045
         }
       },
       "n_simulations": 12,
@@ -51,7 +51,7 @@
       "simple_regret": 0.125,
       "true_objective": 0.5,
       "true_best_objective": 0.375,
-      "variance_mode": "class"
+      "variance_mode": "orthogonal"
     }
   },
   "validation_config": {
@@ -60,15 +60,17 @@
     "K1": 10,
     "legacy_K2": 1,
     "candidate_K2": 1,
+    "posterior_pool_size": 150,
+    "posterior_keep": 8,
     "repeats": 2,
     "seed": 123,
     "max_wall_ratio": 0.98,
-    "variance_mode": "class",
+    "variance_mode": "orthogonal",
     "candidate_problem": "RegimeRZDT1",
     "legacy_problem": "RZDT1"
   },
   "acceptance_gates": {
-    "speed_ratio": 0.08434686231701313,
+    "speed_ratio": 0.7974272724474767,
     "speed_pass": true,
     "single_feasible_pass": true,
     "sc_feasible_pass": true,
@@ -77,112 +79,66 @@
   },
   "full_validation": {
     "schema_version": 1,
-    "created_at": "2026-07-03T21:07:42",
+    "created_at": "2026-07-03T21:15:54",
     "validation_config": {
       "N": 12,
       "n0": 5,
       "K1": 10,
       "legacy_K2": 1,
       "candidate_K2": 1,
+      "posterior_pool_size": 150,
+      "posterior_keep": 8,
       "repeats": 2,
       "seed": 123,
       "max_wall_ratio": 0.98,
-      "variance_mode": "class",
+      "variance_mode": "orthogonal",
       "candidate_problem": "RegimeRZDT1",
       "legacy_problem": "RZDT1"
     },
-    "active_baseline_kind": "legacy",
-    "baseline_source": "legacy_gprkg",
+    "active_baseline_kind": "promoted",
+    "baseline_source": "promoted_candidate",
     "baseline_file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/baselines/current.json",
-    "baseline_wall_time_sec": 4.0869277135207085,
-    "legacy_baseline": {
-      "name": "legacy_gprkg",
-      "wall_time_sec": 4.0869277135207085,
-      "wall_time_sec_runs": [
-        4.221579563018167,
-        3.9522758640232496
-      ],
-      "runs": 2,
-      "stage_times": {
-        "t_posterior_solve": {
-          "total": 0.18411517143249512,
-          "mean": 0.0263021673474993,
-          "share": 0.04704129626827504
-        },
-        "t_candidate_gen": {
-          "total": 1.8104381561279297,
-          "mean": 0.25863402230398996,
-          "share": 0.4625656702550934
-        },
-        "t_kg_compute": {
-          "total": 1.8766849040985107,
-          "mean": 0.26809784344264437,
-          "share": 0.4794916675743118
-        },
-        "t_simulate": {
-          "total": 0.0002529621124267578,
-          "mean": 3.6137444632393976e-05,
-          "share": 6.46316410686382e-05
-        },
-        "t_belief_update": {
-          "total": 0.0006015300750732422,
-          "mean": 8.593286786760603e-05,
-          "share": 0.00015369050934606424
-        },
-        "t_vepm_update": {
-          "total": 0.0007565021514892578,
-          "mean": 0.00010807173592703683,
-          "share": 0.00019328576542015926
-        },
-        "t_hv_eval": {
-          "total": 0.041055917739868164,
-          "mean": 0.005865131105695452,
-          "share": 0.010489757986484981
-        }
-      },
-      "n_simulations": 12,
-      "n_distinct_solutions": 12,
-      "hv_last": 0.0
-    },
+    "baseline_wall_time_sec": 0.3447195291519165,
+    "legacy_baseline": null,
     "candidates": {
       "single_olhkg": {
         "name": "single_olhkg",
-        "wall_time_sec": 0.3447195291519165,
+        "wall_time_sec": 0.2748887538909912,
         "wall_time_sec_runs": [
-          0.3460378646850586,
-          0.3434011936187744
+          0.27291369438171387,
+          0.27686381340026855
         ],
         "runs": 2,
         "stage_times": {
           "t_posterior_solve": {
-            "total": 0.08045554161071777,
-            "mean": 0.011493648801531111,
-            "share": 0.2470015502786549
+            "total": 0.09135794639587402,
+            "mean": 0.013051135199410575,
+            "share": 0.3563034664881351
           },
           "t_candidate_gen": {
-            "total": 0.02770400047302246,
-            "mean": 0.003957714353288923,
-            "share": 0.08505232739425826
+            "total": 0.01683807373046875,
+            "mean": 0.0024054391043526785,
+            "share": 0.0656698653574351
           },
           "t_kg_compute": {
-            "total": 0.1641402244567871,
-            "mean": 0.02344860349382673,
-            "share": 0.5039166860634487
+            "total": 0.09011626243591309,
+            "mean": 0.012873751776559013,
+            "share": 0.3514607974410474
           },
           "t_simulate": {
-            "total": 0.00039696693420410156,
-            "mean": 5.670956202915737e-05,
-            "share": 0.001218703475171387
+            "total": 0.00035691261291503906,
+            "mean": 5.098751613071987e-05,
+            "share": 0.0013919883954474448
           },
           "t_update": {
-            "total": 0.001689910888671875,
-            "mean": 0.00024141584123883928,
-            "share": 0.005188090229438313
+            "total": 0.0016231536865234375,
+            "mean": 0.00023187909807477678,
+            "share": 0.006330432195194525
           },
           "t_eval": {
-            "total": 0.05134224891662598,
-            "mean": 0.007334606988089425,
-            "share": 0.15762264255902844
+            "total": 0.05611252784729004,
+            "mean": 0.00801607540675572,
+            "share": 0.21884345012274045
           }
         },
         "n_simulations": 12,
@@ -191,46 +147,46 @@
         "simple_regret": 0.125,
         "true_objective": 0.5,
         "true_best_objective": 0.375,
-        "variance_mode": "class"
+        "variance_mode": "orthogonal"
       },
       "sc_olhkg": {
         "name": "sc_olhkg",
-        "wall_time_sec": 0.9097566604614258,
+        "wall_time_sec": 0.7732951641082764,
         "wall_time_sec_runs": [
-          0.9068236351013184,
-          0.9126896858215332
+          0.7517333030700684,
+          0.7948570251464844
         ],
         "runs": 2,
         "stage_times": {
           "t_posterior_solve": {
-            "total": 0.33101582527160645,
-            "mean": 0.047287975038800924,
-            "share": 0.38609853823384477
+            "total": 0.34711527824401855,
+            "mean": 0.04958789689200265,
+            "share": 0.469134398190366
           },
           "t_candidate_gen": {
-            "total": 0.09158182144165039,
-            "mean": 0.013083117348807198,
-            "share": 0.10682150123306276
+            "total": 0.04961657524108887,
+            "mean": 0.007088082177298409,
+            "share": 0.06705795919945608
           },
           "t_kg_compute": {
-            "total": 0.2758798599243164,
-            "mean": 0.03941140856061663,
-            "share": 0.32178766848242624
+            "total": 0.17470955848693848,
+            "mean": 0.024958508355276927,
+            "share": 0.23612404499595605
           },
           "t_simulate": {
-            "total": 0.00042510032653808594,
-            "mean": 6.072861807686942e-05,
-            "share": 0.00049583917791366
+            "total": 0.0005245208740234375,
+            "mean": 7.493155343191964e-05,
+            "share": 0.000708902200496876
           },
           "t_update": {
-            "total": 0.0022699832916259766,
-            "mean": 0.0003242833273751395,
-            "share": 0.0026477200296780466
+            "total": 0.002723217010498047,
+            "mean": 0.000389031001499721,
+            "share": 0.003680491333670599
           },
           "t_eval": {
-            "total": 0.15616250038146973,
-            "mean": 0.022308928625924245,
-            "share": 0.18214873284307453
+            "total": 0.16521668434143066,
+            "mean": 0.02360238347734724,
+            "share": 0.2232942040800544
           }
         },
         "n_simulations": 12,
@@ -239,46 +195,46 @@
         "simple_regret": 0.125,
         "true_objective": 0.5,
         "true_best_objective": 0.375,
-        "variance_mode": "class"
+        "variance_mode": "orthogonal"
       },
       "biobj_olhkg_smoke": {
         "name": "biobj_olhkg_smoke",
-        "wall_time_sec": 0.14217925071716309,
+        "wall_time_sec": 0.1425715684890747,
         "wall_time_sec_runs": [
-          0.14933133125305176,
-          0.13502717018127441
+          0.14948058128356934,
+          0.13566255569458008
         ],
         "runs": 2,
         "stage_times": {
           "t_posterior_solve": {
-            "total": 0.03582906723022461,
-            "mean": 0.005118438175746373,
-            "share": 0.2803981751858866
+            "total": 0.035686492919921875,
+            "mean": 0.005098070417131696,
+            "share": 0.27645973436371596
           },
           "t_candidate_gen": {
-            "total": 0.002129077911376953,
-            "mean": 0.00030415398733956475,
-            "share": 0.01666215749750441
+            "total": 0.0023729801177978516,
+            "mean": 0.0003389971596854074,
+            "share": 0.01838324249146222
           },
           "t_kg_compute": {
-            "total": 0.07090139389038086,
-            "mean": 0.010128770555768694,
-            "share": 0.5548741008872179
+            "total": 0.07264423370361328,
+            "mean": 0.010377747671944755,
+            "share": 0.5627677003123286
           },
           "t_simulate": {
-            "total": 0.0003204345703125,
-            "mean": 4.57763671875e-05,
-            "share": 0.0025077200085829704
+            "total": 0.00031065940856933594,
+            "mean": 4.437991550990513e-05,
+            "share": 0.0024066477410203224
           },
           "t_update": {
-            "total": 0.002396106719970703,
-            "mean": 0.00034230095999581475,
-            "share": 0.01875192417132355
+            "total": 0.0022330284118652344,
+            "mean": 0.0003190040588378906,
+            "share": 0.017299050454640322
           },
           "t_eval": {
-            "total": 0.01620316505432129,
-            "mean": 0.0023147378649030414,
-            "share": 0.12680592224948456
+            "total": 0.015836477279663086,
+            "mean": 0.0022623538970947266,
+            "share": 0.1226836246368326
           }
         },
         "n_simulations": 12,
@@ -288,9 +244,9 @@
       }
     },
     "primary_candidate": "single_olhkg",
-    "primary_wall_time_sec": 0.3447195291519165,
+    "primary_wall_time_sec": 0.2748887538909912,
     "gates": {
-      "speed_ratio": 0.08434686231701313,
+      "speed_ratio": 0.7974272724474767,
       "speed_pass": true,
       "single_feasible_pass": true,
       "sc_feasible_pass": true,

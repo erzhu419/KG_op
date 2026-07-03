@@ -26,6 +26,8 @@ class HVDConfig:
     floor: float = 1e-8
     shrinkage_kappa: float = 2.0
     n_factors: int = 3
+    activation_min_records: int = 20
+    certification_kappa: float = 1.0
 
 
 class OrthogonalHVD:
@@ -63,6 +65,18 @@ class OrthogonalHVD:
             return 1
         return 2
 
+    def risk_classes_many(self, X, problem=None):
+        """Vectorized risk class labels for a candidate list."""
+        problem = problem or self._last_problem
+        if problem is not None and hasattr(problem, "risk_class"):
+            return np.array([int(problem.risk_class(x)) for x in X], dtype=int)
+        Z = np.vstack([self._normalize(x, problem) for x in X])
+        u = Z[:, 0] if Z.size else np.zeros(len(X), dtype=float)
+        cls = np.zeros(len(X), dtype=int)
+        cls[u >= 1.0 / 3.0] = 1
+        cls[u >= 2.0 / 3.0] = 2
+        return cls
+
     def _normalize(self, x, problem=None):
         problem = problem or self._last_problem
         if problem is not None and hasattr(problem, "normalize"):
@@ -87,6 +101,26 @@ class OrthogonalHVD:
             float(np.linalg.norm(z - 0.5) / np.sqrt(len(z))),
         ])
         return np.concatenate([[1.0], p1, p2, stats])
+
+    def _feature_matrix(self, X, problem=None):
+        rows = []
+        for x in X:
+            rows.append(self._features(x, problem))
+        return np.vstack(rows) if rows else np.empty((0, 1), dtype=float)
+
+    def _orthogonal_active(self, i):
+        """Whether smooth orthogonal variance is allowed for this output.
+
+        Orthogonal log-variance regression is intentionally delayed until
+        enough residual evidence exists.  Before activation, orthogonal/factor
+        modes use the class-HVD estimate, which is more stable and cheaper in
+        the small-budget regime.
+        """
+        if self.mode not in ("orthogonal", "factor"):
+            return False
+        if self.beta.get(int(i)) is None:
+            return False
+        return len(self.records.get(int(i), [])) >= int(self.config.activation_min_records)
 
     def fit_from_residuals(self, X, residuals, output_index=0, problem=None):
         """Direct fit helper used by tests and by `initialize`."""
@@ -159,7 +193,7 @@ class OrthogonalHVD:
             self.class_var[i][int(c)] = float(max(shrunk, self.floor))
             self.class_count[i][int(c)] = int(n_c)
 
-        if self.mode in ("orthogonal", "factor"):
+        if self.mode in ("orthogonal", "factor") and len(recs) >= int(self.config.activation_min_records):
             X = np.vstack([self._features(x, problem) for x, _ in recs])
             y = np.log(vals)
             reg = float(self.config.ridge_alpha) * np.eye(X.shape[1])
@@ -177,10 +211,22 @@ class OrthogonalHVD:
                     self.factor_energy[i] = (energy / total).tolist()
                 else:
                     self.factor_energy[i] = [0.0 for _ in energy]
+        elif self.mode in ("orthogonal", "factor"):
+            self.beta[i] = None
+            self.factor_energy[i] = []
 
     def _class_variance(self, i, x, problem=None):
         c = self.risk_class(x, problem)
         return float(self.class_var.get(i, {}).get(c, self.global_var.get(i, 0.01)))
+
+    def _class_variance_many(self, i, X, problem=None):
+        classes = self.risk_classes_many(X, problem)
+        global_v = float(self.global_var.get(int(i), 0.01))
+        c_map = self.class_var.get(int(i), {})
+        return np.array([
+            float(max(c_map.get(int(c), global_v), self.floor))
+            for c in classes
+        ], dtype=float)
 
     def predict_variance(self, i, x, problem=None):
         """Predict observation-noise variance for one output channel."""
@@ -195,7 +241,7 @@ class OrthogonalHVD:
         if self.mode == "class":
             return float(max(self._class_variance(i, x, problem), self.floor))
         beta = self.beta.get(i)
-        if beta is None:
+        if beta is None or not self._orthogonal_active(i):
             return float(max(self._class_variance(i, x, problem), self.floor))
         feat = self._features(x, problem)
         pred = float(np.exp(float(feat @ beta)))
@@ -203,6 +249,98 @@ class OrthogonalHVD:
         class_v = self._class_variance(i, x, problem)
         pred = float(np.clip(pred, 0.25 * class_v, 4.0 * class_v))
         return float(max(pred, self.floor))
+
+    def predict_variance_many(self, i, X, problem=None):
+        """Batch variance prediction for candidate pools."""
+        i = int(i)
+        if len(X) == 0:
+            return np.zeros(0, dtype=float)
+        if self.mode == "oracle":
+            if problem is None:
+                problem = self._last_problem
+            if problem is not None and hasattr(problem, "true_sigma"):
+                return np.array([
+                    max(float(problem.true_sigma(x)[i] ** 2), self.floor)
+                    for x in X
+                ], dtype=float)
+        if self.mode == "pooled":
+            return np.full(len(X), max(float(self.global_var.get(i, 0.01)), self.floor))
+        class_v = self._class_variance_many(i, X, problem)
+        beta = self.beta.get(i)
+        if beta is None or not self._orthogonal_active(i):
+            return class_v
+        F = self._feature_matrix(X, problem)
+        pred = np.exp(F @ beta)
+        pred = np.clip(pred, 0.25 * class_v, 4.0 * class_v)
+        return np.maximum(pred, self.floor)
+
+    def model_uncertainty(self, i, x, problem=None):
+        """Conservative variance-estimation uncertainty for certification.
+
+        This term is not used as simulation-noise variance in the Kalman update.
+        It only guards chance feasibility decisions against sparse class cells
+        and not-yet-active smooth variance fits.
+        """
+        i = int(i)
+        if self.mode not in ("orthogonal", "factor"):
+            return 0.0
+        base = self.predict_variance(i, x, problem)
+        c = self.risk_class(x, problem)
+        n_c = int(self.class_count.get(i, {}).get(c, 0))
+        n_total = int(len(self.records.get(i, [])))
+        if n_total <= 0:
+            return float(base)
+        class_unc = 1.0 / np.sqrt(n_c + 1.0)
+        total_unc = 1.0 / np.sqrt(n_total + 1.0)
+        activation_penalty = 1.0 if (
+            self.mode in ("orthogonal", "factor") and not self._orthogonal_active(i)
+        ) else 0.25
+        return float(
+            max(float(self.config.certification_kappa), 0.0)
+            * base
+            * max(class_unc, total_unc)
+            * activation_penalty
+        )
+
+    def model_uncertainty_many(self, i, X, problem=None, base_variance=None):
+        i = int(i)
+        if len(X) == 0:
+            return np.zeros(0, dtype=float)
+        if self.mode not in ("orthogonal", "factor"):
+            return np.zeros(len(X), dtype=float)
+        base = (
+            np.asarray(base_variance, dtype=float)
+            if base_variance is not None
+            else self.predict_variance_many(i, X, problem)
+        )
+        classes = self.risk_classes_many(X, problem)
+        counts = self.class_count.get(i, {})
+        n_c = np.array([int(counts.get(int(c), 0)) for c in classes], dtype=float)
+        n_total = float(len(self.records.get(i, [])))
+        if n_total <= 0:
+            return base.copy()
+        class_unc = 1.0 / np.sqrt(n_c + 1.0)
+        total_unc = 1.0 / np.sqrt(n_total + 1.0)
+        activation_penalty = 1.0 if (
+            self.mode in ("orthogonal", "factor") and not self._orthogonal_active(i)
+        ) else 0.25
+        scale = (
+            max(float(self.config.certification_kappa), 0.0)
+            * np.maximum(class_unc, total_unc)
+            * activation_penalty
+        )
+        return np.maximum(base * scale, 0.0)
+
+    def predict_certification_variance(self, i, x, problem=None):
+        """Variance used inside conservative chance feasibility checks."""
+        return float(
+            self.predict_variance(i, x, problem)
+            + self.model_uncertainty(i, x, problem)
+        )
+
+    def predict_certification_variance_many(self, i, X, problem=None):
+        base = self.predict_variance_many(i, X, problem)
+        return base + self.model_uncertainty_many(i, X, problem, base)
 
     def predict_decomposition(self, i, x, problem=None):
         """Return interpretable decomposition diagnostics."""
@@ -223,6 +361,9 @@ class OrthogonalHVD:
             "class_count": int(self.class_count.get(i, {}).get(c, 0)),
             "factor_contrib": factor_contrib,
             "factor_energy": self.factor_energy.get(i, []),
+            "model_uncertainty": float(self.model_uncertainty(i, x, problem)),
+            "certification_variance": float(
+                self.predict_certification_variance(i, x, problem)),
         }
 
     def variance_information(self, i, x, problem=None):
@@ -242,6 +383,29 @@ class OrthogonalHVD:
             novelty = float(np.min(dist) / (1.0 + np.min(dist)))
         return float(max(pred, self.floor) * (class_unc + novelty))
 
+    def variance_information_many(self, i, X, problem=None):
+        """Batch VOI for learning the variance decomposition."""
+        i = int(i)
+        if len(X) == 0:
+            return np.zeros(0, dtype=float)
+        pred = self.predict_variance_many(i, X, problem)
+        classes = self.risk_classes_many(X, problem)
+        counts = self.class_count.get(i, {})
+        n_c = np.array([int(counts.get(int(c), 0)) for c in classes], dtype=float)
+        class_unc = 1.0 / np.sqrt(n_c + 1.0)
+
+        recs = self.records.get(i, [])
+        if not recs:
+            novelty = np.ones(len(X), dtype=float)
+        else:
+            F_x = self._feature_matrix(X, problem)
+            F_r = self._feature_matrix([r[0] for r in recs], problem)
+            # Small matrices here; broadcasting avoids repeated Python calls.
+            dist = np.linalg.norm(F_x[:, None, :] - F_r[None, :, :], axis=2)
+            min_dist = np.min(dist, axis=1)
+            novelty = min_dist / (1.0 + min_dist)
+        return np.maximum(pred, self.floor) * (class_unc + novelty)
+
     def diagnostics(self):
         return {
             "mode": self.mode,
@@ -259,4 +423,10 @@ class OrthogonalHVD:
                 str(i): self.beta.get(i) is not None
                 for i in range(self.n_outputs)
             },
+            "orthogonal_active": {
+                str(i): bool(self._orthogonal_active(i))
+                for i in range(self.n_outputs)
+            },
+            "activation_min_records": int(self.config.activation_min_records),
+            "certification_kappa": float(self.config.certification_kappa),
         }

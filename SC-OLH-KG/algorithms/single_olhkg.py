@@ -171,10 +171,8 @@ class SingleOLHKGAlgorithm:
         mu_obj = self.gpr[0].posterior_mean_many(pool)
         mu_con = self.gpr[1].posterior_mean_many(pool)
         z = norm.ppf(1 - self.problem.alpha)
-        v_con = np.array([
-            self.variance_model.predict_variance(1, x, self.problem)
-            for x in pool
-        ], dtype=float)
+        v_con = self.variance_model.predict_certification_variance_many(
+            1, pool, self.problem)
         margins = mu_con + z * np.sqrt(np.maximum(v_con, 1e-12)) - self.problem.tau
         feasible = margins <= 0.0
         if np.any(feasible):

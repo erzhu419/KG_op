@@ -280,6 +280,8 @@ def build_validation(args):
             "K1": args.K1,
             "legacy_K2": args.legacy_K2,
             "candidate_K2": args.candidate_K2,
+            "posterior_pool_size": args.posterior_pool_size,
+            "posterior_keep": args.posterior_keep,
             "repeats": args.repeats,
             "seed": args.seed,
             "max_wall_ratio": args.max_wall_ratio,
@@ -332,8 +334,8 @@ def main():
     parser.add_argument("--K1", type=int, default=10)
     parser.add_argument("--legacy_K2", type=int, default=1)
     parser.add_argument("--candidate_K2", type=int, default=1)
-    parser.add_argument("--posterior_pool_size", type=int, default=300)
-    parser.add_argument("--posterior_keep", type=int, default=15)
+    parser.add_argument("--posterior_pool_size", type=int, default=150)
+    parser.add_argument("--posterior_keep", type=int, default=8)
     parser.add_argument("--n_thr", type=int, default=5)
     parser.add_argument("--repeats", type=int, default=2)
     parser.add_argument("--seed", type=int, default=123)

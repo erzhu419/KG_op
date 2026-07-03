@@ -15,6 +15,7 @@ Default quick gate:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/validate_performance.py \
+  --variance_mode orthogonal \
   --repeats 2 \
   --promote-if-pass
 ```
@@ -22,6 +23,6 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/validate_performance.py 
 The tracked baseline is intentionally small-budget and machine-local.  It is a
 development gate, not a final paper experiment.
 
-The default candidate uses `class` HVD because it is the first stable OLH
-milestone.  `orthogonal` and `factor` HVD should be validated as later
-candidates against the promoted class-HVD baseline.
+The first promoted baseline used `class` HVD.  Later candidates, such as
+guarded `orthogonal` and `factor` HVD, are promoted only after passing against
+the current tracked baseline.

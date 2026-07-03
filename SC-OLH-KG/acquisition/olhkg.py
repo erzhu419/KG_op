@@ -49,10 +49,16 @@ class OLHKGAcquisition:
         if len(candidates) == 0:
             return np.zeros(0, dtype=float), []
         mu_g = con_gpr.posterior_mean_many(candidates)
-        v_g = np.array([
-            variance_model.predict_variance(1, x, problem)
-            for x in candidates
-        ], dtype=float)
+        if hasattr(variance_model, "predict_certification_variance_many"):
+            v_g = variance_model.predict_certification_variance_many(
+                1, candidates, problem)
+        else:
+            var_fn = getattr(
+                variance_model,
+                "predict_certification_variance",
+                variance_model.predict_variance,
+            )
+            v_g = np.array([var_fn(1, x, problem) for x in candidates], dtype=float)
         sig_g = np.sqrt(np.maximum(v_g, 1e-12))
         z = norm.ppf(1 - problem.alpha)
         margins = mu_g + z * sig_g - problem.tau
@@ -70,10 +76,14 @@ class OLHKGAcquisition:
         return safe_normalize(raw), details
 
     def variance_scores(self, candidates, variance_model, problem, output_index=1):
-        raw = np.array([
-            variance_model.variance_information(output_index, x, problem)
-            for x in candidates
-        ], dtype=float)
+        if hasattr(variance_model, "variance_information_many"):
+            raw = variance_model.variance_information_many(
+                output_index, candidates, problem)
+        else:
+            raw = np.array([
+                variance_model.variance_information(output_index, x, problem)
+                for x in candidates
+            ], dtype=float)
         return safe_normalize(raw)
 
     def coupling_scores(self, candidates, observed):
@@ -99,10 +109,13 @@ class OLHKGAcquisition:
                 "kg_coupling": np.zeros(0, dtype=float),
                 "feasibility_details": [],
             }
-        sigma2_obj = np.array([
-            variance_model.predict_variance(0, x, problem)
-            for x in candidates
-        ], dtype=float)
+        if hasattr(variance_model, "predict_variance_many"):
+            sigma2_obj = variance_model.predict_variance_many(0, candidates, problem)
+        else:
+            sigma2_obj = np.array([
+                variance_model.predict_variance(0, x, problem)
+                for x in candidates
+            ], dtype=float)
         kg_obj = compute_kg_vectorized(obj_gpr, candidates, sigma2_obj)
         kg_feas, feas_details = self.feasibility_scores(
             candidates, con_gpr, variance_model, problem)

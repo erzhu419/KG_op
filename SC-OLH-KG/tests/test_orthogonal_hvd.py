@@ -47,6 +47,21 @@ class OrthogonalHVDTests(unittest.TestCase):
         self.assertIn("new_variance", detail)
         self.assertGreaterEqual(detail["new_variance"], 0.0)
 
+    def test_orthogonal_delays_activation_until_enough_records(self):
+        X = [(5, 0, 0), (10, 0, 0), (70, 0, 0)]
+        residuals = [0.01, 0.02, 0.2]
+        model = OrthogonalHVD(
+            mode="orthogonal",
+            n_outputs=1,
+            activation_min_records=5,
+        )
+        model.fit_from_residuals(X, residuals, 0, self.problem)
+        diag = model.diagnostics()
+        self.assertFalse(diag["orthogonal_active"]["0"])
+        pred = model.predict_variance(0, (10, 0, 0), self.problem)
+        cert = model.predict_certification_variance(0, (10, 0, 0), self.problem)
+        self.assertGreaterEqual(cert, pred)
+
 
 if __name__ == "__main__":
     unittest.main()
