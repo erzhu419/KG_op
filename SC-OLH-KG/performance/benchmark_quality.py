@@ -1,0 +1,434 @@
+"""Quality benchmark for OLH-KG variance and coupling variants.
+
+This is not a promotion gate.  It runs multiple seeds and summarizes the
+optimization-quality metrics that matter for the chance-constrained problem.
+Wall time is reported as an engineering diagnostic.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import math
+from pathlib import Path
+import statistics
+import sys
+import time
+from typing import Any
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
+from problems.rzdt import make_problem  # noqa: E402
+from problems.single_objective import ScalarizedProblem  # noqa: E402
+
+
+def json_safe(obj: Any):
+    if isinstance(obj, dict):
+        return {str(k): json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [json_safe(v) for v in obj]
+    try:
+        import numpy as np
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        if isinstance(obj, (np.integer,)):
+            return int(obj)
+        if isinstance(obj, (np.floating,)):
+            return float(obj)
+    except Exception:
+        pass
+    return obj
+
+
+def parse_csv(value, cast=str):
+    if value is None or str(value).strip() == "":
+        return []
+    return [cast(item.strip()) for item in str(value).split(",") if item.strip()]
+
+
+def parse_weights(value):
+    weights = parse_csv(value, float)
+    if len(weights) != 2:
+        raise ValueError("--weights must contain two comma-separated numbers")
+    return tuple(weights)
+
+
+def finite_values(values):
+    out = []
+    for value in values:
+        if value is None:
+            continue
+        val = float(value)
+        if math.isfinite(val):
+            out.append(val)
+    return out
+
+
+def stats(values):
+    vals = finite_values(values)
+    if not vals:
+        return {
+            "count": 0,
+            "mean": None,
+            "median": None,
+            "std": None,
+            "min": None,
+            "max": None,
+        }
+    return {
+        "count": len(vals),
+        "mean": float(statistics.fmean(vals)),
+        "median": float(statistics.median(vals)),
+        "std": float(statistics.pstdev(vals)) if len(vals) > 1 else 0.0,
+        "min": float(min(vals)),
+        "max": float(max(vals)),
+    }
+
+
+def mean_bool(values):
+    vals = [bool(v) for v in values]
+    return float(sum(vals) / len(vals)) if vals else None
+
+
+def compact_stage_shares(stage_times):
+    out = {}
+    for key, val in stage_times.items():
+        out[f"{key}_share"] = float(val.get("share", 0.0))
+        out[f"{key}_mean_sec"] = float(val.get("mean", 0.0))
+    return out
+
+
+def run_variant_once(args, variance_mode, seed, use_state_coupling):
+    base = make_problem(
+        args.problem,
+        d=args.d,
+        L=args.L,
+        sigma=args.sigma,
+        alpha=args.alpha,
+    )
+    problem = ScalarizedProblem(base, weights=parse_weights(args.weights))
+    config = SingleOLHKGConfig(
+        N=args.N,
+        n0=args.n0,
+        K1=args.K1,
+        K2=args.K2,
+        posterior_pool_size=args.posterior_pool_size,
+        posterior_keep=args.posterior_keep,
+        n_thr=args.n_thr,
+        variance_mode=variance_mode,
+        lambda_feas=args.lambda_feas,
+        lambda_var=args.lambda_var,
+        lambda_coupling=args.lambda_coupling if use_state_coupling else 0.0,
+        use_state_coupling=use_state_coupling,
+        eval_pool_size=args.eval_pool_size,
+        seed=seed,
+    )
+    alg = SingleOLHKGAlgorithm(problem, config)
+    result = alg.run(verbose=args.verbose)
+    true_feasible = bool(result["true_feasible"])
+    posterior_feasible = bool(result.get("posterior_feasible", False))
+    violation = max(float(result["true_chance_margin"]), 0.0)
+    feasible_objective = float(result["true_objective"]) if true_feasible else None
+    feasible_regret = float(result["simple_regret"]) if true_feasible else None
+    variant = variance_mode + ("+sc" if use_state_coupling else "")
+    row = {
+        "variant": variant,
+        "variance_mode": variance_mode,
+        "use_state_coupling": bool(use_state_coupling),
+        "seed": int(seed),
+        "problem": args.problem,
+        "N": int(args.N),
+        "n0": int(args.n0),
+        "K1": int(args.K1),
+        "K2": int(args.K2),
+        "x_recommended": result["x_recommended"],
+        "true_feasible": true_feasible,
+        "posterior_feasible": posterior_feasible,
+        "false_feasible": bool(posterior_feasible and not true_feasible),
+        "true_objective": float(result["true_objective"]),
+        "best_feasible_objective": feasible_objective,
+        "true_best_objective": float(result["true_best_objective"]),
+        "simple_regret": float(result["simple_regret"]),
+        "feasible_simple_regret": feasible_regret,
+        "true_constraint_mean": float(result["true_constraint_mean"]),
+        "true_constraint_sigma": float(result["true_constraint_sigma"]),
+        "true_chance_margin": float(result["true_chance_margin"]),
+        "constraint_violation": float(violation),
+        "posterior_chance_margin": float(result["posterior_chance_margin"]),
+        "wall_time_sec": float(result["total_time_sec"]),
+        "n_simulations": int(result["n_simulations"]),
+        "n_distinct_solutions": int(result["n_distinct_solutions"]),
+        "variance_diagnostics": result.get("variance", {}),
+    }
+    row.update(compact_stage_shares(result["stage_times"]))
+    return row
+
+
+def summarize_variant(rows):
+    n = len(rows)
+    feasible_rows = [row for row in rows if row["true_feasible"]]
+    summary = {
+        "variant": rows[0]["variant"],
+        "variance_mode": rows[0]["variance_mode"],
+        "use_state_coupling": rows[0]["use_state_coupling"],
+        "n_runs": int(n),
+        "true_feasible_rate": mean_bool(row["true_feasible"] for row in rows),
+        "posterior_feasible_rate": mean_bool(row["posterior_feasible"] for row in rows),
+        "false_feasible_rate": mean_bool(row["false_feasible"] for row in rows),
+        "n_feasible": int(len(feasible_rows)),
+        "simple_regret": stats(row["simple_regret"] for row in rows),
+        "feasible_simple_regret": stats(row["feasible_simple_regret"] for row in rows),
+        "true_objective": stats(row["true_objective"] for row in rows),
+        "best_feasible_objective": stats(
+            row["best_feasible_objective"] for row in rows),
+        "constraint_violation": stats(row["constraint_violation"] for row in rows),
+        "true_chance_margin": stats(row["true_chance_margin"] for row in rows),
+        "wall_time_sec": stats(row["wall_time_sec"] for row in rows),
+        "kg_compute_share": stats(row.get("t_kg_compute_share") for row in rows),
+        "candidate_gen_share": stats(row.get("t_candidate_gen_share") for row in rows),
+        "posterior_solve_share": stats(
+            row.get("t_posterior_solve_share") for row in rows),
+    }
+    return summary
+
+
+def nested_get(doc, path, default=None):
+    cur = doc
+    for key in path:
+        if not isinstance(cur, dict) or key not in cur:
+            return default
+        cur = cur[key]
+    return cur
+
+
+def compare_to_baseline(summaries, baseline_variant):
+    baseline = summaries.get(baseline_variant)
+    if baseline is None:
+        return summaries
+    base_feasible_rate = baseline["true_feasible_rate"]
+    base_false_rate = baseline["false_feasible_rate"]
+    base_regret = nested_get(baseline, ["feasible_simple_regret", "median"])
+    base_violation = nested_get(baseline, ["constraint_violation", "mean"])
+    for variant, summary in summaries.items():
+        regret = nested_get(summary, ["feasible_simple_regret", "median"])
+        violation = nested_get(summary, ["constraint_violation", "mean"])
+        summary["vs_baseline"] = {
+            "baseline_variant": baseline_variant,
+            "feasible_rate_delta": (
+                None if base_feasible_rate is None
+                else float(summary["true_feasible_rate"] - base_feasible_rate)
+            ),
+            "false_feasible_rate_delta": (
+                None if base_false_rate is None
+                else float(summary["false_feasible_rate"] - base_false_rate)
+            ),
+            "feasible_regret_median_delta": (
+                None if regret is None or base_regret is None
+                else float(regret - base_regret)
+            ),
+            "violation_mean_delta": (
+                None if violation is None or base_violation is None
+                else float(violation - base_violation)
+            ),
+        }
+    return summaries
+
+
+def build_variants(args):
+    variants = [(mode, False) for mode in parse_csv(args.modes)]
+    variants.extend((mode, True) for mode in parse_csv(args.sc_modes))
+    seen = set()
+    unique = []
+    for mode, use_sc in variants:
+        key = (mode, use_sc)
+        if key not in seen:
+            unique.append(key)
+            seen.add(key)
+    return unique
+
+
+def run_benchmark(args):
+    seeds = parse_csv(args.seeds, int)
+    if not seeds:
+        seeds = list(range(args.seed_start, args.seed_start + args.n_seeds))
+    variants = build_variants(args)
+    rows = []
+    for variance_mode, use_state_coupling in variants:
+        variant = variance_mode + ("+sc" if use_state_coupling else "")
+        for seed in seeds:
+            print(f"[benchmark] variant={variant} seed={seed}", flush=True)
+            rows.append(run_variant_once(
+                args,
+                variance_mode,
+                seed,
+                use_state_coupling,
+            ))
+    grouped = {}
+    for row in rows:
+        grouped.setdefault(row["variant"], []).append(row)
+    summaries = {
+        variant: summarize_variant(variant_rows)
+        for variant, variant_rows in grouped.items()
+    }
+    compare_to_baseline(summaries, args.baseline_variant)
+    return {
+        "schema_version": 1,
+        "created_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        "config": {
+            "problem": args.problem,
+            "d": args.d,
+            "L": args.L,
+            "sigma": args.sigma,
+            "alpha": args.alpha,
+            "weights": parse_weights(args.weights),
+            "N": args.N,
+            "n0": args.n0,
+            "K1": args.K1,
+            "K2": args.K2,
+            "posterior_pool_size": args.posterior_pool_size,
+            "posterior_keep": args.posterior_keep,
+            "n_thr": args.n_thr,
+            "eval_pool_size": args.eval_pool_size,
+            "lambda_feas": args.lambda_feas,
+            "lambda_var": args.lambda_var,
+            "lambda_coupling": args.lambda_coupling,
+            "seeds": seeds,
+            "modes": parse_csv(args.modes),
+            "sc_modes": parse_csv(args.sc_modes),
+            "baseline_variant": args.baseline_variant,
+        },
+        "rows": rows,
+        "summary": summaries,
+    }
+
+
+def flatten_summary(summary):
+    row = {
+        "variant": summary["variant"],
+        "variance_mode": summary["variance_mode"],
+        "use_state_coupling": summary["use_state_coupling"],
+        "n_runs": summary["n_runs"],
+        "true_feasible_rate": summary["true_feasible_rate"],
+        "posterior_feasible_rate": summary["posterior_feasible_rate"],
+        "false_feasible_rate": summary["false_feasible_rate"],
+        "n_feasible": summary["n_feasible"],
+    }
+    for metric in (
+        "simple_regret",
+        "feasible_simple_regret",
+        "true_objective",
+        "best_feasible_objective",
+        "constraint_violation",
+        "true_chance_margin",
+        "wall_time_sec",
+        "kg_compute_share",
+        "candidate_gen_share",
+        "posterior_solve_share",
+    ):
+        for stat_key, value in summary[metric].items():
+            row[f"{metric}_{stat_key}"] = value
+    for key, value in summary.get("vs_baseline", {}).items():
+        row[f"vs_baseline_{key}"] = value
+    return row
+
+
+def write_csv(path, rows):
+    if not rows:
+        return
+    fieldnames = sorted({key for row in rows for key in row.keys()})
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in rows:
+            flat = {}
+            for key, value in row.items():
+                if isinstance(value, (dict, list, tuple)):
+                    flat[key] = json.dumps(json_safe(value), sort_keys=True)
+                else:
+                    flat[key] = value
+            writer.writerow(flat)
+
+
+def write_outputs(args, result):
+    out_dir = Path(args.out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    prefix = args.out_prefix or f"quality_benchmark_{time.strftime('%Y%m%d_%H%M%S')}"
+    json_path = out_dir / f"{prefix}.json"
+    rows_path = out_dir / f"{prefix}_rows.csv"
+    summary_path = out_dir / f"{prefix}_summary.csv"
+    json_path.write_text(json.dumps(json_safe(result), indent=2), encoding="utf-8")
+    write_csv(rows_path, result["rows"])
+    summary_rows = [flatten_summary(item) for item in result["summary"].values()]
+    write_csv(summary_path, summary_rows)
+    return {
+        "json": str(json_path),
+        "rows_csv": str(rows_path),
+        "summary_csv": str(summary_path),
+    }
+
+
+def printable_summary(result):
+    rows = []
+    for variant, summary in result["summary"].items():
+        rows.append({
+            "variant": variant,
+            "true_feasible_rate": summary["true_feasible_rate"],
+            "false_feasible_rate": summary["false_feasible_rate"],
+            "feasible_regret_median": nested_get(
+                summary, ["feasible_simple_regret", "median"]),
+            "violation_mean": nested_get(
+                summary, ["constraint_violation", "mean"]),
+            "wall_time_median_sec": nested_get(
+                summary, ["wall_time_sec", "median"]),
+            "vs_baseline": summary.get("vs_baseline", {}),
+        })
+    return rows
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--problem", default="RegimeRZDT1")
+    parser.add_argument("--d", type=int, default=5)
+    parser.add_argument("--L", type=int, default=100)
+    parser.add_argument("--sigma", type=float, default=0.04)
+    parser.add_argument("--alpha", type=float, default=0.05)
+    parser.add_argument("--weights", default="0.5,0.5")
+    parser.add_argument("--N", type=int, default=30)
+    parser.add_argument("--n0", type=int, default=8)
+    parser.add_argument("--K1", type=int, default=25)
+    parser.add_argument("--K2", type=int, default=0)
+    parser.add_argument("--posterior_pool_size", type=int, default=300)
+    parser.add_argument("--posterior_keep", type=int, default=15)
+    parser.add_argument("--n_thr", type=int, default=5)
+    parser.add_argument("--eval_pool_size", type=int, default=500)
+    parser.add_argument("--lambda_feas", type=float, default=0.25)
+    parser.add_argument("--lambda_var", type=float, default=0.25)
+    parser.add_argument("--lambda_coupling", type=float, default=0.15)
+    parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
+    parser.add_argument("--sc_modes", default="orthogonal")
+    parser.add_argument("--baseline_variant", default="pooled")
+    parser.add_argument("--seeds", default="")
+    parser.add_argument("--seed_start", type=int, default=0)
+    parser.add_argument("--n_seeds", type=int, default=10)
+    parser.add_argument("--out_dir", default=str(ROOT / "profiles"))
+    parser.add_argument("--out_prefix", default="")
+    parser.add_argument("--verbose", action="store_true")
+    args = parser.parse_args()
+
+    if args.N <= args.n0:
+        raise ValueError("--N must be larger than --n0")
+
+    result = run_benchmark(args)
+    paths = write_outputs(args, result)
+    print(json.dumps(json_safe({
+        "paths": paths,
+        "summary": printable_summary(result),
+    }), indent=2))
+
+
+if __name__ == "__main__":
+    main()

@@ -36,7 +36,24 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/validate_performance.py 
 The tracked baseline is intentionally small-budget and machine-local.  It is a
 development gate, not a final paper experiment.
 
-The first promoted baseline used `class` HVD.  Guarded `orthogonal` HVD is the
-current tracked baseline.  Later candidates, such as `factor` HVD or SC
-coupling variants, are promoted only after passing the quality gates and
-remaining within the configured wall-time budget.
+Quality benchmark:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_quality.py \
+  --N 20 \
+  --n0 5 \
+  --K1 15 \
+  --K2 1 \
+  --n_seeds 5
+```
+
+This benchmark writes JSON plus row/summary CSV files under
+`SC-OLH-KG/profiles/`.  It compares optimization quality across variance modes
+and optional SC coupling; wall time is included only as a diagnostic column.
+
+The first promoted baseline used `class` HVD, and guarded `orthogonal` HVD was
+temporarily promoted by the earlier speed-first gate.  After switching to
+quality-first validation, `pooled` is the current tracked baseline.  Later
+candidates, such as fixed `class`/`orthogonal`/`factor` HVD or SC coupling
+variants, are promoted only after passing the quality gates and remaining
+within the configured wall-time budget.

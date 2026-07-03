@@ -1,57 +1,57 @@
 {
   "schema_version": 1,
-  "created_at": "2026-07-03T21:22:36",
+  "created_at": "2026-07-03T21:32:57",
   "baseline_policy": "Quality-first baseline. Promotion requires feasible primary and state-coupled smoke runs, non-worse simple_regret/true_objective when those metrics exist, and wall time within max_wall_slowdown. Faster wall time alone is not an optimization improvement.",
   "promoted_candidate": {
     "name": "single_olhkg",
-    "primary_wall_time_sec": 0.28337550163269043,
+    "primary_wall_time_sec": 0.24681425094604492,
     "metrics": {
       "name": "single_olhkg",
-      "wall_time_sec": 0.28337550163269043,
+      "wall_time_sec": 0.24681425094604492,
       "wall_time_sec_runs": [
-        0.2782711982727051,
-        0.2884798049926758
+        0.240797758102417,
+        0.25283074378967285
       ],
       "runs": 2,
       "stage_times": {
         "t_posterior_solve": {
-          "total": 0.09399127960205078,
-          "mean": 0.013427325657435827,
-          "share": 0.3511061909465211
+          "total": 0.08286762237548828,
+          "mean": 0.011838231767926897,
+          "share": 0.34992806566613005
         },
         "t_candidate_gen": {
-          "total": 0.017319202423095703,
-          "mean": 0.0024741717747279574,
-          "share": 0.064696206060293
+          "total": 0.0157930850982666,
+          "mean": 0.002256155014038086,
+          "share": 0.06669002393112829
         },
         "t_kg_compute": {
-          "total": 0.0955357551574707,
-          "mean": 0.013647965022495814,
-          "share": 0.35687560840279403
+          "total": 0.0909724235534668,
+          "mean": 0.012996060507638114,
+          "share": 0.384152498774247
         },
         "t_simulate": {
-          "total": 0.0003428459167480469,
-          "mean": 4.8977988106863836e-05,
-          "share": 0.0012807073637110945
+          "total": 0.0004172325134277344,
+          "mean": 5.9604644775390625e-05,
+          "share": 0.0017618626210273774
         },
         "t_update": {
-          "total": 0.0017549991607666016,
-          "mean": 0.00025071416582380025,
-          "share": 0.006555832339553106
+          "total": 0.0016849040985107422,
+          "mean": 0.0002407005855015346,
+          "share": 0.007114904653028843
         },
         "t_eval": {
-          "total": 0.058756351470947266,
-          "mean": 0.00839376449584961,
-          "share": 0.21948545488712765
+          "total": 0.04507803916931152,
+          "mean": 0.006439719881330218,
+          "share": 0.19035264435443844
         }
       },
       "n_simulations": 12,
       "n_distinct_solutions": 12,
       "true_feasible": true,
-      "simple_regret": 0.125,
-      "true_objective": 0.5,
+      "simple_regret": 4.9024320360746554e-05,
+      "true_objective": 0.37504902432036075,
       "true_best_objective": 0.375,
-      "variance_mode": "orthogonal"
+      "variance_mode": "pooled"
     }
   },
   "validation_config": {
@@ -67,20 +67,20 @@
     "max_wall_slowdown": 1.25,
     "max_regret_delta": 0.0,
     "max_objective_delta": 0.0,
-    "variance_mode": "orthogonal",
+    "variance_mode": "pooled",
     "candidate_problem": "RegimeRZDT1",
     "legacy_problem": "RZDT1"
   },
   "acceptance_gates": {
-    "wall_time_ratio": 1.030873390131721,
+    "wall_time_ratio": 0.8709794937247752,
     "wall_time_constraint_pass": true,
     "baseline_simple_regret": 0.125,
-    "candidate_simple_regret": 0.125,
-    "simple_regret_delta": 0.0,
+    "candidate_simple_regret": 4.9024320360746554e-05,
+    "simple_regret_delta": -0.12495097567963925,
     "quality_regret_pass": true,
     "baseline_true_objective": 0.5,
-    "candidate_true_objective": 0.5,
-    "true_objective_delta": 0.0,
+    "candidate_true_objective": 0.37504902432036075,
+    "true_objective_delta": -0.12495097567963925,
     "quality_objective_pass": true,
     "single_feasible_pass": true,
     "sc_feasible_pass": true,
@@ -89,7 +89,7 @@
   },
   "full_validation": {
     "schema_version": 1,
-    "created_at": "2026-07-03T21:22:36",
+    "created_at": "2026-07-03T21:32:57",
     "validation_config": {
       "N": 12,
       "n0": 5,
@@ -103,7 +103,7 @@
       "max_wall_slowdown": 1.25,
       "max_regret_delta": 0.0,
       "max_objective_delta": 0.0,
-      "variance_mode": "orthogonal",
+      "variance_mode": "pooled",
       "candidate_problem": "RegimeRZDT1",
       "legacy_problem": "RZDT1"
     },
@@ -111,101 +111,101 @@
     "baseline_source": "promoted_candidate",
     "baseline_file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/baselines/current.json",
     "baseline_metrics": {
-      "wall_time_sec": 0.2748887538909912,
+      "wall_time_sec": 0.28337550163269043,
       "simple_regret": 0.125,
       "true_objective": 0.5,
       "true_best_objective": 0.375,
       "true_feasible": true
     },
-    "baseline_wall_time_sec": 0.2748887538909912,
+    "baseline_wall_time_sec": 0.28337550163269043,
     "legacy_baseline": null,
     "candidates": {
       "single_olhkg": {
         "name": "single_olhkg",
-        "wall_time_sec": 0.28337550163269043,
+        "wall_time_sec": 0.24681425094604492,
         "wall_time_sec_runs": [
-          0.2782711982727051,
-          0.2884798049926758
+          0.240797758102417,
+          0.25283074378967285
         ],
         "runs": 2,
         "stage_times": {
           "t_posterior_solve": {
-            "total": 0.09399127960205078,
-            "mean": 0.013427325657435827,
-            "share": 0.3511061909465211
+            "total": 0.08286762237548828,
+            "mean": 0.011838231767926897,
+            "share": 0.34992806566613005
           },
           "t_candidate_gen": {
-            "total": 0.017319202423095703,
-            "mean": 0.0024741717747279574,
-            "share": 0.064696206060293
+            "total": 0.0157930850982666,
+            "mean": 0.002256155014038086,
+            "share": 0.06669002393112829
           },
           "t_kg_compute": {
-            "total": 0.0955357551574707,
-            "mean": 0.013647965022495814,
-            "share": 0.35687560840279403
+            "total": 0.0909724235534668,
+            "mean": 0.012996060507638114,
+            "share": 0.384152498774247
           },
           "t_simulate": {
-            "total": 0.0003428459167480469,
-            "mean": 4.8977988106863836e-05,
-            "share": 0.0012807073637110945
+            "total": 0.0004172325134277344,
+            "mean": 5.9604644775390625e-05,
+            "share": 0.0017618626210273774
           },
           "t_update": {
-            "total": 0.0017549991607666016,
-            "mean": 0.00025071416582380025,
-            "share": 0.006555832339553106
+            "total": 0.0016849040985107422,
+            "mean": 0.0002407005855015346,
+            "share": 0.007114904653028843
           },
           "t_eval": {
-            "total": 0.058756351470947266,
-            "mean": 0.00839376449584961,
-            "share": 0.21948545488712765
+            "total": 0.04507803916931152,
+            "mean": 0.006439719881330218,
+            "share": 0.19035264435443844
           }
         },
         "n_simulations": 12,
         "n_distinct_solutions": 12,
         "true_feasible": true,
-        "simple_regret": 0.125,
-        "true_objective": 0.5,
+        "simple_regret": 4.9024320360746554e-05,
+        "true_objective": 0.37504902432036075,
         "true_best_objective": 0.375,
-        "variance_mode": "orthogonal"
+        "variance_mode": "pooled"
       },
       "sc_olhkg": {
         "name": "sc_olhkg",
-        "wall_time_sec": 0.7686580419540405,
+        "wall_time_sec": 0.7213006019592285,
         "wall_time_sec_runs": [
-          0.795814037322998,
-          0.741502046585083
+          0.7189319133758545,
+          0.7236692905426025
         ],
         "runs": 2,
         "stage_times": {
           "t_posterior_solve": {
-            "total": 0.3228797912597656,
-            "mean": 0.04612568446568081,
-            "share": 0.4693672711140687
+            "total": 0.3106975555419922,
+            "mean": 0.044385365077427456,
+            "share": 0.4625854107186658
           },
           "t_candidate_gen": {
-            "total": 0.046424150466918945,
-            "mean": 0.006632021495274135,
-            "share": 0.06748634447956524
+            "total": 0.04696297645568848,
+            "mean": 0.006708996636526925,
+            "share": 0.06992133463821068
           },
           "t_kg_compute": {
-            "total": 0.15793704986572266,
-            "mean": 0.022562435695103238,
-            "share": 0.22959158209948427
+            "total": 0.16249895095825195,
+            "mean": 0.02321413585117885,
+            "share": 0.24193831792222065
           },
           "t_simulate": {
-            "total": 0.00038814544677734375,
-            "mean": 5.544934953962054e-05,
-            "share": 0.0005642433316697166
+            "total": 0.0004413127899169922,
+            "mean": 6.304468427385603e-05,
+            "share": 0.0006570533129011407
           },
           "t_update": {
-            "total": 0.002228975296020508,
-            "mean": 0.000318425042288644,
-            "share": 0.003240240115344091
+            "total": 0.002157926559448242,
+            "mean": 0.0003082752227783203,
+            "share": 0.0032128522609768903
           },
           "t_eval": {
-            "total": 0.15804624557495117,
-            "mean": 0.02257803508213588,
-            "share": 0.22975031885986802
+            "total": 0.1488957405090332,
+            "mean": 0.021270820072719028,
+            "share": 0.2216850311470248
           }
         },
         "n_simulations": 12,
@@ -214,46 +214,46 @@
         "simple_regret": 0.125,
         "true_objective": 0.5,
         "true_best_objective": 0.375,
-        "variance_mode": "orthogonal"
+        "variance_mode": "pooled"
       },
       "biobj_olhkg_smoke": {
         "name": "biobj_olhkg_smoke",
-        "wall_time_sec": 0.1398146152496338,
+        "wall_time_sec": 0.14392542839050293,
         "wall_time_sec_runs": [
-          0.14493680000305176,
-          0.13469243049621582
+          0.15120720863342285,
+          0.136643648147583
         ],
         "runs": 2,
         "stage_times": {
           "t_posterior_solve": {
-            "total": 0.0355677604675293,
-            "mean": 0.005081108638218471,
-            "share": 0.27806316448712404
+            "total": 0.03533220291137695,
+            "mean": 0.005047457558768136,
+            "share": 0.27250711176737763
           },
           "t_candidate_gen": {
-            "total": 0.002349376678466797,
-            "mean": 0.000335625239780971,
-            "share": 0.018367057841134456
+            "total": 0.0025463104248046875,
+            "mean": 0.00036375863211495537,
+            "share": 0.019638959429366866
           },
           "t_kg_compute": {
-            "total": 0.07171034812927246,
-            "mean": 0.010244335447038923,
-            "share": 0.5606202376869511
+            "total": 0.07281017303466797,
+            "mean": 0.010401453290666853,
+            "share": 0.5615639084471431
           },
           "t_simulate": {
-            "total": 0.0003466606140136719,
-            "mean": 4.9522944859095984e-05,
-            "share": 0.0027101382282331537
+            "total": 0.00037407875061035156,
+            "mean": 5.343982151576451e-05,
+            "share": 0.0028851617363929412
           },
           "t_update": {
-            "total": 0.0022335052490234375,
-            "mean": 0.00031907217843191963,
-            "share": 0.017461193206388025
+            "total": 0.0023174285888671875,
+            "mean": 0.0003310612269810268,
+            "share": 0.017873659705378832
           },
           "t_eval": {
-            "total": 0.015704870223999023,
-            "mean": 0.0022435528891427176,
-            "share": 0.12277820855016924
+            "total": 0.016275882720947266,
+            "mean": 0.0023251261029924664,
+            "share": 0.12553119891434067
           }
         },
         "n_simulations": 12,
@@ -263,17 +263,17 @@
       }
     },
     "primary_candidate": "single_olhkg",
-    "primary_wall_time_sec": 0.28337550163269043,
+    "primary_wall_time_sec": 0.24681425094604492,
     "gates": {
-      "wall_time_ratio": 1.030873390131721,
+      "wall_time_ratio": 0.8709794937247752,
       "wall_time_constraint_pass": true,
       "baseline_simple_regret": 0.125,
-      "candidate_simple_regret": 0.125,
-      "simple_regret_delta": 0.0,
+      "candidate_simple_regret": 4.9024320360746554e-05,
+      "simple_regret_delta": -0.12495097567963925,
       "quality_regret_pass": true,
       "baseline_true_objective": 0.5,
-      "candidate_true_objective": 0.5,
-      "true_objective_delta": 0.0,
+      "candidate_true_objective": 0.37504902432036075,
+      "true_objective_delta": -0.12495097567963925,
       "quality_objective_pass": true,
       "single_feasible_pass": true,
       "sc_feasible_pass": true,
