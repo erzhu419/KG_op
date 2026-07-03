@@ -352,10 +352,14 @@ def build_validation(args):
             args.max_objective_delta,
         ),
         "single_feasible_pass": bool(single.get("true_feasible", False)),
-        "sc_feasible_pass": bool(sc.get("true_feasible", False)),
+        "sc_smoke_pass": bool(sc.get("n_simulations", 0) == args.N),
+        "sc_feasible_observed": bool(sc.get("true_feasible", False)),
+        "sc_feasible_required": bool(args.require_sc_feasible),
         "biobj_smoke_pass": bool(
             biobj.get("pareto_size", 0) > 0 and biobj.get("hv_final", 0.0) >= 0.0),
     }
+    if args.require_sc_feasible:
+        gates["sc_feasible_pass"] = bool(sc.get("true_feasible", False))
     gates["all_pass"] = bool(all(v for k, v in gates.items() if k.endswith("_pass")))
 
     return {
@@ -374,6 +378,7 @@ def build_validation(args):
             "max_wall_slowdown": args.max_wall_slowdown,
             "max_regret_delta": args.max_regret_delta,
             "max_objective_delta": args.max_objective_delta,
+            "require_sc_feasible": args.require_sc_feasible,
             "variance_mode": args.variance_mode,
             "candidate_problem": args.candidate_problem,
             "legacy_problem": args.legacy_problem,
@@ -401,9 +406,11 @@ def promote(validation):
         "created_at": validation["created_at"],
         "baseline_policy": (
             "Quality-first baseline. Promotion requires feasible primary and "
-            "state-coupled smoke runs, non-worse simple_regret/true_objective "
-            "when those metrics exist, and wall time within max_wall_slowdown. "
-            "Faster wall time alone is not an optimization improvement."
+            "state-coupled and bi-objective smoke runs, non-worse "
+            "simple_regret/true_objective when those metrics exist, and wall "
+            "time within max_wall_slowdown. SC feasibility is recorded but is "
+            "only a hard gate when require_sc_feasible is enabled. Faster wall "
+            "time alone is not an optimization improvement."
         ),
         "promoted_candidate": {
             "name": validation["primary_candidate"],
@@ -436,7 +443,7 @@ def main():
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--legacy_problem", default="RZDT1")
     parser.add_argument("--candidate_problem", default="RegimeRZDT1")
-    parser.add_argument("--variance_mode", default="pooled",
+    parser.add_argument("--variance_mode", default="orthogonal",
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
     parser.add_argument("--biobj_variance_mode", default="class",
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
@@ -447,6 +454,7 @@ def main():
                         type=float, default=1.25)
     parser.add_argument("--max_regret_delta", type=float, default=0.0)
     parser.add_argument("--max_objective_delta", type=float, default=0.0)
+    parser.add_argument("--require-sc-feasible", action="store_true")
     parser.add_argument("--always-run-legacy", action="store_true")
     parser.add_argument("--promote-if-pass", action="store_true")
     parser.add_argument("--out", default=None)

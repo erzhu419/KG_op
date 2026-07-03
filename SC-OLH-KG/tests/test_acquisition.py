@@ -40,6 +40,23 @@ class AcquisitionTests(unittest.TestCase):
         sig2 = [self.hvd.predict_variance(0, x, self.problem) for x in self.candidates]
         kg = compute_kg_vectorized(self.obj, self.candidates, sig2)
         np.testing.assert_allclose(score["total"], kg, rtol=1e-12, atol=1e-12)
+        np.testing.assert_allclose(score["kg_obj_scaled"], kg, rtol=1e-12, atol=1e-12)
+
+    def test_auxiliary_scores_use_scaled_objective_kg(self):
+        acq = OLHKGAcquisition(lambda_feas=0.25, lambda_var=0.25, lambda_coupling=0.0)
+        score = acq.score(self.candidates, self.obj, self.con, self.hvd, self.problem)
+        sig2 = [self.hvd.predict_variance(0, x, self.problem) for x in self.candidates]
+        kg = compute_kg_vectorized(self.obj, self.candidates, sig2)
+        self.assertGreaterEqual(float(np.min(score["kg_obj_scaled"])), 0.0)
+        self.assertLessEqual(float(np.max(score["kg_obj_scaled"])), 1.0)
+        if float(np.max(kg) - np.min(kg)) > 1e-14:
+            self.assertAlmostEqual(float(np.max(score["kg_obj_scaled"])), 1.0)
+        expected = (
+            score["kg_obj_scaled"]
+            + 0.25 * score["kg_feas"]
+            + 0.25 * score["kg_var"]
+        )
+        np.testing.assert_allclose(score["total"], expected, rtol=1e-12, atol=1e-12)
 
     def test_chance_margin_formula(self):
         mu = 0.2

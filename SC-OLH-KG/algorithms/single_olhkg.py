@@ -256,6 +256,7 @@ class SingleOLHKGAlgorithm:
             row["x_selected"] = list(map(int, x_selected))
             row["score_selected"] = float(score["total"][selected_idx])
             row["kg_obj_selected"] = float(score["kg_obj"][selected_idx])
+            row["kg_obj_scaled_selected"] = float(score["kg_obj_scaled"][selected_idx])
             row["kg_feas_selected"] = float(score["kg_feas"][selected_idx])
             row["kg_var_selected"] = float(score["kg_var"][selected_idx])
             row["kg_coupling_selected"] = float(score["kg_coupling"][selected_idx])

@@ -121,8 +121,14 @@ class OLHKGAcquisition:
             candidates, con_gpr, variance_model, problem)
         kg_var = self.variance_scores(candidates, variance_model, problem, 1)
         kg_coupling = self.coupling_scores(candidates, observed or [])
+        aux_active = (
+            abs(self.lambda_feas) > 0.0
+            or abs(self.lambda_var) > 0.0
+            or abs(self.lambda_coupling) > 0.0
+        )
+        kg_obj_scaled = safe_normalize(kg_obj) if aux_active else kg_obj
         total = (
-            kg_obj
+            kg_obj_scaled
             + self.lambda_feas * kg_feas
             + self.lambda_var * kg_var
             + self.lambda_coupling * kg_coupling
@@ -130,6 +136,7 @@ class OLHKGAcquisition:
         return {
             "total": total,
             "kg_obj": kg_obj,
+            "kg_obj_scaled": kg_obj_scaled,
             "kg_feas": kg_feas,
             "kg_var": kg_var,
             "kg_coupling": kg_coupling,

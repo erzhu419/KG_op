@@ -14,6 +14,9 @@ quality-first:
   `--max_wall_slowdown`.
 
 Faster wall time alone is not a valid algorithmic improvement.
+SC feasibility is recorded by default, but is only a hard gate when
+`--require-sc-feasible` is passed because SC coupling is a separate improvement
+stage from the primary single-objective OLH-KG baseline.
 
 Workflow:
 
@@ -28,7 +31,7 @@ Default quick gate:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/validate_performance.py \
-  --variance_mode pooled \
+  --variance_mode orthogonal \
   --repeats 2 \
   --promote-if-pass
 ```
@@ -65,7 +68,8 @@ constraint-mean error, false-feasible points, and missed-feasible points.
 
 The first promoted baseline used `class` HVD, and guarded `orthogonal` HVD was
 temporarily promoted by the earlier speed-first gate.  After switching to
-quality-first validation, `pooled` is the current tracked baseline.  Later
-candidates, such as fixed `class`/`orthogonal`/`factor` HVD or SC coupling
-variants, are promoted only after passing the quality gates and remaining
-within the configured wall-time budget.
+quality-first validation, `pooled` became the first quality baseline.  After
+normalizing the objective-KG component when auxiliary scores are enabled,
+`orthogonal` is the current tracked primary baseline.  `factor` and SC coupling
+variants are promoted only after passing the quality gates and remaining within
+the configured wall-time budget.
