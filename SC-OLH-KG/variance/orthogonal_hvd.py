@@ -333,14 +333,23 @@ class OrthogonalHVD:
 
     def predict_certification_variance(self, i, x, problem=None):
         """Variance used inside conservative chance feasibility checks."""
-        return float(
+        cert = (
             self.predict_variance(i, x, problem)
             + self.model_uncertainty(i, x, problem)
         )
+        if self.mode in ("orthogonal", "factor"):
+            # Smooth log-variance fits are allowed to guide learning, but
+            # feasibility certification should not be more optimistic than the
+            # coarse regime evidence in small-budget runs.
+            cert = max(cert, self._class_variance(i, x, problem))
+        return float(max(cert, self.floor))
 
     def predict_certification_variance_many(self, i, X, problem=None):
         base = self.predict_variance_many(i, X, problem)
-        return base + self.model_uncertainty_many(i, X, problem, base)
+        cert = base + self.model_uncertainty_many(i, X, problem, base)
+        if self.mode in ("orthogonal", "factor"):
+            cert = np.maximum(cert, self._class_variance_many(i, X, problem))
+        return np.maximum(cert, self.floor)
 
     def predict_decomposition(self, i, x, problem=None):
         """Return interpretable decomposition diagnostics."""
@@ -429,4 +438,5 @@ class OrthogonalHVD:
             },
             "activation_min_records": int(self.config.activation_min_records),
             "certification_kappa": float(self.config.certification_kappa),
+            "certification_uses_class_floor": bool(self.mode in ("orthogonal", "factor")),
         }

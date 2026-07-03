@@ -28,7 +28,7 @@ Default quick gate:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/validate_performance.py \
-  --variance_mode orthogonal \
+  --variance_mode pooled \
   --repeats 2 \
   --promote-if-pass
 ```
@@ -50,6 +50,18 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_quality.py \
 This benchmark writes JSON plus row/summary CSV files under
 `SC-OLH-KG/profiles/`.  It compares optimization quality across variance modes
 and optional SC coupling; wall time is included only as a diagnostic column.
+
+HVD calibration diagnostic:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/diagnose_hvd_calibration.py \
+  --variance_mode orthogonal \
+  --seed 4
+```
+
+The diagnostic evaluates the final recommendation and the axis grid against
+true chance feasibility.  It reports variance calibration ratios, posterior
+constraint-mean error, false-feasible points, and missed-feasible points.
 
 The first promoted baseline used `class` HVD, and guarded `orthogonal` HVD was
 temporarily promoted by the earlier speed-first gate.  After switching to

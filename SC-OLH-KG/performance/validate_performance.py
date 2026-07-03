@@ -436,7 +436,7 @@ def main():
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--legacy_problem", default="RZDT1")
     parser.add_argument("--candidate_problem", default="RegimeRZDT1")
-    parser.add_argument("--variance_mode", default="orthogonal",
+    parser.add_argument("--variance_mode", default="pooled",
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
     parser.add_argument("--biobj_variance_mode", default="class",
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])

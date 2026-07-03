@@ -62,6 +62,24 @@ class OrthogonalHVDTests(unittest.TestCase):
         cert = model.predict_certification_variance(0, (10, 0, 0), self.problem)
         self.assertGreaterEqual(cert, pred)
 
+    def test_orthogonal_certification_uses_class_floor(self):
+        X = [(35, 0, 0), (40, 0, 0), (45, 0, 0), (70, 0, 0), (80, 0, 0)]
+        residuals = [0.08, 0.09, 0.10, 0.02, 0.02]
+        model = OrthogonalHVD(
+            mode="orthogonal",
+            n_outputs=1,
+            activation_min_records=3,
+            shrinkage_kappa=0.0,
+        )
+        model.fit_from_residuals(X, residuals, 0, self.problem)
+        x = (42, 0, 0)
+        decomposition = model.predict_decomposition(0, x, self.problem)
+        self.assertGreaterEqual(
+            decomposition["certification_variance"],
+            decomposition["class_variance"],
+        )
+        self.assertTrue(model.diagnostics()["certification_uses_class_floor"])
+
 
 if __name__ == "__main__":
     unittest.main()
