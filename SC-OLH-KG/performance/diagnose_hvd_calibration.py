@@ -99,9 +99,11 @@ def build_config(args):
         variance_mode=args.variance_mode,
         lambda_feas=args.lambda_feas,
         lambda_var=args.lambda_var,
+        lambda_mean=args.lambda_mean,
         lambda_coupling=args.lambda_coupling if args.use_state_coupling else 0.0,
         coupling_safety_z=args.coupling_safety_z,
         coupling_gate_temperature=args.coupling_gate_temperature,
+        recommendation_infeasible_penalty=args.recommendation_infeasible_penalty,
         use_state_coupling=args.use_state_coupling,
         use_state_basis=args.use_state_basis,
         eval_pool_size=args.eval_pool_size,
@@ -277,9 +279,11 @@ def run_diagnostic(args):
             "use_state_basis": args.use_state_basis,
             "lambda_feas": args.lambda_feas,
             "lambda_var": args.lambda_var,
+            "lambda_mean": args.lambda_mean,
             "lambda_coupling": args.lambda_coupling,
             "coupling_safety_z": args.coupling_safety_z,
             "coupling_gate_temperature": args.coupling_gate_temperature,
+            "recommendation_infeasible_penalty": args.recommendation_infeasible_penalty,
             "boundary_window": args.boundary_window,
         },
         "run_result": result,
@@ -349,9 +353,11 @@ def main():
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
+    parser.add_argument("--lambda_mean", type=float, default=0.10)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
     parser.add_argument("--coupling_safety_z", type=float, default=0.5)
     parser.add_argument("--coupling_gate_temperature", type=float, default=0.25)
+    parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
     parser.add_argument("--use-state-coupling", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--seed", type=int, default=4)

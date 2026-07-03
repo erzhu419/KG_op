@@ -6,7 +6,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from core.candidates import axis_candidates, boundary_solutions  # noqa: E402
+from core.candidates import (  # noqa: E402
+    axis_candidates,
+    axis_landmark_candidates,
+    boundary_solutions,
+)
 from problems.rzdt import RZDT2, StatePolicyRZDT1  # noqa: E402
 
 
@@ -34,6 +38,16 @@ class CandidateTests(unittest.TestCase):
         self.assertIn((0, 0, 0, 0, 0), rows)
         self.assertIn((100, 100, 100, 100, 100), rows)
         self.assertEqual(len(rows), 9)
+        self.assertEqual(len(rows), len(set(rows)))
+
+    def test_axis_landmarks_cover_low_boundary_without_axis_oracle(self):
+        problem = RZDT2(d=5, L=100, sigma=0.04)
+        rows = axis_landmark_candidates(problem, n=8)
+        self.assertIn((0, 0, 0, 0, 0), rows)
+        self.assertIn((100, 0, 0, 0, 0), rows)
+        self.assertIn((10, 0, 0, 0, 0), rows)
+        self.assertIn((14, 0, 0, 0, 0), rows)
+        self.assertEqual(len(rows), 8)
         self.assertEqual(len(rows), len(set(rows)))
 
 

@@ -45,9 +45,11 @@ def _problem_args(args, problem):
         "variance_mode": args.variance_mode,
         "lambda_feas": args.lambda_feas,
         "lambda_var": args.lambda_var,
+        "lambda_mean": args.lambda_mean,
         "lambda_coupling": args.lambda_coupling,
         "recommendation_safety_z": args.recommendation_safety_z,
         "recommendation_noise_floor_scale": args.recommendation_noise_floor_scale,
+        "recommendation_infeasible_penalty": args.recommendation_infeasible_penalty,
         "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
         "baselines": args.baselines,
         "baseline_batch_candidates": args.baseline_batch_candidates,
@@ -168,9 +170,11 @@ def main():
     parser.add_argument("--variance_mode", default="orthogonal")
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
+    parser.add_argument("--lambda_mean", type=float, default=0.10)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
+    parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument(
         "--baselines",

@@ -133,11 +133,13 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         variance_mode=variance_mode,
         lambda_feas=args.lambda_feas,
         lambda_var=args.lambda_var,
+        lambda_mean=args.lambda_mean,
         lambda_coupling=args.lambda_coupling if use_state_coupling else 0.0,
         coupling_safety_z=args.coupling_safety_z,
         coupling_gate_temperature=args.coupling_gate_temperature,
         recommendation_safety_z=args.recommendation_safety_z,
         recommendation_noise_floor_scale=args.recommendation_noise_floor_scale,
+        recommendation_infeasible_penalty=args.recommendation_infeasible_penalty,
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
@@ -323,11 +325,13 @@ def run_benchmark(args):
             "eval_pool_size": args.eval_pool_size,
             "lambda_feas": args.lambda_feas,
             "lambda_var": args.lambda_var,
+            "lambda_mean": args.lambda_mean,
             "lambda_coupling": args.lambda_coupling,
             "coupling_safety_z": args.coupling_safety_z,
             "coupling_gate_temperature": args.coupling_gate_temperature,
             "recommendation_safety_z": args.recommendation_safety_z,
             "recommendation_noise_floor_scale": args.recommendation_noise_floor_scale,
+            "recommendation_infeasible_penalty": args.recommendation_infeasible_penalty,
             "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
             "use_state_basis": args.use_state_basis,
             "seeds": seeds,
@@ -447,11 +451,13 @@ def main():
     parser.add_argument("--eval_pool_size", type=int, default=500)
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
+    parser.add_argument("--lambda_mean", type=float, default=0.10)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
     parser.add_argument("--coupling_safety_z", type=float, default=0.5)
     parser.add_argument("--coupling_gate_temperature", type=float, default=0.25)
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
+    parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--modes", default="pooled,class,orthogonal,factor")

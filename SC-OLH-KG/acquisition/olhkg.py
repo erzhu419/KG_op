@@ -22,7 +22,8 @@ def safe_normalize(values):
 class OLHKGAcquisition:
     """Approximate OLH-KG score.
 
-    score = KG_obj + lambda_f KG_feas + lambda_v KG_var + lambda_rho KG_coupling
+    score = KG_obj + lambda_f KG_feas + lambda_v KG_var + lambda_m KG_mean
+        + lambda_rho KG_coupling
 
     Setting all auxiliary lambdas to zero returns the raw objective KG exactly.
     """
@@ -31,6 +32,7 @@ class OLHKGAcquisition:
         self,
         lambda_feas=0.25,
         lambda_var=0.25,
+        lambda_mean=0.0,
         lambda_coupling=0.0,
         boundary_scale=1.0,
         coupling_safety_z=0.5,
@@ -39,6 +41,7 @@ class OLHKGAcquisition:
     ):
         self.lambda_feas = float(lambda_feas)
         self.lambda_var = float(lambda_var)
+        self.lambda_mean = float(lambda_mean)
         self.lambda_coupling = float(lambda_coupling)
         self.boundary_scale = max(float(boundary_scale), 1e-8)
         self.coupling_safety_z = float(coupling_safety_z)
@@ -90,6 +93,25 @@ class OLHKGAcquisition:
             ], dtype=float)
         return safe_normalize(raw)
 
+    def mean_scores(self, candidates, obj_gpr, feasibility_details):
+        if len(candidates) == 0:
+            return np.zeros(0, dtype=float)
+        mu_obj = obj_gpr.posterior_mean_many(candidates)
+        exploit = safe_normalize(-mu_obj)
+        if not feasibility_details:
+            return exploit
+        margins = np.array([
+            float(item["chance_margin"]) for item in feasibility_details
+        ], dtype=float)
+        variance = np.array([
+            float(item["variance_g"]) for item in feasibility_details
+        ], dtype=float)
+        sig = np.sqrt(np.maximum(variance, 1e-12))
+        scaled = -margins / (1.5 * sig)
+        scaled = np.clip(scaled, -60.0, 60.0)
+        feasible_gate = 1.0 / (1.0 + np.exp(-scaled))
+        return exploit * feasible_gate
+
     def coupling_scores(self, candidates, observed):
         if self.encoder is None:
             return np.zeros(len(candidates), dtype=float)
@@ -128,6 +150,7 @@ class OLHKGAcquisition:
                 "kg_obj_scaled": np.zeros(0, dtype=float),
                 "kg_feas": np.zeros(0, dtype=float),
                 "kg_var": np.zeros(0, dtype=float),
+                "kg_mean": np.zeros(0, dtype=float),
                 "kg_coupling": np.zeros(0, dtype=float),
                 "kg_coupling_raw": np.zeros(0, dtype=float),
                 "kg_coupling_gate": np.zeros(0, dtype=float),
@@ -144,16 +167,19 @@ class OLHKGAcquisition:
         kg_feas, feas_details = self.feasibility_scores(
             candidates, con_gpr, variance_model, problem)
         kg_var = self.variance_scores(candidates, variance_model, problem, 1)
+        kg_mean = self.mean_scores(candidates, obj_gpr, feas_details)
         kg_coupling_raw = self.coupling_scores(candidates, observed or [])
         kg_coupling_gate = self.coupling_feasibility_gate(feas_details)
         aux_active = (
             abs(self.lambda_feas) > 0.0
             or abs(self.lambda_var) > 0.0
+            or abs(self.lambda_mean) > 0.0
             or abs(self.lambda_coupling) > 0.0
         )
         kg_obj_scaled = safe_normalize(kg_obj) if aux_active else kg_obj
         if abs(self.lambda_coupling) > 0.0:
-            relevance = safe_normalize(kg_obj_scaled + kg_feas + 0.5 * kg_var)
+            relevance = safe_normalize(
+                kg_obj_scaled + kg_feas + kg_mean + 0.5 * kg_var)
             kg_coupling = kg_coupling_raw * relevance * kg_coupling_gate
         else:
             kg_coupling = kg_coupling_raw
@@ -161,6 +187,7 @@ class OLHKGAcquisition:
             kg_obj_scaled
             + self.lambda_feas * kg_feas
             + self.lambda_var * kg_var
+            + self.lambda_mean * kg_mean
             + self.lambda_coupling * kg_coupling
         )
         return {
@@ -169,6 +196,7 @@ class OLHKGAcquisition:
             "kg_obj_scaled": kg_obj_scaled,
             "kg_feas": kg_feas,
             "kg_var": kg_var,
+            "kg_mean": kg_mean,
             "kg_coupling": kg_coupling,
             "kg_coupling_raw": kg_coupling_raw,
             "kg_coupling_gate": kg_coupling_gate,

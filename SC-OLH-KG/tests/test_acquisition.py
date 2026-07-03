@@ -58,6 +58,24 @@ class AcquisitionTests(unittest.TestCase):
         )
         np.testing.assert_allclose(score["total"], expected, rtol=1e-12, atol=1e-12)
 
+    def test_mean_score_enters_total_when_enabled(self):
+        acq = OLHKGAcquisition(
+            lambda_feas=0.25,
+            lambda_var=0.25,
+            lambda_mean=0.10,
+            lambda_coupling=0.0,
+        )
+        score = acq.score(self.candidates, self.obj, self.con, self.hvd, self.problem)
+        expected = (
+            score["kg_obj_scaled"]
+            + 0.25 * score["kg_feas"]
+            + 0.25 * score["kg_var"]
+            + 0.10 * score["kg_mean"]
+        )
+        np.testing.assert_allclose(score["total"], expected, rtol=1e-12, atol=1e-12)
+        self.assertGreaterEqual(float(np.min(score["kg_mean"])), 0.0)
+        self.assertLessEqual(float(np.max(score["kg_mean"])), 1.0)
+
     def test_chance_margin_formula(self):
         mu = 0.2
         variance = 0.04

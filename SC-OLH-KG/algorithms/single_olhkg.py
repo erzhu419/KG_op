@@ -11,6 +11,7 @@ from scipy.stats import norm
 from acquisition.olhkg import OLHKGAcquisition
 from core.candidates import (
     axis_candidates,
+    axis_landmark_candidates,
     boundary_solutions,
     latin_hypercube_candidates,
     posterior_sample_candidates,
@@ -46,12 +47,15 @@ class SingleOLHKGConfig:
     variance_mode: str = "class"
     lambda_feas: float = 0.25
     lambda_var: float = 0.25
+    lambda_mean: float = 0.10
     lambda_coupling: float = 0.0
     coupling_safety_z: float = 0.5
     coupling_gate_temperature: float = 0.25
     recommendation_safety_z: float = 0.5
     recommendation_noise_floor_scale: float = 1.0
+    recommendation_infeasible_penalty: float = 5.0
     recommendation_axis_oracle: bool = True
+    recommendation_axis_candidate_count: int = -1
     use_state_coupling: bool = False
     use_state_basis: bool = False
     eval_pool_size: int = 500
@@ -97,6 +101,7 @@ class SingleOLHKGAlgorithm:
         self.acquisition = OLHKGAcquisition(
             lambda_feas=self.config.lambda_feas,
             lambda_var=self.config.lambda_var,
+            lambda_mean=self.config.lambda_mean,
             lambda_coupling=self.config.lambda_coupling,
             coupling_safety_z=self.config.coupling_safety_z,
             coupling_gate_temperature=self.config.coupling_gate_temperature,
@@ -159,6 +164,18 @@ class SingleOLHKGAlgorithm:
     def _variance_lookup(self, i, x):
         return self.variance_model.predict_variance(i, x, self.problem)
 
+    def _axis_candidate_count(self):
+        n_axis = int(self.config.axis_candidate_count)
+        if n_axis >= 0:
+            return n_axis
+        return max(5, min(21, max(1, self.config.K1 // 2)))
+
+    def _recommendation_axis_candidate_count(self):
+        n_axis = int(self.config.recommendation_axis_candidate_count)
+        if n_axis >= 0:
+            return n_axis
+        return self._axis_candidate_count()
+
     def _generate_candidates(self, iteration):
         candidates = []
         sources = {}
@@ -172,9 +189,8 @@ class SingleOLHKGAlgorithm:
 
         add(latin_hypercube_candidates(
             self.problem, self.config.K1, self.rng), "lhs")
-        n_axis = int(self.config.axis_candidate_count)
-        if n_axis < 0:
-            n_axis = 5
+        n_axis = self._axis_candidate_count()
+        add(axis_landmark_candidates(self.problem, n_axis, self.rng), "axis_landmark")
         add(axis_candidates(self.problem, n_axis, self.rng), "axis")
         if hasattr(self.problem, "structured_candidates"):
             n_structured = int(self.config.structured_candidate_count)
@@ -220,6 +236,12 @@ class SingleOLHKGAlgorithm:
             self.problem, "all_axis_solutions"
         ):
             for x in self.problem.all_axis_solutions():
+                pool.add(tuple(x))
+        elif not self.config.recommendation_axis_oracle:
+            n_axis = self._recommendation_axis_candidate_count()
+            for x in axis_landmark_candidates(self.problem, n_axis, self.rng):
+                pool.add(tuple(x))
+            for x in axis_candidates(self.problem, n_axis, self.rng):
                 pool.add(tuple(x))
         return list(pool)
 
@@ -275,16 +297,25 @@ class SingleOLHKGAlgorithm:
             margin_span = float(np.max(scaled_margin))
             if margin_span > 1e-12:
                 scaled_margin = scaled_margin / margin_span
-            local = int(np.argmin(scaled_obj + 2.0 * scaled_margin))
+            local = int(np.argmin(
+                scaled_obj
+                + self.config.recommendation_infeasible_penalty * scaled_margin
+            ))
         used_observed_incumbent = False
+        observed_incumbent_rejected = False
         observed_incumbent = self._observed_nominal_incumbent()
-        if (
-            observed_incumbent is not None
-            and observed_incumbent["empirical_objective"] <= float(mu_obj[local])
-        ):
+        if observed_incumbent is not None:
             try:
-                local = pool.index(observed_incumbent["x"])
-                used_observed_incumbent = True
+                observed_idx = pool.index(observed_incumbent["x"])
+                observed_is_robust = bool(robust_margins[observed_idx] <= 0.0)
+                if (
+                    observed_is_robust
+                    and observed_incumbent["empirical_objective"] <= float(mu_obj[local])
+                ):
+                    local = observed_idx
+                    used_observed_incumbent = True
+                else:
+                    observed_incumbent_rejected = True
             except ValueError:
                 pass
         x_best = tuple(int(v) for v in pool[local])
@@ -297,7 +328,10 @@ class SingleOLHKGAlgorithm:
             "recommendation_safety_z": float(self.config.recommendation_safety_z),
             "recommendation_noise_floor_scale": float(
                 self.config.recommendation_noise_floor_scale),
+            "recommendation_infeasible_penalty": float(
+                self.config.recommendation_infeasible_penalty),
             "observed_incumbent_used": bool(used_observed_incumbent),
+            "observed_incumbent_rejected": bool(observed_incumbent_rejected),
             "observed_incumbent_objective": (
                 None if observed_incumbent is None
                 else float(observed_incumbent["empirical_objective"])

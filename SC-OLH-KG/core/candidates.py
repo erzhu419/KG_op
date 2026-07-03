@@ -70,6 +70,57 @@ def axis_candidates(problem, n, rng=None):
     return [rows[int(round(i))] for i in idx]
 
 
+def axis_landmark_candidates(problem, n, rng=None):
+    """Low-edge axis landmarks that do not require evaluating the objective.
+
+    The paper-style RZDT families often place the best scalarized feasible
+    point near a low-risk boundary rather than exactly at 0/25/50/75/100.
+    These anchors keep the grid problem-independent while giving the optimizer
+    a fair chance to inspect that boundary neighborhood.
+    """
+    del rng
+    if n <= 0:
+        return []
+    lo, hi = problem.int_bounds()
+    lo = np.asarray(lo, dtype=int)
+    hi = np.asarray(hi, dtype=int)
+    if problem.d <= 0:
+        return []
+    span = int(hi[0] - lo[0])
+    if span <= 0:
+        return [tuple(lo)]
+
+    ordered_fractions = [
+        0.0,
+        1.0,
+        0.05,
+        0.10,
+        0.125,
+        0.14,
+        0.15,
+        0.20,
+        0.25,
+        1.0 / 3.0,
+        0.50,
+        2.0 / 3.0,
+        0.75,
+        0.875,
+        0.95,
+    ]
+    rows = []
+    for frac in ordered_fractions:
+        x = lo.copy()
+        x[0] = int(np.clip(round(lo[0] + frac * span), lo[0], hi[0]))
+        rows.append(tuple(x))
+
+    if len(unique_candidates(rows)) < int(n):
+        for frac in np.linspace(0.0, 1.0, int(n)):
+            x = lo.copy()
+            x[0] = int(np.clip(round(lo[0] + frac * span), lo[0], hi[0]))
+            rows.append(tuple(x))
+    return unique_candidates(rows)[: int(n)]
+
+
 def posterior_sample_candidates(
     problem,
     gpr_models,
