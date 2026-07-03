@@ -1,48 +1,48 @@
 {
   "schema_version": 1,
-  "created_at": "2026-07-03T21:15:54",
-  "baseline_policy": "This file is updated only after performance validation passes. Future candidates must improve against promoted_candidate.",
+  "created_at": "2026-07-03T21:22:36",
+  "baseline_policy": "Quality-first baseline. Promotion requires feasible primary and state-coupled smoke runs, non-worse simple_regret/true_objective when those metrics exist, and wall time within max_wall_slowdown. Faster wall time alone is not an optimization improvement.",
   "promoted_candidate": {
     "name": "single_olhkg",
-    "primary_wall_time_sec": 0.2748887538909912,
+    "primary_wall_time_sec": 0.28337550163269043,
     "metrics": {
       "name": "single_olhkg",
-      "wall_time_sec": 0.2748887538909912,
+      "wall_time_sec": 0.28337550163269043,
       "wall_time_sec_runs": [
-        0.27291369438171387,
-        0.27686381340026855
+        0.2782711982727051,
+        0.2884798049926758
       ],
       "runs": 2,
       "stage_times": {
         "t_posterior_solve": {
-          "total": 0.09135794639587402,
-          "mean": 0.013051135199410575,
-          "share": 0.3563034664881351
+          "total": 0.09399127960205078,
+          "mean": 0.013427325657435827,
+          "share": 0.3511061909465211
         },
         "t_candidate_gen": {
-          "total": 0.01683807373046875,
-          "mean": 0.0024054391043526785,
-          "share": 0.0656698653574351
+          "total": 0.017319202423095703,
+          "mean": 0.0024741717747279574,
+          "share": 0.064696206060293
         },
         "t_kg_compute": {
-          "total": 0.09011626243591309,
-          "mean": 0.012873751776559013,
-          "share": 0.3514607974410474
+          "total": 0.0955357551574707,
+          "mean": 0.013647965022495814,
+          "share": 0.35687560840279403
         },
         "t_simulate": {
-          "total": 0.00035691261291503906,
-          "mean": 5.098751613071987e-05,
-          "share": 0.0013919883954474448
+          "total": 0.0003428459167480469,
+          "mean": 4.8977988106863836e-05,
+          "share": 0.0012807073637110945
         },
         "t_update": {
-          "total": 0.0016231536865234375,
-          "mean": 0.00023187909807477678,
-          "share": 0.006330432195194525
+          "total": 0.0017549991607666016,
+          "mean": 0.00025071416582380025,
+          "share": 0.006555832339553106
         },
         "t_eval": {
-          "total": 0.05611252784729004,
-          "mean": 0.00801607540675572,
-          "share": 0.21884345012274045
+          "total": 0.058756351470947266,
+          "mean": 0.00839376449584961,
+          "share": 0.21948545488712765
         }
       },
       "n_simulations": 12,
@@ -64,14 +64,24 @@
     "posterior_keep": 8,
     "repeats": 2,
     "seed": 123,
-    "max_wall_ratio": 0.98,
+    "max_wall_slowdown": 1.25,
+    "max_regret_delta": 0.0,
+    "max_objective_delta": 0.0,
     "variance_mode": "orthogonal",
     "candidate_problem": "RegimeRZDT1",
     "legacy_problem": "RZDT1"
   },
   "acceptance_gates": {
-    "speed_ratio": 0.7974272724474767,
-    "speed_pass": true,
+    "wall_time_ratio": 1.030873390131721,
+    "wall_time_constraint_pass": true,
+    "baseline_simple_regret": 0.125,
+    "candidate_simple_regret": 0.125,
+    "simple_regret_delta": 0.0,
+    "quality_regret_pass": true,
+    "baseline_true_objective": 0.5,
+    "candidate_true_objective": 0.5,
+    "true_objective_delta": 0.0,
+    "quality_objective_pass": true,
     "single_feasible_pass": true,
     "sc_feasible_pass": true,
     "biobj_smoke_pass": true,
@@ -79,7 +89,7 @@
   },
   "full_validation": {
     "schema_version": 1,
-    "created_at": "2026-07-03T21:15:54",
+    "created_at": "2026-07-03T21:22:36",
     "validation_config": {
       "N": 12,
       "n0": 5,
@@ -90,7 +100,9 @@
       "posterior_keep": 8,
       "repeats": 2,
       "seed": 123,
-      "max_wall_ratio": 0.98,
+      "max_wall_slowdown": 1.25,
+      "max_regret_delta": 0.0,
+      "max_objective_delta": 0.0,
       "variance_mode": "orthogonal",
       "candidate_problem": "RegimeRZDT1",
       "legacy_problem": "RZDT1"
@@ -98,47 +110,54 @@
     "active_baseline_kind": "promoted",
     "baseline_source": "promoted_candidate",
     "baseline_file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/baselines/current.json",
-    "baseline_wall_time_sec": 0.3447195291519165,
+    "baseline_metrics": {
+      "wall_time_sec": 0.2748887538909912,
+      "simple_regret": 0.125,
+      "true_objective": 0.5,
+      "true_best_objective": 0.375,
+      "true_feasible": true
+    },
+    "baseline_wall_time_sec": 0.2748887538909912,
     "legacy_baseline": null,
     "candidates": {
       "single_olhkg": {
         "name": "single_olhkg",
-        "wall_time_sec": 0.2748887538909912,
+        "wall_time_sec": 0.28337550163269043,
         "wall_time_sec_runs": [
-          0.27291369438171387,
-          0.27686381340026855
+          0.2782711982727051,
+          0.2884798049926758
         ],
         "runs": 2,
         "stage_times": {
           "t_posterior_solve": {
-            "total": 0.09135794639587402,
-            "mean": 0.013051135199410575,
-            "share": 0.3563034664881351
+            "total": 0.09399127960205078,
+            "mean": 0.013427325657435827,
+            "share": 0.3511061909465211
           },
           "t_candidate_gen": {
-            "total": 0.01683807373046875,
-            "mean": 0.0024054391043526785,
-            "share": 0.0656698653574351
+            "total": 0.017319202423095703,
+            "mean": 0.0024741717747279574,
+            "share": 0.064696206060293
           },
           "t_kg_compute": {
-            "total": 0.09011626243591309,
-            "mean": 0.012873751776559013,
-            "share": 0.3514607974410474
+            "total": 0.0955357551574707,
+            "mean": 0.013647965022495814,
+            "share": 0.35687560840279403
           },
           "t_simulate": {
-            "total": 0.00035691261291503906,
-            "mean": 5.098751613071987e-05,
-            "share": 0.0013919883954474448
+            "total": 0.0003428459167480469,
+            "mean": 4.8977988106863836e-05,
+            "share": 0.0012807073637110945
           },
           "t_update": {
-            "total": 0.0016231536865234375,
-            "mean": 0.00023187909807477678,
-            "share": 0.006330432195194525
+            "total": 0.0017549991607666016,
+            "mean": 0.00025071416582380025,
+            "share": 0.006555832339553106
           },
           "t_eval": {
-            "total": 0.05611252784729004,
-            "mean": 0.00801607540675572,
-            "share": 0.21884345012274045
+            "total": 0.058756351470947266,
+            "mean": 0.00839376449584961,
+            "share": 0.21948545488712765
           }
         },
         "n_simulations": 12,
@@ -151,42 +170,42 @@
       },
       "sc_olhkg": {
         "name": "sc_olhkg",
-        "wall_time_sec": 0.7732951641082764,
+        "wall_time_sec": 0.7686580419540405,
         "wall_time_sec_runs": [
-          0.7517333030700684,
-          0.7948570251464844
+          0.795814037322998,
+          0.741502046585083
         ],
         "runs": 2,
         "stage_times": {
           "t_posterior_solve": {
-            "total": 0.34711527824401855,
-            "mean": 0.04958789689200265,
-            "share": 0.469134398190366
+            "total": 0.3228797912597656,
+            "mean": 0.04612568446568081,
+            "share": 0.4693672711140687
           },
           "t_candidate_gen": {
-            "total": 0.04961657524108887,
-            "mean": 0.007088082177298409,
-            "share": 0.06705795919945608
+            "total": 0.046424150466918945,
+            "mean": 0.006632021495274135,
+            "share": 0.06748634447956524
           },
           "t_kg_compute": {
-            "total": 0.17470955848693848,
-            "mean": 0.024958508355276927,
-            "share": 0.23612404499595605
+            "total": 0.15793704986572266,
+            "mean": 0.022562435695103238,
+            "share": 0.22959158209948427
           },
           "t_simulate": {
-            "total": 0.0005245208740234375,
-            "mean": 7.493155343191964e-05,
-            "share": 0.000708902200496876
+            "total": 0.00038814544677734375,
+            "mean": 5.544934953962054e-05,
+            "share": 0.0005642433316697166
           },
           "t_update": {
-            "total": 0.002723217010498047,
-            "mean": 0.000389031001499721,
-            "share": 0.003680491333670599
+            "total": 0.002228975296020508,
+            "mean": 0.000318425042288644,
+            "share": 0.003240240115344091
           },
           "t_eval": {
-            "total": 0.16521668434143066,
-            "mean": 0.02360238347734724,
-            "share": 0.2232942040800544
+            "total": 0.15804624557495117,
+            "mean": 0.02257803508213588,
+            "share": 0.22975031885986802
           }
         },
         "n_simulations": 12,
@@ -199,42 +218,42 @@
       },
       "biobj_olhkg_smoke": {
         "name": "biobj_olhkg_smoke",
-        "wall_time_sec": 0.1425715684890747,
+        "wall_time_sec": 0.1398146152496338,
         "wall_time_sec_runs": [
-          0.14948058128356934,
-          0.13566255569458008
+          0.14493680000305176,
+          0.13469243049621582
         ],
         "runs": 2,
         "stage_times": {
           "t_posterior_solve": {
-            "total": 0.035686492919921875,
-            "mean": 0.005098070417131696,
-            "share": 0.27645973436371596
+            "total": 0.0355677604675293,
+            "mean": 0.005081108638218471,
+            "share": 0.27806316448712404
           },
           "t_candidate_gen": {
-            "total": 0.0023729801177978516,
-            "mean": 0.0003389971596854074,
-            "share": 0.01838324249146222
+            "total": 0.002349376678466797,
+            "mean": 0.000335625239780971,
+            "share": 0.018367057841134456
           },
           "t_kg_compute": {
-            "total": 0.07264423370361328,
-            "mean": 0.010377747671944755,
-            "share": 0.5627677003123286
+            "total": 0.07171034812927246,
+            "mean": 0.010244335447038923,
+            "share": 0.5606202376869511
           },
           "t_simulate": {
-            "total": 0.00031065940856933594,
-            "mean": 4.437991550990513e-05,
-            "share": 0.0024066477410203224
+            "total": 0.0003466606140136719,
+            "mean": 4.9522944859095984e-05,
+            "share": 0.0027101382282331537
           },
           "t_update": {
-            "total": 0.0022330284118652344,
-            "mean": 0.0003190040588378906,
-            "share": 0.017299050454640322
+            "total": 0.0022335052490234375,
+            "mean": 0.00031907217843191963,
+            "share": 0.017461193206388025
           },
           "t_eval": {
-            "total": 0.015836477279663086,
-            "mean": 0.0022623538970947266,
-            "share": 0.1226836246368326
+            "total": 0.015704870223999023,
+            "mean": 0.0022435528891427176,
+            "share": 0.12277820855016924
           }
         },
         "n_simulations": 12,
@@ -244,10 +263,18 @@
       }
     },
     "primary_candidate": "single_olhkg",
-    "primary_wall_time_sec": 0.2748887538909912,
+    "primary_wall_time_sec": 0.28337550163269043,
     "gates": {
-      "speed_ratio": 0.7974272724474767,
-      "speed_pass": true,
+      "wall_time_ratio": 1.030873390131721,
+      "wall_time_constraint_pass": true,
+      "baseline_simple_regret": 0.125,
+      "candidate_simple_regret": 0.125,
+      "simple_regret_delta": 0.0,
+      "quality_regret_pass": true,
+      "baseline_true_objective": 0.5,
+      "candidate_true_objective": 0.5,
+      "true_objective_delta": 0.0,
+      "quality_objective_pass": true,
       "single_feasible_pass": true,
       "sc_feasible_pass": true,
       "biobj_smoke_pass": true,

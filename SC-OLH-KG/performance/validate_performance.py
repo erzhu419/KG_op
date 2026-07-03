@@ -1,15 +1,18 @@
-"""Performance gate for SC-OLH-KG development.
+"""Quality-first validation gate for SC-OLH-KG development.
 
 The first accepted baseline is the legacy GPR-KG implementation.  After a
 candidate passes, `--promote-if-pass` writes `baselines/current.json`; future
 runs compare against that promoted baseline.
+
+This gate treats optimization quality as the primary acceptance criterion.
+Wall time is only an engineering constraint so experiments remain runnable.
 """
 
 from __future__ import annotations
 
 import argparse
-from dataclasses import asdict
 import json
+import math
 from pathlib import Path
 import statistics
 import sys
@@ -51,6 +54,30 @@ def json_safe(obj: Any):
 
 def median(values):
     return float(statistics.median(values)) if values else float("nan")
+
+
+def optional_float(value):
+    if value is None:
+        return None
+    try:
+        out = float(value)
+    except (TypeError, ValueError):
+        return None
+    return out if math.isfinite(out) else None
+
+
+def metric_delta(candidate, baseline):
+    if candidate is None or baseline is None:
+        return None
+    return float(candidate - baseline)
+
+
+def nonworse_minimization(candidate, baseline, tolerance):
+    if baseline is None:
+        return True
+    if candidate is None:
+        return False
+    return bool(candidate <= baseline + tolerance)
 
 
 def compact_stage_times(stage_times):
@@ -221,6 +248,33 @@ def baseline_primary_wall(baseline):
     return None
 
 
+def baseline_primary_metrics(baseline):
+    if baseline is None:
+        return None
+    if "promoted_candidate" in baseline:
+        candidate = baseline["promoted_candidate"]
+        metrics = candidate.get("metrics", {})
+        return {
+            "wall_time_sec": optional_float(
+                candidate.get("primary_wall_time_sec", metrics.get("wall_time_sec"))
+            ),
+            "simple_regret": optional_float(metrics.get("simple_regret")),
+            "true_objective": optional_float(metrics.get("true_objective")),
+            "true_best_objective": optional_float(metrics.get("true_best_objective")),
+            "true_feasible": bool(metrics.get("true_feasible", False)),
+        }
+    wall = baseline_primary_wall(baseline)
+    if wall is not None:
+        return {
+            "wall_time_sec": float(wall),
+            "simple_regret": None,
+            "true_objective": None,
+            "true_best_objective": None,
+            "true_feasible": None,
+        }
+    return None
+
+
 def build_validation(args):
     baseline_doc = load_baseline(BASELINE_FILE)
     active_baseline_kind = "promoted" if baseline_doc is not None else "legacy"
@@ -253,17 +307,50 @@ def build_validation(args):
         args.seed,
     )
 
-    baseline_wall = baseline_primary_wall(baseline_doc)
+    baseline_metrics = baseline_primary_metrics(baseline_doc)
     baseline_source = "promoted_candidate"
-    if baseline_wall is None:
-        baseline_wall = float(legacy["wall_time_sec"])
+    if baseline_metrics is None:
+        baseline_metrics = {
+            "wall_time_sec": float(legacy["wall_time_sec"]),
+            "simple_regret": None,
+            "true_objective": None,
+            "true_best_objective": None,
+            "true_feasible": None,
+        }
         baseline_source = "legacy_gprkg"
 
     primary = single
-    ratio = float(primary["wall_time_sec"] / baseline_wall)
+    baseline_wall = baseline_metrics["wall_time_sec"]
+    primary_wall = optional_float(primary.get("wall_time_sec"))
+    ratio = (
+        float(primary_wall / baseline_wall)
+        if baseline_wall and primary_wall
+        else float("inf")
+    )
+    baseline_regret = baseline_metrics.get("simple_regret")
+    candidate_regret = optional_float(primary.get("simple_regret"))
+    baseline_objective = baseline_metrics.get("true_objective")
+    candidate_objective = optional_float(primary.get("true_objective"))
+
     gates = {
-        "speed_ratio": ratio,
-        "speed_pass": bool(ratio <= args.max_wall_ratio),
+        "wall_time_ratio": ratio,
+        "wall_time_constraint_pass": bool(ratio <= args.max_wall_slowdown),
+        "baseline_simple_regret": baseline_regret,
+        "candidate_simple_regret": candidate_regret,
+        "simple_regret_delta": metric_delta(candidate_regret, baseline_regret),
+        "quality_regret_pass": nonworse_minimization(
+            candidate_regret,
+            baseline_regret,
+            args.max_regret_delta,
+        ),
+        "baseline_true_objective": baseline_objective,
+        "candidate_true_objective": candidate_objective,
+        "true_objective_delta": metric_delta(candidate_objective, baseline_objective),
+        "quality_objective_pass": nonworse_minimization(
+            candidate_objective,
+            baseline_objective,
+            args.max_objective_delta,
+        ),
         "single_feasible_pass": bool(single.get("true_feasible", False)),
         "sc_feasible_pass": bool(sc.get("true_feasible", False)),
         "biobj_smoke_pass": bool(
@@ -284,7 +371,9 @@ def build_validation(args):
             "posterior_keep": args.posterior_keep,
             "repeats": args.repeats,
             "seed": args.seed,
-            "max_wall_ratio": args.max_wall_ratio,
+            "max_wall_slowdown": args.max_wall_slowdown,
+            "max_regret_delta": args.max_regret_delta,
+            "max_objective_delta": args.max_objective_delta,
             "variance_mode": args.variance_mode,
             "candidate_problem": args.candidate_problem,
             "legacy_problem": args.legacy_problem,
@@ -292,6 +381,7 @@ def build_validation(args):
         "active_baseline_kind": active_baseline_kind,
         "baseline_source": baseline_source,
         "baseline_file": str(BASELINE_FILE),
+        "baseline_metrics": baseline_metrics,
         "baseline_wall_time_sec": float(baseline_wall),
         "legacy_baseline": legacy,
         "candidates": {
@@ -300,7 +390,7 @@ def build_validation(args):
             "biobj_olhkg_smoke": biobj,
         },
         "primary_candidate": "single_olhkg",
-        "primary_wall_time_sec": float(primary["wall_time_sec"]),
+        "primary_wall_time_sec": None if primary_wall is None else float(primary_wall),
         "gates": gates,
     }
 
@@ -310,8 +400,10 @@ def promote(validation):
         "schema_version": 1,
         "created_at": validation["created_at"],
         "baseline_policy": (
-            "This file is updated only after performance validation passes. "
-            "Future candidates must improve against promoted_candidate."
+            "Quality-first baseline. Promotion requires feasible primary and "
+            "state-coupled smoke runs, non-worse simple_regret/true_objective "
+            "when those metrics exist, and wall time within max_wall_slowdown. "
+            "Faster wall time alone is not an optimization improvement."
         ),
         "promoted_candidate": {
             "name": validation["primary_candidate"],
@@ -344,14 +436,17 @@ def main():
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--legacy_problem", default="RZDT1")
     parser.add_argument("--candidate_problem", default="RegimeRZDT1")
-    parser.add_argument("--variance_mode", default="class",
+    parser.add_argument("--variance_mode", default="orthogonal",
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
     parser.add_argument("--biobj_variance_mode", default="class",
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_coupling", type=float, default=0.15)
-    parser.add_argument("--max_wall_ratio", type=float, default=0.98)
+    parser.add_argument("--max_wall_slowdown", "--max_wall_ratio", dest="max_wall_slowdown",
+                        type=float, default=1.25)
+    parser.add_argument("--max_regret_delta", type=float, default=0.0)
+    parser.add_argument("--max_objective_delta", type=float, default=0.0)
     parser.add_argument("--always-run-legacy", action="store_true")
     parser.add_argument("--promote-if-pass", action="store_true")
     parser.add_argument("--out", default=None)
