@@ -161,14 +161,26 @@ class SequentialBaseline:
         true_obj = self.problem.true_objective(x_best)
         true_con = self.problem.true_constraint_mean(x_best)
         true_sig = self.problem.true_sigma(x_best)
+        true_vector = None
+        if hasattr(self.problem, "true_vector_objectives"):
+            true_vector = [
+                float(v)
+                for v in self.problem.true_vector_objectives(x_best)
+            ]
         true_margin = (
             true_con
             + norm.ppf(1 - self.problem.alpha) * true_sig[1]
             - self.problem.tau
         )
         true_best_x, true_best_obj = self.problem.true_best_feasible()
+        true_best_vector = None
+        if true_best_x is not None and hasattr(self.problem, "true_vector_objectives"):
+            true_best_vector = [
+                float(v)
+                for v in self.problem.true_vector_objectives(true_best_x)
+            ]
         regret = true_obj - true_best_obj if np.isfinite(true_best_obj) else np.nan
-        return {
+        out = {
             "x_recommended": list(map(int, x_best)),
             "true_objective": float(true_obj),
             "true_constraint_mean": float(true_con),
@@ -179,6 +191,17 @@ class SequentialBaseline:
             "true_best_objective": float(true_best_obj),
             "simple_regret": float(regret),
         }
+        if true_vector is not None:
+            out["true_vector_objectives"] = true_vector
+            if len(true_vector) >= 2:
+                out["true_f1"] = float(true_vector[0])
+                out["true_f2"] = float(true_vector[1])
+        if true_best_vector is not None:
+            out["true_best_vector_objectives"] = true_best_vector
+            if len(true_best_vector) >= 2:
+                out["true_best_f1"] = float(true_best_vector[0])
+                out["true_best_f2"] = float(true_best_vector[1])
+        return out
 
     def run(self):
         t_start = time.time()
@@ -201,4 +224,3 @@ class SequentialBaseline:
             "tr_radius_final": float(self._tr_radius),
         })
         return result
-

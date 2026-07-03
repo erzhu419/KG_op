@@ -48,6 +48,7 @@ def _problem_args(args, problem):
         "lambda_coupling": args.lambda_coupling,
         "recommendation_safety_z": args.recommendation_safety_z,
         "recommendation_noise_floor_scale": args.recommendation_noise_floor_scale,
+        "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
         "baselines": args.baselines,
         "baseline_batch_candidates": args.baseline_batch_candidates,
         "tr_radius_init": args.tr_radius_init,
@@ -170,6 +171,7 @@ def main():
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
+    parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument(
         "--baselines",
         default="sobol,random,botorch_turbo,botorch_scbo,botorch_saasbo",

@@ -51,6 +51,7 @@ class SingleOLHKGConfig:
     coupling_gate_temperature: float = 0.25
     recommendation_safety_z: float = 0.5
     recommendation_noise_floor_scale: float = 1.0
+    recommendation_axis_oracle: bool = True
     use_state_coupling: bool = False
     use_state_basis: bool = False
     eval_pool_size: int = 500
@@ -215,7 +216,9 @@ class SingleOLHKGAlgorithm:
         pool = set(x for x, _ in self.history)
         for x in random_candidates(self.problem, self.config.eval_pool_size, self.rng):
             pool.add(tuple(x))
-        if hasattr(self.problem, "all_axis_solutions"):
+        if self.config.recommendation_axis_oracle and hasattr(
+            self.problem, "all_axis_solutions"
+        ):
             for x in self.problem.all_axis_solutions():
                 pool.add(tuple(x))
         return list(pool)
@@ -312,14 +315,26 @@ class SingleOLHKGAlgorithm:
         true_obj = self.problem.true_objective(x_best)
         true_con = self.problem.true_constraint_mean(x_best)
         true_sig = self.problem.true_sigma(x_best)
+        true_vector = None
+        if hasattr(self.problem, "true_vector_objectives"):
+            true_vector = [
+                float(v)
+                for v in self.problem.true_vector_objectives(x_best)
+            ]
         true_margin = (
             true_con
             + norm.ppf(1 - self.problem.alpha) * true_sig[1]
             - self.problem.tau
         )
         true_best_x, true_best_obj = self.problem.true_best_feasible()
+        true_best_vector = None
+        if true_best_x is not None and hasattr(self.problem, "true_vector_objectives"):
+            true_best_vector = [
+                float(v)
+                for v in self.problem.true_vector_objectives(true_best_x)
+            ]
         regret = true_obj - true_best_obj if np.isfinite(true_best_obj) else np.nan
-        return {
+        out = {
             "x_recommended": list(map(int, x_best)),
             "true_objective": float(true_obj),
             "true_constraint_mean": float(true_con),
@@ -330,6 +345,17 @@ class SingleOLHKGAlgorithm:
             "true_best_objective": float(true_best_obj),
             "simple_regret": float(regret),
         }
+        if true_vector is not None:
+            out["true_vector_objectives"] = true_vector
+            if len(true_vector) >= 2:
+                out["true_f1"] = float(true_vector[0])
+                out["true_f2"] = float(true_vector[1])
+        if true_best_vector is not None:
+            out["true_best_vector_objectives"] = true_best_vector
+            if len(true_best_vector) >= 2:
+                out["true_best_f1"] = float(true_best_vector[0])
+                out["true_best_f2"] = float(true_best_vector[1])
+        return out
 
     def run(self, verbose=False):
         t_start = time.time()

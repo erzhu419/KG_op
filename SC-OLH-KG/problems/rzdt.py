@@ -186,6 +186,44 @@ class RZDT5RR(TestProblem):
         return self.sigma_level * (0.3 + 2.0 * u ** 2)
 
 
+class PaperRZDT1(RZDT1):
+    """RZDT1 as used by the submitted paper's checkpointed pipeline.
+
+    This keeps the paper chance constraint output
+    ``-(x1/L - 0.5)^2 + 0.04`` and the slightly milder monotone noise field
+    from ``Final_Submission/GPR_KG_Code/gpr_kg.py``.  It is intentionally
+    separate from the prototype ``RZDT1`` so earlier smoke tests remain stable.
+    """
+
+    problem_name = "PaperRZDT1"
+
+    def true_objectives(self, x):
+        t = self.normalize(x)
+        f1 = float(t[0])
+        g = 1.0 + 9.0 / max(self.d - 1, 1) * float(np.sum(t[1:]))
+        f2 = g * (1.0 - np.sqrt(max(f1 / g, 0.0)))
+        f3 = -((f1 - 0.5) ** 2) + 0.04
+        return f1, float(f2), float(f3)
+
+    def sigma_func(self, x, f_val=0.0):
+        if not self.heteroscedastic:
+            return self.sigma_level
+        u = float(self.normalize(x)[0])
+        return self.sigma_level * (0.5 + 2.0 * np.sqrt(max(u, 0.0)))
+
+
+class PaperRZDT2(RZDT2):
+    """Paper RZDT2 alias with explicit problem name."""
+
+    problem_name = "PaperRZDT2"
+
+
+class PaperRZDT5RR(RZDT5RR):
+    """Paper RZDT5_RR alias with explicit problem name."""
+
+    problem_name = "PaperRZDT5_RR"
+
+
 class RegimeRZDT1(RZDT1):
     """RZDT1 with explicit low/medium/high variance regimes.
 
@@ -351,6 +389,9 @@ PROBLEM_REGISTRY = {
     "RZDT1": RZDT1,
     "RZDT2": RZDT2,
     "RZDT5_RR": RZDT5RR,
+    "PaperRZDT1": PaperRZDT1,
+    "PaperRZDT2": PaperRZDT2,
+    "PaperRZDT5_RR": PaperRZDT5RR,
     "RegimeRZDT1": RegimeRZDT1,
     "StatePolicyRZDT1": StatePolicyRZDT1,
 }

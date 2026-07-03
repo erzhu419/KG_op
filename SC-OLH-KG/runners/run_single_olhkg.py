@@ -30,6 +30,7 @@ def main():
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
+    parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--out", default=None)
@@ -49,6 +50,7 @@ def main():
         lambda_coupling=0.0,
         recommendation_safety_z=args.recommendation_safety_z,
         recommendation_noise_floor_scale=args.recommendation_noise_floor_scale,
+        recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
         use_state_coupling=False,
         seed=args.seed,
     )

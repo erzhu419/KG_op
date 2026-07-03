@@ -47,6 +47,12 @@ def finite(values):
     return out
 
 
+def optional_float(value):
+    if value is None:
+        return None
+    return float(value)
+
+
 def stats(values):
     vals = finite(values)
     if not vals:
@@ -86,6 +92,10 @@ def row_from_result(variant, seed, args, result):
         "posterior_feasible": posterior_feasible,
         "false_feasible": bool(posterior_feasible and not true_feasible),
         "true_objective": float(result["true_objective"]),
+        "true_f1": optional_float(result.get("true_f1")),
+        "true_f2": optional_float(result.get("true_f2")),
+        "true_best_f1": optional_float(result.get("true_best_f1")),
+        "true_best_f2": optional_float(result.get("true_best_f2")),
         "true_best_objective": float(result["true_best_objective"]),
         "simple_regret": float(result["simple_regret"]),
         "feasible_simple_regret": feasible_regret,
@@ -121,6 +131,7 @@ def run_olhkg(args, seed, use_sc):
         lambda_coupling=args.lambda_coupling if use_sc else 0.0,
         recommendation_safety_z=args.recommendation_safety_z,
         recommendation_noise_floor_scale=args.recommendation_noise_floor_scale,
+        recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
         use_state_coupling=use_sc,
         seed=seed,
     )
@@ -369,6 +380,7 @@ def main():
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
+    parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--baselines", default="sobol,random,turbo_lite,scbo_lite")
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
     parser.add_argument("--tr_radius_init", type=float, default=0.35)

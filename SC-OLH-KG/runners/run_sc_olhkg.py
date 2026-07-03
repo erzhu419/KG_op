@@ -37,6 +37,7 @@ def main():
     parser.add_argument("--coupling_gate_temperature", type=float, default=0.25)
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
+    parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument("--verbose", action="store_true")
@@ -63,6 +64,7 @@ def main():
         coupling_gate_temperature=args.coupling_gate_temperature,
         recommendation_safety_z=args.recommendation_safety_z,
         recommendation_noise_floor_scale=args.recommendation_noise_floor_scale,
+        recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
         use_state_coupling=True,
         use_state_basis=args.use_state_basis,
         seed=args.seed,
