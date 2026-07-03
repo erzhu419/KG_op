@@ -8,8 +8,9 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
 from encoders.policy_state_encoder import SyntheticPolicyStateEncoder  # noqa: E402
-from problems.rzdt import RegimeRZDT1, StatePolicyRZDT1  # noqa: E402
+from problems.rzdt import HighDimStatePolicyRZDT1, RegimeRZDT1, StatePolicyRZDT1  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 
 
@@ -93,6 +94,42 @@ class StateEncoderTests(unittest.TestCase):
             history,
         )
         self.assertGreater(float(scores[0]), float(scores[1]))
+
+    def test_high_dim_state_policy_has_low_dimensional_basis_and_true_best(self):
+        base = HighDimStatePolicyRZDT1(d=1000, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        best_x, best_y = problem.true_best_feasible()
+        self.assertIsNotNone(best_x)
+        self.assertEqual(len(best_x), 1000)
+        self.assertTrue(problem.is_truly_feasible(best_x))
+        self.assertLess(best_y, 0.35)
+        u, q, spread = base.policy_state(best_x)
+        self.assertTrue(0.15 <= u <= 0.30)
+        self.assertTrue(0.65 <= q <= 0.78)
+        self.assertLess(spread, 1e-12)
+        self.assertEqual(len(problem.hvd_features(best_x)), 9)
+        self.assertEqual(problem.recommendation_random_pool_size(), 0)
+
+        alg = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(N=5, n0=5, K1=4, K2=0, seed=1),
+        )
+        self.assertEqual(alg.gpr[0].p, 12)
+        self.assertLess(alg.gpr[0].p, 2 * problem.d + 1)
+
+    def test_high_dim_state_inverse_returns_raw_policy_with_low_spread(self):
+        base = HighDimStatePolicyRZDT1(d=1000, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        encoder = SyntheticPolicyStateEncoder(problem)
+        candidates = encoder.state_space_candidates(
+            n_anchors=8,
+            inverse_neighbors=2,
+            rng=np.random.default_rng(2),
+        )
+        self.assertGreaterEqual(len(candidates), 8)
+        self.assertTrue(all(len(x) == 1000 for x in candidates))
+        spreads = [base.policy_state(x)[2] for x in candidates]
+        self.assertLess(float(np.median(spreads)), 1e-12)
 
 
 if __name__ == "__main__":

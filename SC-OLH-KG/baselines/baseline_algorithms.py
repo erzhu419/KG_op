@@ -66,11 +66,12 @@ class SequentialBaseline:
         if hasattr(self.problem, "initial_samples"):
             rows.extend(self.problem.initial_samples(n=self.config.n0, rng=self.rng))
             rows = unique_candidates(rows)
-        for x in boundary_solutions(self.problem):
-            if len(rows) >= self.config.n0:
-                break
-            rows.append(tuple(x))
-            rows = unique_candidates(rows)
+        if len(rows) < self.config.n0:
+            for x in boundary_solutions(self.problem):
+                if len(rows) >= self.config.n0:
+                    break
+                rows.append(tuple(x))
+                rows = unique_candidates(rows)
         while len(rows) < self.config.n0:
             rows.append(self.problem.sample_random(self.rng))
             rows = unique_candidates(rows)

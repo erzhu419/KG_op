@@ -87,6 +87,12 @@ class OrthogonalHVD:
 
     def _features(self, x, problem=None):
         """Near-orthogonal polynomial/log-variance features on [0, 1]."""
+        problem = problem or self._last_problem
+        if problem is not None and hasattr(problem, "hvd_features"):
+            try:
+                return np.asarray(problem.hvd_features(x), dtype=float)
+            except AttributeError:
+                pass
         z = self._normalize(x, problem)
         if len(z) == 0:
             z = np.array([0.0])

@@ -103,9 +103,19 @@ class ScalarizedProblem:
             return self.base.hvd_residual_variance_cap(output_index=output_index)
         return None
 
+    def hvd_features(self, x):
+        if hasattr(self.base, "hvd_features"):
+            return self.base.hvd_features(x)
+        raise AttributeError("base problem does not expose hvd_features")
+
     def surrogate_basis_map(self):
         if hasattr(self.base, "surrogate_basis_map"):
             return self.base.surrogate_basis_map()
+        return None
+
+    def gpr_basis_map(self):
+        if hasattr(self.base, "gpr_basis_map"):
+            return self.base.gpr_basis_map()
         return None
 
     def recommendation_refinement_candidates(self):
@@ -113,7 +123,14 @@ class ScalarizedProblem:
             return self.base.recommendation_refinement_candidates()
         return []
 
+    def recommendation_random_pool_size(self):
+        if hasattr(self.base, "recommendation_random_pool_size"):
+            return self.base.recommendation_random_pool_size()
+        raise AttributeError("base problem does not expose recommendation_random_pool_size")
+
     def true_best_feasible(self):
+        if hasattr(self.base, "scalarized_true_best_feasible"):
+            return self.base.scalarized_true_best_feasible(self.weights)
         best_x = None
         best_y = np.inf
         for x in self.all_axis_solutions():

@@ -430,6 +430,196 @@ class StatePolicyRZDT1(TestProblem):
         return rows
 
 
+class StatePolicyMetaFeatureMap:
+    """Low-dimensional basis for high-dimensional policy-state problems."""
+
+    feature_dim = 11
+
+    def __init__(self, problem):
+        self.problem = problem
+
+    def features(self, x):
+        u, q, spread = self.problem.policy_state(x)
+        return np.array([
+            u,
+            q,
+            spread,
+            u ** 2,
+            q ** 2,
+            spread ** 2,
+            u * q,
+            u * spread,
+            q * spread,
+            np.sin(np.pi * u),
+            abs(q - self.problem.q_star),
+        ], dtype=float)
+
+
+class HighDimStatePolicyRZDT1(TestProblem):
+    """High-dimensional raw policy with a low-dimensional state optimum.
+
+    Raw decisions can have thousands of coordinates, but the objective and
+    chance constraint depend on a policy-state summary `(u, q, spread)`.
+    This is the synthetic stress test for SC-style search: state candidates can
+    invert useful meta anchors into raw policies, while raw random/trust-region
+    candidates must discover the same low-spread tail pattern in a huge space.
+    """
+
+    problem_name = "HighDimStatePolicyRZDT1"
+    variance_features = (0, 1, 2)
+    recommended_partition_features = (0, 1, 2)
+
+    def __init__(self, d=1000, L=100, sigma=0.04, heteroscedastic=True, alpha=0.05):
+        super().__init__(d=d, L=L, sigma=sigma, heteroscedastic=heteroscedastic, alpha=alpha)
+        self.u_star = 0.22
+        self.q_star = 0.72
+
+    def policy_state(self, x):
+        z = self.normalize(x)
+        u = float(z[0]) if len(z) else 0.0
+        tail = z[1:] if len(z) > 1 else np.array([self.q_star])
+        q = float(np.mean(tail))
+        spread = float(np.std(tail))
+        return u, q, spread
+
+    def _objectives_from_state(self, u, q, spread):
+        state_loss = (
+            2.5 * (u - self.u_star) ** 2
+            + 5.5 * (q - self.q_star) ** 2
+            + 0.6 * spread ** 2
+        )
+        f1 = 0.28 + state_loss
+        f2 = 0.32 + state_loss + 0.05 * u + 0.02 * abs(q - self.q_star)
+        pocket = (
+            ((u - 0.25) / 0.18) ** 2
+            + ((q - self.q_star) / 0.12) ** 2
+            + 0.7 * (spread / 0.12) ** 2
+        )
+        f3 = 0.09 * (pocket - 1.0)
+        return float(f1), float(f2), float(f3)
+
+    def true_objectives(self, x):
+        return self._objectives_from_state(*self.policy_state(x))
+
+    def _sigma_from_state(self, u, q, spread):
+        if not self.heteroscedastic:
+            return self.sigma_level
+        q_gap = min(abs(q - self.q_star) / max(self.q_star, 1e-8), 1.0)
+        return self.sigma_level * (
+            0.30 + 0.75 * q_gap + 0.45 * np.sin(np.pi * u) ** 2
+            + 0.70 * min(spread / 0.35, 1.0)
+        )
+
+    def sigma_func(self, x, f_val=0.0):
+        del f_val
+        return self._sigma_from_state(*self.policy_state(x))
+
+    def risk_class(self, x):
+        _, q, spread = self.policy_state(x)
+        q_bin = int(np.clip(np.floor(q * 5.0), 0, 4))
+        spread_bin = 0 if spread < 0.04 else (1 if spread < 0.12 else 2)
+        return 10 * q_bin + spread_bin
+
+    def hvd_residual_variance_cap(self, output_index=0):
+        del output_index
+        return float((2.8 * self.sigma_level) ** 2)
+
+    def hvd_features(self, x):
+        u, q, spread = self.policy_state(x)
+        return np.array([
+            1.0,
+            u,
+            q,
+            spread,
+            u ** 2,
+            q ** 2,
+            spread ** 2,
+            abs(q - self.q_star),
+            np.sin(np.pi * u),
+        ], dtype=float)
+
+    def gpr_basis_map(self):
+        return StatePolicyMetaFeatureMap(self)
+
+    def recommendation_random_pool_size(self):
+        return 0
+
+    def _constant_tail_x(self, u, q):
+        lo, hi = self.int_bounds()
+        u_i = int(np.clip(round(float(u) * self.L), lo[0], hi[0]))
+        q_i = int(np.clip(round(float(q) * self.L), lo[-1], hi[-1]))
+        if self.d <= 1:
+            return (u_i,)
+        return tuple([u_i] + [q_i] * (self.d - 1))
+
+    def scalarized_true_best_feasible(self, weights):
+        weights = np.asarray(weights, dtype=float)
+        weights = weights / max(float(np.sum(weights)), 1e-12)
+        z_alpha = norm.ppf(1 - self.alpha)
+        best = None
+        for u_i in range(0, self.L + 1):
+            u = u_i / float(self.L)
+            for q_i in range(0, self.L + 1):
+                q = q_i / float(self.L)
+                f1, f2, f3 = self._objectives_from_state(u, q, 0.0)
+                margin = f3 + z_alpha * self._sigma_from_state(u, q, 0.0) - self.tau
+                if margin > 0.0:
+                    continue
+                obj = float(weights[0] * f1 + weights[1] * f2)
+                item = (obj, u, q)
+                if best is None or item < best:
+                    best = item
+        if best is None:
+            return None, float("inf")
+        return self._constant_tail_x(best[1], best[2]), float(best[0])
+
+    def initial_samples(self, n=5, rng=None):
+        del rng
+        anchors = [
+            (0.05, 0.50),
+            (0.50, 0.50),
+            (0.25, 0.55),
+            (0.25, 0.90),
+            (0.75, 0.50),
+            (0.10, 0.82),
+            (0.90, 0.20),
+            (0.40, 0.65),
+        ]
+        rows = [self._constant_tail_x(u, q) for u, q in anchors[: max(0, int(n))]]
+        return rows
+
+    def structured_candidates(self, n=10, rng=None):
+        rng = rng or np.random.default_rng()
+        u_vals = np.array([0.05, 0.15, 0.22, 0.30, 0.45, 0.65, 0.90])
+        q_vals = np.array([0.45, 0.55, 0.65, 0.72, 0.80, 0.90])
+        rows = [self._constant_tail_x(u, q) for u in u_vals for q in q_vals]
+        order = rng.permutation(len(rows))
+        return [rows[int(idx)] for idx in order[: max(0, int(n))]]
+
+    def state_anchor_points(self, n=10, rng=None):
+        rng = rng or np.random.default_rng()
+        anchors = []
+        u_vals = np.array([0.05, 0.12, 0.22, 0.30, 0.45, 0.65, 0.90])
+        q_vals = np.array([0.50, 0.60, 0.72, 0.80, 0.90])
+        for u in u_vals:
+            for q in q_vals:
+                anchors.append(np.array([u, q], dtype=float))
+        order = rng.permutation(len(anchors))
+        return [anchors[int(idx)] for idx in order[: max(0, int(n))]]
+
+    def inverse_state_anchor(self, anchor, rng=None, n=1):
+        rng = rng or np.random.default_rng()
+        anchor = np.asarray(anchor, dtype=float)
+        u = float(anchor[0])
+        q = float(anchor[1]) if len(anchor) > 1 else self.q_star
+        rows = []
+        for _ in range(max(1, int(n))):
+            u_j = np.clip(u + rng.normal(0.0, 0.025), 0.0, 1.0)
+            q_j = np.clip(q + rng.normal(0.0, 0.025), 0.0, 1.0)
+            rows.append(self._constant_tail_x(u_j, q_j))
+        return rows
+
+
 PROBLEM_REGISTRY = {
     "RZDT1": RZDT1,
     "RZDT2": RZDT2,
@@ -439,6 +629,7 @@ PROBLEM_REGISTRY = {
     "PaperRZDT5_RR": PaperRZDT5RR,
     "RegimeRZDT1": RegimeRZDT1,
     "StatePolicyRZDT1": StatePolicyRZDT1,
+    "HighDimStatePolicyRZDT1": HighDimStatePolicyRZDT1,
 }
 
 

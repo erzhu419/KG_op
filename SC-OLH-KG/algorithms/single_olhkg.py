@@ -82,10 +82,11 @@ class SingleOLHKGAlgorithm:
             )
             else None
         )
-        basis_map = (
-            StateCoupledFeatureMap(problem, self.encoder)
-            if self.config.use_state_basis else None
-        )
+        basis_map = None
+        if hasattr(problem, "gpr_basis_map"):
+            basis_map = problem.gpr_basis_map()
+        if basis_map is None and self.config.use_state_basis:
+            basis_map = StateCoupledFeatureMap(problem, self.encoder)
         self.gpr = [
             ParametricGPR(
                 problem.d,
@@ -125,10 +126,11 @@ class SingleOLHKGAlgorithm:
                 rng=self.rng,
             ))
             samples = unique_candidates(samples)
-        for x in boundary_solutions(self.problem):
-            if len(samples) >= self.config.n0:
-                break
-            samples.append(tuple(x))
+        if len(samples) < self.config.n0:
+            for x in boundary_solutions(self.problem):
+                if len(samples) >= self.config.n0:
+                    break
+                samples.append(tuple(x))
         while len(set(samples)) < self.config.n0:
             samples.append(self.problem.sample_random(self.rng))
             samples = unique_candidates(samples)
@@ -184,6 +186,14 @@ class SingleOLHKGAlgorithm:
             return []
         return unique_candidates(self.problem.recommendation_refinement_candidates())
 
+    def _recommendation_random_pool_size(self):
+        if hasattr(self.problem, "recommendation_random_pool_size"):
+            try:
+                return max(0, int(self.problem.recommendation_random_pool_size()))
+            except AttributeError:
+                pass
+        return max(0, int(self.config.eval_pool_size))
+
     def _generate_candidates(self, iteration):
         candidates = []
         sources = {}
@@ -238,7 +248,11 @@ class SingleOLHKGAlgorithm:
 
     def _recommendation_pool(self):
         pool = set(x for x, _ in self.history)
-        for x in random_candidates(self.problem, self.config.eval_pool_size, self.rng):
+        for x in random_candidates(
+            self.problem,
+            self._recommendation_random_pool_size(),
+            self.rng,
+        ):
             pool.add(tuple(x))
         if self.config.recommendation_axis_oracle and hasattr(
             self.problem, "all_axis_solutions"
