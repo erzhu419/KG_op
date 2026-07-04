@@ -108,6 +108,29 @@ class ScalarizedProblem:
             return self.base.hvd_features(x)
         raise AttributeError("base problem does not expose hvd_features")
 
+    def cumulative_risk_features(self, x, output_index=1):
+        if hasattr(self.base, "cumulative_risk_features"):
+            return self.base.cumulative_risk_features(
+                x,
+                output_index=output_index,
+            )
+        return None
+
+    def cumulative_risk_feature_names(self, output_index=1):
+        if hasattr(self.base, "cumulative_risk_feature_names"):
+            return self.base.cumulative_risk_feature_names(
+                output_index=output_index,
+            )
+        return None
+
+    def true_cumulative_risk_decomposition(self, x, output_index=1):
+        if hasattr(self.base, "true_cumulative_risk_decomposition"):
+            return self.base.true_cumulative_risk_decomposition(
+                x,
+                output_index=output_index,
+            )
+        return None
+
     def surrogate_basis_map(self):
         if hasattr(self.base, "surrogate_basis_map"):
             return self.base.surrogate_basis_map()

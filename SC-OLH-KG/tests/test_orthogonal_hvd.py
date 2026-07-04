@@ -8,7 +8,12 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from problems.rzdt import RegimeRZDT1, StatePolicyRZDT1  # noqa: E402
+from problems.rzdt import (  # noqa: E402
+    FactorShockStatePolicyRZDT1,
+    RegimeRZDT1,
+    StatePolicyRZDT1,
+)
+from problems.single_objective import ScalarizedProblem  # noqa: E402
 from variance.orthogonal_hvd import OrthogonalHVD  # noqa: E402
 
 
@@ -88,6 +93,47 @@ class OrthogonalHVDTests(unittest.TestCase):
         cap = problem.hvd_residual_variance_cap(0)
         self.assertLessEqual(model.predict_variance(0, x, problem), cap)
         self.assertEqual(model.diagnostics()["residual_variance_cap"]["0"], cap)
+
+    def test_factor_shock_oracle_sigma_matches_cumulative_formula(self):
+        base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        x = (25, 72, 72, 72, 72, 72, 72, 72)
+        decomp = problem.true_cumulative_risk_decomposition(x, output_index=1)
+        self.assertIsNotNone(decomp)
+        self.assertGreater(decomp["shared"], 0.0)
+        self.assertAlmostEqual(problem.true_sigma(x)[1] ** 2, decomp["total"])
+        features = problem.cumulative_risk_features(x, output_index=1)
+        names = problem.cumulative_risk_feature_names(output_index=1)
+        self.assertEqual(len(features), len(names))
+
+    def test_factor_hvd_learns_cumulative_risk_ordering(self):
+        base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        X = []
+        residuals = []
+        for u in [5, 15, 25, 40, 60, 80, 95]:
+            for q in [45, 60, 72, 85, 95]:
+                x = tuple([u] + [q] * 7)
+                X.append(x)
+                residuals.append(np.sqrt(problem.true_sigma(x)[1] ** 2))
+        model = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=10,
+            shrinkage_kappa=0.0,
+        )
+        model.fit_from_residuals(X, residuals, output_index=1, problem=problem)
+        low = tuple([25] + [72] * 7)
+        high = tuple([50] + [95] * 7)
+        self.assertTrue(model.diagnostics()["cumulative_active"]["1"])
+        self.assertGreater(
+            model.predict_variance(1, high, problem),
+            model.predict_variance(1, low, problem),
+        )
+        decomposition = model.predict_decomposition(1, high, problem)
+        self.assertIsNotNone(decomposition["cumulative"])
+        self.assertTrue(decomposition["cumulative"]["active"])
+        self.assertIsNotNone(decomposition["cumulative"]["oracle"])
 
 
 if __name__ == "__main__":

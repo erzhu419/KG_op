@@ -46,6 +46,8 @@ class OrthogonalHVD:
         self.class_var = {i: {} for i in range(self.n_outputs)}
         self.class_count = {i: {} for i in range(self.n_outputs)}
         self.beta = {i: None for i in range(self.n_outputs)}
+        self.cumulative_beta = {i: None for i in range(self.n_outputs)}
+        self.cumulative_fit_rmse = {i: None for i in range(self.n_outputs)}
         self.factor_energy = {i: [] for i in range(self.n_outputs)}
         self._last_problem = None
 
@@ -113,6 +115,41 @@ class OrthogonalHVD:
         for x in X:
             rows.append(self._features(x, problem))
         return np.vstack(rows) if rows else np.empty((0, 1), dtype=float)
+
+    def _cumulative_features(self, x, problem=None, output_index=0):
+        """Linear variance features for trajectory/meta cumulative risk."""
+        problem = problem or self._last_problem
+        if problem is None or not hasattr(problem, "cumulative_risk_features"):
+            return None
+        try:
+            feat = problem.cumulative_risk_features(
+                x,
+                output_index=int(output_index),
+            )
+        except TypeError:
+            feat = problem.cumulative_risk_features(x)
+        if feat is None:
+            return None
+        feat = np.asarray(feat, dtype=float)
+        if feat.ndim != 1 or len(feat) == 0 or not np.all(np.isfinite(feat)):
+            return None
+        return feat
+
+    def _cumulative_feature_matrix(self, X, problem=None, output_index=0):
+        rows = []
+        for x in X:
+            feat = self._cumulative_features(x, problem, output_index)
+            if feat is None:
+                return None
+            rows.append(feat)
+        return np.vstack(rows) if rows else np.empty((0, 1), dtype=float)
+
+    def _cumulative_active(self, i):
+        if self.mode != "factor":
+            return False
+        if self.cumulative_beta.get(int(i)) is None:
+            return False
+        return len(self.records.get(int(i), [])) >= int(self.config.activation_min_records)
 
     def _residual_variance_cap(self, i, problem=None):
         problem = problem or self._last_problem
@@ -213,6 +250,41 @@ class OrthogonalHVD:
             self.class_var[i][int(c)] = float(max(shrunk, self.floor))
             self.class_count[i][int(c)] = int(n_c)
 
+        self.cumulative_beta[i] = None
+        self.cumulative_fit_rmse[i] = None
+        if self.mode == "factor" and len(recs) >= int(self.config.activation_min_records):
+            X_c = []
+            y_c = []
+            for (x, _), v in zip(recs, vals):
+                feat = self._cumulative_features(x, problem, output_index=i)
+                if feat is None:
+                    X_c = []
+                    break
+                X_c.append(feat)
+                y_c.append(max(float(v), self.floor))
+            if X_c:
+                X_c = np.vstack(X_c)
+                y_c = np.asarray(y_c, dtype=float)
+                reg = float(self.config.ridge_alpha) * np.eye(X_c.shape[1])
+                reg[0, 0] = 0.0
+                try:
+                    beta_c = np.linalg.solve(X_c.T @ X_c + reg, X_c.T @ y_c)
+                except np.linalg.LinAlgError:
+                    beta_c = np.linalg.lstsq(
+                        X_c.T @ X_c + reg,
+                        X_c.T @ y_c,
+                        rcond=None,
+                    )[0]
+                beta_c = np.maximum(np.asarray(beta_c, dtype=float), 0.0)
+                beta_c[0] = max(float(beta_c[0]), 0.1 * self.floor)
+                self.cumulative_beta[i] = beta_c
+                pred_c = np.maximum(X_c @ beta_c, self.floor)
+                self.cumulative_fit_rmse[i] = float(np.sqrt(np.mean((pred_c - y_c) ** 2)))
+                energy = beta_c[1:] ** 2
+                total = float(np.sum(energy))
+                if total > 0:
+                    self.factor_energy[i] = (energy / total).tolist()
+
         if self.mode in ("orthogonal", "factor") and len(recs) >= int(self.config.activation_min_records):
             X = np.vstack([self._features(x, problem) for x, _ in recs])
             y = np.log(vals)
@@ -223,7 +295,7 @@ class OrthogonalHVD:
             except np.linalg.LinAlgError:
                 beta = np.linalg.lstsq(X.T @ X + reg, X.T @ y, rcond=None)[0]
             self.beta[i] = beta
-            if self.mode == "factor":
+            if self.mode == "factor" and self.cumulative_beta.get(i) is None:
                 coefs = np.asarray(beta[1:], dtype=float)
                 energy = coefs ** 2
                 total = float(np.sum(energy))
@@ -248,6 +320,41 @@ class OrthogonalHVD:
             for c in classes
         ], dtype=float)
 
+    def _predict_cumulative_variance(self, i, x, problem=None):
+        i = int(i)
+        if not self._cumulative_active(i):
+            return None
+        feat = self._cumulative_features(x, problem, output_index=i)
+        beta = self.cumulative_beta.get(i)
+        if feat is None or beta is None:
+            return None
+        pred = float(np.maximum(float(feat @ beta), self.floor))
+        cap = self._residual_variance_cap(i, problem)
+        if cap is not None:
+            pred = min(pred, cap)
+        return float(max(pred, self.floor))
+
+    def _predict_cumulative_variance_many(self, i, X, problem=None):
+        i = int(i)
+        if len(X) == 0 or not self._cumulative_active(i):
+            return None
+        F = self._cumulative_feature_matrix(X, problem, output_index=i)
+        beta = self.cumulative_beta.get(i)
+        if F is None or beta is None:
+            return None
+        pred = np.maximum(F @ beta, self.floor)
+        cap = self._residual_variance_cap(i, problem)
+        if cap is not None:
+            pred = np.minimum(pred, cap)
+        return np.maximum(pred, self.floor)
+
+    def predict_cumulative_variance(self, i, x, problem=None):
+        """Public cumulative-risk variance prediction when available."""
+        pred = self._predict_cumulative_variance(i, x, problem)
+        if pred is None:
+            pred = self.predict_variance(i, x, problem)
+        return float(max(pred, self.floor))
+
     def predict_variance(self, i, x, problem=None):
         """Predict observation-noise variance for one output channel."""
         i = int(i)
@@ -260,6 +367,10 @@ class OrthogonalHVD:
             return float(max(self.global_var.get(i, 0.01), self.floor))
         if self.mode == "class":
             return float(max(self._class_variance(i, x, problem), self.floor))
+        if self.mode == "factor":
+            cumulative = self._predict_cumulative_variance(i, x, problem)
+            if cumulative is not None:
+                return cumulative
         beta = self.beta.get(i)
         if beta is None or not self._orthogonal_active(i):
             return float(max(self._class_variance(i, x, problem), self.floor))
@@ -286,6 +397,10 @@ class OrthogonalHVD:
         if self.mode == "pooled":
             return np.full(len(X), max(float(self.global_var.get(i, 0.01)), self.floor))
         class_v = self._class_variance_many(i, X, problem)
+        if self.mode == "factor":
+            cumulative = self._predict_cumulative_variance_many(i, X, problem)
+            if cumulative is not None:
+                return cumulative
         beta = self.beta.get(i)
         if beta is None or not self._orthogonal_active(i):
             return class_v
@@ -380,6 +495,40 @@ class OrthogonalHVD:
         factor_contrib = None
         if beta is not None:
             factor_contrib = (feat[1:] * beta[1:]).tolist()
+        cumulative = None
+        c_feat = self._cumulative_features(x, problem, output_index=i)
+        c_beta = self.cumulative_beta.get(i)
+        if c_feat is not None:
+            names = None
+            problem_ref = problem or self._last_problem
+            if problem_ref is not None and hasattr(problem_ref, "cumulative_risk_feature_names"):
+                try:
+                    names = problem_ref.cumulative_risk_feature_names(output_index=i)
+                except TypeError:
+                    names = problem_ref.cumulative_risk_feature_names()
+            fitted_contrib = None
+            fitted_variance = None
+            if c_beta is not None:
+                fitted_contrib = (c_feat * c_beta).tolist()
+                fitted_variance = float(max(float(c_feat @ c_beta), self.floor))
+            oracle = None
+            if problem_ref is not None and hasattr(problem_ref, "true_cumulative_risk_decomposition"):
+                try:
+                    oracle = problem_ref.true_cumulative_risk_decomposition(
+                        x,
+                        output_index=i,
+                    )
+                except TypeError:
+                    oracle = problem_ref.true_cumulative_risk_decomposition(x)
+            cumulative = {
+                "active": bool(self._cumulative_active(i)),
+                "feature_names": names,
+                "features": c_feat.tolist(),
+                "fitted_contrib": fitted_contrib,
+                "fitted_variance": fitted_variance,
+                "fit_rmse": self.cumulative_fit_rmse.get(i),
+                "oracle": oracle,
+            }
         return {
             "mode": self.mode,
             "output_index": i,
@@ -390,6 +539,7 @@ class OrthogonalHVD:
             "class_count": int(self.class_count.get(i, {}).get(c, 0)),
             "factor_contrib": factor_contrib,
             "factor_energy": self.factor_energy.get(i, []),
+            "cumulative": cumulative,
             "model_uncertainty": float(self.model_uncertainty(i, x, problem)),
             "certification_variance": float(
                 self.predict_certification_variance(i, x, problem)),
@@ -450,6 +600,21 @@ class OrthogonalHVD:
             },
             "has_beta": {
                 str(i): self.beta.get(i) is not None
+                for i in range(self.n_outputs)
+            },
+            "has_cumulative_beta": {
+                str(i): self.cumulative_beta.get(i) is not None
+                for i in range(self.n_outputs)
+            },
+            "cumulative_active": {
+                str(i): bool(self._cumulative_active(i))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_fit_rmse": {
+                str(i): (
+                    None if self.cumulative_fit_rmse.get(i) is None
+                    else float(self.cumulative_fit_rmse[i])
+                )
                 for i in range(self.n_outputs)
             },
             "orthogonal_active": {
