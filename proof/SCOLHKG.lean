@@ -14,10 +14,14 @@ import SCOLHKG.Real.AdditiveApproxKG
 import SCOLHKG.Real.Certification
 import SCOLHKG.Real.ConditionalVariance
 import SCOLHKG.Real.CumulativeRisk
+import SCOLHKG.Real.FiniteKernelInformationGain
+import SCOLHKG.Real.GPRUpdate
 import SCOLHKG.Real.HVD
+import SCOLHKG.Real.HVDImplementation
 import SCOLHKG.Real.InformationGainRegret
 import SCOLHKG.Real.KG
 import SCOLHKG.Real.OccupancyDecomposition
+import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.RidgeHVD
 import SCOLHKG.Real.SafeRegret
 import SCOLHKG.Scalarization

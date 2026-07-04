@@ -37,6 +37,9 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/CumulativeRisk.lean`: real-valued cumulative-risk algebra.
 - `SCOLHKG/Real/ConditionalVariance.lean`: finite-partition law of total
   variance over real numbers, proved by algebraic expansion.
+- `SCOLHKG/Real/GPRUpdate.lean`: code-level rank-one GPR update bridge, showing
+  the KG slope used in `core/kg.py` is the standard-shock posterior mean
+  response.
 - `SCOLHKG/Real/OccupancyDecomposition.lean`: policy trajectory mixture risk
   decomposition into occupancy cumulative risk, occupancy remainder, and
   between-trajectory explained variance.
@@ -44,6 +47,11 @@ mathlib and its cache; later builds should be fast.
   upper-bound certification implication.
 - `SCOLHKG/Real/HVD.lean`: real-valued residual-square concentration event to
   HVD oracle-inequality implication.
+- `SCOLHKG/Real/HVDImplementation.lean`: code-level HVD bridges for residual
+  square records, nonnegative cumulative beta predictions, clipping, and
+  certification variance.
+- `SCOLHKG/Real/PosteriorRecommendation.lean`: robust posterior recommendation
+  logic used in `SingleOLHKGAlgorithm._solve_posterior_recommendation`.
 - `SCOLHKG/Real/RidgeHVD.lean`: concrete ridge empirical minimizer plus
   residual-square uniform concentration to HVD oracle inequality.
 - `SCOLHKG/Real/KG.lean`: real-valued exact KG and additive-proxy relation.
@@ -51,6 +59,8 @@ mathlib and its cache; later builds should be fast.
   approximation implies a `2 eta` exact-KG optimality gap.
 - `SCOLHKG/Real/InformationGainRegret.lean`: information-gain radius and
   finite-budget regret accounting.
+- `SCOLHKG/Real/FiniteKernelInformationGain.lean`: finite-kernel scalar
+  information-gain accumulation and uniform-cap bound.
 - `SCOLHKG/Real/SafeRegret.lean`: real-valued finite-budget safe simple-regret
   implication.
 - `SCOLHKG/Measure/ProbabilityEvents.lean`: mathlib
@@ -116,19 +126,26 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
     remainder.
 31. Exact posterior-update SC-OLH-KG expected value theorem and maximizer
     optimality.
+32. Code-level rank-one GPR update/KG-slope identity.
+33. Code-level HVD residual-square, nonnegative beta, clipping, and
+    certification-variance guards.
+34. Robust posterior recommendation implication.
+35. Finite-kernel scalar information-gain accumulation and cap bound.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Prove that the Python posterior-solve weights used in `SC-OLH-KG` instantiate
-   the finite-kernel weight map in `GPKernelConfidence.lean`.
-2. Choose manuscript-level residual-square distribution assumptions
+1. Formalize the imperative `compute_h` line-envelope algorithm and prove it
+   equals the Gaussian expectation used by exact KG.
+2. Prove that the Python posterior-sampling candidate generator's coefficient
+   sampling distribution instantiates the finite/adaptive candidate event.
+3. Choose manuscript-level residual-square distribution assumptions
    (bounded, sub-exponential, or Gaussian-derived) and specialize constants
    beyond the bounded Hoeffding case.
-3. Tie `PosteriorUpdateKG.lean` to the concrete implementation's GPR/HVD update
+4. Tie `PosteriorUpdateKG.lean` to the concrete implementation's GPR/HVD update
    equations once the exact estimator replaces the additive runner.
-4. Kernel-specific information-gain upper bounds for the selected feature
-   spaces and adaptive candidate policy.
-5. Traffic trajectory encoder/log model formalization, after the empirical
+5. Kernel-specific determinant-style information-gain upper bounds for the
+   selected feature spaces, beyond the current finite scalar cap.
+6. Traffic trajectory encoder/log model formalization, after the empirical
    traffic case is rebuilt with fresh seeds.
 
 ## Current Math-Depth Assessment

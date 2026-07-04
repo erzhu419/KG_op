@@ -211,13 +211,17 @@ versions needed by the manuscript:
 | Low-rank truncation bookkeeping | `SCOLHKG/Real/CumulativeRisk.lean` | Lean-proved over `R` |
 | Information refinement / law of total variance | `SCOLHKG/Real/ConditionalVariance.lean` | Lean-proved for two-cell and arbitrary finite partitions |
 | Policy/trajectory occupancy decomposition | `SCOLHKG/Real/OccupancyDecomposition.lean` | Lean-proved as occupancy cumulative risk plus remainder plus explained trajectory variance |
+| GPR rank-one update / KG slope | `SCOLHKG/Real/GPRUpdate.lean` | Lean-proved; matches `ParametricGPR.update` and `compute_kg_vectorized` slope |
 | Chance certification | `SCOLHKG/Real/Certification.lean` | Lean-proved from GP-confidence and variance-upper events |
 | HVD oracle inequality | `SCOLHKG/Real/HVD.lean` | Lean-proved from residual-square concentration event |
+| HVD implementation guards | `SCOLHKG/Real/HVDImplementation.lean` | Lean-proved for residual squares, nonnegative linear variance, clipping, and certification variance |
 | Ridge-HVD oracle inequality | `SCOLHKG/Real/RidgeHVD.lean` | Lean-proved from ridge minimizer and uniform residual-square concentration |
+| Posterior recommendation | `SCOLHKG/Real/PosteriorRecommendation.lean` | Lean-proved for robust-feasible posterior certification and objective argmin |
 | Exact KG maximizer | `SCOLHKG/Real/KG.lean` | Lean-proved for expected terminal gain |
 | Additive KG equivalence condition | `SCOLHKG/Real/KG.lean` | Lean-proved when additive score equals exact gain |
 | Additive-to-exact KG approximation | `SCOLHKG/Real/AdditiveApproxKG.lean` | Lean-proved with `2 eta` exact-KG gap |
 | Information-gain regret accounting | `SCOLHKG/Real/InformationGainRegret.lean` | Lean-proved from an information-gain radius budget |
+| Finite-kernel information-gain cap | `SCOLHKG/Real/FiniteKernelInformationGain.lean` | Lean-proved for scalar per-step finite kernel information gain |
 | Safe simple regret | `SCOLHKG/Real/SafeRegret.lean` | Lean-proved from certification and optimization-error events |
 | General conditional variance | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved by invoking mathlib `condVar` law of total variance |
 | GP confidence event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev and finite union bound |
@@ -232,11 +236,12 @@ versions needed by the manuscript:
 The next mathematical frontier is to derive the events used above from the
 probability model:
 
-1. code-level proof map from the Python posterior solve to the finite-kernel
-   weights in `GPKernelConfidence.lean`;
-2. manuscript choice of residual-square tail class, specializing the bounded
+1. formal proof of the imperative `compute_h` line-envelope algorithm against
+   the Gaussian expectation;
+2. posterior-sampling candidate generator distribution formalization;
+3. manuscript choice of residual-square tail class, specializing the bounded
    Hoeffding proof or replacing it with a sub-exponential/Gaussian-square proof;
-3. kernel/feature-specific information-gain upper bounds;
-4. exact SC-OLH-KG posterior-update estimator in code, tied to
+4. kernel/feature-specific determinant information-gain upper bounds;
+5. exact SC-OLH-KG posterior-update estimator in code, tied to
    `PosteriorUpdateKG.lean`;
-5. traffic trajectory/log formalization after fresh-seed traffic experiments.
+6. traffic trajectory/log formalization after fresh-seed traffic experiments.
