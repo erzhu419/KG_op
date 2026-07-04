@@ -136,6 +136,9 @@ def run_olhkg(args, seed, use_sc):
         recommendation_calibration=not args.disable_recommendation_calibration,
         recommendation_calibration_ridge=args.recommendation_calibration_ridge,
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
+        exact_kg_mc_samples=args.exact_kg_mc_samples,
+        exact_kg_use_score=args.exact_kg_use_score,
+        exact_kg_blend=args.exact_kg_blend,
         use_state_coupling=use_sc,
         seed=seed,
     )
@@ -389,6 +392,9 @@ def main():
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--exact_kg_use_score", action="store_true")
+    parser.add_argument("--exact_kg_blend", type=float, default=0.0)
     parser.add_argument("--baselines", default="sobol,random,turbo_lite,scbo_lite")
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
     parser.add_argument("--tr_radius_init", type=float, default=0.35)

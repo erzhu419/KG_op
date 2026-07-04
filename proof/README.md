@@ -55,6 +55,9 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/RidgeHVD.lean`: concrete ridge empirical minimizer plus
   residual-square uniform concentration to HVD oracle inequality.
 - `SCOLHKG/Real/KG.lean`: real-valued exact KG and additive-proxy relation.
+- `SCOLHKG/Real/LineEnvelopeKG.lean`: certificate-level line-envelope KG
+  theorem for the `compute_h` calculation once active hull intervals are
+  certified.
 - `SCOLHKG/Real/AdditiveApproxKG.lean`: uniform additive-acquisition
   approximation implies a `2 eta` exact-KG optimality gap.
 - `SCOLHKG/Real/InformationGainRegret.lean`: information-gain radius and
@@ -73,10 +76,14 @@ mathlib and its cache; later builds should be fast.
   centered confidence events over finite and adaptive candidate sets.
 - `SCOLHKG/Measure/ResidualSquareConcentration.lean`: bounded residual-square
   distribution constants and finite concentration events for HVD.
+- `SCOLHKG/Measure/ResidualSquareTail.lean`: generic sub-exponential or sharper
+  residual-square tail interface for finite HVD concentration.
 - `SCOLHKG/Measure/PosteriorKG.lean`: posterior expected terminal gain defined
   as a Bochner integral.
 - `SCOLHKG/Measure/PosteriorUpdateKG.lean`: exact posterior-update SC-OLH-KG
   value as an integral over updated terminal certified value.
+- `SCOLHKG/Measure/PosteriorSamplingCandidates.lean`: random posterior-sampled
+  candidate sets controlled by deterministic finite envelope pools.
 - `SCOLHKG/Measure/SafeRegretEvent.lean`: high-probability transfer from bad
   events to safe-regret failure events.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
@@ -131,18 +138,23 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
     certification-variance guards.
 34. Robust posterior recommendation implication.
 35. Finite-kernel scalar information-gain accumulation and cap bound.
+36. Certificate-level line-envelope KG exactness for `compute_h`.
+37. Random posterior-sampled candidate events controlled by deterministic
+    envelope pools.
+38. Generic sub-exponential/sharper residual-square tail interface.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Formalize the imperative `compute_h` line-envelope algorithm and prove it
-   equals the Gaussian expectation used by exact KG.
-2. Prove that the Python posterior-sampling candidate generator's coefficient
-   sampling distribution instantiates the finite/adaptive candidate event.
-3. Choose manuscript-level residual-square distribution assumptions
-   (bounded, sub-exponential, or Gaussian-derived) and specialize constants
-   beyond the bounded Hoeffding case.
-4. Tie `PosteriorUpdateKG.lean` to the concrete implementation's GPR/HVD update
-   equations once the exact estimator replaces the additive runner.
+1. Prove the imperative stack construction in `compute_h` produces a valid
+   `LineEnvelopeKG` certificate for the Gaussian hull intervals.
+2. Formalize the multivariate-normal coefficient sampling distribution used by
+   `posterior_sample_candidates`; the random-candidate envelope event is already
+   Lean-proved.
+3. Choose manuscript-level residual-square tail assumptions and instantiate
+   `ResidualSquareTail.lean`; bounded Hoeffding and generic sub-exponential
+   interfaces are already available.
+4. Use the optional Python exact posterior-update estimator in large-seed
+   benchmarks before deciding whether it replaces the additive runner.
 5. Kernel-specific determinant-style information-gain upper bounds for the
    selected feature spaces, beyond the current finite scalar cap.
 6. Traffic trajectory encoder/log model formalization, after the empirical
@@ -153,7 +165,9 @@ Still to formalize at the deeper mathlib probability/analysis layer:
 This is still not a complete 10/10 mathematical package, but the gap has
 narrowed: finite-kernel GP confidence, bounded residual-square constants,
 trajectory occupancy decomposition, ridge-HVD oracle step, additive-to-exact KG
-approximation, posterior-update exact KG, and information-gain regret
-accounting are now Lean-proved.  The remaining hard work is implementation and
-model instantiation: connect the Python posterior/update equations to these
-finite formal objects and choose the final manuscript-level tail assumptions.
+approximation, posterior-update exact KG, line-envelope KG certificates, random
+candidate envelope events, and information-gain regret accounting are now
+Lean-proved.  The remaining hard work is mostly implementation-level
+certification and empirical choice: prove `compute_h`'s stack emits the
+certificate, formalize coefficient sampling if needed, and decide whether the
+optional exact estimator should replace the additive default.

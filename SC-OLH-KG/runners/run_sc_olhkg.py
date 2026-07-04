@@ -43,6 +43,9 @@ def main():
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--exact_kg_use_score", action="store_true")
+    parser.add_argument("--exact_kg_blend", type=float, default=0.0)
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--out", default=None)
@@ -75,6 +78,9 @@ def main():
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
         use_state_coupling=True,
         use_state_basis=args.use_state_basis,
+        exact_kg_mc_samples=args.exact_kg_mc_samples,
+        exact_kg_use_score=args.exact_kg_use_score,
+        exact_kg_blend=args.exact_kg_blend,
         seed=args.seed,
     )
     alg = SingleOLHKGAlgorithm(problem, config)

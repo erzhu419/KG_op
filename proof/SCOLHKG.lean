@@ -4,7 +4,9 @@ import SCOLHKG.Information
 import SCOLHKG.KG
 import SCOLHKG.Measure.GPKernelConfidence
 import SCOLHKG.Measure.PosteriorUpdateKG
+import SCOLHKG.Measure.PosteriorSamplingCandidates
 import SCOLHKG.Measure.ResidualSquareConcentration
+import SCOLHKG.Measure.ResidualSquareTail
 import SCOLHKG.Measure.SubGaussianConfidence
 import SCOLHKG.Measure.PosteriorKG
 import SCOLHKG.Measure.ProbabilityEvents
@@ -20,6 +22,7 @@ import SCOLHKG.Real.HVD
 import SCOLHKG.Real.HVDImplementation
 import SCOLHKG.Real.InformationGainRegret
 import SCOLHKG.Real.KG
+import SCOLHKG.Real.LineEnvelopeKG
 import SCOLHKG.Real.OccupancyDecomposition
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.RidgeHVD

@@ -26,3 +26,10 @@ python3 SC-OLH-KG/performance/benchmark_sota.py --problem StatePolicyRZDT1 --N 2
 python3 SC-OLH-KG/performance/diagnose_hvd_calibration.py --variance_mode orthogonal --seed 4
 python3 -m unittest discover -s SC-OLH-KG/tests
 ```
+
+## Optional Exact KG
+
+`SingleOLHKGConfig(exact_kg_mc_samples>0)` enables a sampled exact
+posterior-update KG estimator.  It is off by default; the stable baseline still
+uses the additive OLH-KG proxy.  Set `exact_kg_use_score=True` for smoke tests
+that select directly by the sampled exact score.

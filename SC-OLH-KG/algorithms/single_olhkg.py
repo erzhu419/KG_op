@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass, asdict
 import time
 
@@ -61,6 +62,9 @@ class SingleOLHKGConfig:
     recommendation_axis_candidate_count: int = -1
     use_state_coupling: bool = False
     use_state_basis: bool = False
+    exact_kg_mc_samples: int = 0
+    exact_kg_use_score: bool = False
+    exact_kg_blend: float = 0.0
     eval_pool_size: int = 500
     seed: int = 123
 
@@ -423,6 +427,102 @@ class SingleOLHKGAlgorithm:
             "n_posterior_feasible": int(np.sum(feasible)),
         }
 
+    def _terminal_value_from_models(self, gpr_models, variance_model, pool):
+        """Terminal certified value used by the optional exact-update KG.
+
+        Lower is better.  If the fixed terminal pool has no robust-feasible
+        point, use the same normalized infeasibility penalty shape as
+        `_solve_posterior_recommendation` so the value remains comparable.
+        """
+        if len(pool) == 0:
+            return 0.0
+        mu_obj = gpr_models[0].posterior_mean_many(pool)
+        mu_con = gpr_models[1].posterior_mean_many(pool)
+        z = norm.ppf(1 - self.problem.alpha)
+        v_con = variance_model.predict_certification_variance_many(
+            1, pool, self.problem)
+        sig_con = np.sqrt(np.maximum(v_con, 1e-12))
+        margins = mu_con + z * sig_con - self.problem.tau
+        nominal_floor = (
+            self.config.recommendation_noise_floor_scale
+            * float(getattr(self.problem, "sigma_level", 0.0))
+        )
+        safety_buffer = np.maximum(
+            self.config.recommendation_safety_z * sig_con,
+            nominal_floor,
+        )
+        robust_margins = margins + safety_buffer
+        feasible = robust_margins <= 0.0
+        if np.any(feasible):
+            return float(np.min(np.where(feasible, mu_obj, np.inf)))
+        scaled_obj = mu_obj - float(np.min(mu_obj))
+        obj_span = float(np.max(scaled_obj))
+        if obj_span > 1e-12:
+            scaled_obj = scaled_obj / obj_span
+        scaled_margin = np.maximum(robust_margins, 0.0)
+        margin_span = float(np.max(scaled_margin))
+        if margin_span > 1e-12:
+            scaled_margin = scaled_margin / margin_span
+        penalized = (
+            scaled_obj
+            + self.config.recommendation_infeasible_penalty * scaled_margin
+        )
+        return float(np.min(penalized))
+
+    def _exact_posterior_update_scores(self, candidates, terminal_pool):
+        """Monte Carlo exact posterior-update KG over a fixed terminal pool.
+
+        This is intentionally optional and small-budget friendly.  It samples
+        predictive observations, applies the same GPR update and HVD residual
+        update as the main loop, and measures current terminal value minus
+        updated terminal value.
+        """
+        mc = int(self.config.exact_kg_mc_samples)
+        if mc <= 0 or len(candidates) == 0:
+            return np.zeros(len(candidates), dtype=float)
+        current_value = self._terminal_value_from_models(
+            self.gpr, self.variance_model, terminal_pool)
+        common_z = self.rng.standard_normal((mc, 2))
+        out = np.zeros(len(candidates), dtype=float)
+        for j, x in enumerate(candidates):
+            x_arr = np.asarray(x, dtype=int)
+            mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]
+            sigma2_before = [
+                self.variance_model.predict_variance(i, x_arr, self.problem)
+                for i in range(2)
+            ]
+            pred_sd = [
+                np.sqrt(max(
+                    float(sigma2_before[i]) + self.gpr[i].posterior_var(x_arr),
+                    1e-12,
+                ))
+                for i in range(2)
+            ]
+            gains = []
+            for z_vec in common_z:
+                gpr_clone = [copy.deepcopy(model) for model in self.gpr]
+                var_clone = copy.deepcopy(self.variance_model)
+                y = [
+                    float(mu_before[i] + pred_sd[i] * z_vec[i])
+                    for i in range(2)
+                ]
+                for i in range(2):
+                    gpr_clone[i].update(x_arr, y[i], sigma2_before[i])
+                for i in range(2):
+                    var_clone.update(
+                        i,
+                        x_arr,
+                        y[i],
+                        mu_before[i],
+                        gpr_clone[i],
+                        self.problem,
+                    )
+                future_value = self._terminal_value_from_models(
+                    gpr_clone, var_clone, terminal_pool)
+                gains.append(current_value - future_value)
+            out[j] = max(float(np.mean(gains)), 0.0)
+        return out
+
     def _evaluate_recommendation(self, x_best):
         true_obj = self.problem.true_objective(x_best)
         true_con = self.problem.true_constraint_mean(x_best)
@@ -506,6 +606,20 @@ class SingleOLHKGAlgorithm:
                 self.problem,
                 observed=self.history,
             )
+            if int(self.config.exact_kg_mc_samples) > 0:
+                terminal_pool = self._recommendation_pool()
+                exact_kg = self._exact_posterior_update_scores(
+                    candidates, terminal_pool)
+                score["exact_kg"] = exact_kg
+                row["exact_kg_mc_samples"] = int(self.config.exact_kg_mc_samples)
+                blend = float(np.clip(self.config.exact_kg_blend, 0.0, 1.0))
+                if self.config.exact_kg_use_score:
+                    score["total"] = exact_kg
+                elif blend > 0.0:
+                    score["total"] = (
+                        (1.0 - blend) * score["total"]
+                        + blend * exact_kg
+                    )
             selected_idx = int(np.argmax(score["total"]))
             x_selected = candidates[selected_idx]
             row["t_kg_compute"] = time.time() - t0
@@ -522,6 +636,8 @@ class SingleOLHKGAlgorithm:
                 score["kg_coupling_raw"][selected_idx])
             row["kg_coupling_gate_selected"] = float(
                 score["kg_coupling_gate"][selected_idx])
+            if "exact_kg" in score:
+                row["exact_kg_selected"] = float(score["exact_kg"][selected_idx])
 
             x_arr = np.asarray(x_selected, dtype=int)
             mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]
