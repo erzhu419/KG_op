@@ -12,6 +12,8 @@ contains a minimal, testable implementation path:
    `mu_g + sqrt(beta_g)s_g + z sqrt(v_C^+) <= tau`.
 5. Compare additive, exact-MC, and blended SC-OLH-KG acquisition variants.
 6. Add deterministic state-policy coupling and fresh-log traffic encoding.
+7. Compare deterministic, self-supervised, and transformer-style state
+   encoders as SC coupling ablations.
 
 Generated outputs should go under `results/`, `profiles/`, or `checkpoints/`;
 those directories are ignored by git.
@@ -28,6 +30,7 @@ python3 SC-OLH-KG/performance/benchmark_quality.py --N 20 --n0 5 --K1 15 --K2 1 
 python3 SC-OLH-KG/performance/benchmark_quality.py --problem FactorShockStatePolicyRZDT1 --modes pooled,class,orthogonal,factor --sc_modes factor --acquisition_modes additive,exact_mc,blend --N 40 --n0 8 --K1 25 --K2 1 --n_seeds 10
 python3 SC-OLH-KG/performance/benchmark_exact_kg.py --N 18 --n0 6 --K1 10 --exact_mc_samples 2 --n_seeds 3
 python3 SC-OLH-KG/performance/benchmark_sota.py --problem StatePolicyRZDT1 --N 20 --n0 5 --baselines botorch_turbo,botorch_scbo,botorch_saasbo
+python3 SC-OLH-KG/performance/benchmark_encoder_suite.py --problem StatePolicyRZDT1 --N 30 --n0 8
 python3 SC-OLH-KG/performance/benchmark_traffic_fresh.py --trajectory_log /path/to/fresh_traffic_trajectories.csv
 python3 SC-OLH-KG/performance/diagnose_hvd_calibration.py --variance_mode orthogonal --seed 4
 python3 -m unittest discover -s SC-OLH-KG/tests
@@ -52,6 +55,16 @@ is kept only for ablation.
 and HVD states before recomputing the terminal theory-certified value.  If
 `exact_mc` or `blend` is selected without an explicit sample count, the runner
 uses a small default MC count for a real exact-KG code path.
+
+## State Encoders
+
+`SingleOLHKGConfig(encoder_kind=...)` accepts `synthetic`,
+`self_supervised`, and `transformer`.  The self-supervised path learns a
+low-rank state representation from unlabeled policy samples or trajectory
+summaries using masked-reconstruction style SVD features.  The transformer path
+uses deterministic attention-style trajectory pooling before the same low-rank
+projection.  Both are available to SC candidate generation and coupling scores,
+and `performance/benchmark_encoder_suite.py` writes their comparison table.
 
 ## Traffic Logs
 

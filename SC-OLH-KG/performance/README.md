@@ -28,6 +28,10 @@ Coverage coupling is also gated by a conservative posterior chance margin:
 coverage rewards concentrated in regions that the constraint model considers
 confidently feasible.  This matters on RZDT2-like problems where global novelty
 can otherwise pull the search into the high-risk middle of the domain.
+`--encoder_kind synthetic,self_supervised,transformer` controls the SC state
+encoder used by candidate generation and coupling scores.  The self-supervised
+and transformer options are lightweight learned encoders, intended for ablation
+and trajectory-representation experiments rather than as hidden oracles.
 
 Workflow:
 
@@ -178,6 +182,50 @@ timeouts are counted instead of silently stalling the benchmark.
 `--botorch_max_candidate_failures` bounds repeated candidate-generation
 failures in one BoTorch run; SAASBO can then switch to a recorded cheap
 fallback instead of spending every remaining budget step in NUTS/optimization.
+The full lightweight baseline family also includes `hetgp_lite`,
+`rahbo_lite`, `safeopt_lite`, and `legacy_vepm_lite`.  These are reproducible
+style baselines for the paper matrix, not substitutes for dedicated external
+packages.
+
+Encoder ablation suite:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_encoder_suite.py \
+  --problem StatePolicyRZDT1 \
+  --encoder_kinds synthetic,self_supervised,transformer \
+  --N 30 --n0 8 \
+  --n_seeds 10 \
+  --out_prefix encoder_suite_statepolicy_n30_s10
+```
+
+Smoke result on 2026-07-04 with `N=12,n0=6,n_seeds=2` confirmed that all three
+encoder paths run inside SC-OLH-KG.  In that tiny probe, self-supervised and
+transformer encoders both achieved median feasible regret `0.00118`, while the
+deterministic synthetic encoder had `0.01343`; this is only a functionality
+probe, not a paper claim.
+
+Exact-MC decision probe:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_quality.py \
+  --problem StatePolicyRZDT1 \
+  --modes factor \
+  --sc_modes factor \
+  --acquisition_modes additive,exact_mc,blend \
+  --N 16 --n0 8 \
+  --K1 6 --K2 0 \
+  --eval_pool_size 80 \
+  --exact_kg_mc_samples 1 \
+  --n_seeds 2 \
+  --out_prefix exact_decision_statepolicy_n16_s2_20260704
+```
+
+This probe showed that exact-MC can improve quality but is still much slower:
+`factor:olhkg_sc_exact` reached median regret `0.00018` with median wall time
+`36.06s`, while `factor:olhkg_sc_additive` reached `0.00181` with `2.30s`.
+Thus exact-MC is implemented and theoretically bridged, but should remain an
+ablation until candidate/HVD clone updates are vectorized enough for N=80,
+20-seed paper runs.
 
 Multi-problem SOTA suite:
 

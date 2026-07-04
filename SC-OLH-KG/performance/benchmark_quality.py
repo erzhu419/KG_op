@@ -160,6 +160,9 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
+        encoder_kind=args.encoder_kind,
+        encoder_latent_dim=args.encoder_latent_dim,
+        encoder_fit_pool_size=args.encoder_fit_pool_size,
         acquisition_mode=acquisition_mode,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
         exact_kg_use_score=args.exact_kg_use_score,
@@ -180,6 +183,9 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         "variance_mode": variance_mode,
         "use_state_coupling": bool(use_state_coupling),
         "use_state_basis": bool(use_state_coupling and args.use_state_basis),
+        "encoder_kind": args.encoder_kind,
+        "encoder_latent_dim": int(args.encoder_latent_dim),
+        "encoder_fit_pool_size": int(args.encoder_fit_pool_size),
         "acquisition_mode": acquisition_mode,
         "beta_g": float(args.beta_g),
         "certification_mode": args.certification_mode,
@@ -380,6 +386,9 @@ def run_benchmark(args):
             "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
             "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
             "use_state_basis": args.use_state_basis,
+            "encoder_kind": args.encoder_kind,
+            "encoder_latent_dim": args.encoder_latent_dim,
+            "encoder_fit_pool_size": args.encoder_fit_pool_size,
             "acquisition_modes": parse_csv(args.acquisition_modes),
             "exact_kg_mc_samples": args.exact_kg_mc_samples,
             "exact_kg_use_score": args.exact_kg_use_score,
@@ -518,6 +527,13 @@ def main():
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument(
+        "--encoder_kind",
+        default="synthetic",
+        choices=["synthetic", "self_supervised", "masked", "contrastive", "transformer"],
+    )
+    parser.add_argument("--encoder_latent_dim", type=int, default=8)
+    parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)

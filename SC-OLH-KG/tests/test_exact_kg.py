@@ -77,6 +77,22 @@ class ExactKGTests(unittest.TestCase):
         alg = SingleOLHKGAlgorithm(problem, config)
         self.assertEqual(alg._effective_exact_kg_mc_samples(), 4)
 
+    def test_additive_mode_ignores_exact_samples_unless_requested(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        config = SingleOLHKGConfig(
+            N=5,
+            n0=4,
+            K1=4,
+            K2=0,
+            acquisition_mode="additive",
+            exact_kg_mc_samples=5,
+            exact_kg_use_score=False,
+            exact_kg_blend=0.0,
+            seed=17,
+        )
+        alg = SingleOLHKGAlgorithm(problem, config)
+        self.assertEqual(alg._effective_exact_kg_mc_samples(), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

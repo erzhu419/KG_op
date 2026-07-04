@@ -5,7 +5,7 @@
 | Theory object | Current code object | Status |
 | --- | --- | --- |
 | Decision vector `x` | `problem` candidates, integer tuples | Implemented |
-| Policy-state summary `s(x)` | `policy_state(x)`, `SyntheticPolicyStateEncoder` | Synthetic implemented |
+| Policy-state summary `s(x)` | `policy_state(x)`, `SyntheticPolicyStateEncoder`, `SelfSupervisedPolicyStateEncoder` | Synthetic and learned encoder paths implemented |
 | Idiosyncratic exposure `A(x)` | `FactorShockStatePolicyRZDT1.risk_exposures(x)[0]` | Implemented for synthetic |
 | Shared-shock exposure `N(x)` | `FactorShockStatePolicyRZDT1.risk_exposures(x)[1]` | Implemented for synthetic |
 | `Lambda`, `B`, `omega` | `cumulative_risk_parameters()` | Implemented for synthetic |
@@ -13,6 +13,7 @@
 | HVD predictor `\hat v_C(x)` | `OrthogonalHVD(mode="factor")` cumulative beta | Implemented for synthetic |
 | Certified bound | `core.certification.conservative_chance_margin` with `predict_certification_variance()` | Implemented for theory/legacy modes |
 | SC candidate generation | `state_anchor_points()` and `inverse_state_anchor()` | Synthetic implemented |
+| Self-supervised trajectory representation | `SelfSupervisedTrajectoryEncoder`, `TransformerTrajectoryEncoder` | Implemented for masked, contrastive, and attention-style pooling ablations |
 | Traffic occupancy encoder | `TrafficTrajectoryEncoder` | Implemented for fresh-seed CSV schema; empirical table blocked if logs absent |
 | Exact terminal KG | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | Formal acquisition variant via `acquisition_mode=exact_mc/blend`; additive remains default ablation |
 
@@ -68,9 +69,9 @@ an ablation.
 | `algorithms.SingleOLHKGAlgorithm._solve_posterior_recommendation` | choose lowest posterior objective among robust chance-feasible candidates | `SCOLHKG.Real.PosteriorRecommendation.robust_feasible_implies_posterior_certified` and `robust_argmin_is_objective_minimizer_on_robust_set` |
 | `core.candidates.posterior_sample_candidates` | finite posterior candidate pool from sampled parametric coefficients | `SCOLHKG.Measure.PosteriorCoefficientSampler.posteriorCoefficientSampler_bad_event_le_sum` and `SCOLHKG.Measure.PosteriorSamplingCandidates.randomAdaptiveCenteredSubGaussian_bad_event_le_sum` control random candidate sets by deterministic envelope pools |
 | posterior coefficient draw law | sampled parametric coefficient vector with mean/covariance from GPR posterior | `SCOLHKG.Measure.PosteriorMultivariateGaussian` uses mathlib `multivariateGaussian` to prove the draw law, mean, covariance, and Gaussian linear scores |
-| finite candidate/kernel budget | scalar information gain `0.5 log(1+var/noise)` accumulated over finite steps | `SCOLHKG.Real.FiniteKernelInformationGain.finiteInformationGain_le_uniform_cap`, `finiteInformationGain_eq_determinantInformationGain_product`, `SCOLHKG.Real.KernelDeterminantBridge.finiteInformationGain_le_determinant_cap`, and `SCOLHKG.Real.FeatureKernelDeterminantCap.finiteInformationGain_le_feature_norm_kernel_cap` |
-| `SingleOLHKGAlgorithm._exact_posterior_update_scores` | MC estimate of current terminal certified value minus updated terminal certified value after GPR/HVD update | `SCOLHKG.Measure.PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer` defines the exact target; `SCOLHKG.Real.ExactKGImplementation.exact_mc_estimator_maximizer_gap` bridges uniformly accurate MC estimates |
-| `TrafficTrajectoryEncoder` fresh CSV aggregate | state-action occupancy plus queue/wait/flow and demand-shock exposure | `SCOLHKG.Real.TrafficTrajectoryModel.totalRisk_decomposition` and `sharedShock_omission_underestimates` formalize the finite traffic risk model |
+| finite candidate/kernel budget | scalar information gain `0.5 log(1+var/noise)` accumulated over finite steps | `SCOLHKG.Real.FiniteKernelInformationGain.finiteInformationGain_le_uniform_cap`, `finiteInformationGain_eq_determinantInformationGain_product`, `SCOLHKG.Real.KernelDeterminantBridge.finiteInformationGain_le_determinant_cap`, and `SCOLHKG.Real.FeatureKernelDeterminantCap.finiteInformationGain_le_feature_map_norm_cap` |
+| `SingleOLHKGAlgorithm._exact_posterior_update_scores` | MC estimate of current terminal certified value minus updated terminal certified value after GPR/HVD update | `SCOLHKG.Measure.PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer` defines the exact target; `SCOLHKG.Real.ExactKGImplementation.exact_mc_estimator_maximizer_gap` bridges uniformly accurate MC estimates; `SCOLHKG.Measure.ExactMCConcentration.exactMC_constant_radius_bad_event_le_sum` gives finite-pool concentration |
+| `TrafficTrajectoryEncoder` fresh CSV aggregate | state-action occupancy plus queue/wait/flow and demand-shock exposure | `SCOLHKG.Real.TrafficTrajectoryModel.totalRisk_decomposition`, `sharedShock_omission_underestimates`, and `TrafficLogSchemaRow` formalize the finite traffic risk model and CSV schema semantics |
 
 The exact posterior-update SC-OLH-KG object is formalized in
 `SCOLHKG.Measure.PosteriorUpdateKG`, and the Python runner now has an optional
@@ -99,8 +100,10 @@ proxy above, so the manuscript has two clean paths:
 3. Bounded and generic sub-exponential residual-square interfaces are
    available, and the default radius is exposed in code/proof with a
    closed-form inversion theorem.
-4. The exact KG estimator is benchmark-wired as `exact_mc`/`blend`, but not yet
-   empirically promoted over the additive default.
-5. The traffic encoder/log parser and finite traffic-risk Lean model are
+4. The exact KG estimator is benchmark-wired as `exact_mc`/`blend` and now has
+   a finite-pool concentration theorem.  It is not yet empirically promoted
+   over the additive default because current probes show a large wall-time
+   multiplier.
+5. The traffic encoder/log parser, schema-row contract, and finite traffic-risk Lean model are
    implemented, but real fresh-seed logs are not present locally; empirical
    traffic results should be marked `missing_data` until those logs exist.

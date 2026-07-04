@@ -3,6 +3,7 @@ import SCOLHKG.HVD
 import SCOLHKG.Information
 import SCOLHKG.KG
 import SCOLHKG.Measure.GPKernelConfidence
+import SCOLHKG.Measure.ExactMCConcentration
 import SCOLHKG.Measure.PosteriorUpdateKG
 import SCOLHKG.Measure.PosteriorCoefficientSampler
 import SCOLHKG.Measure.PosteriorMultivariateGaussian

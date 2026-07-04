@@ -14,7 +14,16 @@ from problems.single_objective import ScalarizedProblem  # noqa: E402
 class BaselineTests(unittest.TestCase):
     def test_lightweight_baselines_run(self):
         problem = ScalarizedProblem(StatePolicyRZDT1(d=5, L=100, sigma=0.04))
-        for method in ("random", "sobol", "turbo_lite", "scbo_lite"):
+        for method in (
+            "random",
+            "sobol",
+            "turbo_lite",
+            "scbo_lite",
+            "hetgp_lite",
+            "rahbo_lite",
+            "safeopt_lite",
+            "legacy_vepm_lite",
+        ):
             config = BaselineConfig(N=8, n0=4, seed=1, method=method)
             result = SequentialBaseline(problem, config).run()
             self.assertEqual(result["n_simulations"], 8)
@@ -24,4 +33,3 @@ class BaselineTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

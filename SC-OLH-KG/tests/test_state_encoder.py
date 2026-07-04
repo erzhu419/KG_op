@@ -11,8 +11,11 @@ sys.path.insert(0, str(ROOT))
 
 from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
 from encoders.policy_state_encoder import (  # noqa: E402
+    SelfSupervisedPolicyStateEncoder,
+    SelfSupervisedTrajectoryEncoder,
     SyntheticPolicyStateEncoder,
     TrafficTrajectoryEncoder,
+    TransformerTrajectoryEncoder,
 )
 from problems.rzdt import HighDimStatePolicyRZDT1, RegimeRZDT1, StatePolicyRZDT1  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
@@ -178,6 +181,70 @@ class StateEncoderTests(unittest.TestCase):
             path = Path(tmp) / "missing.csv"
             status = TrafficTrajectoryEncoder.missing_data_status(path)
         self.assertEqual(status["status"], "missing_data")
+
+    def test_self_supervised_trajectory_encoder_masked_and_contrastive(self):
+        records = []
+        for pid, queue in [("p0", 1.0), ("p1", 8.0), ("p2", 9.0)]:
+            for t in range(4):
+                records.append({
+                    "policy_id": pid,
+                    "time": str(t),
+                    "state": f"s{t % 2}",
+                    "action": f"a{t % 3}",
+                    "occupancy": "1",
+                    "queue": str(queue + 0.1 * t),
+                    "wait": str(0.5 * queue),
+                    "flow": str(10.0 - queue),
+                    "demand_shock": str(0.1 * t),
+                })
+        encoder = SelfSupervisedTrajectoryEncoder(latent_dim=3)
+        encoder.fit_masked_prediction(records)
+        diag = encoder.diagnostics()
+        self.assertLess(
+            diag["masked_reconstruction_mse"],
+            diag["masked_baseline_mse"],
+        )
+        self.assertEqual(encoder.features("p0").shape, (3,))
+
+        labels = {"p0": "low", "p1": "high", "p2": "high"}
+        encoder.fit_contrastive(records, risk_labels=labels)
+        self.assertGreaterEqual(encoder.diagnostics()["contrastive_separation"], 0.0)
+
+    def test_transformer_trajectory_encoder_outputs_features(self):
+        records = [
+            {
+                "policy_id": "p0",
+                "time": str(t),
+                "state": f"s{t}",
+                "action": "a0",
+                "queue": str(t),
+                "wait": str(2 * t),
+                "flow": "3",
+                "demand_shock": str(0.2 * t),
+            }
+            for t in range(5)
+        ]
+        encoder = TransformerTrajectoryEncoder(latent_dim=4)
+        encoder.fit(records)
+        self.assertEqual(encoder.features("p0").shape, (4,))
+
+    def test_self_supervised_policy_state_encoder_integrates_with_sc(self):
+        base = StatePolicyRZDT1(d=5, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        encoder = SelfSupervisedPolicyStateEncoder(
+            problem,
+            latent_dim=5,
+            fit_pool_size=64,
+            rng=np.random.default_rng(3),
+        )
+        feat = encoder.occupancy((25, 70, 70, 70, 70))
+        self.assertEqual(feat.shape, (5,))
+        candidates = encoder.state_space_candidates(
+            n_anchors=4,
+            inverse_neighbors=1,
+            rng=np.random.default_rng(4),
+        )
+        self.assertGreaterEqual(len(candidates), 4)
 
 
 if __name__ == "__main__":

@@ -27,12 +27,24 @@ class BaselineConfig:
     tr_radius_min: float = 0.04
     tr_radius_max: float = 0.8
     nominal_sigma_scale: float = 1.0
+    ridge: float = 1e-6
+    risk_aversion: float = 0.5
+    safe_beta: float = 2.0
 
 
 class SequentialBaseline:
     """Sequential derivative-free baseline with shared evaluation semantics."""
 
-    VALID_METHODS = {"random", "sobol", "turbo_lite", "scbo_lite"}
+    VALID_METHODS = {
+        "random",
+        "sobol",
+        "turbo_lite",
+        "scbo_lite",
+        "hetgp_lite",
+        "rahbo_lite",
+        "safeopt_lite",
+        "legacy_vepm_lite",
+    }
 
     def __init__(self, problem, config: BaselineConfig):
         if config.method not in self.VALID_METHODS:
@@ -129,10 +141,19 @@ class SequentialBaseline:
             return self._trust_region_candidate(feasible_first=False)
         if method == "scbo_lite":
             return self._trust_region_candidate(feasible_first=True)
+        if method in ("hetgp_lite", "rahbo_lite", "safeopt_lite", "legacy_vepm_lite"):
+            return self._surrogate_candidate(method)
         raise AssertionError(method)
 
     def _update_tr_radius(self, y):
-        if self.config.method not in ("turbo_lite", "scbo_lite"):
+        if self.config.method not in (
+            "turbo_lite",
+            "scbo_lite",
+            "hetgp_lite",
+            "rahbo_lite",
+            "safeopt_lite",
+            "legacy_vepm_lite",
+        ):
             return
         score = self._score_observation(y)
         improved = self._last_score is None or score < self._last_score
@@ -147,6 +168,150 @@ class SequentialBaseline:
                 float(self.config.tr_radius_min),
                 0.85 * self._tr_radius,
             )
+
+    def _basis(self, x):
+        z = np.asarray(self.problem.normalize(x), dtype=float)
+        return np.concatenate([[1.0], z, z ** 2])
+
+    def _fit_ridge(self, y):
+        X = np.vstack([self._basis(x) for x, _ in self.history])
+        y = np.asarray(y, dtype=float)
+        ridge = max(float(self.config.ridge), 0.0)
+        reg = ridge * np.eye(X.shape[1], dtype=float)
+        reg[0, 0] = 0.0
+        try:
+            beta = np.linalg.solve(X.T @ X + reg, X.T @ y)
+        except np.linalg.LinAlgError:
+            beta = np.linalg.lstsq(X.T @ X + reg, X.T @ y, rcond=None)[0]
+        resid = y - X @ beta
+        return beta, resid
+
+    def _surrogate_pool(self):
+        rows = []
+        rows.extend(boundary_solutions(self.problem))
+        if hasattr(self.problem, "structured_candidates"):
+            rows.extend(self.problem.structured_candidates(
+                n=max(8, int(self.config.batch_candidates) // 2),
+                rng=self.rng,
+            ))
+        rows.extend(self._trust_region_pool(feasible_first=True))
+        for _ in range(max(8, int(self.config.batch_candidates))):
+            rows.append(self.problem.sample_random(self.rng))
+        return unique_candidates(rows)
+
+    def _trust_region_pool(self, feasible_first=True):
+        center = np.asarray(
+            self.problem.normalize(self._observed_best(feasible_first=feasible_first)),
+            dtype=float,
+        )
+        rows = []
+        for _ in range(max(8, int(self.config.batch_candidates))):
+            z = center + self.rng.uniform(
+                -self._tr_radius,
+                self._tr_radius,
+                size=int(self.problem.d),
+            )
+            rows.append(self.problem.continuous_to_int(np.clip(z, 0.0, 1.0)))
+        return unique_candidates(rows)
+
+    def _class_noise_estimates(self, residuals):
+        global_var = max(float(np.var(residuals)), 1e-8)
+        grouped = {}
+        for (x, _), resid in zip(self.history, residuals):
+            cls = self.problem.risk_class(x) if hasattr(self.problem, "risk_class") else 0
+            grouped.setdefault(cls, []).append(float(resid) ** 2)
+        return {
+            cls: max(float(np.mean(vals)), 1e-8)
+            for cls, vals in grouped.items()
+        }, global_var
+
+    def _nearest_uncertainty(self, pool):
+        if not self.history:
+            return np.ones(len(pool), dtype=float)
+        X_obs = np.vstack([
+            np.asarray(self.problem.normalize(x), dtype=float)
+            for x, _ in self.history
+        ])
+        X_pool = np.vstack([
+            np.asarray(self.problem.normalize(x), dtype=float)
+            for x in pool
+        ])
+        dist = np.sqrt(np.sum((X_pool[:, None, :] - X_obs[None, :, :]) ** 2, axis=2))
+        nearest = np.min(dist, axis=1)
+        hi = max(float(np.max(nearest)), 1e-12)
+        return nearest / hi
+
+    def _surrogate_candidate(self, method):
+        if len(self.history) < max(3, self.config.n0):
+            return self.problem.sample_random(self.rng)
+        y_obj = [float(y[0]) for _, y in self.history]
+        y_con = [float(y[1]) for _, y in self.history]
+        beta_obj, resid_obj = self._fit_ridge(y_obj)
+        beta_con, resid_con = self._fit_ridge(y_con)
+        var_by_class, global_var = self._class_noise_estimates(resid_con)
+        obj_var_by_class, obj_global_var = self._class_noise_estimates(resid_obj)
+        pool = self._surrogate_pool()
+        Phi = np.vstack([self._basis(x) for x in pool])
+        mu_obj = Phi @ beta_obj
+        mu_con = Phi @ beta_con
+        uncert = self._nearest_uncertainty(pool)
+        classes = [
+            self.problem.risk_class(x) if hasattr(self.problem, "risk_class") else 0
+            for x in pool
+        ]
+        v_con = np.asarray([
+            var_by_class.get(cls, global_var) for cls in classes
+        ], dtype=float)
+        v_obj = np.asarray([
+            obj_var_by_class.get(cls, obj_global_var) for cls in classes
+        ], dtype=float)
+        sigma_floor = float(getattr(self.problem, "sigma_level", 0.04))
+        if method == "legacy_vepm_lite":
+            v_con = np.maximum(v_con, sigma_floor ** 2)
+        if method == "hetgp_lite":
+            margin = (
+                mu_con
+                + norm.ppf(1 - self.problem.alpha) * np.sqrt(np.maximum(v_con, 1e-12))
+                - self.problem.tau
+            )
+            score = mu_obj + 5.0 * np.maximum(margin, 0.0) - 0.05 * uncert
+        elif method == "rahbo_lite":
+            margin = (
+                mu_con
+                + norm.ppf(1 - self.problem.alpha) * np.sqrt(np.maximum(v_con, 1e-12))
+                - self.problem.tau
+            )
+            score = (
+                mu_obj
+                + self.config.risk_aversion * np.sqrt(np.maximum(v_obj, 1e-12))
+                + 5.0 * np.maximum(margin, 0.0)
+            )
+        elif method == "safeopt_lite":
+            margin = (
+                mu_con
+                + np.sqrt(max(float(self.config.safe_beta), 0.0)) * uncert
+                + norm.ppf(1 - self.problem.alpha) * np.sqrt(np.maximum(v_con, 1e-12))
+                - self.problem.tau
+            )
+            safe = margin <= 0.0
+            if np.any(safe):
+                score = np.where(safe, mu_obj - 0.05 * uncert, np.inf)
+            else:
+                score = margin
+        else:
+            margin = (
+                mu_con
+                + norm.ppf(1 - self.problem.alpha) * np.sqrt(np.maximum(v_con, 1e-12))
+                - self.problem.tau
+            )
+            score = mu_obj + 6.0 * np.maximum(margin, 0.0) - 0.08 * uncert
+        seen = {x for x, _ in self.history}
+        order = np.argsort(np.nan_to_num(score, nan=np.inf, posinf=np.inf))
+        for idx in order:
+            row = tuple(pool[int(idx)])
+            if row not in seen:
+                return row
+        return tuple(pool[int(order[0])])
 
     def _recommendation(self):
         x_best = self._observed_best(feasible_first=True)

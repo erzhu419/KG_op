@@ -213,6 +213,321 @@ class SyntheticPolicyStateEncoder:
         return rows
 
 
+class SelfSupervisedTrajectoryEncoder:
+    """Lightweight self-supervised trajectory representation.
+
+    This is intentionally dependency-light: it gives the experimental pipeline
+    a real masked-reconstruction / contrastive / transformer-style encoder
+    interface without making PyTorch training a hard dependency for unit tests
+    and paper sweeps.  The learned map is a standardized low-rank projection of
+    sequence summaries; `transformer` mode changes the sequence pooling step to
+    deterministic attention-style weights over trajectory tokens.
+    """
+
+    NUMERIC_FIELDS = ("occupancy", "queue", "wait", "flow", "demand_shock")
+
+    def __init__(self, latent_dim=8, mode="masked", ridge=1e-6):
+        self.latent_dim = int(latent_dim)
+        self.mode = str(mode)
+        self.ridge = float(ridge)
+        self.feature_dim = int(latent_dim)
+        self.policy_features: dict[str, np.ndarray] = {}
+        self.policy_summaries: dict[str, np.ndarray] = {}
+        self.mean_: np.ndarray | None = None
+        self.scale_: np.ndarray | None = None
+        self.components_: np.ndarray | None = None
+        self.singular_values_: np.ndarray | None = None
+        self.class_centers_: dict[str, np.ndarray] = {}
+        self.diagnostics_: dict[str, float | int | str] = {}
+
+    def fit(self, trajectory_logs):
+        return self.fit_masked_prediction(trajectory_logs)
+
+    def fit_masked_prediction(self, trajectory_logs):
+        grouped = self._group_records(trajectory_logs)
+        summaries = {
+            policy_id: self._sequence_summary(rows)
+            for policy_id, rows in grouped.items()
+        }
+        self._fit_projection(summaries)
+        baseline, recon = self._reconstruction_errors(summaries)
+        self.diagnostics_ = {
+            "mode": "masked",
+            "n_policies": int(len(summaries)),
+            "latent_dim": int(self.latent_dim),
+            "masked_baseline_mse": float(baseline),
+            "masked_reconstruction_mse": float(recon),
+        }
+        return self
+
+    def fit_contrastive(self, trajectory_logs, policy_ids=None, risk_labels=None):
+        grouped = self._group_records(trajectory_logs)
+        summaries = {
+            policy_id: self._sequence_summary(rows)
+            for policy_id, rows in grouped.items()
+        }
+        self._fit_projection(summaries)
+        if risk_labels is None:
+            risk_labels = {
+                policy_id: self._auto_risk_label(rows)
+                for policy_id, rows in grouped.items()
+            }
+        if policy_ids is None:
+            policy_ids = list(summaries)
+        centers: dict[str, list[np.ndarray]] = defaultdict(list)
+        for policy_id in policy_ids:
+            key = str(policy_id)
+            if key in summaries and key in risk_labels:
+                centers[str(risk_labels[key])].append(self.features(key))
+        self.class_centers_ = {
+            label: np.mean(np.vstack(vals), axis=0)
+            for label, vals in centers.items()
+            if vals
+        }
+        self.diagnostics_ = {
+            "mode": "contrastive",
+            "n_policies": int(len(summaries)),
+            "n_classes": int(len(self.class_centers_)),
+            "latent_dim": int(self.latent_dim),
+            "contrastive_separation": float(self._contrastive_separation(risk_labels)),
+        }
+        return self
+
+    def fit_transformer_pooling(self, trajectory_logs):
+        old_mode = self.mode
+        self.mode = "transformer"
+        try:
+            return self.fit_masked_prediction(trajectory_logs)
+        finally:
+            self.mode = old_mode if old_mode else "transformer"
+
+    def features(self, policy_id):
+        return np.asarray(self.policy_features[str(policy_id)], dtype=float)
+
+    def diagnostics(self):
+        return dict(self.diagnostics_)
+
+    def _group_records(self, records):
+        grouped = defaultdict(list)
+        for row in records:
+            if "policy_id" not in row:
+                raise ValueError("trajectory row missing 'policy_id'")
+            grouped[str(row["policy_id"])].append(row)
+        if not grouped:
+            raise ValueError("at least one trajectory record is required")
+        for rows in grouped.values():
+            rows.sort(key=lambda r: self._float(r.get("time", len(rows)), 0.0))
+        return grouped
+
+    def _sequence_summary(self, rows):
+        tokens = np.vstack([self._row_vector(row) for row in rows])
+        if self.mode == "transformer":
+            pooled = self._attention_pool(tokens)
+        else:
+            pooled = np.mean(tokens, axis=0)
+        std = np.std(tokens, axis=0)
+        final = tokens[-1] if len(tokens) else np.zeros(tokens.shape[1], dtype=float)
+        delta = final - tokens[0] if len(tokens) else np.zeros(tokens.shape[1], dtype=float)
+        return np.concatenate([
+            pooled,
+            std,
+            final,
+            delta,
+            np.array([float(len(rows))], dtype=float),
+        ])
+
+    def _row_vector(self, row):
+        numeric = [self._float(row.get(field, 0.0), 0.0) for field in self.NUMERIC_FIELDS]
+        state = self._stable_bucket(row.get("state", ""), 997) / 997.0
+        action = self._stable_bucket(row.get("action", ""), 991) / 991.0
+        return np.asarray([state, action] + numeric, dtype=float)
+
+    def _attention_pool(self, tokens):
+        if len(tokens) == 0:
+            return np.zeros(7, dtype=float)
+        risk = tokens[:, 3] + tokens[:, 4] + 0.5 * np.maximum(tokens[:, 6], 0.0)
+        risk = risk - float(np.max(risk))
+        weights = np.exp(risk)
+        weights = weights / max(float(np.sum(weights)), 1e-12)
+        return weights @ tokens
+
+    def _fit_projection(self, summaries):
+        keys = sorted(summaries)
+        X = np.vstack([summaries[key] for key in keys])
+        self.mean_ = np.mean(X, axis=0)
+        self.scale_ = np.std(X, axis=0) + max(self.ridge, 1e-12)
+        Z = (X - self.mean_) / self.scale_
+        try:
+            _, svals, vt = np.linalg.svd(Z, full_matrices=False)
+        except np.linalg.LinAlgError:
+            svals = np.zeros(min(Z.shape), dtype=float)
+            vt = np.zeros((min(Z.shape), Z.shape[1]), dtype=float)
+        n_comp = min(max(1, self.latent_dim), vt.shape[0])
+        components = vt[:n_comp]
+        if n_comp < self.latent_dim:
+            pad = np.zeros((self.latent_dim - n_comp, Z.shape[1]), dtype=float)
+            components = np.vstack([components, pad])
+        self.components_ = components
+        self.singular_values_ = svals
+        self.policy_summaries = summaries
+        self.policy_features = {
+            key: self._project(summary)
+            for key, summary in summaries.items()
+        }
+
+    def _project(self, summary):
+        if self.mean_ is None or self.scale_ is None or self.components_ is None:
+            raise RuntimeError("encoder has not been fitted")
+        z = (np.asarray(summary, dtype=float) - self.mean_) / self.scale_
+        return np.asarray(self.components_ @ z, dtype=float)
+
+    def _reconstruction_errors(self, summaries):
+        if self.mean_ is None or self.scale_ is None or self.components_ is None:
+            return 0.0, 0.0
+        X = np.vstack([summaries[key] for key in sorted(summaries)])
+        Z = (X - self.mean_) / self.scale_
+        recon = (Z @ self.components_.T) @ self.components_
+        baseline = float(np.mean(Z ** 2))
+        err = float(np.mean((Z - recon) ** 2))
+        return baseline, err
+
+    def _contrastive_separation(self, risk_labels):
+        if not self.class_centers_:
+            return 0.0
+        within = []
+        between = []
+        for policy_id, feat in self.policy_features.items():
+            label = str(risk_labels.get(policy_id, ""))
+            if label in self.class_centers_:
+                within.append(float(np.linalg.norm(feat - self.class_centers_[label])))
+        centers = list(self.class_centers_.values())
+        for i in range(len(centers)):
+            for j in range(i + 1, len(centers)):
+                between.append(float(np.linalg.norm(centers[i] - centers[j])))
+        return (float(np.mean(between)) if between else 0.0) / (
+            float(np.mean(within)) + 1e-12 if within else 1.0
+        )
+
+    @staticmethod
+    def _auto_risk_label(rows):
+        vals = [SelfSupervisedTrajectoryEncoder._float(r.get("queue", 0.0), 0.0)
+                + SelfSupervisedTrajectoryEncoder._float(r.get("wait", 0.0), 0.0)
+                for r in rows]
+        score = float(np.mean(vals)) if vals else 0.0
+        if score < 3.0:
+            return "low"
+        if score < 8.0:
+            return "medium"
+        return "high"
+
+    @staticmethod
+    def _stable_bucket(value, modulo):
+        text = str(value)
+        total = 0
+        for idx, ch in enumerate(text):
+            total += (idx + 1) * ord(ch)
+        return int(total % int(modulo))
+
+    @staticmethod
+    def _float(value, default):
+        try:
+            val = float(value)
+        except (TypeError, ValueError):
+            return float(default)
+        if not np.isfinite(val):
+            return float(default)
+        return val
+
+
+class TransformerTrajectoryEncoder(SelfSupervisedTrajectoryEncoder):
+    """Self-supervised encoder with deterministic attention-style pooling."""
+
+    def __init__(self, latent_dim=8, ridge=1e-6):
+        super().__init__(latent_dim=latent_dim, mode="transformer", ridge=ridge)
+
+
+class SelfSupervisedPolicyStateEncoder(SyntheticPolicyStateEncoder):
+    """Synthetic policy-state encoder learned from unlabeled policy samples."""
+
+    def __init__(
+        self,
+        problem,
+        latent_dim=8,
+        mode="masked",
+        fit_pool_size=512,
+        lengthscale=0.35,
+        rng=None,
+    ):
+        self.problem = problem
+        self.lengthscale = float(lengthscale)
+        self.feature_dim = int(latent_dim)
+        self.mode = str(mode)
+        self.fit_pool_size = int(fit_pool_size)
+        self.raw_encoder = SyntheticPolicyStateEncoder(problem, lengthscale=lengthscale)
+        self.rng = rng or np.random.default_rng(12345)
+        self.mean_: np.ndarray | None = None
+        self.scale_: np.ndarray | None = None
+        self.components_: np.ndarray | None = None
+        self._fit_projection()
+
+    def occupancy(self, x):
+        raw = self._expanded_raw(x)
+        if self.mean_ is None or self.scale_ is None or self.components_ is None:
+            return raw[: self.feature_dim]
+        z = (raw - self.mean_) / self.scale_
+        feat = self.components_ @ z
+        if len(feat) < self.feature_dim:
+            feat = np.pad(feat, (0, self.feature_dim - len(feat)))
+        return np.asarray(feat[: self.feature_dim], dtype=float)
+
+    def state_space_candidates(self, *args, **kwargs):
+        return self.raw_encoder.state_space_candidates(*args, **kwargs)
+
+    def _fit_projection(self):
+        pool = self._fit_pool()
+        X = np.vstack([self._expanded_raw(x) for x in pool])
+        self.mean_ = np.mean(X, axis=0)
+        self.scale_ = np.std(X, axis=0) + 1e-8
+        Z = (X - self.mean_) / self.scale_
+        try:
+            _, _, vt = np.linalg.svd(Z, full_matrices=False)
+        except np.linalg.LinAlgError:
+            vt = np.zeros((min(Z.shape), Z.shape[1]), dtype=float)
+        n_comp = min(max(1, self.feature_dim), vt.shape[0])
+        components = vt[:n_comp]
+        if n_comp < self.feature_dim:
+            components = np.vstack([
+                components,
+                np.zeros((self.feature_dim - n_comp, Z.shape[1]), dtype=float),
+            ])
+        self.components_ = components
+
+    def _fit_pool(self):
+        rows = []
+        if hasattr(self.problem, "structured_candidates"):
+            rows.extend(self.problem.structured_candidates(
+                n=max(10, self.fit_pool_size // 5),
+                rng=self.rng,
+            ))
+        rows.extend(self.raw_encoder._raw_inverse_pool(
+            max(10, self.fit_pool_size),
+            self.rng,
+        ))
+        if not rows:
+            rows = [self.problem.sample_random(self.rng) for _ in range(max(2, self.fit_pool_size))]
+        return self._unique(rows)
+
+    def _expanded_raw(self, x):
+        raw = self.raw_encoder.occupancy(x)
+        if self.mode == "transformer":
+            risk = raw[1] + raw[4] + np.maximum(raw[5], 0.0)
+            weights = np.exp(raw - float(np.max(raw)))
+            weights = weights / max(float(np.sum(weights)), 1e-12)
+            attended = weights * risk
+            return np.concatenate([raw, raw ** 2, np.sin(np.pi * raw), attended])
+        return np.concatenate([raw, raw ** 2, np.sin(np.pi * raw)])
+
+
 class StateCoupledFeatureMap:
     """Feature map for the mean belief model.
 

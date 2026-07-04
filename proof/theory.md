@@ -196,8 +196,10 @@ the surrogate and Theorem 5-6 for variance/certification.
 ## Current Gaps
 
 1. The code now has a factor-shock synthetic and factor-HVD cumulative feature
-   path that feeds `v_C^+` in theory certification.  The main empirical choice
-   is whether `exact_mc` or `blend` beats additive at paper budget.
+   path that feeds `v_C^+` in theory certification.  Exact-MC/blend are
+   implemented and concentration-bridged, but current probes show a large
+   runtime multiplier, so additive remains the paper-grade default until the
+   exact path is vectorized.
 2. The traffic trajectory encoder/log schema is implemented, but real
    fresh-seed trajectory logs are not available locally.  Traffic empirical
    tables must be marked `missing_data` until those logs exist.
@@ -242,6 +244,7 @@ versions needed by the manuscript:
 | Finite-kernel information-gain cap | `SCOLHKG/Real/FiniteKernelInformationGain.lean` | Lean-proved for scalar per-step finite kernel information gain and finite determinant/log-product cap |
 | Kernel determinant bridge | `SCOLHKG/Real/KernelDeterminantBridge.lean` | Lean-proved: determinant-ratio cap feeds finite safe-regret accounting |
 | Feature/kernel ratio cap | `SCOLHKG/Real/FeatureKernelDeterminantCap.lean` | Lean-proved: finite feature variance/noise ratio caps imply scalar and determinant information-gain caps |
+| Feature-map norm cap | `SCOLHKG/Real/FeatureKernelDeterminantCap.lean` | Lean-proved: feature norm, coefficient variance, and noise floor imply the finite information-gain cap |
 | Safe simple regret | `SCOLHKG/Real/SafeRegret.lean` | Lean-proved from certification and optimization-error events |
 | General conditional variance | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved by invoking mathlib `condVar` law of total variance |
 | GP confidence event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev and finite union bound |
@@ -255,15 +258,16 @@ versions needed by the manuscript:
 | Sharper residual-square tail interface | `SCOLHKG/Measure/ResidualSquareTail.lean` | Lean-proved finite concentration from generic/sub-exponential residual-square tails and closed-form default radius inversion |
 | Posterior exact KG expectation | `SCOLHKG/Measure/PosteriorKG.lean` | Lean-defined as an integral and linked to exact KG maximization |
 | Exact posterior-update SC-OLH-KG | `SCOLHKG/Measure/PosteriorUpdateKG.lean` | Lean-proved as expected terminal certified value improvement under explicit update map |
+| Exact-MC estimator concentration | `SCOLHKG/Measure/ExactMCConcentration.lean` | Lean-proved finite candidate-pool uniform-error probability bound from centered sub-Gaussian MC errors |
 | High-probability safe regret | `SCOLHKG/Measure/SafeRegretEvent.lean` | Lean-proved by bad-event containment |
-| Traffic finite stochastic model | `SCOLHKG/Real/TrafficTrajectoryModel.lean` | Lean-proved finite state-action occupancy plus shared demand-shock decomposition |
+| Traffic finite stochastic model | `SCOLHKG/Real/TrafficTrajectoryModel.lean` | Lean-proved finite state-action occupancy plus shared demand-shock decomposition and schema-row field semantics |
 
 The next mathematical frontier is to derive the events used above from the
 probability model:
 
-1. sharper kernel/feature-specific determinant constants for the final selected
-   feature map, beyond the current finite ratio-cap theorem;
+1. numeric constants for the final selected feature map, beyond the current
+   feature-norm/coefficient-variance/noise-floor cap theorem;
 2. large-seed benchmark decision on whether `exact_mc` or `blend` replaces the
-   additive runner;
+   additive runner after exact-update vectorization;
 3. binding the finite traffic model to a concrete simulator/log schema after
    fresh-seed traffic experiments are available.

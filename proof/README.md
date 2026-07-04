@@ -91,7 +91,7 @@ mathlib and its cache; later builds should be fast.
   from finite product-ratio information gain into safe-regret accounting.
 - `SCOLHKG/Real/FeatureKernelDeterminantCap.lean`: concrete finite
   feature/kernel ratio caps that imply determinant/log-product information-gain
-  bounds.
+  bounds, including feature-norm/coefficient-variance/noise-floor caps.
 - `SCOLHKG/Real/SafeRegret.lean`: real-valued finite-budget safe simple-regret
   implication.
 - `SCOLHKG/Measure/ProbabilityEvents.lean`: mathlib
@@ -100,6 +100,9 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Measure/GPKernelConfidence.lean`: finite-kernel posterior error as
   a weighted sum of independent sub-Gaussian noise, with explicit
   `sum_i w_i^2 c_i` parameter and finite/adaptive confidence.
+- `SCOLHKG/Measure/ExactMCConcentration.lean`: finite candidate-pool
+  concentration for exact-MC KG estimator errors, feeding the deterministic
+  exact-KG gap bridge.
 - `SCOLHKG/Measure/SubGaussianConfidence.lean`: sub-Gaussian one-sided and
   centered confidence events over finite and adaptive candidate sets.
 - `SCOLHKG/Measure/ResidualSquareConcentration.lean`: bounded residual-square
@@ -122,7 +125,8 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Measure/SafeRegretEvent.lean`: high-probability transfer from bad
   events to safe-regret failure events.
 - `SCOLHKG/Real/TrafficTrajectoryModel.lean`: finite fresh-seed traffic
-  state-action occupancy and demand-shock risk decomposition.
+  state-action occupancy, demand-shock risk decomposition, and schema-row
+  field semantics for the fresh CSV contract.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
   manuscript-level theory.
 - `code_map.md`: mapping from mathematical objects to the current
@@ -223,16 +227,24 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 58. Fresh-seed traffic state-action occupancy risk decomposes into local
     queue/wait/flow risk, shared demand-shock risk, linear shock risk, and
     floor; omitting nonnegative shared shock underestimates risk.
+59. Feature-map norm, coefficient-variance, and observation-noise-floor bounds
+    imply the concrete finite-kernel information-gain cap used by the regret
+    theorem.
+60. Exact-MC finite candidate pools inherit uniform-error probability bounds
+    from centered sub-Gaussian estimator errors, then feed the exact-KG
+    maximizer gap bridge.
+61. Traffic fresh-log schema rows expose the exact policy/state/action and
+    queue/wait/flow/demand-shock fields consumed by the encoder contract.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Derive sharper kernel/feature-specific determinant constants for the exact
-   final feature maps, beyond the current finite ratio-cap theorem.
+1. Derive numeric constants for the final chosen feature maps, beyond the
+   current feature-norm/coefficient-variance/noise-floor cap theorem.
 2. Tie the real traffic CSV schema to a specific simulator once fresh-seed
    traffic logs exist locally.
-3. If exact-MC becomes the paper default after large-seed benchmarks, add its
-   estimator concentration theorem rather than only the deterministic
-   uniform-error bridge.
+3. If exact-MC becomes the paper default after large-seed benchmarks, sharpen
+   the current sub-Gaussian finite-pool concentration theorem to the final
+   simulator noise model and MC sampling schedule.
 
 ## Current Math-Depth Assessment
 
@@ -242,8 +254,9 @@ theory certification, ridge/HVD oracle steps, exact/additive/MC KG bridges,
 posterior candidate envelopes, mathlib multivariate-Gaussian coefficient
 sampling, residual-square tails, line-envelope KG correctness,
 feature/kernel information-gain caps, traffic occupancy-risk decomposition,
-and safe-regret accounting all build in Lean without `sorry`.  The remaining
-hard work is model-specific sharpening: exact constants for the final chosen
-feature maps, formal linkage to a concrete traffic simulator/log format once
-fresh-seed logs exist, and exact-MC estimator concentration if exact-MC is
-promoted as the main experimental runner.
+fresh-log schema semantics, exact-MC concentration, and safe-regret accounting
+all build in Lean without `sorry`.  The remaining hard work is model-specific
+sharpening: numeric constants for the final chosen feature maps, formal linkage
+to a concrete traffic simulator/log format once fresh-seed logs exist, and a
+final exact-MC concentration specialization if exact-MC is promoted as the main
+experimental runner.

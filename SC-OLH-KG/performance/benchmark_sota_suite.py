@@ -42,6 +42,9 @@ def _problem_args(args, problem):
         "state_candidate_count": args.state_candidate_count,
         "state_inverse_pool_size": args.state_inverse_pool_size,
         "state_inverse_neighbors": args.state_inverse_neighbors,
+        "encoder_kind": args.encoder_kind,
+        "encoder_latent_dim": args.encoder_latent_dim,
+        "encoder_fit_pool_size": args.encoder_fit_pool_size,
         "variance_mode": args.variance_mode,
         "lambda_feas": args.lambda_feas,
         "lambda_var": args.lambda_var,
@@ -178,6 +181,13 @@ def main():
     parser.add_argument("--state_candidate_count", type=int, default=-1)
     parser.add_argument("--state_inverse_pool_size", type=int, default=500)
     parser.add_argument("--state_inverse_neighbors", type=int, default=2)
+    parser.add_argument(
+        "--encoder_kind",
+        default="synthetic",
+        choices=["synthetic", "self_supervised", "masked", "contrastive", "transformer"],
+    )
+    parser.add_argument("--encoder_latent_dim", type=int, default=8)
+    parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--variance_mode", default="orthogonal")
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
@@ -200,7 +210,10 @@ def main():
     parser.add_argument("--eval_pool_size", type=int, default=500)
     parser.add_argument(
         "--baselines",
-        default="sobol,random,botorch_turbo,botorch_scbo,botorch_saasbo",
+        default=(
+            "sobol,random,hetgp_lite,rahbo_lite,safeopt_lite,"
+            "legacy_vepm_lite,botorch_turbo,botorch_scbo,botorch_saasbo"
+        ),
     )
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
     parser.add_argument("--tr_radius_init", type=float, default=0.35)

@@ -24,6 +24,7 @@ from core.candidates import (
 from core.gpr import ParametricGPR
 from core.metrics import summarize_stage_times
 from encoders.policy_state_encoder import (
+    SelfSupervisedPolicyStateEncoder,
     StateCoupledFeatureMap,
     SyntheticPolicyStateEncoder,
 )
@@ -65,6 +66,9 @@ class SingleOLHKGConfig:
     recommendation_axis_candidate_count: int = -1
     use_state_coupling: bool = False
     use_state_basis: bool = False
+    encoder_kind: str = "synthetic"
+    encoder_latent_dim: int = 8
+    encoder_fit_pool_size: int = 512
     acquisition_mode: str = "additive"
     exact_kg_mc_samples: int = 0
     exact_kg_use_score: bool = False
@@ -81,15 +85,7 @@ class SingleOLHKGAlgorithm:
         self.config = config or SingleOLHKGConfig()
         self.rng = np.random.default_rng(self.config.seed)
 
-        self.encoder = (
-            SyntheticPolicyStateEncoder(problem)
-            if (
-                self.config.use_state_coupling
-                or self.config.use_state_basis
-                or self.config.lambda_coupling > 0
-            )
-            else None
-        )
+        self.encoder = self._build_encoder()
         basis_map = None
         if hasattr(problem, "gpr_basis_map"):
             basis_map = problem.gpr_basis_map()
@@ -127,6 +123,33 @@ class SingleOLHKGAlgorithm:
         self.iteration_log: list[dict] = []
         self.pre_sampling_log: dict | None = None
         self.final_log: dict | None = None
+
+    def _build_encoder(self):
+        needs_encoder = (
+            self.config.use_state_coupling
+            or self.config.use_state_basis
+            or self.config.lambda_coupling > 0
+        )
+        if not needs_encoder:
+            return None
+        kind = str(self.config.encoder_kind or "synthetic").lower()
+        if kind in ("self_supervised", "masked", "contrastive"):
+            return SelfSupervisedPolicyStateEncoder(
+                self.problem,
+                latent_dim=self.config.encoder_latent_dim,
+                mode="masked",
+                fit_pool_size=self.config.encoder_fit_pool_size,
+                rng=self.rng,
+            )
+        if kind in ("transformer", "attention"):
+            return SelfSupervisedPolicyStateEncoder(
+                self.problem,
+                latent_dim=self.config.encoder_latent_dim,
+                mode="transformer",
+                fit_pool_size=self.config.encoder_fit_pool_size,
+                rng=self.rng,
+            )
+        return SyntheticPolicyStateEncoder(self.problem)
 
     def _initial_samples(self):
         samples = []
@@ -516,6 +539,12 @@ class SingleOLHKGAlgorithm:
 
     def _effective_exact_kg_mc_samples(self):
         mode = str(self.config.acquisition_mode or "additive").lower()
+        if (
+            mode == "additive"
+            and not self.config.exact_kg_use_score
+            and float(self.config.exact_kg_blend) <= 0.0
+        ):
+            return 0
         if mode in ("exact_mc", "blend") and int(self.config.exact_kg_mc_samples) <= 0:
             return 4
         return int(self.config.exact_kg_mc_samples)

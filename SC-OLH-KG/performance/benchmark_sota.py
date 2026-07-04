@@ -157,6 +157,9 @@ def run_olhkg(args, seed, use_sc):
         exact_kg_blend=args.exact_kg_blend,
         eval_pool_size=args.eval_pool_size,
         use_state_coupling=use_sc,
+        encoder_kind=args.encoder_kind,
+        encoder_latent_dim=args.encoder_latent_dim,
+        encoder_fit_pool_size=args.encoder_fit_pool_size,
         seed=seed,
     )
     result = SingleOLHKGAlgorithm(problem, config).run(verbose=False)
@@ -411,6 +414,13 @@ def main():
     parser.add_argument("--state_candidate_count", type=int, default=-1)
     parser.add_argument("--state_inverse_pool_size", type=int, default=500)
     parser.add_argument("--state_inverse_neighbors", type=int, default=2)
+    parser.add_argument(
+        "--encoder_kind",
+        default="synthetic",
+        choices=["synthetic", "self_supervised", "masked", "contrastive", "transformer"],
+    )
+    parser.add_argument("--encoder_latent_dim", type=int, default=8)
+    parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--variance_mode", default="orthogonal")
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
@@ -431,7 +441,13 @@ def main():
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
     parser.add_argument("--eval_pool_size", type=int, default=500)
-    parser.add_argument("--baselines", default="sobol,random,turbo_lite,scbo_lite")
+    parser.add_argument(
+        "--baselines",
+        default=(
+            "sobol,random,hetgp_lite,rahbo_lite,safeopt_lite,"
+            "legacy_vepm_lite,turbo_lite,scbo_lite"
+        ),
+    )
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
     parser.add_argument("--tr_radius_init", type=float, default=0.35)
     parser.add_argument("--tr_radius_min", type=float, default=0.04)

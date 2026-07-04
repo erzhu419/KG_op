@@ -130,4 +130,54 @@ theorem complete_fresh_seed_coverage_has_policy_seed_eval
 
 end TrafficTrajectoryRiskModel
 
+structure TrafficLogSchemaRow where
+  policyId : String
+  seed : String
+  time : ℕ
+  state : String
+  action : String
+  occupancy : ℝ
+  queue : ℝ
+  wait : ℝ
+  flow : ℝ
+  demandShock : ℝ
+
+namespace TrafficLogSchemaRow
+
+def cellKey (r : TrafficLogSchemaRow) : String :=
+  r.state ++ "|" ++ r.action
+
+def localExposure (r : TrafficLogSchemaRow) : ℝ × ℝ × ℝ :=
+  (r.queue, r.wait, max r.flow 0)
+
+def sharedExposure (r : TrafficLogSchemaRow) : ℝ :=
+  r.demandShock
+
+def hasRequiredFields (r : TrafficLogSchemaRow) : Prop :=
+  r.policyId ≠ "" ∧ r.state ≠ "" ∧ r.action ≠ ""
+
+theorem localExposure_first_eq_queue
+    (r : TrafficLogSchemaRow) :
+    r.localExposure.1 = r.queue := by
+  rfl
+
+theorem localExposure_second_eq_wait
+    (r : TrafficLogSchemaRow) :
+    r.localExposure.2.1 = r.wait := by
+  rfl
+
+theorem localExposure_flow_nonnegative
+    (r : TrafficLogSchemaRow) :
+    0 ≤ r.localExposure.2.2 := by
+  unfold localExposure
+  exact le_max_right r.flow 0
+
+theorem required_fields_give_nonempty_policy_state_action
+    (r : TrafficLogSchemaRow)
+    (h : r.hasRequiredFields) :
+    r.policyId ≠ "" ∧ r.state ≠ "" ∧ r.action ≠ "" := by
+  exact h
+
+end TrafficLogSchemaRow
+
 end SCOLHKG.Real
