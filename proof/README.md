@@ -63,6 +63,9 @@ mathlib and its cache; later builds should be fast.
   certificates.
 - `SCOLHKG/Real/LineEnvelopeAlgorithm.lean`: step-level stack-loop
   formalization for the Python `cuts.pop()` and `cuts.append(z)` mutations.
+- `SCOLHKG/Real/LineEnvelopeGlobal.lean`: final global stack dominance
+  invariant implies atom certificates and exact line-envelope KG, without a
+  Python runtime-validator assumption.
 - `SCOLHKG/Real/AdditiveApproxKG.lean`: uniform additive-acquisition
   approximation implies a `2 eta` exact-KG optimality gap.
 - `SCOLHKG/Real/InformationGainRegret.lean`: information-gain radius and
@@ -152,12 +155,14 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 40. Stack-hull endpoint/tail certificate bridge for `compute_h`.
 41. Stack-loop pop/push cut-order preservation for `compute_h`.
 42. Closed-form sub-exponential default radius inversion.
+43. Final global stack dominance invariant to exact line-envelope KG.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Derive full global endpoint/tail dominance from the stack-loop invariants
-   without relying on the Python runtime validator.  Pop/push cut-order
-   preservation and validator-to-certificate soundness are now Lean-proved.
+1. Prove the concrete intersection arithmetic in `compute_h` establishes the
+   final global dominance invariant.  Once that invariant is available,
+   certificate generation and exact KG no longer rely on Python runtime
+   validation.
 2. Formalize the multivariate-normal coefficient sampling distribution used by
    `posterior_sample_candidates`; the random-candidate envelope event is already
    Lean-proved.
@@ -175,9 +180,10 @@ narrowed: finite-kernel GP confidence, bounded residual-square constants,
 trajectory occupancy decomposition, ridge-HVD oracle step, additive-to-exact KG
 approximation, posterior-update exact KG, line-envelope KG certificates,
 validator-level stack-hull certificates, stack-loop cut-order preservation,
-closed-form residual-square tail radii, random candidate envelope events, and
-information-gain regret accounting are now Lean-proved.  The remaining hard
-work is mostly implementation-level certification and empirical choice:
-derive full global dominance directly from the stack invariants, formalize
-coefficient sampling if needed, and decide whether the optional exact estimator
-should replace the additive default.
+final-stack global dominance to exact KG, closed-form residual-square tail
+radii, random candidate envelope events, and information-gain regret accounting
+are now Lean-proved.  The remaining hard work is mostly implementation-level
+certification and empirical choice: prove the concrete intersection arithmetic
+establishes the global dominance invariant, formalize coefficient sampling if
+needed, and decide whether the optional exact estimator should replace the
+additive default.

@@ -45,4 +45,6 @@ finite-interval endpoint and Gaussian-tail slope conditions.  These checks are
 bridged to Lean in `proof/SCOLHKG/Real/LineEnvelopeStack.lean`.  The certificate
 also carries a per-step stack trace for candidate, break, pop, and push actions;
 pop/push cut-order preservation is formalized in
-`proof/SCOLHKG/Real/LineEnvelopeAlgorithm.lean`.
+`proof/SCOLHKG/Real/LineEnvelopeAlgorithm.lean`.  The final global dominance
+invariant implies exact KG without a runtime validator in
+`proof/SCOLHKG/Real/LineEnvelopeGlobal.lean`.

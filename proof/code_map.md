@@ -45,6 +45,7 @@ This gives the proof and experiments one place where the shared-shock term
 | `core.kg.compute_h` | `E[max_j a_j+b_j Z]-max_j a_j` line-envelope KG value | `SCOLHKG.Real.LineEnvelopeKG.certified_lineEnvelopeKG_exact` proves exactness once the active hull certificate is available |
 | `core.kg.compute_h_certificate`, `validate_h_certificate` | active stack hull, cuts, Gaussian masses, endpoint/tail-slope dominance checks | `SCOLHKG.Real.LineEnvelopeStack` proves the validator conditions imply active-line certificates |
 | `core.kg.compute_h_certificate(...).trace` | per-step stack snapshots for candidate, break, pop, and push actions | `SCOLHKG.Real.LineEnvelopeAlgorithm` proves pop/push preserve slope and cut order under the Python branch conditions |
+| final `compute_h` hull state | active atoms whose lines dominate all original/processed lines at interval endpoints | `SCOLHKG.Real.LineEnvelopeGlobal` proves final global dominance implies atom certificates and exact line-envelope KG without a runtime validator |
 | `variance.OrthogonalHVD.update` | residual record `resid2=(y-mu)^2` | `SCOLHKG.Real.HVDImplementation.residualSquare_nonnegative` |
 | `variance.OrthogonalHVD._fit_output`, factor mode | cumulative ridge fit, then `beta=max(beta,0)` and `pred=max(F beta,floor)` | `SCOLHKG.Real.RidgeHVD.ridge_hvd_residual_square_oracle`, `SCOLHKG.Real.HVDImplementation.cumulative_linear_prediction_nonnegative`, `clippedVariance_ge_floor` |
 | `variance.OrthogonalHVD.predict_certification_variance` | `base + model_uncertainty`, guarded by class variance and floor | `SCOLHKG.Real.HVDImplementation.certificationVariance_sound_from_model_uncertainty` |
@@ -67,9 +68,10 @@ proxy above, so the manuscript has two clean paths:
 ## Remaining Code-To-Theory Gaps
 
 1. `compute_h` now emits and validates a checkable certificate, the validator
-   conditions are Lean-bridged, and pop/push cut-order preservation is
-   Lean-proved.  The remaining gap is deriving full global endpoint/tail
-   dominance directly from stack invariants without runtime validation.
+   conditions are Lean-bridged, pop/push cut-order preservation is Lean-proved,
+   and final global dominance implies exact KG without runtime validation.  The
+   remaining gap is proving the concrete intersection arithmetic establishes
+   that global dominance invariant.
 2. The posterior-sampling candidate generator is covered by random-set envelope
    containment, but its multivariate-normal coefficient sampling distribution
    has not been formalized.

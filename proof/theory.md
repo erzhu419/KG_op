@@ -221,6 +221,7 @@ versions needed by the manuscript:
 | Line-envelope KG | `SCOLHKG/Real/LineEnvelopeKG.lean` | Lean-proved at certificate level for active hull regions and `compute_h` sum formula |
 | Stack-hull validator bridge | `SCOLHKG/Real/LineEnvelopeStack.lean` | Lean-proved endpoint/tail-slope checks imply active-line certificates |
 | Stack-loop step preservation | `SCOLHKG/Real/LineEnvelopeAlgorithm.lean` | Lean-proved pop/push preserve slope/cut order under Python branch conditions |
+| Final stack global dominance | `SCOLHKG/Real/LineEnvelopeGlobal.lean` | Lean-proved final global dominance invariant implies atom certificates and exact line-envelope KG without runtime validation |
 | Additive KG equivalence condition | `SCOLHKG/Real/KG.lean` | Lean-proved when additive score equals exact gain |
 | Additive-to-exact KG approximation | `SCOLHKG/Real/AdditiveApproxKG.lean` | Lean-proved with `2 eta` exact-KG gap |
 | Information-gain regret accounting | `SCOLHKG/Real/InformationGainRegret.lean` | Lean-proved from an information-gain radius budget |
@@ -241,12 +242,12 @@ versions needed by the manuscript:
 The next mathematical frontier is to derive the events used above from the
 probability model:
 
-1. direct derivation of full endpoint/tail dominance from the `compute_h`
-   stack-loop invariants; pop/push cut-order preservation and
-   validator-to-certificate soundness are already Lean-proved;
+1. proof that the concrete intersection arithmetic in `compute_h` establishes
+   the final global dominance invariant; once established, exact KG follows
+   without runtime validation;
 2. multivariate-normal coefficient sampling formalization for the
    posterior-sampling candidate generator;
 3. kernel/feature-specific determinant information-gain upper bounds;
 4. large-seed benchmark decision on whether optional exact posterior-update KG
    replaces the additive runner;
-6. traffic trajectory/log formalization after fresh-seed traffic experiments.
+5. traffic trajectory/log formalization after fresh-seed traffic experiments.
