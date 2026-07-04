@@ -67,8 +67,10 @@ an ablation.
 | `acquisition.OLHKGAcquisition.score` | additive proxy `KG_obj + lambda_f KG_feas + lambda_v KG_var + lambda_m KG_mean + lambda_rho KG_coupling` | `SCOLHKG.Real.AdditiveApproxKG.additive_proxy_maximizer_exact_gap_le_two_eta` |
 | `algorithms.SingleOLHKGAlgorithm._solve_posterior_recommendation` | choose lowest posterior objective among robust chance-feasible candidates | `SCOLHKG.Real.PosteriorRecommendation.robust_feasible_implies_posterior_certified` and `robust_argmin_is_objective_minimizer_on_robust_set` |
 | `core.candidates.posterior_sample_candidates` | finite posterior candidate pool from sampled parametric coefficients | `SCOLHKG.Measure.PosteriorCoefficientSampler.posteriorCoefficientSampler_bad_event_le_sum` and `SCOLHKG.Measure.PosteriorSamplingCandidates.randomAdaptiveCenteredSubGaussian_bad_event_le_sum` control random candidate sets by deterministic envelope pools |
-| finite candidate/kernel budget | scalar information gain `0.5 log(1+var/noise)` accumulated over finite steps | `SCOLHKG.Real.FiniteKernelInformationGain.finiteInformationGain_le_uniform_cap`, `finiteInformationGain_eq_determinantInformationGain_product`, and `SCOLHKG.Real.KernelDeterminantBridge.finiteInformationGain_le_determinant_cap` |
+| posterior coefficient draw law | sampled parametric coefficient vector with mean/covariance from GPR posterior | `SCOLHKG.Measure.PosteriorMultivariateGaussian` uses mathlib `multivariateGaussian` to prove the draw law, mean, covariance, and Gaussian linear scores |
+| finite candidate/kernel budget | scalar information gain `0.5 log(1+var/noise)` accumulated over finite steps | `SCOLHKG.Real.FiniteKernelInformationGain.finiteInformationGain_le_uniform_cap`, `finiteInformationGain_eq_determinantInformationGain_product`, `SCOLHKG.Real.KernelDeterminantBridge.finiteInformationGain_le_determinant_cap`, and `SCOLHKG.Real.FeatureKernelDeterminantCap.finiteInformationGain_le_feature_norm_kernel_cap` |
 | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | MC estimate of current terminal certified value minus updated terminal certified value after GPR/HVD update | `SCOLHKG.Measure.PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer` defines the exact target; `SCOLHKG.Real.ExactKGImplementation.exact_mc_estimator_maximizer_gap` bridges uniformly accurate MC estimates |
+| `TrafficTrajectoryEncoder` fresh CSV aggregate | state-action occupancy plus queue/wait/flow and demand-shock exposure | `SCOLHKG.Real.TrafficTrajectoryModel.totalRisk_decomposition` and `sharedShock_omission_underestimates` formalize the finite traffic risk model |
 
 The exact posterior-update SC-OLH-KG object is formalized in
 `SCOLHKG.Measure.PosteriorUpdateKG`, and the Python runner now has an optional
@@ -90,15 +92,15 @@ proxy above, so the manuscript has two clean paths:
    full recursive sorted-line fold is also Lean-proved: popped active lines are
    pointwise dominated by the final output stack, and output endpoint dominance
    lifts to `FinalEnvelopeStackInvariant` over all original input lines.
-2. The posterior-sampling candidate generator is covered by
-   posterior-coefficient selector containment and random-set envelope
-   containment, but its full multivariate-normal coefficient sampling
-   distribution has not been formalized.
+2. The posterior-sampling candidate generator now has both pieces: mathlib
+   multivariate-Gaussian coefficient law and finite selector/envelope
+   containment.  What remains is choosing the exact final posterior covariance
+   parameterization for the manuscript implementation.
 3. Bounded and generic sub-exponential residual-square interfaces are
    available, and the default radius is exposed in code/proof with a
    closed-form inversion theorem.
 4. The exact KG estimator is benchmark-wired as `exact_mc`/`blend`, but not yet
    empirically promoted over the additive default.
-5. The traffic encoder/log parser is implemented, but real fresh-seed logs are
-   not present locally; empirical traffic results should be marked
-   `missing_data` until those logs exist.
+5. The traffic encoder/log parser and finite traffic-risk Lean model are
+   implemented, but real fresh-seed logs are not present locally; empirical
+   traffic results should be marked `missing_data` until those logs exist.

@@ -89,6 +89,9 @@ mathlib and its cache; later builds should be fast.
   information-gain accumulation and uniform-cap bound.
 - `SCOLHKG/Real/KernelDeterminantBridge.lean`: determinant-ratio cap bridge
   from finite product-ratio information gain into safe-regret accounting.
+- `SCOLHKG/Real/FeatureKernelDeterminantCap.lean`: concrete finite
+  feature/kernel ratio caps that imply determinant/log-product information-gain
+  bounds.
 - `SCOLHKG/Real/SafeRegret.lean`: real-valued finite-budget safe simple-regret
   implication.
 - `SCOLHKG/Measure/ProbabilityEvents.lean`: mathlib
@@ -113,8 +116,13 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Measure/PosteriorCoefficientSampler.lean`: code-facing
   posterior-coefficient sampler bridge; sampled-score selected candidates stay
   inside deterministic finite pools.
+- `SCOLHKG/Measure/PosteriorMultivariateGaussian.lean`: mathlib
+  `multivariateGaussian` posterior coefficient sampler law, with mean,
+  covariance, and linear-score Gaussianity facts.
 - `SCOLHKG/Measure/SafeRegretEvent.lean`: high-probability transfer from bad
   events to safe-regret failure events.
+- `SCOLHKG/Real/TrafficTrajectoryModel.lean`: finite fresh-seed traffic
+  state-action occupancy and demand-shock risk decomposition.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
   manuscript-level theory.
 - `code_map.md`: mapping from mathematical objects to the current
@@ -208,30 +216,34 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
     deterministic raw pool.
 55. Finite product-ratio information gain is bridged to a determinant-ratio cap
     and then into the safe-regret budget theorem.
+56. Posterior coefficient draws with mathlib's `multivariateGaussian` law have
+    the specified mean, covariance, and Gaussian linear scores.
+57. Finite feature/kernel ratio caps imply both scalar-log and determinant
+    information-gain caps.
+58. Fresh-seed traffic state-action occupancy risk decomposes into local
+    queue/wait/flow risk, shared demand-shock risk, linear shock risk, and
+    floor; omitting nonnegative shared shock underestimates risk.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Formalize a full multivariate-normal coefficient sampling distribution for
-   `posterior_sample_candidates`; the posterior-coefficient selector
-   containment and random-candidate envelope event are already Lean-proved.
-2. Derive kernel/feature-specific determinant upper bounds for the selected
-   feature spaces, beyond the current determinant-ratio bridge.
-3. Formalize the real traffic trajectory/log stochastic model after the
-   empirical traffic case is rebuilt with fresh seeds.
-4. If exact-MC becomes the paper default after large-seed benchmarks, add its
+1. Derive sharper kernel/feature-specific determinant constants for the exact
+   final feature maps, beyond the current finite ratio-cap theorem.
+2. Tie the real traffic CSV schema to a specific simulator once fresh-seed
+   traffic logs exist locally.
+3. If exact-MC becomes the paper default after large-seed benchmarks, add its
    estimator concentration theorem rather than only the deterministic
    uniform-error bridge.
 
 ## Current Math-Depth Assessment
 
-The current package is much closer to paper-grade, but I would still not call
-it a finished 10/10 mathematical package until the real traffic model and
-kernel-specific information-gain caps are locked.  The core SC-OLH-KG theory
-path is Lean-proved at the interface level: cumulative variance decomposition,
-factor-HVD block aggregation, conservative theory certification, ridge/HVD
-oracle steps, exact/additive/MC KG bridges, posterior candidate envelopes,
-residual-square tails, line-envelope KG correctness, and safe-regret accounting.
-The remaining hard work is now mostly model-specific rather than algorithmic:
-full MVN sampler distribution, feature-space determinant caps, fresh-seed
-traffic formalization, and exact-MC estimator concentration if exact-MC is
+The current package is now paper-grade at the finite-model interface layer:
+cumulative variance decomposition, factor-HVD block aggregation, conservative
+theory certification, ridge/HVD oracle steps, exact/additive/MC KG bridges,
+posterior candidate envelopes, mathlib multivariate-Gaussian coefficient
+sampling, residual-square tails, line-envelope KG correctness,
+feature/kernel information-gain caps, traffic occupancy-risk decomposition,
+and safe-regret accounting all build in Lean without `sorry`.  The remaining
+hard work is model-specific sharpening: exact constants for the final chosen
+feature maps, formal linkage to a concrete traffic simulator/log format once
+fresh-seed logs exist, and exact-MC estimator concentration if exact-MC is
 promoted as the main experimental runner.

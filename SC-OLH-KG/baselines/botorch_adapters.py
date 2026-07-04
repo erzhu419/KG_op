@@ -117,6 +117,8 @@ class BoTorchBaselineConfig:
     saas_max_tree_depth: int = 4
     saas_mc_samples: int = 64
     saas_constrained: bool = True
+    max_candidate_failures: int = 8
+    saas_fallback_after_failures: bool = True
 
 
 @dataclass
@@ -174,6 +176,7 @@ class BoTorchBaseline:
         )
         self._last_fit_failures = 0
         self._candidate_failures = 0
+        self._timeout_fallback_active = False
 
     def _nominal_margin(self, y):
         sigma = float(getattr(self.problem, "sigma_level", 0.04))
@@ -324,6 +327,14 @@ class BoTorchBaseline:
         except Exception:
             return rows[int(self.rng.integers(0, len(rows)))]
 
+    def _cheap_candidate(self, feasible_first=True):
+        bounds = self._trust_region_bounds(feasible_first=feasible_first)
+        return self._dedupe_or_fallback(self.problem.sample_random(self.rng), bounds)
+
+    def _failure_budget_exhausted(self):
+        budget = int(getattr(self.config, "max_candidate_failures", 0))
+        return budget > 0 and self._candidate_failures >= budget
+
     def _optimize_acqf(self, acqf, bounds):
         options = {
             "maxiter": int(self.config.maxiter),
@@ -389,6 +400,8 @@ class BoTorchBaseline:
             )
 
     def _saas_candidate(self):
+        if self._timeout_fallback_active:
+            return self._cheap_candidate(feasible_first=True)
         try:
             with _wall_time_limit(self.config.timeout_sec):
                 train_X, train_obj, train_con = self._training_tensors()
@@ -429,6 +442,12 @@ class BoTorchBaseline:
                 return self._optimize_acqf(acqf, self._global_bounds())
         except Exception:
             self._last_fit_failures += 1
+            self._candidate_failures += 1
+            if (
+                self.config.saas_fallback_after_failures
+                and self._failure_budget_exhausted()
+            ):
+                self._timeout_fallback_active = True
             bounds = self._global_bounds()
             return self._dedupe_or_fallback(self.problem.sample_random(self.rng), bounds)
 
@@ -439,6 +458,11 @@ class BoTorchBaseline:
         if method == "botorch_scbo":
             return self._scbo_candidate()
         if method == "botorch_saasbo":
+            if (
+                self.config.saas_fallback_after_failures
+                and self._failure_budget_exhausted()
+            ):
+                self._timeout_fallback_active = True
             return self._saas_candidate()
         raise AssertionError(method)
 
@@ -520,6 +544,7 @@ class BoTorchBaseline:
             "tr_radius_final": float(self._tr.length),
             "botorch_fit_failures": int(self._last_fit_failures),
             "botorch_candidate_failures": int(self._candidate_failures),
+            "botorch_timeout_fallback": bool(self._timeout_fallback_active),
             "saas_constrained": bool(self.config.saas_constrained),
         })
         return result

@@ -72,12 +72,14 @@ def _problem_args(args, problem):
         "botorch_num_restarts": args.botorch_num_restarts,
         "botorch_maxiter": args.botorch_maxiter,
         "botorch_timeout_sec": args.botorch_timeout_sec,
+        "botorch_max_candidate_failures": args.botorch_max_candidate_failures,
         "saas_warmup_steps": args.saas_warmup_steps,
         "saas_num_samples": args.saas_num_samples,
         "saas_thinning": args.saas_thinning,
         "saas_max_tree_depth": args.saas_max_tree_depth,
         "saas_mc_samples": args.saas_mc_samples,
         "saas_unconstrained": args.saas_unconstrained,
+        "disable_saas_failure_fallback": args.disable_saas_failure_fallback,
         "include_olhkg": args.include_olhkg,
         "include_sc": args.include_sc,
         "seeds": args.seeds,
@@ -211,12 +213,14 @@ def main():
     parser.add_argument("--botorch_num_restarts", type=int, default=5)
     parser.add_argument("--botorch_maxiter", type=int, default=50)
     parser.add_argument("--botorch_timeout_sec", type=float, default=30.0)
+    parser.add_argument("--botorch_max_candidate_failures", type=int, default=8)
     parser.add_argument("--saas_warmup_steps", type=int, default=16)
     parser.add_argument("--saas_num_samples", type=int, default=16)
     parser.add_argument("--saas_thinning", type=int, default=1)
     parser.add_argument("--saas_max_tree_depth", type=int, default=4)
     parser.add_argument("--saas_mc_samples", type=int, default=64)
     parser.add_argument("--saas_unconstrained", action="store_true")
+    parser.add_argument("--disable_saas_failure_fallback", action="store_true")
     parser.add_argument("--include_olhkg", action="store_true", default=True)
     parser.add_argument("--include_sc", action="store_true", default=True)
     parser.add_argument("--seeds", default="")

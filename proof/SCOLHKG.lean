@@ -5,6 +5,7 @@ import SCOLHKG.KG
 import SCOLHKG.Measure.GPKernelConfidence
 import SCOLHKG.Measure.PosteriorUpdateKG
 import SCOLHKG.Measure.PosteriorCoefficientSampler
+import SCOLHKG.Measure.PosteriorMultivariateGaussian
 import SCOLHKG.Measure.PosteriorSamplingCandidates
 import SCOLHKG.Measure.ResidualSquareConcentration
 import SCOLHKG.Measure.ResidualSquareTail
@@ -20,6 +21,7 @@ import SCOLHKG.Real.ConditionalVariance
 import SCOLHKG.Real.CumulativeRisk
 import SCOLHKG.Real.CumulativeRiskImplementation
 import SCOLHKG.Real.ExactKGImplementation
+import SCOLHKG.Real.FeatureKernelDeterminantCap
 import SCOLHKG.Real.FiniteKernelInformationGain
 import SCOLHKG.Real.GPRUpdate
 import SCOLHKG.Real.HVD
@@ -37,5 +39,6 @@ import SCOLHKG.Real.OccupancyDecomposition
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.RidgeHVD
 import SCOLHKG.Real.SafeRegret
+import SCOLHKG.Real.TrafficTrajectoryModel
 import SCOLHKG.Scalarization
 import SCOLHKG.Variance

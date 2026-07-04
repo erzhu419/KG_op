@@ -88,6 +88,35 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_hvd_suite.py \
   --jobs 10 \
   --out_prefix hvd_theory_n80_s20
 ```
+
+Completed additive paper-grade HVD run on 2026-07-04:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_hvd_suite.py \
+  --problems RegimeRZDT1,RZDT2,StatePolicyRZDT1,FactorShockStatePolicyRZDT1 \
+  --modes pooled,class,orthogonal,factor \
+  --sc_modes factor \
+  --acquisition_modes additive \
+  --certification_mode theory \
+  --beta_g 2.0 \
+  --N 80 --n0 10 \
+  --K1 25 --K2 1 \
+  --posterior_pool_size 300 \
+  --posterior_keep 15 \
+  --eval_pool_size 500 \
+  --n_seeds 20 \
+  --jobs 4 \
+  --out_prefix paper_hvd_additive_n80_s20_20260704
+```
+
+The output lives under `SC-OLH-KG/profiles/` with that prefix.  Pooled across
+the four problems, `factor+sc` achieved true-feasible rate `1.0`, false-feasible
+rate `0.0`, and median feasible simple regret `0.0013932`.  The non-SC
+`factor` run achieved true-feasible rate `0.825`, false-feasible rate `0.0`,
+and median feasible simple regret `0.00018`.  On the factor-shock synthetic,
+`factor+sc` raised true-feasible rate from `0.30` (`factor`) to `1.0` while
+keeping false-feasible rate at `0.0`, which is the main evidence that the
+cumulative shared-shock block is doing useful work.
 For SC coupling evidence, run both a monotone/regime problem and a concave
 boundary problem:
 
@@ -146,6 +175,9 @@ Use small `--botorch_raw_samples`, `--botorch_num_restarts`, and
 `--saas_warmup_steps` values for smoke tests; increase them for paper runs.
 `--botorch_timeout_sec` is required for SAASBO accounting in formal runs, so
 timeouts are counted instead of silently stalling the benchmark.
+`--botorch_max_candidate_failures` bounds repeated candidate-generation
+failures in one BoTorch run; SAASBO can then switch to a recorded cheap
+fallback instead of spending every remaining budget step in NUTS/optimization.
 
 Multi-problem SOTA suite:
 
@@ -164,6 +196,48 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_sota_suite.py 
   --worker_torch_threads 1 \
   --out_prefix sota_real_n20_s20
 ```
+
+Completed guarded BoTorch SOTA suite on 2026-07-04:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_sota_suite.py \
+  --problems RegimeRZDT1,RZDT2,StatePolicyRZDT1 \
+  --variance_mode factor \
+  --acquisition_mode additive \
+  --certification_mode theory \
+  --beta_g 2.0 \
+  --N 80 --n0 10 \
+  --K1 25 --K2 1 \
+  --posterior_pool_size 300 \
+  --posterior_keep 15 \
+  --eval_pool_size 500 \
+  --baselines sobol,random,botorch_turbo,botorch_scbo,botorch_saasbo \
+  --botorch_fallback error \
+  --botorch_raw_samples 64 \
+  --botorch_num_restarts 4 \
+  --botorch_maxiter 50 \
+  --botorch_timeout_sec 10 \
+  --botorch_max_candidate_failures 2 \
+  --saas_warmup_steps 4 \
+  --saas_num_samples 4 \
+  --saas_max_tree_depth 3 \
+  --saas_mc_samples 32 \
+  --jobs 10 \
+  --worker_torch_threads 1 \
+  --n_seeds 20 \
+  --out_prefix sota_real_additive_n80_s20_20260704_guarded
+```
+
+This is a 420-run matrix: three problems, seven variants, and 20 seeds.  The
+real BoTorch backends were available and no fit/candidate failures or SAASBO
+fallbacks were recorded.  Pooled across the three problems, `olhkg_additive`
+kept true-feasible rate `1.0`, false-feasible rate `0.0`, median feasible
+simple regret `0.0`, and median wall time `12.69s`.  `olhkg_sc_additive` also
+kept true-feasible rate `1.0` and false-feasible rate `0.0`, with median regret
+`0.000186` and median wall time `15.47s`.  The real BoTorch baselines had
+lower feasibility and higher median regret: TuRBO `0.9667/0.0333/0.00669`,
+SCBO `0.9833/0.0167/0.00871`, and SAASBO `0.9667/0.0333/0.00193` for
+true-feasible rate / false-feasible rate / median feasible simple regret.
 
 Paper bridge on the original RZDT families:
 
