@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+import csv
+from collections import defaultdict
+from pathlib import Path
+
 import numpy as np
 
 
@@ -228,3 +232,121 @@ class StateCoupledFeatureMap:
         z = np.asarray(self.problem.normalize(x), dtype=float)
         rho = self.state_scale * self.encoder.occupancy(x)
         return np.concatenate([z, z ** 2, rho])
+
+
+class TrafficTrajectoryEncoder:
+    """Aggregate fresh-seed traffic trajectories into occupancy/risk features.
+
+    Expected row fields are CSV-friendly: `policy_id`, `seed`, `time`, `state`,
+    `action`, `occupancy`, `queue`, `wait`, `flow`, and `demand_shock`.
+    Extra columns are ignored.
+    """
+
+    REQUIRED_FIELDS = ("policy_id", "state", "action")
+
+    def __init__(self, records=None):
+        self.policy_features: dict[str, np.ndarray] = {}
+        self.policy_occupancy: dict[str, dict[str, float]] = {}
+        self.policy_exposures: dict[str, dict[str, np.ndarray]] = {}
+        if records is not None:
+            self.fit_records(records)
+
+    @classmethod
+    def from_csv(cls, path):
+        path = Path(path)
+        with path.open("r", newline="", encoding="utf-8") as handle:
+            rows = list(csv.DictReader(handle))
+        return cls(rows)
+
+    @staticmethod
+    def missing_data_status(path):
+        path = Path(path) if path else None
+        if path is None or not path.exists():
+            return {
+                "status": "missing_data",
+                "reason": "fresh-seed traffic trajectory log not found",
+                "path": None if path is None else str(path),
+            }
+        return {"status": "available", "path": str(path)}
+
+    def fit_records(self, records):
+        grouped = defaultdict(list)
+        for row in records:
+            for field in self.REQUIRED_FIELDS:
+                if field not in row:
+                    raise ValueError(f"traffic trajectory row missing {field!r}")
+            grouped[str(row["policy_id"])].append(row)
+        self.policy_features.clear()
+        self.policy_occupancy.clear()
+        self.policy_exposures.clear()
+        for policy_id, rows in grouped.items():
+            self._fit_policy(policy_id, rows)
+        return self
+
+    def _fit_policy(self, policy_id, rows):
+        occ = defaultdict(float)
+        queue = []
+        wait = []
+        flow = []
+        shock = []
+        for row in rows:
+            key = f"{row.get('state', '')}|{row.get('action', '')}"
+            occ[key] += self._float(row.get("occupancy", 1.0), 1.0)
+            queue.append(self._float(row.get("queue", 0.0), 0.0))
+            wait.append(self._float(row.get("wait", 0.0), 0.0))
+            flow.append(self._float(row.get("flow", 0.0), 0.0))
+            shock.append(self._float(row.get("demand_shock", 0.0), 0.0))
+        total_occ = max(float(sum(occ.values())), 1e-12)
+        occ_norm = {key: float(value / total_occ) for key, value in occ.items()}
+        probs = np.asarray(list(occ_norm.values()), dtype=float)
+        entropy = float(-np.sum(probs * np.log(np.maximum(probs, 1e-12))))
+        queue_arr = np.asarray(queue, dtype=float)
+        wait_arr = np.asarray(wait, dtype=float)
+        flow_arr = np.asarray(flow, dtype=float)
+        shock_arr = np.asarray(shock, dtype=float)
+        local_exposure = np.array([
+            float(np.mean(queue_arr)) if len(queue_arr) else 0.0,
+            float(np.mean(wait_arr)) if len(wait_arr) else 0.0,
+            float(np.mean(np.maximum(flow_arr, 0.0))) if len(flow_arr) else 0.0,
+        ], dtype=float)
+        shared_exposure = np.array([
+            float(np.mean(shock_arr)) if len(shock_arr) else 0.0,
+            float(np.std(shock_arr)) if len(shock_arr) else 0.0,
+        ], dtype=float)
+        self.policy_occupancy[str(policy_id)] = occ_norm
+        self.policy_exposures[str(policy_id)] = {
+            "local": local_exposure,
+            "shared": shared_exposure,
+        }
+        self.policy_features[str(policy_id)] = np.array([
+            total_occ,
+            entropy,
+            local_exposure[0],
+            local_exposure[1],
+            local_exposure[2],
+            shared_exposure[0],
+            shared_exposure[1],
+            float(len(rows)),
+        ], dtype=float)
+
+    def features(self, policy_id):
+        return np.asarray(self.policy_features[str(policy_id)], dtype=float)
+
+    def occupancy(self, policy_id):
+        return dict(self.policy_occupancy[str(policy_id)])
+
+    def risk_exposure(self, policy_id):
+        return np.asarray(self.policy_exposures[str(policy_id)]["local"], dtype=float)
+
+    def shared_shock_exposure(self, policy_id):
+        return np.asarray(self.policy_exposures[str(policy_id)]["shared"], dtype=float)
+
+    @staticmethod
+    def _float(value, default):
+        try:
+            val = float(value)
+        except (TypeError, ValueError):
+            return float(default)
+        if not np.isfinite(val):
+            return float(default)
+        return val

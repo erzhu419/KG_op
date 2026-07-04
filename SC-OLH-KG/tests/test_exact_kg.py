@@ -45,7 +45,7 @@ class ExactKGTests(unittest.TestCase):
             K1=4,
             K2=0,
             exact_kg_mc_samples=1,
-            exact_kg_use_score=True,
+            acquisition_mode="exact_mc",
             eval_pool_size=10,
             seed=11,
         )
@@ -57,6 +57,25 @@ class ExactKGTests(unittest.TestCase):
             "exact_kg_selected" in row
             for row in alg.iteration_log
         ))
+        self.assertTrue(all(
+            row.get("acquisition_mode") == "exact_mc"
+            for row in alg.iteration_log
+        ))
+
+    def test_exact_mc_mode_supplies_default_sample_count(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        config = SingleOLHKGConfig(
+            N=5,
+            n0=4,
+            K1=4,
+            K2=0,
+            acquisition_mode="exact_mc",
+            exact_kg_mc_samples=0,
+            eval_pool_size=10,
+            seed=13,
+        )
+        alg = SingleOLHKGAlgorithm(problem, config)
+        self.assertEqual(alg._effective_exact_kg_mc_samples(), 4)
 
 
 if __name__ == "__main__":

@@ -164,8 +164,16 @@ KG_SC(x) = E_n[V_n - V_{n+1}(x)].
 ```
 
 The current implementation uses an additive approximation to this expression.
-The proof target is to show when the approximation is a lower-order surrogate
-or to replace it with a sampled exact estimator.
+The implementation now exposes three acquisition variants:
+
+```text
+additive, exact_mc, blend.
+```
+
+`additive` is justified by a uniform approximation gap.  `exact_mc` estimates
+the posterior-update expectation by cloning and updating both GPR and HVD
+states, then recomputing the theory-certified terminal value.  `blend` is the
+controlled interpolation used for ablation.
 
 ## Theorem 8: Finite-Budget Safe Simple-Regret Bound
 
@@ -188,15 +196,15 @@ the surrogate and Theorem 5-6 for variance/certification.
 ## Current Gaps
 
 1. The code now has a factor-shock synthetic and factor-HVD cumulative feature
-   path, but the exact posterior-update KG estimator is optional and has not
-   been promoted over the additive default.
-2. The traffic trajectory encoder is not yet connected to real trajectory logs.
+   path that feeds `v_C^+` in theory certification.  The main empirical choice
+   is whether `exact_mc` or `blend` beats additive at paper budget.
+2. The traffic trajectory encoder/log schema is implemented, but real
+   fresh-seed trajectory logs are not available locally.  Traffic empirical
+   tables must be marked `missing_data` until those logs exist.
 3. The manuscript still needs a final choice between bounded,
    sub-exponential, or Gaussian-derived residual-square tails.
 4. The full recursive `compute_h` sorted-stack fold/output theorem is now
-   Lean-proved for the sorted/collapsed active-line loop; the remaining
-   manuscript choice is whether to present the additive runner or promote the
-   optional exact posterior-update estimator.
+   Lean-proved for the sorted/collapsed active-line loop.
 
 ## Lean4 Status
 
@@ -214,8 +222,10 @@ versions needed by the manuscript:
 | Policy/trajectory occupancy decomposition | `SCOLHKG/Real/OccupancyDecomposition.lean` | Lean-proved as occupancy cumulative risk plus remainder plus explained trajectory variance |
 | GPR rank-one update / KG slope | `SCOLHKG/Real/GPRUpdate.lean` | Lean-proved; matches `ParametricGPR.update` and `compute_kg_vectorized` slope |
 | Chance certification | `SCOLHKG/Real/Certification.lean` | Lean-proved from GP-confidence and variance-upper events |
+| Theory certification implementation | `SCOLHKG/Real/CertificationImplementation.lean` | Lean-proved for `mu + sqrt(beta)s + z sqrt(v_C^+) <= tau`, with legacy mode dominated by theory mode |
 | HVD oracle inequality | `SCOLHKG/Real/HVD.lean` | Lean-proved from residual-square concentration event |
 | HVD implementation guards | `SCOLHKG/Real/HVDImplementation.lean` | Lean-proved for residual squares, nonnegative linear variance, clipping, and certification variance |
+| Factor cumulative block implementation | `SCOLHKG/Real/CumulativeRiskImplementation.lean` | Lean-proved for `floor/independent/shared/linear/total` aggregation and shared-shock omission underestimation |
 | Ridge-HVD oracle inequality | `SCOLHKG/Real/RidgeHVD.lean` | Lean-proved from ridge minimizer and uniform residual-square concentration |
 | Posterior recommendation | `SCOLHKG/Real/PosteriorRecommendation.lean` | Lean-proved for robust-feasible posterior certification and objective argmin |
 | Exact KG maximizer | `SCOLHKG/Real/KG.lean` | Lean-proved for expected terminal gain |
@@ -227,14 +237,17 @@ versions needed by the manuscript:
 | Full line-envelope fold/output correctness | `SCOLHKG/Real/LineEnvelopeFold.lean` | Lean-proved recursive insert-loop/fold correctness: every original line is pointwise dominated by final output active lines; output endpoint dominance lifts to original-input `FinalEnvelopeStackInvariant` and exact KG |
 | Additive KG equivalence condition | `SCOLHKG/Real/KG.lean` | Lean-proved when additive score equals exact gain |
 | Additive-to-exact KG approximation | `SCOLHKG/Real/AdditiveApproxKG.lean` | Lean-proved with `2 eta` exact-KG gap |
+| Exact-MC estimator bridge | `SCOLHKG/Real/ExactKGImplementation.lean` | Lean-proved: uniformly accurate exact-MC estimator inherits the same exact-KG gap |
 | Information-gain regret accounting | `SCOLHKG/Real/InformationGainRegret.lean` | Lean-proved from an information-gain radius budget |
 | Finite-kernel information-gain cap | `SCOLHKG/Real/FiniteKernelInformationGain.lean` | Lean-proved for scalar per-step finite kernel information gain and finite determinant/log-product cap |
+| Kernel determinant bridge | `SCOLHKG/Real/KernelDeterminantBridge.lean` | Lean-proved: determinant-ratio cap feeds finite safe-regret accounting |
 | Safe simple regret | `SCOLHKG/Real/SafeRegret.lean` | Lean-proved from certification and optimization-error events |
 | General conditional variance | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved by invoking mathlib `condVar` law of total variance |
 | GP confidence event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev and finite union bound |
 | Sub-Gaussian GP confidence event | `SCOLHKG/Measure/SubGaussianConfidence.lean` | Lean-proved for one-sided and centered finite/adaptive candidate sets |
 | Finite-kernel GP posterior confidence | `SCOLHKG/Measure/GPKernelConfidence.lean` | Lean-proved with explicit `sum_i w_i^2 c_i` parameter |
 | Posterior-sampled random candidates | `SCOLHKG/Measure/PosteriorSamplingCandidates.lean` | Lean-proved by posterior-score selector containment and deterministic adaptive envelope pools |
+| Posterior coefficient sampler bridge | `SCOLHKG/Measure/PosteriorCoefficientSampler.lean` | Lean-proved for sampled coefficient score selectors staying inside finite pools |
 | Residual-square concentration event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev for an abstract centered estimator |
 | Bounded residual-square constants | `SCOLHKG/Measure/ResidualSquareConcentration.lean` | Lean-proved via Hoeffding's lemma and finite union concentration |
 | Sharper residual-square tail interface | `SCOLHKG/Measure/ResidualSquareTail.lean` | Lean-proved finite concentration from generic/sub-exponential residual-square tails and closed-form default radius inversion |
@@ -247,8 +260,8 @@ probability model:
 
 1. multivariate-normal coefficient sampling formalization for the
    posterior-sampling candidate generator;
-2. kernel/feature-specific determinant upper bounds beyond the current finite
-   product-ratio identity;
-3. large-seed benchmark decision on whether optional exact posterior-update KG
-   replaces the additive runner;
+2. kernel/feature-specific determinant upper bounds beyond the current
+   determinant-ratio bridge;
+3. large-seed benchmark decision on whether `exact_mc` or `blend` replaces the
+   additive runner;
 4. traffic trajectory/log formalization after fresh-seed traffic experiments.

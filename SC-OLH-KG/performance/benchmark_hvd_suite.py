@@ -52,6 +52,8 @@ def _problem_args(args, problem):
         "lambda_var": args.lambda_var,
         "lambda_mean": args.lambda_mean,
         "lambda_coupling": args.lambda_coupling,
+        "beta_g": args.beta_g,
+        "certification_mode": args.certification_mode,
         "coupling_safety_z": args.coupling_safety_z,
         "coupling_gate_temperature": args.coupling_gate_temperature,
         "recommendation_safety_z": args.recommendation_safety_z,
@@ -64,6 +66,7 @@ def _problem_args(args, problem):
         "exact_kg_mc_samples": args.exact_kg_mc_samples,
         "exact_kg_use_score": args.exact_kg_use_score,
         "exact_kg_blend": args.exact_kg_blend,
+        "acquisition_modes": args.acquisition_modes,
         "modes": args.modes,
         "sc_modes": args.sc_modes,
         "baseline_variant": args.baseline_variant,
@@ -192,6 +195,9 @@ def main():
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_mean", type=float, default=0.10)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
+    parser.add_argument("--beta_g", type=float, default=2.0)
+    parser.add_argument("--certification_mode", default="theory",
+                        choices=["theory", "legacy"])
     parser.add_argument("--coupling_safety_z", type=float, default=0.5)
     parser.add_argument("--coupling_gate_temperature", type=float, default=0.25)
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
@@ -204,6 +210,7 @@ def main():
     parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
+    parser.add_argument("--acquisition_modes", default="additive")
     parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
     parser.add_argument("--sc_modes", default="orthogonal,factor")
     parser.add_argument("--baseline_variant", default="orthogonal")

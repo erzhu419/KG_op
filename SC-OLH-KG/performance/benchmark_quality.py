@@ -108,7 +108,20 @@ def compact_stage_shares(stage_times):
     return out
 
 
-def run_variant_once(args, variance_mode, seed, use_state_coupling):
+def _variant_name(args, variance_mode, use_state_coupling, acquisition_mode):
+    modes = parse_csv(getattr(args, "acquisition_modes", "additive"))
+    if modes == ["additive"]:
+        return variance_mode + ("+sc" if use_state_coupling else "")
+    if acquisition_mode == "exact_mc":
+        suffix = "olhkg_sc_exact" if use_state_coupling else "olhkg_exact"
+    elif acquisition_mode == "blend":
+        suffix = "olhkg_sc_blend" if use_state_coupling else "olhkg_blend"
+    else:
+        suffix = "olhkg_sc_additive" if use_state_coupling else "olhkg_additive"
+    return f"{variance_mode}:{suffix}"
+
+
+def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_mode="additive"):
     base = make_problem(
         args.problem,
         d=args.d,
@@ -135,6 +148,8 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         lambda_var=args.lambda_var,
         lambda_mean=args.lambda_mean,
         lambda_coupling=args.lambda_coupling if use_state_coupling else 0.0,
+        beta_g=args.beta_g,
+        certification_mode=args.certification_mode,
         coupling_safety_z=args.coupling_safety_z,
         coupling_gate_temperature=args.coupling_gate_temperature,
         recommendation_safety_z=args.recommendation_safety_z,
@@ -145,6 +160,7 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
+        acquisition_mode=acquisition_mode,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
         exact_kg_use_score=args.exact_kg_use_score,
         exact_kg_blend=args.exact_kg_blend,
@@ -158,12 +174,15 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
     violation = max(float(result["true_chance_margin"]), 0.0)
     feasible_objective = float(result["true_objective"]) if true_feasible else None
     feasible_regret = float(result["simple_regret"]) if true_feasible else None
-    variant = variance_mode + ("+sc" if use_state_coupling else "")
+    variant = _variant_name(args, variance_mode, use_state_coupling, acquisition_mode)
     row = {
         "variant": variant,
         "variance_mode": variance_mode,
         "use_state_coupling": bool(use_state_coupling),
         "use_state_basis": bool(use_state_coupling and args.use_state_basis),
+        "acquisition_mode": acquisition_mode,
+        "beta_g": float(args.beta_g),
+        "certification_mode": args.certification_mode,
         "exact_kg_mc_samples": int(args.exact_kg_mc_samples),
         "exact_kg_use_score": bool(args.exact_kg_use_score),
         "exact_kg_blend": float(args.exact_kg_blend),
@@ -191,6 +210,9 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         "true_chance_margin": float(result["true_chance_margin"]),
         "constraint_violation": float(violation),
         "posterior_chance_margin": float(result["posterior_chance_margin"]),
+        "posterior_beta_g": optional_float(result.get("posterior_beta_g")),
+        "posterior_epistemic_variance_con": optional_float(
+            result.get("posterior_epistemic_variance_con")),
         "wall_time_sec": float(result["total_time_sec"]),
         "n_simulations": int(result["n_simulations"]),
         "n_distinct_solutions": int(result["n_distinct_solutions"]),
@@ -208,6 +230,9 @@ def summarize_variant(rows):
         "variance_mode": rows[0]["variance_mode"],
         "use_state_coupling": rows[0]["use_state_coupling"],
         "use_state_basis": rows[0].get("use_state_basis", False),
+        "acquisition_mode": rows[0].get("acquisition_mode", "additive"),
+        "beta_g": rows[0].get("beta_g", 0.0),
+        "certification_mode": rows[0].get("certification_mode", "legacy"),
         "n_runs": int(n),
         "true_feasible_rate": mean_bool(row["true_feasible"] for row in rows),
         "posterior_feasible_rate": mean_bool(row["posterior_feasible"] for row in rows),
@@ -272,12 +297,20 @@ def compare_to_baseline(summaries, baseline_variant):
 
 
 def build_variants(args):
-    variants = [(mode, False) for mode in parse_csv(args.modes)]
-    variants.extend((mode, True) for mode in parse_csv(args.sc_modes))
+    variants = [
+        (mode, False, acq)
+        for mode in parse_csv(args.modes)
+        for acq in parse_csv(args.acquisition_modes)
+    ]
+    variants.extend(
+        (mode, True, acq)
+        for mode in parse_csv(args.sc_modes)
+        for acq in parse_csv(args.acquisition_modes)
+    )
     seen = set()
     unique = []
-    for mode, use_sc in variants:
-        key = (mode, use_sc)
+    for mode, use_sc, acq in variants:
+        key = (mode, use_sc, acq)
         if key not in seen:
             unique.append(key)
             seen.add(key)
@@ -290,8 +323,8 @@ def run_benchmark(args):
         seeds = list(range(args.seed_start, args.seed_start + args.n_seeds))
     variants = build_variants(args)
     rows = []
-    for variance_mode, use_state_coupling in variants:
-        variant = variance_mode + ("+sc" if use_state_coupling else "")
+    for variance_mode, use_state_coupling, acquisition_mode in variants:
+        variant = _variant_name(args, variance_mode, use_state_coupling, acquisition_mode)
         for seed in seeds:
             print(f"[benchmark] variant={variant} seed={seed}", flush=True)
             rows.append(run_variant_once(
@@ -299,6 +332,7 @@ def run_benchmark(args):
                 variance_mode,
                 seed,
                 use_state_coupling,
+                acquisition_mode,
             ))
     grouped = {}
     for row in rows:
@@ -335,6 +369,8 @@ def run_benchmark(args):
             "lambda_var": args.lambda_var,
             "lambda_mean": args.lambda_mean,
             "lambda_coupling": args.lambda_coupling,
+            "beta_g": args.beta_g,
+            "certification_mode": args.certification_mode,
             "coupling_safety_z": args.coupling_safety_z,
             "coupling_gate_temperature": args.coupling_gate_temperature,
             "recommendation_safety_z": args.recommendation_safety_z,
@@ -344,6 +380,7 @@ def run_benchmark(args):
             "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
             "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
             "use_state_basis": args.use_state_basis,
+            "acquisition_modes": parse_csv(args.acquisition_modes),
             "exact_kg_mc_samples": args.exact_kg_mc_samples,
             "exact_kg_use_score": args.exact_kg_use_score,
             "exact_kg_blend": args.exact_kg_blend,
@@ -363,6 +400,9 @@ def flatten_summary(summary):
         "variance_mode": summary["variance_mode"],
         "use_state_coupling": summary["use_state_coupling"],
         "use_state_basis": summary.get("use_state_basis", False),
+        "acquisition_mode": summary.get("acquisition_mode", "additive"),
+        "beta_g": summary.get("beta_g", 0.0),
+        "certification_mode": summary.get("certification_mode", "legacy"),
         "n_runs": summary["n_runs"],
         "true_feasible_rate": summary["true_feasible_rate"],
         "posterior_feasible_rate": summary["posterior_feasible_rate"],
@@ -466,6 +506,9 @@ def main():
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_mean", type=float, default=0.10)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
+    parser.add_argument("--beta_g", type=float, default=2.0)
+    parser.add_argument("--certification_mode", default="theory",
+                        choices=["theory", "legacy"])
     parser.add_argument("--coupling_safety_z", type=float, default=0.5)
     parser.add_argument("--coupling_gate_temperature", type=float, default=0.25)
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
@@ -478,6 +521,7 @@ def main():
     parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
+    parser.add_argument("--acquisition_modes", default="additive")
     parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
     parser.add_argument("--sc_modes", default="orthogonal")
     parser.add_argument("--baseline_variant", default="orthogonal")

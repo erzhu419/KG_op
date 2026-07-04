@@ -59,12 +59,35 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_quality.py \
   --K1 15 \
   --K2 1 \
   --problem RegimeRZDT1 \
+  --certification_mode theory \
+  --beta_g 2.0 \
   --n_seeds 5
 ```
 
 This benchmark writes JSON plus row/summary CSV files under
 `SC-OLH-KG/profiles/`.  It compares optimization quality across variance modes
 and optional SC coupling; wall time is included only as a diagnostic column.
+Set `--acquisition_modes additive,exact_mc,blend` to compare the additive proxy,
+sampled posterior-update KG, and the blended bridge in the same table.  In
+`exact_mc`/`blend` modes, the runner uses cloned GPR and HVD updates before
+recomputing the theory-certified terminal value.
+
+Paper-grade HVD/acquisition ablation:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_hvd_suite.py \
+  --problems RegimeRZDT1,RZDT2,StatePolicyRZDT1,FactorShockStatePolicyRZDT1 \
+  --modes pooled,class,orthogonal,factor \
+  --sc_modes factor \
+  --acquisition_modes additive,exact_mc,blend \
+  --certification_mode theory \
+  --beta_g 2.0 \
+  --N 80 --n0 10 \
+  --K1 25 --K2 1 \
+  --n_seeds 20 \
+  --jobs 10 \
+  --out_prefix hvd_theory_n80_s20
+```
 For SC coupling evidence, run both a monotone/regime problem and a concave
 boundary problem:
 
@@ -104,6 +127,11 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_sota.py \
   --problem StatePolicyRZDT1 \
   --N 20 --n0 5 \
   --n_seeds 5 \
+  --variance_mode factor \
+  --acquisition_mode exact_mc \
+  --eval_pool_size 200 \
+  --certification_mode theory \
+  --botorch_timeout_sec 30 \
   --baselines sobol,random,turbo_lite,scbo_lite,botorch_turbo,botorch_scbo,botorch_saasbo
 ```
 
@@ -116,6 +144,8 @@ installed, the benchmark can either fall back to the lite baselines
 (`--botorch_fallback lite`) or fail loudly (`--botorch_fallback error`).
 Use small `--botorch_raw_samples`, `--botorch_num_restarts`, and
 `--saas_warmup_steps` values for smoke tests; increase them for paper runs.
+`--botorch_timeout_sec` is required for SAASBO accounting in formal runs, so
+timeouts are counted instead of silently stalling the benchmark.
 
 Multi-problem SOTA suite:
 
@@ -125,10 +155,39 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_sota_suite.py 
   --N 20 --n0 5 \
   --n_seeds 20 \
   --baselines sobol,random,botorch_turbo,botorch_scbo,botorch_saasbo \
+  --variance_mode factor \
+  --acquisition_mode exact_mc \
+  --eval_pool_size 200 \
+  --certification_mode theory \
+  --botorch_timeout_sec 60 \
   --jobs 10 \
   --worker_torch_threads 1 \
   --out_prefix sota_real_n20_s20
 ```
+
+Paper bridge on the original RZDT families:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_paper_bridge.py \
+  --modes orthogonal,factor \
+  --sc_modes factor \
+  --acquisition_modes additive,exact_mc,blend \
+  --certification_mode theory \
+  --N 80 --n0 10 \
+  --n_seeds 20 \
+  --out_prefix paper_bridge_theory_n80_s20
+```
+
+Fresh traffic trajectory logs:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_traffic_fresh.py \
+  --trajectory_log /path/to/fresh_traffic_trajectories.csv \
+  --out_prefix traffic_fresh
+```
+
+If the CSV is absent, this runner writes a `missing_data` record.  That is the
+only valid traffic status until real fresh-seed logs are supplied.
 
 HVD calibration diagnostic:
 

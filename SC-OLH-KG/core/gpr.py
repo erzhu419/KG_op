@@ -134,6 +134,20 @@ class ParametricGPR:
             var += self.lambda_i
         return max(var, 1e-12)
 
+    def posterior_var_many(self, X: list[ArrayLike] | np.ndarray) -> np.ndarray:
+        """Vectorized posterior variance for candidate pools."""
+        if len(X) == 0:
+            return np.zeros(0, dtype=float)
+        A = self.augmented_feature_matrix(X)
+        var = np.einsum("ij,jk,ik->i", A, self.C, A)
+        unseen = np.array([
+            tuple(int(v) for v in np.asarray(x, dtype=int)) not in self.sol_to_idx
+            for x in X
+        ], dtype=bool)
+        var = np.asarray(var, dtype=float)
+        var[unseen] += self.lambda_i
+        return np.maximum(var, 1e-12)
+
     def dimension_augment(self, x: ArrayLike) -> None:
         x_tuple = tuple(int(v) for v in np.asarray(x, dtype=int))
         if x_tuple in self.sol_to_idx:

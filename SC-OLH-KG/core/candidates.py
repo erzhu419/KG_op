@@ -130,8 +130,11 @@ def posterior_sample_candidates(
     rng=None,
     use_constraint=False,
     variance_lookup=None,
+    epistemic_lookup=None,
     tau=0.0,
     alpha_z=1.6448536269514722,
+    beta_g=0.0,
+    certification_mode="legacy",
 ):
     """Cheap posterior-sampling candidate generator.
 
@@ -164,7 +167,19 @@ def posterior_sample_candidates(
             con = Phi @ sampled[1]
             if variance_lookup is not None:
                 sig = np.sqrt(np.array([variance_lookup(1, x) for x in X]))
-                feasible = con + alpha_z * sig <= tau
+                if (
+                    str(certification_mode).lower() == "theory"
+                    and epistemic_lookup is not None
+                ):
+                    s_g = np.sqrt(np.array([epistemic_lookup(x) for x in X]))
+                    feasible = (
+                        con
+                        + np.sqrt(max(float(beta_g), 0.0)) * s_g
+                        + alpha_z * sig
+                        <= tau
+                    )
+                else:
+                    feasible = con + alpha_z * sig <= tau
             else:
                 feasible = con <= tau
         else:

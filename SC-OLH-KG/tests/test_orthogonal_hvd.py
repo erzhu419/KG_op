@@ -151,6 +151,57 @@ class OrthogonalHVDTests(unittest.TestCase):
         self.assertIsNotNone(decomposition["cumulative"])
         self.assertTrue(decomposition["cumulative"]["active"])
         self.assertIsNotNone(decomposition["cumulative"]["oracle"])
+        self.assertIsNotNone(decomposition["cumulative"]["fitted_blocks"])
+        blocks = decomposition["cumulative"]["fitted_blocks"]
+        self.assertAlmostEqual(
+            blocks["total"],
+            blocks["floor"] + blocks["independent"] + blocks["shared"] + blocks["linear"],
+        )
+
+    def test_factor_certification_includes_residual_tail_guard(self):
+        base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        X = []
+        residuals = []
+        for u in [5, 15, 25, 40, 60, 80, 95]:
+            for q in [45, 60, 72, 85, 95]:
+                x = tuple([u] + [q] * 7)
+                X.append(x)
+                residuals.append(problem.true_sigma(x)[1])
+        model = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=10,
+            shrinkage_kappa=0.0,
+            residual_tail_delta=0.05,
+        )
+        model.fit_from_residuals(X, residuals, output_index=1, problem=problem)
+        x = tuple([50] + [95] * 7)
+        decomposition = model.predict_decomposition(1, x, problem)
+        self.assertTrue(decomposition["cumulative"]["active"])
+        self.assertGreater(decomposition["residual_tail_uncertainty"], 0.0)
+        self.assertGreaterEqual(
+            decomposition["certification_variance"],
+            decomposition["variance"] + decomposition["residual_tail_uncertainty"],
+        )
+
+    def test_omitting_shared_shock_can_flip_false_feasible_certificate(self):
+        base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        x = tuple([50] + [95] * 7)
+        decomp = problem.true_cumulative_risk_decomposition(x, output_index=1)
+        self.assertGreater(decomp["shared"], 0.0)
+        no_shared = decomp["floor"] + decomp["independent"] + decomp["linear"]
+        self.assertLess(no_shared, decomp["total"])
+
+        z_alpha = 1.6448536269514722
+        mu_g = -z_alpha * 0.5 * (
+            np.sqrt(no_shared) + np.sqrt(decomp["total"]))
+        tau = 0.0
+        no_shared_margin = mu_g + z_alpha * np.sqrt(no_shared) - tau
+        true_margin = mu_g + z_alpha * np.sqrt(decomp["total"]) - tau
+        self.assertLessEqual(no_shared_margin, 0.0)
+        self.assertGreater(true_margin, 0.0)
 
 
 if __name__ == "__main__":

@@ -47,15 +47,19 @@ def _problem_args(args, problem):
         "lambda_var": args.lambda_var,
         "lambda_mean": args.lambda_mean,
         "lambda_coupling": args.lambda_coupling,
+        "beta_g": args.beta_g,
+        "certification_mode": args.certification_mode,
         "recommendation_safety_z": args.recommendation_safety_z,
         "recommendation_noise_floor_scale": args.recommendation_noise_floor_scale,
         "recommendation_infeasible_penalty": args.recommendation_infeasible_penalty,
         "disable_recommendation_calibration": args.disable_recommendation_calibration,
         "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
         "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
+        "acquisition_mode": args.acquisition_mode,
         "exact_kg_mc_samples": args.exact_kg_mc_samples,
         "exact_kg_use_score": args.exact_kg_use_score,
         "exact_kg_blend": args.exact_kg_blend,
+        "eval_pool_size": args.eval_pool_size,
         "baselines": args.baselines,
         "baseline_batch_candidates": args.baseline_batch_candidates,
         "tr_radius_init": args.tr_radius_init,
@@ -177,15 +181,21 @@ def main():
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_mean", type=float, default=0.10)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
+    parser.add_argument("--beta_g", type=float, default=2.0)
+    parser.add_argument("--certification_mode", default="theory",
+                        choices=["theory", "legacy"])
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
+    parser.add_argument("--acquisition_mode", default="additive",
+                        choices=["additive", "exact_mc", "blend"])
     parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
+    parser.add_argument("--eval_pool_size", type=int, default=500)
     parser.add_argument(
         "--baselines",
         default="sobol,random,botorch_turbo,botorch_scbo,botorch_saasbo",

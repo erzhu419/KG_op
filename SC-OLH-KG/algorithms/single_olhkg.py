@@ -10,6 +10,7 @@ import numpy as np
 from scipy.stats import norm
 
 from acquisition.olhkg import OLHKGAcquisition
+from core.certification import conservative_chance_margin
 from core.candidates import (
     axis_candidates,
     axis_landmark_candidates,
@@ -50,6 +51,8 @@ class SingleOLHKGConfig:
     lambda_var: float = 0.25
     lambda_mean: float = 0.10
     lambda_coupling: float = 0.0
+    beta_g: float = 2.0
+    certification_mode: str = "theory"
     coupling_safety_z: float = 0.5
     coupling_gate_temperature: float = 0.25
     recommendation_safety_z: float = 0.5
@@ -62,6 +65,7 @@ class SingleOLHKGConfig:
     recommendation_axis_candidate_count: int = -1
     use_state_coupling: bool = False
     use_state_basis: bool = False
+    acquisition_mode: str = "additive"
     exact_kg_mc_samples: int = 0
     exact_kg_use_score: bool = False
     exact_kg_blend: float = 0.0
@@ -111,6 +115,8 @@ class SingleOLHKGAlgorithm:
             lambda_var=self.config.lambda_var,
             lambda_mean=self.config.lambda_mean,
             lambda_coupling=self.config.lambda_coupling,
+            beta_g=self.config.beta_g,
+            certification_mode=self.config.certification_mode,
             coupling_safety_z=self.config.coupling_safety_z,
             coupling_gate_temperature=self.config.coupling_gate_temperature,
             encoder=self.encoder,
@@ -172,6 +178,24 @@ class SingleOLHKGAlgorithm:
 
     def _variance_lookup(self, i, x):
         return self.variance_model.predict_variance(i, x, self.problem)
+
+    def _constraint_epistemic_lookup(self, x):
+        return self.gpr[1].posterior_var(x)
+
+    def _certification_result(self, mu_con, candidates, v_con=None):
+        if v_con is None:
+            v_con = self.variance_model.predict_certification_variance_many(
+                1, candidates, self.problem)
+        epistemic = self.gpr[1].posterior_var_many(candidates)
+        return conservative_chance_margin(
+            mu_con,
+            epistemic,
+            v_con,
+            tau=self.problem.tau,
+            alpha=self.problem.alpha,
+            beta_g=self.config.beta_g,
+            mode=self.config.certification_mode,
+        )
 
     def _axis_candidate_count(self):
         n_axis = int(self.config.axis_candidate_count)
@@ -243,8 +267,11 @@ class SingleOLHKGAlgorithm:
             rng=self.rng,
             use_constraint=use_constraint,
             variance_lookup=self._variance_lookup,
+            epistemic_lookup=self._constraint_epistemic_lookup,
             tau=self.problem.tau,
             alpha_z=norm.ppf(1 - self.problem.alpha),
+            beta_g=self.config.beta_g,
+            certification_mode=self.config.certification_mode,
         ), "posterior")
         if not candidates:
             add([self.problem.sample_random(self.rng)], "random")
@@ -346,19 +373,22 @@ class SingleOLHKGAlgorithm:
         pool = self._recommendation_pool()
         mu_obj = self.gpr[0].posterior_mean_many(pool)
         mu_con = self.gpr[1].posterior_mean_many(pool)
-        z = norm.ppf(1 - self.problem.alpha)
         v_con = self.variance_model.predict_certification_variance_many(
             1, pool, self.problem)
-        margins = mu_con + z * np.sqrt(np.maximum(v_con, 1e-12)) - self.problem.tau
-        sig_con = np.sqrt(np.maximum(v_con, 1e-12))
-        nominal_floor = (
-            self.config.recommendation_noise_floor_scale
-            * float(getattr(self.problem, "sigma_level", 0.0))
-        )
-        safety_buffer = np.maximum(
-            self.config.recommendation_safety_z * sig_con,
-            nominal_floor,
-        )
+        cert = self._certification_result(mu_con, pool, v_con)
+        margins = cert.margin
+        sig_con = np.sqrt(np.maximum(cert.aleatoric_var, 1e-12))
+        if cert.mode == "theory":
+            safety_buffer = np.zeros_like(margins)
+        else:
+            nominal_floor = (
+                self.config.recommendation_noise_floor_scale
+                * float(getattr(self.problem, "sigma_level", 0.0))
+            )
+            safety_buffer = np.maximum(
+                self.config.recommendation_safety_z * sig_con,
+                nominal_floor,
+            )
         robust_margins = margins + safety_buffer
         feasible = robust_margins <= 0.0
         if np.any(feasible):
@@ -402,7 +432,10 @@ class SingleOLHKGAlgorithm:
         return x_best, {
             "posterior_mu_obj": float(mu_obj[local]),
             "posterior_mu_con": float(mu_con[local]),
-            "posterior_variance_con": float(v_con[local]),
+            "posterior_epistemic_variance_con": float(cert.epistemic_var[local]),
+            "posterior_variance_con": float(cert.aleatoric_var[local]),
+            "posterior_beta_g": float(cert.beta_g),
+            "certification_mode": cert.mode,
             "posterior_chance_margin": float(margins[local]),
             "posterior_robust_chance_margin": float(robust_margins[local]),
             "recommendation_safety_z": float(self.config.recommendation_safety_z),
@@ -438,19 +471,31 @@ class SingleOLHKGAlgorithm:
             return 0.0
         mu_obj = gpr_models[0].posterior_mean_many(pool)
         mu_con = gpr_models[1].posterior_mean_many(pool)
-        z = norm.ppf(1 - self.problem.alpha)
         v_con = variance_model.predict_certification_variance_many(
             1, pool, self.problem)
-        sig_con = np.sqrt(np.maximum(v_con, 1e-12))
-        margins = mu_con + z * sig_con - self.problem.tau
-        nominal_floor = (
-            self.config.recommendation_noise_floor_scale
-            * float(getattr(self.problem, "sigma_level", 0.0))
+        epistemic = gpr_models[1].posterior_var_many(pool)
+        cert = conservative_chance_margin(
+            mu_con,
+            epistemic,
+            v_con,
+            tau=self.problem.tau,
+            alpha=self.problem.alpha,
+            beta_g=self.config.beta_g,
+            mode=self.config.certification_mode,
         )
-        safety_buffer = np.maximum(
-            self.config.recommendation_safety_z * sig_con,
-            nominal_floor,
-        )
+        margins = cert.margin
+        sig_con = np.sqrt(np.maximum(cert.aleatoric_var, 1e-12))
+        if cert.mode == "theory":
+            safety_buffer = np.zeros_like(margins)
+        else:
+            nominal_floor = (
+                self.config.recommendation_noise_floor_scale
+                * float(getattr(self.problem, "sigma_level", 0.0))
+            )
+            safety_buffer = np.maximum(
+                self.config.recommendation_safety_z * sig_con,
+                nominal_floor,
+            )
         robust_margins = margins + safety_buffer
         feasible = robust_margins <= 0.0
         if np.any(feasible):
@@ -469,6 +514,12 @@ class SingleOLHKGAlgorithm:
         )
         return float(np.min(penalized))
 
+    def _effective_exact_kg_mc_samples(self):
+        mode = str(self.config.acquisition_mode or "additive").lower()
+        if mode in ("exact_mc", "blend") and int(self.config.exact_kg_mc_samples) <= 0:
+            return 4
+        return int(self.config.exact_kg_mc_samples)
+
     def _exact_posterior_update_scores(self, candidates, terminal_pool):
         """Monte Carlo exact posterior-update KG over a fixed terminal pool.
 
@@ -477,7 +528,7 @@ class SingleOLHKGAlgorithm:
         update as the main loop, and measures current terminal value minus
         updated terminal value.
         """
-        mc = int(self.config.exact_kg_mc_samples)
+        mc = self._effective_exact_kg_mc_samples()
         if mc <= 0 or len(candidates) == 0:
             return np.zeros(len(candidates), dtype=float)
         current_value = self._terminal_value_from_models(
@@ -606,16 +657,25 @@ class SingleOLHKGAlgorithm:
                 self.problem,
                 observed=self.history,
             )
-            if int(self.config.exact_kg_mc_samples) > 0:
+            exact_mc_samples = self._effective_exact_kg_mc_samples()
+            acquisition_mode = str(self.config.acquisition_mode or "additive").lower()
+            if exact_mc_samples > 0:
                 terminal_pool = self._recommendation_pool()
                 exact_kg = self._exact_posterior_update_scores(
                     candidates, terminal_pool)
                 score["exact_kg"] = exact_kg
-                row["exact_kg_mc_samples"] = int(self.config.exact_kg_mc_samples)
-                blend = float(np.clip(self.config.exact_kg_blend, 0.0, 1.0))
-                if self.config.exact_kg_use_score:
+                row["exact_kg_mc_samples"] = int(exact_mc_samples)
+                row["acquisition_mode"] = acquisition_mode
+                blend = 0.0
+                if acquisition_mode == "exact_mc" or self.config.exact_kg_use_score:
                     score["total"] = exact_kg
-                elif blend > 0.0:
+                else:
+                    blend = float(np.clip(self.config.exact_kg_blend, 0.0, 1.0))
+                    if acquisition_mode == "blend" and blend <= 0.0:
+                        blend = 0.5
+                if acquisition_mode == "blend" or (
+                    acquisition_mode == "additive" and float(self.config.exact_kg_blend) > 0.0
+                ):
                     score["total"] = (
                         (1.0 - blend) * score["total"]
                         + blend * exact_kg

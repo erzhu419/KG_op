@@ -1,4 +1,5 @@
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -9,7 +10,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
-from encoders.policy_state_encoder import SyntheticPolicyStateEncoder  # noqa: E402
+from encoders.policy_state_encoder import (  # noqa: E402
+    SyntheticPolicyStateEncoder,
+    TrafficTrajectoryEncoder,
+)
 from problems.rzdt import HighDimStatePolicyRZDT1, RegimeRZDT1, StatePolicyRZDT1  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 
@@ -130,6 +134,50 @@ class StateEncoderTests(unittest.TestCase):
         self.assertTrue(all(len(x) == 1000 for x in candidates))
         spreads = [base.policy_state(x)[2] for x in candidates]
         self.assertLess(float(np.median(spreads)), 1e-12)
+
+    def test_traffic_trajectory_encoder_aggregates_fresh_seed_logs(self):
+        records = [
+            {
+                "policy_id": "p0",
+                "seed": "0",
+                "time": "0",
+                "state": "s0",
+                "action": "a0",
+                "occupancy": "2",
+                "queue": "4",
+                "wait": "1",
+                "flow": "7",
+                "demand_shock": "0.2",
+            },
+            {
+                "policy_id": "p0",
+                "seed": "0",
+                "time": "1",
+                "state": "s1",
+                "action": "a1",
+                "occupancy": "1",
+                "queue": "8",
+                "wait": "3",
+                "flow": "5",
+                "demand_shock": "0.4",
+            },
+        ]
+        encoder = TrafficTrajectoryEncoder(records)
+        occupancy = encoder.occupancy("p0")
+        self.assertAlmostEqual(sum(occupancy.values()), 1.0)
+        self.assertAlmostEqual(occupancy["s0|a0"], 2.0 / 3.0)
+        risk = encoder.risk_exposure("p0")
+        shared = encoder.shared_shock_exposure("p0")
+        self.assertTrue(np.allclose(risk, [6.0, 2.0, 6.0]))
+        self.assertTrue(np.allclose(shared, [0.3, 0.1]))
+        features = encoder.features("p0")
+        self.assertEqual(features.shape, (8,))
+
+    def test_traffic_trajectory_encoder_reports_missing_data(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "missing.csv"
+            status = TrafficTrajectoryEncoder.missing_data_status(path)
+        self.assertEqual(status["status"], "missing_data")
 
 
 if __name__ == "__main__":

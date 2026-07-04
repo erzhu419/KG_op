@@ -4,6 +4,7 @@ import SCOLHKG.Information
 import SCOLHKG.KG
 import SCOLHKG.Measure.GPKernelConfidence
 import SCOLHKG.Measure.PosteriorUpdateKG
+import SCOLHKG.Measure.PosteriorCoefficientSampler
 import SCOLHKG.Measure.PosteriorSamplingCandidates
 import SCOLHKG.Measure.ResidualSquareConcentration
 import SCOLHKG.Measure.ResidualSquareTail
@@ -14,13 +15,17 @@ import SCOLHKG.Measure.SafeRegretEvent
 import SCOLHKG.Optimization
 import SCOLHKG.Real.AdditiveApproxKG
 import SCOLHKG.Real.Certification
+import SCOLHKG.Real.CertificationImplementation
 import SCOLHKG.Real.ConditionalVariance
 import SCOLHKG.Real.CumulativeRisk
+import SCOLHKG.Real.CumulativeRiskImplementation
+import SCOLHKG.Real.ExactKGImplementation
 import SCOLHKG.Real.FiniteKernelInformationGain
 import SCOLHKG.Real.GPRUpdate
 import SCOLHKG.Real.HVD
 import SCOLHKG.Real.HVDImplementation
 import SCOLHKG.Real.InformationGainRegret
+import SCOLHKG.Real.KernelDeterminantBridge
 import SCOLHKG.Real.KG
 import SCOLHKG.Real.LineEnvelopeAlgorithm
 import SCOLHKG.Real.LineEnvelopeFold

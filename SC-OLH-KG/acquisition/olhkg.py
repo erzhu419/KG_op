@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 from scipy.stats import norm
 
+from core.certification import conservative_chance_margin
 from core.kg import compute_kg_vectorized
 
 
@@ -37,6 +38,8 @@ class OLHKGAcquisition:
         boundary_scale=1.0,
         coupling_safety_z=0.5,
         coupling_gate_temperature=0.25,
+        beta_g=0.0,
+        certification_mode="legacy",
         encoder=None,
     ):
         self.lambda_feas = float(lambda_feas)
@@ -46,6 +49,8 @@ class OLHKGAcquisition:
         self.boundary_scale = max(float(boundary_scale), 1e-8)
         self.coupling_safety_z = float(coupling_safety_z)
         self.coupling_gate_temperature = max(float(coupling_gate_temperature), 1e-8)
+        self.beta_g = float(beta_g)
+        self.certification_mode = str(certification_mode or "legacy")
         self.encoder = encoder
 
     @staticmethod
@@ -66,16 +71,33 @@ class OLHKGAcquisition:
                 variance_model.predict_variance,
             )
             v_g = np.array([var_fn(1, x, problem) for x in candidates], dtype=float)
-        sig_g = np.sqrt(np.maximum(v_g, 1e-12))
-        z = norm.ppf(1 - problem.alpha)
-        margins = mu_g + z * sig_g - problem.tau
+        if hasattr(con_gpr, "posterior_var_many"):
+            epistemic = con_gpr.posterior_var_many(candidates)
+        else:
+            epistemic = np.array([
+                con_gpr.posterior_var(x) for x in candidates
+            ], dtype=float)
+        cert = conservative_chance_margin(
+            mu_g,
+            epistemic,
+            v_g,
+            tau=problem.tau,
+            alpha=problem.alpha,
+            beta_g=self.beta_g,
+            mode=self.certification_mode,
+        )
+        sig_g = np.sqrt(np.maximum(cert.aleatoric_var, 1e-12))
+        margins = cert.margin
         scale = np.maximum(self.boundary_scale * sig_g, 1e-8)
         raw = np.exp(-0.5 * (margins / scale) ** 2) * sig_g
         details = [
             {
                 "x": list(map(int, candidates[j])),
                 "mu_g": float(mu_g[j]),
-                "variance_g": float(v_g[j]),
+                "epistemic_variance_g": float(cert.epistemic_var[j]),
+                "variance_g": float(cert.aleatoric_var[j]),
+                "beta_g": float(cert.beta_g),
+                "certification_mode": cert.mode,
                 "chance_margin": float(margins[j]),
             }
             for j in range(len(candidates))

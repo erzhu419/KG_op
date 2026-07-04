@@ -11,9 +11,10 @@
 | `Lambda`, `B`, `omega` | `cumulative_risk_parameters()` | Implemented for synthetic |
 | `v_C(x)` | `true_cumulative_risk_decomposition()["total"]` | Implemented for synthetic |
 | HVD predictor `\hat v_C(x)` | `OrthogonalHVD(mode="factor")` cumulative beta | Implemented for synthetic |
-| Certified bound | `predict_certification_variance()` in chance margin | Partial |
+| Certified bound | `core.certification.conservative_chance_margin` with `predict_certification_variance()` | Implemented for theory/legacy modes |
 | SC candidate generation | `state_anchor_points()` and `inverse_state_anchor()` | Synthetic implemented |
-| Exact terminal KG | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | Optional MC estimator implemented; additive remains default |
+| Traffic occupancy encoder | `TrafficTrajectoryEncoder` | Implemented for fresh-seed CSV schema; empirical table blocked if logs absent |
+| Exact terminal KG | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | Formal acquisition variant via `acquisition_mode=exact_mc/blend`; additive remains default ablation |
 
 ## Implementation Notes
 
@@ -36,6 +37,16 @@ v_C(x) = A(x)^T Lambda A(x) + N(x)^T B N(x) + N(x)^T omega + floor.
 This gives the proof and experiments one place where the shared-shock term
 `N^T B N` is not merely a metaphor.
 
+The default paper-style feasibility certificate is now the theory bound
+
+```text
+mu_g(x) + sqrt(beta_g) s_g(x) + z_alpha sqrt(v_C^+(x)) <= tau,
+```
+
+where `s_g` is the constraint GPR posterior standard deviation and `v_C^+`
+comes from HVD certification variance.  Legacy mode remains available only as
+an ablation.
+
 ## Code-Level Proof Bridges
 
 | Python implementation | Formula implemented | Lean bridge |
@@ -51,21 +62,24 @@ This gives the proof and experiments one place where the shared-shock term
 | `variance.OrthogonalHVD.update` | residual record `resid2=(y-mu)^2` | `SCOLHKG.Real.HVDImplementation.residualSquare_nonnegative` |
 | `variance.OrthogonalHVD._fit_output`, factor mode | cumulative ridge fit, then `beta=max(beta,0)` and `pred=max(F beta,floor)` | `SCOLHKG.Real.RidgeHVD.ridge_hvd_residual_square_oracle`, `SCOLHKG.Real.HVDImplementation.cumulative_linear_prediction_nonnegative`, `clippedVariance_ge_floor` |
 | `variance.OrthogonalHVD.predict_certification_variance` | `base + model_uncertainty`, guarded by class variance and floor | `SCOLHKG.Real.HVDImplementation.certificationVariance_sound_from_model_uncertainty` |
+| `variance.OrthogonalHVD.predict_decomposition`, factor mode | block diagnostics `floor/independent/shared/linear/total` | `SCOLHKG.Real.CumulativeRiskImplementation.factorShockBlocks_total_eq_components` and `factorShockBlocks_shared_omission_underestimates` |
+| `core.certification.conservative_chance_margin` | `mu_g + sqrt(beta_g)s_g + z sqrt(v_C^+) - tau` | `SCOLHKG.Real.CertificationImplementation.implementation_certifies_true_quantile` |
 | `acquisition.OLHKGAcquisition.score` | additive proxy `KG_obj + lambda_f KG_feas + lambda_v KG_var + lambda_m KG_mean + lambda_rho KG_coupling` | `SCOLHKG.Real.AdditiveApproxKG.additive_proxy_maximizer_exact_gap_le_two_eta` |
 | `algorithms.SingleOLHKGAlgorithm._solve_posterior_recommendation` | choose lowest posterior objective among robust chance-feasible candidates | `SCOLHKG.Real.PosteriorRecommendation.robust_feasible_implies_posterior_certified` and `robust_argmin_is_objective_minimizer_on_robust_set` |
-| `core.candidates.posterior_sample_candidates` | finite posterior candidate pool from sampled parametric coefficients | `SCOLHKG.Measure.PosteriorSamplingCandidates.randomAdaptiveCenteredSubGaussian_bad_event_le_sum` controls random candidate sets by deterministic envelope pools; `posteriorScoreSelected_*` proves posterior-score selectors remain inside the finite pool |
-| finite candidate/kernel budget | scalar information gain `0.5 log(1+var/noise)` accumulated over finite steps | `SCOLHKG.Real.FiniteKernelInformationGain.finiteInformationGain_le_uniform_cap` and `finiteInformationGain_eq_determinantInformationGain_product` |
-| `SingleOLHKGAlgorithm._exact_posterior_update_scores` | MC estimate of current terminal certified value minus updated terminal certified value after GPR/HVD update | `SCOLHKG.Measure.PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer` defines the exact target; MC estimator is optional code path |
+| `core.candidates.posterior_sample_candidates` | finite posterior candidate pool from sampled parametric coefficients | `SCOLHKG.Measure.PosteriorCoefficientSampler.posteriorCoefficientSampler_bad_event_le_sum` and `SCOLHKG.Measure.PosteriorSamplingCandidates.randomAdaptiveCenteredSubGaussian_bad_event_le_sum` control random candidate sets by deterministic envelope pools |
+| finite candidate/kernel budget | scalar information gain `0.5 log(1+var/noise)` accumulated over finite steps | `SCOLHKG.Real.FiniteKernelInformationGain.finiteInformationGain_le_uniform_cap`, `finiteInformationGain_eq_determinantInformationGain_product`, and `SCOLHKG.Real.KernelDeterminantBridge.finiteInformationGain_le_determinant_cap` |
+| `SingleOLHKGAlgorithm._exact_posterior_update_scores` | MC estimate of current terminal certified value minus updated terminal certified value after GPR/HVD update | `SCOLHKG.Measure.PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer` defines the exact target; `SCOLHKG.Real.ExactKGImplementation.exact_mc_estimator_maximizer_gap` bridges uniformly accurate MC estimates |
 
 The exact posterior-update SC-OLH-KG object is formalized in
 `SCOLHKG.Measure.PosteriorUpdateKG`, and the Python runner now has an optional
 MC estimator through `exact_kg_mc_samples`.  The default remains the additive
 proxy above, so the manuscript has two clean paths:
 
-1. claim additive OLH-KG and use the `2 eta` approximation theorem;
-2. promote the sampled exact posterior-update estimator after performance and
-   quality validation, then connect it to
-   `PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer`.
+1. report additive OLH-KG as an ablation and use the `2 eta` approximation
+   theorem;
+2. report `exact_mc` or `blend` after performance and quality validation, then
+   connect it to `PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer`
+   plus the exact-MC estimator bridge.
 
 ## Remaining Code-To-Theory Gaps
 
@@ -76,14 +90,15 @@ proxy above, so the manuscript has two clean paths:
    full recursive sorted-line fold is also Lean-proved: popped active lines are
    pointwise dominated by the final output stack, and output endpoint dominance
    lifts to `FinalEnvelopeStackInvariant` over all original input lines.
-2. The posterior-sampling candidate generator is covered by score-selector
-   containment and random-set envelope containment, but its full
-   multivariate-normal coefficient sampling distribution has not been
-   formalized.
+2. The posterior-sampling candidate generator is covered by
+   posterior-coefficient selector containment and random-set envelope
+   containment, but its full multivariate-normal coefficient sampling
+   distribution has not been formalized.
 3. Bounded and generic sub-exponential residual-square interfaces are
    available, and the default radius is exposed in code/proof with a
    closed-form inversion theorem.
-4. The optional exact KG estimator is benchmark-wired but not yet promoted over the
-   additive default.
-5. The traffic encoder/log model is still synthetic-only in code and therefore
-   not yet formalized as a real traffic trajectory theorem.
+4. The exact KG estimator is benchmark-wired as `exact_mc`/`blend`, but not yet
+   empirically promoted over the additive default.
+5. The traffic encoder/log parser is implemented, but real fresh-seed logs are
+   not present locally; empirical traffic results should be marked
+   `missing_data` until those logs exist.

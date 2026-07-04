@@ -192,6 +192,15 @@ class OrthogonalHVD:
             return None
         return max(cap, self.floor)
 
+    def _residual_square_tail_radius(self, i):
+        tail_delta = float(self.config.residual_tail_delta)
+        nu, b = gaussian_square_subexp_params(self.global_var.get(int(i), 0.01))
+        return float(sub_exponential_residual_square_radius(nu, b, tail_delta))
+
+    def _residual_tail_uncertainty(self, i):
+        n = max(int(len(self.records.get(int(i), []))), 0)
+        return float(self._residual_square_tail_radius(i) / np.sqrt(n + 1.0))
+
     def _orthogonal_active(self, i):
         """Whether smooth orthogonal variance is allowed for this output.
 
@@ -501,6 +510,8 @@ class OrthogonalHVD:
             self.predict_variance(i, x, problem)
             + self.model_uncertainty(i, x, problem)
         )
+        if self.mode == "factor" and self._cumulative_active(i):
+            cert += self._residual_tail_uncertainty(i)
         if self.mode in ("orthogonal", "factor"):
             # Smooth log-variance fits are allowed to guide learning, but
             # feasibility certification should not be more optimistic than the
@@ -511,6 +522,8 @@ class OrthogonalHVD:
     def predict_certification_variance_many(self, i, X, problem=None):
         base = self.predict_variance_many(i, X, problem)
         cert = base + self.model_uncertainty_many(i, X, problem, base)
+        if self.mode == "factor" and self._cumulative_active(i):
+            cert = cert + self._residual_tail_uncertainty(i)
         if self.mode in ("orthogonal", "factor"):
             cert = np.maximum(cert, self._class_variance_many(i, X, problem))
         return np.maximum(cert, self.floor)
@@ -537,10 +550,27 @@ class OrthogonalHVD:
                     names = problem_ref.cumulative_risk_feature_names()
             fitted_contrib = None
             fitted_variance = None
+            fitted_by_name = None
+            fitted_blocks = None
             if c_beta is not None:
-                fitted_contrib = (c_feat * c_beta).tolist()
+                contrib = np.asarray(c_feat * c_beta, dtype=float)
+                fitted_contrib = contrib.tolist()
                 fitted_variance = float(max(float(c_feat @ c_beta), self.floor))
+                if names is not None and len(names) == len(contrib):
+                    fitted_by_name = {
+                        str(name): float(value)
+                        for name, value in zip(names, contrib)
+                    }
+                if len(contrib) >= 9:
+                    fitted_blocks = {
+                        "floor": float(contrib[0]),
+                        "independent": float(np.sum(contrib[1:4])),
+                        "shared": float(np.sum(contrib[4:7])),
+                        "linear": float(np.sum(contrib[7:9])),
+                        "total": float(max(np.sum(contrib), self.floor)),
+                    }
             oracle = None
+            oracle_blocks = None
             if problem_ref is not None and hasattr(problem_ref, "true_cumulative_risk_decomposition"):
                 try:
                     oracle = problem_ref.true_cumulative_risk_decomposition(
@@ -549,14 +579,23 @@ class OrthogonalHVD:
                     )
                 except TypeError:
                     oracle = problem_ref.true_cumulative_risk_decomposition(x)
+                if oracle is not None:
+                    oracle_blocks = {
+                        key: float(oracle[key])
+                        for key in ("floor", "independent", "shared", "linear", "total")
+                        if key in oracle
+                    }
             cumulative = {
                 "active": bool(self._cumulative_active(i)),
                 "feature_names": names,
                 "features": c_feat.tolist(),
                 "fitted_contrib": fitted_contrib,
+                "fitted_by_name": fitted_by_name,
+                "fitted_blocks": fitted_blocks,
                 "fitted_variance": fitted_variance,
                 "fit_rmse": self.cumulative_fit_rmse.get(i),
                 "oracle": oracle,
+                "oracle_blocks": oracle_blocks,
             }
         return {
             "mode": self.mode,
@@ -570,6 +609,7 @@ class OrthogonalHVD:
             "factor_energy": self.factor_energy.get(i, []),
             "cumulative": cumulative,
             "model_uncertainty": float(self.model_uncertainty(i, x, problem)),
+            "residual_tail_uncertainty": float(self._residual_tail_uncertainty(i)),
             "certification_variance": float(
                 self.predict_certification_variance(i, x, problem)),
         }
@@ -625,6 +665,7 @@ class OrthogonalHVD:
                 "b": float(b),
                 "radius": float(sub_exponential_residual_square_radius(
                     nu, b, tail_delta)),
+                "uncertainty": float(self._residual_tail_uncertainty(i)),
             }
         return {
             "mode": self.mode,

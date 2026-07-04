@@ -8,7 +8,10 @@ contains a minimal, testable implementation path:
 1. Profile the current GPR-KG baseline.
 2. Smoke-test OLH variance decomposition in the existing bi-objective shape.
 3. Run single-objective chance-constrained OLH-KG.
-4. Add deterministic state-policy coupling for SC-OLH-KG.
+4. Run factor-HVD cumulative-risk certification with
+   `mu_g + sqrt(beta_g)s_g + z sqrt(v_C^+) <= tau`.
+5. Compare additive, exact-MC, and blended SC-OLH-KG acquisition variants.
+6. Add deterministic state-policy coupling and fresh-log traffic encoding.
 
 Generated outputs should go under `results/`, `profiles/`, or `checkpoints/`;
 those directories are ignored by git.
@@ -22,20 +25,40 @@ python3 SC-OLH-KG/runners/run_sc_olhkg.py --N 30 --n0 8 --K1 25 --K2 0
 python3 SC-OLH-KG/runners/run_sc_olhkg.py --N 30 --n0 8 --K1 25 --K2 0 --use_state_basis
 python3 SC-OLH-KG/runners/run_olh_biobj_smoke.py --N 20 --n0 6 --K1 20
 python3 SC-OLH-KG/performance/benchmark_quality.py --N 20 --n0 5 --K1 15 --K2 1 --n_seeds 5
+python3 SC-OLH-KG/performance/benchmark_quality.py --problem FactorShockStatePolicyRZDT1 --modes pooled,class,orthogonal,factor --sc_modes factor --acquisition_modes additive,exact_mc,blend --N 40 --n0 8 --K1 25 --K2 1 --n_seeds 10
 python3 SC-OLH-KG/performance/benchmark_exact_kg.py --N 18 --n0 6 --K1 10 --exact_mc_samples 2 --n_seeds 3
 python3 SC-OLH-KG/performance/benchmark_sota.py --problem StatePolicyRZDT1 --N 20 --n0 5 --baselines botorch_turbo,botorch_scbo,botorch_saasbo
+python3 SC-OLH-KG/performance/benchmark_traffic_fresh.py --trajectory_log /path/to/fresh_traffic_trajectories.csv
 python3 SC-OLH-KG/performance/diagnose_hvd_calibration.py --variance_mode orthogonal --seed 4
 python3 -m unittest discover -s SC-OLH-KG/tests
 ```
 
-## Optional Exact KG
+## Certification And Exact KG
 
-`SingleOLHKGConfig(exact_kg_mc_samples>0)` enables a sampled exact
-posterior-update KG estimator.  It is off by default; the stable baseline still
-uses the additive OLH-KG proxy.  Set `exact_kg_use_score=True` for smoke tests
-that select directly by the sampled exact score.  Use
-`performance/benchmark_exact_kg.py` to compare additive, blended, and exact
-selection before promoting it.
+`SingleOLHKGConfig(certification_mode="theory")` uses the paper-style
+certificate:
+
+```text
+mu_g + sqrt(beta_g) * s_g + z_alpha * sqrt(v_C_plus) <= tau.
+```
+
+`s_g` is constraint GPR posterior variance and `v_C_plus` is HVD
+certification variance.  In `factor` mode, `v_C_plus` prioritizes cumulative
+risk blocks and includes residual-tail/model-uncertainty guards.  Legacy mode
+is kept only for ablation.
+
+`SingleOLHKGConfig(acquisition_mode=...)` accepts `additive`, `exact_mc`, and
+`blend`.  `exact_mc` enables sampled posterior-update KG and updates cloned GPR
+and HVD states before recomputing the terminal theory-certified value.  If
+`exact_mc` or `blend` is selected without an explicit sample count, the runner
+uses a small default MC count for a real exact-KG code path.
+
+## Traffic Logs
+
+`TrafficTrajectoryEncoder` reads fresh-seed CSV logs with `policy_id`, `state`,
+`action`, and optional `occupancy`, `queue`, `wait`, `flow`, `demand_shock`
+columns.  `performance/benchmark_traffic_fresh.py` reports `missing_data` when
+real logs are absent; it does not fabricate traffic results.
 
 ## Compute-H Certificates
 
@@ -47,4 +70,6 @@ also carries a per-step stack trace for candidate, break, pop, and push actions;
 pop/push cut-order preservation is formalized in
 `proof/SCOLHKG/Real/LineEnvelopeAlgorithm.lean`.  The final global dominance
 invariant implies exact KG without a runtime validator in
-`proof/SCOLHKG/Real/LineEnvelopeGlobal.lean`.
+`proof/SCOLHKG/Real/LineEnvelopeGlobal.lean`, and the full recursive
+sorted-line fold/output proof lives in
+`proof/SCOLHKG/Real/LineEnvelopeFold.lean`.

@@ -45,11 +45,17 @@ mathlib and its cache; later builds should be fast.
   between-trajectory explained variance.
 - `SCOLHKG/Real/Certification.lean`: real-valued GP-confidence plus variance
   upper-bound certification implication.
+- `SCOLHKG/Real/CertificationImplementation.lean`: code-level bridge proving
+  the implemented `mu + sqrt(beta)s + z sqrt(v_C^+) <= tau` margin is the
+  Lean certification predicate and is more conservative than legacy mode.
 - `SCOLHKG/Real/HVD.lean`: real-valued residual-square concentration event to
   HVD oracle-inequality implication.
 - `SCOLHKG/Real/HVDImplementation.lean`: code-level HVD bridges for residual
   square records, nonnegative cumulative beta predictions, clipping, and
   certification variance.
+- `SCOLHKG/Real/CumulativeRiskImplementation.lean`: factor-HVD feature-block
+  bridge for `floor/independent/shared/linear/total`, including the
+  shared-shock omission underestimation lemma.
 - `SCOLHKG/Real/PosteriorRecommendation.lean`: robust posterior recommendation
   logic used in `SingleOLHKGAlgorithm._solve_posterior_recommendation`.
 - `SCOLHKG/Real/RidgeHVD.lean`: concrete ridge empirical minimizer plus
@@ -75,10 +81,14 @@ mathlib and its cache; later builds should be fast.
   input `FinalEnvelopeStackInvariant`.
 - `SCOLHKG/Real/AdditiveApproxKG.lean`: uniform additive-acquisition
   approximation implies a `2 eta` exact-KG optimality gap.
+- `SCOLHKG/Real/ExactKGImplementation.lean`: deterministic bridge from a
+  uniformly accurate exact-MC estimator to the same `2 eta` exact-KG gap.
 - `SCOLHKG/Real/InformationGainRegret.lean`: information-gain radius and
   finite-budget regret accounting.
 - `SCOLHKG/Real/FiniteKernelInformationGain.lean`: finite-kernel scalar
   information-gain accumulation and uniform-cap bound.
+- `SCOLHKG/Real/KernelDeterminantBridge.lean`: determinant-ratio cap bridge
+  from finite product-ratio information gain into safe-regret accounting.
 - `SCOLHKG/Real/SafeRegret.lean`: real-valued finite-budget safe simple-regret
   implication.
 - `SCOLHKG/Measure/ProbabilityEvents.lean`: mathlib
@@ -100,6 +110,9 @@ mathlib and its cache; later builds should be fast.
   value as an integral over updated terminal certified value.
 - `SCOLHKG/Measure/PosteriorSamplingCandidates.lean`: random posterior-sampled
   candidate sets controlled by deterministic finite envelope pools.
+- `SCOLHKG/Measure/PosteriorCoefficientSampler.lean`: code-facing
+  posterior-coefficient sampler bridge; sampled-score selected candidates stay
+  inside deterministic finite pools.
 - `SCOLHKG/Measure/SafeRegretEvent.lean`: high-probability transfer from bad
   events to safe-regret failure events.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
@@ -183,33 +196,42 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 50. Final output endpoint dominance over output active lines lifts to
     `FinalEnvelopeStackInvariant` over all original input lines, closing the
     list-output gap without a Python runtime validator.
+51. Code-level theory certification margin equals the Lean chance certificate,
+    and theory mode is never less conservative than legacy aleatoric-only mode.
+52. Factor-HVD cumulative feature blocks aggregate exactly into
+    `floor + independent + shared + linear`, and omitting nonnegative shared
+    shock underestimates total risk.
+53. Uniformly accurate exact-MC posterior-update KG estimators inherit the
+    exact-KG maximizer gap bound.
+54. Posterior coefficient sampler selection inherits finite/adaptive
+    sub-Gaussian envelope bounds because selected candidates remain inside the
+    deterministic raw pool.
+55. Finite product-ratio information gain is bridged to a determinant-ratio cap
+    and then into the safe-regret budget theorem.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
 1. Formalize a full multivariate-normal coefficient sampling distribution for
-   `posterior_sample_candidates`; the posterior-score selector containment and
-   random-candidate envelope event are already Lean-proved.
-2. Use the optional Python exact posterior-update estimator in large-seed
-   benchmarks before deciding whether it replaces the additive runner.
-3. Kernel/feature-specific determinant upper bounds for the selected feature
-   spaces, beyond the current finite product-ratio identity.
-4. Traffic trajectory encoder/log model formalization, after the empirical
-   traffic case is rebuilt with fresh seeds.
+   `posterior_sample_candidates`; the posterior-coefficient selector
+   containment and random-candidate envelope event are already Lean-proved.
+2. Derive kernel/feature-specific determinant upper bounds for the selected
+   feature spaces, beyond the current determinant-ratio bridge.
+3. Formalize the real traffic trajectory/log stochastic model after the
+   empirical traffic case is rebuilt with fresh seeds.
+4. If exact-MC becomes the paper default after large-seed benchmarks, add its
+   estimator concentration theorem rather than only the deterministic
+   uniform-error bridge.
 
 ## Current Math-Depth Assessment
 
-This is still not a complete 10/10 mathematical package, but the gap has
-narrowed: finite-kernel GP confidence, bounded residual-square constants,
-trajectory occupancy decomposition, ridge-HVD oracle step, additive-to-exact KG
-approximation, posterior-update exact KG, line-envelope KG certificates,
-validator-level stack-hull certificates, stack-loop cut-order preservation,
-final-stack global dominance to exact KG, concrete intersection/pop/split
-branch certificates, full sorted-stack fold/output correctness,
-closed-form residual-square tail radii, posterior-score candidate containment,
-random candidate envelope events, finite product-ratio information gain, and
-information-gain regret accounting are now Lean-proved.  The remaining hard
-work is now outside the line-envelope core: add a complete multivariate-normal
-sampler layer if the paper needs that exact distribution claim, prove
-kernel/feature-specific determinant caps, refresh traffic-log formalization,
-and decide empirically whether the optional exact estimator should replace the
-additive default.
+The current package is much closer to paper-grade, but I would still not call
+it a finished 10/10 mathematical package until the real traffic model and
+kernel-specific information-gain caps are locked.  The core SC-OLH-KG theory
+path is Lean-proved at the interface level: cumulative variance decomposition,
+factor-HVD block aggregation, conservative theory certification, ridge/HVD
+oracle steps, exact/additive/MC KG bridges, posterior candidate envelopes,
+residual-square tails, line-envelope KG correctness, and safe-regret accounting.
+The remaining hard work is now mostly model-specific rather than algorithmic:
+full MVN sampler distribution, feature-space determinant caps, fresh-seed
+traffic formalization, and exact-MC estimator concentration if exact-MC is
+promoted as the main experimental runner.

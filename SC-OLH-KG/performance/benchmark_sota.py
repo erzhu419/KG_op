@@ -66,6 +66,15 @@ def stats(values):
     }
 
 
+def olhkg_variant_name(use_sc, acquisition_mode):
+    mode = str(acquisition_mode or "additive").lower()
+    if mode == "exact_mc":
+        return "olhkg_sc_exact" if use_sc else "olhkg_exact"
+    if mode == "blend":
+        return "olhkg_sc_blend" if use_sc else "olhkg_blend"
+    return "olhkg_sc_additive" if use_sc else "olhkg_additive"
+
+
 def make_wrapped_problem(args):
     base = make_problem(
         args.problem,
@@ -105,6 +114,9 @@ def row_from_result(variant, seed, args, result):
         "wall_time_sec": float(result["total_time_sec"]),
         "n_simulations": int(result["n_simulations"]),
         "n_distinct_solutions": int(result["n_distinct_solutions"]),
+        "acquisition_mode": getattr(args, "acquisition_mode", ""),
+        "beta_g": optional_float(getattr(args, "beta_g", None)),
+        "certification_mode": getattr(args, "certification_mode", ""),
         "backend": result.get("backend", "lite"),
         "botorch_fit_failures": int(result.get("botorch_fit_failures", 0)),
         "botorch_candidate_failures": int(result.get("botorch_candidate_failures", 0)),
@@ -130,20 +142,29 @@ def run_olhkg(args, seed, use_sc):
         lambda_var=args.lambda_var,
         lambda_mean=args.lambda_mean,
         lambda_coupling=args.lambda_coupling if use_sc else 0.0,
+        beta_g=args.beta_g,
+        certification_mode=args.certification_mode,
         recommendation_safety_z=args.recommendation_safety_z,
         recommendation_noise_floor_scale=args.recommendation_noise_floor_scale,
         recommendation_infeasible_penalty=args.recommendation_infeasible_penalty,
         recommendation_calibration=not args.disable_recommendation_calibration,
         recommendation_calibration_ridge=args.recommendation_calibration_ridge,
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
+        acquisition_mode=args.acquisition_mode,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
         exact_kg_use_score=args.exact_kg_use_score,
         exact_kg_blend=args.exact_kg_blend,
+        eval_pool_size=args.eval_pool_size,
         use_state_coupling=use_sc,
         seed=seed,
     )
     result = SingleOLHKGAlgorithm(problem, config).run(verbose=False)
-    return row_from_result("olhkg_sc" if use_sc else "olhkg", seed, args, result)
+    return row_from_result(
+        olhkg_variant_name(use_sc, args.acquisition_mode),
+        seed,
+        args,
+        result,
+    )
 
 
 def run_baseline(args, seed, method):
@@ -243,7 +264,12 @@ def summarize(rows):
             "constraint_violation": stats(r["constraint_violation"] for r in items),
             "wall_time_sec": stats(r["wall_time_sec"] for r in items),
         }
-    baseline = summaries.get("olhkg")
+    baseline = (
+        summaries.get("olhkg")
+        or summaries.get("olhkg_additive")
+        or summaries.get("olhkg_exact")
+        or summaries.get("olhkg_blend")
+    )
     if baseline is not None:
         base_regret = nested_get(baseline, ["feasible_simple_regret", "median"])
         base_false = baseline["false_feasible_rate"]
@@ -251,6 +277,7 @@ def summarize(rows):
         for summary in summaries.values():
             regret = nested_get(summary, ["feasible_simple_regret", "median"])
             summary["vs_olhkg"] = {
+                "baseline_variant": baseline["variant"],
                 "feasible_rate_delta": float(summary["true_feasible_rate"] - base_feas),
                 "false_feasible_rate_delta": float(summary["false_feasible_rate"] - base_false),
                 "feasible_regret_median_delta": (
@@ -386,15 +413,21 @@ def main():
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_mean", type=float, default=0.10)
     parser.add_argument("--lambda_coupling", type=float, default=0.05)
+    parser.add_argument("--beta_g", type=float, default=2.0)
+    parser.add_argument("--certification_mode", default="theory",
+                        choices=["theory", "legacy"])
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
+    parser.add_argument("--acquisition_mode", default="additive",
+                        choices=["additive", "exact_mc", "blend"])
     parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
+    parser.add_argument("--eval_pool_size", type=int, default=500)
     parser.add_argument("--baselines", default="sobol,random,turbo_lite,scbo_lite")
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
     parser.add_argument("--tr_radius_init", type=float, default=0.35)
