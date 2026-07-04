@@ -3,5 +3,11 @@ import SCOLHKG.HVD
 import SCOLHKG.Information
 import SCOLHKG.KG
 import SCOLHKG.Optimization
+import SCOLHKG.Real.Certification
+import SCOLHKG.Real.ConditionalVariance
+import SCOLHKG.Real.CumulativeRisk
+import SCOLHKG.Real.HVD
+import SCOLHKG.Real.KG
+import SCOLHKG.Real.SafeRegret
 import SCOLHKG.Scalarization
 import SCOLHKG.Variance

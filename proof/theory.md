@@ -195,3 +195,31 @@ the surrogate and Theorem 5-6 for variance/certification.
 4. The finite-budget theorem needs a final decision on whether the paper claims
    exact KG or an additive OLH-KG surrogate.
 
+## Lean4 Status
+
+The proof workspace now has two layers.
+
+The Lean-core layer proves bookkeeping/algebra over `Nat`, mostly to keep a
+minimal always-fast proof backbone.  The mathlib layer proves the real-valued
+versions needed by the manuscript:
+
+| Manuscript item | Lean file | Status |
+| --- | --- | --- |
+| Fixed trajectory cumulative variance algebra | `SCOLHKG/Real/CumulativeRisk.lean` | Lean-proved over `R` |
+| Low-rank truncation bookkeeping | `SCOLHKG/Real/CumulativeRisk.lean` | Lean-proved over `R` |
+| Information refinement / law of total variance | `SCOLHKG/Real/ConditionalVariance.lean` | Lean-proved for two-cell and arbitrary finite partitions |
+| Chance certification | `SCOLHKG/Real/Certification.lean` | Lean-proved from GP-confidence and variance-upper events |
+| HVD oracle inequality | `SCOLHKG/Real/HVD.lean` | Lean-proved from residual-square concentration event |
+| Exact KG maximizer | `SCOLHKG/Real/KG.lean` | Lean-proved for expected terminal gain |
+| Additive KG equivalence condition | `SCOLHKG/Real/KG.lean` | Lean-proved when additive score equals exact gain |
+| Safe simple regret | `SCOLHKG/Real/SafeRegret.lean` | Lean-proved from certification and optimization-error events |
+
+The next mathematical frontier is to derive the events used above from the
+probability model:
+
+1. general conditional expectation/variance identities in mathlib MeasureTheory;
+2. GP posterior confidence over finite/adaptive candidate sets;
+3. concentration for residual-square HVD regression;
+4. information-gain control of the optimization-error event;
+5. a formal bridge from the implemented additive acquisition to either an exact
+   KG estimator or a theorem that bounds its approximation error.
