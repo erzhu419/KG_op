@@ -31,6 +31,7 @@ class LineEnvelopeCertificate:
     prob_masses: tuple[float, ...]
     first_moments: tuple[float, ...]
     contributions: tuple[float, ...]
+    trace: tuple[dict, ...] = ()
 
 
 def _as_line_arrays(a, b):
@@ -41,11 +42,12 @@ def _as_line_arrays(a, b):
     return a, b
 
 
-def _build_line_envelope(a, b, slope_tol=1e-14):
+def _build_line_envelope(a, b, slope_tol=1e-14, return_trace=False):
     """Return active line indices, intercepts, slopes, and lower cuts."""
     a, b = _as_line_arrays(a, b)
     if len(a) == 0:
-        return [], [], [], []
+        empty = ([], [], [], [])
+        return (*empty, []) if return_trace else empty
 
     order = np.lexsort((-a, b))
     a_sorted = a[order]
@@ -74,16 +76,50 @@ def _build_line_envelope(a, b, slope_tol=1e-14):
     hull_a = []
     hull_b = []
     cuts = []
+    trace = []
+
+    def record(action, **extra):
+        if not return_trace:
+            return
+        trace.append({
+            "action": action,
+            "hull_indices": [int(v) for v in hull_idx],
+            "hull_intercepts": [float(v) for v in hull_a],
+            "hull_slopes": [float(v) for v in hull_b],
+            "cuts": [float(v) for v in cuts],
+            **extra,
+        })
+
     for original_idx, aj, bj in zip(keep_idx, keep_a, keep_b):
+        record(
+            "candidate",
+            candidate_index=int(original_idx),
+            candidate_intercept=float(aj),
+            candidate_slope=float(bj),
+        )
         while hull_a:
             z = (hull_a[-1] - aj) / (bj - hull_b[-1])
             if not cuts or z > cuts[-1]:
+                record(
+                    "break",
+                    candidate_index=int(original_idx),
+                    candidate_intercept=float(aj),
+                    candidate_slope=float(bj),
+                    proposed_cut=float(z),
+                )
                 break
             hull_idx.pop()
             hull_a.pop()
             hull_b.pop()
             if cuts:
                 cuts.pop()
+            record(
+                "pop",
+                candidate_index=int(original_idx),
+                candidate_intercept=float(aj),
+                candidate_slope=float(bj),
+                proposed_cut=float(z),
+            )
         if not hull_a:
             cuts.append(-np.inf)
         else:
@@ -91,6 +127,15 @@ def _build_line_envelope(a, b, slope_tol=1e-14):
         hull_idx.append(int(original_idx))
         hull_a.append(float(aj))
         hull_b.append(float(bj))
+        record(
+            "push",
+            candidate_index=int(original_idx),
+            candidate_intercept=float(aj),
+            candidate_slope=float(bj),
+            pushed_cut=float(cuts[-1]),
+        )
+    if return_trace:
+        return hull_idx, hull_a, hull_b, cuts, trace
     return hull_idx, hull_a, hull_b, cuts
 
 
@@ -158,7 +203,8 @@ def compute_h_certificate(a, b) -> LineEnvelopeCertificate:
             first_moments=(),
             contributions=(),
         )
-    hull_idx, hull_a, hull_b, cuts = _build_line_envelope(a, b)
+    hull_idx, hull_a, hull_b, cuts, trace = _build_line_envelope(
+        a, b, return_trace=True)
     h_value, baseline, probs, moments, contributions = _integrate_line_envelope(
         a, hull_a, hull_b, cuts)
     return LineEnvelopeCertificate(
@@ -173,6 +219,7 @@ def compute_h_certificate(a, b) -> LineEnvelopeCertificate:
         prob_masses=tuple(float(v) for v in probs),
         first_moments=tuple(float(v) for v in moments),
         contributions=tuple(float(v) for v in contributions),
+        trace=tuple(trace),
     )
 
 

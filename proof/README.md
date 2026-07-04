@@ -61,6 +61,8 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/LineEnvelopeStack.lean`: endpoint and tail-slope bridge showing
   that the Python `validate_h_certificate` checks imply active-line
   certificates.
+- `SCOLHKG/Real/LineEnvelopeAlgorithm.lean`: step-level stack-loop
+  formalization for the Python `cuts.pop()` and `cuts.append(z)` mutations.
 - `SCOLHKG/Real/AdditiveApproxKG.lean`: uniform additive-acquisition
   approximation implies a `2 eta` exact-KG optimality gap.
 - `SCOLHKG/Real/InformationGainRegret.lean`: information-gain radius and
@@ -80,8 +82,8 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Measure/ResidualSquareConcentration.lean`: bounded residual-square
   distribution constants and finite concentration events for HVD.
 - `SCOLHKG/Measure/ResidualSquareTail.lean`: generic sub-exponential or sharper
-  residual-square tail interface and default radius wrapper for finite HVD
-  concentration.
+  residual-square tail interface, closed-form default radius inversion, and
+  finite HVD concentration.
 - `SCOLHKG/Measure/PosteriorKG.lean`: posterior expected terminal gain defined
   as a Bochner integral.
 - `SCOLHKG/Measure/PosteriorUpdateKG.lean`: exact posterior-update SC-OLH-KG
@@ -148,23 +150,22 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 38. Generic sub-exponential/sharper residual-square tail interface.
 39. Default sub-exponential residual-square radius wrapper.
 40. Stack-hull endpoint/tail certificate bridge for `compute_h`.
+41. Stack-loop pop/push cut-order preservation for `compute_h`.
+42. Closed-form sub-exponential default radius inversion.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Prove the imperative while-loop in `compute_h` itself emits a certificate
-   accepted by `validate_h_certificate`; the validator conditions are now
-   Lean-bridged.
+1. Derive full global endpoint/tail dominance from the stack-loop invariants
+   without relying on the Python runtime validator.  Pop/push cut-order
+   preservation and validator-to-certificate soundness are now Lean-proved.
 2. Formalize the multivariate-normal coefficient sampling distribution used by
    `posterior_sample_candidates`; the random-candidate envelope event is already
    Lean-proved.
-3. Prove the closed-form default radius inversion for the chosen
-   sub-exponential residual-square constants, instead of passing the final tail
-   inequality as an assumption.
-4. Use the optional Python exact posterior-update estimator in large-seed
+3. Use the optional Python exact posterior-update estimator in large-seed
    benchmarks before deciding whether it replaces the additive runner.
-5. Kernel-specific determinant-style information-gain upper bounds for the
+4. Kernel-specific determinant-style information-gain upper bounds for the
    selected feature spaces, beyond the current finite scalar cap.
-6. Traffic trajectory encoder/log model formalization, after the empirical
+5. Traffic trajectory encoder/log model formalization, after the empirical
    traffic case is rebuilt with fresh seeds.
 
 ## Current Math-Depth Assessment
@@ -173,9 +174,10 @@ This is still not a complete 10/10 mathematical package, but the gap has
 narrowed: finite-kernel GP confidence, bounded residual-square constants,
 trajectory occupancy decomposition, ridge-HVD oracle step, additive-to-exact KG
 approximation, posterior-update exact KG, line-envelope KG certificates,
-validator-level stack-hull certificates, random candidate envelope events, and
+validator-level stack-hull certificates, stack-loop cut-order preservation,
+closed-form residual-square tail radii, random candidate envelope events, and
 information-gain regret accounting are now Lean-proved.  The remaining hard
 work is mostly implementation-level certification and empirical choice:
-formalize the while-loop certificate emitter, formalize coefficient sampling if
-needed, and decide whether the optional exact estimator should replace the
-additive default.
+derive full global dominance directly from the stack invariants, formalize
+coefficient sampling if needed, and decide whether the optional exact estimator
+should replace the additive default.

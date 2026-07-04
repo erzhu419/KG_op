@@ -22,6 +22,7 @@ import SCOLHKG.Real.HVD
 import SCOLHKG.Real.HVDImplementation
 import SCOLHKG.Real.InformationGainRegret
 import SCOLHKG.Real.KG
+import SCOLHKG.Real.LineEnvelopeAlgorithm
 import SCOLHKG.Real.LineEnvelopeKG
 import SCOLHKG.Real.LineEnvelopeStack
 import SCOLHKG.Real.OccupancyDecomposition

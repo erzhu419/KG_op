@@ -42,4 +42,7 @@ selection before promoting it.
 `core.kg.compute_h_certificate` returns the active line-envelope hull used by
 `compute_h`; `validate_h_certificate` checks all original lines against the
 finite-interval endpoint and Gaussian-tail slope conditions.  These checks are
-bridged to Lean in `proof/SCOLHKG/Real/LineEnvelopeStack.lean`.
+bridged to Lean in `proof/SCOLHKG/Real/LineEnvelopeStack.lean`.  The certificate
+also carries a per-step stack trace for candidate, break, pop, and push actions;
+pop/push cut-order preservation is formalized in
+`proof/SCOLHKG/Real/LineEnvelopeAlgorithm.lean`.

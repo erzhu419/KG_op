@@ -15,6 +15,26 @@ from core.kg import (  # noqa: E402
 )
 
 
+def assert_stack_snapshot_valid(testcase, snapshot):
+    slopes = snapshot["hull_slopes"]
+    cuts = snapshot["cuts"]
+    testcase.assertEqual(len(slopes), len(cuts))
+    testcase.assertEqual(
+        len(snapshot["hull_indices"]),
+        len(slopes),
+    )
+    testcase.assertEqual(
+        len(snapshot["hull_intercepts"]),
+        len(slopes),
+    )
+    for left, right in zip(slopes, slopes[1:]):
+        testcase.assertLess(left, right)
+    for left, right in zip(cuts, cuts[1:]):
+        testcase.assertLess(left, right)
+    if cuts:
+        testcase.assertTrue(np.isneginf(cuts[0]))
+
+
 class ComputeHCertificateTests(unittest.TestCase):
     def test_certificate_validates_random_line_envelopes(self):
         rng = np.random.default_rng(123)
@@ -27,6 +47,9 @@ class ComputeHCertificateTests(unittest.TestCase):
                 self.assertTrue(check["valid"], check["errors"])
                 self.assertAlmostEqual(cert.h_value, compute_h(a, b), places=12)
                 self.assertGreaterEqual(cert.h_value, 0.0)
+                self.assertGreater(len(cert.trace), 0)
+                for snapshot in cert.trace:
+                    assert_stack_snapshot_valid(self, snapshot)
 
     def test_certificate_handles_duplicate_slopes(self):
         a = np.array([0.0, 2.0, -1.0, 1.0])
@@ -36,6 +59,17 @@ class ComputeHCertificateTests(unittest.TestCase):
         self.assertTrue(check["valid"], check["errors"])
         self.assertIn(1, cert.hull_indices)
         self.assertNotIn(0, cert.hull_indices)
+
+    def test_trace_records_pop_and_break_steps(self):
+        a = np.array([0.0, -1.0, -0.5])
+        b = np.array([0.0, 1.0, 2.0])
+        cert = compute_h_certificate(a, b)
+        actions = [row["action"] for row in cert.trace]
+        self.assertIn("pop", actions)
+        self.assertIn("break", actions)
+        self.assertEqual(actions[-1], "push")
+        for snapshot in cert.trace:
+            assert_stack_snapshot_valid(self, snapshot)
 
     def test_validator_rejects_corrupted_cut(self):
         a = np.array([0.0, 1.0, -0.5])
