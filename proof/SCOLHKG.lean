@@ -23,6 +23,7 @@ import SCOLHKG.Real.HVDImplementation
 import SCOLHKG.Real.InformationGainRegret
 import SCOLHKG.Real.KG
 import SCOLHKG.Real.LineEnvelopeKG
+import SCOLHKG.Real.LineEnvelopeStack
 import SCOLHKG.Real.OccupancyDecomposition
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.RidgeHVD

@@ -28,6 +28,35 @@ class HVDConfig:
     n_factors: int = 3
     activation_min_records: int = 20
     certification_kappa: float = 1.0
+    residual_tail_delta: float = 0.05
+
+
+def gaussian_square_subexp_params(sigma2):
+    """Conservative sub-exponential constants for centered Gaussian squares.
+
+    If a residual is modeled as sub-Gaussian with proxy variance `sigma2`, then
+    its centered square is sub-exponential under the common Bernstein-style
+    constants `(nu, b) = (2 sqrt(2) sigma2, 4 sigma2)`.
+    """
+    sigma2 = max(float(sigma2), 1e-12)
+    return float(2.0 * np.sqrt(2.0) * sigma2), float(4.0 * sigma2)
+
+
+def sub_exponential_residual_square_radius(nu, b, delta):
+    """Radius r with `2 exp(-min(r^2/(2nu^2), r/(2b))) <= delta`.
+
+    This is the manuscript-level default tail radius paired with the Lean
+    `ResidualSquareTail` interface.  It is intentionally standalone so changing
+    the certification policy is an explicit experiment rather than an accidental
+    side effect of HVD fitting.
+    """
+    nu = max(float(nu), 1e-12)
+    b = max(float(b), 1e-12)
+    delta = float(delta)
+    if not 0.0 < delta < 2.0:
+        raise ValueError("delta must lie in (0, 2)")
+    log_term = float(np.log(2.0 / delta))
+    return float(max(np.sqrt(2.0 * nu * nu * log_term), 2.0 * b * log_term))
 
 
 class OrthogonalHVD:
@@ -586,6 +615,17 @@ class OrthogonalHVD:
         return np.maximum(pred, self.floor) * (class_unc + novelty)
 
     def diagnostics(self):
+        tail_delta = float(self.config.residual_tail_delta)
+        tail_radius = {}
+        for i in range(self.n_outputs):
+            nu, b = gaussian_square_subexp_params(self.global_var.get(i, 0.01))
+            tail_radius[str(i)] = {
+                "delta": tail_delta,
+                "nu": float(nu),
+                "b": float(b),
+                "radius": float(sub_exponential_residual_square_radius(
+                    nu, b, tail_delta)),
+            }
         return {
             "mode": self.mode,
             "n_outputs": self.n_outputs,
@@ -624,6 +664,7 @@ class OrthogonalHVD:
             "activation_min_records": int(self.config.activation_min_records),
             "certification_kappa": float(self.config.certification_kappa),
             "certification_uses_class_floor": bool(self.mode in ("orthogonal", "factor")),
+            "residual_square_tail": tail_radius,
             "residual_variance_cap": {
                 str(i): self._residual_variance_cap(i)
                 for i in range(self.n_outputs)

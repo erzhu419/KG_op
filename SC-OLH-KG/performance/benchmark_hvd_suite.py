@@ -61,6 +61,9 @@ def _problem_args(args, problem):
         "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
         "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
         "use_state_basis": args.use_state_basis,
+        "exact_kg_mc_samples": args.exact_kg_mc_samples,
+        "exact_kg_use_score": args.exact_kg_use_score,
+        "exact_kg_blend": args.exact_kg_blend,
         "modes": args.modes,
         "sc_modes": args.sc_modes,
         "baseline_variant": args.baseline_variant,
@@ -198,6 +201,9 @@ def main():
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--exact_kg_use_score", action="store_true")
+    parser.add_argument("--exact_kg_blend", type=float, default=0.0)
     parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
     parser.add_argument("--sc_modes", default="orthogonal,factor")
     parser.add_argument("--baseline_variant", default="orthogonal")

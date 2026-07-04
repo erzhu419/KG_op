@@ -58,6 +58,9 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/LineEnvelopeKG.lean`: certificate-level line-envelope KG
   theorem for the `compute_h` calculation once active hull intervals are
   certified.
+- `SCOLHKG/Real/LineEnvelopeStack.lean`: endpoint and tail-slope bridge showing
+  that the Python `validate_h_certificate` checks imply active-line
+  certificates.
 - `SCOLHKG/Real/AdditiveApproxKG.lean`: uniform additive-acquisition
   approximation implies a `2 eta` exact-KG optimality gap.
 - `SCOLHKG/Real/InformationGainRegret.lean`: information-gain radius and
@@ -77,7 +80,8 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Measure/ResidualSquareConcentration.lean`: bounded residual-square
   distribution constants and finite concentration events for HVD.
 - `SCOLHKG/Measure/ResidualSquareTail.lean`: generic sub-exponential or sharper
-  residual-square tail interface for finite HVD concentration.
+  residual-square tail interface and default radius wrapper for finite HVD
+  concentration.
 - `SCOLHKG/Measure/PosteriorKG.lean`: posterior expected terminal gain defined
   as a Bochner integral.
 - `SCOLHKG/Measure/PosteriorUpdateKG.lean`: exact posterior-update SC-OLH-KG
@@ -142,17 +146,20 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 37. Random posterior-sampled candidate events controlled by deterministic
     envelope pools.
 38. Generic sub-exponential/sharper residual-square tail interface.
+39. Default sub-exponential residual-square radius wrapper.
+40. Stack-hull endpoint/tail certificate bridge for `compute_h`.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Prove the imperative stack construction in `compute_h` produces a valid
-   `LineEnvelopeKG` certificate for the Gaussian hull intervals.
+1. Prove the imperative while-loop in `compute_h` itself emits a certificate
+   accepted by `validate_h_certificate`; the validator conditions are now
+   Lean-bridged.
 2. Formalize the multivariate-normal coefficient sampling distribution used by
    `posterior_sample_candidates`; the random-candidate envelope event is already
    Lean-proved.
-3. Choose manuscript-level residual-square tail assumptions and instantiate
-   `ResidualSquareTail.lean`; bounded Hoeffding and generic sub-exponential
-   interfaces are already available.
+3. Prove the closed-form default radius inversion for the chosen
+   sub-exponential residual-square constants, instead of passing the final tail
+   inequality as an assumption.
 4. Use the optional Python exact posterior-update estimator in large-seed
    benchmarks before deciding whether it replaces the additive runner.
 5. Kernel-specific determinant-style information-gain upper bounds for the
@@ -165,9 +172,10 @@ Still to formalize at the deeper mathlib probability/analysis layer:
 This is still not a complete 10/10 mathematical package, but the gap has
 narrowed: finite-kernel GP confidence, bounded residual-square constants,
 trajectory occupancy decomposition, ridge-HVD oracle step, additive-to-exact KG
-approximation, posterior-update exact KG, line-envelope KG certificates, random
-candidate envelope events, and information-gain regret accounting are now
-Lean-proved.  The remaining hard work is mostly implementation-level
-certification and empirical choice: prove `compute_h`'s stack emits the
-certificate, formalize coefficient sampling if needed, and decide whether the
-optional exact estimator should replace the additive default.
+approximation, posterior-update exact KG, line-envelope KG certificates,
+validator-level stack-hull certificates, random candidate envelope events, and
+information-gain regret accounting are now Lean-proved.  The remaining hard
+work is mostly implementation-level certification and empirical choice:
+formalize the while-loop certificate emitter, formalize coefficient sampling if
+needed, and decide whether the optional exact estimator should replace the
+additive default.

@@ -219,6 +219,7 @@ versions needed by the manuscript:
 | Posterior recommendation | `SCOLHKG/Real/PosteriorRecommendation.lean` | Lean-proved for robust-feasible posterior certification and objective argmin |
 | Exact KG maximizer | `SCOLHKG/Real/KG.lean` | Lean-proved for expected terminal gain |
 | Line-envelope KG | `SCOLHKG/Real/LineEnvelopeKG.lean` | Lean-proved at certificate level for active hull regions and `compute_h` sum formula |
+| Stack-hull validator bridge | `SCOLHKG/Real/LineEnvelopeStack.lean` | Lean-proved endpoint/tail-slope checks imply active-line certificates |
 | Additive KG equivalence condition | `SCOLHKG/Real/KG.lean` | Lean-proved when additive score equals exact gain |
 | Additive-to-exact KG approximation | `SCOLHKG/Real/AdditiveApproxKG.lean` | Lean-proved with `2 eta` exact-KG gap |
 | Information-gain regret accounting | `SCOLHKG/Real/InformationGainRegret.lean` | Lean-proved from an information-gain radius budget |
@@ -231,7 +232,7 @@ versions needed by the manuscript:
 | Posterior-sampled random candidates | `SCOLHKG/Measure/PosteriorSamplingCandidates.lean` | Lean-proved by containment in deterministic adaptive envelope pools |
 | Residual-square concentration event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev for an abstract centered estimator |
 | Bounded residual-square constants | `SCOLHKG/Measure/ResidualSquareConcentration.lean` | Lean-proved via Hoeffding's lemma and finite union concentration |
-| Sharper residual-square tail interface | `SCOLHKG/Measure/ResidualSquareTail.lean` | Lean-proved finite concentration from generic/sub-exponential residual-square tails |
+| Sharper residual-square tail interface | `SCOLHKG/Measure/ResidualSquareTail.lean` | Lean-proved finite concentration from generic/sub-exponential residual-square tails and a default radius wrapper |
 | Posterior exact KG expectation | `SCOLHKG/Measure/PosteriorKG.lean` | Lean-defined as an integral and linked to exact KG maximization |
 | Exact posterior-update SC-OLH-KG | `SCOLHKG/Measure/PosteriorUpdateKG.lean` | Lean-proved as expected terminal certified value improvement under explicit update map |
 | High-probability safe regret | `SCOLHKG/Measure/SafeRegretEvent.lean` | Lean-proved by bad-event containment |
@@ -239,12 +240,13 @@ versions needed by the manuscript:
 The next mathematical frontier is to derive the events used above from the
 probability model:
 
-1. proof that the imperative `compute_h` stack emits the
-   `LineEnvelopeKG.lean` certificate for Gaussian hull intervals;
+1. line-by-line proof that the imperative `compute_h` while-loop always emits a
+   `validate_h_certificate`-accepted hull; the validator conditions are already
+   Lean-bridged to `LineEnvelopeKG.lean`;
 2. multivariate-normal coefficient sampling formalization for the
    posterior-sampling candidate generator;
-3. manuscript choice of residual-square tail class, instantiating
-   `ResidualSquareTail.lean`;
+3. closed-form inversion proof for the chosen sub-exponential
+   residual-square radius;
 4. kernel/feature-specific determinant information-gain upper bounds;
 5. large-seed benchmark decision on whether optional exact posterior-update KG
    replaces the additive runner;

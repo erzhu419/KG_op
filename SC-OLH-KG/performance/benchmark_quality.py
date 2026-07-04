@@ -145,6 +145,9 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
+        exact_kg_mc_samples=args.exact_kg_mc_samples,
+        exact_kg_use_score=args.exact_kg_use_score,
+        exact_kg_blend=args.exact_kg_blend,
         eval_pool_size=args.eval_pool_size,
         seed=seed,
     )
@@ -161,6 +164,9 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling):
         "variance_mode": variance_mode,
         "use_state_coupling": bool(use_state_coupling),
         "use_state_basis": bool(use_state_coupling and args.use_state_basis),
+        "exact_kg_mc_samples": int(args.exact_kg_mc_samples),
+        "exact_kg_use_score": bool(args.exact_kg_use_score),
+        "exact_kg_blend": float(args.exact_kg_blend),
         "seed": int(seed),
         "problem": args.problem,
         "N": int(args.N),
@@ -338,6 +344,9 @@ def run_benchmark(args):
             "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
             "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
             "use_state_basis": args.use_state_basis,
+            "exact_kg_mc_samples": args.exact_kg_mc_samples,
+            "exact_kg_use_score": args.exact_kg_use_score,
+            "exact_kg_blend": args.exact_kg_blend,
             "seeds": seeds,
             "modes": parse_csv(args.modes),
             "sc_modes": parse_csv(args.sc_modes),
@@ -466,6 +475,9 @@ def main():
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--exact_kg_use_score", action="store_true")
+    parser.add_argument("--exact_kg_blend", type=float, default=0.0)
     parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
     parser.add_argument("--sc_modes", default="orthogonal")
     parser.add_argument("--baseline_variant", default="orthogonal")

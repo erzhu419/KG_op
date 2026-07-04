@@ -14,7 +14,11 @@ from problems.rzdt import (  # noqa: E402
     StatePolicyRZDT1,
 )
 from problems.single_objective import ScalarizedProblem  # noqa: E402
-from variance.orthogonal_hvd import OrthogonalHVD  # noqa: E402
+from variance.orthogonal_hvd import (  # noqa: E402
+    OrthogonalHVD,
+    gaussian_square_subexp_params,
+    sub_exponential_residual_square_radius,
+)
 
 
 class OrthogonalHVDTests(unittest.TestCase):
@@ -51,6 +55,19 @@ class OrthogonalHVDTests(unittest.TestCase):
         self.assertEqual(detail["mode"], "class")
         self.assertIn("new_variance", detail)
         self.assertGreaterEqual(detail["new_variance"], 0.0)
+
+    def test_residual_square_tail_radius_is_exposed(self):
+        nu, b = gaussian_square_subexp_params(0.04)
+        loose = sub_exponential_residual_square_radius(nu, b, 0.20)
+        tight = sub_exponential_residual_square_radius(nu, b, 0.01)
+        self.assertGreater(nu, 0.0)
+        self.assertGreater(b, 0.0)
+        self.assertGreater(tight, loose)
+        model = OrthogonalHVD(mode="class", n_outputs=1)
+        model.fit_from_residuals([(10, 0, 0), (80, 0, 0)], [0.1, 0.2], 0, self.problem)
+        tail = model.diagnostics()["residual_square_tail"]["0"]
+        self.assertEqual(tail["delta"], 0.05)
+        self.assertGreater(tail["radius"], 0.0)
 
     def test_orthogonal_delays_activation_until_enough_records(self):
         X = [(5, 0, 0), (10, 0, 0), (70, 0, 0)]

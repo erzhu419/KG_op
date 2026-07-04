@@ -25,6 +25,12 @@ noncomputable def subExponentialResidualSquareTail
     (nu b radius : ℝ) : ℝ :=
   2 * Real.exp (-min (radius ^ 2 / (2 * nu ^ 2)) (radius / (2 * b)))
 
+noncomputable def subExponentialResidualSquareRadius
+    (nu b delta : ℝ) : ℝ :=
+  max
+    (Real.sqrt (2 * nu ^ 2 * Real.log (2 / delta)))
+    (2 * b * Real.log (2 / delta))
+
 def HasSubExponentialResidualSquareTail
     (Z : Ω → ℝ)
     (nu b : ℝ) : Prop :=
@@ -92,6 +98,45 @@ theorem residualSquare_finite_concentration_from_subExponential_tail
     delta
     (fun theta ↦ subExponentialResidualSquareTail (nu theta) (b theta))
     (fun theta htheta ↦ hTail theta htheta (radius theta) (hradius theta htheta))
+    hDelta
+
+theorem residualSquare_finite_concentration_from_subExponential_default_radius
+    {Param : Type*}
+    (s : Finset Param)
+    (Z : Param → Ω → ℝ)
+    (nu b delta : Param → ℝ)
+    (hradius :
+      ∀ theta ∈ s,
+        0 ≤ subExponentialResidualSquareRadius
+          (nu theta) (b theta) (delta theta))
+    (hTail :
+      ∀ theta ∈ s,
+        HasSubExponentialResidualSquareTail
+          (μ := μ) (Z theta) (nu theta) (b theta))
+    (hDelta :
+      ∀ theta ∈ s,
+        subExponentialResidualSquareTail
+          (nu theta) (b theta)
+          (subExponentialResidualSquareRadius
+            (nu theta) (b theta) (delta theta))
+          ≤ delta theta) :
+    μ.real
+        (⋃ theta ∈ s,
+          ResidualSquareCenteredBadEvent (μ := μ) (Z theta)
+            (subExponentialResidualSquareRadius
+              (nu theta) (b theta) (delta theta)))
+      ≤ ∑ theta ∈ s, delta theta := by
+  exact residualSquare_finite_concentration_from_subExponential_tail
+    (μ := μ)
+    s
+    Z
+    nu
+    b
+    (fun theta ↦ subExponentialResidualSquareRadius
+      (nu theta) (b theta) (delta theta))
+    delta
+    hradius
+    hTail
     hDelta
 
 end SCOLHKG.Measure
