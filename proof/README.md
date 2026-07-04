@@ -44,6 +44,13 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/KG.lean`: real-valued exact KG and additive-proxy relation.
 - `SCOLHKG/Real/SafeRegret.lean`: real-valued finite-budget safe simple-regret
   implication.
+- `SCOLHKG/Measure/ProbabilityEvents.lean`: mathlib
+  `ProbabilityTheory` layer connecting conditional variance, Chebyshev, and
+  finite union bounds to GP/residual concentration events.
+- `SCOLHKG/Measure/PosteriorKG.lean`: posterior expected terminal gain defined
+  as a Bochner integral.
+- `SCOLHKG/Measure/SafeRegretEvent.lean`: high-probability transfer from bad
+  events to safe-regret failure events.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
   manuscript-level theory.
 - `code_map.md`: mapping from mathematical objects to the current
@@ -69,25 +76,30 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 12. Real-valued residual-square concentration event to HVD oracle bound.
 13. Real-valued exact KG/additive-proxy theorem.
 14. Real-valued finite-budget safe simple-regret implication.
+15. General mathlib law of total variance via `condVar`.
+16. Chebyshev-derived GP confidence bad-event probability.
+17. Finite-candidate simultaneous confidence via union bound.
+18. Chebyshev-derived residual-square concentration bad-event probability.
+19. Posterior exact KG expected gain as an integral.
+20. High-probability safe-regret event transfer.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. General conditional variance over arbitrary probability spaces, beyond the
-   current finite-partition expansion.
-2. Random-policy occupancy-risk decomposition using conditional expectation.
-3. Concentration proof for HVD residual-square estimation, deriving the
-   `ResidualSquareConcentration.Valid` event.
-4. GP/posterior confidence event for constraint and objective means, deriving
-   `GPConfidenceEvent.Valid`.
-5. Exact SC-OLH-KG one-step value-of-information theorem over posterior
-   expectations, not only the deterministic maximizer theorem.
-6. Finite-budget safe simple-regret bound with information gain, deriving the
-   optimization-error premise.
+1. Random-policy occupancy-risk decomposition using conditional expectation
+   and the trajectory exposure maps `A(T),N(T)`.
+2. Sub-Gaussian rather than Chebyshev GP confidence, with adaptive candidate
+   sets and posterior covariance.
+3. Residual-square concentration for the concrete HVD ridge estimator, not
+   only a Chebyshev event for an abstract centered estimator.
+4. Exact SC-OLH-KG one-step value-of-information theorem tied to the
+   implemented update equations.
+5. Information-gain control of the optimization-error premise in the
+   finite-budget regret theorem.
 
 ## Current Math-Depth Assessment
 
 This is not yet a 10/10 mathematical package, but it is no longer only a
-Lean-core bookkeeping layer.  It now has a mathlib-backed real-valued proof
-layer.  A 10/10 version still needs the probability layer that derives the
-events currently consumed by the real theorems: GP confidence,
-residual-square concentration, posterior KG value, and information-gain regret.
+Lean-core bookkeeping layer.  It now has a mathlib-backed real-valued and
+measure-theoretic event layer.  A 10/10 version still needs the model-specific
+probability layer: sub-Gaussian GP confidence, ridge-HVD concentration,
+posterior-update exact KG, and information-gain regret.

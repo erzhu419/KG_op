@@ -2,6 +2,9 @@ import SCOLHKG.Certification
 import SCOLHKG.HVD
 import SCOLHKG.Information
 import SCOLHKG.KG
+import SCOLHKG.Measure.PosteriorKG
+import SCOLHKG.Measure.ProbabilityEvents
+import SCOLHKG.Measure.SafeRegretEvent
 import SCOLHKG.Optimization
 import SCOLHKG.Real.Certification
 import SCOLHKG.Real.ConditionalVariance

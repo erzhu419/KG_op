@@ -213,13 +213,18 @@ versions needed by the manuscript:
 | Exact KG maximizer | `SCOLHKG/Real/KG.lean` | Lean-proved for expected terminal gain |
 | Additive KG equivalence condition | `SCOLHKG/Real/KG.lean` | Lean-proved when additive score equals exact gain |
 | Safe simple regret | `SCOLHKG/Real/SafeRegret.lean` | Lean-proved from certification and optimization-error events |
+| General conditional variance | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved by invoking mathlib `condVar` law of total variance |
+| GP confidence event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev and finite union bound |
+| Residual-square concentration event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev for an abstract centered estimator |
+| Posterior exact KG expectation | `SCOLHKG/Measure/PosteriorKG.lean` | Lean-defined as an integral and linked to exact KG maximization |
+| High-probability safe regret | `SCOLHKG/Measure/SafeRegretEvent.lean` | Lean-proved by bad-event containment |
 
 The next mathematical frontier is to derive the events used above from the
 probability model:
 
-1. general conditional expectation/variance identities in mathlib MeasureTheory;
-2. GP posterior confidence over finite/adaptive candidate sets;
-3. concentration for residual-square HVD regression;
+1. random-policy occupancy decomposition from trajectory exposure maps;
+2. sub-Gaussian GP posterior confidence over adaptive candidate sets;
+3. concentration for the concrete residual-square HVD ridge estimator;
 4. information-gain control of the optimization-error event;
 5. a formal bridge from the implemented additive acquisition to either an exact
    KG estimator or a theorem that bounds its approximation error.
