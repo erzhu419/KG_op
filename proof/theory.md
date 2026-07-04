@@ -190,10 +190,12 @@ the surrogate and Theorem 5-6 for variance/certification.
 1. The code now has a factor-shock synthetic and factor-HVD cumulative feature
    path, but the exact terminal-value KG estimator is still not implemented.
 2. The traffic trajectory encoder is not yet connected to real trajectory logs.
-3. The proof of Theorem 5 needs the exact residual-square noise assumptions
-   chosen for the manuscript.
-4. The finite-budget theorem needs a final decision on whether the paper claims
-   exact KG or an additive OLH-KG surrogate.
+3. The Lean proof now has bounded residual-square constants; the manuscript
+   still needs a final choice between bounded, sub-exponential, or
+   Gaussian-derived residual-square tails.
+4. The Lean proof now has exact posterior-update KG as an integral; the code
+   still needs an exact estimator if the main claim is exact KG rather than an
+   additive OLH-KG surrogate.
 
 ## Lean4 Status
 
@@ -208,6 +210,7 @@ versions needed by the manuscript:
 | Fixed trajectory cumulative variance algebra | `SCOLHKG/Real/CumulativeRisk.lean` | Lean-proved over `R` |
 | Low-rank truncation bookkeeping | `SCOLHKG/Real/CumulativeRisk.lean` | Lean-proved over `R` |
 | Information refinement / law of total variance | `SCOLHKG/Real/ConditionalVariance.lean` | Lean-proved for two-cell and arbitrary finite partitions |
+| Policy/trajectory occupancy decomposition | `SCOLHKG/Real/OccupancyDecomposition.lean` | Lean-proved as occupancy cumulative risk plus remainder plus explained trajectory variance |
 | Chance certification | `SCOLHKG/Real/Certification.lean` | Lean-proved from GP-confidence and variance-upper events |
 | HVD oracle inequality | `SCOLHKG/Real/HVD.lean` | Lean-proved from residual-square concentration event |
 | Ridge-HVD oracle inequality | `SCOLHKG/Real/RidgeHVD.lean` | Lean-proved from ridge minimizer and uniform residual-square concentration |
@@ -219,17 +222,21 @@ versions needed by the manuscript:
 | General conditional variance | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved by invoking mathlib `condVar` law of total variance |
 | GP confidence event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev and finite union bound |
 | Sub-Gaussian GP confidence event | `SCOLHKG/Measure/SubGaussianConfidence.lean` | Lean-proved for one-sided and centered finite/adaptive candidate sets |
+| Finite-kernel GP posterior confidence | `SCOLHKG/Measure/GPKernelConfidence.lean` | Lean-proved with explicit `sum_i w_i^2 c_i` parameter |
 | Residual-square concentration event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev for an abstract centered estimator |
+| Bounded residual-square constants | `SCOLHKG/Measure/ResidualSquareConcentration.lean` | Lean-proved via Hoeffding's lemma and finite union concentration |
 | Posterior exact KG expectation | `SCOLHKG/Measure/PosteriorKG.lean` | Lean-defined as an integral and linked to exact KG maximization |
+| Exact posterior-update SC-OLH-KG | `SCOLHKG/Measure/PosteriorUpdateKG.lean` | Lean-proved as expected terminal certified value improvement under explicit update map |
 | High-probability safe regret | `SCOLHKG/Measure/SafeRegretEvent.lean` | Lean-proved by bad-event containment |
 
 The next mathematical frontier is to derive the events used above from the
 probability model:
 
-1. random-policy occupancy decomposition from trajectory exposure maps;
-2. kernel-specific proof that the implemented GP posterior error satisfies the
-   sub-Gaussian parameters assumed by `SubGaussianConfidence.lean`;
-3. distribution-specific residual-square concentration constants for the HVD
-   ridge estimator;
-4. kernel/feature-specific information-gain upper bounds;
-5. exact SC-OLH-KG posterior-update value theorem tied to the implementation.
+1. code-level proof map from the Python posterior solve to the finite-kernel
+   weights in `GPKernelConfidence.lean`;
+2. manuscript choice of residual-square tail class, specializing the bounded
+   Hoeffding proof or replacing it with a sub-exponential/Gaussian-square proof;
+3. kernel/feature-specific information-gain upper bounds;
+4. exact SC-OLH-KG posterior-update estimator in code, tied to
+   `PosteriorUpdateKG.lean`;
+5. traffic trajectory/log formalization after fresh-seed traffic experiments.

@@ -37,6 +37,9 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/CumulativeRisk.lean`: real-valued cumulative-risk algebra.
 - `SCOLHKG/Real/ConditionalVariance.lean`: finite-partition law of total
   variance over real numbers, proved by algebraic expansion.
+- `SCOLHKG/Real/OccupancyDecomposition.lean`: policy trajectory mixture risk
+  decomposition into occupancy cumulative risk, occupancy remainder, and
+  between-trajectory explained variance.
 - `SCOLHKG/Real/Certification.lean`: real-valued GP-confidence plus variance
   upper-bound certification implication.
 - `SCOLHKG/Real/HVD.lean`: real-valued residual-square concentration event to
@@ -53,10 +56,17 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Measure/ProbabilityEvents.lean`: mathlib
   `ProbabilityTheory` layer connecting conditional variance, Chebyshev, and
   finite union bounds to GP/residual concentration events.
+- `SCOLHKG/Measure/GPKernelConfidence.lean`: finite-kernel posterior error as
+  a weighted sum of independent sub-Gaussian noise, with explicit
+  `sum_i w_i^2 c_i` parameter and finite/adaptive confidence.
 - `SCOLHKG/Measure/SubGaussianConfidence.lean`: sub-Gaussian one-sided and
   centered confidence events over finite and adaptive candidate sets.
+- `SCOLHKG/Measure/ResidualSquareConcentration.lean`: bounded residual-square
+  distribution constants and finite concentration events for HVD.
 - `SCOLHKG/Measure/PosteriorKG.lean`: posterior expected terminal gain defined
   as a Bochner integral.
+- `SCOLHKG/Measure/PosteriorUpdateKG.lean`: exact posterior-update SC-OLH-KG
+  value as an integral over updated terminal certified value.
 - `SCOLHKG/Measure/SafeRegretEvent.lean`: high-probability transfer from bad
   events to safe-regret failure events.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
@@ -97,26 +107,36 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
     minimizer and uniform concentration event.
 25. Additive acquisition to exact KG approximation gap (`2 eta` theorem).
 26. Information-gain radius to finite-budget safe-regret accounting.
+27. Finite-kernel posterior error sub-Gaussian parameter
+    `sum_i w_i(x)^2 c_i`.
+28. Finite/adaptive candidate confidence for that finite-kernel GP posterior
+    error model.
+29. Bounded residual-square HVD concentration constants via Hoeffding's lemma.
+30. Policy trajectory occupancy-risk decomposition with explicit occupancy
+    remainder.
+31. Exact posterior-update SC-OLH-KG expected value theorem and maximizer
+    optimality.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Random-policy occupancy-risk decomposition using conditional expectation
-   and the trajectory exposure maps `A(T),N(T)`.
-2. Instantiation that the chosen GP posterior kernel and noise model satisfy
-   the sub-Gaussian parameters used by `SubGaussianConfidence.lean`.
-3. Distribution-specific residual-square concentration constants for the HVD
-   ridge estimator, beyond the deterministic ridge oracle step.
-4. Exact SC-OLH-KG one-step value-of-information theorem tied to the
-   implemented update equations.
-5. Kernel-specific information-gain upper bounds for the selected feature
+1. Prove that the Python posterior-solve weights used in `SC-OLH-KG` instantiate
+   the finite-kernel weight map in `GPKernelConfidence.lean`.
+2. Choose manuscript-level residual-square distribution assumptions
+   (bounded, sub-exponential, or Gaussian-derived) and specialize constants
+   beyond the bounded Hoeffding case.
+3. Tie `PosteriorUpdateKG.lean` to the concrete implementation's GPR/HVD update
+   equations once the exact estimator replaces the additive runner.
+4. Kernel-specific information-gain upper bounds for the selected feature
    spaces and adaptive candidate policy.
+5. Traffic trajectory encoder/log model formalization, after the empirical
+   traffic case is rebuilt with fresh seeds.
 
 ## Current Math-Depth Assessment
 
 This is still not a complete 10/10 mathematical package, but the gap has
-narrowed: the generic sub-Gaussian confidence, adaptive candidate union bounds,
-ridge-HVD oracle step, additive-to-exact KG approximation, and information-gain
-regret accounting are now Lean-proved.  The remaining hard work is model
-instantiation: the exact GP posterior kernel assumptions, distribution-specific
-HVD concentration constants, posterior-update exact KG theorem, and trajectory
-occupancy decomposition.
+narrowed: finite-kernel GP confidence, bounded residual-square constants,
+trajectory occupancy decomposition, ridge-HVD oracle step, additive-to-exact KG
+approximation, posterior-update exact KG, and information-gain regret
+accounting are now Lean-proved.  The remaining hard work is implementation and
+model instantiation: connect the Python posterior/update equations to these
+finite formal objects and choose the final manuscript-level tail assumptions.

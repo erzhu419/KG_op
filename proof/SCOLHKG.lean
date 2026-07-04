@@ -2,6 +2,9 @@ import SCOLHKG.Certification
 import SCOLHKG.HVD
 import SCOLHKG.Information
 import SCOLHKG.KG
+import SCOLHKG.Measure.GPKernelConfidence
+import SCOLHKG.Measure.PosteriorUpdateKG
+import SCOLHKG.Measure.ResidualSquareConcentration
 import SCOLHKG.Measure.SubGaussianConfidence
 import SCOLHKG.Measure.PosteriorKG
 import SCOLHKG.Measure.ProbabilityEvents
@@ -14,6 +17,7 @@ import SCOLHKG.Real.CumulativeRisk
 import SCOLHKG.Real.HVD
 import SCOLHKG.Real.InformationGainRegret
 import SCOLHKG.Real.KG
+import SCOLHKG.Real.OccupancyDecomposition
 import SCOLHKG.Real.RidgeHVD
 import SCOLHKG.Real.SafeRegret
 import SCOLHKG.Scalarization
