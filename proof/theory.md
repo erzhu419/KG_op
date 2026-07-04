@@ -188,14 +188,14 @@ the surrogate and Theorem 5-6 for variance/certification.
 ## Current Gaps
 
 1. The code now has a factor-shock synthetic and factor-HVD cumulative feature
-   path, but the exact terminal-value KG estimator is still not implemented.
+   path, but the exact posterior-update KG estimator is optional and has not
+   been promoted over the additive default.
 2. The traffic trajectory encoder is not yet connected to real trajectory logs.
-3. The Lean proof now has bounded residual-square constants; the manuscript
-   still needs a final choice between bounded, sub-exponential, or
-   Gaussian-derived residual-square tails.
-4. The Lean proof now has exact posterior-update KG as an integral; the code
-   still needs an exact estimator if the main claim is exact KG rather than an
-   additive OLH-KG surrogate.
+3. The manuscript still needs a final choice between bounded,
+   sub-exponential, or Gaussian-derived residual-square tails.
+4. The full recursive `compute_h` sorted-stack fold/output theorem is still
+   open, although the concrete intersection arithmetic and the pop/split branch
+   certificate steps are now Lean-proved.
 
 ## Lean4 Status
 
@@ -222,16 +222,17 @@ versions needed by the manuscript:
 | Stack-hull validator bridge | `SCOLHKG/Real/LineEnvelopeStack.lean` | Lean-proved endpoint/tail-slope checks imply active-line certificates |
 | Stack-loop step preservation | `SCOLHKG/Real/LineEnvelopeAlgorithm.lean` | Lean-proved pop/push preserve slope/cut order under Python branch conditions |
 | Final stack global dominance | `SCOLHKG/Real/LineEnvelopeGlobal.lean` | Lean-proved final global dominance invariant implies atom certificates and exact line-envelope KG without runtime validation |
+| Concrete line-envelope branch certificates | `SCOLHKG/Real/LineEnvelopeIntersection.lean` | Lean-proved intersection arithmetic, popped finite-cell takeover, and right-tail finite/tail split certificates |
 | Additive KG equivalence condition | `SCOLHKG/Real/KG.lean` | Lean-proved when additive score equals exact gain |
 | Additive-to-exact KG approximation | `SCOLHKG/Real/AdditiveApproxKG.lean` | Lean-proved with `2 eta` exact-KG gap |
 | Information-gain regret accounting | `SCOLHKG/Real/InformationGainRegret.lean` | Lean-proved from an information-gain radius budget |
-| Finite-kernel information-gain cap | `SCOLHKG/Real/FiniteKernelInformationGain.lean` | Lean-proved for scalar per-step finite kernel information gain |
+| Finite-kernel information-gain cap | `SCOLHKG/Real/FiniteKernelInformationGain.lean` | Lean-proved for scalar per-step finite kernel information gain and finite determinant/log-product cap |
 | Safe simple regret | `SCOLHKG/Real/SafeRegret.lean` | Lean-proved from certification and optimization-error events |
 | General conditional variance | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved by invoking mathlib `condVar` law of total variance |
 | GP confidence event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev and finite union bound |
 | Sub-Gaussian GP confidence event | `SCOLHKG/Measure/SubGaussianConfidence.lean` | Lean-proved for one-sided and centered finite/adaptive candidate sets |
 | Finite-kernel GP posterior confidence | `SCOLHKG/Measure/GPKernelConfidence.lean` | Lean-proved with explicit `sum_i w_i^2 c_i` parameter |
-| Posterior-sampled random candidates | `SCOLHKG/Measure/PosteriorSamplingCandidates.lean` | Lean-proved by containment in deterministic adaptive envelope pools |
+| Posterior-sampled random candidates | `SCOLHKG/Measure/PosteriorSamplingCandidates.lean` | Lean-proved by posterior-score selector containment and deterministic adaptive envelope pools |
 | Residual-square concentration event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev for an abstract centered estimator |
 | Bounded residual-square constants | `SCOLHKG/Measure/ResidualSquareConcentration.lean` | Lean-proved via Hoeffding's lemma and finite union concentration |
 | Sharper residual-square tail interface | `SCOLHKG/Measure/ResidualSquareTail.lean` | Lean-proved finite concentration from generic/sub-exponential residual-square tails and closed-form default radius inversion |
@@ -242,12 +243,13 @@ versions needed by the manuscript:
 The next mathematical frontier is to derive the events used above from the
 probability model:
 
-1. proof that the concrete intersection arithmetic in `compute_h` establishes
-   the final global dominance invariant; once established, exact KG follows
-   without runtime validation;
+1. full recursive proof that the sorted-line `compute_h` stack fold/output
+   satisfies the final global dominance invariant; the concrete intersection
+   arithmetic and branch-level certificate steps are already proved;
 2. multivariate-normal coefficient sampling formalization for the
    posterior-sampling candidate generator;
-3. kernel/feature-specific determinant information-gain upper bounds;
+3. kernel/feature-specific determinant upper bounds beyond the current finite
+   product-ratio identity;
 4. large-seed benchmark decision on whether optional exact posterior-update KG
    replaces the additive runner;
 5. traffic trajectory/log formalization after fresh-seed traffic experiments.

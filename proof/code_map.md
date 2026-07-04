@@ -46,13 +46,14 @@ This gives the proof and experiments one place where the shared-shock term
 | `core.kg.compute_h_certificate`, `validate_h_certificate` | active stack hull, cuts, Gaussian masses, endpoint/tail-slope dominance checks | `SCOLHKG.Real.LineEnvelopeStack` proves the validator conditions imply active-line certificates |
 | `core.kg.compute_h_certificate(...).trace` | per-step stack snapshots for candidate, break, pop, and push actions | `SCOLHKG.Real.LineEnvelopeAlgorithm` proves pop/push preserve slope and cut order under the Python branch conditions |
 | final `compute_h` hull state | active atoms whose lines dominate all original/processed lines at interval endpoints | `SCOLHKG.Real.LineEnvelopeGlobal` proves final global dominance implies atom certificates and exact line-envelope KG without a runtime validator |
+| `core.kg._build_line_envelope` intersection `z=(a_old-a_new)/(b_new-b_old)` | old active line dominates left of the cut; new line dominates right of the cut; pop and right-tail split preserve certificates over every point of the affected interval/tail | `SCOLHKG.Real.LineEnvelopeIntersection` proves the concrete intersection arithmetic, popped-cell takeover, right-tail finite/tail cell construction, and interval/tail dominance |
 | `variance.OrthogonalHVD.update` | residual record `resid2=(y-mu)^2` | `SCOLHKG.Real.HVDImplementation.residualSquare_nonnegative` |
 | `variance.OrthogonalHVD._fit_output`, factor mode | cumulative ridge fit, then `beta=max(beta,0)` and `pred=max(F beta,floor)` | `SCOLHKG.Real.RidgeHVD.ridge_hvd_residual_square_oracle`, `SCOLHKG.Real.HVDImplementation.cumulative_linear_prediction_nonnegative`, `clippedVariance_ge_floor` |
 | `variance.OrthogonalHVD.predict_certification_variance` | `base + model_uncertainty`, guarded by class variance and floor | `SCOLHKG.Real.HVDImplementation.certificationVariance_sound_from_model_uncertainty` |
 | `acquisition.OLHKGAcquisition.score` | additive proxy `KG_obj + lambda_f KG_feas + lambda_v KG_var + lambda_m KG_mean + lambda_rho KG_coupling` | `SCOLHKG.Real.AdditiveApproxKG.additive_proxy_maximizer_exact_gap_le_two_eta` |
 | `algorithms.SingleOLHKGAlgorithm._solve_posterior_recommendation` | choose lowest posterior objective among robust chance-feasible candidates | `SCOLHKG.Real.PosteriorRecommendation.robust_feasible_implies_posterior_certified` and `robust_argmin_is_objective_minimizer_on_robust_set` |
-| `core.candidates.posterior_sample_candidates` | finite posterior candidate pool from sampled parametric coefficients | `SCOLHKG.Measure.PosteriorSamplingCandidates.randomAdaptiveCenteredSubGaussian_bad_event_le_sum` controls random candidate sets by deterministic envelope pools |
-| finite candidate/kernel budget | scalar information gain `0.5 log(1+var/noise)` accumulated over finite steps | `SCOLHKG.Real.FiniteKernelInformationGain.finiteInformationGain_le_uniform_cap` |
+| `core.candidates.posterior_sample_candidates` | finite posterior candidate pool from sampled parametric coefficients | `SCOLHKG.Measure.PosteriorSamplingCandidates.randomAdaptiveCenteredSubGaussian_bad_event_le_sum` controls random candidate sets by deterministic envelope pools; `posteriorScoreSelected_*` proves posterior-score selectors remain inside the finite pool |
+| finite candidate/kernel budget | scalar information gain `0.5 log(1+var/noise)` accumulated over finite steps | `SCOLHKG.Real.FiniteKernelInformationGain.finiteInformationGain_le_uniform_cap` and `finiteInformationGain_eq_determinantInformationGain_product` |
 | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | MC estimate of current terminal certified value minus updated terminal certified value after GPR/HVD update | `SCOLHKG.Measure.PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer` defines the exact target; MC estimator is optional code path |
 
 The exact posterior-update SC-OLH-KG object is formalized in
@@ -69,12 +70,14 @@ proxy above, so the manuscript has two clean paths:
 
 1. `compute_h` now emits and validates a checkable certificate, the validator
    conditions are Lean-bridged, pop/push cut-order preservation is Lean-proved,
-   and final global dominance implies exact KG without runtime validation.  The
-   remaining gap is proving the concrete intersection arithmetic establishes
-   that global dominance invariant.
-2. The posterior-sampling candidate generator is covered by random-set envelope
-   containment, but its multivariate-normal coefficient sampling distribution
-   has not been formalized.
+   concrete intersection/pop/split branch certificates are Lean-proved, and
+   final global dominance implies exact KG without runtime validation.  The
+   remaining gap is the full recursive list/fold theorem that the complete
+   sorted-line stack output satisfies the global dominance invariant.
+2. The posterior-sampling candidate generator is covered by score-selector
+   containment and random-set envelope containment, but its full
+   multivariate-normal coefficient sampling distribution has not been
+   formalized.
 3. Bounded and generic sub-exponential residual-square interfaces are
    available, and the default radius is exposed in code/proof with a
    closed-form inversion theorem.

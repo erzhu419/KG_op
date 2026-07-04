@@ -66,6 +66,9 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/LineEnvelopeGlobal.lean`: final global stack dominance
   invariant implies atom certificates and exact line-envelope KG, without a
   Python runtime-validator assumption.
+- `SCOLHKG/Real/LineEnvelopeIntersection.lean`: concrete `compute_h`
+  intersection arithmetic, popped-cell takeover, and right-tail split
+  certificates for the stack loop.
 - `SCOLHKG/Real/AdditiveApproxKG.lean`: uniform additive-acquisition
   approximation implies a `2 eta` exact-KG optimality gap.
 - `SCOLHKG/Real/InformationGainRegret.lean`: information-gain radius and
@@ -156,20 +159,34 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 41. Stack-loop pop/push cut-order preservation for `compute_h`.
 42. Closed-form sub-exponential default radius inversion.
 43. Final global stack dominance invariant to exact line-envelope KG.
+44. Concrete `compute_h` intersection arithmetic:
+    `z=(a_old-a_new)/(b_new-b_old)` gives old-line dominance on the left and
+    new-line dominance on the right.
+45. Popped finite envelope cells are certificate-preservingly taken over by
+    the new line under the Python pop branch condition, with all processed
+    lines dominated at every point of the popped interval.
+46. Right-tail split branch constructs certified old finite and new right-tail
+    cells under the Python break/push branch condition, with all processed
+    lines dominated on the finite left piece and the whole right tail.
+47. Posterior-score candidate selection from sampled coefficients is contained
+    in the deterministic finite candidate pool, so its bad event inherits the
+    adaptive sub-Gaussian envelope bound.
+48. Finite-kernel information gain equals a determinant/log-product-style cap
+    for the finite product ratio, and this cap feeds the regret accounting.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Prove the concrete intersection arithmetic in `compute_h` establishes the
-   final global dominance invariant.  Once that invariant is available,
-   certificate generation and exact KG no longer rely on Python runtime
-   validation.
-2. Formalize the multivariate-normal coefficient sampling distribution used by
-   `posterior_sample_candidates`; the random-candidate envelope event is already
-   Lean-proved.
+1. Complete the recursive list/fold theorem that the full sorted-line
+   imperative `compute_h` stack, after all candidates are processed, produces
+   the final global dominance invariant.  The intersection arithmetic and the
+   pop/split certificate-preserving branch steps are now Lean-proved.
+2. Formalize a full multivariate-normal coefficient sampling distribution for
+   `posterior_sample_candidates`; the posterior-score selector containment and
+   random-candidate envelope event are already Lean-proved.
 3. Use the optional Python exact posterior-update estimator in large-seed
    benchmarks before deciding whether it replaces the additive runner.
-4. Kernel-specific determinant-style information-gain upper bounds for the
-   selected feature spaces, beyond the current finite scalar cap.
+4. Kernel/feature-specific determinant upper bounds for the selected feature
+   spaces, beyond the current finite product-ratio identity.
 5. Traffic trajectory encoder/log model formalization, after the empirical
    traffic case is rebuilt with fresh seeds.
 
@@ -180,10 +197,11 @@ narrowed: finite-kernel GP confidence, bounded residual-square constants,
 trajectory occupancy decomposition, ridge-HVD oracle step, additive-to-exact KG
 approximation, posterior-update exact KG, line-envelope KG certificates,
 validator-level stack-hull certificates, stack-loop cut-order preservation,
-final-stack global dominance to exact KG, closed-form residual-square tail
-radii, random candidate envelope events, and information-gain regret accounting
-are now Lean-proved.  The remaining hard work is mostly implementation-level
-certification and empirical choice: prove the concrete intersection arithmetic
-establishes the global dominance invariant, formalize coefficient sampling if
-needed, and decide whether the optional exact estimator should replace the
-additive default.
+final-stack global dominance to exact KG, concrete intersection/pop/split
+branch certificates, closed-form residual-square tail radii, posterior-score
+candidate containment, random candidate envelope events, finite product-ratio
+information gain, and information-gain regret accounting are now Lean-proved.
+The remaining hard work is narrower: finish the full recursive sorted-stack
+fold/output theorem, add a complete multivariate-normal sampler layer if the
+paper needs that exact distribution claim, and decide empirically whether the
+optional exact estimator should replace the additive default.

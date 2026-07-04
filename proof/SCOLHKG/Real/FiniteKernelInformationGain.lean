@@ -29,6 +29,33 @@ noncomputable def finiteInformationGain
     (variance noise : Time → ℝ) : ℝ :=
   ∑ t ∈ steps, scalarInformationGain (variance t) (noise t)
 
+noncomputable def finiteKernelProductRatio
+    {Time : Type*}
+    (steps : Finset Time)
+    (variance noise : Time → ℝ) : ℝ :=
+  ∏ t ∈ steps, (1 + variance t / noise t)
+
+noncomputable def determinantInformationGain (detRatio : ℝ) : ℝ :=
+  (1 / 2 : ℝ) * Real.log detRatio
+
+theorem finiteInformationGain_eq_determinantInformationGain_product
+    {Time : Type*}
+    (steps : Finset Time)
+    (variance noise : Time → ℝ)
+    (hpos :
+      ∀ t ∈ steps, 0 < 1 + variance t / noise t) :
+    finiteInformationGain steps variance noise =
+      determinantInformationGain
+        (finiteKernelProductRatio steps variance noise) := by
+  unfold finiteInformationGain scalarInformationGain
+    determinantInformationGain finiteKernelProductRatio
+  have hne :
+      ∀ t ∈ steps, 1 + variance t / noise t ≠ 0 := by
+    intro t ht
+    exact (hpos t ht).ne'
+  rw [Real.log_prod hne]
+  rw [Finset.mul_sum]
+
 theorem scalarInformationGain_le_of_ratio
     {variance noise varianceCap noiseFloor : ℝ}
     (hposLeft : 0 < 1 + variance / noise)
@@ -83,5 +110,45 @@ theorem finiteInformationGain_regret_budget
   unfold InformationGainRegretBound at hRegret
   have hRadius' := hRadius hGamma
   linarith
+
+theorem finiteInformationGain_regret_budget_from_determinant_product
+    {Time : Type*}
+    (steps : Finset Time)
+    (variance noise : Time → ℝ)
+    (t : InformationGainRegretTerms)
+    {eps : ℝ}
+    (hpos :
+      ∀ step ∈ steps, 0 < 1 + variance step / noise step)
+    (hRadius :
+      finiteInformationGain steps variance noise
+        ≤ determinantInformationGain
+            (finiteKernelProductRatio steps variance noise) →
+        informationGainRadius t.beta t.gammaT
+        ≤ informationGainRadius t.beta
+            (determinantInformationGain
+              (finiteKernelProductRatio steps variance noise)))
+    (hRegret : InformationGainRegretBound t)
+    (hBudget :
+      informationGainRadius t.beta
+          (determinantInformationGain
+            (finiteKernelProductRatio steps variance noise))
+        + t.candidateSetError
+        + t.certificationError
+        + t.kgApproximationError ≤ eps) :
+    t.actualRegret ≤ eps := by
+  apply finiteInformationGain_regret_budget
+    (steps := steps)
+    (variance := variance)
+    (noise := noise)
+    (t := t)
+    (cap :=
+      determinantInformationGain
+        (finiteKernelProductRatio steps variance noise))
+    (eps := eps)
+  · rw [finiteInformationGain_eq_determinantInformationGain_product
+      steps variance noise hpos]
+  · exact hRadius
+  · exact hRegret
+  · exact hBudget
 
 end SCOLHKG.Real
