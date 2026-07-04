@@ -210,11 +210,15 @@ versions needed by the manuscript:
 | Information refinement / law of total variance | `SCOLHKG/Real/ConditionalVariance.lean` | Lean-proved for two-cell and arbitrary finite partitions |
 | Chance certification | `SCOLHKG/Real/Certification.lean` | Lean-proved from GP-confidence and variance-upper events |
 | HVD oracle inequality | `SCOLHKG/Real/HVD.lean` | Lean-proved from residual-square concentration event |
+| Ridge-HVD oracle inequality | `SCOLHKG/Real/RidgeHVD.lean` | Lean-proved from ridge minimizer and uniform residual-square concentration |
 | Exact KG maximizer | `SCOLHKG/Real/KG.lean` | Lean-proved for expected terminal gain |
 | Additive KG equivalence condition | `SCOLHKG/Real/KG.lean` | Lean-proved when additive score equals exact gain |
+| Additive-to-exact KG approximation | `SCOLHKG/Real/AdditiveApproxKG.lean` | Lean-proved with `2 eta` exact-KG gap |
+| Information-gain regret accounting | `SCOLHKG/Real/InformationGainRegret.lean` | Lean-proved from an information-gain radius budget |
 | Safe simple regret | `SCOLHKG/Real/SafeRegret.lean` | Lean-proved from certification and optimization-error events |
 | General conditional variance | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved by invoking mathlib `condVar` law of total variance |
 | GP confidence event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev and finite union bound |
+| Sub-Gaussian GP confidence event | `SCOLHKG/Measure/SubGaussianConfidence.lean` | Lean-proved for one-sided and centered finite/adaptive candidate sets |
 | Residual-square concentration event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev for an abstract centered estimator |
 | Posterior exact KG expectation | `SCOLHKG/Measure/PosteriorKG.lean` | Lean-defined as an integral and linked to exact KG maximization |
 | High-probability safe regret | `SCOLHKG/Measure/SafeRegretEvent.lean` | Lean-proved by bad-event containment |
@@ -223,8 +227,9 @@ The next mathematical frontier is to derive the events used above from the
 probability model:
 
 1. random-policy occupancy decomposition from trajectory exposure maps;
-2. sub-Gaussian GP posterior confidence over adaptive candidate sets;
-3. concentration for the concrete residual-square HVD ridge estimator;
-4. information-gain control of the optimization-error event;
-5. a formal bridge from the implemented additive acquisition to either an exact
-   KG estimator or a theorem that bounds its approximation error.
+2. kernel-specific proof that the implemented GP posterior error satisfies the
+   sub-Gaussian parameters assumed by `SubGaussianConfidence.lean`;
+3. distribution-specific residual-square concentration constants for the HVD
+   ridge estimator;
+4. kernel/feature-specific information-gain upper bounds;
+5. exact SC-OLH-KG posterior-update value theorem tied to the implementation.

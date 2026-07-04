@@ -41,12 +41,20 @@ mathlib and its cache; later builds should be fast.
   upper-bound certification implication.
 - `SCOLHKG/Real/HVD.lean`: real-valued residual-square concentration event to
   HVD oracle-inequality implication.
+- `SCOLHKG/Real/RidgeHVD.lean`: concrete ridge empirical minimizer plus
+  residual-square uniform concentration to HVD oracle inequality.
 - `SCOLHKG/Real/KG.lean`: real-valued exact KG and additive-proxy relation.
+- `SCOLHKG/Real/AdditiveApproxKG.lean`: uniform additive-acquisition
+  approximation implies a `2 eta` exact-KG optimality gap.
+- `SCOLHKG/Real/InformationGainRegret.lean`: information-gain radius and
+  finite-budget regret accounting.
 - `SCOLHKG/Real/SafeRegret.lean`: real-valued finite-budget safe simple-regret
   implication.
 - `SCOLHKG/Measure/ProbabilityEvents.lean`: mathlib
   `ProbabilityTheory` layer connecting conditional variance, Chebyshev, and
   finite union bounds to GP/residual concentration events.
+- `SCOLHKG/Measure/SubGaussianConfidence.lean`: sub-Gaussian one-sided and
+  centered confidence events over finite and adaptive candidate sets.
 - `SCOLHKG/Measure/PosteriorKG.lean`: posterior expected terminal gain defined
   as a Bochner integral.
 - `SCOLHKG/Measure/SafeRegretEvent.lean`: high-probability transfer from bad
@@ -82,24 +90,33 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 18. Chebyshev-derived residual-square concentration bad-event probability.
 19. Posterior exact KG expected gain as an integral.
 20. High-probability safe-regret event transfer.
+21. Sub-Gaussian one-sided tail confidence from mathlib Chernoff bound.
+22. Two-sided centered sub-Gaussian GP-confidence events.
+23. Finite and adaptive candidate-set sub-Gaussian union bounds.
+24. Ridge-HVD residual-square oracle inequality from a concrete ridge
+    minimizer and uniform concentration event.
+25. Additive acquisition to exact KG approximation gap (`2 eta` theorem).
+26. Information-gain radius to finite-budget safe-regret accounting.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
 1. Random-policy occupancy-risk decomposition using conditional expectation
    and the trajectory exposure maps `A(T),N(T)`.
-2. Sub-Gaussian rather than Chebyshev GP confidence, with adaptive candidate
-   sets and posterior covariance.
-3. Residual-square concentration for the concrete HVD ridge estimator, not
-   only a Chebyshev event for an abstract centered estimator.
+2. Instantiation that the chosen GP posterior kernel and noise model satisfy
+   the sub-Gaussian parameters used by `SubGaussianConfidence.lean`.
+3. Distribution-specific residual-square concentration constants for the HVD
+   ridge estimator, beyond the deterministic ridge oracle step.
 4. Exact SC-OLH-KG one-step value-of-information theorem tied to the
    implemented update equations.
-5. Information-gain control of the optimization-error premise in the
-   finite-budget regret theorem.
+5. Kernel-specific information-gain upper bounds for the selected feature
+   spaces and adaptive candidate policy.
 
 ## Current Math-Depth Assessment
 
-This is not yet a 10/10 mathematical package, but it is no longer only a
-Lean-core bookkeeping layer.  It now has a mathlib-backed real-valued and
-measure-theoretic event layer.  A 10/10 version still needs the model-specific
-probability layer: sub-Gaussian GP confidence, ridge-HVD concentration,
-posterior-update exact KG, and information-gain regret.
+This is still not a complete 10/10 mathematical package, but the gap has
+narrowed: the generic sub-Gaussian confidence, adaptive candidate union bounds,
+ridge-HVD oracle step, additive-to-exact KG approximation, and information-gain
+regret accounting are now Lean-proved.  The remaining hard work is model
+instantiation: the exact GP posterior kernel assumptions, distribution-specific
+HVD concentration constants, posterior-update exact KG theorem, and trajectory
+occupancy decomposition.
