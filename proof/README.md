@@ -27,6 +27,14 @@ analysis and probability machinery.
   refinement proposition.
 - `SCOLHKG/Certification.lean`: formal ordered-arithmetic core of conservative
   chance certification.
+- `SCOLHKG/Scalarization.lean`: inherited bi-objective-to-scalar bridge:
+  weak Pareto dominance is preserved by nonnegative weighted scalarization.
+- `SCOLHKG/HVD.lean`: deterministic oracle-inequality and conservative
+  variance-estimation skeleton for HVD.
+- `SCOLHKG/Optimization.lean`: safe recommendation and simple-regret
+  consequences once mean confidence and variance upper bounds hold.
+- `SCOLHKG/KG.lean`: exact KG maximizer bookkeeping and the condition under
+  which an additive KG proxy is exact.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
   manuscript-level theory.
 - `code_map.md`: mapping from mathematical objects to the current
@@ -40,10 +48,24 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 2. Information-refinement reduction of apparent variance as algebraic lemma.
 3. Low-rank/effective-risk truncation bookkeeping lemmas.
 4. Conservative chance-feasibility certification arithmetic.
+5. Weighted scalarization monotonicity for the inherited bi-objective bridge.
+6. Deterministic HVD oracle-inequality skeleton.
+7. Safe recommendation and safe simple-regret implication.
+8. Exact KG/additive-surrogate bookkeeping.
 
 Still to formalize after introducing mathlib probability/analysis:
 
 1. Random-policy occupancy-risk decomposition with conditional variance.
-2. HVD estimation oracle inequality.
-3. Exact SC-OLH-KG one-step value-of-information theorem.
-4. Finite-budget safe simple-regret bound.
+2. Concentration proof for HVD residual-square estimation.
+3. GP/posterior confidence event for constraint and objective means.
+4. Exact SC-OLH-KG one-step value-of-information theorem over real
+   posterior expectations.
+5. Finite-budget safe simple-regret bound with information gain.
+
+## Current Math-Depth Assessment
+
+This is not yet a 10/10 mathematical package.  It is a clean Lean-checked
+deterministic backbone.  A 10/10 version needs the probability layer in Lean or
+at least a manuscript-grade paper proof that derives the assumptions consumed
+by these Lean theorems: conditional variance identities, GP confidence,
+residual-square concentration, exact KG value, and finite-budget regret.
