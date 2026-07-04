@@ -23,6 +23,7 @@ import SCOLHKG.Real.HVDImplementation
 import SCOLHKG.Real.InformationGainRegret
 import SCOLHKG.Real.KG
 import SCOLHKG.Real.LineEnvelopeAlgorithm
+import SCOLHKG.Real.LineEnvelopeFold
 import SCOLHKG.Real.LineEnvelopeGlobal
 import SCOLHKG.Real.LineEnvelopeIntersection
 import SCOLHKG.Real.LineEnvelopeKG

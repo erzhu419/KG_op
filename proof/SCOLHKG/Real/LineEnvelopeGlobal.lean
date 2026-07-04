@@ -12,10 +12,10 @@ the theorem path: if the final stack carries the standard global dominance
 invariant for all processed/original lines, then every atom is certified and
 the `compute_h` envelope sum is exact.
 
-The remaining implementation-level work after this file is to prove that the
-particular intersection arithmetic in the imperative while-loop establishes
-`FinalEnvelopeStackInvariant`.  Once that invariant is available, no runtime
-validator assumption is needed.
+The implementation-level bridge is completed in the follow-on line-envelope
+files: `LineEnvelopeIntersection.lean` proves the concrete intersection and
+pop/split branch arithmetic, while `LineEnvelopeFold.lean` proves the full
+sorted-line fold/output dominance theorem that feeds this final invariant.
 -/
 
 universe u v

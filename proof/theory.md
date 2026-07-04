@@ -193,9 +193,10 @@ the surrogate and Theorem 5-6 for variance/certification.
 2. The traffic trajectory encoder is not yet connected to real trajectory logs.
 3. The manuscript still needs a final choice between bounded,
    sub-exponential, or Gaussian-derived residual-square tails.
-4. The full recursive `compute_h` sorted-stack fold/output theorem is still
-   open, although the concrete intersection arithmetic and the pop/split branch
-   certificate steps are now Lean-proved.
+4. The full recursive `compute_h` sorted-stack fold/output theorem is now
+   Lean-proved for the sorted/collapsed active-line loop; the remaining
+   manuscript choice is whether to present the additive runner or promote the
+   optional exact posterior-update estimator.
 
 ## Lean4 Status
 
@@ -223,6 +224,7 @@ versions needed by the manuscript:
 | Stack-loop step preservation | `SCOLHKG/Real/LineEnvelopeAlgorithm.lean` | Lean-proved pop/push preserve slope/cut order under Python branch conditions |
 | Final stack global dominance | `SCOLHKG/Real/LineEnvelopeGlobal.lean` | Lean-proved final global dominance invariant implies atom certificates and exact line-envelope KG without runtime validation |
 | Concrete line-envelope branch certificates | `SCOLHKG/Real/LineEnvelopeIntersection.lean` | Lean-proved intersection arithmetic, popped finite-cell takeover, and right-tail finite/tail split certificates |
+| Full line-envelope fold/output correctness | `SCOLHKG/Real/LineEnvelopeFold.lean` | Lean-proved recursive insert-loop/fold correctness: every original line is pointwise dominated by final output active lines; output endpoint dominance lifts to original-input `FinalEnvelopeStackInvariant` and exact KG |
 | Additive KG equivalence condition | `SCOLHKG/Real/KG.lean` | Lean-proved when additive score equals exact gain |
 | Additive-to-exact KG approximation | `SCOLHKG/Real/AdditiveApproxKG.lean` | Lean-proved with `2 eta` exact-KG gap |
 | Information-gain regret accounting | `SCOLHKG/Real/InformationGainRegret.lean` | Lean-proved from an information-gain radius budget |
@@ -243,13 +245,10 @@ versions needed by the manuscript:
 The next mathematical frontier is to derive the events used above from the
 probability model:
 
-1. full recursive proof that the sorted-line `compute_h` stack fold/output
-   satisfies the final global dominance invariant; the concrete intersection
-   arithmetic and branch-level certificate steps are already proved;
-2. multivariate-normal coefficient sampling formalization for the
+1. multivariate-normal coefficient sampling formalization for the
    posterior-sampling candidate generator;
-3. kernel/feature-specific determinant upper bounds beyond the current finite
+2. kernel/feature-specific determinant upper bounds beyond the current finite
    product-ratio identity;
-4. large-seed benchmark decision on whether optional exact posterior-update KG
+3. large-seed benchmark decision on whether optional exact posterior-update KG
    replaces the additive runner;
-5. traffic trajectory/log formalization after fresh-seed traffic experiments.
+4. traffic trajectory/log formalization after fresh-seed traffic experiments.

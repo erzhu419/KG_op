@@ -47,6 +47,7 @@ This gives the proof and experiments one place where the shared-shock term
 | `core.kg.compute_h_certificate(...).trace` | per-step stack snapshots for candidate, break, pop, and push actions | `SCOLHKG.Real.LineEnvelopeAlgorithm` proves pop/push preserve slope and cut order under the Python branch conditions |
 | final `compute_h` hull state | active atoms whose lines dominate all original/processed lines at interval endpoints | `SCOLHKG.Real.LineEnvelopeGlobal` proves final global dominance implies atom certificates and exact line-envelope KG without a runtime validator |
 | `core.kg._build_line_envelope` intersection `z=(a_old-a_new)/(b_new-b_old)` | old active line dominates left of the cut; new line dominates right of the cut; pop and right-tail split preserve certificates over every point of the affected interval/tail | `SCOLHKG.Real.LineEnvelopeIntersection` proves the concrete intersection arithmetic, popped-cell takeover, right-tail finite/tail cell construction, and interval/tail dominance |
+| sorted/collapsed `_build_line_envelope` while-loop fold | recursive insert loop over active lines; popped lines remain pointwise dominated by the final output stack; final output endpoint checks lift to original input lines | `SCOLHKG.Real.LineEnvelopeFold.foldLoop_dominates_input`, `foldLoop_output_endpoint_dominance_to_finalInvariant`, and `foldLoop_lineEnvelopeKG_exact_from_output_endpoint_dominance` |
 | `variance.OrthogonalHVD.update` | residual record `resid2=(y-mu)^2` | `SCOLHKG.Real.HVDImplementation.residualSquare_nonnegative` |
 | `variance.OrthogonalHVD._fit_output`, factor mode | cumulative ridge fit, then `beta=max(beta,0)` and `pred=max(F beta,floor)` | `SCOLHKG.Real.RidgeHVD.ridge_hvd_residual_square_oracle`, `SCOLHKG.Real.HVDImplementation.cumulative_linear_prediction_nonnegative`, `clippedVariance_ge_floor` |
 | `variance.OrthogonalHVD.predict_certification_variance` | `base + model_uncertainty`, guarded by class variance and floor | `SCOLHKG.Real.HVDImplementation.certificationVariance_sound_from_model_uncertainty` |
@@ -72,8 +73,9 @@ proxy above, so the manuscript has two clean paths:
    conditions are Lean-bridged, pop/push cut-order preservation is Lean-proved,
    concrete intersection/pop/split branch certificates are Lean-proved, and
    final global dominance implies exact KG without runtime validation.  The
-   remaining gap is the full recursive list/fold theorem that the complete
-   sorted-line stack output satisfies the global dominance invariant.
+   full recursive sorted-line fold is also Lean-proved: popped active lines are
+   pointwise dominated by the final output stack, and output endpoint dominance
+   lifts to `FinalEnvelopeStackInvariant` over all original input lines.
 2. The posterior-sampling candidate generator is covered by score-selector
    containment and random-set envelope containment, but its full
    multivariate-normal coefficient sampling distribution has not been

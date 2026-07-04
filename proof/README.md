@@ -69,6 +69,10 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/LineEnvelopeIntersection.lean`: concrete `compute_h`
   intersection arithmetic, popped-cell takeover, and right-tail split
   certificates for the stack loop.
+- `SCOLHKG/Real/LineEnvelopeFold.lean`: full sorted-line recursive fold for
+  the `compute_h` active stack; popped lines are proved pointwise dominated by
+  the final output stack, and output endpoint dominance lifts to the original
+  input `FinalEnvelopeStackInvariant`.
 - `SCOLHKG/Real/AdditiveApproxKG.lean`: uniform additive-acquisition
   approximation implies a `2 eta` exact-KG optimality gap.
 - `SCOLHKG/Real/InformationGainRegret.lean`: information-gain radius and
@@ -173,21 +177,23 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
     adaptive sub-Gaussian envelope bound.
 48. Finite-kernel information gain equals a determinant/log-product-style cap
     for the finite product ratio, and this cap feeds the regret accounting.
+49. Full recursive sorted-line `compute_h` stack fold:
+    every input line is pointwise dominated by some final output active line
+    after all while-pop/push insertions.
+50. Final output endpoint dominance over output active lines lifts to
+    `FinalEnvelopeStackInvariant` over all original input lines, closing the
+    list-output gap without a Python runtime validator.
 
 Still to formalize at the deeper mathlib probability/analysis layer:
 
-1. Complete the recursive list/fold theorem that the full sorted-line
-   imperative `compute_h` stack, after all candidates are processed, produces
-   the final global dominance invariant.  The intersection arithmetic and the
-   pop/split certificate-preserving branch steps are now Lean-proved.
-2. Formalize a full multivariate-normal coefficient sampling distribution for
+1. Formalize a full multivariate-normal coefficient sampling distribution for
    `posterior_sample_candidates`; the posterior-score selector containment and
    random-candidate envelope event are already Lean-proved.
-3. Use the optional Python exact posterior-update estimator in large-seed
+2. Use the optional Python exact posterior-update estimator in large-seed
    benchmarks before deciding whether it replaces the additive runner.
-4. Kernel/feature-specific determinant upper bounds for the selected feature
+3. Kernel/feature-specific determinant upper bounds for the selected feature
    spaces, beyond the current finite product-ratio identity.
-5. Traffic trajectory encoder/log model formalization, after the empirical
+4. Traffic trajectory encoder/log model formalization, after the empirical
    traffic case is rebuilt with fresh seeds.
 
 ## Current Math-Depth Assessment
@@ -198,10 +204,12 @@ trajectory occupancy decomposition, ridge-HVD oracle step, additive-to-exact KG
 approximation, posterior-update exact KG, line-envelope KG certificates,
 validator-level stack-hull certificates, stack-loop cut-order preservation,
 final-stack global dominance to exact KG, concrete intersection/pop/split
-branch certificates, closed-form residual-square tail radii, posterior-score
-candidate containment, random candidate envelope events, finite product-ratio
-information gain, and information-gain regret accounting are now Lean-proved.
-The remaining hard work is narrower: finish the full recursive sorted-stack
-fold/output theorem, add a complete multivariate-normal sampler layer if the
-paper needs that exact distribution claim, and decide empirically whether the
-optional exact estimator should replace the additive default.
+branch certificates, full sorted-stack fold/output correctness,
+closed-form residual-square tail radii, posterior-score candidate containment,
+random candidate envelope events, finite product-ratio information gain, and
+information-gain regret accounting are now Lean-proved.  The remaining hard
+work is now outside the line-envelope core: add a complete multivariate-normal
+sampler layer if the paper needs that exact distribution claim, prove
+kernel/feature-specific determinant caps, refresh traffic-log formalization,
+and decide empirically whether the optional exact estimator should replace the
+additive default.
