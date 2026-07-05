@@ -112,6 +112,16 @@ class OrthogonalHVDTests(unittest.TestCase):
         self.assertLessEqual(model.predict_variance(0, x, problem), cap)
         self.assertEqual(model.diagnostics()["residual_variance_cap"]["0"], cap)
 
+    def test_update_clips_residual_before_float_overflow(self):
+        problem = StatePolicyRZDT1(d=5, L=100, sigma=0.04)
+        x = np.array([25, 70, 70, 70, 70])
+        model = OrthogonalHVD(mode="class", n_outputs=1, shrinkage_kappa=0.0)
+        detail = model.update(0, x, 1e200, 0.0, problem=problem)
+        cap = problem.hvd_residual_variance_cap(0)
+        self.assertTrue(np.isfinite(detail["resid2"]))
+        self.assertLessEqual(detail["resid2"], cap)
+        self.assertLessEqual(model.predict_variance(0, tuple(x), problem), cap)
+
     def test_factor_shock_oracle_sigma_matches_cumulative_formula(self):
         base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
         problem = ScalarizedProblem(base)

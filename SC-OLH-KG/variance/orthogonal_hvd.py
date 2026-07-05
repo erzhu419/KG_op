@@ -267,6 +267,33 @@ class OrthogonalHVD:
             return None
         return max(cap, self.floor)
 
+    def _safe_residual_square(self, residual, output_index=0, problem=None):
+        """Square a residual with the same cap used by the HVD fit.
+
+        High-dimensional basis experiments can occasionally produce enormous
+        transient posterior means before the surrogate stabilizes.  The HVD
+        model already caps residual variances during fitting; applying that cap
+        before squaring keeps the numerical path identical in intent but avoids
+        Python float overflow on the raw subtraction.
+        """
+        i = int(output_index)
+        cap = self._residual_variance_cap(i, problem)
+        if cap is not None:
+            max_abs = float(np.sqrt(max(cap, self.floor)))
+        else:
+            max_abs = float(np.sqrt(np.finfo(float).max / 16.0))
+        try:
+            r_abs = abs(float(residual))
+        except (OverflowError, ValueError):
+            r_abs = max_abs
+        if not np.isfinite(r_abs):
+            r_abs = max_abs
+        r_abs = min(r_abs, max_abs)
+        resid2 = r_abs * r_abs
+        if not np.isfinite(resid2):
+            resid2 = cap if cap is not None else max(self.global_var.get(i, 0.01), self.floor)
+        return float(max(resid2, self.floor))
+
     def _residual_square_tail_radius(self, i):
         tail_delta = float(self.config.residual_tail_delta)
         nu, b = gaussian_square_subexp_params(self.global_var.get(int(i), 0.01))
@@ -295,7 +322,10 @@ class OrthogonalHVD:
         self._last_problem = problem or self._last_problem
         i = int(output_index)
         for x, r in zip(X, residuals):
-            self.records[i].append((tuple(int(v) for v in x), float(r) ** 2))
+            self.records[i].append((
+                tuple(int(v) for v in x),
+                self._safe_residual_square(r, i, problem),
+            ))
         self._fit_output(i, problem)
 
     def initialize(self, samples, observations, gpr_models, problem=None):
@@ -313,7 +343,7 @@ class OrthogonalHVD:
             for y_vec in obs_list:
                 for i in range(self.n_outputs):
                     mu = float(gpr_models[i].posterior_mean(x_arr))
-                    resid2 = (float(y_vec[i]) - mu) ** 2
+                    resid2 = self._safe_residual_square(float(y_vec[i]) - mu, i, problem)
                     self.records[i].append((tuple(x_tuple), resid2))
         for i in range(self.n_outputs):
             self._fit_output(i, problem)
@@ -324,7 +354,7 @@ class OrthogonalHVD:
         self._last_problem = problem or self._last_problem
         i = int(i)
         x_tuple = tuple(int(v) for v in np.asarray(x, dtype=int))
-        resid2 = (float(y) - float(mu)) ** 2
+        resid2 = self._safe_residual_square(float(y) - float(mu), i, problem)
         self.records[i].append((x_tuple, resid2))
         old = self.predict_variance(i, x_tuple, problem)
         self._fit_output(i, problem)
