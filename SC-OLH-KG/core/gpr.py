@@ -53,6 +53,7 @@ class ParametricGPR:
         self.numeric_backend_device = str(numeric_backend_device or "auto")
         self.torch_dtype = str(torch_dtype or "float64").lower()
         self.torch_min_rows = max(1, int(torch_min_rows))
+        self._last_torch_import_error = None
 
         self.p = self._infer_basis_dim()
         self.a = np.zeros(self.p, dtype=float)
@@ -62,6 +63,12 @@ class ParametricGPR:
         self.sol_to_idx: dict[tuple[int, ...], int] = {}
         self._state_version = 0
         self._torch_cache = {}
+        if self.numeric_backend in ("torch", "torch_cuda", "cuda"):
+            if self._import_torch() is None:
+                raise RuntimeError(
+                    "numeric backend requested torch, but torch is not importable: "
+                    f"{self._last_torch_import_error}"
+                )
 
     def __getstate__(self):
         state = self.__dict__.copy()
@@ -75,8 +82,10 @@ class ParametricGPR:
     def _import_torch(self):
         try:
             import torch  # noqa: WPS433
-        except Exception:
+        except Exception as exc:
+            self._last_torch_import_error = repr(exc)
             return None
+        self._last_torch_import_error = None
         return torch
 
     def _torch_dtype_obj(self, torch):
@@ -105,7 +114,10 @@ class ParametricGPR:
         torch = self._import_torch()
         if torch is None:
             if backend in ("torch", "torch_cuda", "cuda"):
-                raise RuntimeError("numeric backend requested torch, but torch is not importable")
+                raise RuntimeError(
+                    "numeric backend requested torch, but torch is not importable: "
+                    f"{self._last_torch_import_error}"
+                )
             return None
         if backend in ("auto", "cuda_auto") and not torch.cuda.is_available():
             return None
