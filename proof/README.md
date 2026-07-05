@@ -235,16 +235,25 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
     maximizer gap bridge.
 61. Traffic fresh-log schema rows expose the exact policy/state/action and
     queue/wait/flow/demand-shock fields consumed by the encoder contract.
+62. The ingolstadt21 feature map has an explicit conservative numeric
+    information-gain cap with feature-norm bound `10`, coefficient variance
+    cap `10`, and observation-noise floor `1e-8`.
+63. The exact-MC concentration layer includes the final MC schedule theorem:
+    `M` posterior-update samples reduce the per-candidate variance proxy by
+    `1/M`, and the finite candidate pool is controlled by a pool-level delta.
+64. The traffic schema bridge includes simulator snapshot constructors proving
+    that rows emitted by the SUMO logger expose the required policy, state,
+    action, cell-key, and demand-shock fields.
 
-Still to formalize at the deeper mathlib probability/analysis layer:
+Remaining model-specific work is empirical/binding rather than missing Lean
+theorems:
 
-1. Derive numeric constants for the final chosen feature maps, beyond the
-   current feature-norm/coefficient-variance/noise-floor cap theorem.
-2. Tie the real traffic CSV schema to a specific simulator once fresh-seed
-   traffic logs exist locally.
-3. If exact-MC becomes the paper default after large-seed benchmarks, sharpen
-   the current sub-Gaussian finite-pool concentration theorem to the final
-   simulator noise model and MC sampling schedule.
+1. Generate and archive the real fresh-seed trajectory CSV logs with the SUMO
+   logger now implemented in `sumo_sim.py`.
+2. Decide empirically whether `exact_mc`, `blend`, or additive-with-`2 eta`
+   should be the main runner after the large benchmark matrix finishes.
+3. If the final manuscript chooses a less conservative traffic feature map
+   than the current ingolstadt21 cap, add that sharper numeric cap.
 
 ## Current Math-Depth Assessment
 
@@ -255,8 +264,7 @@ posterior candidate envelopes, mathlib multivariate-Gaussian coefficient
 sampling, residual-square tails, line-envelope KG correctness,
 feature/kernel information-gain caps, traffic occupancy-risk decomposition,
 fresh-log schema semantics, exact-MC concentration, and safe-regret accounting
-all build in Lean without `sorry`.  The remaining hard work is model-specific
-sharpening: numeric constants for the final chosen feature maps, formal linkage
-to a concrete traffic simulator/log format once fresh-seed logs exist, and a
-final exact-MC concentration specialization if exact-MC is promoted as the main
-experimental runner.
+all build in Lean without `sorry`.  The remaining hard work is now experimental
+closure and manuscript selection, not a missing proof skeleton: run the
+trajectory logger, finish the exact/additive decision, and keep the numeric
+feature cap synchronized with the final code path.

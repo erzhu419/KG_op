@@ -13,6 +13,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import benchmark_quality  # noqa: E402
 from benchmark_quality import (  # noqa: E402
@@ -33,16 +34,19 @@ def _safe_name(value):
 def _method_args(args, method):
     values = dict(vars(args))
     values["exact_method"] = method
+    values["acquisition_mode"] = "additive"
     values["exact_kg_mc_samples"] = 0
     values["exact_kg_use_score"] = False
     values["exact_kg_blend"] = 0.0
     if method == "additive":
         pass
     elif method == "exact":
+        values["acquisition_mode"] = "exact_mc"
         values["exact_kg_mc_samples"] = int(args.exact_mc_samples)
         values["exact_kg_use_score"] = True
     elif method.startswith("blend"):
         blend = float(method.removeprefix("blend"))
+        values["acquisition_mode"] = "blend"
         values["exact_kg_mc_samples"] = int(args.exact_mc_samples)
         values["exact_kg_blend"] = blend
     else:
@@ -59,6 +63,7 @@ def _run_one(payload):
         args.variance_mode,
         seed,
         args.use_state_coupling,
+        run_args.acquisition_mode,
     )
     suffix = "+sc" if args.use_state_coupling else ""
     row["variant"] = f"{method}{suffix}"

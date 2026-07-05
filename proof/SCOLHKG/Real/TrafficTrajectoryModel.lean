@@ -178,6 +178,53 @@ theorem required_fields_give_nonempty_policy_state_action
     r.policyId ≠ "" ∧ r.state ≠ "" ∧ r.action ≠ "" := by
   exact h
 
+def fromSimulatorSnapshot
+    (policy seed state action : String)
+    (time : ℕ)
+    (occupancy queue wait flow demandShock : ℝ) :
+    TrafficLogSchemaRow where
+  policyId := policy
+  seed := seed
+  time := time
+  state := state
+  action := action
+  occupancy := occupancy
+  queue := queue
+  wait := wait
+  flow := flow
+  demandShock := demandShock
+
+theorem simulatorSnapshot_required_fields
+    {policy seed state action : String}
+    {time : ℕ}
+    {occupancy queue wait flow demandShock : ℝ}
+    (hp : policy ≠ "")
+    (hs : state ≠ "")
+    (ha : action ≠ "") :
+    (fromSimulatorSnapshot
+      policy seed state action time occupancy queue wait flow demandShock
+    ).hasRequiredFields := by
+  unfold fromSimulatorSnapshot hasRequiredFields
+  exact ⟨hp, hs, ha⟩
+
+theorem simulatorSnapshot_cellKey_eq
+    (policy seed state action : String)
+    (time : ℕ)
+    (occupancy queue wait flow demandShock : ℝ) :
+    (fromSimulatorSnapshot
+      policy seed state action time occupancy queue wait flow demandShock
+    ).cellKey = state ++ "|" ++ action := by
+  rfl
+
+theorem simulatorSnapshot_sharedExposure_eq
+    (policy seed state action : String)
+    (time : ℕ)
+    (occupancy queue wait flow demandShock : ℝ) :
+    (fromSimulatorSnapshot
+      policy seed state action time occupancy queue wait flow demandShock
+    ).sharedExposure = demandShock := by
+  rfl
+
 end TrafficLogSchemaRow
 
 end SCOLHKG.Real

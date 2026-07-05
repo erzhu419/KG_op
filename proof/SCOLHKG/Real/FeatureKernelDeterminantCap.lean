@@ -200,4 +200,55 @@ theorem finiteInformationGain_le_feature_map_norm_cap
       (hnoise t ht)
       (hvarianceNonneg t ht))
 
+/-!
+Concrete conservative constants for the current implementation.
+
+The production GPR basis uses an intercept, normalized raw coordinates,
+quadratic raw coordinates, and optionally an 8-dimensional state feature block.
+For the traffic case `d = 44`; with the default state scale the Euclidean
+feature norm is below `10`.  We keep the theorem interface explicit: the code
+or manuscript must still discharge the feature-norm/noise-floor hypotheses for
+the final chosen map, but the numeric cap consumed by the regret theorem is no
+longer abstract.
+-/
+
+noncomputable def ingolstadt21FeatureMapCap : FeatureMapVarianceCap where
+  featureNormBound := 10
+  coefficientVarianceCap := 10
+  observationNoiseFloor := 1 / 100000000
+
+theorem ingolstadt21FeatureMapCap_valid :
+    ingolstadt21FeatureMapCap.Valid := by
+  unfold ingolstadt21FeatureMapCap FeatureMapVarianceCap.Valid
+  norm_num
+
+theorem ingolstadt21FeatureMap_ratioCap_eq :
+    ingolstadt21FeatureMapCap.ratioCap = 100000000000 := by
+  unfold ingolstadt21FeatureMapCap FeatureMapVarianceCap.ratioCap
+  norm_num
+
+theorem finiteInformationGain_le_ingolstadt21_feature_map_cap
+    {Time : Type*}
+    (steps : Finset Time)
+    (variance noise : Time → ℝ)
+    (hpos :
+      ∀ t ∈ steps, 0 < 1 + variance t / noise t)
+    (hvariance :
+      ∀ t ∈ steps,
+        variance t
+          ≤ ingolstadt21FeatureMapCap.featureNormBound ^ 2
+              * ingolstadt21FeatureMapCap.coefficientVarianceCap)
+    (hnoise :
+      ∀ t ∈ steps, ingolstadt21FeatureMapCap.observationNoiseFloor ≤ noise t)
+    (hvarianceNonneg :
+      ∀ t ∈ steps, 0 ≤ variance t) :
+    finiteInformationGain steps variance noise
+      ≤ steps.card *
+          ((1 / 2 : ℝ)
+            * Real.log (1 + ingolstadt21FeatureMapCap.ratioCap)) := by
+  exact finiteInformationGain_le_feature_map_norm_cap
+    steps variance noise ingolstadt21FeatureMapCap
+    ingolstadt21FeatureMapCap_valid
+    hpos hvariance hnoise hvarianceNonneg
+
 end SCOLHKG.Real

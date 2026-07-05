@@ -14,7 +14,7 @@
 | Certified bound | `core.certification.conservative_chance_margin` with `predict_certification_variance()` | Implemented for theory/legacy modes |
 | SC candidate generation | `state_anchor_points()` and `inverse_state_anchor()` | Synthetic implemented |
 | Self-supervised trajectory representation | `SelfSupervisedTrajectoryEncoder`, `TransformerTrajectoryEncoder` | Implemented for masked, contrastive, and attention-style pooling ablations |
-| Traffic occupancy encoder | `TrafficTrajectoryEncoder` | Implemented for fresh-seed CSV schema; empirical table blocked if logs absent |
+| Traffic occupancy encoder | `TrafficTrajectoryEncoder` plus `sumo_sim.py` trajectory logger | Implemented for fresh-seed CSV schema; large trajectory table requires server-generated logs |
 | Exact terminal KG | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | Formal acquisition variant via `acquisition_mode=exact_mc/blend`; additive remains default ablation |
 
 ## Implementation Notes
@@ -84,7 +84,7 @@ proxy above, so the manuscript has two clean paths:
    connect it to `PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer`
    plus the exact-MC estimator bridge.
 
-## Remaining Code-To-Theory Gaps
+## Code-To-Theory Closure Notes
 
 1. `compute_h` now emits and validates a checkable certificate, the validator
    conditions are Lean-bridged, pop/push cut-order preservation is Lean-proved,
@@ -95,15 +95,17 @@ proxy above, so the manuscript has two clean paths:
    lifts to `FinalEnvelopeStackInvariant` over all original input lines.
 2. The posterior-sampling candidate generator now has both pieces: mathlib
    multivariate-Gaussian coefficient law and finite selector/envelope
-   containment.  What remains is choosing the exact final posterior covariance
-   parameterization for the manuscript implementation.
+   containment.  The remaining manuscript choice is only the exact final
+   posterior covariance parameterization to describe in prose.
 3. Bounded and generic sub-exponential residual-square interfaces are
    available, and the default radius is exposed in code/proof with a
    closed-form inversion theorem.
 4. The exact KG estimator is benchmark-wired as `exact_mc`/`blend` and now has
-   a finite-pool concentration theorem.  It is not yet empirically promoted
-   over the additive default because current probes show a large wall-time
-   multiplier.
-5. The traffic encoder/log parser, schema-row contract, and finite traffic-risk Lean model are
-   implemented, but real fresh-seed logs are not present locally; empirical
-   traffic results should be marked `missing_data` until those logs exist.
+   both a finite-pool concentration theorem and an MC-schedule variance theorem.
+   It is not yet empirically promoted over the additive default because current
+   probes show a large wall-time multiplier; the large benchmark matrix will
+   decide whether main text uses `exact_mc`, `blend`, or additive plus `2 eta`.
+5. The traffic encoder/log parser, SUMO trajectory logger, schema-row
+   contract, and finite traffic-risk Lean model are implemented.  The remaining
+   work is to generate the server-side fresh-seed CSV artifact and include its
+   encoded table in the paper package.

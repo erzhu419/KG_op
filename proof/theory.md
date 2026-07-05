@@ -193,16 +193,17 @@ Proof sketch: decompose regret into posterior mean error, acquisition/search
 error, and feasibility certification error.  Use information-gain bounds for
 the surrogate and Theorem 5-6 for variance/certification.
 
-## Current Gaps
+## Current Empirical Closure Items
 
 1. The code now has a factor-shock synthetic and factor-HVD cumulative feature
    path that feeds `v_C^+` in theory certification.  Exact-MC/blend are
-   implemented and concentration-bridged, but current probes show a large
-   runtime multiplier, so additive remains the paper-grade default until the
-   exact path is vectorized.
-2. The traffic trajectory encoder/log schema is implemented, but real
-   fresh-seed trajectory logs are not available locally.  Traffic empirical
-   tables must be marked `missing_data` until those logs exist.
+   implemented and concentration-bridged, including an MC-schedule variance
+   theorem.  Current probes show a large runtime multiplier, so the benchmark
+   matrix must decide between `exact_mc`, `blend`, and additive plus the
+   `2 eta` approximation theorem.
+2. The traffic trajectory encoder/log schema and SUMO trajectory logger are
+   implemented.  The remaining task is to generate the fresh-seed trajectory
+   CSV on the server and include its encoded table.
 3. The manuscript still needs a final choice between bounded,
    sub-exponential, or Gaussian-derived residual-square tails.
 4. The full recursive `compute_h` sorted-stack fold/output theorem is now
@@ -245,6 +246,7 @@ versions needed by the manuscript:
 | Kernel determinant bridge | `SCOLHKG/Real/KernelDeterminantBridge.lean` | Lean-proved: determinant-ratio cap feeds finite safe-regret accounting |
 | Feature/kernel ratio cap | `SCOLHKG/Real/FeatureKernelDeterminantCap.lean` | Lean-proved: finite feature variance/noise ratio caps imply scalar and determinant information-gain caps |
 | Feature-map norm cap | `SCOLHKG/Real/FeatureKernelDeterminantCap.lean` | Lean-proved: feature norm, coefficient variance, and noise floor imply the finite information-gain cap |
+| ingolstadt21 numeric feature cap | `SCOLHKG/Real/FeatureKernelDeterminantCap.lean` | Lean-proved conservative cap with feature norm `10`, coefficient variance `10`, and noise floor `1e-8` |
 | Safe simple regret | `SCOLHKG/Real/SafeRegret.lean` | Lean-proved from certification and optimization-error events |
 | General conditional variance | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved by invoking mathlib `condVar` law of total variance |
 | GP confidence event | `SCOLHKG/Measure/ProbabilityEvents.lean` | Lean-proved via Chebyshev and finite union bound |
@@ -258,16 +260,12 @@ versions needed by the manuscript:
 | Sharper residual-square tail interface | `SCOLHKG/Measure/ResidualSquareTail.lean` | Lean-proved finite concentration from generic/sub-exponential residual-square tails and closed-form default radius inversion |
 | Posterior exact KG expectation | `SCOLHKG/Measure/PosteriorKG.lean` | Lean-defined as an integral and linked to exact KG maximization |
 | Exact posterior-update SC-OLH-KG | `SCOLHKG/Measure/PosteriorUpdateKG.lean` | Lean-proved as expected terminal certified value improvement under explicit update map |
-| Exact-MC estimator concentration | `SCOLHKG/Measure/ExactMCConcentration.lean` | Lean-proved finite candidate-pool uniform-error probability bound from centered sub-Gaussian MC errors |
+| Exact-MC estimator concentration | `SCOLHKG/Measure/ExactMCConcentration.lean` | Lean-proved finite candidate-pool uniform-error probability bound from centered sub-Gaussian MC errors, plus MC-schedule variance scaling |
 | High-probability safe regret | `SCOLHKG/Measure/SafeRegretEvent.lean` | Lean-proved by bad-event containment |
-| Traffic finite stochastic model | `SCOLHKG/Real/TrafficTrajectoryModel.lean` | Lean-proved finite state-action occupancy plus shared demand-shock decomposition and schema-row field semantics |
+| Traffic finite stochastic model | `SCOLHKG/Real/TrafficTrajectoryModel.lean` | Lean-proved finite state-action occupancy plus shared demand-shock decomposition, schema-row field semantics, and SUMO snapshot row bridge |
 
-The next mathematical frontier is to derive the events used above from the
-probability model:
-
-1. numeric constants for the final selected feature map, beyond the current
-   feature-norm/coefficient-variance/noise-floor cap theorem;
-2. large-seed benchmark decision on whether `exact_mc` or `blend` replaces the
-   additive runner after exact-update vectorization;
-3. binding the finite traffic model to a concrete simulator/log schema after
-   fresh-seed traffic experiments are available.
+The next frontier is no longer missing formal structure.  It is to keep the
+manuscript honest about the final empirical choice: if exact-MC is not the main
+runner, the main text should state additive is an approximation and cite the
+`2 eta` theorem; if exact-MC/blend wins after the large benchmark, cite the
+posterior-update and MC-schedule concentration theorems.

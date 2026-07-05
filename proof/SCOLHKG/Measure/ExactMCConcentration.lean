@@ -137,4 +137,80 @@ theorem exactMC_constant_radius_bad_event_le_sum
     (fun x hx ↦ heta)
     (fun x hx ↦ by simpa using htail x hx)
 
+structure ExactMCSchedule where
+  mcSamples : ℕ
+  perDrawVarianceProxy : ℝ
+  poolDelta : ℝ
+  radius : ℝ
+
+def ExactMCSchedule.Valid
+    (s : ExactMCSchedule)
+    (poolSize : ℕ) : Prop :=
+  0 < s.mcSamples ∧
+  0 < s.perDrawVarianceProxy ∧
+  0 ≤ s.radius ∧
+  0 ≤ s.poolDelta ∧
+  2 * Real.exp
+      (-(s.radius) ^ 2
+        / (2 * (s.perDrawVarianceProxy / s.mcSamples)))
+    ≤ s.poolDelta / poolSize
+
+theorem exactMC_schedule_bad_event_le_pool_delta
+    (candidates : Finset Design)
+    (exact : Design → ℝ)
+    (estimate : Ω → Design → ℝ)
+    (schedule : ExactMCSchedule)
+    [IsFiniteMeasure μ]
+    (hvalid : schedule.Valid candidates.card)
+    (hsub :
+      ∀ x ∈ candidates,
+        HasSubgaussianMGF
+          (fun ω ↦ estimate ω x - exact x)
+          ⟨schedule.perDrawVarianceProxy / schedule.mcSamples,
+            by
+              have hpos :
+                  0 < schedule.perDrawVarianceProxy / schedule.mcSamples := by
+                exact div_pos hvalid.2.1 (Nat.cast_pos.mpr hvalid.1)
+              exact hpos.le⟩
+          μ) :
+    μ.real (ExactMCBadEvent candidates exact estimate schedule.radius)
+      ≤ schedule.poolDelta := by
+  let mcProxy : NNReal :=
+    ⟨schedule.perDrawVarianceProxy / schedule.mcSamples,
+      by
+        have hpos :
+            0 < schedule.perDrawVarianceProxy / schedule.mcSamples := by
+          exact div_pos hvalid.2.1 (Nat.cast_pos.mpr hvalid.1)
+        exact hpos.le⟩
+  have hmcProxy_coe :
+      (mcProxy : ℝ)
+        = schedule.perDrawVarianceProxy / schedule.mcSamples := rfl
+  calc
+    μ.real (ExactMCBadEvent candidates exact estimate schedule.radius)
+      ≤ ∑ x ∈ candidates, schedule.poolDelta / candidates.card := by
+        exact exactMC_constant_radius_bad_event_le_sum
+          (μ := μ)
+          candidates
+          exact
+          estimate
+          (fun _ ↦ mcProxy)
+          (fun _ ↦ schedule.poolDelta / candidates.card)
+          (by simpa [mcProxy] using hsub)
+          hvalid.2.2.1
+          (fun x hx ↦ by
+            simpa [hmcProxy_coe] using hvalid.2.2.2.2)
+    _ = candidates.card * (schedule.poolDelta / candidates.card) := by
+        simp
+    _ ≤ schedule.poolDelta := by
+        by_cases hzero : candidates.card = 0
+        · simp [hzero, hvalid.2.2.2.1]
+        · have hpos : (0 : ℝ) < candidates.card := by
+            exact_mod_cast Nat.pos_of_ne_zero hzero
+          have hne : (candidates.card : ℝ) ≠ 0 := ne_of_gt hpos
+          calc
+            (candidates.card : ℝ)
+                * (schedule.poolDelta / candidates.card)
+              = schedule.poolDelta := by field_simp [hne]
+            _ ≤ schedule.poolDelta := le_rfl
+
 end SCOLHKG.Measure

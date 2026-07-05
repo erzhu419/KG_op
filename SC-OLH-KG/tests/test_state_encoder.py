@@ -182,6 +182,29 @@ class StateEncoderTests(unittest.TestCase):
             status = TrafficTrajectoryEncoder.missing_data_status(path)
         self.assertEqual(status["status"], "missing_data")
 
+    def test_traffic_strict_none_uses_state_meta_not_raw_shortcuts(self):
+        from problems.traffic_ingolstadt21 import Ingolstadt21ScalarizedTrafficProblem
+
+        problem = Ingolstadt21ScalarizedTrafficProblem(
+            historical_anchor_policy="strict_none",
+            seed=0,
+        )
+        self.assertEqual(problem.structured_candidates(n=8), [])
+        self.assertEqual(problem.recommendation_refinement_candidates(), [])
+
+        anchors = problem.state_anchor_points(n=6, rng=np.random.default_rng(0))
+        self.assertLess(anchors[0]["mean"], 0.12)
+        rows = []
+        for anchor in anchors[:3]:
+            rows.extend(problem.inverse_state_anchor(
+                anchor,
+                rng=np.random.default_rng(1),
+                n=2,
+            ))
+        self.assertGreaterEqual(len(rows), 3)
+        norm_means = [float(np.mean(problem.normalize(x))) for x in rows]
+        self.assertLess(max(norm_means), 0.30)
+
     def test_self_supervised_trajectory_encoder_masked_and_contrastive(self):
         records = []
         for pid, queue in [("p0", 1.0), ("p1", 8.0), ("p2", 9.0)]:

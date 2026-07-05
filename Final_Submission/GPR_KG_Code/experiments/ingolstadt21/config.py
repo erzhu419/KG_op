@@ -24,10 +24,23 @@ _HERE        = os.path.dirname(os.path.abspath(__file__))
 # locales (the project root path contains Chinese characters), so the network
 # data lives under an ASCII-only mirror.  Override with INGOLSTADT21_DATA_DIR
 # if needed; bootstrap_data() copies the files there if missing.
-DATA_DIR     = os.environ.get("INGOLSTADT21_DATA_DIR", r"C:\sumo_scenarios\ingolstadt21")
+_PROJECT_DATA_MIRROR = os.path.join(_HERE, "data")  # in-tree copy for git tracking
+
+
+def _default_data_dir() -> str:
+    override = os.environ.get("INGOLSTADT21_DATA_DIR")
+    if override:
+        return override
+    if os.name == "nt":
+        return r"C:\sumo_scenarios\ingolstadt21"
+    # On Linux/WSL the repository path is ASCII-safe and avoids creating a
+    # literal "C:\..." directory relative to the current working directory.
+    return _PROJECT_DATA_MIRROR
+
+
+DATA_DIR     = _default_data_dir()
 NET_FILE     = os.path.join(DATA_DIR, "ingolstadt21.net.xml")
 ROUTE_FILE   = os.path.join(DATA_DIR, "ingolstadt21.rou.xml")
-_PROJECT_DATA_MIRROR = os.path.join(_HERE, "data")  # in-tree copy for git tracking
 
 
 def bootstrap_data():
@@ -43,6 +56,8 @@ def bootstrap_data():
     for fname in ("ingolstadt21.net.xml", "ingolstadt21.rou.xml"):
         src = os.path.join(_PROJECT_DATA_MIRROR, fname)
         dst = os.path.join(DATA_DIR, fname)
+        if os.path.abspath(src) == os.path.abspath(dst):
+            continue
         if not os.path.exists(dst) and os.path.exists(src):
             shutil.copy2(src, dst)
 

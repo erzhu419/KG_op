@@ -59,9 +59,11 @@ class SingleOLHKGConfig:
     recommendation_safety_z: float = 0.5
     recommendation_noise_floor_scale: float = 1.0
     recommendation_infeasible_penalty: float = 5.0
+    recommendation_infeasible_strategy: str = "penalty"
     recommendation_calibration: bool = True
     recommendation_calibration_ridge: float = 1e-6
     recommendation_calibration_min_obs: int = 8
+    recommend_observed_only: bool = False
     recommendation_axis_oracle: bool = True
     recommendation_axis_candidate_count: int = -1
     use_state_coupling: bool = False
@@ -74,6 +76,7 @@ class SingleOLHKGConfig:
     exact_kg_use_score: bool = False
     exact_kg_blend: float = 0.0
     eval_pool_size: int = 500
+    evaluate_interval: int = 5
     seed: int = 123
 
 
@@ -84,6 +87,7 @@ class SingleOLHKGAlgorithm:
         self.problem = problem
         self.config = config or SingleOLHKGConfig()
         self.rng = np.random.default_rng(self.config.seed)
+        self.rec_rng = np.random.default_rng(int(self.config.seed) + 1_000_003)
 
         self.encoder = self._build_encoder()
         basis_map = None
@@ -302,10 +306,12 @@ class SingleOLHKGAlgorithm:
 
     def _recommendation_pool(self):
         pool = set(x for x, _ in self.history)
+        if self.config.recommend_observed_only:
+            return list(pool)
         for x in random_candidates(
             self.problem,
             self._recommendation_random_pool_size(),
-            self.rng,
+            self.rec_rng,
         ):
             pool.add(tuple(x))
         if self.config.recommendation_axis_oracle and hasattr(
@@ -315,9 +321,9 @@ class SingleOLHKGAlgorithm:
                 pool.add(tuple(x))
         elif not self.config.recommendation_axis_oracle:
             n_axis = self._recommendation_axis_candidate_count()
-            for x in axis_landmark_candidates(self.problem, n_axis, self.rng):
+            for x in axis_landmark_candidates(self.problem, n_axis, self.rec_rng):
                 pool.add(tuple(x))
-            for x in axis_candidates(self.problem, n_axis, self.rng):
+            for x in axis_candidates(self.problem, n_axis, self.rec_rng):
                 pool.add(tuple(x))
         for x in self._recommendation_refinement_candidates():
             pool.add(tuple(x))
@@ -416,6 +422,13 @@ class SingleOLHKGAlgorithm:
         feasible = robust_margins <= 0.0
         if np.any(feasible):
             local = int(np.argmin(np.where(feasible, mu_obj, np.inf)))
+        elif str(self.config.recommendation_infeasible_strategy).lower() in (
+            "min_margin",
+            "lexicographic",
+        ):
+            min_margin = float(np.min(robust_margins))
+            near_min_margin = robust_margins <= min_margin + 1e-12
+            local = int(np.argmin(np.where(near_min_margin, mu_obj, np.inf)))
         else:
             scaled_obj = mu_obj - float(np.min(mu_obj))
             obj_span = float(np.max(scaled_obj))
@@ -523,6 +536,13 @@ class SingleOLHKGAlgorithm:
         feasible = robust_margins <= 0.0
         if np.any(feasible):
             return float(np.min(np.where(feasible, mu_obj, np.inf)))
+        if str(self.config.recommendation_infeasible_strategy).lower() in (
+            "min_margin",
+            "lexicographic",
+        ):
+            min_margin = float(np.min(robust_margins))
+            near_min_margin = robust_margins <= min_margin + 1e-12
+            return float(np.min(np.where(near_min_margin, mu_obj, np.inf)))
         scaled_obj = mu_obj - float(np.min(mu_obj))
         obj_span = float(np.max(scaled_obj))
         if obj_span > 1e-12:
@@ -754,7 +774,10 @@ class SingleOLHKGAlgorithm:
             row["n_visited"] = len(self.gpr[0].sampled_set)
 
             t0 = time.time()
-            if iteration % 5 == 0 or n == self.config.N - 1:
+            eval_interval = int(self.config.evaluate_interval)
+            if eval_interval > 0 and (
+                iteration % eval_interval == 0 or n == self.config.N - 1
+            ):
                 rec_x_after, rec_after = self._solve_posterior_recommendation()
                 eval_after = self._evaluate_recommendation(rec_x_after)
                 row["recommendation_after"] = list(map(int, rec_x_after))

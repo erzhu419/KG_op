@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
+from performance import benchmark_exact_kg  # noqa: E402
 from problems.rzdt import RZDT1  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 
@@ -92,6 +93,17 @@ class ExactKGTests(unittest.TestCase):
         )
         alg = SingleOLHKGAlgorithm(problem, config)
         self.assertEqual(alg._effective_exact_kg_mc_samples(), 0)
+
+    def test_exact_benchmark_methods_set_acquisition_mode(self):
+        class Args:
+            exact_mc_samples = 3
+
+        exact = benchmark_exact_kg._method_args(Args(), "exact")
+        self.assertEqual(exact.acquisition_mode, "exact_mc")
+        self.assertTrue(exact.exact_kg_use_score)
+        blend = benchmark_exact_kg._method_args(Args(), "blend0.25")
+        self.assertEqual(blend.acquisition_mode, "blend")
+        self.assertEqual(blend.exact_kg_blend, 0.25)
 
 
 if __name__ == "__main__":
