@@ -8,6 +8,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
+from encoders.policy_state_encoder import StateCoupledFeatureMap  # noqa: E402
 from problems.rzdt import HighDimStatePolicyRZDT1, StatePolicyRZDT1  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 from representation.manifold import (  # noqa: E402
@@ -131,6 +133,24 @@ class RepresentationTests(unittest.TestCase):
         self.assertEqual(encoder.diagnostics()["last_inverse_mode"], "problem_state_anchor")
         spreads = [problem.base.policy_state(x)[2] for x in candidates]
         self.assertLessEqual(max(spreads), 1e-12)
+
+    def test_explicit_manifold_basis_overrides_problem_default_basis(self):
+        problem = ScalarizedProblem(HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04))
+        alg = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                use_state_coupling=True,
+                use_state_basis=True,
+                state_basis_mode="manifold",
+                encoder_kind="pca_manifold",
+                encoder_latent_dim=4,
+                encoder_fit_pool_size=16,
+                seed=9,
+            ),
+        )
+        basis_map = alg.gpr[0].basis_map
+        self.assertIsInstance(basis_map, StateCoupledFeatureMap)
+        self.assertEqual(basis_map.feature_dim, 4)
 
     def test_masked_ssl_record_diagnostics_are_finite(self):
         encoder = MaskedTrajectoryEncoder(problem=None, latent_dim=4).fit(tiny_records())

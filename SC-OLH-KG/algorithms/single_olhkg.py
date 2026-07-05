@@ -100,14 +100,14 @@ class SingleOLHKGAlgorithm:
 
         self.encoder = self._build_encoder()
         basis_map = None
-        if hasattr(problem, "gpr_basis_map"):
-            basis_map = problem.gpr_basis_map()
-        if basis_map is None and self.config.use_state_basis:
+        if self.config.use_state_basis:
             basis_map = StateCoupledFeatureMap(
                 problem,
                 self.encoder,
                 mode=self.config.state_basis_mode,
             )
+        elif hasattr(problem, "gpr_basis_map"):
+            basis_map = problem.gpr_basis_map()
         self._attach_representation_to_problem()
         self.gpr = [
             ParametricGPR(
