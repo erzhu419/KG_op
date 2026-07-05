@@ -432,7 +432,7 @@ def run_anchor_only(args, variance_mode, seed):
         "x_recommended": x_rec,
         "wall_time_sec": float(wall),
     }, indent=2), flush=True)
-    print("DONE", flush=True)
+    print("SUBRUN_DONE", flush=True)
     return summary
 
 
@@ -535,7 +535,7 @@ def run_one(args, variant, variance_mode, seed):
         "x_recommended": x_rec,
         "wall_time_sec": float(wall),
     }, indent=2), flush=True)
-    print("DONE", flush=True)
+    print("SUBRUN_DONE", flush=True)
     return summary
 
 
@@ -641,6 +641,7 @@ def main():
             for row in rows
         ],
     }), indent=2))
+    print("DONE", flush=True)
 
 
 if __name__ == "__main__":
