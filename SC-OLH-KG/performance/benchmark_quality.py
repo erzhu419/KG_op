@@ -161,6 +161,8 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
         state_basis_mode=args.state_basis_mode,
+        raw_basis_dim=args.raw_basis_dim,
+        raw_projection_seed=args.raw_projection_seed,
         encoder_kind=args.encoder_kind,
         encoder_latent_dim=args.encoder_latent_dim,
         encoder_fit_pool_size=args.encoder_fit_pool_size,
@@ -185,6 +187,8 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         "use_state_coupling": bool(use_state_coupling),
         "use_state_basis": bool(use_state_coupling and args.use_state_basis),
         "state_basis_mode": args.state_basis_mode,
+        "raw_basis_dim": int(args.raw_basis_dim),
+        "raw_projection_seed": int(args.raw_projection_seed),
         "encoder_kind": args.encoder_kind,
         "encoder_latent_dim": int(args.encoder_latent_dim),
         "encoder_fit_pool_size": int(args.encoder_fit_pool_size),
@@ -239,6 +243,8 @@ def summarize_variant(rows):
         "use_state_coupling": rows[0]["use_state_coupling"],
         "use_state_basis": rows[0].get("use_state_basis", False),
         "state_basis_mode": rows[0].get("state_basis_mode", "raw+state"),
+        "raw_basis_dim": rows[0].get("raw_basis_dim", -1),
+        "raw_projection_seed": rows[0].get("raw_projection_seed", 314159),
         "acquisition_mode": rows[0].get("acquisition_mode", "additive"),
         "beta_g": rows[0].get("beta_g", 0.0),
         "certification_mode": rows[0].get("certification_mode", "legacy"),
@@ -390,6 +396,8 @@ def run_benchmark(args):
             "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
             "use_state_basis": args.use_state_basis,
             "state_basis_mode": args.state_basis_mode,
+            "raw_basis_dim": args.raw_basis_dim,
+            "raw_projection_seed": args.raw_projection_seed,
             "encoder_kind": args.encoder_kind,
             "encoder_latent_dim": args.encoder_latent_dim,
             "encoder_fit_pool_size": args.encoder_fit_pool_size,
@@ -414,6 +422,7 @@ def flatten_summary(summary):
         "use_state_coupling": summary["use_state_coupling"],
         "use_state_basis": summary.get("use_state_basis", False),
         "state_basis_mode": summary.get("state_basis_mode", "raw+state"),
+        "raw_basis_dim": summary.get("raw_basis_dim", -1),
         "acquisition_mode": summary.get("acquisition_mode", "additive"),
         "beta_g": summary.get("beta_g", 0.0),
         "certification_mode": summary.get("certification_mode", "legacy"),
@@ -537,6 +546,17 @@ def main():
         default="raw+state",
         choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
     )
+    parser.add_argument(
+        "--raw_basis_dim",
+        type=int,
+        default=-1,
+        help=(
+            "If positive and smaller than 2*d, project the raw [x,x^2] basis "
+            "to this many fixed random features before concatenating state/"
+            "manifold features."
+        ),
+    )
+    parser.add_argument("--raw_projection_seed", type=int, default=314159)
     parser.add_argument(
         "--encoder_kind",
         default="synthetic",

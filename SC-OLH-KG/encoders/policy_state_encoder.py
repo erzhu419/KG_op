@@ -543,32 +543,59 @@ class StateCoupledFeatureMap:
     GPR basis adds an intercept outside this object.
     """
 
-    def __init__(self, problem, encoder=None, state_scale=0.2, mode="raw+state"):
+    def __init__(
+        self,
+        problem,
+        encoder=None,
+        state_scale=0.2,
+        mode="raw+state",
+        raw_basis_dim: int = -1,
+        raw_projection_seed: int = 314159,
+    ):
         self.problem = problem
         self.encoder = encoder or SyntheticPolicyStateEncoder(problem)
         self.state_scale = float(state_scale)
         self.mode = str(mode or "raw+state").lower()
         d = int(problem.d)
         rho_d = int(self.encoder.feature_dim)
+        self.raw_dim = 2 * d
+        self.raw_basis_dim = int(raw_basis_dim)
+        self.raw_projection_seed = int(raw_projection_seed)
+        self.raw_projection_: np.ndarray | None = None
+        raw_out_dim = self.raw_dim
+        if 0 < self.raw_basis_dim < self.raw_dim:
+            rng = np.random.default_rng(self.raw_projection_seed)
+            self.raw_projection_ = (
+                rng.normal(size=(self.raw_dim, self.raw_basis_dim))
+                / np.sqrt(float(self.raw_basis_dim))
+            )
+            raw_out_dim = self.raw_basis_dim
         if self.mode == "raw":
-            self.feature_dim = 2 * d
+            self.feature_dim = raw_out_dim
         elif self.mode in ("state", "manifold"):
             self.feature_dim = rho_d
         elif self.mode in ("raw+state", "raw_plus_state", "raw+manifold", "raw_plus_manifold"):
-            self.feature_dim = 2 * d + rho_d
+            self.feature_dim = raw_out_dim + rho_d
         else:
             raise ValueError(
                 "state basis mode must be raw, state/manifold, or raw+state/raw+manifold"
             )
 
-    def features(self, x):
+    def _raw_features(self, x):
         z = np.asarray(self.problem.normalize(x), dtype=float)
+        raw = np.concatenate([z, z ** 2])
+        if self.raw_projection_ is not None:
+            raw = raw @ self.raw_projection_
+        return np.asarray(raw, dtype=float)
+
+    def features(self, x):
+        raw = self._raw_features(x)
         rho = self.state_scale * self.encoder.occupancy(x)
         if self.mode == "raw":
-            return np.concatenate([z, z ** 2])
+            return raw
         if self.mode in ("state", "manifold"):
             return rho
-        return np.concatenate([z, z ** 2, rho])
+        return np.concatenate([raw, rho])
 
 
 class TrafficTrajectoryEncoder:

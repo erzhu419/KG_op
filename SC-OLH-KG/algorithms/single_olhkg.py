@@ -76,6 +76,8 @@ class SingleOLHKGConfig:
     use_state_coupling: bool = False
     use_state_basis: bool = False
     state_basis_mode: str = "raw+state"
+    raw_basis_dim: int = -1
+    raw_projection_seed: int = 314159
     use_manifold_hvd_features: bool = True
     encoder_kind: str = "synthetic"
     encoder_latent_dim: int = 8
@@ -105,6 +107,8 @@ class SingleOLHKGAlgorithm:
                 problem,
                 self.encoder,
                 mode=self.config.state_basis_mode,
+                raw_basis_dim=self.config.raw_basis_dim,
+                raw_projection_seed=self.config.raw_projection_seed,
             )
         elif hasattr(problem, "gpr_basis_map"):
             basis_map = problem.gpr_basis_map()

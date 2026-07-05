@@ -152,6 +152,29 @@ class RepresentationTests(unittest.TestCase):
         self.assertIsInstance(basis_map, StateCoupledFeatureMap)
         self.assertEqual(basis_map.feature_dim, 4)
 
+    def test_raw_manifold_basis_can_compress_raw_features(self):
+        problem = ScalarizedProblem(HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04))
+        encoder = PCAManifoldEncoder(
+            problem,
+            latent_dim=4,
+            fit_pool_size=16,
+            rng=np.random.default_rng(11),
+        )
+        basis = StateCoupledFeatureMap(
+            problem,
+            encoder,
+            mode="raw+manifold",
+            raw_basis_dim=16,
+            raw_projection_seed=7,
+        )
+        x = tuple([25] * problem.d)
+        f1 = basis.features(x)
+        f2 = basis.features(x)
+        self.assertEqual(basis.feature_dim, 20)
+        self.assertEqual(f1.shape, (20,))
+        self.assertTrue(np.all(np.isfinite(f1)))
+        np.testing.assert_allclose(f1, f2)
+
     def test_masked_ssl_record_diagnostics_are_finite(self):
         encoder = MaskedTrajectoryEncoder(problem=None, latent_dim=4).fit(tiny_records())
         feat = encoder.features("p0")

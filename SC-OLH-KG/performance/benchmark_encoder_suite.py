@@ -121,6 +121,13 @@ def main():
         choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
     )
     parser.add_argument(
+        "--raw_basis_dim",
+        type=int,
+        default=-1,
+        help="Positive value enables fixed random projection of the raw [x,x^2] basis.",
+    )
+    parser.add_argument("--raw_projection_seed", type=int, default=314159)
+    parser.add_argument(
         "--encoder_kinds",
         default=(
             "synthetic,pca_manifold,kernel_manifold,ssl_masked,"
