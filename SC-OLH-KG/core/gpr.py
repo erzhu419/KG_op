@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 import numpy as np
 
 
-ArrayLike = np.ndarray | list[float] | tuple[float, ...]
+ArrayLike = Union[np.ndarray, list, tuple]
 
 
 @dataclass
