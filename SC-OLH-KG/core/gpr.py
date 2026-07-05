@@ -39,12 +39,20 @@ class ParametricGPR:
         normalize_func: Optional[Callable[[ArrayLike], np.ndarray]] = None,
         basis_map=None,
         basis_config: BasisConfig | None = None,
+        numeric_backend: str = "numpy",
+        numeric_backend_device: str = "auto",
+        torch_dtype: str = "float64",
+        torch_min_rows: int = 128,
     ):
         self.d = int(d)
         self.lambda_i = float(lambda_i)
         self.normalize_func = normalize_func
         self.basis_map = basis_map
         self.basis_config = basis_config or BasisConfig()
+        self.numeric_backend = str(numeric_backend or "numpy").lower()
+        self.numeric_backend_device = str(numeric_backend_device or "auto")
+        self.torch_dtype = str(torch_dtype or "float64").lower()
+        self.torch_min_rows = max(1, int(torch_min_rows))
 
         self.p = self._infer_basis_dim()
         self.a = np.zeros(self.p, dtype=float)
@@ -52,6 +60,85 @@ class ParametricGPR:
 
         self.sampled_set: list[tuple[int, ...]] = []
         self.sol_to_idx: dict[tuple[int, ...], int] = {}
+        self._state_version = 0
+        self._torch_cache = {}
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state["_torch_cache"] = {}
+        return state
+
+    def _invalidate_backend_cache(self):
+        self._state_version += 1
+        self._torch_cache = {}
+
+    def _import_torch(self):
+        try:
+            import torch  # noqa: WPS433
+        except Exception:
+            return None
+        return torch
+
+    def _torch_dtype_obj(self, torch):
+        if self.torch_dtype in ("float32", "single"):
+            return torch.float32
+        return torch.float64
+
+    def _resolve_torch_device(self, torch):
+        requested = self.numeric_backend_device
+        if requested == "auto":
+            if torch.cuda.is_available():
+                return torch.device("cuda")
+            return torch.device("cpu")
+        device = torch.device(requested)
+        if device.type == "cuda" and not torch.cuda.is_available():
+            raise RuntimeError("numeric backend requested CUDA, but torch.cuda is unavailable")
+        return device
+
+    def _torch_context(self, rows=0, force=False):
+        """Return `(torch, device, dtype)` when the optional torch backend is active."""
+        backend = self.numeric_backend
+        if backend in ("", "numpy", "np"):
+            return None
+        if not force and int(rows) > 0 and int(rows) < self.torch_min_rows:
+            return None
+        torch = self._import_torch()
+        if torch is None:
+            if backend in ("torch", "torch_cuda", "cuda"):
+                raise RuntimeError("numeric backend requested torch, but torch is not importable")
+            return None
+        if backend in ("auto", "cuda_auto") and not torch.cuda.is_available():
+            return None
+        if backend in ("torch_cuda", "cuda") and not torch.cuda.is_available():
+            raise RuntimeError("numeric backend requested CUDA, but torch.cuda is unavailable")
+        device = self._resolve_torch_device(torch)
+        if backend in ("auto", "cuda_auto") and device.type != "cuda":
+            return None
+        return torch, device, self._torch_dtype_obj(torch)
+
+    def backend_status(self):
+        torch = self._import_torch()
+        effective = "numpy"
+        device = None
+        cuda_available = False
+        if torch is not None:
+            cuda_available = bool(torch.cuda.is_available())
+            try:
+                ctx = self._torch_context(rows=self.torch_min_rows, force=True)
+            except RuntimeError:
+                ctx = None
+            if ctx is not None and self.numeric_backend not in ("numpy", "np", ""):
+                effective = "torch"
+                device = str(ctx[1])
+        return {
+            "requested_backend": self.numeric_backend,
+            "effective_backend": effective,
+            "device": device,
+            "torch_available": bool(torch is not None),
+            "cuda_available": bool(cuda_available),
+            "torch_dtype": self.torch_dtype,
+            "torch_min_rows": int(self.torch_min_rows),
+        }
 
     def _infer_basis_dim(self) -> int:
         if self.basis_map is not None:
@@ -124,6 +211,13 @@ class ParametricGPR:
 
     def posterior_mean_many(self, X: list[ArrayLike] | np.ndarray) -> np.ndarray:
         A = self.augmented_feature_matrix(X)
+        ctx = self._torch_context(rows=len(A))
+        if ctx is not None:
+            torch, device, dtype = ctx
+            with torch.no_grad():
+                A_t = torch.as_tensor(A, dtype=dtype, device=device)
+                a_t, _ = self.torch_state(rows=len(A), force=True)
+                return (A_t @ a_t).detach().cpu().numpy()
         return A @ self.a
 
     def posterior_var(self, x: ArrayLike) -> float:
@@ -139,7 +233,16 @@ class ParametricGPR:
         if len(X) == 0:
             return np.zeros(0, dtype=float)
         A = self.augmented_feature_matrix(X)
-        var = np.einsum("ij,jk,ik->i", A, self.C, A)
+        ctx = self._torch_context(rows=len(A))
+        if ctx is not None:
+            torch, device, dtype = ctx
+            with torch.no_grad():
+                A_t = torch.as_tensor(A, dtype=dtype, device=device)
+                _, C_t = self.torch_state(rows=len(A), force=True)
+                var_t = torch.sum((A_t @ C_t) * A_t, dim=1)
+                var = var_t.detach().cpu().numpy()
+        else:
+            var = np.einsum("ij,jk,ik->i", A, self.C, A)
         unseen = np.array([
             tuple(int(v) for v in np.asarray(x, dtype=int)) not in self.sol_to_idx
             for x in X
@@ -162,6 +265,7 @@ class ParametricGPR:
         C_new[: n - 1, : n - 1] = self.C
         C_new[n - 1, n - 1] = self.lambda_i
         self.C = C_new
+        self._invalidate_backend_cache()
 
     def set_parametric_prior(
         self,
@@ -178,6 +282,7 @@ class ParametricGPR:
         self.C = max(float(prior_var), 1e-12) * np.eye(self.p)
         self.sampled_set = []
         self.sol_to_idx = {}
+        self._invalidate_backend_cache()
 
     def update(self, x: ArrayLike, y: float, sigma2_hat: float) -> None:
         """Rank-one Kalman update using the plug-in observation variance."""
@@ -190,3 +295,32 @@ class ParametricGPR:
         self.a = self.a + gain * innovation
         self.C = self.C - np.outer(gain, Ce)
         self.C = 0.5 * (self.C + self.C.T)
+        self._invalidate_backend_cache()
+
+    def torch_state(self, rows=0, force=False):
+        ctx = self._torch_context(rows=rows, force=force)
+        if ctx is None:
+            return None
+        torch, device, dtype = ctx
+        key = (self._state_version, str(device), str(dtype))
+        cached = self._torch_cache.get(key)
+        if cached is not None:
+            return cached
+        with torch.no_grad():
+            a_t = torch.as_tensor(self.a, dtype=dtype, device=device)
+            C_t = torch.as_tensor(self.C, dtype=dtype, device=device)
+        self._torch_cache = {key: (a_t, C_t)}
+        return a_t, C_t
+
+    def augmented_feature_matrix_torch(
+        self,
+        X: list[ArrayLike] | np.ndarray,
+        rows=0,
+        force=False,
+    ):
+        ctx = self._torch_context(rows=rows or len(X), force=force)
+        if ctx is None:
+            return None
+        torch, device, dtype = ctx
+        A = self.augmented_feature_matrix(X)
+        return torch.as_tensor(A, dtype=dtype, device=device)

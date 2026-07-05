@@ -78,6 +78,10 @@ class SingleOLHKGConfig:
     state_basis_mode: str = "raw+state"
     raw_basis_dim: int = -1
     raw_projection_seed: int = 314159
+    numeric_backend: str = "numpy"
+    numeric_backend_device: str = "auto"
+    torch_dtype: str = "float64"
+    torch_min_rows: int = 128
     use_manifold_hvd_features: bool = True
     encoder_kind: str = "synthetic"
     encoder_latent_dim: int = 8
@@ -120,6 +124,10 @@ class SingleOLHKGAlgorithm:
                 self.config.prior_var,
                 normalize_func=problem.normalize,
                 basis_map=basis_map,
+                numeric_backend=self.config.numeric_backend,
+                numeric_backend_device=self.config.numeric_backend_device,
+                torch_dtype=self.config.torch_dtype,
+                torch_min_rows=self.config.torch_min_rows,
             )
             for _ in range(2)
         ]
@@ -890,6 +898,7 @@ class SingleOLHKGAlgorithm:
             "n_distinct_solutions": int(len(self.gpr[0].sampled_set)),
             "stage_times": summarize_stage_times(self.iteration_log),
             "variance": self.variance_model.diagnostics(),
+            "numeric_backend": self.gpr[0].backend_status(),
             "config": asdict(self.config),
         }
         return self.final_log

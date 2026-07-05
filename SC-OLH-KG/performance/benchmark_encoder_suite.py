@@ -128,6 +128,28 @@ def main():
     )
     parser.add_argument("--raw_projection_seed", type=int, default=314159)
     parser.add_argument(
+        "--numeric_backend",
+        default="numpy",
+        choices=["numpy", "auto", "torch", "torch_cuda", "cuda"],
+        help="Optional matrix backend for GPR/KG algebra. Defaults to numpy.",
+    )
+    parser.add_argument(
+        "--numeric_backend_device",
+        default="auto",
+        help="Torch device such as auto, cuda, cuda:0, or cpu.",
+    )
+    parser.add_argument(
+        "--torch_dtype",
+        default="float64",
+        choices=["float64", "float32", "double", "single"],
+    )
+    parser.add_argument(
+        "--torch_min_rows",
+        type=int,
+        default=128,
+        help="Minimum candidate/sample rows before using torch backend.",
+    )
+    parser.add_argument(
         "--encoder_kinds",
         default=(
             "synthetic,pca_manifold,kernel_manifold,ssl_masked,"

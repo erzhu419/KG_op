@@ -96,6 +96,12 @@ def _problem_args(args, problem):
         disable_recommendation_axis_oracle=args.disable_recommendation_axis_oracle,
         use_state_basis=args.use_state_basis,
         state_basis_mode=args.state_basis_mode,
+        raw_basis_dim=args.raw_basis_dim,
+        raw_projection_seed=args.raw_projection_seed,
+        numeric_backend=args.numeric_backend,
+        numeric_backend_device=args.numeric_backend_device,
+        torch_dtype=args.torch_dtype,
+        torch_min_rows=args.torch_min_rows,
         encoder_kind=args.encoder_kind,
         encoder_latent_dim=args.encoder_latent_dim,
         encoder_fit_pool_size=args.encoder_fit_pool_size,
@@ -225,6 +231,20 @@ def main():
         default="raw+state",
         choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
     )
+    parser.add_argument("--raw_basis_dim", type=int, default=-1)
+    parser.add_argument("--raw_projection_seed", type=int, default=314159)
+    parser.add_argument(
+        "--numeric_backend",
+        default="numpy",
+        choices=["numpy", "auto", "torch", "torch_cuda", "cuda"],
+    )
+    parser.add_argument("--numeric_backend_device", default="auto")
+    parser.add_argument(
+        "--torch_dtype",
+        default="float64",
+        choices=["float64", "float32", "double", "single"],
+    )
+    parser.add_argument("--torch_min_rows", type=int, default=128)
     parser.add_argument(
         "--encoder_kind",
         default="synthetic",

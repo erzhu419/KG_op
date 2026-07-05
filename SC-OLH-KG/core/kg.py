@@ -346,6 +346,15 @@ def compute_kg_vectorized(
     if len(candidate_set) == 0 or len(sample_points) == 0:
         return np.zeros(0, dtype=float)
 
+    torch_result = _compute_kg_vectorized_torch(
+        gpr,
+        candidate_set,
+        sigma2_hats,
+        sample_points,
+    )
+    if torch_result is not None:
+        return torch_result
+
     candidate_aug = gpr.augmented_feature_matrix(candidate_set)
     sample_aug = gpr.augmented_feature_matrix(sample_points)
     mu_vec = candidate_aug @ gpr.a
@@ -362,5 +371,52 @@ def compute_kg_vectorized(
     sigma_tilde = (candidate_aug @ Ce) / denom[None, :]
     return np.array([
         compute_h(-mu_vec, -sigma_tilde[:, j])
+        for j in range(len(sample_points))
+    ], dtype=float)
+
+
+def _compute_kg_vectorized_torch(
+    gpr: ParametricGPR,
+    candidate_set,
+    sigma2_hats,
+    sample_points,
+):
+    """Use torch for KG matrix algebra, then reuse the certified CPU envelope."""
+    if not hasattr(gpr, "torch_state"):
+        return None
+    n_rows = max(len(candidate_set), len(sample_points))
+    state = gpr.torch_state(rows=n_rows)
+    if state is None:
+        return None
+    candidate_aug = gpr.augmented_feature_matrix_torch(candidate_set, rows=n_rows)
+    sample_aug = gpr.augmented_feature_matrix_torch(sample_points, rows=n_rows)
+    if candidate_aug is None or sample_aug is None:
+        return None
+    a_t, C_t = state
+    torch = gpr._import_torch()
+    if torch is None:
+        return None
+
+    sigma2 = np.asarray(sigma2_hats, dtype=float)
+    if sigma2.ndim == 0:
+        sigma2 = np.full(len(sample_points), float(sigma2))
+    if len(sigma2) != len(sample_points):
+        raise ValueError("sigma2_hats length must match sample_points")
+
+    with torch.no_grad():
+        sigma2_t = torch.as_tensor(
+            sigma2,
+            dtype=sample_aug.dtype,
+            device=sample_aug.device,
+        )
+        mu_t = candidate_aug @ a_t
+        Ce = C_t @ sample_aug.T
+        denom_vals = sigma2_t + torch.sum(sample_aug * Ce.T, dim=1)
+        denom = torch.sqrt(torch.clamp(denom_vals, min=1e-15))
+        sigma_tilde = (candidate_aug @ Ce) / denom[None, :]
+        mu_vec = mu_t.detach().cpu().numpy()
+        sigma_tilde_np = sigma_tilde.detach().cpu().numpy()
+    return np.array([
+        compute_h(-mu_vec, -sigma_tilde_np[:, j])
         for j in range(len(sample_points))
     ], dtype=float)

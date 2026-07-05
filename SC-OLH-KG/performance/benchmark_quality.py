@@ -163,6 +163,10 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         state_basis_mode=args.state_basis_mode,
         raw_basis_dim=args.raw_basis_dim,
         raw_projection_seed=args.raw_projection_seed,
+        numeric_backend=args.numeric_backend,
+        numeric_backend_device=args.numeric_backend_device,
+        torch_dtype=args.torch_dtype,
+        torch_min_rows=args.torch_min_rows,
         encoder_kind=args.encoder_kind,
         encoder_latent_dim=args.encoder_latent_dim,
         encoder_fit_pool_size=args.encoder_fit_pool_size,
@@ -189,6 +193,12 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         "state_basis_mode": args.state_basis_mode,
         "raw_basis_dim": int(args.raw_basis_dim),
         "raw_projection_seed": int(args.raw_projection_seed),
+        "numeric_backend": args.numeric_backend,
+        "numeric_backend_effective": result.get("numeric_backend", {}).get(
+            "effective_backend"),
+        "numeric_backend_device": result.get("numeric_backend", {}).get("device"),
+        "torch_dtype": args.torch_dtype,
+        "torch_min_rows": int(args.torch_min_rows),
         "encoder_kind": args.encoder_kind,
         "encoder_latent_dim": int(args.encoder_latent_dim),
         "encoder_fit_pool_size": int(args.encoder_fit_pool_size),
@@ -245,6 +255,11 @@ def summarize_variant(rows):
         "state_basis_mode": rows[0].get("state_basis_mode", "raw+state"),
         "raw_basis_dim": rows[0].get("raw_basis_dim", -1),
         "raw_projection_seed": rows[0].get("raw_projection_seed", 314159),
+        "numeric_backend": rows[0].get("numeric_backend", "numpy"),
+        "numeric_backend_effective": rows[0].get("numeric_backend_effective"),
+        "numeric_backend_device": rows[0].get("numeric_backend_device"),
+        "torch_dtype": rows[0].get("torch_dtype", "float64"),
+        "torch_min_rows": rows[0].get("torch_min_rows", 128),
         "acquisition_mode": rows[0].get("acquisition_mode", "additive"),
         "beta_g": rows[0].get("beta_g", 0.0),
         "certification_mode": rows[0].get("certification_mode", "legacy"),
@@ -398,6 +413,10 @@ def run_benchmark(args):
             "state_basis_mode": args.state_basis_mode,
             "raw_basis_dim": args.raw_basis_dim,
             "raw_projection_seed": args.raw_projection_seed,
+            "numeric_backend": args.numeric_backend,
+            "numeric_backend_device": args.numeric_backend_device,
+            "torch_dtype": args.torch_dtype,
+            "torch_min_rows": args.torch_min_rows,
             "encoder_kind": args.encoder_kind,
             "encoder_latent_dim": args.encoder_latent_dim,
             "encoder_fit_pool_size": args.encoder_fit_pool_size,
@@ -423,6 +442,11 @@ def flatten_summary(summary):
         "use_state_basis": summary.get("use_state_basis", False),
         "state_basis_mode": summary.get("state_basis_mode", "raw+state"),
         "raw_basis_dim": summary.get("raw_basis_dim", -1),
+        "numeric_backend": summary.get("numeric_backend", "numpy"),
+        "numeric_backend_effective": summary.get("numeric_backend_effective"),
+        "numeric_backend_device": summary.get("numeric_backend_device"),
+        "torch_dtype": summary.get("torch_dtype", "float64"),
+        "torch_min_rows": summary.get("torch_min_rows", 128),
         "acquisition_mode": summary.get("acquisition_mode", "additive"),
         "beta_g": summary.get("beta_g", 0.0),
         "certification_mode": summary.get("certification_mode", "legacy"),
@@ -557,6 +581,28 @@ def main():
         ),
     )
     parser.add_argument("--raw_projection_seed", type=int, default=314159)
+    parser.add_argument(
+        "--numeric_backend",
+        default="numpy",
+        choices=["numpy", "auto", "torch", "torch_cuda", "cuda"],
+        help="Optional matrix backend for GPR/KG algebra. Defaults to numpy.",
+    )
+    parser.add_argument(
+        "--numeric_backend_device",
+        default="auto",
+        help="Torch device such as auto, cuda, cuda:0, or cpu.",
+    )
+    parser.add_argument(
+        "--torch_dtype",
+        default="float64",
+        choices=["float64", "float32", "double", "single"],
+    )
+    parser.add_argument(
+        "--torch_min_rows",
+        type=int,
+        default=128,
+        help="Minimum candidate/sample rows before using torch backend.",
+    )
     parser.add_argument(
         "--encoder_kind",
         default="synthetic",

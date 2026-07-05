@@ -42,6 +42,44 @@ class AcquisitionTests(unittest.TestCase):
         np.testing.assert_allclose(score["total"], kg, rtol=1e-12, atol=1e-12)
         np.testing.assert_allclose(score["kg_obj_scaled"], kg, rtol=1e-12, atol=1e-12)
 
+    def test_optional_torch_backend_matches_numpy_kg(self):
+        try:
+            import torch  # noqa: F401
+        except Exception:
+            self.skipTest("torch is not installed")
+        torch_obj = ParametricGPR(
+            3,
+            normalize_func=self.problem.normalize,
+            numeric_backend="torch",
+            numeric_backend_device="cpu",
+            torch_min_rows=1,
+        )
+        torch_obj.a = self.obj.a.copy()
+        torch_obj.C = self.obj.C.copy()
+        torch_obj.lambda_i = self.obj.lambda_i
+        torch_obj.sampled_set = list(self.obj.sampled_set)
+        torch_obj.sol_to_idx = dict(self.obj.sol_to_idx)
+        sig2 = [self.hvd.predict_variance(0, x, self.problem) for x in self.candidates]
+        np.testing.assert_allclose(
+            torch_obj.posterior_mean_many(self.candidates),
+            self.obj.posterior_mean_many(self.candidates),
+            rtol=1e-10,
+            atol=1e-10,
+        )
+        np.testing.assert_allclose(
+            torch_obj.posterior_var_many(self.candidates),
+            self.obj.posterior_var_many(self.candidates),
+            rtol=1e-10,
+            atol=1e-10,
+        )
+        np.testing.assert_allclose(
+            compute_kg_vectorized(torch_obj, self.candidates, sig2),
+            compute_kg_vectorized(self.obj, self.candidates, sig2),
+            rtol=1e-10,
+            atol=1e-10,
+        )
+        self.assertEqual(torch_obj.backend_status()["effective_backend"], "torch")
+
     def test_auxiliary_scores_use_scaled_objective_kg(self):
         acq = OLHKGAcquisition(lambda_feas=0.25, lambda_var=0.25, lambda_coupling=0.0)
         score = acq.score(self.candidates, self.obj, self.con, self.hvd, self.problem)
