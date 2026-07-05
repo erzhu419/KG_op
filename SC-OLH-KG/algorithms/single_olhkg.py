@@ -450,50 +450,125 @@ class SingleOLHKGAlgorithm:
 
     def _calibrated_recommendation_index(self, pool, robust_margins):
         if not self.config.recommendation_calibration:
-            return None
+            return None, {}
         if not hasattr(self.problem, "surrogate_basis_map"):
-            return None
+            return None, {}
         basis = self.problem.surrogate_basis_map()
         if basis is None:
-            return None
+            return None, {}
         refinement = self._recommendation_refinement_candidates()
         if not refinement:
-            return None
+            return None, {}
         if len(self.observations) < int(self.config.recommendation_calibration_min_obs):
-            return None
+            return None, {}
 
         train_x = []
-        train_y = []
+        train_obj = []
+        train_con = []
         for x, ys in self.observations.items():
             train_x.append(tuple(int(v) for v in x))
-            train_y.append(float(np.mean(np.asarray(ys, dtype=float), axis=0)[0]))
+            y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
+            train_obj.append(float(y_bar[0]))
+            train_con.append(float(y_bar[1]))
         Phi = np.vstack([
             np.concatenate([[1.0], np.asarray(basis.features(x), dtype=float)])
             for x in train_x
         ])
-        y = np.asarray(train_y, dtype=float)
+        y_obj = np.asarray(train_obj, dtype=float)
+        y_con = np.asarray(train_con, dtype=float)
         ridge = max(float(self.config.recommendation_calibration_ridge), 0.0)
         penalty = ridge * np.eye(Phi.shape[1], dtype=float)
         penalty[0, 0] = 0.0
         try:
-            beta = np.linalg.solve(Phi.T @ Phi + penalty, Phi.T @ y)
+            beta_obj = np.linalg.solve(Phi.T @ Phi + penalty, Phi.T @ y_obj)
+            beta_con = np.linalg.solve(Phi.T @ Phi + penalty, Phi.T @ y_con)
         except np.linalg.LinAlgError:
-            beta = np.linalg.lstsq(Phi.T @ Phi + penalty, Phi.T @ y, rcond=None)[0]
+            beta_obj = np.linalg.lstsq(
+                Phi.T @ Phi + penalty,
+                Phi.T @ y_obj,
+                rcond=None,
+            )[0]
+            beta_con = np.linalg.lstsq(
+                Phi.T @ Phi + penalty,
+                Phi.T @ y_con,
+                rcond=None,
+            )[0]
 
         pool_index = {tuple(int(v) for v in x): i for i, x in enumerate(pool)}
         candidate_indices = [
             pool_index[x]
             for x in refinement
-            if x in pool_index and robust_margins[pool_index[x]] <= 0.0
+            if x in pool_index
         ]
         if not candidate_indices:
-            return None
+            return None, {}
         Phi_cand = np.vstack([
             np.concatenate([[1.0], np.asarray(basis.features(pool[i]), dtype=float)])
             for i in candidate_indices
         ])
-        pred = Phi_cand @ beta
-        return int(candidate_indices[int(np.argmin(pred))])
+        pred_obj = Phi_cand @ beta_obj
+
+        certified = np.array([
+            robust_margins[i] <= 0.0
+            for i in candidate_indices
+        ], dtype=bool)
+        if np.any(certified):
+            local_cert = np.where(certified)[0]
+            chosen_pos = int(local_cert[int(np.argmin(pred_obj[local_cert]))])
+            return int(candidate_indices[chosen_pos]), {
+                "calibrated_recommendation_reason": "certified_refinement_objective",
+                "calibrated_objective": float(pred_obj[chosen_pos]),
+                "calibrated_constraint_margin": None,
+                "calibrated_constraint_feasible": None,
+                "calibrated_constraint_sigma": None,
+                "n_calibration_refinement": int(len(candidate_indices)),
+                "n_calibration_certified": int(np.sum(certified)),
+            }
+
+        # If the theory bound is too conservative everywhere, fit a local
+        # low-dimensional constraint surrogate on observed data and use it only
+        # as a fallback.  The returned posterior_feasible flag remains false;
+        # this path is an empirical recommendation rescue, not a certification
+        # claim.
+        pred_con = Phi_cand @ beta_con
+        resid_con = y_con - Phi @ beta_con
+        resid_sigma = float(np.sqrt(np.mean(resid_con ** 2))) if len(resid_con) else 0.0
+        nominal_floor = (
+            float(self.config.recommendation_noise_floor_scale)
+            * 0.35
+            * float(getattr(self.problem, "sigma_level", 0.0))
+        )
+        sigma_cal = max(resid_sigma, nominal_floor, 1e-8)
+        z_alpha = float(norm.ppf(1 - self.problem.alpha))
+        calibrated_margin = (
+            pred_con
+            + z_alpha * sigma_cal
+            - float(self.problem.tau)
+        )
+        feasible = calibrated_margin <= 0.0
+        if not np.any(feasible):
+            return None, {
+                "calibrated_recommendation_reason": "no_calibrated_feasible",
+                "calibrated_objective": None,
+                "calibrated_constraint_margin": float(np.min(calibrated_margin)),
+                "calibrated_constraint_feasible": False,
+                "calibrated_constraint_sigma": float(sigma_cal),
+                "n_calibration_refinement": int(len(candidate_indices)),
+                "n_calibration_certified": 0,
+                "n_calibration_feasible": 0,
+            }
+        local_feas = np.where(feasible)[0]
+        chosen_pos = int(local_feas[int(np.argmin(pred_obj[local_feas]))])
+        return int(candidate_indices[chosen_pos]), {
+            "calibrated_recommendation_reason": "calibrated_constraint_fallback",
+            "calibrated_objective": float(pred_obj[chosen_pos]),
+            "calibrated_constraint_margin": float(calibrated_margin[chosen_pos]),
+            "calibrated_constraint_feasible": True,
+            "calibrated_constraint_sigma": float(sigma_cal),
+            "n_calibration_refinement": int(len(candidate_indices)),
+            "n_calibration_certified": 0,
+            "n_calibration_feasible": int(np.sum(feasible)),
+        }
 
     def _solve_posterior_recommendation(self):
         pool = self._recommendation_pool()
@@ -557,7 +632,11 @@ class SingleOLHKGAlgorithm:
             except ValueError:
                 pass
         calibrated_recommendation_used = False
-        calibrated_idx = self._calibrated_recommendation_index(pool, robust_margins)
+        calibrated_details = {}
+        calibrated_idx, calibrated_details = self._calibrated_recommendation_index(
+            pool,
+            robust_margins,
+        )
         if calibrated_idx is not None:
             local = calibrated_idx
             calibrated_recommendation_used = True
@@ -578,6 +657,7 @@ class SingleOLHKGAlgorithm:
                 self.config.recommendation_infeasible_penalty),
             "recommendation_calibration": bool(self.config.recommendation_calibration),
             "calibrated_recommendation_used": bool(calibrated_recommendation_used),
+            **calibrated_details,
             "observed_incumbent_used": bool(used_observed_incumbent),
             "observed_incumbent_rejected": bool(observed_incumbent_rejected),
             "observed_incumbent_objective": (

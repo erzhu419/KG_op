@@ -111,6 +111,11 @@ def main():
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--recommendation_infeasible_strategy",
+        default="penalty",
+        choices=["penalty", "min_margin", "lexicographic"],
+    )
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")

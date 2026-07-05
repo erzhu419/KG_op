@@ -116,6 +116,10 @@ class StateEncoderTests(unittest.TestCase):
         self.assertLess(spread, 1e-12)
         self.assertEqual(len(problem.hvd_features(best_x)), 9)
         self.assertEqual(problem.recommendation_random_pool_size(), 0)
+        self.assertIsNotNone(problem.surrogate_basis_map())
+        refinement = problem.recommendation_refinement_candidates()
+        self.assertIn(best_x, refinement)
+        self.assertEqual(problem.all_axis_solutions(), [])
 
         alg = SingleOLHKGAlgorithm(
             problem,
@@ -123,6 +127,48 @@ class StateEncoderTests(unittest.TestCase):
         )
         self.assertEqual(alg.gpr[0].p, 12)
         self.assertLess(alg.gpr[0].p, 2 * problem.d + 1)
+
+    def test_high_dim_calibrated_recommendation_rescues_feasible_meta_point(self):
+        base = HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        alg = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=8,
+                n0=8,
+                K1=4,
+                K2=0,
+                seed=2,
+                recommendation_calibration=True,
+            ),
+        )
+        train = [
+            base._constant_tail_x(u, q)
+            for u, q in [
+                (0.05, 0.50),
+                (0.50, 0.50),
+                (0.25, 0.55),
+                (0.25, 0.90),
+                (0.75, 0.50),
+                (0.10, 0.82),
+                (0.90, 0.20),
+                (0.40, 0.65),
+                (0.22, 0.72),
+            ]
+        ]
+        for x in train:
+            alg.observations[tuple(x)] = [problem.true_outputs(x)]
+        pool = problem.recommendation_refinement_candidates()
+        robust_margins = np.ones(len(pool), dtype=float)
+        idx, details = alg._calibrated_recommendation_index(pool, robust_margins)
+        self.assertIsNotNone(idx)
+        x_rec = pool[idx]
+        self.assertTrue(problem.is_truly_feasible(x_rec))
+        self.assertLess(problem.true_objective(x_rec), 0.35)
+        self.assertEqual(
+            details["calibrated_recommendation_reason"],
+            "calibrated_constraint_fallback",
+        )
 
     def test_high_dim_state_inverse_returns_raw_policy_with_low_spread(self):
         base = HighDimStatePolicyRZDT1(d=1000, L=100, sigma=0.04)

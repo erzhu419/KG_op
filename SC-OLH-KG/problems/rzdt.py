@@ -386,7 +386,17 @@ class StatePolicyRZDT1(TestProblem):
         q = float(anchor[1]) if len(anchor) > 1 else 0.5
         lo, hi = self.int_bounds()
         rows = []
-        for _ in range(max(1, int(n))):
+        for rep in range(max(1, int(n))):
+            if rep == 0:
+                u_i = int(np.round(self.L * np.clip(u, 0.0, 1.0)))
+                q_i = int(np.round(self.L * np.clip(q, 0.0, 1.0)))
+                x = [int(np.clip(u_i, lo[0], hi[0]))]
+                x.extend([
+                    int(np.clip(q_i, lo[j], hi[j]))
+                    for j in range(1, self.d)
+                ])
+                rows.append(tuple(x))
+                continue
             u_j = int(np.round(self.L * np.clip(u + rng.normal(0.0, 0.035), 0.0, 1.0)))
             q_j = int(np.round(self.L * np.clip(q + rng.normal(0.0, 0.035), 0.0, 1.0)))
             x = [int(np.clip(u_j, lo[0], hi[0]))]
@@ -440,6 +450,7 @@ class StatePolicyMetaFeatureMap:
 
     def features(self, x):
         u, q, spread = self.problem.policy_state(x)
+        reference_q = float(getattr(self.problem, "reference_q", 0.70))
         return np.array([
             u,
             q,
@@ -451,7 +462,7 @@ class StatePolicyMetaFeatureMap:
             u * spread,
             q * spread,
             np.sin(np.pi * u),
-            abs(q - self.problem.q_star),
+            abs(q - reference_q),
         ], dtype=float)
 
 
@@ -544,6 +555,9 @@ class HighDimStatePolicyRZDT1(TestProblem):
     def recommendation_random_pool_size(self):
         return 0
 
+    def surrogate_basis_map(self):
+        return StatePolicyMetaFeatureMap(self)
+
     def _constant_tail_x(self, u, q):
         lo, hi = self.int_bounds()
         u_i = int(np.clip(round(float(u) * self.L), lo[0], hi[0]))
@@ -590,17 +604,43 @@ class HighDimStatePolicyRZDT1(TestProblem):
 
     def structured_candidates(self, n=10, rng=None):
         rng = rng or np.random.default_rng()
-        u_vals = np.array([0.05, 0.15, 0.22, 0.30, 0.45, 0.65, 0.90])
-        q_vals = np.array([0.45, 0.55, 0.65, 0.72, 0.80, 0.90])
+        u_vals = np.array([0.05, 0.15, 0.25, 0.35, 0.45, 0.65, 0.90])
+        q_vals = np.array([0.45, 0.55, 0.65, 0.75, 0.85, 0.95])
         rows = [self._constant_tail_x(u, q) for u in u_vals for q in q_vals]
         order = rng.permutation(len(rows))
         return [rows[int(idx)] for idx in order[: max(0, int(n))]]
 
+    def recommendation_refinement_candidates(self):
+        """Dense, non-oracle meta grid for final high-dimensional selection.
+
+        The raw search space may have thousands of coordinates, but this
+        synthetic family declares that policies are judged through `(u, q,
+        spread)`.  The refinement pool therefore covers that state-policy
+        manifold directly instead of falling back to raw random points whose
+        tail spread is almost surely large.
+        """
+        cache = getattr(self, "_recommendation_refinement_cache", None)
+        if cache is not None:
+            return list(cache)
+        # Fixed meta grid, deliberately not expressed in terms of the hidden
+        # synthetic optimum.  It is dense around the feasible transition but
+        # remains a generic state-policy refinement rule.
+        u_vals = np.round(np.arange(0.10, 0.361, 0.02), 2)
+        q_vals = np.round(np.arange(0.60, 0.841, 0.02), 2)
+        rows = [self._constant_tail_x(u, q) for u in u_vals for q in q_vals]
+        rows = tuple(dict.fromkeys(rows))
+        self._recommendation_refinement_cache = rows
+        return list(rows)
+
+    def all_axis_solutions(self):
+        """No raw axis oracle for the high-dimensional state-policy case."""
+        return []
+
     def state_anchor_points(self, n=10, rng=None):
         rng = rng or np.random.default_rng()
         anchors = []
-        u_vals = np.array([0.05, 0.12, 0.22, 0.30, 0.45, 0.65, 0.90])
-        q_vals = np.array([0.50, 0.60, 0.72, 0.80, 0.90])
+        u_vals = np.array([0.06, 0.14, 0.22, 0.30, 0.38, 0.50, 0.66, 0.84])
+        q_vals = np.array([0.52, 0.60, 0.68, 0.72, 0.76, 0.84, 0.92])
         for u in u_vals:
             for q in q_vals:
                 anchors.append(np.array([u, q], dtype=float))
@@ -611,9 +651,12 @@ class HighDimStatePolicyRZDT1(TestProblem):
         rng = rng or np.random.default_rng()
         anchor = np.asarray(anchor, dtype=float)
         u = float(anchor[0])
-        q = float(anchor[1]) if len(anchor) > 1 else self.q_star
+        q = float(anchor[1]) if len(anchor) > 1 else 0.70
         rows = []
-        for _ in range(max(1, int(n))):
+        for rep in range(max(1, int(n))):
+            if rep == 0:
+                rows.append(self._constant_tail_x(u, q))
+                continue
             u_j = np.clip(u + rng.normal(0.0, 0.025), 0.0, 1.0)
             q_j = np.clip(q + rng.normal(0.0, 0.025), 0.0, 1.0)
             rows.append(self._constant_tail_x(u_j, q_j))

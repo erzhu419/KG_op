@@ -155,6 +155,7 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         recommendation_safety_z=args.recommendation_safety_z,
         recommendation_noise_floor_scale=args.recommendation_noise_floor_scale,
         recommendation_infeasible_penalty=args.recommendation_infeasible_penalty,
+        recommendation_infeasible_strategy=args.recommendation_infeasible_strategy,
         recommendation_calibration=not args.disable_recommendation_calibration,
         recommendation_calibration_ridge=args.recommendation_calibration_ridge,
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
@@ -232,6 +233,18 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         "true_chance_margin": float(result["true_chance_margin"]),
         "constraint_violation": float(violation),
         "posterior_chance_margin": float(result["posterior_chance_margin"]),
+        "posterior_robust_chance_margin": optional_float(
+            result.get("posterior_robust_chance_margin")),
+        "n_posterior_feasible": result.get("n_posterior_feasible"),
+        "calibrated_recommendation_used": bool(
+            result.get("calibrated_recommendation_used", False)),
+        "calibrated_recommendation_reason": result.get(
+            "calibrated_recommendation_reason"),
+        "calibrated_constraint_margin": optional_float(
+            result.get("calibrated_constraint_margin")),
+        "calibrated_constraint_feasible": result.get(
+            "calibrated_constraint_feasible"),
+        "n_calibration_feasible": result.get("n_calibration_feasible"),
         "posterior_beta_g": optional_float(result.get("posterior_beta_g")),
         "posterior_epistemic_variance_con": optional_float(
             result.get("posterior_epistemic_variance_con")),
@@ -561,6 +574,11 @@ def main():
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--recommendation_infeasible_strategy",
+        default="penalty",
+        choices=["penalty", "min_margin", "lexicographic"],
+    )
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
