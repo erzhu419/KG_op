@@ -38,6 +38,8 @@ def suite_commands(args, run_id):
         f"--eval_pool_size {args.eval_pool_size} "
         f"--n_seeds {args.n_seeds} --jobs {args.jobs_per_suite}"
     )
+    if args.use_state_basis:
+        base += f" --use_state_basis --state_basis_mode {args.state_basis_mode}"
     if "exact" in args.suites:
         for problem in parse_csv(args.problems):
             out.append((
@@ -85,13 +87,14 @@ def suite_commands(args, run_id):
             "encoder",
             (
                 f"{PYTHON} performance/benchmark_encoder_suite.py "
-                f"--problem StatePolicyRZDT1 --encoder_kinds synthetic,self_supervised,transformer "
+                f"--problem StatePolicyRZDT1 --encoder_kinds {args.encoder_kinds} "
                 f"--N {args.N} --n0 {args.n0} --K1 {args.K1} --K2 {args.K2} "
                 f"--posterior_pool_size {args.posterior_pool_size} "
                 f"--posterior_keep {args.posterior_keep} "
                 f"--state_candidate_count {args.state_candidate_count} "
                 f"--state_inverse_pool_size {args.state_inverse_pool_size} "
                 f"--state_inverse_neighbors {args.state_inverse_neighbors} "
+                f"--use_state_basis --state_basis_mode {args.state_basis_mode} "
                 f"--n_seeds {args.n_seeds} --out_prefix paper_encoder_{run_id}"
             ),
         ))
@@ -120,6 +123,19 @@ def main():
     parser.add_argument("--state-inverse-pool-size", type=int, default=600)
     parser.add_argument("--state-inverse-neighbors", type=int, default=2)
     parser.add_argument("--eval-pool-size", type=int, default=500)
+    parser.add_argument("--use-state-basis", action="store_true")
+    parser.add_argument(
+        "--state-basis-mode",
+        default="raw+manifold",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
+    parser.add_argument(
+        "--encoder-kinds",
+        default=(
+            "synthetic,pca_manifold,kernel_manifold,ssl_masked,"
+            "ssl_contrastive,ssl_next_risk,ssl_transformer"
+        ),
+    )
     parser.add_argument("--n-seeds", type=int, default=20)
     parser.add_argument("--jobs-per-suite", type=int, default=10)
     parser.add_argument("--exact-mc-samples", type=int, default=4)

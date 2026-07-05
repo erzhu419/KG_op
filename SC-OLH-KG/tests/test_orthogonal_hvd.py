@@ -14,6 +14,7 @@ from problems.rzdt import (  # noqa: E402
     StatePolicyRZDT1,
 )
 from problems.single_objective import ScalarizedProblem  # noqa: E402
+from representation.manifold import ManifoldRiskDecomposer, PCAManifoldEncoder  # noqa: E402
 from variance.orthogonal_hvd import (  # noqa: E402
     OrthogonalHVD,
     gaussian_square_subexp_params,
@@ -184,6 +185,48 @@ class OrthogonalHVDTests(unittest.TestCase):
             decomposition["certification_variance"],
             decomposition["variance"] + decomposition["residual_tail_uncertainty"],
         )
+
+    def test_factor_hvd_accepts_manifold_cumulative_blocks(self):
+        base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        encoder = PCAManifoldEncoder(
+            problem,
+            latent_dim=4,
+            fit_pool_size=32,
+            rng=np.random.default_rng(7),
+        )
+        problem._scolhkg_representation_encoder = encoder
+        problem._scolhkg_use_manifold_hvd = True
+        problem._scolhkg_manifold_decomposer = ManifoldRiskDecomposer(encoder)
+
+        X = []
+        residuals = []
+        for u in [5, 15, 25, 40, 60, 80, 95]:
+            for q in [45, 60, 72, 85, 95]:
+                x = tuple([u] + [q] * 7)
+                X.append(x)
+                residuals.append(problem.true_sigma(x)[1])
+        model = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=10,
+            shrinkage_kappa=0.0,
+        )
+        model.fit_from_residuals(X, residuals, output_index=1, problem=problem)
+        x = tuple([50] + [95] * 7)
+        decomposition = model.predict_decomposition(1, x, problem)
+        cumulative = decomposition["cumulative"]
+        self.assertTrue(model.diagnostics()["uses_manifold_hvd_features"])
+        self.assertIsNotNone(cumulative["manifold_blocks"])
+        blocks = cumulative["manifold_blocks"]
+        self.assertAlmostEqual(
+            blocks["total"],
+            blocks["tangent"] + blocks["normal"] + blocks["shared"] + blocks["residual"],
+        )
+        self.assertTrue(any(
+            str(name).startswith("manifold_")
+            for name in cumulative["feature_names"]
+        ))
 
     def test_omitting_shared_shock_can_flip_false_feasible_certificate(self):
         base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)

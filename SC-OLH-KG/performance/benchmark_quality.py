@@ -160,6 +160,7 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
+        state_basis_mode=args.state_basis_mode,
         encoder_kind=args.encoder_kind,
         encoder_latent_dim=args.encoder_latent_dim,
         encoder_fit_pool_size=args.encoder_fit_pool_size,
@@ -183,6 +184,7 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         "variance_mode": variance_mode,
         "use_state_coupling": bool(use_state_coupling),
         "use_state_basis": bool(use_state_coupling and args.use_state_basis),
+        "state_basis_mode": args.state_basis_mode,
         "encoder_kind": args.encoder_kind,
         "encoder_latent_dim": int(args.encoder_latent_dim),
         "encoder_fit_pool_size": int(args.encoder_fit_pool_size),
@@ -236,6 +238,7 @@ def summarize_variant(rows):
         "variance_mode": rows[0]["variance_mode"],
         "use_state_coupling": rows[0]["use_state_coupling"],
         "use_state_basis": rows[0].get("use_state_basis", False),
+        "state_basis_mode": rows[0].get("state_basis_mode", "raw+state"),
         "acquisition_mode": rows[0].get("acquisition_mode", "additive"),
         "beta_g": rows[0].get("beta_g", 0.0),
         "certification_mode": rows[0].get("certification_mode", "legacy"),
@@ -386,6 +389,7 @@ def run_benchmark(args):
             "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
             "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
             "use_state_basis": args.use_state_basis,
+            "state_basis_mode": args.state_basis_mode,
             "encoder_kind": args.encoder_kind,
             "encoder_latent_dim": args.encoder_latent_dim,
             "encoder_fit_pool_size": args.encoder_fit_pool_size,
@@ -409,6 +413,7 @@ def flatten_summary(summary):
         "variance_mode": summary["variance_mode"],
         "use_state_coupling": summary["use_state_coupling"],
         "use_state_basis": summary.get("use_state_basis", False),
+        "state_basis_mode": summary.get("state_basis_mode", "raw+state"),
         "acquisition_mode": summary.get("acquisition_mode", "additive"),
         "beta_g": summary.get("beta_g", 0.0),
         "certification_mode": summary.get("certification_mode", "legacy"),
@@ -528,9 +533,26 @@ def main():
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
     parser.add_argument(
+        "--state_basis_mode",
+        default="raw+state",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
+    parser.add_argument(
         "--encoder_kind",
         default="synthetic",
-        choices=["synthetic", "self_supervised", "masked", "contrastive", "transformer"],
+        choices=[
+            "synthetic",
+            "self_supervised",
+            "masked",
+            "contrastive",
+            "transformer",
+            "pca_manifold",
+            "kernel_manifold",
+            "ssl_masked",
+            "ssl_contrastive",
+            "ssl_next_risk",
+            "ssl_transformer",
+        ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)

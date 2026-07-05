@@ -108,6 +108,10 @@ def build_config(args):
         recommendation_calibration_ridge=args.recommendation_calibration_ridge,
         use_state_coupling=args.use_state_coupling,
         use_state_basis=args.use_state_basis,
+        state_basis_mode=args.state_basis_mode,
+        encoder_kind=args.encoder_kind,
+        encoder_latent_dim=args.encoder_latent_dim,
+        encoder_fit_pool_size=args.encoder_fit_pool_size,
         eval_pool_size=args.eval_pool_size,
         seed=args.seed,
     )
@@ -279,6 +283,8 @@ def run_diagnostic(args):
             "state_inverse_neighbors": args.state_inverse_neighbors,
             "use_state_coupling": args.use_state_coupling,
             "use_state_basis": args.use_state_basis,
+            "state_basis_mode": args.state_basis_mode,
+            "encoder_kind": args.encoder_kind,
             "lambda_feas": args.lambda_feas,
             "lambda_var": args.lambda_var,
             "lambda_mean": args.lambda_mean,
@@ -366,6 +372,30 @@ def main():
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--use-state-coupling", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument(
+        "--state_basis_mode",
+        default="raw+state",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
+    parser.add_argument(
+        "--encoder_kind",
+        default="synthetic",
+        choices=[
+            "synthetic",
+            "self_supervised",
+            "masked",
+            "contrastive",
+            "transformer",
+            "pca_manifold",
+            "kernel_manifold",
+            "ssl_masked",
+            "ssl_contrastive",
+            "ssl_next_risk",
+            "ssl_transformer",
+        ],
+    )
+    parser.add_argument("--encoder_latent_dim", type=int, default=8)
+    parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--seed", type=int, default=4)
     parser.add_argument("--boundary_window", type=float, default=0.08)
     parser.add_argument("--out_dir", default=str(ROOT / "profiles"))

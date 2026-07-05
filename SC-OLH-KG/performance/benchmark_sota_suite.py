@@ -42,6 +42,8 @@ def _problem_args(args, problem):
         "state_candidate_count": args.state_candidate_count,
         "state_inverse_pool_size": args.state_inverse_pool_size,
         "state_inverse_neighbors": args.state_inverse_neighbors,
+        "use_state_basis": args.use_state_basis,
+        "state_basis_mode": args.state_basis_mode,
         "encoder_kind": args.encoder_kind,
         "encoder_latent_dim": args.encoder_latent_dim,
         "encoder_fit_pool_size": args.encoder_fit_pool_size,
@@ -181,10 +183,28 @@ def main():
     parser.add_argument("--state_candidate_count", type=int, default=-1)
     parser.add_argument("--state_inverse_pool_size", type=int, default=500)
     parser.add_argument("--state_inverse_neighbors", type=int, default=2)
+    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument(
+        "--state_basis_mode",
+        default="raw+state",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
     parser.add_argument(
         "--encoder_kind",
         default="synthetic",
-        choices=["synthetic", "self_supervised", "masked", "contrastive", "transformer"],
+        choices=[
+            "synthetic",
+            "self_supervised",
+            "masked",
+            "contrastive",
+            "transformer",
+            "pca_manifold",
+            "kernel_manifold",
+            "ssl_masked",
+            "ssl_contrastive",
+            "ssl_next_risk",
+            "ssl_transformer",
+        ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)

@@ -1,4 +1,4 @@
-"""Compare deterministic, self-supervised, and transformer state encoders."""
+"""Compare deterministic, manifold, self-supervised, and transformer encoders."""
 
 from __future__ import annotations
 
@@ -115,7 +115,18 @@ def main():
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
-    parser.add_argument("--encoder_kinds", default="synthetic,self_supervised,transformer")
+    parser.add_argument(
+        "--state_basis_mode",
+        default="raw+state",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
+    parser.add_argument(
+        "--encoder_kinds",
+        default=(
+            "synthetic,pca_manifold,kernel_manifold,ssl_masked,"
+            "ssl_contrastive,ssl_next_risk,ssl_transformer"
+        ),
+    )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--exact_kg_mc_samples", type=int, default=0)

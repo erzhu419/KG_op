@@ -161,6 +161,7 @@ def run(args):
                 f"policy={policy_id} f={y.tolist()}",
                 flush=True,
             )
+    _attach_policy_x_to_trajectory_log(out_csv, rows)
     status = TrafficTrajectoryEncoder.missing_data_status(out_csv)
     encoded = None
     if status["status"] == "available":
@@ -184,6 +185,32 @@ def run(args):
         "encoder_summary": encoded,
     }
     return summary
+
+
+def _attach_policy_x_to_trajectory_log(path, simulations):
+    path = Path(path)
+    if not path.exists() or not simulations:
+        return
+    policy_x = {
+        str(row["policy_id"]): str(row["x"])
+        for row in simulations
+        if row.get("policy_id") and row.get("x")
+    }
+    if not policy_x:
+        return
+    with path.open("r", newline="", encoding="utf-8") as handle:
+        records = list(csv.DictReader(handle))
+        fieldnames = list(records[0].keys()) if records else []
+    if not records:
+        return
+    if "x" not in fieldnames:
+        fieldnames.append("x")
+    for record in records:
+        record["x"] = policy_x.get(str(record.get("policy_id", "")), record.get("x", ""))
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(records)
 
 
 def write_csv(path, rows):

@@ -205,6 +205,10 @@ def run_single_once(args, seed, use_state_coupling=False):
         recommendation_calibration_ridge=args.recommendation_calibration_ridge,
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
+        state_basis_mode=args.state_basis_mode,
+        encoder_kind=args.encoder_kind,
+        encoder_latent_dim=args.encoder_latent_dim,
+        encoder_fit_pool_size=args.encoder_fit_pool_size,
         seed=seed,
     )
     alg = SingleOLHKGAlgorithm(problem, config)
@@ -391,6 +395,8 @@ def build_validation(args):
             "max_objective_delta": args.max_objective_delta,
             "require_sc_feasible": args.require_sc_feasible,
             "use_state_basis": args.use_state_basis,
+            "state_basis_mode": args.state_basis_mode,
+            "encoder_kind": args.encoder_kind,
             "variance_mode": args.variance_mode,
             "candidate_problem": args.candidate_problem,
             "legacy_problem": args.legacy_problem,
@@ -478,6 +484,30 @@ def main():
     parser.add_argument("--max_objective_delta", type=float, default=0.0)
     parser.add_argument("--require-sc-feasible", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument(
+        "--state_basis_mode",
+        default="raw+state",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
+    parser.add_argument(
+        "--encoder_kind",
+        default="synthetic",
+        choices=[
+            "synthetic",
+            "self_supervised",
+            "masked",
+            "contrastive",
+            "transformer",
+            "pca_manifold",
+            "kernel_manifold",
+            "ssl_masked",
+            "ssl_contrastive",
+            "ssl_next_risk",
+            "ssl_transformer",
+        ],
+    )
+    parser.add_argument("--encoder_latent_dim", type=int, default=8)
+    parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--always-run-legacy", action="store_true")
     parser.add_argument("--promote-if-pass", action="store_true")
     parser.add_argument("--out", default=None)

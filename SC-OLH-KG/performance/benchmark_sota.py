@@ -114,6 +114,9 @@ def row_from_result(variant, seed, args, result):
         "wall_time_sec": float(result["total_time_sec"]),
         "n_simulations": int(result["n_simulations"]),
         "n_distinct_solutions": int(result["n_distinct_solutions"]),
+        "use_state_basis": bool(getattr(args, "use_state_basis", False)),
+        "state_basis_mode": getattr(args, "state_basis_mode", "raw+state"),
+        "encoder_kind": getattr(args, "encoder_kind", "synthetic"),
         "acquisition_mode": getattr(args, "acquisition_mode", ""),
         "beta_g": optional_float(getattr(args, "beta_g", None)),
         "certification_mode": getattr(args, "certification_mode", ""),
@@ -157,6 +160,8 @@ def run_olhkg(args, seed, use_sc):
         exact_kg_blend=args.exact_kg_blend,
         eval_pool_size=args.eval_pool_size,
         use_state_coupling=use_sc,
+        use_state_basis=bool(use_sc and args.use_state_basis),
+        state_basis_mode=args.state_basis_mode,
         encoder_kind=args.encoder_kind,
         encoder_latent_dim=args.encoder_latent_dim,
         encoder_fit_pool_size=args.encoder_fit_pool_size,
@@ -414,10 +419,28 @@ def main():
     parser.add_argument("--state_candidate_count", type=int, default=-1)
     parser.add_argument("--state_inverse_pool_size", type=int, default=500)
     parser.add_argument("--state_inverse_neighbors", type=int, default=2)
+    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument(
+        "--state_basis_mode",
+        default="raw+state",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
     parser.add_argument(
         "--encoder_kind",
         default="synthetic",
-        choices=["synthetic", "self_supervised", "masked", "contrastive", "transformer"],
+        choices=[
+            "synthetic",
+            "self_supervised",
+            "masked",
+            "contrastive",
+            "transformer",
+            "pca_manifold",
+            "kernel_manifold",
+            "ssl_masked",
+            "ssl_contrastive",
+            "ssl_next_risk",
+            "ssl_transformer",
+        ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)

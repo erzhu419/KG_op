@@ -176,6 +176,30 @@ def main():
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_coupling", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument(
+        "--state_basis_mode",
+        default="raw+state",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
+    parser.add_argument(
+        "--encoder_kind",
+        default="synthetic",
+        choices=[
+            "synthetic",
+            "self_supervised",
+            "masked",
+            "contrastive",
+            "transformer",
+            "pca_manifold",
+            "kernel_manifold",
+            "ssl_masked",
+            "ssl_contrastive",
+            "ssl_next_risk",
+            "ssl_transformer",
+        ],
+    )
+    parser.add_argument("--encoder_latent_dim", type=int, default=8)
+    parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--methods", default="additive,blend0.25,blend0.5,exact")
     parser.add_argument("--exact_mc_samples", type=int, default=4)
     parser.add_argument("--baseline_variant", default="additive")

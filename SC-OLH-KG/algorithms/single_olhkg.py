@@ -24,10 +24,17 @@ from core.candidates import (
 from core.gpr import ParametricGPR
 from core.metrics import summarize_stage_times
 from encoders.policy_state_encoder import (
+    ContrastivePolicyEncoder,
+    KernelManifoldEncoder,
+    MaskedTrajectoryEncoder,
+    NextRiskEncoder,
+    PCAManifoldEncoder,
     SelfSupervisedPolicyStateEncoder,
+    SmallTransformerEncoder,
     StateCoupledFeatureMap,
     SyntheticPolicyStateEncoder,
 )
+from representation.manifold import ManifoldRiskDecomposer
 from variance.orthogonal_hvd import OrthogonalHVD
 
 
@@ -68,6 +75,8 @@ class SingleOLHKGConfig:
     recommendation_axis_candidate_count: int = -1
     use_state_coupling: bool = False
     use_state_basis: bool = False
+    state_basis_mode: str = "raw+state"
+    use_manifold_hvd_features: bool = True
     encoder_kind: str = "synthetic"
     encoder_latent_dim: int = 8
     encoder_fit_pool_size: int = 512
@@ -94,7 +103,12 @@ class SingleOLHKGAlgorithm:
         if hasattr(problem, "gpr_basis_map"):
             basis_map = problem.gpr_basis_map()
         if basis_map is None and self.config.use_state_basis:
-            basis_map = StateCoupledFeatureMap(problem, self.encoder)
+            basis_map = StateCoupledFeatureMap(
+                problem,
+                self.encoder,
+                mode=self.config.state_basis_mode,
+            )
+        self._attach_representation_to_problem()
         self.gpr = [
             ParametricGPR(
                 problem.d,
@@ -137,6 +151,7 @@ class SingleOLHKGAlgorithm:
         if not needs_encoder:
             return None
         kind = str(self.config.encoder_kind or "synthetic").lower()
+        trajectory_records = getattr(self.problem, "_scolhkg_trajectory_records", None)
         if kind in ("self_supervised", "masked", "contrastive"):
             return SelfSupervisedPolicyStateEncoder(
                 self.problem,
@@ -153,7 +168,77 @@ class SingleOLHKGAlgorithm:
                 fit_pool_size=self.config.encoder_fit_pool_size,
                 rng=self.rng,
             )
+        if kind == "pca_manifold":
+            return PCAManifoldEncoder(
+                self.problem,
+                latent_dim=self.config.encoder_latent_dim,
+                fit_pool_size=self.config.encoder_fit_pool_size,
+                rng=self.rng,
+            )
+        if kind == "kernel_manifold":
+            return KernelManifoldEncoder(
+                self.problem,
+                latent_dim=self.config.encoder_latent_dim,
+                fit_pool_size=self.config.encoder_fit_pool_size,
+                rng=self.rng,
+            )
+        if kind in ("ssl_masked", "masked_trajectory"):
+            return MaskedTrajectoryEncoder(
+                self.problem,
+                latent_dim=self.config.encoder_latent_dim,
+                fit_pool_size=self.config.encoder_fit_pool_size,
+                rng=self.rng,
+                records_or_policy_pool=trajectory_records,
+            )
+        if kind in ("ssl_contrastive", "contrastive_policy"):
+            return ContrastivePolicyEncoder(
+                self.problem,
+                latent_dim=self.config.encoder_latent_dim,
+                fit_pool_size=self.config.encoder_fit_pool_size,
+                rng=self.rng,
+                records_or_policy_pool=trajectory_records,
+            )
+        if kind in ("ssl_next_risk", "next_risk"):
+            return NextRiskEncoder(
+                self.problem,
+                latent_dim=self.config.encoder_latent_dim,
+                fit_pool_size=self.config.encoder_fit_pool_size,
+                rng=self.rng,
+                records_or_policy_pool=trajectory_records,
+            )
+        if kind in ("ssl_transformer", "small_transformer"):
+            return SmallTransformerEncoder(
+                self.problem,
+                latent_dim=self.config.encoder_latent_dim,
+                fit_pool_size=self.config.encoder_fit_pool_size,
+                rng=self.rng,
+                records_or_policy_pool=trajectory_records,
+            )
         return SyntheticPolicyStateEncoder(self.problem)
+
+    def _attach_representation_to_problem(self):
+        if self.encoder is None:
+            return
+        kind = str(self.config.encoder_kind or "synthetic").lower()
+        setattr(self.problem, "_scolhkg_representation_encoder", self.encoder)
+        if (
+            self.config.use_manifold_hvd_features
+            and kind in {
+                "pca_manifold",
+                "kernel_manifold",
+                "ssl_masked",
+                "ssl_contrastive",
+                "ssl_next_risk",
+                "ssl_transformer",
+                "small_transformer",
+            }
+        ):
+            setattr(self.problem, "_scolhkg_use_manifold_hvd", True)
+            setattr(
+                self.problem,
+                "_scolhkg_manifold_decomposer",
+                ManifoldRiskDecomposer(self.encoder),
+            )
 
     def _initial_samples(self):
         samples = []

@@ -95,6 +95,10 @@ def _problem_args(args, problem):
         recommendation_calibration_ridge=args.recommendation_calibration_ridge,
         disable_recommendation_axis_oracle=args.disable_recommendation_axis_oracle,
         use_state_basis=args.use_state_basis,
+        state_basis_mode=args.state_basis_mode,
+        encoder_kind=args.encoder_kind,
+        encoder_latent_dim=args.encoder_latent_dim,
+        encoder_fit_pool_size=args.encoder_fit_pool_size,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
         exact_kg_use_score=args.exact_kg_use_score,
         exact_kg_blend=args.exact_kg_blend,
@@ -216,6 +220,30 @@ def main():
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument(
+        "--state_basis_mode",
+        default="raw+state",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
+    parser.add_argument(
+        "--encoder_kind",
+        default="synthetic",
+        choices=[
+            "synthetic",
+            "self_supervised",
+            "masked",
+            "contrastive",
+            "transformer",
+            "pca_manifold",
+            "kernel_manifold",
+            "ssl_masked",
+            "ssl_contrastive",
+            "ssl_next_risk",
+            "ssl_transformer",
+        ],
+    )
+    parser.add_argument("--encoder_latent_dim", type=int, default=8)
+    parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)

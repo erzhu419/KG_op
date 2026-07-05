@@ -28,10 +28,14 @@ Coverage coupling is also gated by a conservative posterior chance margin:
 coverage rewards concentrated in regions that the constraint model considers
 confidently feasible.  This matters on RZDT2-like problems where global novelty
 can otherwise pull the search into the high-risk middle of the domain.
-`--encoder_kind synthetic,self_supervised,transformer` controls the SC state
-encoder used by candidate generation and coupling scores.  The self-supervised
-and transformer options are lightweight learned encoders, intended for ablation
-and trajectory-representation experiments rather than as hidden oracles.
+`--encoder_kind` controls the SC state encoder used by candidate generation,
+coupling scores, optional GPR state basis, and optional manifold HVD features.
+The current family is `synthetic`, `self_supervised`, `transformer`,
+`pca_manifold`, `kernel_manifold`, `ssl_masked`, `ssl_contrastive`,
+`ssl_next_risk`, and `ssl_transformer`.  The learned encoders are ablations for
+state-policy representation experiments rather than hidden oracles.
+`--state_basis_mode raw+manifold` tests the learned latent basis inside the
+mean model; `raw+state` keeps the older deterministic occupancy basis.
 
 Workflow:
 
@@ -192,17 +196,17 @@ Encoder ablation suite:
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_encoder_suite.py \
   --problem StatePolicyRZDT1 \
-  --encoder_kinds synthetic,self_supervised,transformer \
+  --encoder_kinds synthetic,pca_manifold,kernel_manifold,ssl_masked,ssl_contrastive,ssl_next_risk,ssl_transformer \
+  --use_state_basis --state_basis_mode raw+manifold \
   --N 30 --n0 8 \
   --n_seeds 10 \
   --out_prefix encoder_suite_statepolicy_n30_s10
 ```
 
-Smoke result on 2026-07-04 with `N=12,n0=6,n_seeds=2` confirmed that all three
-encoder paths run inside SC-OLH-KG.  In that tiny probe, self-supervised and
-transformer encoders both achieved median feasible regret `0.00118`, while the
-deterministic synthetic encoder had `0.01343`; this is only a functionality
-probe, not a paper claim.
+Smoke result on 2026-07-05 with `N=7,n0=5,n_seeds=1` confirmed that all seven
+representation paths run inside SC-OLH-KG.  The tiny probe is a functionality
+check only; paper-grade evidence still needs the high-dimensional and traffic
+scheduler suites.
 
 Exact-MC decision probe:
 
@@ -310,6 +314,9 @@ PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_traffic_fresh.
 
 If the CSV is absent, this runner writes a `missing_data` record.  That is the
 only valid traffic status until real fresh-seed logs are supplied.
+Learned traffic encoders (`ssl_*`) additionally require the trajectory CSV to
+include a raw policy column `x`; `generate_traffic_trajectory_logs.py` now
+adds that column when it creates fresh logs from candidate summaries.
 
 HVD calibration diagnostic:
 

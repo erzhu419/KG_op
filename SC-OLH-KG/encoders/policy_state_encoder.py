@@ -8,6 +8,14 @@ from pathlib import Path
 
 import numpy as np
 
+from representation.manifold import KernelManifoldEncoder, PCAManifoldEncoder
+from representation.ssl_encoder import (
+    ContrastivePolicyEncoder,
+    MaskedTrajectoryEncoder,
+    NextRiskEncoder,
+    SmallTransformerEncoder,
+)
+
 
 class SyntheticPolicyStateEncoder:
     """Map a policy/design vector to a deterministic occupancy proxy.
@@ -535,17 +543,31 @@ class StateCoupledFeatureMap:
     GPR basis adds an intercept outside this object.
     """
 
-    def __init__(self, problem, encoder=None, state_scale=0.2):
+    def __init__(self, problem, encoder=None, state_scale=0.2, mode="raw+state"):
         self.problem = problem
         self.encoder = encoder or SyntheticPolicyStateEncoder(problem)
         self.state_scale = float(state_scale)
+        self.mode = str(mode or "raw+state").lower()
         d = int(problem.d)
         rho_d = int(self.encoder.feature_dim)
-        self.feature_dim = 2 * d + rho_d
+        if self.mode == "raw":
+            self.feature_dim = 2 * d
+        elif self.mode in ("state", "manifold"):
+            self.feature_dim = rho_d
+        elif self.mode in ("raw+state", "raw_plus_state", "raw+manifold", "raw_plus_manifold"):
+            self.feature_dim = 2 * d + rho_d
+        else:
+            raise ValueError(
+                "state basis mode must be raw, state/manifold, or raw+state/raw+manifold"
+            )
 
     def features(self, x):
         z = np.asarray(self.problem.normalize(x), dtype=float)
         rho = self.state_scale * self.encoder.occupancy(x)
+        if self.mode == "raw":
+            return np.concatenate([z, z ** 2])
+        if self.mode in ("state", "manifold"):
+            return rho
         return np.concatenate([z, z ** 2, rho])
 
 

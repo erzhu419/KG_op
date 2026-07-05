@@ -8,6 +8,7 @@ special casing.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from pathlib import Path
 import sys
@@ -25,7 +26,17 @@ sys.path.insert(0, str(GPR_KG_CODE))
 
 from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
 from benchmark_quality import json_safe, parse_csv  # noqa: E402
+from encoders.policy_state_encoder import TrafficTrajectoryEncoder  # noqa: E402
 from problems.traffic_ingolstadt21 import Ingolstadt21ScalarizedTrafficProblem  # noqa: E402
+
+
+TRAJECTORY_ENCODERS = {
+    "ssl_masked",
+    "ssl_contrastive",
+    "ssl_next_risk",
+    "ssl_transformer",
+    "masked_trajectory",
+}
 
 
 def _safe_name(value):
@@ -37,6 +48,44 @@ def _summary_dir(args, method, partition, seed):
     safe_method = _safe_name(method)
     safe_partition = _safe_name(partition)
     return out_root / f"{safe_method}_{safe_partition}_seed{int(seed)}"
+
+
+def _trajectory_encoder_status(args):
+    encoder_kind = str(args.encoder_kind or "synthetic").lower()
+    if encoder_kind not in TRAJECTORY_ENCODERS:
+        return None
+    status = TrafficTrajectoryEncoder.missing_data_status(args.trajectory_log)
+    if status["status"] == "missing_data":
+        status["encoder_kind"] = encoder_kind
+        return status
+    try:
+        with Path(args.trajectory_log).open("r", encoding="utf-8") as handle:
+            header = handle.readline().strip().split(",")
+    except OSError as exc:
+        return {
+            "status": "missing_data",
+            "reason": f"fresh-seed traffic trajectory log cannot be read: {exc}",
+            "path": args.trajectory_log,
+            "encoder_kind": encoder_kind,
+        }
+    if "x" not in header:
+        return {
+            "status": "missing_data",
+            "reason": (
+                "trajectory log lacks raw policy column 'x'; learned traffic "
+                "encoders need policy-to-trajectory pairs for inverse use"
+            ),
+            "path": args.trajectory_log,
+            "encoder_kind": encoder_kind,
+        }
+    return {"status": "available", "path": args.trajectory_log, "encoder_kind": encoder_kind}
+
+
+def _load_trajectory_records(path):
+    if not path:
+        return None
+    with Path(path).open("r", newline="", encoding="utf-8") as handle:
+        return list(csv.DictReader(handle))
 
 
 def _unique_rows(rows):
@@ -278,7 +327,10 @@ def _build_config(args, variant, variance_mode, seed):
         recommendation_axis_oracle=False,
         use_state_coupling=is_sc,
         use_state_basis=is_sc and args.use_state_basis,
+        state_basis_mode=args.state_basis_mode,
         encoder_kind=args.encoder_kind,
+        encoder_latent_dim=args.encoder_latent_dim,
+        encoder_fit_pool_size=args.encoder_fit_pool_size,
         acquisition_mode=args.acquisition_mode,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
         exact_kg_use_score=args.exact_kg_use_score,
@@ -393,6 +445,9 @@ def run_one(args, variant, variance_mode, seed):
         sigma_replications=args.sigma_replications,
         historical_anchor_policy=args.traffic_anchor_policy,
     )
+    trajectory_records = _load_trajectory_records(args.trajectory_log)
+    if trajectory_records:
+        problem._scolhkg_trajectory_records = trajectory_records
     config = _build_config(args, variant, variance_mode, seed)
     method = "SC-OLH-KG" if config.use_state_coupling else "OLH-KG"
     partition = _partition_name(
@@ -528,7 +583,14 @@ def main():
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--allow_unobserved_recommendation", action="store_true")
     parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument(
+        "--state_basis_mode",
+        default="raw+state",
+        choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
+    )
     parser.add_argument("--encoder_kind", default="synthetic")
+    parser.add_argument("--encoder_latent_dim", type=int, default=8)
+    parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--acquisition_mode", default="additive")
     parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
     parser.add_argument("--exact_kg_use_score", action="store_true")
@@ -555,10 +617,22 @@ def main():
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=1)
     parser.add_argument("--paper_results_dir", default=str(GPR_KG_CODE / "results" / "ingolstadt21"))
+    parser.add_argument("--trajectory_log", default="")
     parser.add_argument("--tag", default="")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
+    trajectory_status = _trajectory_encoder_status(args)
+    if trajectory_status is not None and trajectory_status["status"] == "missing_data":
+        print(json.dumps(json_safe({
+            "status": "missing_data",
+            "reason": trajectory_status.get("reason"),
+            "trajectory_log": args.trajectory_log,
+            "encoder_kind": args.encoder_kind,
+            "n_runs": 0,
+            "summary_paths": [],
+        }), indent=2))
+        return
     rows = run(args)
     print(json.dumps(json_safe({
         "n_runs": len(rows),

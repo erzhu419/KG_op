@@ -148,27 +148,102 @@ class OrthogonalHVD:
     def _cumulative_features(self, x, problem=None, output_index=0):
         """Linear variance features for trajectory/meta cumulative risk."""
         problem = problem or self._last_problem
-        if problem is None or not hasattr(problem, "cumulative_risk_features"):
+        feat = None
+        if problem is not None and hasattr(problem, "cumulative_risk_features"):
+            try:
+                feat = problem.cumulative_risk_features(
+                    x,
+                    output_index=int(output_index),
+                )
+            except TypeError:
+                feat = problem.cumulative_risk_features(x)
+            if feat is not None:
+                feat = np.asarray(feat, dtype=float)
+                if feat.ndim != 1 or len(feat) == 0 or not np.all(np.isfinite(feat)):
+                    feat = None
+
+        manifold = self._manifold_cumulative_features(x, problem)
+        if feat is None and manifold is None:
+            return None
+        if feat is None:
+            return np.concatenate([[1.0], manifold])
+        if manifold is None:
+            return feat
+        return np.concatenate([feat, manifold])
+
+    def _base_cumulative_feature_names(self, problem=None, output_index=0):
+        problem = problem or self._last_problem
+        if problem is None or not hasattr(problem, "cumulative_risk_feature_names"):
             return None
         try:
-            feat = problem.cumulative_risk_features(
-                x,
-                output_index=int(output_index),
-            )
+            names = problem.cumulative_risk_feature_names(output_index=int(output_index))
         except TypeError:
-            feat = problem.cumulative_risk_features(x)
-        if feat is None:
+            names = problem.cumulative_risk_feature_names()
+        if names is None:
             return None
-        feat = np.asarray(feat, dtype=float)
-        if feat.ndim != 1 or len(feat) == 0 or not np.all(np.isfinite(feat)):
+        return [str(name) for name in names]
+
+    def _cumulative_feature_names(self, x, problem=None, output_index=0, feat_len=None):
+        problem = problem or self._last_problem
+        names = self._base_cumulative_feature_names(problem, output_index)
+        manifold = self._manifold_cumulative_features(x, problem)
+        if names is None:
+            if manifold is None:
+                return None
+            names = ["floor"] + [
+                f"manifold_rho{j}_sq" for j in range(len(manifold) // 2)
+            ] + [
+                f"manifold_rho{j}_abs" for j in range(len(manifold) // 2)
+            ]
+        elif manifold is not None:
+            k = len(manifold) // 2
+            names = list(names) + [
+                f"manifold_rho{j}_sq" for j in range(k)
+            ] + [
+                f"manifold_rho{j}_abs" for j in range(k)
+            ]
+        if feat_len is not None and len(names) != int(feat_len):
+            # Keep diagnostics honest when a problem exposes an older feature
+            # name list while representation features are appended.
+            names = list(names[: int(feat_len)])
+            while len(names) < int(feat_len):
+                names.append(f"feature_{len(names)}")
+        return names
+
+    def _manifold_cumulative_features(self, x, problem=None):
+        """Positive low-dimensional latent blocks for cumulative variance.
+
+        These do not replace the problem's trajectory/factor features.  They
+        append tangent/meta information when a representation encoder is active,
+        and provide a fallback cumulative feature block for purely synthetic
+        representation ablations.
+        """
+        problem = problem or self._last_problem
+        if problem is None or not getattr(problem, "_scolhkg_use_manifold_hvd", False):
             return None
-        return feat
+        encoder = getattr(problem, "_scolhkg_representation_encoder", None)
+        if encoder is None or not hasattr(encoder, "occupancy"):
+            return None
+        try:
+            rho = np.asarray(encoder.occupancy(x), dtype=float)
+        except Exception:
+            return None
+        if rho.ndim != 1 or len(rho) == 0 or not np.all(np.isfinite(rho)):
+            return None
+        k = min(8, len(rho))
+        rho = np.clip(rho[:k], -5.0, 5.0)
+        return np.concatenate([rho ** 2, np.abs(rho)])
 
     def _cumulative_feature_matrix(self, X, problem=None, output_index=0):
         rows = []
+        expected_dim = None
         for x in X:
             feat = self._cumulative_features(x, problem, output_index)
             if feat is None:
+                return None
+            if expected_dim is None:
+                expected_dim = len(feat)
+            elif len(feat) != expected_dim:
                 return None
             rows.append(feat)
         return np.vstack(rows) if rows else np.empty((0, 1), dtype=float)
@@ -541,17 +616,18 @@ class OrthogonalHVD:
         c_feat = self._cumulative_features(x, problem, output_index=i)
         c_beta = self.cumulative_beta.get(i)
         if c_feat is not None:
-            names = None
             problem_ref = problem or self._last_problem
-            if problem_ref is not None and hasattr(problem_ref, "cumulative_risk_feature_names"):
-                try:
-                    names = problem_ref.cumulative_risk_feature_names(output_index=i)
-                except TypeError:
-                    names = problem_ref.cumulative_risk_feature_names()
+            names = self._cumulative_feature_names(
+                x,
+                problem_ref,
+                output_index=i,
+                feat_len=len(c_feat),
+            )
             fitted_contrib = None
             fitted_variance = None
             fitted_by_name = None
             fitted_blocks = None
+            manifold_blocks = None
             if c_beta is not None:
                 contrib = np.asarray(c_feat * c_beta, dtype=float)
                 fitted_contrib = contrib.tolist()
@@ -569,6 +645,12 @@ class OrthogonalHVD:
                         "linear": float(np.sum(contrib[7:9])),
                         "total": float(max(np.sum(contrib), self.floor)),
                     }
+                decomposer = getattr(problem_ref, "_scolhkg_manifold_decomposer", None)
+                if decomposer is not None:
+                    manifold_blocks = decomposer.decompose(
+                        x,
+                        total_variance=fitted_variance,
+                    )
             oracle = None
             oracle_blocks = None
             if problem_ref is not None and hasattr(problem_ref, "true_cumulative_risk_decomposition"):
@@ -592,6 +674,7 @@ class OrthogonalHVD:
                 "fitted_contrib": fitted_contrib,
                 "fitted_by_name": fitted_by_name,
                 "fitted_blocks": fitted_blocks,
+                "manifold_blocks": manifold_blocks,
                 "fitted_variance": fitted_variance,
                 "fit_rmse": self.cumulative_fit_rmse.get(i),
                 "oracle": oracle,
@@ -705,6 +788,11 @@ class OrthogonalHVD:
             "activation_min_records": int(self.config.activation_min_records),
             "certification_kappa": float(self.config.certification_kappa),
             "certification_uses_class_floor": bool(self.mode in ("orthogonal", "factor")),
+            "uses_manifold_hvd_features": bool(getattr(
+                self._last_problem,
+                "_scolhkg_use_manifold_hvd",
+                False,
+            )),
             "residual_square_tail": tail_radius,
             "residual_variance_cap": {
                 str(i): self._residual_variance_cap(i)
