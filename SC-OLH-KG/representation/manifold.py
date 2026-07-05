@@ -183,6 +183,17 @@ class PCAManifoldEncoder:
         inverse_neighbors = max(1, int(inverse_neighbors))
         if n_anchors <= 0:
             return []
+
+        anchor_rows = self._problem_state_inverse_candidates(
+            n_anchors=n_anchors,
+            inverse_neighbors=inverse_neighbors,
+            rng=rng,
+        )
+        if anchor_rows:
+            self.diagnostics_["last_inverse_mode"] = "problem_state_anchor"
+            self.diagnostics_["last_inverse_count"] = int(len(anchor_rows))
+            return anchor_rows
+
         pool = self._raw_inverse_pool(inverse_pool_size, rng, observed)
         if not pool:
             return []
@@ -199,7 +210,32 @@ class PCAManifoldEncoder:
             dist = np.linalg.norm(feats - anchor[None, :], axis=1)
             for idx in np.argsort(dist)[:inverse_neighbors]:
                 chosen.append(pool[int(idx)])
-        return _unique(chosen)
+        chosen = _unique(chosen)
+        self.diagnostics_["last_inverse_mode"] = "latent_nearest_neighbor"
+        self.diagnostics_["last_inverse_count"] = int(len(chosen))
+        return chosen
+
+    def _problem_state_inverse_candidates(self, n_anchors, inverse_neighbors, rng):
+        if not (
+            hasattr(self.problem, "state_anchor_points")
+            and hasattr(self.problem, "inverse_state_anchor")
+        ):
+            return []
+        try:
+            anchors = self.problem.state_anchor_points(n=n_anchors, rng=rng)
+        except Exception:
+            return []
+        rows = []
+        for anchor in anchors or []:
+            try:
+                rows.extend(self.problem.inverse_state_anchor(
+                    anchor,
+                    rng=rng,
+                    n=inverse_neighbors,
+                ))
+            except Exception:
+                continue
+        return _unique(rows)
 
     def _policy_pool(self, records_or_policy_pool=None):
         if records_or_policy_pool is not None:

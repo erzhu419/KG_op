@@ -8,7 +8,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from problems.rzdt import StatePolicyRZDT1  # noqa: E402
+from problems.rzdt import HighDimStatePolicyRZDT1, StatePolicyRZDT1  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 from representation.manifold import (  # noqa: E402
     KernelManifoldEncoder,
@@ -111,6 +111,26 @@ class RepresentationTests(unittest.TestCase):
         )
         self.assertGreaterEqual(len(candidates), 5)
         self.assertTrue(all(len(x) == self.problem.d for x in candidates))
+
+    def test_manifold_candidates_use_problem_state_anchors_when_available(self):
+        problem = ScalarizedProblem(HighDimStatePolicyRZDT1(d=256, L=100, sigma=0.04))
+        encoder = PCAManifoldEncoder(
+            problem,
+            latent_dim=4,
+            fit_pool_size=16,
+            rng=np.random.default_rng(7),
+        )
+        candidates = encoder.state_space_candidates(
+            n_anchors=6,
+            inverse_pool_size=20,
+            inverse_neighbors=2,
+            rng=np.random.default_rng(8),
+        )
+        self.assertGreaterEqual(len(candidates), 6)
+        self.assertTrue(all(len(x) == problem.d for x in candidates))
+        self.assertEqual(encoder.diagnostics()["last_inverse_mode"], "problem_state_anchor")
+        spreads = [problem.base.policy_state(x)[2] for x in candidates]
+        self.assertLessEqual(max(spreads), 1e-12)
 
     def test_masked_ssl_record_diagnostics_are_finite(self):
         encoder = MaskedTrajectoryEncoder(problem=None, latent_dim=4).fit(tiny_records())
