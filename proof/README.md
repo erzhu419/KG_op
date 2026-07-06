@@ -54,8 +54,9 @@ mathlib and its cache; later builds should be fast.
   square records, nonnegative cumulative beta predictions, clipping, and
   certification variance.
 - `SCOLHKG/Real/CumulativeRiskImplementation.lean`: factor-HVD feature-block
-  bridge for `floor/independent/shared/linear/total`, including the
-  shared-shock omission underestimation lemma.
+  bridge for `floor/independent/shared/linear/total`, the provider-based
+  `psi=(A,N)` bridge, `v_C^+ = total + tail_guard`, and the shared-shock
+  omission underestimation lemma.
 - `SCOLHKG/Real/PosteriorRecommendation.lean`: robust posterior recommendation
   logic used in `SingleOLHKGAlgorithm._solve_posterior_recommendation`.
 - `SCOLHKG/Real/RidgeHVD.lean`: concrete ridge empirical minimizer plus

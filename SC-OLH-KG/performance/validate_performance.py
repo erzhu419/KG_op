@@ -476,8 +476,8 @@ def main():
     parser.add_argument("--sigma", type=float, default=0.04)
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--legacy_problem", default="RZDT1")
-    parser.add_argument("--candidate_problem", default="RegimeRZDT1")
-    parser.add_argument("--variance_mode", default="orthogonal",
+    parser.add_argument("--candidate_problem", default="FactorShockStatePolicyRZDT1")
+    parser.add_argument("--variance_mode", default="factor",
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
     parser.add_argument("--biobj_variance_mode", default="class",
                         choices=["pooled", "oracle", "class", "orthogonal", "factor"])
@@ -495,7 +495,8 @@ def main():
     parser.add_argument("--max_regret_delta", type=float, default=0.0)
     parser.add_argument("--max_objective_delta", type=float, default=0.0)
     parser.add_argument("--require-sc-feasible", action="store_true")
-    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--use_state_basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable_state_basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
         "--state_basis_mode",
         default="raw+state",
@@ -526,10 +527,16 @@ def main():
             "transformer",
             "pca_manifold",
             "kernel_manifold",
+            "graph_laplacian",
+            "diffusion_manifold",
+            "graph_manifold",
             "ssl_masked",
             "ssl_contrastive",
             "ssl_next_risk",
             "ssl_transformer",
+            "ssl_hybrid",
+            "hybrid_ssl",
+            "contextual_manifold",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)

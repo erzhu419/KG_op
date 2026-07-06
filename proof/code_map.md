@@ -6,8 +6,9 @@
 | --- | --- | --- |
 | Decision vector `x` | `problem` candidates, integer tuples | Implemented |
 | Policy-state summary `s(x)` | `policy_state(x)`, `SyntheticPolicyStateEncoder`, `SelfSupervisedPolicyStateEncoder` | Synthetic and learned encoder paths implemented |
-| Idiosyncratic exposure `A(x)` | `FactorShockStatePolicyRZDT1.risk_exposures(x)[0]` | Implemented for synthetic |
-| Shared-shock exposure `N(x)` | `FactorShockStatePolicyRZDT1.risk_exposures(x)[1]` | Implemented for synthetic |
+| Provider coordinate `psi(x)=(A(x),N(x))` | `core.cumulative_risk.CumulativeRiskFeatureProvider` / `RiskExposure` | Implemented as the main interface |
+| Idiosyncratic exposure `A(x)` | `risk_exposures(x).A` | Implemented for factor synthetic, inventory, queue, and traffic proxy/CSV |
+| Shared-shock exposure `N(x)` | `risk_exposures(x).N` | Implemented for factor synthetic, inventory, queue, and traffic proxy/CSV |
 | `Lambda`, `B`, `omega` | `cumulative_risk_parameters()` | Implemented for synthetic |
 | `v_C(x)` | `true_cumulative_risk_decomposition()["total"]` | Implemented for synthetic |
 | HVD predictor `\hat v_C(x)` | `OrthogonalHVD(mode="factor")` cumulative beta | Implemented for synthetic |
@@ -15,7 +16,7 @@
 | SC candidate generation | `state_anchor_points()` and `inverse_state_anchor()` | Synthetic implemented |
 | Self-supervised trajectory representation | `SelfSupervisedTrajectoryEncoder`, `TransformerTrajectoryEncoder` | Implemented for masked, contrastive, and attention-style pooling ablations |
 | Traffic occupancy encoder | `TrafficTrajectoryEncoder` plus `sumo_sim.py` trajectory logger | Implemented for fresh-seed CSV schema; large trajectory table requires server-generated logs |
-| Exact terminal KG | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | Formal acquisition variant via `acquisition_mode=exact_mc/blend`; additive remains default ablation |
+| Exact terminal KG | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | Main default via `acquisition_mode=exact_mc`; additive is an ablation/proxy |
 
 ## Implementation Notes
 
@@ -28,7 +29,12 @@ variance estimators, which makes the ablation clean:
 - `orthogonal`: smooth low-dimensional log-variance.
 - `factor`: cumulative trajectory/meta variance with shared shocks.
 
-The current factor synthetic is deliberately controlled: the true constraint
+The current high-dependence path is deliberately controlled around one provider
+coordinate.  Factor synthetic, inventory, queue, and traffic all expose
+`psi(x)=(A,N)` through `CumulativeRiskFeatureProvider`; factor-HVD, state
+candidate anchors, GPR state basis, certification and exact KG all consume that
+same coordinate.  The factor synthetic is the oracle-clean case where the true
+constraint
 variance is exactly
 
 ```text
@@ -61,11 +67,11 @@ an ablation.
 | `core.kg._build_line_envelope` intersection `z=(a_old-a_new)/(b_new-b_old)` | old active line dominates left of the cut; new line dominates right of the cut; pop and right-tail split preserve certificates over every point of the affected interval/tail | `SCOLHKG.Real.LineEnvelopeIntersection` proves the concrete intersection arithmetic, popped-cell takeover, right-tail finite/tail cell construction, and interval/tail dominance |
 | sorted/collapsed `_build_line_envelope` while-loop fold | recursive insert loop over active lines; popped lines remain pointwise dominated by the final output stack; final output endpoint checks lift to original input lines | `SCOLHKG.Real.LineEnvelopeFold.foldLoop_dominates_input`, `foldLoop_output_endpoint_dominance_to_finalInvariant`, and `foldLoop_lineEnvelopeKG_exact_from_output_endpoint_dominance` |
 | `variance.OrthogonalHVD.update` | residual record `resid2=(y-mu)^2` | `SCOLHKG.Real.HVDImplementation.residualSquare_nonnegative` |
-| `variance.OrthogonalHVD._fit_output`, factor mode | cumulative ridge fit, then `beta=max(beta,0)` and `pred=max(F beta,floor)` | `SCOLHKG.Real.RidgeHVD.ridge_hvd_residual_square_oracle`, `SCOLHKG.Real.HVDImplementation.cumulative_linear_prediction_nonnegative`, `clippedVariance_ge_floor` |
+| `variance.OrthogonalHVD._fit_output`, factor mode | provider cumulative ridge fit, PSD-project `B`, nonnegative-project `Lambda/floor/omega`, and predict `floor + A^T Lambda A + N^T B N + N^T omega` | `SCOLHKG.Real.RidgeHVD.ridge_hvd_residual_square_oracle`, `SCOLHKG.Real.HVDImplementation.cumulative_linear_prediction_nonnegative`, `clippedVariance_ge_floor`, and `SCOLHKG.Real.CumulativeRiskImplementation.providerRiskBlocks_vCPlus_conservative` |
 | `variance.OrthogonalHVD.predict_certification_variance` | `base + model_uncertainty`, guarded by class variance and floor | `SCOLHKG.Real.HVDImplementation.certificationVariance_sound_from_model_uncertainty` |
-| `variance.OrthogonalHVD.predict_decomposition`, factor mode | block diagnostics `floor/independent/shared/linear/total` | `SCOLHKG.Real.CumulativeRiskImplementation.factorShockBlocks_total_eq_components` and `factorShockBlocks_shared_omission_underestimates` |
+| `variance.OrthogonalHVD.predict_decomposition`, factor mode | provider block diagnostics `floor/independent/shared/linear/tail_guard/v_C_plus` | `SCOLHKG.Real.CumulativeRiskImplementation.factorShockBlocks_total_eq_components`, `factorShockBlocks_shared_omission_underestimates`, `providerRiskBlocks_total_eq_components`, and `providerRiskBlocks_vCPlus_conservative` |
 | `core.certification.conservative_chance_margin` | `mu_g + sqrt(beta_g)s_g + z sqrt(v_C^+) - tau` | `SCOLHKG.Real.CertificationImplementation.implementation_certifies_true_quantile` |
-| `acquisition.OLHKGAcquisition.score` | additive proxy `KG_obj + lambda_f KG_feas + lambda_v KG_var + lambda_m KG_mean + lambda_rho KG_coupling` | `SCOLHKG.Real.AdditiveApproxKG.additive_proxy_maximizer_exact_gap_le_two_eta` |
+| `acquisition.OLHKGAcquisition.score` | additive proxy retained for ablation | `SCOLHKG.Real.AdditiveApproxKG.additive_proxy_maximizer_exact_gap_le_two_eta` |
 | `algorithms.SingleOLHKGAlgorithm._solve_posterior_recommendation` | choose lowest posterior objective among robust chance-feasible candidates | `SCOLHKG.Real.PosteriorRecommendation.robust_feasible_implies_posterior_certified` and `robust_argmin_is_objective_minimizer_on_robust_set` |
 | `core.candidates.posterior_sample_candidates` | finite posterior candidate pool from sampled parametric coefficients | `SCOLHKG.Measure.PosteriorCoefficientSampler.posteriorCoefficientSampler_bad_event_le_sum` and `SCOLHKG.Measure.PosteriorSamplingCandidates.randomAdaptiveCenteredSubGaussian_bad_event_le_sum` control random candidate sets by deterministic envelope pools |
 | posterior coefficient draw law | sampled parametric coefficient vector with mean/covariance from GPR posterior | `SCOLHKG.Measure.PosteriorMultivariateGaussian` uses mathlib `multivariateGaussian` to prove the draw law, mean, covariance, and Gaussian linear scores |
@@ -74,15 +80,11 @@ an ablation.
 | `TrafficTrajectoryEncoder` fresh CSV aggregate | state-action occupancy plus queue/wait/flow and demand-shock exposure | `SCOLHKG.Real.TrafficTrajectoryModel.totalRisk_decomposition`, `sharedShock_omission_underestimates`, and `TrafficLogSchemaRow` formalize the finite traffic risk model and CSV schema semantics |
 
 The exact posterior-update SC-OLH-KG object is formalized in
-`SCOLHKG.Measure.PosteriorUpdateKG`, and the Python runner now has an optional
-MC estimator through `exact_kg_mc_samples`.  The default remains the additive
-proxy above, so the manuscript has two clean paths:
-
-1. report additive OLH-KG as an ablation and use the `2 eta` approximation
-   theorem;
-2. report `exact_mc` or `blend` after performance and quality validation, then
-   connect it to `PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer`
-   plus the exact-MC estimator bridge.
+`SCOLHKG.Measure.PosteriorUpdateKG`, and the Python runner now defaults to the
+MC estimator through `acquisition_mode=exact_mc` and `exact_kg_mc_samples=8`.
+The additive proxy above is now explicitly an ablation; if exact-MC is too
+expensive in a table, the manuscript must cite the `2 eta` approximation lemma
+instead of presenting additive as the main mathematical object.
 
 ## Code-To-Theory Closure Notes
 

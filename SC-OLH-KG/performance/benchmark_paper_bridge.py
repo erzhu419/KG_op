@@ -106,8 +106,17 @@ def _problem_args(args, problem):
         encoder_latent_dim=args.encoder_latent_dim,
         encoder_fit_pool_size=args.encoder_fit_pool_size,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
+        exact_kg_jobs=args.exact_kg_jobs,
         exact_kg_use_score=args.exact_kg_use_score,
         exact_kg_blend=args.exact_kg_blend,
+        checkpoint_dir=(
+            str(Path(args.checkpoint_dir) / problem)
+            if str(args.checkpoint_dir or "").strip()
+            else ""
+        ),
+        checkpoint_resume=args.checkpoint_resume,
+        checkpoint_interval=args.checkpoint_interval,
+        checkpoint_keep_last=args.checkpoint_keep_last,
         acquisition_modes=args.acquisition_modes,
         modes=args.modes,
         sc_modes=args.sc_modes,
@@ -225,7 +234,8 @@ def main():
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
-    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--use_state_basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable_state_basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
         "--state_basis_mode",
         default="raw+state",
@@ -256,21 +266,32 @@ def main():
             "transformer",
             "pca_manifold",
             "kernel_manifold",
+            "graph_laplacian",
+            "diffusion_manifold",
+            "graph_manifold",
             "ssl_masked",
             "ssl_contrastive",
             "ssl_next_risk",
             "ssl_transformer",
+            "ssl_hybrid",
+            "hybrid_ssl",
+            "contextual_manifold",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
-    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
+    parser.add_argument("--exact_kg_jobs", type=int, default=1)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
-    parser.add_argument("--acquisition_modes", default="additive")
+    parser.add_argument("--checkpoint_dir", default="")
+    parser.add_argument("--checkpoint_resume", action="store_true")
+    parser.add_argument("--checkpoint_interval", type=int, default=1)
+    parser.add_argument("--checkpoint_keep_last", type=int, default=3)
+    parser.add_argument("--acquisition_modes", default="exact_mc")
     parser.add_argument("--modes", default="orthogonal,factor")
     parser.add_argument("--sc_modes", default="")
-    parser.add_argument("--baseline_variant", default="orthogonal")
+    parser.add_argument("--baseline_variant", default="factor:olhkg_exact")
     parser.add_argument("--seeds", default="")
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=10)

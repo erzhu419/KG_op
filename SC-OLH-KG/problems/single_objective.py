@@ -108,6 +108,21 @@ class ScalarizedProblem:
             return self.base.hvd_features(x)
         raise AttributeError("base problem does not expose hvd_features")
 
+    def risk_exposures(self, x, output_index=1):
+        if hasattr(self.base, "risk_exposures"):
+            return self.base.risk_exposures(x, output_index=output_index)
+        raise AttributeError("base problem does not expose risk_exposures")
+
+    def cumulative_risk_parameters(self, output_index=1):
+        if hasattr(self.base, "cumulative_risk_parameters"):
+            return self.base.cumulative_risk_parameters(output_index=output_index)
+        return None
+
+    def cumulative_risk_provider_status(self):
+        if hasattr(self.base, "cumulative_risk_provider_status"):
+            return self.base.cumulative_risk_provider_status()
+        return {"status": "missing_provider"}
+
     def cumulative_risk_features(self, x, output_index=1):
         if hasattr(self.base, "cumulative_risk_features"):
             return self.base.cumulative_risk_features(

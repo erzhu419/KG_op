@@ -33,6 +33,24 @@ def _safe_name(value):
 
 def _method_args(args, method):
     values = dict(vars(args))
+    # Keep this benchmark thin while satisfying benchmark_quality's full
+    # paper-runner argument contract.
+    values.setdefault("beta_g", 2.0)
+    values.setdefault("certification_mode", "theory")
+    values.setdefault("coupling_safety_z", 0.5)
+    values.setdefault("coupling_gate_temperature", 0.25)
+    values.setdefault("recommendation_infeasible_strategy", "penalty")
+    values.setdefault("enable_certification_calibration", False)
+    values.setdefault("certification_calibration_min_obs", 8)
+    values.setdefault("certification_calibration_ridge", 1e-6)
+    values.setdefault("certification_calibration_noise_floor_scale", 0.5)
+    values.setdefault("certification_calibration_beta", 2.0)
+    values.setdefault("raw_basis_dim", -1)
+    values.setdefault("raw_projection_seed", 314159)
+    values.setdefault("numeric_backend", "numpy")
+    values.setdefault("numeric_backend_device", "auto")
+    values.setdefault("torch_dtype", "float64")
+    values.setdefault("torch_min_rows", 128)
     values["exact_method"] = method
     values["acquisition_mode"] = "additive"
     values["exact_kg_mc_samples"] = 0
@@ -55,9 +73,30 @@ def _method_args(args, method):
 
 
 def _run_one(payload):
-    args_dict, method, seed = payload
+    if len(payload) == 3:
+        args_dict, method, seed = payload
+        job_index = 0
+        n_jobs = 1
+    else:
+        args_dict, method, seed, job_index, n_jobs = payload
     args = SimpleNamespace(**args_dict)
     run_args = _method_args(args, method)
+    run_args.progress_logging = bool(getattr(args, "progress_logging", True))
+    run_args.progress_label = (
+        f"job={int(job_index) + 1}/{int(n_jobs)} "
+        f"problem={args.problem} method={method} seed={int(seed)}"
+    )
+    run_args.progress_units_per_iteration = int(
+        getattr(args, "progress_units_per_iteration", 100))
+    run_args.progress_exact_updates = int(
+        getattr(args, "progress_exact_updates", 10))
+    checkpoint_dir = str(getattr(args, "checkpoint_dir", "") or "").strip()
+    if checkpoint_dir:
+        run_args.checkpoint_dir = str(
+            Path(checkpoint_dir)
+            / _safe_name(args.problem)
+            / _safe_name(method)
+        )
     row = benchmark_quality.run_variant_once(
         run_args,
         args.variance_mode,
@@ -76,24 +115,45 @@ def run_benchmark(args):
     if not seeds:
         seeds = list(range(args.seed_start, args.seed_start + args.n_seeds))
     methods = parse_csv(args.methods)
-    payloads = [
+    raw_payloads = [
         (vars(args), method, seed)
         for method in methods
         for seed in seeds
     ]
+    payloads = [
+        (args_dict, method, seed, idx, len(raw_payloads))
+        for idx, (args_dict, method, seed) in enumerate(raw_payloads)
+    ]
     rows = []
+    total = len(payloads)
+    completed = 0
     if int(args.jobs) > 1 and len(payloads) > 1:
         with ProcessPoolExecutor(max_workers=int(args.jobs)) as pool:
             futures = {pool.submit(_run_one, payload): payload for payload in payloads}
             for future in as_completed(futures):
-                _, method, seed = futures[future]
-                print(f"[exact-kg] done method={method} seed={seed}", flush=True)
+                _, method, seed, _, _ = futures[future]
                 rows.append(future.result())
+                completed += 1
+                print(
+                    f"[{completed}/{total}] [exact-kg] done "
+                    f"method={method} seed={seed}",
+                    flush=True,
+                )
     else:
         for payload in payloads:
-            _, method, seed = payload
-            print(f"[exact-kg] method={method} seed={seed}", flush=True)
+            _, method, seed, _, _ = payload
+            print(
+                f"[{completed}/{total}] [exact-kg] start "
+                f"method={method} seed={seed}",
+                flush=True,
+            )
             rows.append(_run_one(payload))
+            completed += 1
+            print(
+                f"[{completed}/{total}] [exact-kg] done "
+                f"method={method} seed={seed}",
+                flush=True,
+            )
 
     grouped = {}
     for row in rows:
@@ -142,7 +202,7 @@ def write_outputs(args, result):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--problem", default="RegimeRZDT1")
+    parser.add_argument("--problem", default="FactorShockStatePolicyRZDT1")
     parser.add_argument("--d", type=int, default=5)
     parser.add_argument("--L", type=int, default=100)
     parser.add_argument("--sigma", type=float, default=0.04)
@@ -161,7 +221,7 @@ def main():
     parser.add_argument("--state_inverse_neighbors", type=int, default=2)
     parser.add_argument("--n_thr", type=int, default=5)
     parser.add_argument("--eval_pool_size", type=int, default=300)
-    parser.add_argument("--variance_mode", default="orthogonal")
+    parser.add_argument("--variance_mode", default="factor")
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_mean", type=float, default=0.10)
@@ -174,8 +234,10 @@ def main():
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
-    parser.add_argument("--use_state_coupling", action="store_true")
-    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--use_state_coupling", dest="use_state_coupling", action="store_true", default=True)
+    parser.add_argument("--disable_state_coupling", dest="use_state_coupling", action="store_false")
+    parser.add_argument("--use_state_basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable_state_basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
         "--state_basis_mode",
         default="raw+state",
@@ -192,17 +254,32 @@ def main():
             "transformer",
             "pca_manifold",
             "kernel_manifold",
+            "graph_laplacian",
+            "diffusion_manifold",
+            "graph_manifold",
             "ssl_masked",
             "ssl_contrastive",
             "ssl_next_risk",
             "ssl_transformer",
+            "ssl_hybrid",
+            "hybrid_ssl",
+            "contextual_manifold",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
     parser.add_argument("--methods", default="additive,blend0.25,blend0.5,exact")
-    parser.add_argument("--exact_mc_samples", type=int, default=4)
-    parser.add_argument("--baseline_variant", default="additive")
+    parser.add_argument("--exact_mc_samples", type=int, default=8)
+    parser.add_argument("--exact_kg_jobs", type=int, default=1)
+    parser.add_argument("--checkpoint_dir", default="")
+    parser.add_argument("--checkpoint_resume", action="store_true")
+    parser.add_argument("--checkpoint_interval", type=int, default=1)
+    parser.add_argument("--checkpoint_keep_last", type=int, default=3)
+    parser.add_argument("--progress_logging", dest="progress_logging", action="store_true", default=True)
+    parser.add_argument("--disable_progress_logging", dest="progress_logging", action="store_false")
+    parser.add_argument("--progress_units_per_iteration", type=int, default=100)
+    parser.add_argument("--progress_exact_updates", type=int, default=10)
+    parser.add_argument("--baseline_variant", default="exact+sc")
     parser.add_argument("--seeds", default="")
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=5)

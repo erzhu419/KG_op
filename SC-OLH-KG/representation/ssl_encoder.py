@@ -422,3 +422,97 @@ class SmallTransformerEncoder(MaskedTrajectoryEncoder):
         final = tokens[-1]
         delta = final - tokens[0]
         return np.concatenate([pooled, std, final, delta, [float(len(rows))]])
+
+
+class HybridSSLPolicyEncoder(MaskedTrajectoryEncoder):
+    """Contextual/contrastive policy encoder for state-coupled BO.
+
+    This is the lightweight roadmap bridge between self-supervised features,
+    contextual BO, and latent-space BO: the pretext feature keeps the generic
+    masked-reconstruction basis, but augments it with policy-induced state
+    moments and regime indicators.  It is still deterministic and dependency
+    light, so it can be swept at 10k dimensions before deciding whether a
+    heavier transformer is worth the cost.
+    """
+
+    def fit(self, records_or_policy_pool=None):
+        out = super().fit(records_or_policy_pool)
+        self.diagnostics_.update({
+            "encoder": "ssl_hybrid",
+            "pretext": "masked_contextual_contrastive",
+            "contextual_coupling": True,
+            "context_weight": 3.0,
+        })
+        return out
+
+    def _raw_feature(self, x):
+        base = super()._raw_feature(x)
+        state = self._state_context(x)
+        label = self._risk_label_value(x)
+        state_block = np.concatenate([
+            3.0 * state,
+            2.0 * state ** 2,
+            np.sin(np.pi * state),
+            np.cos(np.pi * state),
+        ])
+        base_summary = np.asarray([
+            float(np.mean(base)),
+            float(np.std(base)),
+            float(np.min(base)),
+            float(np.max(base)),
+            *np.quantile(base, [0.1, 0.25, 0.5, 0.75, 0.9]),
+        ], dtype=float)
+        interactions = np.concatenate([
+            state * (1.0 + label),
+            state * base_summary[: len(state)],
+            0.35 * base[: min(32, len(base))],
+            [label],
+        ])
+        return np.concatenate([state_block, interactions, base_summary, 0.20 * base])
+
+    def _state_context(self, x):
+        if self.problem is None:
+            return np.zeros(8, dtype=float)
+        target = self.problem.base if hasattr(self.problem, "base") else self.problem
+        if not hasattr(target, "policy_state"):
+            z = np.asarray(self.problem.normalize(x), dtype=float)
+            if len(z) == 0:
+                return np.zeros(8, dtype=float)
+            tail = z[1:] if len(z) > 1 else z
+            return np.asarray([
+                float(z[0]),
+                float(np.mean(tail)),
+                float(np.std(tail)),
+                float(np.mean(z)),
+                float(np.std(z)),
+                float(np.min(z)),
+                float(np.max(z)),
+                float(np.linalg.norm(z - 0.5) / np.sqrt(len(z))),
+            ], dtype=float)
+        try:
+            u, q, spread = target.policy_state(x)
+        except Exception:
+            return np.zeros(8, dtype=float)
+        q_ref = float(getattr(target, "reference_q", getattr(target, "q_star", 0.70)))
+        return np.asarray([
+            float(u),
+            float(q),
+            float(spread),
+            float(abs(q - q_ref)),
+            float(u * q),
+            float(q * spread),
+            float(np.sin(np.pi * u)),
+            float(np.cos(np.pi * u)),
+        ], dtype=float)
+
+    def _risk_label_value(self, x):
+        if self.problem is None:
+            return 0.0
+        target = self.problem.base if hasattr(self.problem, "base") else self.problem
+        if not hasattr(target, "risk_class"):
+            return 0.0
+        try:
+            label = float(target.risk_class(x))
+        except Exception:
+            return 0.0
+        return float(np.clip(label / 50.0, 0.0, 4.0))

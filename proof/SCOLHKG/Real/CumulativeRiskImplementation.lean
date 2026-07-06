@@ -102,4 +102,76 @@ theorem factorShockBlocks_nonnegative_components_yield_total_nonnegative
   unfold FactorShockBlocks.total
   positivity
 
+/-!
+Provider-based high-dependence bridge.
+
+The refactored Python path exposes a single provider coordinate
+`psi(x) = (A(x), N(x))`; factor-HVD, certification and exact KG consume the
+same `v_C_plus` computed from these coordinates.
+-/
+
+structure ProviderRiskBlocks where
+  floor : ℝ
+  independent : ℝ
+  shared : ℝ
+  linear : ℝ
+  tailGuard : ℝ
+
+def ProviderRiskBlocks.total (b : ProviderRiskBlocks) : ℝ :=
+  b.floor + b.independent + b.shared + b.linear
+
+def ProviderRiskBlocks.vCPlus (b : ProviderRiskBlocks) : ℝ :=
+  b.total + b.tailGuard
+
+theorem providerRiskBlocks_total_eq_components
+    (b : ProviderRiskBlocks) :
+    b.total = b.floor + b.independent + b.shared + b.linear := by
+  rfl
+
+theorem providerRiskBlocks_vCPlus_eq_total_plus_tail
+    (b : ProviderRiskBlocks) :
+    b.vCPlus = b.total + b.tailGuard := by
+  rfl
+
+theorem providerRiskBlocks_vCPlus_conservative
+    (b : ProviderRiskBlocks)
+    (htail : 0 ≤ b.tailGuard) :
+    b.total ≤ b.vCPlus := by
+  unfold ProviderRiskBlocks.vCPlus
+  linarith
+
+structure ProviderCertifiedKGInputs where
+  posteriorConstraintMean : ℝ
+  gprEpistemicStd : ℝ
+  betaSqrt : ℝ
+  zAlpha : ℝ
+  tau : ℝ
+  risk : ProviderRiskBlocks
+
+noncomputable def ProviderCertifiedKGInputs.certificationLeft
+    (u : ProviderCertifiedKGInputs) : ℝ :=
+  u.posteriorConstraintMean
+    + u.betaSqrt * u.gprEpistemicStd
+    + u.zAlpha * Real.sqrt u.risk.vCPlus
+
+def ProviderCertifiedKGInputs.certified
+    (u : ProviderCertifiedKGInputs) : Prop :=
+  u.certificationLeft ≤ u.tau
+
+theorem providerCertifiedKG_uses_provider_vCPlus
+    (u : ProviderCertifiedKGInputs) :
+    u.certificationLeft =
+      u.posteriorConstraintMean
+        + u.betaSqrt * u.gprEpistemicStd
+        + u.zAlpha * Real.sqrt u.risk.vCPlus := by
+  rfl
+
+theorem additiveProxy_is_ablation_not_main_bound
+    (exact proxy eta : ℝ)
+    (heta : |exact - proxy| ≤ eta) :
+    exact ≤ proxy + eta := by
+  have h₁ : exact - proxy ≤ |exact - proxy| := by
+    exact le_abs_self (exact - proxy)
+  linarith
+
 end SCOLHKG.Real

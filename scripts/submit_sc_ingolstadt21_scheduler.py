@@ -71,9 +71,12 @@ def main():
     parser.add_argument("--final-revalidation-replications", type=int, default=0)
     parser.add_argument("--final-revalidation-seed-start", type=int, default=70000)
     parser.add_argument("--final-revalidation-include-refinement", action="store_true")
-    parser.add_argument("--acquisition-mode", default="additive")
-    parser.add_argument("--exact-kg-mc-samples", type=int, default=0)
-    parser.add_argument("--use-state-basis", action="store_true")
+    parser.add_argument("--acquisition-mode", default="exact_mc")
+    parser.add_argument("--exact-kg-mc-samples", type=int, default=8)
+    parser.add_argument("--exact-kg-jobs", type=int, default=1)
+    parser.add_argument("--checkpoint-keep-last", type=int, default=2)
+    parser.add_argument("--use-state-basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable-state-basis", dest="use_state_basis", action="store_false")
     parser.add_argument("--cpu", type=int, default=1)
     parser.add_argument("--ram-mb", type=int, default=8192)
     parser.add_argument("--dispatch", action="store_true")
@@ -86,6 +89,7 @@ def main():
     run_id = args.run_id or time.strftime("%Y%m%d_%H%M%S")
     cwd = args.deploy / "SC-OLH-KG"
     paper_results = args.deploy / "Final_Submission/GPR_KG_Code/results/ingolstadt21"
+    checkpoint_root = args.deploy / "SC-OLH-KG" / "checkpoints" / "traffic" / run_id
     nodes = parse_csv(args.nodes)
     variants = parse_csv(args.variants)
     modes = parse_csv(args.variance_modes)
@@ -126,6 +130,9 @@ def main():
                         f"--final_revalidation_seed_start {args.final_revalidation_seed_start} "
                         f"--acquisition_mode {args.acquisition_mode} "
                         f"--exact_kg_mc_samples {args.exact_kg_mc_samples} "
+                        f"--exact_kg_jobs {args.exact_kg_jobs} "
+                        f"--checkpoint_dir {checkpoint_root} --checkpoint_resume "
+                        f"--checkpoint_interval 1 --checkpoint_keep_last {args.checkpoint_keep_last} "
                         f"--lambda_feas {args.lambda_feas} "
                         f"--lambda_var {args.lambda_var} "
                         f"--lambda_mean {args.lambda_mean} "

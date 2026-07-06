@@ -492,6 +492,170 @@ class KernelManifoldEncoder(PCAManifoldEncoder):
         return np.maximum(aa + bb - 2.0 * A @ B.T, 0.0)
 
 
+class GraphLaplacianEncoder(PCAManifoldEncoder):
+    """Diffusion-map / graph-Laplacian state-policy representation.
+
+    This is a dependency-light implementation of the graph-structured coupling
+    route from the roadmap.  It builds a kNN graph over policy-state summaries,
+    extracts the leading non-trivial diffusion coordinates, and uses RBF
+    Nyström interpolation for new policies.  Candidate inversion is inherited
+    from the manifold encoder, so it can still use exact synthetic state anchors
+    when the problem provides them.
+    """
+
+    def __init__(
+        self,
+        *args,
+        n_neighbors=12,
+        diffusion_time=1.0,
+        gamma=None,
+        **kwargs,
+    ):
+        self.n_neighbors = int(n_neighbors)
+        self.diffusion_time = float(diffusion_time)
+        self.gamma = gamma
+        self.train_z_: np.ndarray | None = None
+        self.gamma_: float | None = None
+        self.eigvals_: np.ndarray | None = None
+        self.train_degrees_: np.ndarray | None = None
+        self._fallback_pca: PCAManifoldEncoder | None = None
+        auto_fit = bool(kwargs.pop("auto_fit", True))
+        super().__init__(*args, auto_fit=False, **kwargs)
+        if auto_fit:
+            self.fit()
+
+    def fit(self, records_or_policy_pool=None):
+        rows = _unique(self._policy_pool(records_or_policy_pool))
+        min_rows = max(6, self.latent_dim + 2)
+        if len(rows) < min_rows:
+            self._fallback_pca = PCAManifoldEncoder(
+                self.problem,
+                latent_dim=self.latent_dim,
+                fit_pool_size=self.fit_pool_size,
+                lengthscale=self.lengthscale,
+                rng=self.rng,
+                auto_fit=False,
+            ).fit(rows)
+            self.train_x_ = self._fallback_pca.train_x_
+            self.train_features_ = self._fallback_pca.train_features_
+            self.diagnostics_ = dict(self._fallback_pca.diagnostics())
+            self.diagnostics_.update({
+                "encoder": "graph_laplacian",
+                "status": "fit_pca_fallback",
+                "fallback_small_sample": True,
+            })
+            return self
+
+        X = np.vstack([self._raw_feature(x) for x in rows])
+        self.train_x_ = rows
+        self.train_raw_ = X
+        self.mean_ = np.mean(X, axis=0)
+        self.scale_ = np.std(X, axis=0) + 1e-8
+        Z = (X - self.mean_) / self.scale_
+        self.train_z_ = Z
+        gamma = self._gamma(Z)
+        self.gamma_ = float(gamma)
+        dist2 = KernelManifoldEncoder._sqdist(Z, Z)
+        W = self._knn_affinity(dist2, gamma)
+        deg = np.sum(W, axis=1)
+        self.train_degrees_ = np.maximum(deg, 1e-12)
+        D_inv_sqrt = 1.0 / np.sqrt(self.train_degrees_)
+        S = D_inv_sqrt[:, None] * W * D_inv_sqrt[None, :]
+        try:
+            eigvals, eigvecs = np.linalg.eigh(0.5 * (S + S.T))
+        except np.linalg.LinAlgError:
+            return self._fit_graph_fallback(rows)
+        order = np.argsort(eigvals)[::-1]
+        eigvals = eigvals[order]
+        eigvecs = eigvecs[:, order]
+        start = 1 if len(eigvals) > 1 else 0
+        stop = min(start + max(1, self.latent_dim), eigvecs.shape[1])
+        vals = np.maximum(eigvals[start:stop], 0.0)
+        vecs = eigvecs[:, start:stop]
+        if vecs.shape[1] < self.latent_dim:
+            vecs = np.hstack([
+                vecs,
+                np.zeros((vecs.shape[0], self.latent_dim - vecs.shape[1]), dtype=float),
+            ])
+            vals = np.pad(vals, (0, self.latent_dim - len(vals)))
+        scale = np.power(np.maximum(vals[: self.latent_dim], 1e-12), self.diffusion_time)
+        self.eigvals_ = vals[: self.latent_dim]
+        self.train_features_ = np.asarray(vecs[:, : self.latent_dim] * scale[None, :], dtype=float)
+        energy = float(np.sum(np.maximum(vals, 0.0)) / max(np.sum(np.maximum(eigvals[start:], 0.0)), 1e-12))
+        self.diagnostics_ = {
+            "encoder": "graph_laplacian",
+            "status": "fit",
+            "n_train": int(len(rows)),
+            "raw_dim": int(X.shape[1]),
+            "latent_dim": int(self.latent_dim),
+            "n_neighbors": int(min(max(1, self.n_neighbors), len(rows) - 1)),
+            "kernel_gamma": float(gamma),
+            "diffusion_time": float(self.diffusion_time),
+            "explained_energy": energy,
+            "fallback_small_sample": False,
+        }
+        return self
+
+    def occupancy(self, x):
+        if self._fallback_pca is not None:
+            return self._fallback_pca.occupancy(x)
+        if (
+            self.mean_ is None
+            or self.scale_ is None
+            or self.train_z_ is None
+            or self.train_features_ is None
+        ):
+            return super().occupancy(x)
+        z = (self._raw_feature(x) - self.mean_) / self.scale_
+        gamma = float(self.gamma_ if self.gamma_ is not None else self._gamma(self.train_z_))
+        k = np.exp(-gamma * np.sum((self.train_z_ - z[None, :]) ** 2, axis=1))
+        if np.all(k <= 1e-300):
+            return np.zeros(self.feature_dim, dtype=float)
+        weights = k / max(float(np.sum(k)), 1e-12)
+        feat = weights @ self.train_features_
+        if len(feat) < self.feature_dim:
+            feat = np.pad(feat, (0, self.feature_dim - len(feat)))
+        return np.asarray(feat[: self.feature_dim], dtype=float)
+
+    def _fit_graph_fallback(self, rows):
+        self._fallback_pca = PCAManifoldEncoder(
+            self.problem,
+            latent_dim=self.latent_dim,
+            fit_pool_size=self.fit_pool_size,
+            lengthscale=self.lengthscale,
+            rng=self.rng,
+            auto_fit=False,
+        ).fit(rows)
+        self.train_x_ = self._fallback_pca.train_x_
+        self.train_features_ = self._fallback_pca.train_features_
+        self.diagnostics_ = dict(self._fallback_pca.diagnostics())
+        self.diagnostics_.update({"encoder": "graph_laplacian", "status": "fit_pca_fallback"})
+        return self
+
+    def _knn_affinity(self, dist2, gamma):
+        n = dist2.shape[0]
+        W = np.zeros_like(dist2, dtype=float)
+        k = min(max(1, self.n_neighbors), max(1, n - 1))
+        for i in range(n):
+            order = np.argsort(dist2[i])
+            neigh = [idx for idx in order if idx != i][:k]
+            for j in neigh:
+                W[i, j] = float(np.exp(-gamma * dist2[i, j]))
+        W = np.maximum(W, W.T)
+        np.fill_diagonal(W, 0.0)
+        return W
+
+    def _gamma(self, Z):
+        if self.gamma is not None:
+            return max(float(self.gamma), 1e-12)
+        if len(Z) <= 1:
+            return 1.0
+        dist2 = KernelManifoldEncoder._sqdist(Z, Z)
+        vals = dist2[np.triu_indices_from(dist2, k=1)]
+        med = float(np.median(vals[vals > 1e-12])) if np.any(vals > 1e-12) else 1.0
+        return float(1.0 / max(med, 1e-12))
+
+
 class ManifoldRiskDecomposer:
     """Split a variance estimate into tangent/normal/shared/residual blocks."""
 

@@ -59,6 +59,7 @@ def _problem_args(args, problem):
         "recommendation_safety_z": args.recommendation_safety_z,
         "recommendation_noise_floor_scale": args.recommendation_noise_floor_scale,
         "recommendation_infeasible_penalty": args.recommendation_infeasible_penalty,
+        "recommendation_infeasible_strategy": args.recommendation_infeasible_strategy,
         "disable_recommendation_calibration": args.disable_recommendation_calibration,
         "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
         "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
@@ -74,8 +75,20 @@ def _problem_args(args, problem):
         "encoder_latent_dim": args.encoder_latent_dim,
         "encoder_fit_pool_size": args.encoder_fit_pool_size,
         "exact_kg_mc_samples": args.exact_kg_mc_samples,
+        "exact_kg_jobs": args.exact_kg_jobs,
         "exact_kg_use_score": args.exact_kg_use_score,
         "exact_kg_blend": args.exact_kg_blend,
+        "checkpoint_dir": (
+            str(Path(args.checkpoint_dir) / _safe_name(problem))
+            if str(args.checkpoint_dir or "").strip()
+            else ""
+        ),
+        "checkpoint_resume": args.checkpoint_resume,
+        "checkpoint_interval": args.checkpoint_interval,
+        "checkpoint_keep_last": args.checkpoint_keep_last,
+        "progress_logging": args.progress_logging,
+        "progress_units_per_iteration": args.progress_units_per_iteration,
+        "progress_exact_updates": args.progress_exact_updates,
         "acquisition_modes": args.acquisition_modes,
         "modes": args.modes,
         "sc_modes": args.sc_modes,
@@ -124,6 +137,8 @@ def run_suite(args):
     problem_results = {}
     all_rows = []
     summary_rows = []
+    total = len(problem_args)
+    completed = 0
 
     if int(args.jobs) > 1 and len(problem_args) > 1:
         with ProcessPoolExecutor(max_workers=int(args.jobs)) as pool:
@@ -139,9 +154,19 @@ def run_suite(args):
                     flat = benchmark_quality.flatten_summary(summary)
                     flat["problem"] = problem
                     summary_rows.append(flat)
+                completed += 1
+                print(
+                    f"[{completed}/{total}] [hvd-suite] done "
+                    f"problem={problem}",
+                    flush=True,
+                )
     else:
         for item in problem_args:
-            print(f"[hvd-suite] problem={item.problem}", flush=True)
+            print(
+                f"[{completed}/{total}] [hvd-suite] start "
+                f"problem={item.problem}",
+                flush=True,
+            )
             problem, paths, result = _run_problem(item)
             problem_results[problem] = {"paths": paths, "summary": result["summary"]}
             for row in result["rows"]:
@@ -152,6 +177,12 @@ def run_suite(args):
                 flat = benchmark_quality.flatten_summary(summary)
                 flat["problem"] = problem
                 summary_rows.append(flat)
+            completed += 1
+            print(
+                f"[{completed}/{total}] [hvd-suite] done "
+                f"problem={item.problem}",
+                flush=True,
+            )
 
     grouped = {}
     for row in all_rows:
@@ -181,7 +212,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--problems",
-        default="RegimeRZDT1,RZDT2,StatePolicyRZDT1,FactorShockStatePolicyRZDT1",
+        default="RegimeRZDT1,RZDT2,FactorShockStatePolicyRZDT1,InventorySupplyChain,QueueResourceControl,StatePolicyRZDT1",
     )
     parser.add_argument("--d", type=int, default=8)
     parser.add_argument("--L", type=int, default=100)
@@ -213,10 +244,16 @@ def main():
     parser.add_argument("--recommendation_safety_z", type=float, default=0.5)
     parser.add_argument("--recommendation_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--recommendation_infeasible_penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--recommendation_infeasible_strategy",
+        default="penalty",
+        choices=["penalty", "min_margin"],
+    )
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
-    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--use_state_basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable_state_basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
         "--state_basis_mode",
         default="raw+state",
@@ -247,21 +284,36 @@ def main():
             "transformer",
             "pca_manifold",
             "kernel_manifold",
+            "graph_laplacian",
+            "diffusion_manifold",
+            "graph_manifold",
             "ssl_masked",
             "ssl_contrastive",
             "ssl_next_risk",
             "ssl_transformer",
+            "ssl_hybrid",
+            "hybrid_ssl",
+            "contextual_manifold",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
-    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
+    parser.add_argument("--exact_kg_jobs", type=int, default=1)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
-    parser.add_argument("--acquisition_modes", default="additive")
+    parser.add_argument("--checkpoint_dir", default="")
+    parser.add_argument("--checkpoint_resume", action="store_true")
+    parser.add_argument("--checkpoint_interval", type=int, default=1)
+    parser.add_argument("--checkpoint_keep_last", type=int, default=3)
+    parser.add_argument("--progress_logging", dest="progress_logging", action="store_true", default=True)
+    parser.add_argument("--disable_progress_logging", dest="progress_logging", action="store_false")
+    parser.add_argument("--progress_units_per_iteration", type=int, default=100)
+    parser.add_argument("--progress_exact_updates", type=int, default=10)
+    parser.add_argument("--acquisition_modes", default="exact_mc")
     parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
     parser.add_argument("--sc_modes", default="orthogonal,factor")
-    parser.add_argument("--baseline_variant", default="orthogonal")
+    parser.add_argument("--baseline_variant", default="factor:olhkg_sc_exact")
     parser.add_argument("--seeds", default="")
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=10)

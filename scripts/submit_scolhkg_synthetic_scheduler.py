@@ -13,6 +13,7 @@ import time
 DEFAULT_SCHEDULER = Path.home() / ".claude/skills/scheduler/scheduler.py"
 DEFAULT_DEPLOY = Path("/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
 PYTHON = "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python"
+BOTORCH_OVERLAY = "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310"
 
 
 def parse_csv(text):
@@ -28,6 +29,12 @@ def run_cmd(cmd, dry_run=False):
 
 def suite_commands(args, run_id):
     out = []
+    ckpt_root = args.deploy / "SC-OLH-KG" / "checkpoints" / run_id
+    checkpoint_common = (
+        f"--exact_kg_jobs {args.exact_kg_jobs} "
+        f"--checkpoint_resume --checkpoint_interval 1 "
+        f"--checkpoint_keep_last {args.checkpoint_keep_last}"
+    )
     base = (
         f"--N {args.N} --n0 {args.n0} --K1 {args.K1} --K2 {args.K2} "
         f"--posterior_pool_size {args.posterior_pool_size} "
@@ -36,7 +43,8 @@ def suite_commands(args, run_id):
         f"--state_inverse_pool_size {args.state_inverse_pool_size} "
         f"--state_inverse_neighbors {args.state_inverse_neighbors} "
         f"--eval_pool_size {args.eval_pool_size} "
-        f"--n_seeds {args.n_seeds} --jobs {args.jobs_per_suite}"
+        f"--n_seeds {args.n_seeds} --jobs {args.jobs_per_suite} "
+        f"{checkpoint_common}"
     )
     if args.use_state_basis:
         base += f" --use_state_basis --state_basis_mode {args.state_basis_mode}"
@@ -49,6 +57,10 @@ def suite_commands(args, run_id):
                     f"--problem {problem} --variance_mode factor "
                     f"--methods additive,blend0.25,blend0.5,exact "
                     f"--exact_mc_samples {args.exact_mc_samples} "
+                    f"--exact_kg_jobs {args.exact_kg_jobs} "
+                    f"--checkpoint_dir {ckpt_root / 'exact'} "
+                    f"--checkpoint_resume --checkpoint_interval 1 "
+                    f"--checkpoint_keep_last {args.checkpoint_keep_last} "
                     f"--use_state_coupling --N {args.exact_N} --n0 {args.n0} "
                     f"--K1 {args.exact_K1} --K2 0 --posterior_pool_size {args.posterior_pool_size} "
                     f"--posterior_keep {args.posterior_keep} --state_candidate_count {args.state_candidate_count} "
@@ -70,6 +82,7 @@ def suite_commands(args, run_id):
                 f"--botorch_num_restarts {args.botorch_num_restarts} "
                 f"--botorch_maxiter {args.botorch_maxiter} "
                 f"--botorch_timeout_sec {args.botorch_timeout_sec} "
+                f"--checkpoint_dir {ckpt_root / 'sota'} "
                 f"--out_prefix paper_sota_{run_id}"
             ),
         ))
@@ -79,7 +92,8 @@ def suite_commands(args, run_id):
             (
                 f"{PYTHON} performance/benchmark_hvd_suite.py "
                 f"--problems {args.hvd_problems} --modes pooled,class,orthogonal,factor "
-                f"--sc_modes factor {base} --out_prefix paper_hvd_{run_id}"
+                f"--sc_modes factor {base} --checkpoint_dir {ckpt_root / 'hvd'} "
+                f"--out_prefix paper_hvd_{run_id}"
             ),
         ))
     if "encoder" in args.suites:
@@ -95,7 +109,10 @@ def suite_commands(args, run_id):
                 f"--state_inverse_pool_size {args.state_inverse_pool_size} "
                 f"--state_inverse_neighbors {args.state_inverse_neighbors} "
                 f"--use_state_basis --state_basis_mode {args.state_basis_mode} "
-                f"--n_seeds {args.n_seeds} --out_prefix paper_encoder_{run_id}"
+                f"--n_seeds {args.n_seeds} --exact_kg_jobs {args.exact_kg_jobs} "
+                f"--checkpoint_dir {ckpt_root / 'encoder'} --checkpoint_resume "
+                f"--checkpoint_interval 1 --checkpoint_keep_last {args.checkpoint_keep_last} "
+                f"--out_prefix paper_encoder_{run_id}"
             ),
         ))
     return out
@@ -108,8 +125,8 @@ def main():
     parser.add_argument("--run-id", default="")
     parser.add_argument("--nodes", default="node001,node002,node003,node004,node005,node006")
     parser.add_argument("--suites", default="exact,sota,hvd,encoder")
-    parser.add_argument("--problems", default="RegimeRZDT1,RZDT2,StatePolicyRZDT1,PaperRZDT1,PaperRZDT2,PaperRZDT5_RR")
-    parser.add_argument("--hvd-problems", default="RegimeRZDT1,RZDT2,StatePolicyRZDT1,FactorShockStatePolicyRZDT1")
+    parser.add_argument("--problems", default="RegimeRZDT1,RZDT2,FactorShockStatePolicyRZDT1,InventorySupplyChain,QueueResourceControl,StatePolicyRZDT1,PaperRZDT1,PaperRZDT2,PaperRZDT5_RR")
+    parser.add_argument("--hvd-problems", default="RegimeRZDT1,RZDT2,FactorShockStatePolicyRZDT1,InventorySupplyChain,QueueResourceControl,StatePolicyRZDT1")
     parser.add_argument("--baselines", default="sobol,random,hetgp_lite,rahbo_lite,safeopt_lite,legacy_vepm_lite,botorch_turbo,botorch_scbo,botorch_saasbo")
     parser.add_argument("--N", type=int, default=80)
     parser.add_argument("--exact-N", type=int, default=40)
@@ -123,23 +140,27 @@ def main():
     parser.add_argument("--state-inverse-pool-size", type=int, default=600)
     parser.add_argument("--state-inverse-neighbors", type=int, default=2)
     parser.add_argument("--eval-pool-size", type=int, default=500)
-    parser.add_argument("--use-state-basis", action="store_true")
+    parser.add_argument("--use-state-basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable-state-basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
         "--state-basis-mode",
-        default="raw+manifold",
+        default="raw+state",
         choices=["raw", "state", "raw+state", "manifold", "raw+manifold"],
     )
     parser.add_argument(
         "--encoder-kinds",
         default=(
-            "synthetic,pca_manifold,kernel_manifold,ssl_masked,"
+            "synthetic,pca_manifold,kernel_manifold,graph_laplacian,ssl_masked,"
             "ssl_contrastive,ssl_next_risk,ssl_transformer"
         ),
     )
     parser.add_argument("--n-seeds", type=int, default=20)
     parser.add_argument("--jobs-per-suite", type=int, default=10)
-    parser.add_argument("--exact-mc-samples", type=int, default=4)
+    parser.add_argument("--exact-mc-samples", type=int, default=8)
+    parser.add_argument("--exact-kg-jobs", type=int, default=1)
+    parser.add_argument("--checkpoint-keep-last", type=int, default=2)
     parser.add_argument("--botorch-fallback", choices=("lite", "error"), default="error")
+    parser.add_argument("--botorch-overlay", default=BOTORCH_OVERLAY)
     parser.add_argument("--botorch-raw-samples", type=int, default=128)
     parser.add_argument("--botorch-num-restarts", type=int, default=8)
     parser.add_argument("--botorch-maxiter", type=int, default=80)
@@ -160,6 +181,7 @@ def main():
         cmd = "; ".join([
             "export LC_ALL=C LANG=C",
             "export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1",
+            f"export PYTHONPATH={args.botorch_overlay}:$PYTHONPATH",
             command,
             "echo DONE",
         ])

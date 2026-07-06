@@ -58,13 +58,14 @@ uses a small default MC count for a real exact-KG code path.
 
 ## State Encoders
 
-`SingleOLHKGConfig(encoder_kind=...)` accepts `synthetic`,
-`self_supervised`, and `transformer`.  The self-supervised path learns a
-low-rank state representation from unlabeled policy samples or trajectory
-summaries using masked-reconstruction style SVD features.  The transformer path
-uses deterministic attention-style trajectory pooling before the same low-rank
-projection.  Both are available to SC candidate generation and coupling scores,
-and `performance/benchmark_encoder_suite.py` writes their comparison table.
+`SingleOLHKGConfig(encoder_kind=...)` accepts deterministic occupancy,
+manifold, graph/diffusion, and lightweight self-supervised encoders.  The
+self-supervised path learns a low-rank state representation from unlabeled
+policy samples or trajectory summaries using masked-reconstruction style SVD
+features; `ssl_hybrid` adds contextual/risk-regime interactions.  The
+`graph_laplacian` path is a diffusion-map coupling over policy-state summaries.
+All are available to SC candidate generation and coupling scores, and
+`performance/benchmark_encoder_suite.py` writes their comparison table.
 
 ## Traffic Logs
 

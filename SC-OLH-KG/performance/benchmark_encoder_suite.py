@@ -20,6 +20,9 @@ from benchmark_quality import json_safe, parse_csv, write_csv  # noqa: E402
 def _encoder_args(args, encoder_kind):
     fields = vars(args).copy()
     fields["encoder_kind"] = encoder_kind
+    checkpoint_dir = str(fields.get("checkpoint_dir", "") or "").strip()
+    if checkpoint_dir:
+        fields["checkpoint_dir"] = str(Path(checkpoint_dir) / str(encoder_kind))
     fields["modes"] = args.modes
     fields["sc_modes"] = args.sc_modes
     fields["out_prefix"] = (
@@ -30,27 +33,74 @@ def _encoder_args(args, encoder_kind):
     return SimpleNamespace(**fields)
 
 
+def _calibration_args(args, calibration_mode):
+    fields = vars(args).copy()
+    mode = str(calibration_mode or "recommendation").lower()
+    fields["calibration_mode"] = mode
+    checkpoint_dir = str(fields.get("checkpoint_dir", "") or "").strip()
+    if checkpoint_dir:
+        fields["checkpoint_dir"] = str(Path(checkpoint_dir) / mode)
+    fields["disable_recommendation_calibration"] = mode in (
+        "none",
+        "off",
+        "no_calibration",
+        "strict",
+        "theory_only",
+    )
+    fields["enable_certification_calibration"] = mode in (
+        "certified",
+        "certification",
+        "cert",
+        "calibrated_certification",
+    )
+    fields["out_prefix"] = (
+        f"{args.out_prefix}_{mode}" if args.out_prefix else f"encoder_suite_{mode}"
+    )
+    return SimpleNamespace(**fields)
+
+
 def run_suite(args):
     rows = []
     summary_rows = []
     encoder_results = {}
-    for encoder_kind in parse_csv(args.encoder_kinds):
-        print(f"[encoder-suite] encoder={encoder_kind}", flush=True)
-        enc_args = _encoder_args(args, encoder_kind)
-        result = benchmark_quality.run_benchmark(enc_args)
-        paths = benchmark_quality.write_outputs(enc_args, result)
-        encoder_results[encoder_kind] = {
-            "paths": paths,
-            "summary": result["summary"],
-        }
-        for row in result["rows"]:
-            row = dict(row)
-            row["encoder_kind"] = encoder_kind
-            rows.append(row)
-        for summary in result["summary"].values():
-            flat = benchmark_quality.flatten_summary(summary)
-            flat["encoder_kind"] = encoder_kind
-            summary_rows.append(flat)
+    calibration_modes = parse_csv(args.calibration_modes)
+    encoder_kinds = parse_csv(args.encoder_kinds)
+    total = len(calibration_modes) * len(encoder_kinds)
+    completed = 0
+    for calibration_mode in calibration_modes:
+        cal_args = _calibration_args(args, calibration_mode)
+        for encoder_kind in encoder_kinds:
+            print(
+                f"[{completed}/{total}] [encoder-suite] start "
+                f"calibration={cal_args.calibration_mode} "
+                f"encoder={encoder_kind}",
+                flush=True,
+            )
+            enc_args = _encoder_args(cal_args, encoder_kind)
+            result = benchmark_quality.run_benchmark(enc_args)
+            paths = benchmark_quality.write_outputs(enc_args, result)
+            result_key = f"{cal_args.calibration_mode}:{encoder_kind}"
+            encoder_results[result_key] = {
+                "paths": paths,
+                "summary": result["summary"],
+            }
+            for row in result["rows"]:
+                row = dict(row)
+                row["encoder_kind"] = encoder_kind
+                row["calibration_mode"] = cal_args.calibration_mode
+                rows.append(row)
+            for summary in result["summary"].values():
+                flat = benchmark_quality.flatten_summary(summary)
+                flat["encoder_kind"] = encoder_kind
+                flat["calibration_mode"] = cal_args.calibration_mode
+                summary_rows.append(flat)
+            completed += 1
+            print(
+                f"[{completed}/{total}] [encoder-suite] done "
+                f"calibration={cal_args.calibration_mode} "
+                f"encoder={encoder_kind}",
+                flush=True,
+            )
     return {
         "schema_version": 1,
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -118,8 +168,18 @@ def main():
     )
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
+    parser.add_argument("--enable_certification_calibration", action="store_true")
+    parser.add_argument("--certification_calibration_min_obs", type=int, default=8)
+    parser.add_argument("--certification_calibration_ridge", type=float, default=1e-6)
+    parser.add_argument(
+        "--certification_calibration_noise_floor_scale",
+        type=float,
+        default=0.5,
+    )
+    parser.add_argument("--certification_calibration_beta", type=float, default=2.0)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
-    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--use_state_basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable_state_basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
         "--state_basis_mode",
         default="raw+state",
@@ -157,19 +217,33 @@ def main():
     parser.add_argument(
         "--encoder_kinds",
         default=(
-            "synthetic,pca_manifold,kernel_manifold,ssl_masked,"
-            "ssl_contrastive,ssl_next_risk,ssl_transformer"
+            "synthetic,pca_manifold,kernel_manifold,graph_laplacian,ssl_masked,"
+            "ssl_contrastive,ssl_next_risk,ssl_transformer,ssl_hybrid"
         ),
+    )
+    parser.add_argument(
+        "--calibration_modes",
+        default="recommendation",
+        help="Calibration ablation list: none,recommendation,certified.",
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
-    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
+    parser.add_argument("--exact_kg_jobs", type=int, default=1)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
-    parser.add_argument("--acquisition_modes", default="additive")
+    parser.add_argument("--checkpoint_dir", default="")
+    parser.add_argument("--checkpoint_resume", action="store_true")
+    parser.add_argument("--checkpoint_interval", type=int, default=1)
+    parser.add_argument("--checkpoint_keep_last", type=int, default=3)
+    parser.add_argument("--progress_logging", dest="progress_logging", action="store_true", default=True)
+    parser.add_argument("--disable_progress_logging", dest="progress_logging", action="store_false")
+    parser.add_argument("--progress_units_per_iteration", type=int, default=100)
+    parser.add_argument("--progress_exact_updates", type=int, default=10)
+    parser.add_argument("--acquisition_modes", default="exact_mc")
     parser.add_argument("--modes", default="")
     parser.add_argument("--sc_modes", default="factor")
-    parser.add_argument("--baseline_variant", default="factor+sc")
+    parser.add_argument("--baseline_variant", default="factor:olhkg_sc_exact")
     parser.add_argument("--seeds", default="")
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=5)

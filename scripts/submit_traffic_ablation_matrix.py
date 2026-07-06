@@ -58,6 +58,18 @@ def main():
     parser.add_argument("--trajectory-log", default="")
     parser.add_argument("--cpu", type=int, default=1)
     parser.add_argument("--ram-mb", type=int, default=8192)
+    parser.add_argument("--exact-kg-jobs", type=int, default=1)
+    parser.add_argument("--checkpoint-keep-last", type=int, default=2)
+    parser.add_argument(
+        "--only-specs",
+        default="",
+        help="Comma-separated subset of spec tags to submit.",
+    )
+    parser.add_argument(
+        "--no-json",
+        action="store_true",
+        help="Use compact scheduler output instead of the full JSON plan.",
+    )
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
@@ -65,6 +77,7 @@ def main():
     run_id = args.run_id or time.strftime("%Y%m%d_%H%M%S")
     cwd = args.deploy / "SC-OLH-KG"
     paper_results = args.deploy / "Final_Submission/GPR_KG_Code/results/ingolstadt21"
+    checkpoint_root = args.deploy / "SC-OLH-KG" / "checkpoints" / "traffic_ablation" / run_id
     common = (
         f"{PYTHON} performance/benchmark_traffic_ingolstadt21.py "
         f"--N {args.N} --n0 {args.n0} --K1 {args.K1} --K2 0 "
@@ -75,6 +88,10 @@ def main():
         f"--traffic_anchor_policy strict_none "
         f"--final_revalidation_candidates {args.final_revalidation_candidates} "
         f"--final_revalidation_replications {args.final_revalidation_replications} "
+        f"--acquisition_mode exact_mc --exact_kg_mc_samples 8 "
+        f"--exact_kg_jobs {args.exact_kg_jobs} "
+        f"--checkpoint_dir {checkpoint_root} --checkpoint_resume "
+        f"--checkpoint_interval 1 --checkpoint_keep_last {args.checkpoint_keep_last} "
         f"--recommendation_infeasible_strategy min_margin "
         f"--recommendation_safety_z 0.5 --coupling_safety_z 0.5"
     )
@@ -102,12 +119,18 @@ def main():
                 + trajectory_arg
             ),
         ))
+    only_specs = set(parse_csv(args.only_specs))
+    if only_specs:
+        specs = [(tag, command) for tag, command in specs if tag in only_specs]
+        missing = sorted(only_specs - {tag for tag, _ in specs})
+        if missing:
+            raise SystemExit(f"unknown --only-specs entries: {','.join(missing)}")
     task_ids = []
     for tag, command in specs:
         cmd_template = (
             f"{sumo_env_prefix()}; {command} --tag {tag}_{run_id}; echo DONE"
         )
-        out = run_cmd([
+        submit_cmd = [
             sys.executable, args.scheduler, "submit-cpu-batch",
             "--items", str(args.n_seeds),
             "--cmd-template", cmd_template,
@@ -120,8 +143,10 @@ def main():
             "--allow-no-ckpt",
             "--allow-no-resume",
             "--allow-duplicate",
-            "--json",
-        ], dry_run=args.dry_run)
+        ]
+        if not args.no_json:
+            submit_cmd.append("--json")
+        out = run_cmd(submit_cmd, dry_run=args.dry_run)
         if out:
             print(out, end="" if out.endswith("\n") else "\n")
             task_ids.append(out)

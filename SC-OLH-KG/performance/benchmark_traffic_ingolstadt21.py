@@ -88,6 +88,62 @@ def _load_trajectory_records(path):
         return list(csv.DictReader(handle))
 
 
+def _parse_x_field(value):
+    if value is None:
+        return None
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        data = json.loads(text)
+        if isinstance(data, dict) and "x" in data:
+            data = data["x"]
+        return tuple(int(float(v)) for v in data)
+    except Exception:
+        pass
+    cleaned = text.replace(";", ",").replace("|", ",").replace(" ", ",")
+    cleaned = cleaned.strip("[]()")
+    try:
+        vals = [int(float(v)) for v in cleaned.split(",") if str(v).strip()]
+    except ValueError:
+        return None
+    return tuple(vals) if vals else None
+
+
+def _attach_trajectory_exposure(problem, trajectory_records):
+    if not trajectory_records:
+        return None
+    encoder = TrafficTrajectoryEncoder(trajectory_records)
+    policy_to_x = {}
+    for row in trajectory_records:
+        policy_id = str(row.get("policy_id", ""))
+        if not policy_id or policy_id in policy_to_x:
+            continue
+        x = _parse_x_field(row.get("x") or row.get("policy") or row.get("policy_x"))
+        if x is not None and len(x) == int(problem.d):
+            policy_to_x[policy_id] = x
+    exposure_by_x = {}
+    for policy_id, x in policy_to_x.items():
+        try:
+            exposure_by_x[x] = {
+                "A": encoder.risk_exposure(policy_id).tolist(),
+                "N": encoder.shared_shock_exposure(policy_id).tolist(),
+                "local_names": ("queue", "wait", "flow", "emission"),
+                "shared_names": ("demand_shock", "common_flow"),
+                "meta": {"provider": "fresh_trajectory_csv", "policy_id": policy_id},
+            }
+        except KeyError:
+            continue
+    if exposure_by_x:
+        problem.attach_trajectory_exposure(exposure_by_x)
+    return {
+        "status": "available" if exposure_by_x else "missing_data",
+        "n_records": int(len(trajectory_records)),
+        "n_policies": int(len(encoder.policy_features)),
+        "n_attached_policies": int(len(exposure_by_x)),
+    }
+
+
 def _unique_rows(rows):
     seen = set()
     out = []
@@ -339,8 +395,13 @@ def _build_config(args, variant, variance_mode, seed):
         encoder_fit_pool_size=args.encoder_fit_pool_size,
         acquisition_mode=args.acquisition_mode,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
+        exact_kg_jobs=int(args.exact_kg_jobs),
         exact_kg_use_score=args.exact_kg_use_score,
         exact_kg_blend=args.exact_kg_blend,
+        checkpoint_dir=str(args.checkpoint_dir or ""),
+        checkpoint_resume=bool(args.checkpoint_resume),
+        checkpoint_interval=int(args.checkpoint_interval),
+        checkpoint_keep_last=int(args.checkpoint_keep_last),
         eval_pool_size=args.eval_pool_size,
         evaluate_interval=args.evaluate_interval,
         seed=seed,
@@ -454,6 +515,10 @@ def run_one(args, variant, variance_mode, seed):
     trajectory_records = _load_trajectory_records(args.trajectory_log)
     if trajectory_records:
         problem._scolhkg_trajectory_records = trajectory_records
+        problem._scolhkg_trajectory_exposure_status = _attach_trajectory_exposure(
+            problem,
+            trajectory_records,
+        )
     config = _build_config(args, variant, variance_mode, seed)
     method = "SC-OLH-KG" if config.use_state_coupling else "OLH-KG"
     partition = _partition_name(
@@ -467,6 +532,16 @@ def run_one(args, variant, variance_mode, seed):
         return json.loads(summary_path.read_text(encoding="utf-8"))
 
     out_dir.mkdir(parents=True, exist_ok=True)
+    if config.checkpoint_dir:
+        config.checkpoint_dir = str(
+            Path(config.checkpoint_dir)
+            / _safe_name(method)
+            / _safe_name(partition)
+            / f"seed{int(seed)}"
+        )
+    else:
+        config.checkpoint_dir = str(out_dir / "checkpoints")
+    config.checkpoint_resume = bool(args.resume or args.checkpoint_resume)
     t0 = time.time()
     alg = SingleOLHKGAlgorithm(problem, config)
     final = alg.run(verbose=args.verbose)
@@ -520,6 +595,11 @@ def run_one(args, variant, variance_mode, seed):
         "final_revalidation": json_safe(revalidation),
         "config": json_safe(config.__dict__),
         "traffic_anchor_policy": args.traffic_anchor_policy,
+        "trajectory_exposure_status": json_safe(getattr(
+            problem,
+            "_scolhkg_trajectory_exposure_status",
+            None,
+        )),
         "traffic_note": (
             "Optimization uses live SUMO samples; paper-grade feasibility must "
             "be certified by validate_oos_feasibility with fresh seeds."
@@ -588,7 +668,8 @@ def main():
     parser.add_argument("--recommendation_infeasible_strategy", default="min_margin")
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--allow_unobserved_recommendation", action="store_true")
-    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--use_state_basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable_state_basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
         "--state_basis_mode",
         default="raw+state",
@@ -611,10 +692,24 @@ def main():
     parser.add_argument("--encoder_kind", default="synthetic")
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
-    parser.add_argument("--acquisition_mode", default="additive")
-    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--acquisition_mode", default="exact_mc")
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
+    parser.add_argument(
+        "--exact_kg_jobs",
+        type=int,
+        default=1,
+        help="Candidate-level thread parallelism inside exact posterior-update KG.",
+    )
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
+    parser.add_argument(
+        "--checkpoint_dir",
+        default="",
+        help="Optional root directory for true per-iteration KG checkpoints.",
+    )
+    parser.add_argument("--checkpoint_resume", action="store_true")
+    parser.add_argument("--checkpoint_interval", type=int, default=1)
+    parser.add_argument("--checkpoint_keep_last", type=int, default=3)
     parser.add_argument("--eval_pool_size", type=int, default=128)
     parser.add_argument("--evaluate_interval", type=int, default=0)
     parser.add_argument("--true_replications", type=int, default=2)

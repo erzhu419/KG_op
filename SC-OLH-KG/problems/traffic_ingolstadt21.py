@@ -16,6 +16,13 @@ from typing import Iterable
 import numpy as np
 from scipy.stats import norm
 
+from core.cumulative_risk import (
+    CumulativeRiskFeatureProvider,
+    CumulativeRiskParameters,
+    RiskExposure,
+    cumulative_feature_names,
+    cumulative_feature_vector,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GPR_KG_CODE = REPO_ROOT / "Final_Submission" / "GPR_KG_Code"
@@ -25,7 +32,7 @@ if str(GPR_KG_CODE) not in sys.path:
 from experiments.ingolstadt21.ingolstadt21_problem import Ingolstadt21Problem  # noqa: E402
 
 
-class Ingolstadt21ScalarizedTrafficProblem:
+class Ingolstadt21ScalarizedTrafficProblem(CumulativeRiskFeatureProvider):
     """Scalarized traffic objective with the original emission chance constraint.
 
     The algorithm observes two outputs:
@@ -71,6 +78,7 @@ class Ingolstadt21ScalarizedTrafficProblem:
         self.historical_anchor_policy = policy
         self._rng = np.random.default_rng(int(seed))
         self._historical_anchor_cache = None
+        self._scolhkg_traffic_exposure_by_x = {}
 
     def int_bounds(self):
         return self.base.int_bounds()
@@ -278,51 +286,48 @@ class Ingolstadt21ScalarizedTrafficProblem:
         return _unique(rows)
 
     def state_anchor_points(self, n=10, rng=None):
-        """Traffic state/meta anchors used only by SC candidate generation.
-
-        These anchors live in a low-dimensional policy-state space:
-        target network green intensity, heterogeneity/spread, and a coarse
-        temporal pattern.  They deliberately do not reuse historical
-        solutions or deterministic final-recommendation refinement points.
-        """
+        """Traffic psi=(A,N) anchors used by SC candidate generation."""
         rng = rng or self._rng
         n = max(0, int(n))
         templates = [
-            # Low-risk meta anchors are intentionally specified in state space
-            # rather than as raw low/center/high signal vectors.  This keeps the
-            # strict no-history ablation from inheriting the old deterministic
-            # "low green ratio" refinement shortcut while still letting SC
-            # explore the safe traffic regime.
-            {"mean": 0.08, "spread": 0.025, "pattern": "balanced"},
-            {"mean": 0.14, "spread": 0.035, "pattern": "corridor"},
-            {"mean": 0.20, "spread": 0.045, "pattern": "balanced"},
-            {"mean": 0.26, "spread": 0.060, "pattern": "alternating"},
-            {"mean": 0.32, "spread": 0.075, "pattern": "balanced"},
-            {"mean": 0.38, "spread": 0.120, "pattern": "corridor"},
-            {"mean": 0.44, "spread": 0.180, "pattern": "alternating"},
-            {"mean": 0.50, "spread": 0.100, "pattern": "clustered"},
-            {"mean": 0.58, "spread": 0.150, "pattern": "corridor"},
-            {"mean": 0.66, "spread": 0.200, "pattern": "alternating"},
+            {"A": [0.20, 0.18, 0.20, 0.10], "N": [0.12, 0.05], "pattern": "balanced"},
+            {"A": [0.28, 0.25, 0.22, 0.15], "N": [0.18, 0.07], "pattern": "corridor"},
+            {"A": [0.36, 0.32, 0.26, 0.20], "N": [0.24, 0.09], "pattern": "balanced"},
+            {"A": [0.46, 0.42, 0.34, 0.28], "N": [0.34, 0.12], "pattern": "alternating"},
+            {"A": [0.58, 0.54, 0.46, 0.35], "N": [0.46, 0.16], "pattern": "clustered"},
+            {"A": [0.70, 0.62, 0.58, 0.44], "N": [0.58, 0.20], "pattern": "corridor"},
         ]
         anchors = []
         for i in range(n):
             base = dict(templates[i % len(templates)])
             if i >= len(templates):
-                if rng.random() < 0.45:
-                    base["mean"] = float(rng.uniform(0.06, 0.34))
-                    base["spread"] = float(rng.uniform(0.02, 0.10))
+                if rng.random() < 0.55:
+                    base["A"] = [
+                        float(rng.uniform(0.16, 0.42)),
+                        float(rng.uniform(0.14, 0.38)),
+                        float(rng.uniform(0.16, 0.35)),
+                        float(rng.uniform(0.08, 0.24)),
+                    ]
+                    base["N"] = [float(rng.uniform(0.10, 0.30)), float(rng.uniform(0.04, 0.12))]
                 else:
-                    base["mean"] = float(rng.uniform(0.28, 0.72))
-                    base["spread"] = float(rng.uniform(0.06, 0.22))
+                    base["A"] = [
+                        float(rng.uniform(0.36, 0.78)),
+                        float(rng.uniform(0.30, 0.70)),
+                        float(rng.uniform(0.28, 0.66)),
+                        float(rng.uniform(0.20, 0.52)),
+                    ]
+                    base["N"] = [float(rng.uniform(0.26, 0.64)), float(rng.uniform(0.08, 0.24))]
                 base["pattern"] = str(rng.choice([
                     "balanced", "corridor", "alternating", "clustered"
                 ]))
+            base["psi"] = list(base["A"]) + list(base["N"])
+            base["coordinate"] = "psi=(A,N)"
             base["phase"] = float(rng.uniform(0.0, 2.0 * np.pi))
             anchors.append(base)
         return anchors
 
     def inverse_state_anchor(self, anchor, rng=None, n=1):
-        """Invert a traffic meta anchor into raw integer signal parameters."""
+        """Invert a traffic psi=(A,N) anchor into raw integer signal parameters."""
         rng = rng or self._rng
         n = max(1, int(n))
         lo, hi = self.int_bounds()
@@ -330,8 +335,13 @@ class Ingolstadt21ScalarizedTrafficProblem:
         hi = np.asarray(hi, dtype=int)
         span = np.maximum(hi - lo, 1)
         d = int(self.d)
-        target_mean = float(np.clip(anchor.get("mean", 0.5), 0.05, 0.95))
-        target_spread = float(np.clip(anchor.get("spread", 0.12), 0.01, 0.35))
+        A = np.asarray(anchor.get("A", [0.36, 0.32, 0.26, 0.20]), dtype=float)
+        N = np.asarray(anchor.get("N", [0.24, 0.09]), dtype=float)
+        queue_pressure = float(np.clip(np.mean(A[:2]), 0.0, 1.0))
+        flow_pressure = float(np.clip(A[2] if len(A) > 2 else queue_pressure, 0.0, 1.0))
+        shock_pressure = float(np.clip(np.mean(N), 0.0, 1.0))
+        target_mean = float(np.clip(0.18 + 0.55 * flow_pressure - 0.20 * queue_pressure, 0.05, 0.95))
+        target_spread = float(np.clip(0.03 + 0.22 * shock_pressure + 0.08 * queue_pressure, 0.01, 0.35))
         pattern = str(anchor.get("pattern", "balanced"))
         phase = float(anchor.get("phase", 0.0))
         idx = np.arange(d, dtype=float)
@@ -381,22 +391,84 @@ class Ingolstadt21ScalarizedTrafficProblem:
         ])
         return np.concatenate([[1.0], stats, z[: min(12, len(z))]])
 
-    def cumulative_risk_features(self, x, output_index=1):
-        z = self.normalize(x)
+    def _reference_risk_exposure(self):
+        return RiskExposure(
+            [0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0],
+            local_names=("queue", "wait", "flow", "emission"),
+            shared_names=("demand_shock", "common_flow"),
+            meta={"provider": "Ingolstadt21Traffic"},
+        )
+
+    def _x_key(self, x):
+        return tuple(int(v) for v in np.asarray(x, dtype=int))
+
+    def attach_trajectory_exposure(self, policy_to_exposure):
+        self._scolhkg_traffic_exposure_by_x = {
+            self._x_key(key): value
+            for key, value in dict(policy_to_exposure).items()
+        }
+
+    def risk_exposures(self, x, output_index=1):
+        del output_index
+        key = self._x_key(x)
+        cached = self._scolhkg_traffic_exposure_by_x.get(key)
+        if cached is not None:
+            if isinstance(cached, RiskExposure):
+                return cached
+            if isinstance(cached, dict):
+                return RiskExposure(
+                    cached.get("A", cached.get("local", [])),
+                    cached.get("N", cached.get("shared", [])),
+                    local_names=tuple(cached.get("local_names", ())),
+                    shared_names=tuple(cached.get("shared_names", ())),
+                    meta=dict(cached.get("meta", {})),
+                )
+            A, N = cached
+            return RiskExposure(
+                A,
+                N,
+                local_names=("queue", "wait", "flow", "emission"),
+                shared_names=("demand_shock", "common_flow"),
+                meta={"provider": "trajectory_csv"},
+            )
+
+        z = np.asarray(self.normalize(x), dtype=float)
         if len(z) == 0:
             z = np.array([0.0])
-        low = np.maximum(0.0, 0.35 - z)
-        high = np.maximum(0.0, z - 0.75)
-        return np.array([
-            1.0,
-            float(np.mean(z)),
-            float(np.sum(low) / len(z)),
-            float(np.sum(high) / len(z)),
-            float(np.std(z)),
-        ], dtype=float)
+        low_green = np.maximum(0.0, 0.35 - z)
+        high_green = np.maximum(0.0, z - 0.72)
+        mean_green = float(np.mean(z))
+        spread = float(np.std(z))
+        queue = float(np.mean(low_green) + 0.18 * spread)
+        wait = float(np.mean(low_green ** 2) + 0.12 * spread)
+        flow = float(np.mean(high_green) + 0.10 * mean_green)
+        emission = float(mean_green + 0.35 * np.mean(high_green) + 0.10 * spread)
+        demand_shock = float(0.50 * queue + 0.35 * flow + 0.20 * spread)
+        common_flow = float(0.50 * flow + 0.25 * mean_green + 0.20 * spread)
+        return RiskExposure(
+            [queue, wait, flow, emission],
+            [demand_shock, common_flow],
+            local_names=("queue", "wait", "flow", "emission"),
+            shared_names=("demand_shock", "common_flow"),
+            meta={"provider": "traffic_policy_proxy"},
+        )
+
+    def cumulative_risk_features(self, x, output_index=1):
+        return cumulative_feature_vector(self.risk_exposures(x, output_index=output_index))
 
     def cumulative_risk_feature_names(self, output_index=1):
-        return ["floor", "mean_green_norm", "low_green_exposure", "high_green_exposure", "dispersion"]
+        del output_index
+        return cumulative_feature_names(self._reference_risk_exposure())
+
+    def cumulative_risk_parameters(self, output_index=1):
+        del output_index
+        return CumulativeRiskParameters(
+            Lambda=np.array([0.55, 0.65, 0.32, 0.42]) * self.sigma_level ** 2,
+            B=np.array([[0.72, 0.28], [0.28, 0.48]]) * self.sigma_level ** 2,
+            omega=np.array([0.15, 0.12]) * self.sigma_level ** 2,
+            floor=(0.10 * self.sigma_level) ** 2,
+        )
 
     def hvd_residual_variance_cap(self, output_index=0):
         return 0.20 if int(output_index) == 1 else 0.10

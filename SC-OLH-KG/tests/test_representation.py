@@ -13,12 +13,14 @@ from encoders.policy_state_encoder import StateCoupledFeatureMap  # noqa: E402
 from problems.rzdt import HighDimStatePolicyRZDT1, StatePolicyRZDT1  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 from representation.manifold import (  # noqa: E402
+    GraphLaplacianEncoder,
     KernelManifoldEncoder,
     ManifoldRiskDecomposer,
     PCAManifoldEncoder,
 )
 from representation.ssl_encoder import (  # noqa: E402
     ContrastivePolicyEncoder,
+    HybridSSLPolicyEncoder,
     MaskedTrajectoryEncoder,
     NextRiskEncoder,
     SmallTransformerEncoder,
@@ -97,6 +99,22 @@ class RepresentationTests(unittest.TestCase):
         diag = encoder.diagnostics()
         self.assertEqual(diag["status"], "fit_pca_fallback")
         self.assertEqual(encoder.features((25, 70, 70, 70, 70)).shape, (4,))
+
+    def test_graph_laplacian_features_are_finite(self):
+        encoder = GraphLaplacianEncoder(
+            self.problem,
+            latent_dim=4,
+            fit_pool_size=32,
+            n_neighbors=5,
+            rng=np.random.default_rng(13),
+        )
+        x = (25, 70, 70, 70, 70)
+        feat = encoder.features(x)
+        diag = encoder.diagnostics()
+        self.assertEqual(feat.shape, (4,))
+        self.assertTrue(np.all(np.isfinite(feat)))
+        self.assertEqual(diag["encoder"], "graph_laplacian")
+        self.assertIn(diag["status"], {"fit", "fit_pca_fallback"})
 
     def test_manifold_inverse_candidates_return_raw_policies(self):
         encoder = PCAManifoldEncoder(
@@ -219,6 +237,19 @@ class RepresentationTests(unittest.TestCase):
         self.assertEqual(next_encoder.features(x).shape, (4,))
         self.assertEqual(transformer.features(x).shape, (4,))
         self.assertIn("torch_status", transformer.diagnostics())
+
+    def test_hybrid_ssl_contextual_features_are_finite(self):
+        encoder = HybridSSLPolicyEncoder(
+            self.problem,
+            latent_dim=4,
+            fit_pool_size=16,
+            rng=np.random.default_rng(12),
+        )
+        x = (25, 70, 70, 70, 70)
+        feat = encoder.features(x)
+        self.assertEqual(feat.shape, (4,))
+        self.assertTrue(np.all(np.isfinite(feat)))
+        self.assertEqual(encoder.diagnostics()["encoder"], "ssl_hybrid")
 
     def test_manifold_risk_decomposition_sums_to_total(self):
         encoder = PCAManifoldEncoder(

@@ -31,9 +31,10 @@ can otherwise pull the search into the high-risk middle of the domain.
 `--encoder_kind` controls the SC state encoder used by candidate generation,
 coupling scores, optional GPR state basis, and optional manifold HVD features.
 The current family is `synthetic`, `self_supervised`, `transformer`,
-`pca_manifold`, `kernel_manifold`, `ssl_masked`, `ssl_contrastive`,
-`ssl_next_risk`, and `ssl_transformer`.  The learned encoders are ablations for
-state-policy representation experiments rather than hidden oracles.
+`pca_manifold`, `kernel_manifold`, `graph_laplacian`, `ssl_masked`,
+`ssl_contrastive`, `ssl_next_risk`, `ssl_transformer`, and `ssl_hybrid`.  The
+learned encoders are ablations for state-policy representation experiments
+rather than hidden oracles.
 `--state_basis_mode raw+manifold` tests the learned latent basis inside the
 mean model; `raw+state` keeps the older deterministic occupancy basis.
 
@@ -196,7 +197,7 @@ Encoder ablation suite:
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/benchmark_encoder_suite.py \
   --problem StatePolicyRZDT1 \
-  --encoder_kinds synthetic,pca_manifold,kernel_manifold,ssl_masked,ssl_contrastive,ssl_next_risk,ssl_transformer \
+  --encoder_kinds synthetic,pca_manifold,kernel_manifold,graph_laplacian,ssl_masked,ssl_contrastive,ssl_next_risk,ssl_transformer,ssl_hybrid \
   --use_state_basis --state_basis_mode raw+manifold \
   --N 30 --n0 8 \
   --n_seeds 10 \

@@ -8,9 +8,15 @@ from pathlib import Path
 
 import numpy as np
 
-from representation.manifold import KernelManifoldEncoder, PCAManifoldEncoder
+from core.cumulative_risk import get_risk_exposure
+from representation.manifold import (
+    GraphLaplacianEncoder,
+    KernelManifoldEncoder,
+    PCAManifoldEncoder,
+)
 from representation.ssl_encoder import (
     ContrastivePolicyEncoder,
+    HybridSSLPolicyEncoder,
     MaskedTrajectoryEncoder,
     NextRiskEncoder,
     SmallTransformerEncoder,
@@ -31,6 +37,18 @@ class SyntheticPolicyStateEncoder:
         self.feature_dim = 8
 
     def occupancy(self, x):
+        exposure = get_risk_exposure(self.problem, x)
+        if exposure is not None:
+            psi = np.concatenate([exposure.A, exposure.N]).astype(float)
+            stats = np.array([
+                float(np.mean(psi)) if len(psi) else 0.0,
+                float(np.std(psi)) if len(psi) else 0.0,
+                float(np.linalg.norm(psi)) if len(psi) else 0.0,
+            ], dtype=float)
+            out = np.concatenate([psi, stats])
+            if len(out) < self.feature_dim:
+                out = np.pad(out, (0, self.feature_dim - len(out)))
+            return np.asarray(out[: self.feature_dim], dtype=float)
         z = np.asarray(self.problem.normalize(x), dtype=float)
         center = np.full_like(z, 0.5)
         u0 = float(z[0]) if len(z) else 0.0
@@ -232,7 +250,7 @@ class SelfSupervisedTrajectoryEncoder:
     deterministic attention-style weights over trajectory tokens.
     """
 
-    NUMERIC_FIELDS = ("occupancy", "queue", "wait", "flow", "demand_shock")
+    NUMERIC_FIELDS = ("occupancy", "queue", "wait", "flow", "emission", "demand_shock")
 
     def __init__(self, latent_dim=8, mode="masked", ridge=1e-6):
         self.latent_dim = int(latent_dim)
@@ -352,8 +370,8 @@ class SelfSupervisedTrajectoryEncoder:
 
     def _attention_pool(self, tokens):
         if len(tokens) == 0:
-            return np.zeros(7, dtype=float)
-        risk = tokens[:, 3] + tokens[:, 4] + 0.5 * np.maximum(tokens[:, 6], 0.0)
+            return np.zeros(8, dtype=float)
+        risk = tokens[:, 3] + tokens[:, 4] + 0.5 * tokens[:, 6] + 0.5 * np.maximum(tokens[:, 7], 0.0)
         risk = risk - float(np.max(risk))
         weights = np.exp(risk)
         weights = weights / max(float(np.sum(weights)), 1e-12)
@@ -602,7 +620,8 @@ class TrafficTrajectoryEncoder:
     """Aggregate fresh-seed traffic trajectories into occupancy/risk features.
 
     Expected row fields are CSV-friendly: `policy_id`, `seed`, `time`, `state`,
-    `action`, `occupancy`, `queue`, `wait`, `flow`, and `demand_shock`.
+    `action`, `occupancy`, `queue`, `wait`, `flow`, `emission`, and
+    `demand_shock`.
     Extra columns are ignored.
     """
 
@@ -652,6 +671,7 @@ class TrafficTrajectoryEncoder:
         queue = []
         wait = []
         flow = []
+        emission = []
         shock = []
         for row in rows:
             key = f"{row.get('state', '')}|{row.get('action', '')}"
@@ -659,6 +679,7 @@ class TrafficTrajectoryEncoder:
             queue.append(self._float(row.get("queue", 0.0), 0.0))
             wait.append(self._float(row.get("wait", 0.0), 0.0))
             flow.append(self._float(row.get("flow", 0.0), 0.0))
+            emission.append(self._float(row.get("emission", 0.0), 0.0))
             shock.append(self._float(row.get("demand_shock", 0.0), 0.0))
         total_occ = max(float(sum(occ.values())), 1e-12)
         occ_norm = {key: float(value / total_occ) for key, value in occ.items()}
@@ -667,11 +688,13 @@ class TrafficTrajectoryEncoder:
         queue_arr = np.asarray(queue, dtype=float)
         wait_arr = np.asarray(wait, dtype=float)
         flow_arr = np.asarray(flow, dtype=float)
+        emission_arr = np.asarray(emission, dtype=float)
         shock_arr = np.asarray(shock, dtype=float)
         local_exposure = np.array([
             float(np.mean(queue_arr)) if len(queue_arr) else 0.0,
             float(np.mean(wait_arr)) if len(wait_arr) else 0.0,
             float(np.mean(np.maximum(flow_arr, 0.0))) if len(flow_arr) else 0.0,
+            float(np.mean(np.maximum(emission_arr, 0.0))) if len(emission_arr) else 0.0,
         ], dtype=float)
         shared_exposure = np.array([
             float(np.mean(shock_arr)) if len(shock_arr) else 0.0,
@@ -688,9 +711,9 @@ class TrafficTrajectoryEncoder:
             local_exposure[0],
             local_exposure[1],
             local_exposure[2],
+            local_exposure[3],
             shared_exposure[0],
             shared_exposure[1],
-            float(len(rows)),
         ], dtype=float)
 
     def features(self, policy_id):

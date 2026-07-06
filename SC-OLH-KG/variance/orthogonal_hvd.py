@@ -17,6 +17,12 @@ from dataclasses import dataclass
 
 import numpy as np
 
+from core.cumulative_risk import (
+    decompose_cumulative_risk,
+    get_risk_exposure,
+    project_cumulative_beta,
+)
+
 
 @dataclass
 class HVDConfig:
@@ -76,9 +82,26 @@ class OrthogonalHVD:
         self.class_count = {i: {} for i in range(self.n_outputs)}
         self.beta = {i: None for i in range(self.n_outputs)}
         self.cumulative_beta = {i: None for i in range(self.n_outputs)}
+        self.cumulative_params = {i: None for i in range(self.n_outputs)}
+        self.cumulative_provider_active = {i: False for i in range(self.n_outputs)}
         self.cumulative_fit_rmse = {i: None for i in range(self.n_outputs)}
         self.factor_energy = {i: [] for i in range(self.n_outputs)}
         self._last_problem = None
+
+    def __getstate__(self):
+        """Drop non-picklable problem/simulator handles during exact-KG clones."""
+        state = self.__dict__.copy()
+        # Traffic/SUMO providers can own imported simulator modules and live
+        # handles. Exact posterior-update KG always passes the current problem
+        # explicitly after cloning, so retaining this cache is unnecessary and
+        # can make ``copy.deepcopy`` fail with "cannot pickle module object".
+        state["_last_problem"] = None
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        if "_last_problem" not in self.__dict__:
+            self._last_problem = None
 
     @property
     def floor(self):
@@ -394,33 +417,92 @@ class OrthogonalHVD:
             self.class_count[i][int(c)] = int(n_c)
 
         self.cumulative_beta[i] = None
+        self.cumulative_params[i] = None
+        self.cumulative_provider_active[i] = False
         self.cumulative_fit_rmse[i] = None
         if self.mode == "factor" and len(recs) >= int(self.config.activation_min_records):
             X_c = []
             y_c = []
+            exposure_layout_ref = None
             for (x, _), v in zip(recs, vals):
                 feat = self._cumulative_features(x, problem, output_index=i)
                 if feat is None:
                     X_c = []
                     break
+                if exposure_layout_ref is None:
+                    exposure_layout_ref = get_risk_exposure(
+                        problem or self._last_problem,
+                        x,
+                        output_index=i,
+                    )
                 X_c.append(feat)
                 y_c.append(max(float(v), self.floor))
             if X_c:
                 X_c = np.vstack(X_c)
                 y_c = np.asarray(y_c, dtype=float)
-                reg = float(self.config.ridge_alpha) * np.eye(X_c.shape[1])
-                reg[0, 0] = 0.0
+                ridge_alpha = float(self.config.ridge_alpha)
+                reg = ridge_alpha * np.eye(X_c.shape[1])
+                prior_beta = None
+                problem_ref = problem or self._last_problem
+                if (
+                    problem_ref is not None
+                    and hasattr(problem_ref, "cumulative_hvd_prior_beta")
+                ):
+                    try:
+                        prior_beta = problem_ref.cumulative_hvd_prior_beta(
+                            output_index=i,
+                            feature_dim=X_c.shape[1],
+                        )
+                    except TypeError:
+                        prior_beta = problem_ref.cumulative_hvd_prior_beta(i)
+                    if prior_beta is not None:
+                        prior_beta = np.asarray(prior_beta, dtype=float)
+                        if prior_beta.shape != (X_c.shape[1],):
+                            prior_beta = None
+                if prior_beta is None:
+                    reg[0, 0] = 0.0
+                    rhs = X_c.T @ y_c
+                else:
+                    rhs = X_c.T @ y_c + reg @ prior_beta
                 try:
-                    beta_c = np.linalg.solve(X_c.T @ X_c + reg, X_c.T @ y_c)
+                    beta_c = np.linalg.solve(X_c.T @ X_c + reg, rhs)
                 except np.linalg.LinAlgError:
                     beta_c = np.linalg.lstsq(
                         X_c.T @ X_c + reg,
-                        X_c.T @ y_c,
+                        rhs,
                         rcond=None,
                     )[0]
-                beta_c = np.maximum(np.asarray(beta_c, dtype=float), 0.0)
-                beta_c[0] = max(float(beta_c[0]), 0.1 * self.floor)
+                beta_c = np.asarray(beta_c, dtype=float)
+                params = None
+                provider_active = False
+                if (
+                    exposure_layout_ref is not None
+                    and len(beta_c) == len(self._cumulative_features(
+                        recs[0][0],
+                        problem,
+                        output_index=i,
+                    ))
+                ):
+                    try:
+                        projected, params = project_cumulative_beta(
+                            beta_c,
+                            exposure_layout_ref,
+                        )
+                        if len(projected) == len(beta_c):
+                            beta_c = projected
+                            provider_active = True
+                        else:
+                            params = None
+                    except (ValueError, IndexError):
+                        params = None
+                        provider_active = False
+                if not provider_active:
+                    params = None
+                    beta_c = np.maximum(beta_c, 0.0)
+                    beta_c[0] = max(float(beta_c[0]), 0.1 * self.floor)
                 self.cumulative_beta[i] = beta_c
+                self.cumulative_params[i] = params
+                self.cumulative_provider_active[i] = bool(provider_active)
                 pred_c = np.maximum(X_c @ beta_c, self.floor)
                 self.cumulative_fit_rmse[i] = float(np.sqrt(np.mean((pred_c - y_c) ** 2)))
                 energy = beta_c[1:] ** 2
@@ -675,6 +757,14 @@ class OrthogonalHVD:
                         "linear": float(np.sum(contrib[7:9])),
                         "total": float(max(np.sum(contrib), self.floor)),
                     }
+                params = self.cumulative_params.get(i)
+                exposure = get_risk_exposure(problem_ref, x, output_index=i)
+                if params is not None and exposure is not None:
+                    try:
+                        fitted_blocks = decompose_cumulative_risk(exposure, params)
+                        fitted_variance = float(max(fitted_blocks["total"], self.floor))
+                    except (ValueError, TypeError):
+                        pass
                 decomposer = getattr(problem_ref, "_scolhkg_manifold_decomposer", None)
                 if decomposer is not None:
                     manifold_blocks = decomposer.decompose(
@@ -707,6 +797,10 @@ class OrthogonalHVD:
                 "manifold_blocks": manifold_blocks,
                 "fitted_variance": fitted_variance,
                 "fit_rmse": self.cumulative_fit_rmse.get(i),
+                "provider_active": bool(self.cumulative_provider_active.get(i, False)),
+                "v_C_plus": float(self.predict_certification_variance(i, x, problem)),
+                "tail_guard": float(self._residual_tail_uncertainty(i))
+                if self._cumulative_active(i) else 0.0,
                 "oracle": oracle,
                 "oracle_blocks": oracle_blocks,
             }
@@ -802,6 +896,10 @@ class OrthogonalHVD:
             },
             "cumulative_active": {
                 str(i): bool(self._cumulative_active(i))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_provider_active": {
+                str(i): bool(self.cumulative_provider_active.get(i, False))
                 for i in range(self.n_outputs)
             },
             "cumulative_fit_rmse": {

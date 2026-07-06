@@ -52,8 +52,16 @@ terms into `B`, and residual rates into `omega`.
 
 ## Assumption A2: Policy-State Occupancy Representation
 
-Each design `x` induces a distribution over trajectories.  Its occupancy
-summary `s(x)` determines expected exposures
+Each design `x` induces a distribution over trajectories.  Its state-coupled
+cumulative risk coordinate is
+
+```text
+psi(x) = (A(x), N(x)).
+```
+
+The same `psi` is used for HVD features, SC candidate anchors, GPR state basis,
+certification diagnostics, and exact KG terminal values.  Its occupancy summary
+`s(x)` determines expected exposures
 
 ```text
 A(x) = E[A(T) | x],     N(x) = E[N(T) | x],
@@ -163,17 +171,19 @@ state.  The exact SC-OLH-KG acquisition is
 KG_SC(x) = E_n[V_n - V_{n+1}(x)].
 ```
 
-The current implementation uses an additive approximation to this expression.
-The implementation now exposes three acquisition variants:
+The high-dependence main implementation uses `exact_mc` as the default
+posterior-update estimator of this expression.  The implementation exposes
+three acquisition variants:
 
 ```text
 additive, exact_mc, blend.
 ```
 
-`additive` is justified by a uniform approximation gap.  `exact_mc` estimates
-the posterior-update expectation by cloning and updating both GPR and HVD
-states, then recomputing the theory-certified terminal value.  `blend` is the
-controlled interpolation used for ablation.
+`exact_mc` estimates the posterior-update expectation by cloning and updating
+both GPR and factor-HVD states, then recomputing the theory-certified terminal
+value with the same provider `v_C^+`.  `additive` is now only an ablation/proxy
+and is justified by a uniform approximation gap.  `blend` is the controlled
+interpolation used for robustness checks.
 
 ## Theorem 8: Finite-Budget Safe Simple-Regret Bound
 

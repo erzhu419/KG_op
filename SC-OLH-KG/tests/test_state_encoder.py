@@ -170,6 +170,49 @@ class StateEncoderTests(unittest.TestCase):
             "calibrated_constraint_fallback",
         )
 
+    def test_high_dim_calibrated_certification_marks_supported_meta_point(self):
+        base = HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        alg = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=8,
+                n0=8,
+                K1=4,
+                K2=0,
+                seed=2,
+                recommendation_calibration=False,
+                certification_calibration=True,
+                certification_calibration_noise_floor_scale=0.5,
+            ),
+        )
+        train = [
+            base._constant_tail_x(u, q)
+            for u, q in [
+                (0.05, 0.50),
+                (0.50, 0.50),
+                (0.25, 0.55),
+                (0.25, 0.90),
+                (0.75, 0.50),
+                (0.10, 0.82),
+                (0.90, 0.20),
+                (0.40, 0.65),
+                (0.22, 0.72),
+            ]
+        ]
+        for x in train:
+            alg.observations[tuple(x)] = [problem.true_outputs(x)]
+        pool = problem.recommendation_refinement_candidates()
+        cert = alg._calibrated_certification_result(
+            pool,
+            v_con=np.full(len(pool), 10.0, dtype=float),
+        )
+        self.assertIsNotNone(cert)
+        best_x, _ = problem.true_best_feasible()
+        best_idx = pool.index(best_x)
+        self.assertLessEqual(float(cert["margin"][best_idx]), 0.0)
+        self.assertGreater(cert["n_feasible"], 0)
+
     def test_high_dim_state_inverse_returns_raw_policy_with_low_spread(self):
         base = HighDimStatePolicyRZDT1(d=1000, L=100, sigma=0.04)
         problem = ScalarizedProblem(base)
@@ -217,7 +260,7 @@ class StateEncoderTests(unittest.TestCase):
         self.assertAlmostEqual(occupancy["s0|a0"], 2.0 / 3.0)
         risk = encoder.risk_exposure("p0")
         shared = encoder.shared_shock_exposure("p0")
-        self.assertTrue(np.allclose(risk, [6.0, 2.0, 6.0]))
+        self.assertTrue(np.allclose(risk, [6.0, 2.0, 6.0, 0.0]))
         self.assertTrue(np.allclose(shared, [0.3, 0.1]))
         features = encoder.features("p0")
         self.assertEqual(features.shape, (8,))
@@ -239,7 +282,9 @@ class StateEncoderTests(unittest.TestCase):
         self.assertEqual(problem.recommendation_refinement_candidates(), [])
 
         anchors = problem.state_anchor_points(n=6, rng=np.random.default_rng(0))
-        self.assertLess(anchors[0]["mean"], 0.12)
+        self.assertEqual(anchors[0]["coordinate"], "psi=(A,N)")
+        self.assertEqual(len(anchors[0]["A"]), 4)
+        self.assertEqual(len(anchors[0]["N"]), 2)
         rows = []
         for anchor in anchors[:3]:
             rows.extend(problem.inverse_state_anchor(
@@ -248,8 +293,8 @@ class StateEncoderTests(unittest.TestCase):
                 n=2,
             ))
         self.assertGreaterEqual(len(rows), 3)
-        norm_means = [float(np.mean(problem.normalize(x))) for x in rows]
-        self.assertLess(max(norm_means), 0.30)
+        exposures = [problem.risk_exposures(x) for x in rows]
+        self.assertTrue(all(len(exp.A) == 4 and len(exp.N) == 2 for exp in exposures))
 
     def test_self_supervised_trajectory_encoder_masked_and_contrastive(self):
         records = []

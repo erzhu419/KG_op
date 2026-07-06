@@ -57,6 +57,13 @@ def parse_weights(value):
     return tuple(weights)
 
 
+def _safe_name(value):
+    return "".join(
+        c if c.isalnum() or c in ("-", "_", ".") else "_"
+        for c in str(value)
+    )
+
+
 def finite_values(values):
     out = []
     for value in values:
@@ -121,7 +128,7 @@ def _variant_name(args, variance_mode, use_state_coupling, acquisition_mode):
     return f"{variance_mode}:{suffix}"
 
 
-def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_mode="additive"):
+def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_mode="exact_mc"):
     base = make_problem(
         args.problem,
         d=args.d,
@@ -130,6 +137,12 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         alpha=args.alpha,
     )
     problem = ScalarizedProblem(base, weights=parse_weights(args.weights))
+    variant = _variant_name(args, variance_mode, use_state_coupling, acquisition_mode)
+    checkpoint_dir = str(getattr(args, "checkpoint_dir", "") or "").strip()
+    if checkpoint_dir:
+        checkpoint_dir = str(
+            Path(checkpoint_dir) / _safe_name(variant) / f"seed{int(seed)}"
+        )
     config = SingleOLHKGConfig(
         N=args.N,
         n0=args.n0,
@@ -158,7 +171,26 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         recommendation_infeasible_strategy=args.recommendation_infeasible_strategy,
         recommendation_calibration=not args.disable_recommendation_calibration,
         recommendation_calibration_ridge=args.recommendation_calibration_ridge,
+        certification_calibration=bool(
+            getattr(args, "enable_certification_calibration", False)),
+        certification_calibration_min_obs=int(
+            getattr(args, "certification_calibration_min_obs", 8)),
+        certification_calibration_ridge=float(
+            getattr(args, "certification_calibration_ridge", 1e-6)),
+        certification_calibration_noise_floor_scale=float(getattr(
+            args,
+            "certification_calibration_noise_floor_scale",
+            0.5,
+        )),
+        certification_calibration_beta=float(
+            getattr(args, "certification_calibration_beta", 2.0)),
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
+        use_problem_initial_samples=not getattr(
+            args, "disable_problem_initial_samples", False),
+        use_boundary_initial_samples=not getattr(
+            args, "disable_boundary_initial_samples", False),
+        use_recommendation_refinement=not getattr(
+            args, "disable_recommendation_refinement", False),
         use_state_coupling=use_state_coupling,
         use_state_basis=bool(use_state_coupling and args.use_state_basis),
         state_basis_mode=args.state_basis_mode,
@@ -173,8 +205,21 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         encoder_fit_pool_size=args.encoder_fit_pool_size,
         acquisition_mode=acquisition_mode,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
+        exact_kg_jobs=int(getattr(args, "exact_kg_jobs", 1)),
         exact_kg_use_score=args.exact_kg_use_score,
         exact_kg_blend=args.exact_kg_blend,
+        checkpoint_dir=checkpoint_dir,
+        checkpoint_resume=bool(getattr(args, "checkpoint_resume", False)),
+        checkpoint_interval=int(getattr(args, "checkpoint_interval", 1)),
+        checkpoint_keep_last=int(getattr(args, "checkpoint_keep_last", 3)),
+        progress_logging=bool(getattr(args, "progress_logging", False)),
+        progress_label=str(
+            getattr(args, "progress_label", "")
+            or f"{variant}:seed={int(seed)}"
+        ),
+        progress_units_per_iteration=int(
+            getattr(args, "progress_units_per_iteration", 100)),
+        progress_exact_updates=int(getattr(args, "progress_exact_updates", 10)),
         eval_pool_size=args.eval_pool_size,
         seed=seed,
     )
@@ -185,7 +230,6 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
     violation = max(float(result["true_chance_margin"]), 0.0)
     feasible_objective = float(result["true_objective"]) if true_feasible else None
     feasible_regret = float(result["simple_regret"]) if true_feasible else None
-    variant = _variant_name(args, variance_mode, use_state_coupling, acquisition_mode)
     row = {
         "variant": variant,
         "variance_mode": variance_mode,
@@ -207,8 +251,17 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         "beta_g": float(args.beta_g),
         "certification_mode": args.certification_mode,
         "exact_kg_mc_samples": int(args.exact_kg_mc_samples),
+        "exact_kg_jobs": int(getattr(args, "exact_kg_jobs", 1)),
         "exact_kg_use_score": bool(args.exact_kg_use_score),
         "exact_kg_blend": float(args.exact_kg_blend),
+        "checkpoint_dir": checkpoint_dir,
+        "checkpoint_resume": bool(getattr(args, "checkpoint_resume", False)),
+        "disable_problem_initial_samples": bool(getattr(
+            args, "disable_problem_initial_samples", False)),
+        "disable_boundary_initial_samples": bool(getattr(
+            args, "disable_boundary_initial_samples", False)),
+        "disable_recommendation_refinement": bool(getattr(
+            args, "disable_recommendation_refinement", False)),
         "seed": int(seed),
         "problem": args.problem,
         "N": int(args.N),
@@ -233,9 +286,22 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         "true_chance_margin": float(result["true_chance_margin"]),
         "constraint_violation": float(violation),
         "posterior_chance_margin": float(result["posterior_chance_margin"]),
+        "posterior_theory_chance_margin": optional_float(
+            result.get("posterior_theory_chance_margin")),
+        "posterior_calibrated_chance_margin": optional_float(
+            result.get("posterior_calibrated_chance_margin")),
         "posterior_robust_chance_margin": optional_float(
             result.get("posterior_robust_chance_margin")),
+        "posterior_certification_source": result.get(
+            "posterior_certification_source"),
         "n_posterior_feasible": result.get("n_posterior_feasible"),
+        "n_theory_posterior_feasible": result.get("n_theory_posterior_feasible"),
+        "certification_calibration_used": bool(
+            result.get("certification_calibration_used", False)),
+        "certification_calibration_n_feasible": result.get(
+            "certification_calibration_n_feasible"),
+        "certification_calibration_sigma": optional_float(
+            result.get("certification_calibration_sigma")),
         "calibrated_recommendation_used": bool(
             result.get("calibrated_recommendation_used", False)),
         "calibrated_recommendation_reason": result.get(
@@ -246,8 +312,14 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
             "calibrated_constraint_feasible"),
         "n_calibration_feasible": result.get("n_calibration_feasible"),
         "posterior_beta_g": optional_float(result.get("posterior_beta_g")),
+        "posterior_mu_con": optional_float(result.get("posterior_mu_con")),
+        "posterior_gpr_mu_con": optional_float(result.get("posterior_gpr_mu_con")),
+        "posterior_variance_con": optional_float(result.get("posterior_variance_con")),
+        "posterior_hvd_variance_con": optional_float(result.get("posterior_hvd_variance_con")),
         "posterior_epistemic_variance_con": optional_float(
             result.get("posterior_epistemic_variance_con")),
+        "posterior_gpr_epistemic_variance_con": optional_float(
+            result.get("posterior_gpr_epistemic_variance_con")),
         "wall_time_sec": float(result["total_time_sec"]),
         "n_simulations": int(result["n_simulations"]),
         "n_distinct_solutions": int(result["n_distinct_solutions"]),
@@ -276,6 +348,10 @@ def summarize_variant(rows):
         "acquisition_mode": rows[0].get("acquisition_mode", "additive"),
         "beta_g": rows[0].get("beta_g", 0.0),
         "certification_mode": rows[0].get("certification_mode", "legacy"),
+        "certification_calibration_used_rate": mean_bool(
+            row.get("certification_calibration_used", False) for row in rows),
+        "certification_calibration_n_feasible": stats(
+            row.get("certification_calibration_n_feasible") for row in rows),
         "n_runs": int(n),
         "true_feasible_rate": mean_bool(row["true_feasible"] for row in rows),
         "posterior_feasible_rate": mean_bool(row["posterior_feasible"] for row in rows),
@@ -366,10 +442,16 @@ def run_benchmark(args):
         seeds = list(range(args.seed_start, args.seed_start + args.n_seeds))
     variants = build_variants(args)
     rows = []
+    total = len(variants) * len(seeds)
+    completed = 0
     for variance_mode, use_state_coupling, acquisition_mode in variants:
         variant = _variant_name(args, variance_mode, use_state_coupling, acquisition_mode)
         for seed in seeds:
-            print(f"[benchmark] variant={variant} seed={seed}", flush=True)
+            print(
+                f"[{completed}/{total}] [benchmark] start "
+                f"variant={variant} seed={seed}",
+                flush=True,
+            )
             rows.append(run_variant_once(
                 args,
                 variance_mode,
@@ -377,6 +459,12 @@ def run_benchmark(args):
                 use_state_coupling,
                 acquisition_mode,
             ))
+            completed += 1
+            print(
+                f"[{completed}/{total}] [benchmark] done "
+                f"variant={variant} seed={seed}",
+                flush=True,
+            )
     grouped = {}
     for row in rows:
         grouped.setdefault(row["variant"], []).append(row)
@@ -421,7 +509,26 @@ def run_benchmark(args):
             "recommendation_infeasible_penalty": args.recommendation_infeasible_penalty,
             "disable_recommendation_calibration": args.disable_recommendation_calibration,
             "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
+            "enable_certification_calibration": bool(
+                getattr(args, "enable_certification_calibration", False)),
+            "certification_calibration_min_obs": int(
+                getattr(args, "certification_calibration_min_obs", 8)),
+            "certification_calibration_ridge": float(
+                getattr(args, "certification_calibration_ridge", 1e-6)),
+            "certification_calibration_noise_floor_scale": float(getattr(
+                args,
+                "certification_calibration_noise_floor_scale",
+                0.5,
+            )),
+            "certification_calibration_beta": float(
+                getattr(args, "certification_calibration_beta", 2.0)),
             "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
+            "disable_problem_initial_samples": bool(getattr(
+                args, "disable_problem_initial_samples", False)),
+            "disable_boundary_initial_samples": bool(getattr(
+                args, "disable_boundary_initial_samples", False)),
+            "disable_recommendation_refinement": bool(getattr(
+                args, "disable_recommendation_refinement", False)),
             "use_state_basis": args.use_state_basis,
             "state_basis_mode": args.state_basis_mode,
             "raw_basis_dim": args.raw_basis_dim,
@@ -435,8 +542,18 @@ def run_benchmark(args):
             "encoder_fit_pool_size": args.encoder_fit_pool_size,
             "acquisition_modes": parse_csv(args.acquisition_modes),
             "exact_kg_mc_samples": args.exact_kg_mc_samples,
+            "exact_kg_jobs": int(getattr(args, "exact_kg_jobs", 1)),
             "exact_kg_use_score": args.exact_kg_use_score,
             "exact_kg_blend": args.exact_kg_blend,
+            "checkpoint_dir": str(getattr(args, "checkpoint_dir", "") or ""),
+            "checkpoint_resume": bool(getattr(args, "checkpoint_resume", False)),
+            "checkpoint_interval": int(getattr(args, "checkpoint_interval", 1)),
+            "checkpoint_keep_last": int(getattr(args, "checkpoint_keep_last", 3)),
+            "progress_logging": bool(getattr(args, "progress_logging", False)),
+            "progress_units_per_iteration": int(
+                getattr(args, "progress_units_per_iteration", 100)),
+            "progress_exact_updates": int(
+                getattr(args, "progress_exact_updates", 10)),
             "seeds": seeds,
             "modes": parse_csv(args.modes),
             "sc_modes": parse_csv(args.sc_modes),
@@ -463,6 +580,8 @@ def flatten_summary(summary):
         "acquisition_mode": summary.get("acquisition_mode", "additive"),
         "beta_g": summary.get("beta_g", 0.0),
         "certification_mode": summary.get("certification_mode", "legacy"),
+        "certification_calibration_used_rate": summary.get(
+            "certification_calibration_used_rate"),
         "n_runs": summary["n_runs"],
         "true_feasible_rate": summary["true_feasible_rate"],
         "posterior_feasible_rate": summary["posterior_feasible_rate"],
@@ -543,7 +662,7 @@ def printable_summary(result):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--problem", default="RegimeRZDT1")
+    parser.add_argument("--problem", default="FactorShockStatePolicyRZDT1")
     parser.add_argument("--d", type=int, default=5)
     parser.add_argument("--L", type=int, default=100)
     parser.add_argument("--sigma", type=float, default=0.04)
@@ -581,8 +700,33 @@ def main():
     )
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
+    parser.add_argument("--enable_certification_calibration", action="store_true")
+    parser.add_argument("--certification_calibration_min_obs", type=int, default=8)
+    parser.add_argument("--certification_calibration_ridge", type=float, default=1e-6)
+    parser.add_argument(
+        "--certification_calibration_noise_floor_scale",
+        type=float,
+        default=0.5,
+    )
+    parser.add_argument("--certification_calibration_beta", type=float, default=2.0)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
-    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument(
+        "--disable_problem_initial_samples",
+        action="store_true",
+        help="Use random/boundary initialization instead of problem-defined anchors.",
+    )
+    parser.add_argument(
+        "--disable_boundary_initial_samples",
+        action="store_true",
+        help="Use random initialization instead of generic boundary points when anchors are disabled.",
+    )
+    parser.add_argument(
+        "--disable_recommendation_refinement",
+        action="store_true",
+        help="Do not add problem-defined dense refinement grids to the final recommendation pool.",
+    )
+    parser.add_argument("--use_state_basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable_state_basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
         "--state_basis_mode",
         default="raw+state",
@@ -632,21 +776,49 @@ def main():
             "transformer",
             "pca_manifold",
             "kernel_manifold",
+            "graph_laplacian",
+            "diffusion_manifold",
+            "graph_manifold",
             "ssl_masked",
             "ssl_contrastive",
             "ssl_next_risk",
             "ssl_transformer",
+            "ssl_hybrid",
+            "hybrid_ssl",
+            "contextual_manifold",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
-    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
+    parser.add_argument(
+        "--exact_kg_jobs",
+        type=int,
+        default=1,
+        help="Candidate-level thread parallelism inside exact posterior-update KG.",
+    )
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
-    parser.add_argument("--acquisition_modes", default="additive")
-    parser.add_argument("--modes", default="pooled,class,orthogonal,factor")
-    parser.add_argument("--sc_modes", default="orthogonal")
-    parser.add_argument("--baseline_variant", default="orthogonal")
+    parser.add_argument(
+        "--checkpoint_dir",
+        default="",
+        help="Optional root directory for per-variant/per-seed KG checkpoints.",
+    )
+    parser.add_argument(
+        "--checkpoint_resume",
+        action="store_true",
+        help="Resume each KG run from checkpoint_latest.pkl when present.",
+    )
+    parser.add_argument("--checkpoint_interval", type=int, default=1)
+    parser.add_argument("--checkpoint_keep_last", type=int, default=3)
+    parser.add_argument("--progress_logging", dest="progress_logging", action="store_true", default=True)
+    parser.add_argument("--disable_progress_logging", dest="progress_logging", action="store_false")
+    parser.add_argument("--progress_units_per_iteration", type=int, default=100)
+    parser.add_argument("--progress_exact_updates", type=int, default=10)
+    parser.add_argument("--acquisition_modes", default="exact_mc")
+    parser.add_argument("--modes", default="factor")
+    parser.add_argument("--sc_modes", default="factor")
+    parser.add_argument("--baseline_variant", default="factor:olhkg_sc_exact")
     parser.add_argument("--seeds", default="")
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=10)

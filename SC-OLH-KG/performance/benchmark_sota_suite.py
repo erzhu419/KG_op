@@ -24,6 +24,7 @@ def _problem_prefix(prefix, problem, n, n_seeds):
 
 
 def _problem_args(args, problem):
+    safe_problem = "".join(ch.lower() if ch.isalnum() else "_" for ch in problem)
     fields = {
         "problem": problem,
         "d": args.d,
@@ -68,8 +69,20 @@ def _problem_args(args, problem):
         "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
         "acquisition_mode": args.acquisition_mode,
         "exact_kg_mc_samples": args.exact_kg_mc_samples,
+        "exact_kg_jobs": args.exact_kg_jobs,
         "exact_kg_use_score": args.exact_kg_use_score,
         "exact_kg_blend": args.exact_kg_blend,
+        "checkpoint_dir": (
+            str(Path(args.checkpoint_dir) / safe_problem)
+            if str(args.checkpoint_dir or "").strip()
+            else ""
+        ),
+        "checkpoint_resume": args.checkpoint_resume,
+        "checkpoint_interval": args.checkpoint_interval,
+        "checkpoint_keep_last": args.checkpoint_keep_last,
+        "progress_logging": args.progress_logging,
+        "progress_units_per_iteration": args.progress_units_per_iteration,
+        "progress_exact_updates": args.progress_exact_updates,
         "eval_pool_size": args.eval_pool_size,
         "baselines": args.baselines,
         "baseline_batch_candidates": args.baseline_batch_candidates,
@@ -128,9 +141,15 @@ def run_suite(args):
     all_rows = []
     summary_rows = []
     problem_results = {}
-    for problem in parse_csv(args.problems):
+    problems = parse_csv(args.problems)
+    total = len(problems)
+    completed = 0
+    for problem in problems:
         problem_args = _problem_args(args, problem)
-        print(f"[sota-suite] problem={problem}", flush=True)
+        print(
+            f"[{completed}/{total}] [sota-suite] start problem={problem}",
+            flush=True,
+        )
         result = benchmark_sota.run_benchmark(problem_args)
         paths = benchmark_sota.write_outputs(problem_args, result)
         problem_results[problem] = {
@@ -145,6 +164,11 @@ def run_suite(args):
             flat = benchmark_sota.flatten_summary(summary)
             flat["problem"] = problem
             summary_rows.append(flat)
+        completed += 1
+        print(
+            f"[{completed}/{total}] [sota-suite] done problem={problem}",
+            flush=True,
+        )
 
     pooled = benchmark_sota.summarize(all_rows) if all_rows else {}
     pooled_rows = [
@@ -172,7 +196,7 @@ def printable_summary(result):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--problems", default="RegimeRZDT1,RZDT2,StatePolicyRZDT1")
+    parser.add_argument("--problems", default="FactorShockStatePolicyRZDT1,InventorySupplyChain,QueueResourceControl,StatePolicyRZDT1")
     parser.add_argument("--d", type=int, default=5)
     parser.add_argument("--L", type=int, default=100)
     parser.add_argument("--sigma", type=float, default=0.04)
@@ -189,7 +213,8 @@ def main():
     parser.add_argument("--state_candidate_count", type=int, default=-1)
     parser.add_argument("--state_inverse_pool_size", type=int, default=500)
     parser.add_argument("--state_inverse_neighbors", type=int, default=2)
-    parser.add_argument("--use_state_basis", action="store_true")
+    parser.add_argument("--use_state_basis", dest="use_state_basis", action="store_true", default=True)
+    parser.add_argument("--disable_state_basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
         "--state_basis_mode",
         default="raw+state",
@@ -206,10 +231,16 @@ def main():
             "transformer",
             "pca_manifold",
             "kernel_manifold",
+            "graph_laplacian",
+            "diffusion_manifold",
+            "graph_manifold",
             "ssl_masked",
             "ssl_contrastive",
             "ssl_next_risk",
             "ssl_transformer",
+            "ssl_hybrid",
+            "hybrid_ssl",
+            "contextual_manifold",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
@@ -228,7 +259,7 @@ def main():
         choices=["float64", "float32", "double", "single"],
     )
     parser.add_argument("--torch_min_rows", type=int, default=128)
-    parser.add_argument("--variance_mode", default="orthogonal")
+    parser.add_argument("--variance_mode", default="factor")
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_mean", type=float, default=0.10)
@@ -242,11 +273,20 @@ def main():
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
-    parser.add_argument("--acquisition_mode", default="additive",
+    parser.add_argument("--acquisition_mode", default="exact_mc",
                         choices=["additive", "exact_mc", "blend"])
-    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
+    parser.add_argument("--exact_kg_jobs", type=int, default=1)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
+    parser.add_argument("--checkpoint_dir", default="")
+    parser.add_argument("--checkpoint_resume", action="store_true")
+    parser.add_argument("--checkpoint_interval", type=int, default=1)
+    parser.add_argument("--checkpoint_keep_last", type=int, default=3)
+    parser.add_argument("--progress_logging", dest="progress_logging", action="store_true", default=True)
+    parser.add_argument("--disable_progress_logging", dest="progress_logging", action="store_false")
+    parser.add_argument("--progress_units_per_iteration", type=int, default=100)
+    parser.add_argument("--progress_exact_updates", type=int, default=10)
     parser.add_argument("--eval_pool_size", type=int, default=500)
     parser.add_argument(
         "--baselines",
