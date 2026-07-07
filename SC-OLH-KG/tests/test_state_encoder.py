@@ -239,6 +239,15 @@ class StateEncoderTests(unittest.TestCase):
         )
         self.assertGreater(details["n_calibration_raw_feasible"], 0)
         self.assertEqual(details["n_calibration_guarded"], 0)
+        decision_margins = -np.ones(len(pool), dtype=float)
+        guard_margins = np.ones(len(pool), dtype=float)
+        idx, details = alg._calibrated_recommendation_index(
+            pool,
+            decision_margins,
+            guard_margins=guard_margins,
+        )
+        self.assertIsNone(idx)
+        self.assertEqual(details["n_calibration_guarded"], 0)
 
     def test_source_safe_rescue_when_calibrated_margin_is_conservative(self):
         base = HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04)
@@ -295,7 +304,7 @@ class StateEncoderTests(unittest.TestCase):
         self.assertFalse(details["calibrated_constraint_feasible"])
         self.assertTrue(details["source_mean_prior_guard_used"])
 
-    def test_high_dim_calibrated_certification_marks_supported_meta_point(self):
+    def test_high_dim_calibrated_certification_respects_hvd_variance(self):
         base = HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04)
         problem = ScalarizedProblem(base)
         alg = SingleOLHKGAlgorithm(
@@ -335,8 +344,16 @@ class StateEncoderTests(unittest.TestCase):
         self.assertIsNotNone(cert)
         best_x, _ = problem.true_best_feasible()
         best_idx = pool.index(best_x)
-        self.assertLessEqual(float(cert["margin"][best_idx]), 0.0)
-        self.assertGreater(cert["n_feasible"], 0)
+        self.assertGreaterEqual(float(cert["aleatoric_var"][best_idx]), 10.0)
+        self.assertGreater(float(cert["margin"][best_idx]), 0.0)
+
+        cert_small = alg._calibrated_certification_result(
+            pool,
+            v_con=np.full(len(pool), 1e-4, dtype=float),
+        )
+        self.assertIsNotNone(cert_small)
+        self.assertLessEqual(float(cert_small["margin"][best_idx]), 0.0)
+        self.assertGreater(cert_small["n_feasible"], 0)
 
     def test_high_dim_state_inverse_returns_raw_policy_with_low_spread(self):
         base = HighDimStatePolicyRZDT1(d=1000, L=100, sigma=0.04)

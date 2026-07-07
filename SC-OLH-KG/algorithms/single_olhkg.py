@@ -88,6 +88,10 @@ class SingleOLHKGConfig:
     certification_calibration_ridge: float = 1e-6
     certification_calibration_noise_floor_scale: float = 0.5
     certification_calibration_beta: float = 2.0
+    certification_calibration_policy: str = "guarded"
+    certification_calibration_max_leverage: float = 10.0
+    certification_calibration_max_theory_margin: float = 0.25
+    certification_calibration_raise_delta: float = 0.10
     calibration_standardize_features: bool = False
     recommend_observed_only: bool = False
     recommendation_axis_oracle: bool = True
@@ -1172,11 +1176,12 @@ class SingleOLHKGAlgorithm:
             max(float(fit["sigma"]) ** 2, 1e-12),
             dtype=float,
         )
-        # Keep HVD visible in diagnostics without letting sparse high-dimensional
-        # GPR residuals dominate a low-dimensional calibrated certificate.
+        # Certification calibration is allowed to add structure, but not to
+        # erase cumulative-risk uncertainty.  Sparse LODO runs otherwise turn
+        # theory-unsafe points into calibrated-safe recommendations.
         if v_con is not None:
             hvd = np.maximum(np.asarray(v_con, dtype=float), 1e-12)
-            aleatoric = np.maximum(np.minimum(hvd, aleatoric), 0.25 * aleatoric)
+            aleatoric = np.maximum(hvd, aleatoric)
         beta = max(float(self.config.certification_calibration_beta), 0.0)
         cert = conservative_chance_margin(
             mu,
@@ -1199,6 +1204,7 @@ class SingleOLHKGAlgorithm:
             "n_train": int(fit["n_train"]),
             "feature_dim": int(fit["feature_dim"]),
             "n_feasible": int(np.sum(cert.margin <= 0.0)),
+            "leverage": leverage,
         }
 
     def _recommendation_calibration_audit_scores(self, pool):
@@ -1286,6 +1292,7 @@ class SingleOLHKGAlgorithm:
         pool,
         robust_margins,
         source_margins=None,
+        guard_margins=None,
     ):
         if not self.config.recommendation_calibration:
             return None, {}
@@ -1361,10 +1368,21 @@ class SingleOLHKGAlgorithm:
         else:
             leverage = np.sum((Phi_cand @ lhs_inv) * Phi_cand, axis=1)
             leverage = np.maximum(np.asarray(leverage, dtype=float), 0.0)
-        theory_margin = np.asarray([
+        decision_margin = np.asarray([
             robust_margins[i]
             for i in candidate_indices
         ], dtype=float)
+        if guard_margins is None:
+            theory_margin = decision_margin
+        else:
+            guard_margins = np.asarray(guard_margins, dtype=float)
+            if len(guard_margins) == len(pool):
+                theory_margin = np.asarray([
+                    guard_margins[i]
+                    for i in candidate_indices
+                ], dtype=float)
+            else:
+                theory_margin = decision_margin
         source_margin_local = None
         if source_margins is not None:
             source_margins = np.asarray(source_margins, dtype=float)
@@ -1428,7 +1446,7 @@ class SingleOLHKGAlgorithm:
                     source_margin_local[chosen])
             return chosen, details
 
-        certified = theory_margin <= 0.0
+        certified = decision_margin <= 0.0
         certified_guarded = certified & calibration_guard
         if np.any(certified_guarded):
             local_cert = np.where(certified_guarded)[0]
@@ -1655,13 +1673,53 @@ class SingleOLHKGAlgorithm:
         effective_aleatoric = np.asarray(cert.aleatoric_var, dtype=float)
         certification_sources = np.full(len(pool), "theory", dtype=object)
         calibrated_cert = self._calibrated_certification_result(pool, v_con)
+        calibration_policy = str(
+            self.config.certification_calibration_policy or "conservative"
+        ).lower()
         if calibrated_cert is not None:
             calibrated_margins = (
                 np.asarray(calibrated_cert["margin"], dtype=float)
                 + recommendation_slack
             )
-            use_calibrated = calibrated_margins < robust_margins
-            robust_margins = np.where(use_calibrated, calibrated_margins, robust_margins)
+            if calibration_policy in ("replace", "optimistic", "legacy"):
+                use_calibrated = calibrated_margins < robust_margins
+                robust_margins = np.where(
+                    use_calibrated,
+                    calibrated_margins,
+                    robust_margins,
+                )
+            elif calibration_policy in ("guarded", "supported"):
+                lower_calibrated = calibrated_margins < robust_margins
+                max_leverage = float(
+                    self.config.certification_calibration_max_leverage)
+                if max_leverage > 0.0:
+                    leverage = np.asarray(
+                        calibrated_cert.get("leverage", np.inf),
+                        dtype=float,
+                    )
+                    lower_calibrated &= np.isfinite(leverage)
+                    lower_calibrated &= leverage <= max_leverage
+                max_theory_margin = float(
+                    self.config.certification_calibration_max_theory_margin)
+                if max_theory_margin > 0.0:
+                    lower_calibrated &= np.isfinite(robust_margins)
+                    lower_calibrated &= robust_margins <= max_theory_margin
+                raise_delta = max(
+                    float(self.config.certification_calibration_raise_delta),
+                    0.0,
+                )
+                raise_calibrated = calibrated_margins > robust_margins + raise_delta
+                use_calibrated = lower_calibrated | raise_calibrated
+                robust_margins = np.where(
+                    use_calibrated,
+                    calibrated_margins,
+                    robust_margins,
+                )
+            elif calibration_policy in ("off", "disabled", "none"):
+                use_calibrated = np.zeros(len(pool), dtype=bool)
+            else:
+                use_calibrated = calibrated_margins > robust_margins
+                robust_margins = np.maximum(robust_margins, calibrated_margins)
             effective_mu_con = np.where(
                 use_calibrated,
                 calibrated_cert["mu"],
@@ -1785,6 +1843,7 @@ class SingleOLHKGAlgorithm:
             pool,
             robust_margins,
             source_margins=source_margins,
+            guard_margins=theory_margins + recommendation_slack,
         )
         if calibrated_idx is not None:
             keep_observed = False
@@ -1863,12 +1922,21 @@ class SingleOLHKGAlgorithm:
                     calibrated_cert["beta_g"]),
                 "certification_calibration_n_feasible": int(
                     calibrated_cert["n_feasible"]),
+                "certification_calibration_policy": calibration_policy,
+                "certification_calibration_n_used": int(np.sum(use_calibrated)),
+                "certification_calibration_max_leverage": float(
+                    self.config.certification_calibration_max_leverage),
+                "certification_calibration_max_theory_margin": float(
+                    self.config.certification_calibration_max_theory_margin),
+                "certification_calibration_raise_delta": float(
+                    self.config.certification_calibration_raise_delta),
                 "posterior_calibrated_chance_margin": float(
                     calibrated_margins[local]),
             }
         else:
             calibration_details = {
                 "certification_calibration_used": False,
+                "certification_calibration_policy": calibration_policy,
                 "posterior_calibrated_chance_margin": None,
             }
         recommendation_calibration_details = {}

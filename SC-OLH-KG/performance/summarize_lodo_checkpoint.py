@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,30 +27,53 @@ def load_rows(paths):
     rows = []
     bad = 0
     seen = set()
+
+    def add_row(row, path, lineno, inferred_N):
+        nonlocal bad
+        if not isinstance(row, dict):
+            bad += 1
+            return
+        if row.get("N") is None and inferred_N is not None:
+            row["N"] = inferred_N
+        key = (
+            int(row.get("N", -1)),
+            str(row.get("heldout", "")),
+            str(row.get("line", "")),
+            int(row.get("seed", -1)),
+            str(row.get("basis_label", "")),
+        )
+        if key in seen:
+            return
+        seen.add(key)
+        row["_checkpoint_path"] = str(path)
+        row["_checkpoint_lineno"] = lineno
+        rows.append(row)
+
     for path in paths:
         path = Path(path)
-        with path.open("r", encoding="utf-8") as fh:
-            for lineno, line in enumerate(fh, start=1):
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    row = json.loads(line)
-                except json.JSONDecodeError:
-                    bad += 1
-                    continue
-                key = (
-                    str(row.get("heldout", "")),
-                    str(row.get("line", "")),
-                    int(row.get("seed", -1)),
-                    str(row.get("basis_label", "")),
-                )
-                if key in seen:
-                    continue
-                seen.add(key)
-                row["_checkpoint_path"] = str(path)
-                row["_checkpoint_lineno"] = lineno
-                rows.append(row)
+        n_match = re.search(r"(?:^|_)N(\d+)(?:_|$)", path.name)
+        inferred_N = int(n_match.group(1)) if n_match else None
+        text = path.read_text(encoding="utf-8")
+        stripped = text.lstrip()
+        if stripped.startswith("{"):
+            try:
+                payload = json.loads(text)
+            except json.JSONDecodeError:
+                payload = None
+            if isinstance(payload, dict) and isinstance(payload.get("rows"), list):
+                for idx, row in enumerate(payload["rows"], start=1):
+                    add_row(row, path, idx, inferred_N)
+                continue
+        for lineno, line in enumerate(text.splitlines(), start=1):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                bad += 1
+                continue
+            add_row(row, path, lineno, inferred_N)
     return rows, bad
 
 
@@ -74,6 +98,7 @@ def compact_rows(summary):
     for key, item in sorted(summary.items()):
         rows.append({
             "variant": key,
+            "N": item.get("N", ""),
             "heldout": item.get("heldout", ""),
             "basis": item.get("basis_label", ""),
             "line": item.get("line", ""),
@@ -111,9 +136,10 @@ def print_compact(rows):
             current_basis = row["basis"]
             print(f" basis={current_basis}")
         print(
-            "  {line:12s} n={n:<3d} tf={tf:>5s} pf={pf:>5s} ff={ff:>5s} "
+            "  N={N:<4s} {line:12s} n={n:<3d} tf={tf:>5s} pf={pf:>5s} ff={ff:>5s} "
             "reg_med={reg:>8s} viol_med={viol:>8s} "
             "pool_tf={pool:>5s} sel_tf={sel:>5s} wall_med={wall:>7s}s".format(
+                N=str(row.get("N", "")),
                 line=str(row["line"]),
                 n=int(row["n"] or 0),
                 tf=fmt(row["true_feasible_rate"], 2),

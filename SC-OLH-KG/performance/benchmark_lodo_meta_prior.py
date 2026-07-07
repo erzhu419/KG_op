@@ -306,6 +306,14 @@ def run_one(task):
             "recommendation_calibration_max_theory_margin"],
         certification_calibration_min_obs=args_dict["certification_calibration_min_obs"],
         certification_calibration_beta=args_dict["certification_calibration_beta"],
+        certification_calibration_policy=args_dict[
+            "certification_calibration_policy"],
+        certification_calibration_max_leverage=args_dict[
+            "certification_calibration_max_leverage"],
+        certification_calibration_max_theory_margin=args_dict[
+            "certification_calibration_max_theory_margin"],
+        certification_calibration_raise_delta=args_dict[
+            "certification_calibration_raise_delta"],
         calibration_standardize_features=bool(
             args_dict["calibration_standardize_features"]),
         recommendation_observed_fallback=bool(args_dict["recommendation_observed_fallback"]),
@@ -356,6 +364,10 @@ def run_one(task):
         "line": line,
         "heldout": heldout,
         "seed": seed,
+        "N": int(args_dict["N"]),
+        "n0": int(args_dict["n0"]),
+        "K1": int(args_dict["K1"]),
+        "K2": int(args_dict["K2"]),
         "basis_label": basis_label,
         "state_basis_enabled": bool(args_dict["use_state_basis"]),
         "state_basis_mode": args_dict["state_basis_mode"],
@@ -438,6 +450,16 @@ def run_one(task):
         "recommendation_selected_calibrated_rec_leverage": result.get(
             "recommendation_selected_calibrated_rec_leverage"),
         "certification_calibration_used": result.get("certification_calibration_used"),
+        "certification_calibration_policy": result.get(
+            "certification_calibration_policy"),
+        "certification_calibration_n_used": result.get(
+            "certification_calibration_n_used"),
+        "certification_calibration_max_leverage": result.get(
+            "certification_calibration_max_leverage"),
+        "certification_calibration_max_theory_margin": result.get(
+            "certification_calibration_max_theory_margin"),
+        "certification_calibration_raise_delta": result.get(
+            "certification_calibration_raise_delta"),
         "certification_calibration_n_feasible": result.get(
             "certification_calibration_n_feasible"),
         "source_mean_prior_fallback": result.get("source_mean_prior_fallback"),
@@ -534,11 +556,17 @@ def run_one(task):
 def summarize(rows):
     grouped = {}
     for row in rows:
-        grouped.setdefault(row["variant"], []).append(row)
+        N_value = row.get("N")
+        if N_value is None:
+            key = row["variant"]
+        else:
+            key = f"N{int(N_value)}:{row['variant']}"
+        grouped.setdefault(key, []).append(row)
     out = {}
     for variant, items in grouped.items():
         out[variant] = {
             "variant": variant,
+            "N": items[0].get("N"),
             "line": items[0]["line"],
             "heldout": items[0]["heldout"],
             "basis_label": items[0].get("basis_label", ""),
@@ -627,6 +655,11 @@ def summarize(rows):
                 row.get("observed_incumbent_used", None) for row in items),
             "observed_incumbent_chance_margin": finite_stats(
                 row.get("observed_incumbent_chance_margin", None) for row in items),
+            "certification_calibration_n_used": finite_stats(
+                row.get("certification_calibration_n_used", None) for row in items),
+            "certification_calibration_n_feasible": finite_stats(
+                row.get("certification_calibration_n_feasible", None)
+                for row in items),
             "recommendation_best_true_feasible_mu_con": finite_stats(
                 row.get("recommendation_best_true_feasible_mu_con", None)
                 for row in items),
@@ -725,6 +758,7 @@ def summarize(rows):
 def flatten_summary(summary):
     row = {
         "variant": summary["variant"],
+        "N": summary.get("N"),
         "line": summary["line"],
         "heldout": summary["heldout"],
         "basis_label": summary.get("basis_label", ""),
@@ -768,6 +802,8 @@ def flatten_summary(summary):
         "calibrated_recommendation_rejected_by_observed",
         "observed_incumbent_used",
         "observed_incumbent_chance_margin",
+        "certification_calibration_n_used",
+        "certification_calibration_n_feasible",
         "recommendation_best_true_feasible_mu_con",
         "recommendation_best_true_feasible_epistemic_var",
         "recommendation_best_true_feasible_aleatoric_var",
@@ -1079,6 +1115,10 @@ def main():
     parser.add_argument("--certification_calibration", action="store_true")
     parser.add_argument("--certification_calibration_min_obs", type=int, default=8)
     parser.add_argument("--certification_calibration_beta", type=float, default=2.0)
+    parser.add_argument("--certification_calibration_policy", default="guarded")
+    parser.add_argument("--certification_calibration_max_leverage", type=float, default=10.0)
+    parser.add_argument("--certification_calibration_max_theory_margin", type=float, default=0.25)
+    parser.add_argument("--certification_calibration_raise_delta", type=float, default=0.10)
     parser.add_argument("--calibration_standardize_features", action="store_true")
     parser.add_argument("--use_source_recommendation_slack", action="store_true")
     parser.add_argument("--source_mean_prior_fallback", action="store_true")

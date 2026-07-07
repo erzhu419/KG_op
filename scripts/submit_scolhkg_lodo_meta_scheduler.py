@@ -140,6 +140,13 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"{'--certification_calibration ' if args.certification_calibration else ''}"
         f"--certification_calibration_min_obs {args.certification_calibration_min_obs} "
         f"--certification_calibration_beta {args.certification_calibration_beta} "
+        f"--certification_calibration_policy {args.certification_calibration_policy} "
+        f"--certification_calibration_max_leverage "
+        f"{args.certification_calibration_max_leverage} "
+        f"--certification_calibration_max_theory_margin "
+        f"{args.certification_calibration_max_theory_margin} "
+        f"--certification_calibration_raise_delta "
+        f"{args.certification_calibration_raise_delta} "
         f"{'--recommendation_observed_fallback ' if args.recommendation_observed_fallback else ''}"
         f"--observed_incumbent_margin_scale "
         f"{args.observed_incumbent_margin_scale} "
@@ -292,6 +299,10 @@ def main():
     )
     parser.add_argument("--certification-calibration-min-obs", type=int, default=8)
     parser.add_argument("--certification-calibration-beta", type=float, default=2.0)
+    parser.add_argument("--certification-calibration-policy", default="guarded")
+    parser.add_argument("--certification-calibration-max-leverage", type=float, default=10.0)
+    parser.add_argument("--certification-calibration-max-theory-margin", type=float, default=0.25)
+    parser.add_argument("--certification-calibration-raise-delta", type=float, default=0.10)
     parser.add_argument(
         "--recommendation-observed-fallback",
         action=argparse.BooleanOptionalAction,
