@@ -63,9 +63,20 @@ def preset_flags(name):
     return " ".join(f"--{key} {value}" for key, value in LOSS_PRESETS[name].items())
 
 
-def suite_command(args, run_id, N, preset):
+def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
     ckpt_root = args.deploy / "SC-OLH-KG" / "checkpoints" / run_id / "lodo_meta"
-    prefix = f"lodo_meta_{run_id}_N{N}_{preset}"
+    base_prefix = f"lodo_meta_{run_id}_N{N}_{preset}"
+    if int(num_shards) > 1:
+        shard_suffix = f"_shard{int(shard_index):02d}of{int(num_shards):02d}"
+    else:
+        shard_suffix = ""
+    prefix = base_prefix + shard_suffix
+    base_checkpoint = ckpt_root / (base_prefix + ".jsonl")
+    resume_completed_from = (
+        f"--resume_completed_from {base_checkpoint} "
+        if int(num_shards) > 1
+        else ""
+    )
     return (
         f"{PYTHON} performance/benchmark_lodo_meta_prior.py "
         f"--domains {args.domains} --heldouts {args.heldouts} --lines {args.lines} "
@@ -81,9 +92,13 @@ def suite_command(args, run_id, N, preset):
         f"--n_thr {args.n_thr} --eval_pool_size {args.eval_pool_size} "
         f"--variance_mode factor --lambda_feas {args.lambda_feas} "
         f"--lambda_var {args.lambda_var} --lambda_mean {args.lambda_mean} "
+        f"--lambda_constraint_epistemic {args.lambda_constraint_epistemic} "
         f"--lambda_coupling {args.lambda_coupling} --beta_g {args.beta_g} "
         f"--certification_mode theory --use_state_basis "
-        f"--state_basis_mode {args.state_basis_mode} --raw_basis_dim {args.raw_basis_dim} "
+        f"--state_basis_mode {args.state_basis_mode} "
+        f"--constraint_state_basis_mode {args.constraint_state_basis_mode} "
+        f"{'--basis_pair_grid ' if args.basis_pair_grid else ''}"
+        f"--raw_basis_dim {args.raw_basis_dim} "
         f"--raw_projection_seed {args.raw_projection_seed} "
         f"--numeric_backend {args.numeric_backend} "
         f"--numeric_backend_device {args.numeric_backend_device} "
@@ -92,6 +107,46 @@ def suite_command(args, run_id, N, preset):
         f"--exact_kg_mc_samples {args.exact_kg_mc_samples} "
         f"--exact_kg_jobs {args.exact_kg_jobs} "
         f"--exact_kg_blend {args.exact_kg_blend} "
+        f"--constraint_uncertain_candidate_count {args.constraint_uncertain_candidate_count} "
+        f"--constraint_uncertain_pool_size {args.constraint_uncertain_pool_size} "
+        f"--constraint_uncertain_state_pool_fraction "
+        f"{args.constraint_uncertain_state_pool_fraction} "
+        f"--constraint_epistemic_margin_softening "
+        f"{args.constraint_epistemic_margin_softening} "
+        f"--safe_interior_candidate_count {args.safe_interior_candidate_count} "
+        f"--safe_interior_pool_size {args.safe_interior_pool_size} "
+        f"--safe_interior_margin {args.safe_interior_margin} "
+        f"--observed_neighbor_candidate_count "
+        f"{args.observed_neighbor_candidate_count} "
+        f"--observed_neighbor_radius {args.observed_neighbor_radius} "
+        f"--observed_neighbor_safe_margin_scale "
+        f"{args.observed_neighbor_safe_margin_scale} "
+        f"--recommendation_infeasible_penalty "
+        f"{args.recommendation_infeasible_penalty} "
+        f"--recommendation_infeasible_strategy "
+        f"{args.recommendation_infeasible_strategy} "
+        f"{'--recommend_observed_only ' if args.recommend_observed_only else ''}"
+        f"{'--recommendation_calibration ' if args.recommendation_calibration else ''}"
+        f"--recommendation_calibration_scope {args.recommendation_calibration_scope} "
+        f"--recommendation_calibration_min_obs {args.recommendation_calibration_min_obs} "
+        f"--recommendation_calibration_max_theory_margin "
+        f"{args.recommendation_calibration_max_theory_margin} "
+        f"--recommendation_calibration_max_leverage "
+        f"{args.recommendation_calibration_max_leverage} "
+        f"--recommendation_slack_initial {args.recommendation_slack_initial} "
+        f"--recommendation_slack_decay {args.recommendation_slack_decay} "
+        f"{'--certification_calibration ' if args.certification_calibration else ''}"
+        f"--certification_calibration_min_obs {args.certification_calibration_min_obs} "
+        f"--certification_calibration_beta {args.certification_calibration_beta} "
+        f"{'--recommendation_observed_fallback ' if args.recommendation_observed_fallback else ''}"
+        f"--observed_incumbent_margin_scale "
+        f"{args.observed_incumbent_margin_scale} "
+        f"{'--use_source_recommendation_slack ' if args.use_source_recommendation_slack else ''}"
+        f"{'--source_mean_prior_fallback ' if args.source_mean_prior_fallback else ''}"
+        f"--source_mean_prior_z {args.source_mean_prior_z} "
+        f"--source_mean_prior_margin_tol {args.source_mean_prior_margin_tol} "
+        f"{'--truth_pool_diagnostics ' if args.truth_pool_diagnostics else ''}"
+        f"--truth_pool_max_candidates {args.truth_pool_max_candidates} "
         f"--source_records_per_domain {args.source_records_per_domain} "
         f"--meta_local_dim {args.meta_local_dim} "
         f"--meta_shared_dim {args.meta_shared_dim} "
@@ -100,12 +155,36 @@ def suite_command(args, run_id, N, preset):
         f"--meta_soft_temperature {args.meta_soft_temperature} "
         f"--meta_ridge {args.meta_ridge} "
         f"{preset_flags(preset)} "
+        f"--meta_anchor_sampling_temperature {args.meta_anchor_sampling_temperature} "
+        f"--meta_teacher_records_per_domain {args.meta_teacher_records_per_domain} "
+        f"--meta_teacher_weight {args.meta_teacher_weight} "
+        f"--meta_teacher_pool_size {args.meta_teacher_pool_size} "
+        f"--meta_teacher_elite_fraction {args.meta_teacher_elite_fraction} "
+        f"--meta_teacher_boundary_fraction {args.meta_teacher_boundary_fraction} "
+        f"--meta_teacher_anchor_sampling_temperature "
+        f"{args.meta_teacher_anchor_sampling_temperature} "
+        f"--meta_hvd_noise_floor_scale {args.meta_hvd_noise_floor_scale} "
+        f"--meta_teacher_hvd_noise_floor_scale "
+        f"{args.meta_teacher_hvd_noise_floor_scale} "
+        f"--meta_universal_shape_count {args.meta_universal_shape_count} "
+        f"--meta_source_augments {args.meta_source_augments} "
+        f"--meta_source_sigma_jitter {args.meta_source_sigma_jitter} "
+        f"--meta_source_alpha_jitter {args.meta_source_alpha_jitter} "
+        f"--meta_source_weight_jitter {args.meta_source_weight_jitter} "
         f"--meta_seed {args.meta_seed} "
         f"--meta_proposal_pool_size {args.meta_proposal_pool_size} "
         f"--meta_refinement_count {args.meta_refinement_count} "
         f"--seed_start {args.seed_start} --n_seeds {args.n_seeds} "
         f"--jobs {args.jobs_per_suite} "
+        f"--task_shard_index {int(shard_index)} "
+        f"--task_num_shards {int(num_shards)} "
         f"--checkpoint_path {ckpt_root / (prefix + '.jsonl')} --resume_completed "
+        f"--runtime_checkpoint_resume "
+        f"--runtime_checkpoint_interval {args.runtime_checkpoint_interval} "
+        f"{'--progress_logging ' if args.progress_logging else ''}"
+        f"--progress_units_per_iteration {args.progress_units_per_iteration} "
+        f"--progress_exact_updates {args.progress_exact_updates} "
+        f"{resume_completed_from}"
         f"--out_prefix {prefix}"
     )
 
@@ -144,9 +223,16 @@ def main():
     parser.add_argument("--lambda-feas", type=float, default=0.25)
     parser.add_argument("--lambda-var", type=float, default=0.25)
     parser.add_argument("--lambda-mean", type=float, default=0.10)
+    parser.add_argument("--lambda-constraint-epistemic", type=float, default=0.20)
     parser.add_argument("--lambda-coupling", type=float, default=0.05)
     parser.add_argument("--beta-g", type=float, default=2.0)
     parser.add_argument("--state-basis-mode", default="raw+state")
+    parser.add_argument("--constraint-state-basis-mode", default="state")
+    parser.add_argument(
+        "--basis-pair-grid",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
     parser.add_argument("--raw-basis-dim", type=int, default=32)
     parser.add_argument("--raw-projection-seed", type=int, default=314159)
     parser.add_argument("--numeric-backend", default="numpy")
@@ -157,6 +243,77 @@ def main():
     parser.add_argument("--exact-kg-mc-samples", type=int, default=0)
     parser.add_argument("--exact-kg-jobs", type=int, default=1)
     parser.add_argument("--exact-kg-blend", type=float, default=0.0)
+    parser.add_argument("--constraint-uncertain-candidate-count", type=int, default=8)
+    parser.add_argument("--constraint-uncertain-pool-size", type=int, default=180)
+    parser.add_argument(
+        "--constraint-uncertain-state-pool-fraction",
+        type=float,
+        default=0.50,
+    )
+    parser.add_argument(
+        "--constraint-epistemic-margin-softening",
+        type=float,
+        default=3.0,
+    )
+    parser.add_argument("--safe-interior-candidate-count", type=int, default=0)
+    parser.add_argument("--safe-interior-pool-size", type=int, default=300)
+    parser.add_argument("--safe-interior-margin", type=float, default=0.0)
+    parser.add_argument("--observed-neighbor-candidate-count", type=int, default=0)
+    parser.add_argument("--observed-neighbor-radius", type=float, default=0.08)
+    parser.add_argument("--observed-neighbor-safe-margin-scale", type=float, default=1.0)
+    parser.add_argument("--recommendation-infeasible-penalty", type=float, default=5.0)
+    parser.add_argument("--recommendation-infeasible-strategy", default="penalty")
+    parser.add_argument("--recommend-observed-only", action="store_true")
+    parser.add_argument(
+        "--recommendation-calibration",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument("--recommendation-calibration-scope", default="pool")
+    parser.add_argument("--recommendation-calibration-min-obs", type=int, default=8)
+    parser.add_argument(
+        "--recommendation-calibration-max-theory-margin",
+        type=float,
+        default=0.8,
+    )
+    parser.add_argument(
+        "--recommendation-calibration-max-leverage",
+        type=float,
+        default=20.0,
+    )
+    parser.add_argument("--recommendation-slack-initial", type=float, default=0.0)
+    parser.add_argument("--recommendation-slack-decay", default="sqrt")
+    parser.add_argument(
+        "--certification-calibration",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument("--certification-calibration-min-obs", type=int, default=8)
+    parser.add_argument("--certification-calibration-beta", type=float, default=2.0)
+    parser.add_argument(
+        "--recommendation-observed-fallback",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument("--observed-incumbent-margin-scale", type=float, default=-0.5)
+    parser.add_argument(
+        "--use-source-recommendation-slack",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--source-mean-prior-fallback",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument("--source-mean-prior-z", type=float, default=0.5)
+    parser.add_argument("--source-mean-prior-margin-tol", type=float, default=0.0)
+    parser.add_argument(
+        "--truth-pool-diagnostics",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument("--truth-pool-max-candidates", type=int, default=400)
     parser.add_argument("--source-records-per-domain", type=int, default=256)
     parser.add_argument("--meta-local-dim", type=int, default=3)
     parser.add_argument("--meta-shared-dim", type=int, default=3)
@@ -164,12 +321,51 @@ def main():
     parser.add_argument("--meta-kmeans-iters", type=int, default=35)
     parser.add_argument("--meta-soft-temperature", type=float, default=0.75)
     parser.add_argument("--meta-ridge", type=float, default=1e-4)
+    parser.add_argument("--meta-anchor-sampling-temperature", type=float, default=0.0)
+    parser.add_argument("--meta-teacher-records-per-domain", type=int, default=96)
+    parser.add_argument("--meta-teacher-weight", type=float, default=3.0)
+    parser.add_argument("--meta-teacher-pool-size", type=int, default=2048)
+    parser.add_argument("--meta-teacher-elite-fraction", type=float, default=0.50)
+    parser.add_argument("--meta-teacher-boundary-fraction", type=float, default=0.35)
+    parser.add_argument(
+        "--meta-teacher-anchor-sampling-temperature",
+        type=float,
+        default=0.35,
+    )
+    parser.add_argument("--meta-hvd-noise-floor-scale", type=float, default=0.0)
+    parser.add_argument("--meta-teacher-hvd-noise-floor-scale", type=float, default=1.0)
+    parser.add_argument("--meta-universal-shape-count", type=int, default=64)
+    parser.add_argument("--meta-source-augments", type=int, default=1)
+    parser.add_argument("--meta-source-sigma-jitter", type=float, default=0.20)
+    parser.add_argument("--meta-source-alpha-jitter", type=float, default=0.25)
+    parser.add_argument("--meta-source-weight-jitter", type=float, default=0.05)
     parser.add_argument("--meta-seed", type=int, default=20260706)
     parser.add_argument("--meta-proposal-pool-size", type=int, default=1024)
     parser.add_argument("--meta-refinement-count", type=int, default=192)
+    parser.add_argument("--runtime-checkpoint-interval", type=int, default=1)
+    parser.add_argument(
+        "--progress-logging",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument("--progress-units-per-iteration", type=int, default=100)
+    parser.add_argument("--progress-exact-updates", type=int, default=10)
     parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=10)
     parser.add_argument("--jobs-per-suite", type=int, default=10)
+    parser.add_argument("--num-shards-per-suite", type=int, default=1)
+    parser.add_argument(
+        "--shard-start",
+        type=int,
+        default=0,
+        help="First shard index to submit, inclusive.",
+    )
+    parser.add_argument(
+        "--shard-stop",
+        type=int,
+        default=-1,
+        help="Shard index to stop before; -1 means num-shards-per-suite.",
+    )
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=32768)
     parser.add_argument("--dispatch", action="store_true")
@@ -180,14 +376,34 @@ def main():
     cwd = args.deploy / "SC-OLH-KG"
     nodes = parse_csv(args.nodes)
     task_ids = []
+    num_shards = max(1, int(args.num_shards_per_suite))
+    shard_start = max(0, int(args.shard_start))
+    shard_stop = (
+        num_shards
+        if int(args.shard_stop) < 0
+        else min(num_shards, int(args.shard_stop))
+    )
+    if shard_start >= shard_stop:
+        raise ValueError(
+            f"empty shard range [{shard_start},{shard_stop}) for "
+            f"num_shards={num_shards}"
+        )
     suites = [
-        (N, preset)
+        (N, preset, shard_index)
         for N in parse_csv(args.N_values, int)
         for preset in parse_csv(args.loss_presets)
+        for shard_index in range(shard_start, shard_stop)
     ]
-    for idx, (N, preset) in enumerate(suites):
+    for idx, (N, preset, shard_index) in enumerate(suites):
         node = nodes[idx % len(nodes)]
-        command = suite_command(args, run_id, N, preset)
+        command = suite_command(
+            args,
+            run_id,
+            N,
+            preset,
+            shard_index=shard_index,
+            num_shards=num_shards,
+        )
         cmd = "; ".join([
             "export LC_ALL=C LANG=C",
             "export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1",
@@ -196,10 +412,18 @@ def main():
         ])
         out = run_cmd([
             sys.executable, args.scheduler, "submit",
-            "--description", f"SC-OLH-KG LODO meta-prior N={N} {preset} {run_id}",
+            "--description",
+            (
+                f"SC-OLH-KG LODO meta-prior N={N} {preset} {run_id} "
+                f"shard={shard_index}/{num_shards}"
+            ),
             "--cmd", cmd,
             "--cwd", str(cwd),
-            "--signature", f"KG_op/scolhkg_lodo_meta/{run_id}/N{N}/{preset}",
+            "--signature",
+            (
+                f"KG_op/scolhkg_lodo_meta/{run_id}/N{N}/{preset}/"
+                f"shard{shard_index}of{num_shards}"
+            ),
             "--project", "KG-SYNTH",
             "--vram", "0",
             "--cpu", str(args.cpu),

@@ -65,6 +65,7 @@ class SingleOLHKGConfig:
     lambda_feas: float = 0.25
     lambda_var: float = 0.25
     lambda_mean: float = 0.10
+    lambda_constraint_epistemic: float = 0.0
     lambda_coupling: float = 0.05
     beta_g: float = 2.0
     certification_mode: str = "theory"
@@ -74,14 +75,20 @@ class SingleOLHKGConfig:
     recommendation_noise_floor_scale: float = 1.0
     recommendation_infeasible_penalty: float = 5.0
     recommendation_infeasible_strategy: str = "penalty"
+    recommendation_observed_fallback: bool = False
+    observed_incumbent_margin_scale: float = -0.5
     recommendation_calibration: bool = True
+    recommendation_calibration_scope: str = "refinement"
     recommendation_calibration_ridge: float = 1e-6
     recommendation_calibration_min_obs: int = 8
+    recommendation_calibration_max_leverage: float = 0.0
+    recommendation_calibration_max_theory_margin: float = 0.0
     certification_calibration: bool = False
     certification_calibration_min_obs: int = 8
     certification_calibration_ridge: float = 1e-6
     certification_calibration_noise_floor_scale: float = 0.5
     certification_calibration_beta: float = 2.0
+    calibration_standardize_features: bool = False
     recommend_observed_only: bool = False
     recommendation_axis_oracle: bool = True
     use_problem_initial_samples: bool = True
@@ -91,6 +98,7 @@ class SingleOLHKGConfig:
     use_state_coupling: bool = True
     use_state_basis: bool = True
     state_basis_mode: str = "raw+state"
+    constraint_state_basis_mode: str = ""
     raw_basis_dim: int = -1
     raw_projection_seed: int = 314159
     numeric_backend: str = "numpy"
@@ -106,6 +114,26 @@ class SingleOLHKGConfig:
     exact_kg_jobs: int = 1
     exact_kg_use_score: bool = False
     exact_kg_blend: float = 0.0
+    constraint_uncertain_candidate_count: int = 0
+    constraint_uncertain_pool_size: int = 300
+    constraint_uncertain_state_pool_fraction: float = 0.25
+    constraint_uncertain_use_calibration: bool = False
+    constraint_epistemic_margin_softening: float = 3.0
+    safe_interior_candidate_count: int = 0
+    safe_interior_pool_size: int = 300
+    safe_interior_margin: float = 0.0
+    observed_neighbor_candidate_count: int = 0
+    observed_neighbor_radius: float = 0.08
+    observed_neighbor_safe_margin_scale: float = 1.0
+    recommendation_slack_initial: float = 0.0
+    recommendation_slack_decay: str = "sqrt"
+    use_source_recommendation_slack: bool = False
+    source_mean_prior_fallback: bool = False
+    source_mean_prior_z: float = 1.0
+    source_mean_prior_margin_tol: float = 0.0
+    truth_pool_diagnostics: bool = False
+    truth_pool_good_regret: float = 0.05
+    truth_pool_max_candidates: int = 0
     llm_prior_enabled: bool = False
     llm_prior_base_url: str = "https://ruoli.dev"
     llm_prior_model: str = "gpt-5.4-mini"
@@ -177,6 +205,17 @@ class SingleOLHKGAlgorithm:
                 raw_basis_dim=self.config.raw_basis_dim,
                 raw_projection_seed=self.config.raw_projection_seed,
             )
+        constraint_basis_map = basis_map
+        constraint_basis_mode = str(
+            self.config.constraint_state_basis_mode or "").strip()
+        if constraint_basis_mode:
+            constraint_basis_map = StateCoupledFeatureMap(
+                problem,
+                self.encoder,
+                mode=constraint_basis_mode,
+                raw_basis_dim=self.config.raw_basis_dim,
+                raw_projection_seed=self.config.raw_projection_seed,
+            )
         self._attach_representation_to_problem()
         self.gpr = [
             ParametricGPR(
@@ -184,13 +223,13 @@ class SingleOLHKGAlgorithm:
                 self.config.lambda_i,
                 self.config.prior_var,
                 normalize_func=problem.normalize,
-                basis_map=basis_map,
+                basis_map=basis_map if output_index == 0 else constraint_basis_map,
                 numeric_backend=self.config.numeric_backend,
                 numeric_backend_device=self.config.numeric_backend_device,
                 torch_dtype=self.config.torch_dtype,
                 torch_min_rows=self.config.torch_min_rows,
             )
-            for _ in range(2)
+            for output_index in range(2)
         ]
         self.variance_model = OrthogonalHVD(
             mode=self.config.variance_mode,
@@ -201,7 +240,10 @@ class SingleOLHKGAlgorithm:
             lambda_feas=self.config.lambda_feas,
             lambda_var=self.config.lambda_var,
             lambda_mean=self.config.lambda_mean,
+            lambda_constraint_epistemic=self.config.lambda_constraint_epistemic,
             lambda_coupling=self.config.lambda_coupling,
+            constraint_epistemic_margin_softening=(
+                self.config.constraint_epistemic_margin_softening),
             beta_g=self.config.beta_g,
             certification_mode=self.config.certification_mode,
             coupling_safety_z=self.config.coupling_safety_z,
@@ -230,6 +272,7 @@ class SingleOLHKGAlgorithm:
         self.iteration_log: list[dict] = []
         self.pre_sampling_log: dict | None = None
         self.final_log: dict | None = None
+        self._true_best_feasible_cache = None
 
     def _build_encoder(self):
         needs_encoder = (
@@ -381,8 +424,8 @@ class SingleOLHKGAlgorithm:
         for x in samples:
             self._simulate_and_store(x)
 
-        Phi = self.gpr[0].basis_matrix(samples)
         for i in range(2):
+            Phi = self.gpr[i].basis_matrix(samples)
             y_i = np.array([self.observations[x][0][i] for x in samples], dtype=float)
             try:
                 beta = np.linalg.lstsq(Phi, y_i, rcond=None)[0]
@@ -643,6 +686,11 @@ class SingleOLHKGAlgorithm:
     def _constraint_epistemic_lookup(self, x):
         return self.gpr[1].posterior_var(x)
 
+    def _true_best_feasible_cached(self):
+        if self._true_best_feasible_cache is None:
+            self._true_best_feasible_cache = self.problem.true_best_feasible()
+        return self._true_best_feasible_cache
+
     def _certification_result(self, mu_con, candidates, v_con=None):
         if v_con is None:
             v_con = self.variance_model.predict_certification_variance_many(
@@ -685,6 +733,210 @@ class SingleOLHKGAlgorithm:
                 pass
         return max(0, int(self.config.eval_pool_size))
 
+    def _recommendation_slack(self):
+        slack = max(float(self.config.recommendation_slack_initial), 0.0)
+        if self.config.use_source_recommendation_slack and hasattr(
+            self.problem, "source_calibrated_recommendation_slack"
+        ):
+            try:
+                slack = max(
+                    slack,
+                    float(self.problem.source_calibrated_recommendation_slack()),
+                )
+            except (AttributeError, TypeError, ValueError):
+                pass
+        if slack <= 0.0:
+            return 0.0
+        n_eff = max(1, len(self.history))
+        decay = str(self.config.recommendation_slack_decay or "none").lower()
+        if decay in ("sqrt", "sqrt_n"):
+            return float(slack / np.sqrt(n_eff))
+        if decay in ("linear", "n"):
+            return float(slack / n_eff)
+        return float(slack)
+
+    def _safe_interior_candidates(self):
+        n_safe = int(self.config.safe_interior_candidate_count)
+        if n_safe <= 0:
+            return []
+        pool_size = max(n_safe, int(self.config.safe_interior_pool_size))
+        pool = unique_candidates(random_candidates(self.problem, pool_size, self.rng))
+        if not pool:
+            return []
+        try:
+            mu_con = self.gpr[1].posterior_mean_many(pool)
+            mu_obj = self.gpr[0].posterior_mean_many(pool)
+            v_con = self.variance_model.predict_certification_variance_many(
+                1, pool, self.problem)
+            cert = self._certification_result(mu_con, pool, v_con)
+        except Exception:
+            return []
+        margins = np.asarray(cert.margin, dtype=float) + self._recommendation_slack()
+        eta = max(float(self.config.safe_interior_margin), 0.0)
+        feasible = np.where(margins <= -eta)[0]
+        if len(feasible):
+            order = feasible[np.argsort(mu_obj[feasible])]
+        else:
+            order = np.lexsort((mu_obj, margins))
+        return [pool[int(i)] for i in order[:n_safe]]
+
+    def _observed_neighbor_candidates(self, n=None, rng=None):
+        """Local, target-feedback-only candidates around empirical safe points.
+
+        This is deliberately domain-generic: it uses only observed outputs and
+        box-normalized policy perturbations.  It gives LODO runs a way to
+        recover target-specific safe basins without calling hidden structural
+        hooks such as target anchors or refinement grids.
+        """
+        n_target = (
+            int(self.config.observed_neighbor_candidate_count)
+            if n is None else int(n)
+        )
+        if n_target <= 0 or not self.observations:
+            return []
+        rng = rng or self.rng
+        z_alpha = float(norm.ppf(1 - self.problem.alpha))
+        sigma_floor = max(float(getattr(self.problem, "sigma_level", 0.0)), 1e-8)
+        margin_limit = (
+            float(self.config.observed_neighbor_safe_margin_scale)
+            * sigma_floor
+        )
+        scored = []
+        for x, ys in self.observations.items():
+            y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
+            margin = float(y_bar[1] + z_alpha * sigma_floor - self.problem.tau)
+            obj = float(y_bar[0])
+            # Prefer empirically safe points, then near-boundary points, then
+            # low objective.  The margin gate is intentionally soft; in noisy
+            # few-shot runs a slightly positive empirical margin can still be
+            # useful for boundary-local exploration.
+            safe_rank = 0 if margin <= margin_limit else 1
+            scored.append((safe_rank, max(margin, 0.0), obj, tuple(int(v) for v in x)))
+        if not scored:
+            return []
+        scored.sort()
+        seeds = [row[3] for row in scored[: max(1, min(len(scored), 8))]]
+        radius = max(float(self.config.observed_neighbor_radius), 0.0)
+        if radius <= 0.0:
+            return unique_candidates(seeds)[:n_target]
+        rows = list(seeds)
+        d = max(1, int(getattr(self.problem, "d", len(seeds[0]))))
+
+        def add_from_z(z):
+            try:
+                rows.append(tuple(int(v) for v in self.problem.continuous_to_int(z)))
+            except Exception:
+                L = int(getattr(self.problem, "L", 100))
+                rows.append(tuple(
+                    int(np.clip(round(float(v) * L), 0, L))
+                    for v in np.clip(np.asarray(z, dtype=float), 0.0, 1.0)
+                ))
+
+        patterns = ("global", "tail", "third", "sparse")
+        attempts = 0
+        while len(unique_candidates(rows)) < n_target and attempts < 20 * n_target:
+            attempts += 1
+            seed = seeds[int(rng.integers(0, len(seeds)))]
+            z = np.asarray(self.problem.normalize(seed), dtype=float).reshape(-1)
+            if len(z) != d:
+                d = len(z)
+            mode = patterns[attempts % len(patterns)]
+            cand = z.copy()
+            if mode == "global":
+                cand += rng.normal(0.0, radius, size=len(cand))
+            elif mode == "tail" and len(cand) > 1:
+                cand[1:] += rng.normal(0.0, radius)
+                cand[0] += rng.normal(0.0, 0.5 * radius)
+            elif mode == "third" and len(cand) > 2:
+                thirds = np.array_split(np.arange(len(cand)), 3)
+                block = thirds[int(rng.integers(0, len(thirds)))]
+                cand[block] += rng.normal(0.0, radius)
+            else:
+                k = max(1, min(len(cand), int(np.ceil(np.sqrt(len(cand))))))
+                idx = rng.choice(len(cand), size=k, replace=False)
+                cand[idx] += rng.normal(0.0, radius, size=k)
+            add_from_z(np.clip(cand, 0.0, 1.0))
+        return unique_candidates(rows)[:n_target]
+
+    def _constraint_uncertain_candidates(self):
+        n_uncertain = int(self.config.constraint_uncertain_candidate_count)
+        if n_uncertain <= 0:
+            return []
+        pool_size = max(n_uncertain, int(self.config.constraint_uncertain_pool_size))
+        pool = []
+        state_fraction = float(np.clip(
+            self.config.constraint_uncertain_state_pool_fraction, 0.0, 1.0))
+        if (
+            state_fraction > 0.0
+            and self.config.use_state_coupling
+            and self.encoder is not None
+        ):
+            n_state_pool = int(round(pool_size * state_fraction))
+            if n_state_pool > 0:
+                try:
+                    pool.extend(self.encoder.state_space_candidates(
+                        n_anchors=max(1, n_state_pool),
+                        inverse_pool_size=max(
+                            self.config.state_inverse_pool_size,
+                            n_state_pool,
+                        ),
+                        inverse_neighbors=max(
+                            1,
+                            int(self.config.state_inverse_neighbors),
+                        ),
+                        rng=self.rng,
+                        observed=[x for x, _ in self.history],
+                    ))
+                except Exception:
+                    pass
+        n_random_pool = max(pool_size - len(pool), n_uncertain)
+        pool.extend(random_candidates(self.problem, n_random_pool, self.rng))
+        pool = unique_candidates(pool)
+        if not pool:
+            return []
+        try:
+            mu_con = self.gpr[1].posterior_mean_many(pool)
+            epistemic = self.gpr[1].posterior_var_many(pool)
+            v_con = self.variance_model.predict_certification_variance_many(
+                1, pool, self.problem)
+            cert = self._certification_result(mu_con, pool, v_con)
+        except Exception:
+            return []
+        calibration = (
+            self._calibrated_certification_result(pool, v_con)
+            if self.config.constraint_uncertain_use_calibration
+            else None
+        )
+        total_var = (
+            np.maximum(cert.aleatoric_var, 1e-12)
+            + max(float(cert.beta_g), 0.0) * np.maximum(cert.epistemic_var, 0.0)
+        )
+        margins = np.asarray(cert.margin, dtype=float)
+        if calibration is not None:
+            cal_epistemic = np.asarray(calibration["epistemic_var"], dtype=float)
+            epistemic = np.maximum(np.asarray(epistemic, dtype=float), cal_epistemic)
+            total_var = np.maximum(
+                total_var,
+                np.maximum(calibration["aleatoric_var"], 1e-12)
+                + max(float(calibration["beta_g"]), 0.0) * np.maximum(cal_epistemic, 0.0),
+            )
+            cal_margins = np.asarray(calibration["margin"], dtype=float)
+            margins = np.where(np.abs(cal_margins) < np.abs(margins), cal_margins, margins)
+        sig = np.sqrt(np.maximum(total_var, 1e-12))
+        softened = (
+            max(float(self.config.constraint_epistemic_margin_softening), 1e-8)
+            * sig
+        )
+        boundary_weight = np.exp(
+            -0.5
+            * (margins / np.maximum(softened, 1e-8)) ** 2
+        )
+        score = np.sqrt(np.maximum(epistemic, 0.0)) * (0.25 + boundary_weight)
+        if not np.any(np.isfinite(score)):
+            return []
+        order = np.argsort(-np.nan_to_num(score, nan=-np.inf))
+        return [pool[int(i)] for i in order[:n_uncertain]]
+
     def _generate_candidates(self, iteration):
         candidates = []
         sources = {}
@@ -716,8 +968,11 @@ class SingleOLHKGAlgorithm:
                 inverse_pool_size=self.config.state_inverse_pool_size,
                 inverse_neighbors=self.config.state_inverse_neighbors,
                 rng=self.rng,
-                observed=[x for x, _ in self.history],
+                    observed=[x for x, _ in self.history],
             ), "state")
+        add(self._constraint_uncertain_candidates(), "constraint_uncertain")
+        add(self._safe_interior_candidates(), "safe_interior")
+        add(self._observed_neighbor_candidates(), "observed_neighbor")
         self._last_llm_prior_info = {
             "status": "disabled" if self.llm_prior is None else "skipped",
             "gate": 0.0,
@@ -789,12 +1044,17 @@ class SingleOLHKGAlgorithm:
                 pool.add(tuple(x))
         for x in self._recommendation_refinement_candidates():
             pool.add(tuple(x))
+        for x in self._observed_neighbor_candidates(
+            n=max(0, int(self.config.observed_neighbor_candidate_count)),
+            rng=self.rec_rng,
+        ):
+            pool.add(tuple(x))
         return list(pool)
 
     def _observed_nominal_incumbent(self):
         z = norm.ppf(1 - self.problem.alpha)
         sigma_floor = float(getattr(self.problem, "sigma_level", 0.0))
-        margin_limit = -0.5 * sigma_floor
+        margin_limit = float(self.config.observed_incumbent_margin_scale) * sigma_floor
         best = None
         for x, ys in self.observations.items():
             y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
@@ -813,6 +1073,30 @@ class SingleOLHKGAlgorithm:
             "empirical_chance_margin": float(margin),
         }
 
+    def _surrogate_feature_matrix(
+        self,
+        basis,
+        xs,
+        *,
+        feature_mean=None,
+        feature_scale=None,
+    ):
+        raw = np.vstack([
+            np.asarray(basis.features(x), dtype=float).reshape(-1)
+            for x in xs
+        ])
+        if feature_mean is None or feature_scale is None:
+            if self.config.calibration_standardize_features:
+                feature_mean = np.mean(raw, axis=0)
+                feature_scale = np.std(raw, axis=0)
+                feature_scale = np.where(feature_scale < 1e-8, 1.0, feature_scale)
+            else:
+                feature_mean = np.zeros(raw.shape[1], dtype=float)
+                feature_scale = np.ones(raw.shape[1], dtype=float)
+        scaled = (raw - feature_mean) / feature_scale
+        Phi = np.column_stack([np.ones(len(scaled), dtype=float), scaled])
+        return Phi, np.asarray(feature_mean, dtype=float), np.asarray(feature_scale, dtype=float)
+
     def _constraint_calibration_fit(self):
         if not self.config.certification_calibration:
             return None
@@ -830,10 +1114,8 @@ class SingleOLHKGAlgorithm:
             train_x.append(tuple(int(v) for v in x))
             y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
             train_con.append(float(y_bar[1]))
-        Phi = np.vstack([
-            np.concatenate([[1.0], np.asarray(basis.features(x), dtype=float)])
-            for x in train_x
-        ])
+        Phi, feature_mean, feature_scale = self._surrogate_feature_matrix(
+            basis, train_x)
         y_con = np.asarray(train_con, dtype=float)
         ridge = max(float(self.config.certification_calibration_ridge), 0.0)
         penalty = ridge * np.eye(Phi.shape[1], dtype=float)
@@ -867,19 +1149,20 @@ class SingleOLHKGAlgorithm:
             "resid_sigma": float(resid_sigma),
             "n_train": int(len(train_x)),
             "feature_dim": int(Phi.shape[1]),
+            "feature_mean": feature_mean,
+            "feature_scale": feature_scale,
         }
 
     def _calibrated_certification_result(self, pool, v_con=None):
         fit = self._constraint_calibration_fit()
         if fit is None or not pool:
             return None
-        Phi_cand = np.vstack([
-            np.concatenate([
-                [1.0],
-                np.asarray(fit["basis"].features(x), dtype=float),
-            ])
-            for x in pool
-        ])
+        Phi_cand, _, _ = self._surrogate_feature_matrix(
+            fit["basis"],
+            pool,
+            feature_mean=fit["feature_mean"],
+            feature_scale=fit["feature_scale"],
+        )
         mu = Phi_cand @ fit["beta"]
         leverage = np.sum((Phi_cand @ fit["inv_lhs"]) * Phi_cand, axis=1)
         leverage = np.maximum(leverage, 0.0)
@@ -918,7 +1201,92 @@ class SingleOLHKGAlgorithm:
             "n_feasible": int(np.sum(cert.margin <= 0.0)),
         }
 
-    def _calibrated_recommendation_index(self, pool, robust_margins):
+    def _recommendation_calibration_audit_scores(self, pool):
+        """Evaluate the empirical recommendation surrogate on a fixed pool.
+
+        This is diagnostics-only.  It mirrors the fallback model used by
+        `_calibrated_recommendation_index`, but it does not choose a point.
+        The audit lets us see whether a true-feasible pool member was missed
+        because the theory certificate, the calibrated surrogate, or the source
+        prior was too conservative.
+        """
+        if not self.config.recommendation_calibration:
+            return None
+        if not hasattr(self.problem, "surrogate_basis_map"):
+            return None
+        basis = self.problem.surrogate_basis_map()
+        if basis is None or not pool:
+            return None
+        if len(self.observations) < int(self.config.recommendation_calibration_min_obs):
+            return None
+
+        train_x = []
+        train_obj = []
+        train_con = []
+        for x, ys in self.observations.items():
+            train_x.append(tuple(int(v) for v in x))
+            y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
+            train_obj.append(float(y_bar[0]))
+            train_con.append(float(y_bar[1]))
+        Phi, feature_mean, feature_scale = self._surrogate_feature_matrix(
+            basis, train_x)
+        y_obj = np.asarray(train_obj, dtype=float)
+        y_con = np.asarray(train_con, dtype=float)
+        ridge = max(float(self.config.recommendation_calibration_ridge), 0.0)
+        penalty = ridge * np.eye(Phi.shape[1], dtype=float)
+        penalty[0, 0] = 0.0
+        lhs = Phi.T @ Phi + penalty
+        try:
+            beta_obj = np.linalg.solve(lhs, Phi.T @ y_obj)
+            beta_con = np.linalg.solve(lhs, Phi.T @ y_con)
+        except np.linalg.LinAlgError:
+            beta_obj = np.linalg.lstsq(lhs, Phi.T @ y_obj, rcond=None)[0]
+            beta_con = np.linalg.lstsq(lhs, Phi.T @ y_con, rcond=None)[0]
+        try:
+            lhs_inv = np.linalg.pinv(lhs)
+        except np.linalg.LinAlgError:
+            lhs_inv = None
+        Phi_pool, _, _ = self._surrogate_feature_matrix(
+            basis,
+            pool,
+            feature_mean=feature_mean,
+            feature_scale=feature_scale,
+        )
+        pred_obj = Phi_pool @ beta_obj
+        pred_con = Phi_pool @ beta_con
+        resid_con = y_con - Phi @ beta_con
+        resid_sigma = float(np.sqrt(np.mean(resid_con ** 2))) if len(resid_con) else 0.0
+        nominal_floor = (
+            float(self.config.recommendation_noise_floor_scale)
+            * 0.35
+            * float(getattr(self.problem, "sigma_level", 0.0))
+        )
+        sigma_cal = max(resid_sigma, nominal_floor, 1e-8)
+        z_alpha = float(norm.ppf(1 - self.problem.alpha))
+        margin = pred_con + z_alpha * sigma_cal - float(self.problem.tau)
+        if lhs_inv is None:
+            leverage = np.full(len(pool), np.nan, dtype=float)
+        else:
+            leverage = np.sum((Phi_pool @ lhs_inv) * Phi_pool, axis=1)
+            leverage = np.maximum(np.asarray(leverage, dtype=float), 0.0)
+        return {
+            "pred_obj": np.asarray(pred_obj, dtype=float),
+            "pred_con": np.asarray(pred_con, dtype=float),
+            "margin": np.asarray(margin, dtype=float),
+            "leverage": np.asarray(leverage, dtype=float),
+            "sigma": float(sigma_cal),
+            "resid_sigma": float(resid_sigma),
+            "n_train": int(len(train_x)),
+            "feature_dim": int(Phi.shape[1]),
+            "n_feasible": int(np.sum(margin <= 0.0)),
+        }
+
+    def _calibrated_recommendation_index(
+        self,
+        pool,
+        robust_margins,
+        source_margins=None,
+    ):
         if not self.config.recommendation_calibration:
             return None, {}
         if not hasattr(self.problem, "surrogate_basis_map"):
@@ -926,8 +1294,9 @@ class SingleOLHKGAlgorithm:
         basis = self.problem.surrogate_basis_map()
         if basis is None:
             return None, {}
+        scope = str(self.config.recommendation_calibration_scope or "refinement").lower()
         refinement = self._recommendation_refinement_candidates()
-        if not refinement:
+        if scope not in ("pool", "full", "recommendation_pool") and not refinement:
             return None, {}
         if len(self.observations) < int(self.config.recommendation_calibration_min_obs):
             return None, {}
@@ -940,59 +1309,157 @@ class SingleOLHKGAlgorithm:
             y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
             train_obj.append(float(y_bar[0]))
             train_con.append(float(y_bar[1]))
-        Phi = np.vstack([
-            np.concatenate([[1.0], np.asarray(basis.features(x), dtype=float)])
-            for x in train_x
-        ])
+        Phi, feature_mean, feature_scale = self._surrogate_feature_matrix(
+            basis, train_x)
         y_obj = np.asarray(train_obj, dtype=float)
         y_con = np.asarray(train_con, dtype=float)
         ridge = max(float(self.config.recommendation_calibration_ridge), 0.0)
         penalty = ridge * np.eye(Phi.shape[1], dtype=float)
         penalty[0, 0] = 0.0
+        lhs = Phi.T @ Phi + penalty
         try:
-            beta_obj = np.linalg.solve(Phi.T @ Phi + penalty, Phi.T @ y_obj)
-            beta_con = np.linalg.solve(Phi.T @ Phi + penalty, Phi.T @ y_con)
+            beta_obj = np.linalg.solve(lhs, Phi.T @ y_obj)
+            beta_con = np.linalg.solve(lhs, Phi.T @ y_con)
         except np.linalg.LinAlgError:
             beta_obj = np.linalg.lstsq(
-                Phi.T @ Phi + penalty,
+                lhs,
                 Phi.T @ y_obj,
                 rcond=None,
             )[0]
             beta_con = np.linalg.lstsq(
-                Phi.T @ Phi + penalty,
+                lhs,
                 Phi.T @ y_con,
                 rcond=None,
             )[0]
+        try:
+            lhs_inv = np.linalg.pinv(lhs)
+        except np.linalg.LinAlgError:
+            lhs_inv = None
 
         pool_index = {tuple(int(v) for v in x): i for i, x in enumerate(pool)}
-        candidate_indices = [
-            pool_index[x]
-            for x in refinement
-            if x in pool_index
-        ]
+        if scope in ("pool", "full", "recommendation_pool"):
+            candidate_indices = list(range(len(pool)))
+            scope_label = "pool"
+        else:
+            candidate_indices = [
+                pool_index[x]
+                for x in refinement
+                if x in pool_index
+            ]
+            scope_label = "refinement"
         if not candidate_indices:
             return None, {}
-        Phi_cand = np.vstack([
-            np.concatenate([[1.0], np.asarray(basis.features(pool[i]), dtype=float)])
-            for i in candidate_indices
-        ])
+        Phi_cand, _, _ = self._surrogate_feature_matrix(
+            basis,
+            [pool[i] for i in candidate_indices],
+            feature_mean=feature_mean,
+            feature_scale=feature_scale,
+        )
         pred_obj = Phi_cand @ beta_obj
-
-        certified = np.array([
-            robust_margins[i] <= 0.0
+        if lhs_inv is None:
+            leverage = np.full(len(candidate_indices), np.nan, dtype=float)
+        else:
+            leverage = np.sum((Phi_cand @ lhs_inv) * Phi_cand, axis=1)
+            leverage = np.maximum(np.asarray(leverage, dtype=float), 0.0)
+        theory_margin = np.asarray([
+            robust_margins[i]
             for i in candidate_indices
-        ], dtype=bool)
-        if np.any(certified):
-            local_cert = np.where(certified)[0]
-            chosen_pos = int(local_cert[int(np.argmin(pred_obj[local_cert]))])
+        ], dtype=float)
+        source_margin_local = None
+        if source_margins is not None:
+            source_margins = np.asarray(source_margins, dtype=float)
+            if len(source_margins) == len(pool):
+                source_margin_local = np.asarray([
+                    source_margins[i]
+                    for i in candidate_indices
+                ], dtype=float)
+        max_leverage = float(
+            self.config.recommendation_calibration_max_leverage)
+        max_theory_margin = float(
+            self.config.recommendation_calibration_max_theory_margin)
+        calibration_guard = np.ones(len(candidate_indices), dtype=bool)
+        if max_leverage > 0.0:
+            calibration_guard &= np.isfinite(leverage)
+            calibration_guard &= leverage <= max_leverage
+        if max_theory_margin > 0.0:
+            calibration_guard &= np.isfinite(theory_margin)
+            calibration_guard &= theory_margin <= max_theory_margin
+
+        def choose_position(local_positions):
+            positions = np.asarray(local_positions, dtype=int)
+            details = {
+                "source_mean_prior_guard_used": False,
+                "source_mean_prior_ranker_used": False,
+                "source_mean_prior_guard_n_feasible": None,
+                "source_mean_prior_guard_selected_margin": None,
+            }
+            if len(positions) == 0:
+                return None, details
+            if source_margin_local is not None:
+                margins = np.asarray(source_margin_local[positions], dtype=float)
+                finite = np.isfinite(margins)
+                tol = float(self.config.source_mean_prior_margin_tol)
+                source_safe = finite & (margins <= tol)
+                details["source_mean_prior_guard_n_feasible"] = int(np.sum(source_safe))
+                if np.any(source_safe):
+                    guarded = positions[source_safe]
+                    chosen = int(guarded[int(np.argmin(pred_obj[guarded]))])
+                    details["source_mean_prior_guard_used"] = True
+                    details["source_mean_prior_guard_selected_margin"] = float(
+                        source_margin_local[chosen])
+                    return chosen, details
+                if str(self.config.recommendation_infeasible_strategy).lower() in (
+                    "source_prior",
+                    "source_prior_margin",
+                ) and np.any(finite):
+                    finite_positions = positions[finite]
+                    order = np.lexsort((
+                        pred_obj[finite_positions],
+                        source_margin_local[finite_positions],
+                    ))
+                    chosen = int(finite_positions[int(order[0])])
+                    details["source_mean_prior_ranker_used"] = True
+                    details["source_mean_prior_guard_selected_margin"] = float(
+                        source_margin_local[chosen])
+                    return chosen, details
+            chosen = int(positions[int(np.argmin(pred_obj[positions]))])
+            if source_margin_local is not None and np.isfinite(source_margin_local[chosen]):
+                details["source_mean_prior_guard_selected_margin"] = float(
+                    source_margin_local[chosen])
+            return chosen, details
+
+        certified = theory_margin <= 0.0
+        certified_guarded = certified & calibration_guard
+        if np.any(certified_guarded):
+            local_cert = np.where(certified_guarded)[0]
+            chosen_pos, source_details = choose_position(local_cert)
+            if chosen_pos is None:
+                return None, {}
             return int(candidate_indices[chosen_pos]), {
-                "calibrated_recommendation_reason": "certified_refinement_objective",
+                "calibrated_recommendation_reason": (
+                    f"guarded_certified_{scope_label}_objective"),
                 "calibrated_objective": float(pred_obj[chosen_pos]),
                 "calibrated_constraint_margin": None,
                 "calibrated_constraint_feasible": None,
                 "calibrated_constraint_sigma": None,
+                "calibrated_recommendation_scope": scope_label,
                 "n_calibration_refinement": int(len(candidate_indices)),
+                "n_calibration_candidates": int(len(candidate_indices)),
                 "n_calibration_certified": int(np.sum(certified)),
+                "n_calibration_certified_guarded": int(np.sum(certified_guarded)),
+                "n_calibration_guarded": int(np.sum(calibration_guard)),
+                "calibration_max_leverage": (
+                    None if max_leverage <= 0.0 else float(max_leverage)),
+                "calibration_max_theory_margin": (
+                    None if max_theory_margin <= 0.0
+                    else float(max_theory_margin)),
+                "calibration_selected_leverage": (
+                    None if not np.isfinite(leverage[chosen_pos])
+                    else float(leverage[chosen_pos])),
+                "calibration_selected_theory_margin": (
+                    None if not np.isfinite(theory_margin[chosen_pos])
+                    else float(theory_margin[chosen_pos])),
+                **source_details,
             }
 
         # If the theory bound is too conservative everywhere, fit a local
@@ -1015,29 +1482,149 @@ class SingleOLHKGAlgorithm:
             + z_alpha * sigma_cal
             - float(self.problem.tau)
         )
-        feasible = calibrated_margin <= 0.0
+        feasible_raw = calibrated_margin <= 0.0
+        feasible = feasible_raw & calibration_guard
         if not np.any(feasible):
+            source_rescue = None
+            source_rescue_details = {}
+            if (
+                source_margin_local is not None
+                and str(self.config.recommendation_infeasible_strategy).lower() in (
+                    "source_prior",
+                    "source_prior_margin",
+                )
+            ):
+                tol = float(self.config.source_mean_prior_margin_tol)
+                source_safe = (
+                    np.isfinite(source_margin_local)
+                    & (source_margin_local <= tol)
+                    & calibration_guard
+                )
+                if np.any(source_safe):
+                    source_rescue, source_rescue_details = choose_position(
+                        np.where(source_safe)[0])
+                    if source_rescue is not None:
+                        return int(candidate_indices[source_rescue]), {
+                            "calibrated_recommendation_reason": (
+                                "source_safe_calibrated_margin_rescue"),
+                            "calibrated_objective": float(pred_obj[source_rescue]),
+                            "calibrated_constraint_margin": float(
+                                calibrated_margin[source_rescue]),
+                            "calibrated_guarded_constraint_margin": float(
+                                calibrated_margin[source_rescue]),
+                            "calibrated_constraint_feasible": False,
+                            "calibrated_constraint_sigma": float(sigma_cal),
+                            "calibrated_recommendation_scope": scope_label,
+                            "n_calibration_refinement": int(len(candidate_indices)),
+                            "n_calibration_candidates": int(len(candidate_indices)),
+                            "n_calibration_certified": 0,
+                            "n_calibration_certified_guarded": 0,
+                            "n_calibration_feasible": int(np.sum(feasible)),
+                            "n_calibration_raw_feasible": int(np.sum(feasible_raw)),
+                            "n_calibration_guarded": int(np.sum(calibration_guard)),
+                            "n_calibration_source_safe_guarded": int(np.sum(source_safe)),
+                            "calibration_max_leverage": (
+                                None if max_leverage <= 0.0 else float(max_leverage)),
+                            "calibration_max_theory_margin": (
+                                None if max_theory_margin <= 0.0
+                                else float(max_theory_margin)),
+                            "calibration_selected_leverage": (
+                                None if not np.isfinite(leverage[source_rescue])
+                                else float(leverage[source_rescue])),
+                            "calibration_selected_theory_margin": (
+                                None if not np.isfinite(theory_margin[source_rescue])
+                                else float(theory_margin[source_rescue])),
+                            "calibration_selected_source_margin": float(
+                                source_margin_local[source_rescue]),
+                            **source_rescue_details,
+                        }
+            if np.any(calibration_guard):
+                guarded_min = float(np.min(calibrated_margin[calibration_guard]))
+            else:
+                guarded_min = None
             return None, {
-                "calibrated_recommendation_reason": "no_calibrated_feasible",
+                "calibrated_recommendation_reason": (
+                    "no_calibrated_feasible_after_guard"
+                    if np.any(feasible_raw)
+                    else "no_calibrated_feasible"),
                 "calibrated_objective": None,
                 "calibrated_constraint_margin": float(np.min(calibrated_margin)),
+                "calibrated_guarded_constraint_margin": guarded_min,
                 "calibrated_constraint_feasible": False,
                 "calibrated_constraint_sigma": float(sigma_cal),
+                "calibrated_recommendation_scope": scope_label,
                 "n_calibration_refinement": int(len(candidate_indices)),
+                "n_calibration_candidates": int(len(candidate_indices)),
                 "n_calibration_certified": 0,
-                "n_calibration_feasible": 0,
+                "n_calibration_certified_guarded": 0,
+                "n_calibration_feasible": int(np.sum(feasible)),
+                "n_calibration_raw_feasible": int(np.sum(feasible_raw)),
+                "n_calibration_guarded": int(np.sum(calibration_guard)),
+                "calibration_max_leverage": (
+                    None if max_leverage <= 0.0 else float(max_leverage)),
+                "calibration_max_theory_margin": (
+                    None if max_theory_margin <= 0.0
+                    else float(max_theory_margin)),
+                "calibration_min_leverage": (
+                    None if not np.any(np.isfinite(leverage))
+                    else float(np.nanmin(leverage))),
+                "calibration_median_leverage": (
+                    None if not np.any(np.isfinite(leverage))
+                    else float(np.nanmedian(leverage))),
+                "calibration_min_theory_margin": (
+                    None if not np.any(np.isfinite(theory_margin))
+                    else float(np.nanmin(theory_margin))),
+                "source_mean_prior_guard_n_feasible": (
+                    None
+                    if source_margin_local is None
+                    else int(np.sum(
+                        np.isfinite(source_margin_local)
+                        & (source_margin_local <= float(
+                            self.config.source_mean_prior_margin_tol))
+                        & calibration_guard
+                    ))
+                ),
             }
         local_feas = np.where(feasible)[0]
-        chosen_pos = int(local_feas[int(np.argmin(pred_obj[local_feas]))])
+        chosen_pos, source_details = choose_position(local_feas)
+        if chosen_pos is None:
+            return None, {}
         return int(candidate_indices[chosen_pos]), {
             "calibrated_recommendation_reason": "calibrated_constraint_fallback",
             "calibrated_objective": float(pred_obj[chosen_pos]),
             "calibrated_constraint_margin": float(calibrated_margin[chosen_pos]),
+            "calibrated_guarded_constraint_margin": float(
+                calibrated_margin[chosen_pos]),
             "calibrated_constraint_feasible": True,
             "calibrated_constraint_sigma": float(sigma_cal),
+            "calibrated_recommendation_scope": scope_label,
             "n_calibration_refinement": int(len(candidate_indices)),
+            "n_calibration_candidates": int(len(candidate_indices)),
             "n_calibration_certified": 0,
+            "n_calibration_certified_guarded": 0,
             "n_calibration_feasible": int(np.sum(feasible)),
+            "n_calibration_raw_feasible": int(np.sum(feasible_raw)),
+            "n_calibration_guarded": int(np.sum(calibration_guard)),
+            "calibration_max_leverage": (
+                None if max_leverage <= 0.0 else float(max_leverage)),
+            "calibration_max_theory_margin": (
+                None if max_theory_margin <= 0.0 else float(max_theory_margin)),
+            "calibration_selected_leverage": (
+                None if not np.isfinite(leverage[chosen_pos])
+                else float(leverage[chosen_pos])),
+            "calibration_selected_theory_margin": (
+                None if not np.isfinite(theory_margin[chosen_pos])
+                else float(theory_margin[chosen_pos])),
+            "calibration_min_leverage": (
+                None if not np.any(np.isfinite(leverage))
+                else float(np.nanmin(leverage))),
+            "calibration_median_leverage": (
+                None if not np.any(np.isfinite(leverage))
+                else float(np.nanmedian(leverage))),
+            "calibration_min_theory_margin": (
+                None if not np.any(np.isfinite(theory_margin))
+                else float(np.nanmin(theory_margin))),
+            **source_details,
         }
 
     def _solve_posterior_recommendation(self):
@@ -1060,15 +1647,19 @@ class SingleOLHKGAlgorithm:
                 self.config.recommendation_safety_z * sig_con,
                 nominal_floor,
             )
+        recommendation_slack = self._recommendation_slack()
         theory_margins = np.asarray(margins + safety_buffer, dtype=float)
-        robust_margins = theory_margins.copy()
+        robust_margins = theory_margins + recommendation_slack
         effective_mu_con = np.asarray(mu_con, dtype=float)
         effective_epistemic = np.asarray(cert.epistemic_var, dtype=float)
         effective_aleatoric = np.asarray(cert.aleatoric_var, dtype=float)
         certification_sources = np.full(len(pool), "theory", dtype=object)
         calibrated_cert = self._calibrated_certification_result(pool, v_con)
         if calibrated_cert is not None:
-            calibrated_margins = np.asarray(calibrated_cert["margin"], dtype=float)
+            calibrated_margins = (
+                np.asarray(calibrated_cert["margin"], dtype=float)
+                + recommendation_slack
+            )
             use_calibrated = calibrated_margins < robust_margins
             robust_margins = np.where(use_calibrated, calibrated_margins, robust_margins)
             effective_mu_con = np.where(
@@ -1093,6 +1684,9 @@ class SingleOLHKGAlgorithm:
             )
         else:
             calibrated_margins = None
+        recommendation_calibration_audit = (
+            self._recommendation_calibration_audit_scores(pool)
+        )
         feasible = robust_margins <= 0.0
         if np.any(feasible):
             local = int(np.argmin(np.where(feasible, mu_obj, np.inf)))
@@ -1118,6 +1712,8 @@ class SingleOLHKGAlgorithm:
             ))
         used_observed_incumbent = False
         observed_incumbent_rejected = False
+        observed_incumbent_reason = None
+        observed_idx = None
         observed_incumbent = self._observed_nominal_incumbent()
         if observed_incumbent is not None:
             try:
@@ -1129,19 +1725,129 @@ class SingleOLHKGAlgorithm:
                 ):
                     local = observed_idx
                     used_observed_incumbent = True
+                    observed_incumbent_reason = "robust_observed_incumbent"
+                elif (
+                    self.config.recommendation_observed_fallback
+                    and not np.any(feasible)
+                ):
+                    local = observed_idx
+                    used_observed_incumbent = True
+                    observed_incumbent_reason = "empirical_observed_fallback"
                 else:
                     observed_incumbent_rejected = True
             except ValueError:
                 pass
+        source_prior_recommendation_used = False
+        source_margins = None
+        source_prior_details = {
+            "source_mean_prior_fallback": bool(self.config.source_mean_prior_fallback),
+            "source_mean_prior_used": False,
+            "source_mean_prior_available": False,
+            "source_mean_prior_n_feasible": 0,
+            "source_mean_prior_min_margin": None,
+            "source_mean_prior_selected_margin": None,
+            "source_mean_prior_guard_used": False,
+            "source_mean_prior_ranker_used": False,
+            "source_mean_prior_guard_n_feasible": None,
+        }
+        if (
+            self.config.source_mean_prior_fallback
+            and hasattr(self.problem, "source_mean_prior_predict_many")
+        ):
+            try:
+                source_mu = self.problem.source_mean_prior_predict_many(pool, output_index=1)
+                if source_mu is not None:
+                    source_mu = np.asarray(source_mu, dtype=float)
+                    try:
+                        source_sigma = float(
+                            self.problem.source_mean_prior_sigma(output_index=1))
+                    except Exception:
+                        source_sigma = float(getattr(self.problem, "sigma_level", 0.0))
+                    source_margin = (
+                        source_mu
+                        + float(self.config.source_mean_prior_z) * max(source_sigma, 1e-8)
+                        - float(self.problem.tau)
+                    )
+                    source_margins = np.asarray(source_margin, dtype=float)
+                    source_prior_details.update({
+                        "source_mean_prior_available": True,
+                        "source_mean_prior_sigma": float(source_sigma),
+                        "source_mean_prior_min_margin": float(np.min(source_margin)),
+                        "source_mean_prior_n_feasible": int(
+                            np.sum(source_margin <= float(
+                                self.config.source_mean_prior_margin_tol))),
+                    })
+            except Exception:
+                source_margins = None
         calibrated_recommendation_used = False
         calibrated_details = {}
         calibrated_idx, calibrated_details = self._calibrated_recommendation_index(
             pool,
             robust_margins,
+            source_margins=source_margins,
         )
         if calibrated_idx is not None:
-            local = calibrated_idx
-            calibrated_recommendation_used = True
+            keep_observed = False
+            if used_observed_incumbent and observed_idx is not None:
+                calibrated_is_robust = bool(robust_margins[calibrated_idx] <= 0.0)
+                calibrated_better = (
+                    float(mu_obj[calibrated_idx])
+                    < float(observed_incumbent["empirical_objective"]) - 1e-12
+                )
+                keep_observed = not (calibrated_is_robust and calibrated_better)
+                if keep_observed:
+                    calibrated_details = {
+                        **calibrated_details,
+                        "calibrated_recommendation_rejected_by_observed": True,
+                        "calibrated_recommendation_rejected_observed_reason": (
+                            observed_incumbent_reason),
+                        "calibrated_recommendation_rejected_candidate_margin": float(
+                            robust_margins[calibrated_idx]),
+                        "calibrated_recommendation_rejected_candidate_mu_obj": float(
+                            mu_obj[calibrated_idx]),
+                    }
+            if not keep_observed:
+                local = calibrated_idx
+                calibrated_recommendation_used = True
+                if source_margins is not None:
+                    guard_used = bool(calibrated_details.get(
+                        "source_mean_prior_guard_used", False))
+                    ranker_used = bool(calibrated_details.get(
+                        "source_mean_prior_ranker_used", False))
+                    if guard_used or ranker_used:
+                        source_prior_details.update({
+                            "source_mean_prior_used": True,
+                            "source_mean_prior_guard_used": guard_used,
+                            "source_mean_prior_ranker_used": ranker_used,
+                            "source_mean_prior_guard_n_feasible": calibrated_details.get(
+                                "source_mean_prior_guard_n_feasible"),
+                            "source_mean_prior_selected_margin": float(
+                                source_margins[local]),
+                        })
+        if (
+            self.config.source_mean_prior_fallback
+            and not np.any(feasible)
+            and not calibrated_recommendation_used
+            and not used_observed_incumbent
+            and source_margins is not None
+        ):
+            source_feasible = source_margins <= float(
+                self.config.source_mean_prior_margin_tol)
+            if np.any(source_feasible):
+                local = int(np.argmin(np.where(source_feasible, mu_obj, np.inf)))
+                source_prior_recommendation_used = True
+            elif str(self.config.recommendation_infeasible_strategy).lower() in (
+                "source_prior",
+                "source_prior_margin",
+            ):
+                local = int(np.lexsort((mu_obj, source_margins))[0])
+                source_prior_recommendation_used = True
+                source_prior_details["source_mean_prior_ranker_used"] = True
+            if source_prior_recommendation_used:
+                source_prior_details.update({
+                    "source_mean_prior_used": True,
+                    "source_mean_prior_selected_margin": float(source_margins[local]),
+                })
         x_best = tuple(int(v) for v in pool[local])
         calibration_details = {}
         if calibrated_cert is not None:
@@ -1165,6 +1871,37 @@ class SingleOLHKGAlgorithm:
                 "certification_calibration_used": False,
                 "posterior_calibrated_chance_margin": None,
             }
+        recommendation_calibration_details = {}
+        if recommendation_calibration_audit is not None:
+            cal_margin = recommendation_calibration_audit["margin"]
+            cal_pred_obj = recommendation_calibration_audit["pred_obj"]
+            cal_leverage = recommendation_calibration_audit["leverage"]
+            recommendation_calibration_details = {
+                "recommendation_calibration_audit_available": True,
+                "recommendation_calibration_sigma": float(
+                    recommendation_calibration_audit["sigma"]),
+                "recommendation_calibration_resid_sigma": float(
+                    recommendation_calibration_audit["resid_sigma"]),
+                "recommendation_calibration_n_train": int(
+                    recommendation_calibration_audit["n_train"]),
+                "recommendation_calibration_feature_dim": int(
+                    recommendation_calibration_audit["feature_dim"]),
+                "recommendation_calibration_n_feasible": int(
+                    recommendation_calibration_audit["n_feasible"]),
+                "recommendation_selected_calibrated_rec_margin": float(
+                    cal_margin[local]),
+                "recommendation_selected_calibrated_rec_objective": float(
+                    cal_pred_obj[local]),
+                "recommendation_selected_calibrated_rec_leverage": (
+                    None
+                    if not np.isfinite(cal_leverage[local])
+                    else float(cal_leverage[local])
+                ),
+            }
+        else:
+            recommendation_calibration_details = {
+                "recommendation_calibration_audit_available": False,
+            }
         return x_best, {
             "posterior_mu_obj": float(mu_obj[local]),
             "posterior_mu_con": float(effective_mu_con[local]),
@@ -1182,14 +1919,21 @@ class SingleOLHKGAlgorithm:
             "recommendation_safety_z": float(self.config.recommendation_safety_z),
             "recommendation_noise_floor_scale": float(
                 self.config.recommendation_noise_floor_scale),
+            "recommendation_slack": float(recommendation_slack),
             "recommendation_infeasible_penalty": float(
                 self.config.recommendation_infeasible_penalty),
+            "recommendation_observed_fallback": bool(
+                self.config.recommendation_observed_fallback),
             "recommendation_calibration": bool(self.config.recommendation_calibration),
             "calibrated_recommendation_used": bool(calibrated_recommendation_used),
+            "source_prior_recommendation_used": bool(source_prior_recommendation_used),
             **calibration_details,
+            **recommendation_calibration_details,
             **calibrated_details,
+            **source_prior_details,
             "observed_incumbent_used": bool(used_observed_incumbent),
             "observed_incumbent_rejected": bool(observed_incumbent_rejected),
+            "observed_incumbent_reason": observed_incumbent_reason,
             "observed_incumbent_objective": (
                 None if observed_incumbent is None
                 else float(observed_incumbent["empirical_objective"])
@@ -1202,6 +1946,39 @@ class SingleOLHKGAlgorithm:
             "n_pool": int(len(pool)),
             "n_posterior_feasible": int(np.sum(feasible)),
             "n_theory_posterior_feasible": int(np.sum(theory_margins <= 0.0)),
+            **self._truth_pool_diagnostics(
+                pool,
+                selected=x_best,
+                prefix="recommendation",
+            ),
+            **self._truth_pool_decision_margin_audit(
+                pool,
+                robust_margins,
+                selected=x_best,
+                mu_con=effective_mu_con,
+                epistemic_var=effective_epistemic,
+                aleatoric_var=effective_aleatoric,
+                theory_margins=theory_margins,
+                calibrated_margins=calibrated_margins,
+                recommendation_calibrated_margins=(
+                    None
+                    if recommendation_calibration_audit is None
+                    else recommendation_calibration_audit["margin"]
+                ),
+                recommendation_calibrated_objectives=(
+                    None
+                    if recommendation_calibration_audit is None
+                    else recommendation_calibration_audit["pred_obj"]
+                ),
+                recommendation_calibrated_leverage=(
+                    None
+                    if recommendation_calibration_audit is None
+                    else recommendation_calibration_audit["leverage"]
+                ),
+                source_margins=source_margins,
+                certification_sources=certification_sources,
+                prefix="recommendation",
+            ),
         }
 
     def _terminal_value_from_models(self, gpr_models, variance_model, pool):
@@ -1240,7 +2017,7 @@ class SingleOLHKGAlgorithm:
                 self.config.recommendation_safety_z * sig_con,
                 nominal_floor,
             )
-        robust_margins = margins + safety_buffer
+        robust_margins = margins + safety_buffer + self._recommendation_slack()
         feasible = robust_margins <= 0.0
         if np.any(feasible):
             return float(np.min(np.where(feasible, mu_obj, np.inf)))
@@ -1416,7 +2193,7 @@ class SingleOLHKGAlgorithm:
             + norm.ppf(1 - self.problem.alpha) * true_sig[1]
             - self.problem.tau
         )
-        true_best_x, true_best_obj = self.problem.true_best_feasible()
+        true_best_x, true_best_obj = self._true_best_feasible_cached()
         true_best_vector = None
         if true_best_x is not None and hasattr(self.problem, "true_vector_objectives"):
             true_best_vector = [
@@ -1446,6 +2223,335 @@ class SingleOLHKGAlgorithm:
                 out["true_best_f1"] = float(true_best_vector[0])
                 out["true_best_f2"] = float(true_best_vector[1])
         return out
+
+    def _true_chance_margin(self, x):
+        sig = self.problem.true_sigma(x)
+        return float(
+            self.problem.true_constraint_mean(x)
+            + norm.ppf(1 - self.problem.alpha) * float(sig[1])
+            - self.problem.tau
+        )
+
+    def _truth_pool_diagnostics(self, pool, selected=None, prefix="candidate"):
+        if not self.config.truth_pool_diagnostics or not pool:
+            return {}
+        pool = [tuple(int(v) for v in x) for x in unique_candidates(pool)]
+        cap = int(self.config.truth_pool_max_candidates)
+        if cap > 0 and len(pool) > cap:
+            # Deterministic subsample for diagnostics only; never affects decisions.
+            idx = np.linspace(0, len(pool) - 1, cap)
+            pool = [pool[int(round(i))] for i in idx]
+        try:
+            _, true_best_obj = self._true_best_feasible_cached()
+        except Exception:
+            true_best_obj = np.inf
+        margins = []
+        regrets = []
+        for x in pool:
+            try:
+                margin = self._true_chance_margin(x)
+                obj = float(self.problem.true_objective(x))
+            except Exception:
+                continue
+            margins.append(margin)
+            regrets.append(obj - true_best_obj if np.isfinite(true_best_obj) else np.nan)
+        if not margins:
+            return {f"{prefix}_truth_diagnostics_available": False}
+        margins = np.asarray(margins, dtype=float)
+        regrets = np.asarray(regrets, dtype=float)
+        feasible = margins <= 0.0
+        good_eps = float(self.config.truth_pool_good_regret)
+        good = feasible & np.isfinite(regrets) & (regrets <= good_eps)
+        out = {
+            f"{prefix}_truth_diagnostics_available": True,
+            f"{prefix}_truth_n": int(len(margins)),
+            f"{prefix}_true_feasible_count": int(np.sum(feasible)),
+            f"{prefix}_true_feasible_rate": float(np.mean(feasible)),
+            f"{prefix}_has_true_feasible": bool(np.any(feasible)),
+            f"{prefix}_true_safe_good_count": int(np.sum(good)),
+            f"{prefix}_has_true_safe_good": bool(np.any(good)),
+            f"{prefix}_true_min_margin": float(np.min(margins)),
+            f"{prefix}_true_median_margin": float(np.median(margins)),
+            f"{prefix}_true_best_regret": (
+                float(np.nanmin(regrets)) if np.any(np.isfinite(regrets)) else None
+            ),
+            f"{prefix}_true_best_feasible_regret": (
+                float(np.nanmin(np.where(feasible, regrets, np.nan)))
+                if np.any(feasible & np.isfinite(regrets))
+                else None
+            ),
+        }
+        try:
+            mu_con = self.gpr[1].posterior_mean_many(pool)
+            cert = self._certification_result(mu_con, pool)
+            posterior_margins = np.asarray(cert.margin, dtype=float)
+            out[f"{prefix}_posterior_feasible_count"] = int(
+                np.sum(posterior_margins <= 0.0))
+            out[f"{prefix}_posterior_min_margin"] = float(np.min(posterior_margins))
+            if np.any(feasible & np.isfinite(regrets)):
+                feasible_idx = np.where(feasible & np.isfinite(regrets))[0]
+                best_pos = int(feasible_idx[int(np.nanargmin(regrets[feasible_idx]))])
+                out[f"{prefix}_best_true_feasible_posterior_margin"] = float(
+                    posterior_margins[best_pos])
+                out[f"{prefix}_best_true_feasible_posterior_feasible"] = bool(
+                    posterior_margins[best_pos] <= 0.0)
+                out[f"{prefix}_best_true_feasible_regret_audit"] = float(
+                    regrets[best_pos])
+        except Exception:
+            out[f"{prefix}_posterior_audit_available"] = False
+        if selected is not None:
+            selected = tuple(int(v) for v in selected)
+            try:
+                sel_margin = self._true_chance_margin(selected)
+                sel_regret = (
+                    float(self.problem.true_objective(selected) - true_best_obj)
+                    if np.isfinite(true_best_obj)
+                    else np.nan
+                )
+                sel_feasible = sel_margin <= 0.0
+                out.update({
+                    f"{prefix}_selected_true_margin": float(sel_margin),
+                    f"{prefix}_selected_true_regret": (
+                        float(sel_regret) if np.isfinite(sel_regret) else None
+                    ),
+                    f"{prefix}_selected_true_feasible": bool(sel_feasible),
+                    f"{prefix}_missed_true_feasible": bool(np.any(feasible) and not sel_feasible),
+                    f"{prefix}_missed_true_safe_good": bool(np.any(good) and not (
+                        sel_feasible
+                        and np.isfinite(sel_regret)
+                        and sel_regret <= good_eps
+                    )),
+                })
+            except Exception:
+                out[f"{prefix}_selected_truth_available"] = False
+        return out
+
+    def _truth_pool_decision_margin_audit(
+        self,
+        pool,
+        decision_margins,
+        selected=None,
+        mu_con=None,
+        epistemic_var=None,
+        aleatoric_var=None,
+        theory_margins=None,
+        calibrated_margins=None,
+        recommendation_calibrated_margins=None,
+        recommendation_calibrated_objectives=None,
+        recommendation_calibrated_leverage=None,
+        source_margins=None,
+        certification_sources=None,
+        prefix="recommendation",
+    ):
+        if not self.config.truth_pool_diagnostics or not pool:
+            return {}
+        pool = [tuple(int(v) for v in x) for x in pool]
+        decision_margins = np.asarray(decision_margins, dtype=float)
+        if len(pool) != len(decision_margins):
+            return {}
+        try:
+            _, true_best_obj = self._true_best_feasible_cached()
+        except Exception:
+            true_best_obj = np.inf
+        feasible = []
+        regrets = []
+        for x in pool:
+            try:
+                margin = self._true_chance_margin(x)
+                obj = float(self.problem.true_objective(x))
+            except Exception:
+                margin = np.nan
+                obj = np.nan
+            feasible.append(bool(np.isfinite(margin) and margin <= 0.0))
+            regrets.append(obj - true_best_obj if np.isfinite(true_best_obj) else np.nan)
+        feasible = np.asarray(feasible, dtype=bool)
+        regrets = np.asarray(regrets, dtype=float)
+        mu_con = None if mu_con is None else np.asarray(mu_con, dtype=float)
+        epistemic_var = (
+            None if epistemic_var is None else np.asarray(epistemic_var, dtype=float)
+        )
+        aleatoric_var = (
+            None if aleatoric_var is None else np.asarray(aleatoric_var, dtype=float)
+        )
+        theory_margins = (
+            None if theory_margins is None else np.asarray(theory_margins, dtype=float)
+        )
+        calibrated_margins = (
+            None
+            if calibrated_margins is None
+            else np.asarray(calibrated_margins, dtype=float)
+        )
+        recommendation_calibrated_margins = (
+            None
+            if recommendation_calibrated_margins is None
+            else np.asarray(recommendation_calibrated_margins, dtype=float)
+        )
+        recommendation_calibrated_objectives = (
+            None
+            if recommendation_calibrated_objectives is None
+            else np.asarray(recommendation_calibrated_objectives, dtype=float)
+        )
+        recommendation_calibrated_leverage = (
+            None
+            if recommendation_calibrated_leverage is None
+            else np.asarray(recommendation_calibrated_leverage, dtype=float)
+        )
+        source_margins = (
+            None
+            if source_margins is None
+            else np.asarray(source_margins, dtype=float)
+        )
+        certification_sources = (
+            None
+            if certification_sources is None
+            else np.asarray(certification_sources, dtype=object)
+        )
+        out = {}
+        idx = np.where(feasible & np.isfinite(regrets))[0]
+        if len(idx):
+            best_pos = int(idx[int(np.nanargmin(regrets[idx]))])
+            out[f"{prefix}_best_true_feasible_decision_margin"] = float(
+                decision_margins[best_pos])
+            out[f"{prefix}_best_true_feasible_decision_feasible"] = bool(
+                decision_margins[best_pos] <= 0.0)
+            out[f"{prefix}_best_true_feasible_decision_regret"] = float(
+                regrets[best_pos])
+            if mu_con is not None and len(mu_con) == len(pool):
+                out[f"{prefix}_best_true_feasible_mu_con"] = float(mu_con[best_pos])
+            if epistemic_var is not None and len(epistemic_var) == len(pool):
+                out[f"{prefix}_best_true_feasible_epistemic_var"] = float(
+                    epistemic_var[best_pos])
+            if aleatoric_var is not None and len(aleatoric_var) == len(pool):
+                out[f"{prefix}_best_true_feasible_aleatoric_var"] = float(
+                    aleatoric_var[best_pos])
+            if theory_margins is not None and len(theory_margins) == len(pool):
+                out[f"{prefix}_best_true_feasible_theory_margin"] = float(
+                    theory_margins[best_pos])
+            if calibrated_margins is not None and len(calibrated_margins) == len(pool):
+                out[f"{prefix}_best_true_feasible_calibrated_margin"] = float(
+                    calibrated_margins[best_pos])
+            if (
+                recommendation_calibrated_margins is not None
+                and len(recommendation_calibrated_margins) == len(pool)
+            ):
+                out[f"{prefix}_best_true_feasible_calibrated_rec_margin"] = float(
+                    recommendation_calibrated_margins[best_pos])
+            if (
+                recommendation_calibrated_objectives is not None
+                and len(recommendation_calibrated_objectives) == len(pool)
+            ):
+                out[f"{prefix}_best_true_feasible_calibrated_rec_objective"] = float(
+                    recommendation_calibrated_objectives[best_pos])
+            if (
+                recommendation_calibrated_leverage is not None
+                and len(recommendation_calibrated_leverage) == len(pool)
+            ):
+                lev = recommendation_calibrated_leverage[best_pos]
+                out[f"{prefix}_best_true_feasible_calibrated_rec_leverage"] = (
+                    None if not np.isfinite(lev) else float(lev)
+                )
+            if source_margins is not None and len(source_margins) == len(pool):
+                out[f"{prefix}_best_true_feasible_source_margin"] = float(
+                    source_margins[best_pos])
+            if certification_sources is not None and len(certification_sources) == len(pool):
+                out[f"{prefix}_best_true_feasible_certification_source"] = str(
+                    certification_sources[best_pos])
+        if selected is not None:
+            selected = tuple(int(v) for v in selected)
+            for i, x in enumerate(pool):
+                if tuple(int(v) for v in x) == selected:
+                    out[f"{prefix}_selected_decision_margin"] = float(
+                        decision_margins[i])
+                    out[f"{prefix}_selected_decision_feasible"] = bool(
+                        decision_margins[i] <= 0.0)
+                    if mu_con is not None and len(mu_con) == len(pool):
+                        out[f"{prefix}_selected_mu_con"] = float(mu_con[i])
+                    if epistemic_var is not None and len(epistemic_var) == len(pool):
+                        out[f"{prefix}_selected_epistemic_var"] = float(
+                            epistemic_var[i])
+                    if aleatoric_var is not None and len(aleatoric_var) == len(pool):
+                        out[f"{prefix}_selected_aleatoric_var"] = float(
+                            aleatoric_var[i])
+                    if theory_margins is not None and len(theory_margins) == len(pool):
+                        out[f"{prefix}_selected_theory_margin"] = float(
+                            theory_margins[i])
+                    if calibrated_margins is not None and len(calibrated_margins) == len(pool):
+                        out[f"{prefix}_selected_calibrated_margin"] = float(
+                            calibrated_margins[i])
+                    if (
+                        recommendation_calibrated_margins is not None
+                        and len(recommendation_calibrated_margins) == len(pool)
+                    ):
+                        out[f"{prefix}_selected_calibrated_rec_margin"] = float(
+                            recommendation_calibrated_margins[i])
+                    if (
+                        recommendation_calibrated_objectives is not None
+                        and len(recommendation_calibrated_objectives) == len(pool)
+                    ):
+                        out[f"{prefix}_selected_calibrated_rec_objective"] = float(
+                            recommendation_calibrated_objectives[i])
+                    if (
+                        recommendation_calibrated_leverage is not None
+                        and len(recommendation_calibrated_leverage) == len(pool)
+                    ):
+                        lev = recommendation_calibrated_leverage[i]
+                        out[f"{prefix}_selected_calibrated_rec_leverage"] = (
+                            None if not np.isfinite(lev) else float(lev)
+                        )
+                    if source_margins is not None and len(source_margins) == len(pool):
+                        out[f"{prefix}_selected_source_margin"] = float(
+                            source_margins[i])
+                    if certification_sources is not None and len(certification_sources) == len(pool):
+                        out[f"{prefix}_selected_certification_source"] = str(
+                            certification_sources[i])
+                    break
+        return out
+
+    def _summarize_truth_pool_diagnostics(self):
+        if not self.iteration_log:
+            return {}
+        rows = [
+            row for row in self.iteration_log
+            if row.get("candidate_truth_diagnostics_available")
+        ]
+        if not rows:
+            return {"enabled": bool(self.config.truth_pool_diagnostics), "n_logged": 0}
+        def mean_bool(key):
+            vals = [bool(row.get(key, False)) for row in rows]
+            return float(sum(vals) / len(vals)) if vals else 0.0
+        def mean_float(key):
+            vals = []
+            for row in rows:
+                val = row.get(key)
+                if val is None:
+                    continue
+                try:
+                    val = float(val)
+                except (TypeError, ValueError):
+                    continue
+                if np.isfinite(val):
+                    vals.append(val)
+            return float(np.mean(vals)) if vals else None
+        return {
+            "enabled": True,
+            "n_logged": int(len(rows)),
+            "pool_has_true_feasible_rate": mean_bool("candidate_has_true_feasible"),
+            "pool_has_true_safe_good_rate": mean_bool("candidate_has_true_safe_good"),
+            "selected_true_feasible_rate": mean_bool("candidate_selected_true_feasible"),
+            "missed_true_feasible_rate": mean_bool("candidate_missed_true_feasible"),
+            "missed_true_safe_good_rate": mean_bool("candidate_missed_true_safe_good"),
+            "mean_pool_true_feasible_rate": mean_float("candidate_true_feasible_rate"),
+            "mean_pool_best_feasible_regret": mean_float(
+                "candidate_true_best_feasible_regret"),
+            "mean_selected_true_regret": mean_float("candidate_selected_true_regret"),
+            "mean_selected_true_margin": mean_float("candidate_selected_true_margin"),
+            "mean_best_true_feasible_posterior_margin": mean_float(
+                "candidate_best_true_feasible_posterior_margin"),
+            "best_true_feasible_posterior_feasible_rate": mean_bool(
+                "candidate_best_true_feasible_posterior_feasible"),
+            "recommendation_has_true_feasible_rate": mean_bool(
+                "rec_recommendation_has_true_feasible"),
+        }
 
     def run(self, verbose=False):
         t_start = time.time()
@@ -1525,6 +2631,11 @@ class SingleOLHKGAlgorithm:
             row["candidate_source_selected"] = candidate_sources.get(
                 tuple(x_selected), "unknown")
             row["score_selected"] = float(score["total"][selected_idx])
+            row.update(self._truth_pool_diagnostics(
+                candidates,
+                selected=x_selected,
+                prefix="candidate",
+            ))
             row["v_C_plus_selected"] = float(
                 self.variance_model.predict_certification_variance(
                     1,
@@ -1548,6 +2659,8 @@ class SingleOLHKGAlgorithm:
             row["kg_obj_scaled_selected"] = float(score["kg_obj_scaled"][selected_idx])
             row["kg_feas_selected"] = float(score["kg_feas"][selected_idx])
             row["kg_var_selected"] = float(score["kg_var"][selected_idx])
+            row["kg_constraint_epistemic_selected"] = float(
+                score["kg_constraint_epistemic"][selected_idx])
             row["kg_coupling_selected"] = float(score["kg_coupling"][selected_idx])
             row["kg_coupling_raw_selected"] = float(
                 score["kg_coupling_raw"][selected_idx])
@@ -1653,6 +2766,7 @@ class SingleOLHKGAlgorithm:
             "stage_times": summarize_stage_times(self.iteration_log),
             "candidate_source_counts": candidate_source_counts,
             "llm_prior": llm_prior_summary,
+            "truth_pool_diagnostics": self._summarize_truth_pool_diagnostics(),
             "variance": self.variance_model.diagnostics(),
             "cumulative_risk_provider": (
                 self.problem.cumulative_risk_provider_status()

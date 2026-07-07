@@ -106,9 +106,13 @@ class SourceRecord:
     x: tuple[int, ...]
     y: np.ndarray
     descriptor: np.ndarray
+    profile: np.ndarray | None
     tau: float
     alpha: float
     sigma_level: float
+    constraint_sigma: float | None = None
+    origin: str = "random"
+    sample_weight: float = 1.0
 
 
 class LearnedMetaPrior:
@@ -129,6 +133,14 @@ class LearnedMetaPrior:
         feasible_bonus=0.15,
         elite_fraction=0.40,
         boundary_fraction=0.35,
+        teacher_records_per_domain=0,
+        teacher_weight=3.0,
+        teacher_pool_size=2048,
+        teacher_elite_fraction=0.50,
+        teacher_boundary_fraction=0.35,
+        anchor_sampling_temperature=0.0,
+        hvd_noise_floor_scale=0.0,
+        universal_shape_count=0,
         seed=123,
     ):
         self.local_dim = int(local_dim)
@@ -144,6 +156,14 @@ class LearnedMetaPrior:
         self.feasible_bonus = float(feasible_bonus)
         self.elite_fraction = float(elite_fraction)
         self.boundary_fraction = float(boundary_fraction)
+        self.teacher_records_per_domain = int(teacher_records_per_domain)
+        self.teacher_weight = float(teacher_weight)
+        self.teacher_pool_size = int(teacher_pool_size)
+        self.teacher_elite_fraction = float(teacher_elite_fraction)
+        self.teacher_boundary_fraction = float(teacher_boundary_fraction)
+        self.anchor_sampling_temperature = float(anchor_sampling_temperature)
+        self.hvd_noise_floor_scale = float(hvd_noise_floor_scale)
+        self.universal_shape_count = int(universal_shape_count)
         self.seed = int(seed)
         self.feature_mean = None
         self.feature_scale = None
@@ -152,7 +172,10 @@ class LearnedMetaPrior:
         self.anchor_psi = np.empty((0, self.local_dim + self.shared_dim))
         self.anchor_scores = np.empty(0, dtype=float)
         self.anchor_meta = []
+        self.profile_templates = []
         self.beta_prior = {}
+        self.mean_prior = {}
+        self.mean_prior_sigma = {}
         self.source_domains = []
         self.n_records = 0
         self.fit_status = "unfit"
@@ -334,25 +357,190 @@ class LearnedMetaPrior:
             for _ in range(max(1, int(n_records_per_domain))):
                 x = _as_tuple(problem.sample_random(rng))
                 y = np.asarray(problem.simulate(x, rng), dtype=float)
+                sigma = (
+                    float(problem.true_sigma(x)[1])
+                    if hasattr(problem, "true_sigma")
+                    else float(getattr(problem, "sigma_level", 0.04))
+                )
                 records.append(SourceRecord(
                     domain=str(domain_name),
                     x=x,
                     y=y,
                     descriptor=self.descriptor(problem, x),
+                    profile=np.asarray(problem.normalize(x), dtype=float),
                     tau=float(getattr(problem, "tau", 0.0)),
                     alpha=float(getattr(problem, "alpha", 0.05)),
                     sigma_level=float(getattr(problem, "sigma_level", 0.04)),
+                    constraint_sigma=sigma,
+                    origin="random",
+                    sample_weight=1.0,
                 ))
+            records.extend(self._record_teacher_source_data(
+                str(domain_name),
+                problem,
+                rng,
+            ))
+        return records
+
+    def _candidate_pool_from_teacher_hooks(self, problem, rng):
+        rows = []
+        n_pool = max(1, int(self.teacher_pool_size))
+        try:
+            rows.extend(problem.initial_samples(n=min(64, n_pool), rng=rng))
+        except (AttributeError, TypeError, ValueError):
+            pass
+        try:
+            rows.extend(problem.structured_candidates(n=min(128, n_pool), rng=rng))
+        except (AttributeError, TypeError, ValueError):
+            pass
+        try:
+            for anchor in problem.state_anchor_points(n=min(64, n_pool), rng=rng):
+                rows.extend(problem.inverse_state_anchor(anchor, rng=rng, n=2))
+        except (AttributeError, TypeError, ValueError):
+            pass
+        try:
+            rows.extend(problem.recommendation_refinement_candidates())
+        except (AttributeError, TypeError, ValueError):
+            pass
+        try:
+            rows.extend(problem.all_axis_solutions())
+        except (AttributeError, TypeError, ValueError):
+            pass
+        rows = unique_candidates(rows)
+        if len(rows) > max(n_pool * 4, 64):
+            order = rng.permutation(len(rows))[: max(n_pool * 4, 64)]
+            rows = [rows[int(i)] for i in order]
+        return rows
+
+    def _record_teacher_source_data(self, domain_name, problem, rng):
+        n_teacher = max(0, int(self.teacher_records_per_domain))
+        if n_teacher <= 0:
+            return []
+        rows = self._candidate_pool_from_teacher_hooks(problem, rng)
+        if not rows:
+            return []
+        scored = []
+        z_alpha = norm.ppf(1.0 - float(getattr(problem, "alpha", 0.05)))
+        for x in rows:
+            x = _as_tuple(x)
+            if hasattr(problem, "true_outputs"):
+                y = np.asarray(problem.true_outputs(x), dtype=float)
+            else:
+                y = np.asarray(problem.simulate(x, rng), dtype=float)
+            if hasattr(problem, "true_sigma"):
+                sigma_con = float(problem.true_sigma(x)[1])
+            else:
+                sigma_con = float(getattr(problem, "sigma_level", 0.04))
+            tau = float(getattr(problem, "tau", 0.0))
+            margin = float(y[1]) + z_alpha * sigma_con - tau
+            scale = max(abs(tau), sigma_con, 1e-6)
+            scaled = margin / scale
+            feasible = margin <= 0.0
+            score = (
+                float(y[0])
+                + self.feasible_penalty * max(scaled, 0.0)
+                + self.boundary_weight * abs(scaled)
+                - self.feasible_bonus * float(feasible)
+            )
+            scored.append({
+                "x": x,
+                "y": y,
+                "sigma_con": sigma_con,
+                "margin": margin,
+                "scaled": scaled,
+                "feasible": feasible,
+                "score": float(score),
+            })
+        selected = []
+        seen = set()
+        n_keep = min(n_teacher, len(scored))
+        n_elite = int(np.ceil(
+            n_keep * np.clip(self.teacher_elite_fraction, 0.0, 1.0)))
+        n_boundary = int(np.ceil(
+            n_keep * np.clip(self.teacher_boundary_fraction, 0.0, 1.0)))
+
+        def add(items, limit):
+            for row in items:
+                if len(selected) >= n_keep or limit <= 0:
+                    break
+                if row["x"] in seen:
+                    continue
+                seen.add(row["x"])
+                selected.append(row)
+                limit -= 1
+
+        feasible_rows = [row for row in scored if row["feasible"]]
+        feasible_rows.sort(key=lambda row: (row["y"][0], abs(row["scaled"])))
+        add(feasible_rows, n_elite)
+        boundary_rows = sorted(
+            scored,
+            key=lambda row: (abs(row["scaled"]), max(row["scaled"], 0.0), row["y"][0]),
+        )
+        add(boundary_rows, n_boundary)
+        add(sorted(scored, key=lambda row: row["score"]), n_keep)
+
+        if len(selected) < n_keep:
+            chosen_desc = [
+                self.descriptor(problem, row["x"])
+                for row in selected
+            ]
+            while len(selected) < n_keep:
+                if not chosen_desc:
+                    add(sorted(scored, key=lambda row: row["score"]), 1)
+                    chosen_desc = [
+                        self.descriptor(problem, row["x"])
+                        for row in selected
+                    ]
+                    continue
+                D = np.vstack(chosen_desc)
+                diverse = []
+                for row in scored:
+                    if row["x"] in seen:
+                        continue
+                    desc = self.descriptor(problem, row["x"])
+                    dist = float(np.min(np.linalg.norm(D - desc[None, :], axis=1)))
+                    diverse.append((dist, row))
+                if not diverse:
+                    break
+                diverse.sort(key=lambda item: (-item[0], item[1]["score"]))
+                add([diverse[0][1]], 1)
+                chosen_desc.append(self.descriptor(problem, diverse[0][1]["x"]))
+
+        records = []
+        for row in selected:
+            records.append(SourceRecord(
+                domain=domain_name,
+                x=row["x"],
+                y=np.asarray(row["y"], dtype=float),
+                descriptor=self.descriptor(problem, row["x"]),
+                profile=np.asarray(problem.normalize(row["x"]), dtype=float),
+                tau=float(getattr(problem, "tau", 0.0)),
+                alpha=float(getattr(problem, "alpha", 0.05)),
+                sigma_level=float(getattr(problem, "sigma_level", 0.04)),
+                constraint_sigma=float(row["sigma_con"]),
+                origin="source_domain_tuned_teacher",
+                sample_weight=max(float(self.teacher_weight), 1e-8),
+            ))
         return records
 
     @staticmethod
     def _source_margin(rec):
         z = norm.ppf(1.0 - float(rec.alpha))
-        return float(rec.y[1]) + z * float(rec.sigma_level) - float(rec.tau)
+        sigma = (
+            float(rec.constraint_sigma)
+            if rec.constraint_sigma is not None
+            else float(rec.sigma_level)
+        )
+        return float(rec.y[1]) + z * sigma - float(rec.tau)
 
     @staticmethod
     def _source_margin_scale(rec):
-        return max(abs(float(rec.tau)), float(rec.sigma_level), 1e-6)
+        sigma = (
+            float(rec.constraint_sigma)
+            if rec.constraint_sigma is not None
+            else float(rec.sigma_level)
+        )
+        return max(abs(float(rec.tau)), sigma, 1e-6)
 
     def _boundary_sample_weight(self, rec):
         margin = self._source_margin(rec)
@@ -360,7 +548,8 @@ class LearnedMetaPrior:
         temp = max(float(self.boundary_temperature), 1e-6)
         boundary = np.exp(-0.5 * (scaled / temp) ** 2)
         violation = max(float(scaled), 0.0)
-        return float(1.0 + self.boundary_weight * boundary + 0.25 * violation)
+        base = 1.0 + self.boundary_weight * boundary + 0.25 * violation
+        return float(base * max(float(rec.sample_weight), 1e-8))
 
     def _record_training_diagnostics(self, records, weights):
         margins = np.asarray([self._source_margin(rec) for rec in records], dtype=float)
@@ -370,6 +559,12 @@ class LearnedMetaPrior:
         ], dtype=float)
         weights = np.asarray(weights, dtype=float)
         feasible = margins <= 0.0
+        positive = np.maximum(margins, 0.0)
+        near_boundary = np.abs(scaled) <= 1.0
+        if np.any(near_boundary):
+            slack_source = float(np.quantile(positive[near_boundary], 0.75))
+        else:
+            slack_source = float(np.quantile(positive, 0.75)) if len(positive) else 0.0
         self.training_diagnostics = {
             "source_feasible_rate": float(np.mean(feasible)) if len(feasible) else None,
             "source_margin_mean": float(np.mean(margins)) if len(margins) else None,
@@ -377,6 +572,7 @@ class LearnedMetaPrior:
             "source_scaled_margin_median_abs": (
                 float(np.median(np.abs(scaled))) if len(scaled) else None
             ),
+            "source_recommendation_slack": max(slack_source, 0.0),
             "boundary_weight_mean": float(np.mean(weights)) if len(weights) else None,
             "boundary_weight_max": float(np.max(weights)) if len(weights) else None,
             "boundary_temperature": float(self.boundary_temperature),
@@ -384,6 +580,18 @@ class LearnedMetaPrior:
             "variance_weight": float(self.variance_weight),
             "feasible_penalty": float(self.feasible_penalty),
             "feasible_bonus": float(self.feasible_bonus),
+            "teacher_records_per_domain": int(self.teacher_records_per_domain),
+            "teacher_weight": float(self.teacher_weight),
+            "teacher_pool_size": int(self.teacher_pool_size),
+            "hvd_noise_floor_scale": float(self.hvd_noise_floor_scale),
+            "teacher_record_count": int(sum(
+                1 for rec in records
+                if rec.origin == "source_domain_tuned_teacher"
+            )),
+            "record_origins": {
+                origin: int(sum(1 for rec in records if rec.origin == origin))
+                for origin in sorted({rec.origin for rec in records})
+            },
         }
 
     def fit_from_source_problems(self, source_problems, n_records_per_domain=128, rng=None):
@@ -412,9 +620,18 @@ class LearnedMetaPrior:
         for rec in records:
             by_domain.setdefault(rec.domain, []).append(rec)
         beta_by_output = {0: [], 1: []}
+        mean_by_output = {0: [], 1: []}
+        sigma_by_output = {0: [], 1: []}
         for domain_records in by_domain.values():
             X_desc = np.vstack([
                 np.concatenate([[1.0], self._scaled_descriptor(rec.descriptor)])
+                for rec in domain_records
+            ])
+            X_meta = np.vstack([
+                np.concatenate([[
+                    1.0],
+                    self._mean_prior_features_from_descriptor(rec.descriptor),
+                ])
                 for rec in domain_records
             ])
             F = np.vstack([
@@ -445,7 +662,38 @@ class LearnedMetaPrior:
                         Xw.T @ yw,
                         rcond=None,
                     )[0]
+                reg_meta = self.ridge * np.eye(X_meta.shape[1], dtype=float)
+                reg_meta[0, 0] = 0.0
+                Xmw = X_meta * sqrt_w[:, None]
+                try:
+                    beta_meta = np.linalg.solve(
+                        Xmw.T @ Xmw + reg_meta,
+                        Xmw.T @ yw,
+                    )
+                except np.linalg.LinAlgError:
+                    beta_meta = np.linalg.lstsq(
+                        Xmw.T @ Xmw + reg_meta,
+                        Xmw.T @ yw,
+                        rcond=None,
+                    )[0]
+                resid_meta = y - X_meta @ beta_meta
+                mean_by_output[out_idx].append(beta_meta)
+                sigma_by_output[out_idx].append(float(
+                    np.sqrt(np.mean(resid_meta ** 2)) if len(resid_meta) else 0.0
+                ))
                 resid2 = np.maximum((y - X_desc @ beta_mean) ** 2, 1e-10)
+                if self.hvd_noise_floor_scale > 0.0:
+                    sigmas = []
+                    for rec in domain_records:
+                        if out_idx == 1 and rec.constraint_sigma is not None:
+                            sigmas.append(float(rec.constraint_sigma))
+                        else:
+                            sigmas.append(float(rec.sigma_level))
+                    noise_floor = (
+                        float(self.hvd_noise_floor_scale)
+                        * np.asarray(sigmas, dtype=float)
+                    ) ** 2
+                    resid2 = np.maximum(resid2, noise_floor)
                 resid_scale = float(np.median(resid2)) if len(resid2) else 0.0
                 if resid_scale <= 1e-12:
                     resid_scale = float(np.mean(resid2) + 1e-10)
@@ -465,6 +713,54 @@ class LearnedMetaPrior:
         for out_idx, rows in beta_by_output.items():
             if rows:
                 self.beta_prior[out_idx] = np.mean(np.vstack(rows), axis=0)
+        for out_idx, rows in mean_by_output.items():
+            if rows:
+                self.mean_prior[out_idx] = np.mean(np.vstack(rows), axis=0)
+                sigmas = np.asarray(sigma_by_output.get(out_idx, []), dtype=float)
+                self.mean_prior_sigma[out_idx] = float(
+                    np.median(sigmas) if len(sigmas) else 0.0)
+
+    def _mean_prior_features_from_descriptor(self, descriptor):
+        desc = self._scaled_descriptor(descriptor)
+        psi = self.risk_coordinate_from_descriptor(descriptor)
+        exposure = self.risk_exposure_from_descriptor(descriptor)
+        cumulative = cumulative_feature_vector(exposure)
+        return np.concatenate([
+            desc,
+            psi,
+            psi ** 2,
+            cumulative[1:],
+        ])
+
+    def mean_prior_features(self, problem, x):
+        return self._mean_prior_features_from_descriptor(self.descriptor(problem, x))
+
+    def source_mean_prior_predict(self, problem, x, output_index=1):
+        beta = self.mean_prior.get(int(output_index))
+        if beta is None:
+            return None
+        phi = np.concatenate([[1.0], self.mean_prior_features(problem, x)])
+        if len(phi) != len(beta):
+            return None
+        return float(phi @ beta)
+
+    def source_mean_prior_predict_many(self, problem, xs, output_index=1):
+        beta = self.mean_prior.get(int(output_index))
+        if beta is None:
+            return None
+        Phi = np.vstack([
+            np.concatenate([[1.0], self.mean_prior_features(problem, x)])
+            for x in xs
+        ])
+        if Phi.shape[1] != len(beta):
+            return None
+        return Phi @ beta
+
+    def source_mean_prior_sigma(self, output_index=1):
+        return float(max(
+            self.mean_prior_sigma.get(int(output_index), 0.0) or 0.0,
+            1e-8,
+        ))
 
     def _fit_anchor_distribution(self, records):
         scored = []
@@ -489,6 +785,11 @@ class LearnedMetaPrior:
                 "margin": float(margin),
                 "scaled_margin": float(scaled_margin),
                 "psi": np.asarray(psi, dtype=float),
+                "profile": (
+                    None
+                    if rec.profile is None
+                    else np.asarray(rec.profile, dtype=float).reshape(-1)
+                ),
                 "domain": rec.domain,
                 "feasible": bool(feasible),
                 "anchor_type": "calibrated_score",
@@ -559,6 +860,26 @@ class LearnedMetaPrior:
             }
             for row in selected
         ]
+        self.profile_templates = []
+        profile_seen = set()
+        for row in selected:
+            profile = row.get("profile")
+            if profile is None or len(profile) == 0:
+                continue
+            profile = np.clip(np.asarray(profile, dtype=float).reshape(-1), 0.0, 1.0)
+            key = tuple(np.round(profile, 3))
+            if key in profile_seen:
+                continue
+            profile_seen.add(key)
+            self.profile_templates.append({
+                "profile": profile,
+                "domain": row["domain"],
+                "anchor_type": row["anchor_type"],
+                "feasible": bool(row["feasible"]),
+                "score": float(row["score"]),
+                "margin": float(row["margin"]),
+                "objective": float(row["objective"]),
+            })
         if selected:
             margins = np.asarray([row["margin"] for row in selected], dtype=float)
             self.training_diagnostics.update({
@@ -571,15 +892,35 @@ class LearnedMetaPrior:
                     ))
                     for anchor_type in sorted({row["anchor_type"] for row in selected})
                 },
+                "profile_template_count": int(len(self.profile_templates)),
             })
 
     def state_anchor_points(self, n=10, rng=None):
         rng = rng or np.random.default_rng(self.seed)
         if len(self.anchor_psi) == 0:
             return []
-        order = rng.permutation(len(self.anchor_psi))
+        n_take = max(0, int(n))
+        if (
+            self.anchor_sampling_temperature > 0.0
+            and len(self.anchor_scores) == len(self.anchor_psi)
+        ):
+            scores = np.asarray(self.anchor_scores, dtype=float)
+            scale = float(np.std(scores))
+            scale = max(scale, 1e-8)
+            logits = -scores / (scale * self.anchor_sampling_temperature)
+            logits -= float(np.max(logits))
+            probs = np.exp(logits)
+            probs = probs / max(float(np.sum(probs)), 1e-12)
+            order = rng.choice(
+                len(self.anchor_psi),
+                size=min(n_take, len(self.anchor_psi)),
+                replace=False,
+                p=probs,
+            )
+        else:
+            order = rng.permutation(len(self.anchor_psi))[:n_take]
         anchors = []
-        for pos in order[: max(0, int(n))]:
+        for pos in order:
             psi = np.asarray(self.anchor_psi[int(pos)], dtype=float)
             anchors.append({
                 "psi": psi.tolist(),
@@ -594,6 +935,139 @@ class LearnedMetaPrior:
                 "coordinate": "learned_meta_psi=(A,N)",
             })
         return anchors
+
+    def _continuous_to_tuple(self, problem, z):
+        z = np.asarray(z, dtype=float).reshape(-1)
+        z = np.clip(z, 0.0, 1.0)
+        try:
+            return _as_tuple(problem.continuous_to_int(z))
+        except (AttributeError, TypeError, ValueError):
+            L = int(getattr(problem, "L", 100))
+            return tuple(int(np.clip(round(v * L), 0, L)) for v in z)
+
+    def universal_shape_candidates(self, problem, n=0, rng=None):
+        """Admissible low-complexity policy shapes shared by all domains.
+
+        These candidates use only bounds and dimension, not held-out target
+        objectives, constraints, anchors, or risk coordinates.  They act like a
+        weak smoothness/low-complexity prior: constants, one-control-plus-tail,
+        piecewise thirds, and monotone ramps.
+        """
+        n_take = max(0, int(n))
+        if n_take <= 0:
+            return []
+        d = max(1, int(getattr(problem, "d", 1)))
+        rows = []
+
+        def add(z):
+            rows.append(self._continuous_to_tuple(problem, z))
+
+        levels = [0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85]
+        for value in levels:
+            add(np.full(d, value, dtype=float))
+
+        constant_end = len(rows)
+
+        head_levels = [0.25, 0.35, 0.50, 0.65, 0.15, 0.80]
+        tail_levels = [0.75, 0.65, 0.85, 0.55, 0.45, 0.30]
+        for head in head_levels:
+            for tail in tail_levels:
+                z = np.full(d, tail, dtype=float)
+                z[0] = head
+                add(z)
+
+        head_tail_end = len(rows)
+
+        third_levels = [0.25, 0.40, 0.55, 0.70]
+        third_templates = [
+            (a, b, c)
+            for a in third_levels
+            for b in third_levels
+            for c in third_levels
+        ]
+        for a, b, c in third_templates:
+            z = np.empty(d, dtype=float)
+            for j in range(d):
+                z[j] = (a, b, c)[min(2, int(3 * j / max(d, 1)))]
+            add(z)
+
+        thirds_end = len(rows)
+
+        for lo, hi in [(0.20, 0.80), (0.30, 0.70), (0.40, 0.60)]:
+            add(np.linspace(lo, hi, d))
+            add(np.linspace(hi, lo, d))
+
+        blocks = [
+            rows[:constant_end],
+            rows[constant_end:head_tail_end],
+            rows[head_tail_end:thirds_end],
+            rows[thirds_end:],
+        ]
+        balanced = []
+        max_block = max((len(block) for block in blocks), default=0)
+        for pos in range(max_block):
+            for block in blocks:
+                if pos < len(block):
+                    balanced.append(block[pos])
+        rows = unique_candidates(balanced)
+        if len(rows) <= n_take:
+            return rows
+        # Keep early hand-balanced shapes and randomly thin only the excess.
+        head = rows[: min(len(rows), max(min(n_take, 8), n_take // 3))]
+        tail = rows[len(head):]
+        rng = rng or np.random.default_rng(self.seed)
+        need = max(0, n_take - len(head))
+        if need > 0 and tail:
+            order = rng.permutation(len(tail))[:need]
+            head.extend(tail[int(i)] for i in order)
+        return unique_candidates(head)[:n_take]
+
+    def profile_template_candidates(self, problem, n=0, rng=None):
+        """Replay source-learned normalized policy profiles on a held-out target.
+
+        Templates are selected only from source-domain records during
+        `fit_from_source_problems`.  At test time we resample each normalized
+        profile to the target dimension and convert through target bounds.  This
+        is a LODO meta-prior: it transfers policy shape, not target objective or
+        feasibility labels.
+        """
+        n_take = max(0, int(n))
+        if n_take <= 0 or not self.profile_templates:
+            return []
+        rng = rng or np.random.default_rng(self.seed)
+        d = max(1, int(getattr(problem, "d", 1)))
+        order = list(range(len(self.profile_templates)))
+        # Keep source-safe/low-score templates early, randomize ties to avoid a
+        # single source domain dominating all held-out proposals.
+        order.sort(key=lambda i: (
+            0 if self.profile_templates[i].get("feasible", False) else 1,
+            float(self.profile_templates[i].get("score", 0.0)),
+            float(abs(self.profile_templates[i].get("margin", 0.0))),
+        ))
+        if len(order) > n_take:
+            head = order[: max(1, min(len(order), n_take // 2))]
+            tail = order[len(head):]
+            need = n_take - len(head)
+            if need > 0 and tail:
+                pick = rng.permutation(len(tail))[:need]
+                head.extend(tail[int(i)] for i in pick)
+            order = head
+        rows = []
+        for idx in order[:n_take]:
+            profile = np.asarray(
+                self.profile_templates[int(idx)]["profile"],
+                dtype=float,
+            ).reshape(-1)
+            if len(profile) == 0:
+                continue
+            if len(profile) == d:
+                z = profile.copy()
+            else:
+                xp = np.linspace(0.0, 1.0, len(profile))
+                xnew = np.linspace(0.0, 1.0, d)
+                z = np.interp(xnew, xp, profile)
+            rows.append(self._continuous_to_tuple(problem, np.clip(z, 0.0, 1.0)))
+        return unique_candidates(rows)[:n_take]
 
     def inverse_state_anchor(self, problem, anchor, rng=None, n=1, pool_size=512):
         rng = rng or np.random.default_rng(self.seed)
@@ -619,18 +1093,40 @@ class LearnedMetaPrior:
 
     def proposal_candidates(self, problem, n=32, rng=None, pool_size=1024):
         rng = rng or np.random.default_rng(self.seed)
+        n_target = max(0, int(n))
         rows = []
-        for anchor in self.state_anchor_points(n=max(1, int(n)), rng=rng):
+        n_profiles = min(
+            len(self.profile_templates),
+            n_target,
+            max(min(n_target, 3), int(round(0.35 * n_target))),
+        )
+        rows.extend(self.profile_template_candidates(
+            problem,
+            n=n_profiles,
+            rng=rng,
+        ))
+        n_universal = min(
+            max(0, int(self.universal_shape_count)),
+            max(0, n_target - len(rows)),
+            max(min(max(0, n_target - len(rows)), 4), int(round(0.35 * n_target))),
+        )
+        rows.extend(self.universal_shape_candidates(
+            problem,
+            n=n_universal,
+            rng=rng,
+        ))
+        n_anchor = max(1, n_target - len(rows))
+        for anchor in self.state_anchor_points(n=n_anchor, rng=rng):
             rows.extend(self.inverse_state_anchor(
                 problem,
                 anchor,
                 rng=rng,
                 n=1,
-                pool_size=max(64, int(pool_size) // max(1, int(n))),
+                pool_size=max(64, int(pool_size) // max(1, n_anchor)),
             ))
-        while len(rows) < int(n):
+        while len(rows) < n_target:
             rows.append(problem.sample_random(rng))
-        return unique_candidates(rows)[: max(0, int(n))]
+        return unique_candidates(rows)[:n_target]
 
     def cumulative_hvd_prior_beta(self, output_index=1, feature_dim=None):
         beta = self.beta_prior.get(int(output_index))
@@ -641,6 +1137,12 @@ class LearnedMetaPrior:
             return None
         return beta.copy()
 
+    def source_calibrated_recommendation_slack(self):
+        return float(max(
+            self.training_diagnostics.get("source_recommendation_slack", 0.0) or 0.0,
+            0.0,
+        ))
+
     def diagnostics(self):
         return {
             "status": self.fit_status,
@@ -649,12 +1151,41 @@ class LearnedMetaPrior:
             "local_dim": int(self.local_dim),
             "shared_dim": int(self.shared_dim),
             "n_anchors": int(len(self.anchor_psi)),
+            "n_profile_templates": int(len(self.profile_templates)),
+            "universal_shape_count": int(self.universal_shape_count),
             "has_beta_prior": {
                 str(key): value is not None
                 for key, value in self.beta_prior.items()
             },
+            "has_mean_prior": {
+                str(key): value is not None
+                for key, value in self.mean_prior.items()
+            },
             "training": dict(self.training_diagnostics),
         }
+
+
+class MetaPriorSurrogateBasis:
+    """Admissible target-observation calibration basis induced by frozen psi."""
+
+    def __init__(self, meta_prior: LearnedMetaPrior, problem):
+        self.meta_prior = meta_prior
+        self.problem = problem
+
+    def features(self, x):
+        desc = self.meta_prior._scaled_descriptor(
+            self.meta_prior.descriptor(self.problem, x)
+        )
+        psi = self.meta_prior.risk_coordinate(self.problem, x)
+        exposure = self.meta_prior.risk_exposure(self.problem, x)
+        cumulative = cumulative_feature_vector(exposure)
+        return np.concatenate([
+            desc,
+            psi,
+            psi ** 2,
+            cumulative[1:],
+        ])
+
 
 class AdmissibleProblemAdapter:
     """Hide target-specific structural hooks while preserving simulation API."""
@@ -743,6 +1274,22 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             output_index=output_index,
             feature_dim=feature_dim,
         )
+
+    def source_calibrated_recommendation_slack(self):
+        return self.meta_prior.source_calibrated_recommendation_slack()
+
+    def surrogate_basis_map(self):
+        return MetaPriorSurrogateBasis(self.meta_prior, self)
+
+    def source_mean_prior_predict_many(self, xs, output_index=1):
+        return self.meta_prior.source_mean_prior_predict_many(
+            self,
+            xs,
+            output_index=output_index,
+        )
+
+    def source_mean_prior_sigma(self, output_index=1):
+        return self.meta_prior.source_mean_prior_sigma(output_index=output_index)
 
     def hvd_features(self, x):
         return self.meta_prior.hvd_features(self, x)

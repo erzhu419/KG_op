@@ -128,6 +128,34 @@ class StateEncoderTests(unittest.TestCase):
         self.assertEqual(alg.gpr[0].p, 12)
         self.assertLess(alg.gpr[0].p, 2 * problem.d + 1)
 
+    def test_observed_neighbor_candidates_use_target_feedback_only(self):
+        base = HighDimStatePolicyRZDT1(d=64, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        alg = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=6,
+                n0=4,
+                K1=4,
+                K2=0,
+                observed_neighbor_candidate_count=12,
+                observed_neighbor_radius=0.04,
+                seed=3,
+            ),
+        )
+        safe = base._constant_tail_x(0.22, 0.72)
+        unsafe = base._constant_tail_x(0.90, 0.20)
+        alg.observations[tuple(safe)] = [problem.true_outputs(safe)]
+        alg.observations[tuple(unsafe)] = [problem.true_outputs(unsafe)]
+        rows = alg._observed_neighbor_candidates(rng=np.random.default_rng(4))
+        self.assertGreaterEqual(len(rows), 4)
+        self.assertLessEqual(len(rows), 12)
+        self.assertTrue(all(len(x) == problem.d for x in rows))
+        lo, hi = problem.int_bounds()
+        self.assertTrue(all(np.all(np.asarray(x) >= lo) for x in rows))
+        self.assertTrue(all(np.all(np.asarray(x) <= hi) for x in rows))
+        self.assertIn(tuple(safe), rows)
+
     def test_high_dim_calibrated_recommendation_rescues_feasible_meta_point(self):
         base = HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04)
         problem = ScalarizedProblem(base)
@@ -169,6 +197,103 @@ class StateEncoderTests(unittest.TestCase):
             details["calibrated_recommendation_reason"],
             "calibrated_constraint_fallback",
         )
+
+    def test_calibrated_recommendation_guard_blocks_high_theory_margin(self):
+        base = HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        alg = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=8,
+                n0=8,
+                K1=4,
+                K2=0,
+                seed=2,
+                recommendation_calibration=True,
+                recommendation_calibration_max_theory_margin=0.5,
+            ),
+        )
+        train = [
+            base._constant_tail_x(u, q)
+            for u, q in [
+                (0.05, 0.50),
+                (0.50, 0.50),
+                (0.25, 0.55),
+                (0.25, 0.90),
+                (0.75, 0.50),
+                (0.10, 0.82),
+                (0.90, 0.20),
+                (0.40, 0.65),
+                (0.22, 0.72),
+            ]
+        ]
+        for x in train:
+            alg.observations[tuple(x)] = [problem.true_outputs(x)]
+        pool = problem.recommendation_refinement_candidates()
+        robust_margins = np.ones(len(pool), dtype=float)
+        idx, details = alg._calibrated_recommendation_index(pool, robust_margins)
+        self.assertIsNone(idx)
+        self.assertEqual(
+            details["calibrated_recommendation_reason"],
+            "no_calibrated_feasible_after_guard",
+        )
+        self.assertGreater(details["n_calibration_raw_feasible"], 0)
+        self.assertEqual(details["n_calibration_guarded"], 0)
+
+    def test_source_safe_rescue_when_calibrated_margin_is_conservative(self):
+        base = HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        alg = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=8,
+                n0=8,
+                K1=4,
+                K2=0,
+                seed=2,
+                recommendation_calibration=True,
+                recommendation_noise_floor_scale=100.0,
+                recommendation_infeasible_strategy="source_prior_margin",
+                source_mean_prior_margin_tol=0.0,
+            ),
+        )
+        train = [
+            base._constant_tail_x(u, q)
+            for u, q in [
+                (0.05, 0.50),
+                (0.50, 0.50),
+                (0.25, 0.55),
+                (0.75, 0.50),
+                (0.90, 0.20),
+                (0.40, 0.65),
+                (0.18, 0.72),
+                (0.62, 0.38),
+            ]
+        ]
+        for x in train:
+            alg.observations[tuple(x)] = [problem.true_outputs(x)]
+        pool = problem.recommendation_refinement_candidates()
+        robust_margins = np.full(len(pool), 0.25, dtype=float)
+        source_margins = np.full(len(pool), 1.0, dtype=float)
+        safe_pos = None
+        for i, x in enumerate(pool):
+            if problem.is_truly_feasible(x):
+                safe_pos = i
+                break
+        self.assertIsNotNone(safe_pos)
+        source_margins[safe_pos] = -0.1
+        idx, details = alg._calibrated_recommendation_index(
+            pool,
+            robust_margins,
+            source_margins=source_margins,
+        )
+        self.assertEqual(idx, safe_pos)
+        self.assertEqual(
+            details["calibrated_recommendation_reason"],
+            "source_safe_calibrated_margin_rescue",
+        )
+        self.assertFalse(details["calibrated_constraint_feasible"])
+        self.assertTrue(details["source_mean_prior_guard_used"])
 
     def test_high_dim_calibrated_certification_marks_supported_meta_point(self):
         base = HighDimStatePolicyRZDT1(d=128, L=100, sigma=0.04)

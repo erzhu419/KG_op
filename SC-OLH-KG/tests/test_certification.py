@@ -77,6 +77,28 @@ class CertificationTests(unittest.TestCase):
         self.assertEqual(details[0]["variance_g"], 0.04)
         self.assertEqual(details[0]["epistemic_variance_g"], 0.25)
 
+    def test_constraint_epistemic_score_targets_uncertain_boundary(self):
+        acquisition = OLHKGAcquisition(
+            constraint_epistemic_margin_softening=3.0,
+        )
+        details = [
+            {
+                "chance_margin": 0.6,
+                "variance_g": 0.01,
+                "total_certification_variance_g": 0.04,
+                "epistemic_variance_g": 0.25,
+            },
+            {
+                "chance_margin": 0.1,
+                "variance_g": 0.01,
+                "total_certification_variance_g": 0.04,
+                "epistemic_variance_g": 0.01,
+            },
+        ]
+        scores = acquisition.constraint_epistemic_scores(details)
+        self.assertEqual(scores.shape, (2,))
+        self.assertGreater(float(scores[0]), float(scores[1]))
+
 
 if __name__ == "__main__":
     unittest.main()
