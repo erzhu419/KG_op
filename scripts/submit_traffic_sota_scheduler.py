@@ -9,6 +9,8 @@ import subprocess
 import sys
 import time
 
+from scheduler_node_policy import parse_cpu_nodes
+
 
 DEFAULT_SCHEDULER = Path.home() / ".claude/skills/scheduler/scheduler.py"
 DEFAULT_DEPLOY = Path("/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
@@ -60,6 +62,8 @@ def main():
     run_id = args.run_id or time.strftime("%Y%m%d_%H%M%S")
     cwd = args.deploy / "SC-OLH-KG"
     paper_results = args.deploy / "Final_Submission/GPR_KG_Code/results/ingolstadt21"
+    nodes = parse_cpu_nodes(args.nodes)
+    node_csv = ",".join(nodes)
     task_groups = []
     for method in parse_csv(args.methods):
         tag = args.tag or run_id
@@ -81,7 +85,7 @@ def main():
             "--cwd", str(cwd),
             "--signature", f"KG_op/traffic_sota/{run_id}/{method}/{{node}}",
             "--description", f"SC-OLH-KG traffic SOTA {method} {run_id} {{node}}",
-            "--nodes", args.nodes,
+            "--nodes", node_csv,
             "--ram-mb", str(args.ram_mb),
             "--project", "KG-SUMO",
             "--allow-no-ckpt",

@@ -9,6 +9,8 @@ import subprocess
 import sys
 import time
 
+from scheduler_node_policy import allowed_node_flags, parse_cpu_nodes
+
 
 DEFAULT_SCHEDULER = Path.home() / ".claude/skills/scheduler/scheduler.py"
 DEFAULT_DEPLOY = Path("/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
@@ -48,7 +50,8 @@ def main():
     args = parser.parse_args()
 
     run_id = args.run_id or time.strftime("%Y%m%d_%H%M%S")
-    node = parse_csv(args.nodes)[0]
+    nodes = parse_cpu_nodes(args.nodes)
+    node = nodes[0]
     cwd = args.deploy / "SC-OLH-KG"
     out_root = args.deploy / "Final_Submission/GPR_KG_Code/results/ingolstadt21"
     out_csv = out_root / f"traffic_trajectory_{run_id}.csv"
@@ -87,6 +90,7 @@ def main():
         "--cpu", str(args.cpu),
         "--ram-mb", str(args.ram_mb),
         "--require-node", node,
+        *allowed_node_flags(nodes),
         "--allow-no-ckpt",
         "--allow-no-resume",
         "--allow-duplicate",

@@ -9,6 +9,8 @@ import subprocess
 import sys
 import time
 
+from scheduler_node_policy import allowed_node_flags, parse_cpu_nodes
+
 
 DEFAULT_SCHEDULER = Path.home() / ".claude/skills/scheduler/scheduler.py"
 DEFAULT_DEPLOY = Path("/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
@@ -374,7 +376,7 @@ def main():
 
     run_id = args.run_id or time.strftime("%Y%m%d_%H%M%S")
     cwd = args.deploy / "SC-OLH-KG"
-    nodes = parse_csv(args.nodes)
+    nodes = parse_cpu_nodes(args.nodes)
     task_ids = []
     num_shards = max(1, int(args.num_shards_per_suite))
     shard_start = max(0, int(args.shard_start))
@@ -429,6 +431,7 @@ def main():
             "--cpu", str(args.cpu),
             "--ram-mb", str(args.ram_mb),
             "--require-node", node,
+            *allowed_node_flags(nodes),
             "--allow-duplicate",
         ], dry_run=args.dry_run)
         if out:

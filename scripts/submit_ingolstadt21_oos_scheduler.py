@@ -13,6 +13,8 @@ import subprocess
 import sys
 import time
 
+from scheduler_node_policy import allowed_node_flags, parse_cpu_nodes
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SCHEDULER = Path.home() / ".claude/skills/scheduler/scheduler.py"
@@ -44,7 +46,7 @@ def submit(args):
     run_id = args.run_id or time.strftime("%Y%m%d_%H%M%S")
     cwd = args.deploy / "Final_Submission/GPR_KG_Code"
     out_dir = f"results/ingolstadt21/{args.out_prefix}_{run_id}"
-    nodes = parse_csv(args.nodes)
+    nodes = parse_cpu_nodes(args.nodes)
     task_ids = []
     for shard in range(args.shards):
         node = nodes[shard % len(nodes)]
@@ -90,6 +92,7 @@ def submit(args):
             "--cpu", str(args.cpu_per_shard),
             "--ram-mb", str(args.ram_mb_per_shard),
             "--require-node", node,
+            *allowed_node_flags(nodes),
             "--allow-no-ckpt",
             "--allow-no-resume",
             "--allow-duplicate",
@@ -151,7 +154,7 @@ def merge(args, run_id=None, task_ids=None):
         raise SystemExit("--run-id is required for merge")
     sched = scheduler_module(args.scheduler)
     remote_dir = args.remote_root / "Final_Submission/GPR_KG_Code/results/ingolstadt21" / f"{args.out_prefix}_{run_id}"
-    nodes = parse_csv(args.nodes)
+    nodes = parse_cpu_nodes(args.nodes)
     shards = []
     for shard in range(args.shards):
         node = nodes[shard % len(nodes)]
