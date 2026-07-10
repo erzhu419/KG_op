@@ -1,6 +1,7 @@
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 
@@ -53,6 +54,15 @@ class FakeLLMAdvisor(LLMStructuralPriorAdvisor):
 
 
 class LLMStructuralPriorTests(unittest.TestCase):
+    def test_offline_guard_blocks_request_before_api_lookup(self):
+        advisor = LLMStructuralPriorAdvisor(
+            base_url="https://example.invalid",
+            model="never-called",
+        )
+        with patch.dict("os.environ", {"SCOLHKG_OFFLINE": "1"}, clear=True):
+            with self.assertRaisesRegex(RuntimeError, "network access disabled"):
+                advisor._call_llm([])
+
     def test_fake_llm_prior_generates_bounded_candidates(self):
         problem = RZDT2(d=5, L=100, sigma=0.04)
         rng = np.random.default_rng(4)

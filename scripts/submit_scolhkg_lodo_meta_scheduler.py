@@ -161,6 +161,7 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"--source_mean_prior_margin_tol {args.source_mean_prior_margin_tol} "
         f"{'--truth_pool_diagnostics ' if args.truth_pool_diagnostics else ''}"
         f"--truth_pool_max_candidates {args.truth_pool_max_candidates} "
+        f"{'--offline_only' if args.offline_only else '--no-offline_only'} "
         f"--source_records_per_domain {args.source_records_per_domain} "
         f"--meta_local_dim {args.meta_local_dim} "
         f"--meta_shared_dim {args.meta_shared_dim} "
@@ -421,6 +422,12 @@ def main():
         default=True,
     )
     parser.add_argument("--truth-pool-max-candidates", type=int, default=400)
+    parser.add_argument(
+        "--offline-only",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Forbid external API/network-assisted priors in every submitted run.",
+    )
     parser.add_argument("--source-records-per-domain", type=int, default=256)
     parser.add_argument("--meta-local-dim", type=int, default=3)
     parser.add_argument("--meta-shared-dim", type=int, default=3)
@@ -686,6 +693,7 @@ def main():
         cmd = "; ".join([
             "export LC_ALL=C LANG=C",
             "export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1",
+            f"export SCOLHKG_OFFLINE={'1' if args.offline_only else '0'}",
             f"{command} && echo DONE",
         ])
         description = (

@@ -6,6 +6,7 @@ import argparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import csv
 import json
+import os
 from pathlib import Path
 import statistics
 import sys
@@ -1282,6 +1283,12 @@ def main():
     parser.add_argument("--truth_pool_good_regret", type=float, default=0.05)
     parser.add_argument("--truth_pool_max_candidates", type=int, default=0)
     parser.add_argument("--llm_prior_enabled", action="store_true")
+    parser.add_argument(
+        "--offline_only",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Disable external API/network-assisted priors for reproducible evaluation.",
+    )
     parser.add_argument("--llm_prior_base_url", default="https://ruoli.dev")
     parser.add_argument("--llm_prior_model", default="gpt-5.4-mini")
     parser.add_argument("--llm_prior_api_key_env", default="SCOLHKG_LLM_API_KEY")
@@ -1509,6 +1516,12 @@ def main():
     args = parser.parse_args()
     if args.N <= args.n0:
         raise ValueError("--N must be larger than --n0")
+    if args.offline_only:
+        os.environ["SCOLHKG_OFFLINE"] = "1"
+        if args.llm_prior_enabled:
+            raise ValueError(
+                "--offline_only is incompatible with --llm_prior_enabled"
+            )
     result = run(args)
     paths = write_outputs(args, result)
     print(json.dumps(json_safe({"paths": paths, "summary": result["summary"]}), indent=2))

@@ -202,6 +202,12 @@ class LLMStructuralPriorAdvisor:
         ]
 
     def _call_llm(self, messages):
+        if os.environ.get("SCOLHKG_OFFLINE", "").strip().lower() in {
+                "1", "true", "yes", "on"}:
+            raise RuntimeError(
+                "network access disabled by SCOLHKG_OFFLINE; "
+                "LLM structural prior cannot be called"
+            )
         key = os.environ.get(self.api_key_env, "").strip()
         if not key:
             raise RuntimeError(f"missing API key env {self.api_key_env}")
