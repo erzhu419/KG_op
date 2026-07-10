@@ -38,6 +38,8 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/ConditionalVariance.lean`: finite-partition law of total
   variance over real numbers, proved by algebraic expansion.
 - `SCOLHKG/Real/GPRUpdate.lean`: code-level rank-one GPR update bridge, showing
+  that PSD-repaired quadratic variance yields a strictly positive noisy
+  Kalman denominator, and
   the KG slope used in `core/kg.py` is the standard-shock posterior mean
   response.
 - `SCOLHKG/Real/OccupancyDecomposition.lean`: policy trajectory mixture risk

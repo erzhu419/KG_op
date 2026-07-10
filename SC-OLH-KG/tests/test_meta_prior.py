@@ -860,6 +860,23 @@ class MetaPriorTests(unittest.TestCase):
             float(np.linalg.norm(least_squares[1:])),
         )
 
+        near_null = np.column_stack([
+            np.ones(10),
+            np.linspace(-1.0, 1.0, 10),
+            np.linspace(-1.0, 1.0, 10) + 1e-9 * np.arange(10),
+        ])
+        near_null_values = np.linspace(-0.5, 0.5, 10)
+        gate.selected_parametric_ridge = 0.0
+        stable = gate.initial_parametric_coefficients(
+            near_null, near_null_values)
+        self.assertTrue(np.all(np.isfinite(stable)))
+        self.assertLess(float(np.max(np.abs(stable))), 10.0)
+        self.assertEqual(
+            gate.gate_diagnostics["initial_fit_solver"],
+            "truncated_svd",
+        )
+        self.assertEqual(gate.gate_diagnostics["initial_fit_rcond"], 1e-3)
+
     def test_additive_group_bank_is_source_only_orthogonal_anova(self):
         prior = LearnedMetaPrior(
             local_dim=2,

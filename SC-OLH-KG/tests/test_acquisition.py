@@ -72,6 +72,16 @@ class AcquisitionTests(unittest.TestCase):
         np.testing.assert_allclose(model.a, beta)
         np.testing.assert_allclose(model.C, covariance, rtol=1e-12, atol=1e-12)
 
+    def test_rank_one_update_repairs_negative_covariance_direction(self):
+        model = ParametricGPR(2, prior_var=1.0)
+        model.C[0, 0] = -1e-6
+        model.update((0, 0), 1.0, 1e-4)
+        diagnostics = model.numerical_diagnostics()
+        self.assertTrue(diagnostics["finite_state"])
+        self.assertEqual(diagnostics["covariance_projection_count"], 1)
+        self.assertGreaterEqual(diagnostics["covariance_min_eigenvalue"], -1e-12)
+        self.assertLess(float(np.max(np.abs(model.a))), 10.0)
+
     def test_optional_torch_backend_matches_numpy_kg(self):
         try:
             import torch  # noqa: F401

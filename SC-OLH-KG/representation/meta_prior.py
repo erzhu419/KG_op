@@ -4276,7 +4276,25 @@ class PilotGatedMetaPriorBasis:
         values = np.asarray(target, dtype=float).reshape(-1)
         ridge = max(float(self.selected_parametric_ridge), 0.0)
         if ridge <= 0.0:
-            return np.linalg.lstsq(matrix, values, rcond=None)[0]
+            # The frozen basis can contain source-identifiable directions that
+            # are nearly null on a ten-point held-out pilot.  A fixed condition
+            # cap removes only those target-unidentifiable directions.
+            rcond = 1e-3
+            singular_values = np.linalg.svd(matrix, compute_uv=False)
+            threshold = (
+                rcond * float(singular_values[0])
+                if len(singular_values)
+                else 0.0
+            )
+            effective_rank = int(np.sum(singular_values > threshold))
+            self.gate_diagnostics.update({
+                "initial_fit_solver": "truncated_svd",
+                "initial_fit_rcond": float(rcond),
+                "initial_fit_effective_rank": effective_rank,
+                "initial_fit_matrix_rank": int(np.linalg.matrix_rank(matrix)),
+                "initial_fit_max_condition": float(1.0 / rcond),
+            })
+            return np.linalg.lstsq(matrix, values, rcond=rcond)[0]
         features = matrix[:, 1:]
         feature_mean = np.mean(features, axis=0)
         feature_scale = np.std(features, axis=0)
@@ -4291,6 +4309,10 @@ class PilotGatedMetaPriorBasis:
         response = (values - value_mean) / value_scale
         penalty = ridge * np.eye(design.shape[1], dtype=float)
         penalty[0, 0] = 0.0
+        self.gate_diagnostics.update({
+            "initial_fit_solver": "standardized_ridge",
+            "initial_fit_ridge": float(ridge),
+        })
         try:
             standardized_beta = np.linalg.solve(
                 design.T @ design + penalty,

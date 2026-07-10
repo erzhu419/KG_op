@@ -129,4 +129,32 @@ theorem replication_updated_variance_nonnegative
     0 ≤ q - replicationVarianceReduction q r := by
   exact sub_nonneg.mpr (replication_variance_reduction_le_epistemic hq hr)
 
+/-!
+The implementation projects a numerically contaminated covariance back to the
+positive-semidefinite cone before forming a Kalman denominator. On a queried
+direction this is the scalar map `q ↦ max q 0`; adding strictly positive
+observation variance gives a strictly positive denominator.
+-/
+
+def stabilizedQuadraticVariance (q : ℝ) : ℝ := max q 0
+
+def stabilizedPredictiveVariance (q r : ℝ) : ℝ :=
+  stabilizedQuadraticVariance q + r
+
+theorem stabilizedQuadraticVariance_nonnegative (q : ℝ) :
+    0 ≤ stabilizedQuadraticVariance q := by
+  exact le_max_right q 0
+
+theorem stabilizedQuadraticVariance_eq_self
+    {q : ℝ} (hq : 0 ≤ q) :
+    stabilizedQuadraticVariance q = q := by
+  exact max_eq_left hq
+
+theorem stabilizedPredictiveVariance_positive
+    {q r : ℝ} (hr : 0 < r) :
+    0 < stabilizedPredictiveVariance q r := by
+  unfold stabilizedPredictiveVariance
+  exact add_pos_of_nonneg_of_pos
+    (stabilizedQuadraticVariance_nonnegative q) hr
+
 end SCOLHKG.Real

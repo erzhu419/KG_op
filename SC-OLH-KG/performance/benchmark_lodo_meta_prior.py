@@ -525,6 +525,7 @@ def run_one(task):
         "meta_prior": meta_diag,
         "meta_basis": result.get("meta_basis"),
         "adaptive_sparsity": result.get("adaptive_sparsity"),
+        "gpr_numerics": result.get("gpr_numerics"),
         "true_feasible": true_feasible,
         "posterior_feasible": posterior_feasible,
         "false_feasible": bool(posterior_feasible and not true_feasible),

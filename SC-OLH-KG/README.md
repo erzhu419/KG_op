@@ -77,6 +77,13 @@ The LODO benchmark and scheduler default to the promoted
 Pass explicit flags to recover the `spectral`, additive, or no-replication
 ablations.
 
+Held-out pilot coefficients use a fixed truncated-SVD condition cap of
+`1/rcond = 1000`, so source-visible directions that are numerically
+unidentifiable on the target pilot cannot create extreme extrapolation. The
+rank-one GPR update also repairs a covariance only when a negative quadratic
+form is detected, before adding observation noise to the Kalman denominator.
+Both operations are reported in `meta_basis` and `gpr_numerics` diagnostics.
+
 ## State Encoders
 
 `SingleOLHKGConfig(encoder_kind=...)` accepts deterministic occupancy,

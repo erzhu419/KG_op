@@ -68,6 +68,9 @@ class ParametricGPR:
         self._adaptive_sparsity = None
         self._adaptive_records = []
         self._adaptive_spec = None
+        self._covariance_projection_count = 0
+        self._min_quadratic_variance_seen = float("inf")
+        self._max_abs_posterior_mean_seen = 0.0
         if self.numeric_backend in ("torch", "torch_cuda", "cuda"):
             if self._import_torch() is None:
                 raise RuntimeError(
@@ -227,7 +230,14 @@ class ParametricGPR:
         return np.hstack([Phi, E])
 
     def posterior_mean(self, x: ArrayLike) -> float:
-        return float(self.augmented_feature(x) @ self.a)
+        value = float(self.augmented_feature(x) @ self.a)
+        if not np.isfinite(value):
+            raise FloatingPointError("non-finite GPR posterior mean")
+        self._max_abs_posterior_mean_seen = max(
+            float(getattr(self, "_max_abs_posterior_mean_seen", 0.0)),
+            abs(value),
+        )
+        return value
 
     def posterior_mean_many(self, X: list[ArrayLike] | np.ndarray) -> np.ndarray:
         A = self.augmented_feature_matrix(X)
@@ -237,13 +247,57 @@ class ParametricGPR:
             with torch.no_grad():
                 A_t = torch.as_tensor(A, dtype=dtype, device=device)
                 a_t, _ = self.torch_state(rows=len(A), force=True)
-                return (A_t @ a_t).detach().cpu().numpy()
-        return A @ self.a
+                values = (A_t @ a_t).detach().cpu().numpy()
+        else:
+            values = A @ self.a
+        values = np.asarray(values, dtype=float)
+        if not np.all(np.isfinite(values)):
+            raise FloatingPointError("non-finite GPR posterior means")
+        if len(values):
+            self._max_abs_posterior_mean_seen = max(
+                float(getattr(self, "_max_abs_posterior_mean_seen", 0.0)),
+                float(np.max(np.abs(values))),
+            )
+        return values
+
+    def _project_covariance_psd(self) -> None:
+        """Repair a covariance only after a negative quadratic form is detected."""
+
+        covariance = np.asarray(self.C, dtype=float)
+        if not np.all(np.isfinite(covariance)):
+            raise FloatingPointError("non-finite GPR covariance")
+        covariance = 0.5 * (covariance + covariance.T)
+        eigenvalues, eigenvectors = np.linalg.eigh(covariance)
+        if not np.all(np.isfinite(eigenvalues)):
+            raise FloatingPointError("non-finite GPR covariance eigenvalues")
+        self.C = (eigenvectors * np.maximum(eigenvalues, 0.0)) @ eigenvectors.T
+        self.C = 0.5 * (self.C + self.C.T)
+        self._covariance_projection_count = int(
+            getattr(self, "_covariance_projection_count", 0)
+        ) + 1
+
+    @staticmethod
+    def _negative_variance_tolerance(values) -> float:
+        arr = np.asarray(values, dtype=float)
+        scale = max(1.0, float(np.max(np.abs(arr))) if arr.size else 1.0)
+        return 1e-10 * scale
+
+    def _record_quadratic_variance(self, value: float) -> None:
+        self._min_quadratic_variance_seen = min(
+            float(getattr(self, "_min_quadratic_variance_seen", float("inf"))),
+            float(value),
+        )
 
     def posterior_var(self, x: ArrayLike) -> float:
         x_tuple = tuple(int(v) for v in np.asarray(x, dtype=int))
         e = self.augmented_feature(x)
         var = float(e @ self.C @ e)
+        self._record_quadratic_variance(var)
+        if var < -self._negative_variance_tolerance([var]):
+            self._project_covariance_psd()
+            var = float(e @ self.C @ e)
+            self._record_quadratic_variance(var)
+        var = max(var, 0.0)
         if x_tuple not in self.sol_to_idx:
             var += self.lambda_i
         var += self.adaptive_model_uncertainty(x)
@@ -264,11 +318,20 @@ class ParametricGPR:
                 var = var_t.detach().cpu().numpy()
         else:
             var = np.einsum("ij,jk,ik->i", A, self.C, A)
+        var = np.asarray(var, dtype=float)
+        if not np.all(np.isfinite(var)):
+            raise FloatingPointError("non-finite GPR posterior variances")
+        if len(var):
+            self._record_quadratic_variance(float(np.min(var)))
+        if len(var) and float(np.min(var)) < -self._negative_variance_tolerance(var):
+            self._project_covariance_psd()
+            var = np.einsum("ij,jk,ik->i", A, self.C, A)
+            self._record_quadratic_variance(float(np.min(var)))
+        var = np.maximum(np.asarray(var, dtype=float), 0.0)
         unseen = np.array([
             tuple(int(v) for v in np.asarray(x, dtype=int)) not in self.sol_to_idx
             for x in X
         ], dtype=bool)
-        var = np.asarray(var, dtype=float)
         var[unseen] += self.lambda_i
         var += self.adaptive_model_uncertainty_many(X)
         return np.maximum(var, 1e-12)
@@ -305,6 +368,8 @@ class ParametricGPR:
         beta_mean = np.asarray(beta_mean, dtype=float)
         if len(beta_mean) != self.p:
             raise ValueError(f"beta length {len(beta_mean)} != basis dim {self.p}")
+        if not np.all(np.isfinite(beta_mean)):
+            raise ValueError("parametric prior mean must be finite")
         self.lambda_i = max(float(lambda_i), 1e-12)
         self.a = beta_mean.copy()
         prior = np.asarray(prior_var, dtype=float)
@@ -339,6 +404,9 @@ class ParametricGPR:
         self._adaptive_sparsity = None
         self._adaptive_records = []
         self._adaptive_spec = None
+        self._covariance_projection_count = 0
+        self._min_quadratic_variance_seen = float("inf")
+        self._max_abs_posterior_mean_seen = 0.0
         self._invalidate_backend_cache()
 
     def update(self, x: ArrayLike, y: float, sigma2_hat: float) -> None:
@@ -351,16 +419,64 @@ class ParametricGPR:
             })
             self._refit_adaptive_sparsity()
             return
+        y = float(y)
+        observation_variance = float(sigma2_hat)
+        if not np.isfinite(y):
+            raise ValueError("GPR observation must be finite")
+        if not np.isfinite(observation_variance):
+            raise ValueError("GPR observation variance must be finite")
+        observation_variance = max(observation_variance, 1e-12)
         self.dimension_augment(x)
         e = self.augmented_feature(x)
         Ce = self.C @ e
-        denom = max(float(sigma2_hat) + float(e @ Ce), 1e-15)
+        predictive_variance = float(e @ Ce)
+        self._record_quadratic_variance(predictive_variance)
+        if predictive_variance < -self._negative_variance_tolerance(
+                [predictive_variance]):
+            self._project_covariance_psd()
+            Ce = self.C @ e
+            predictive_variance = float(e @ Ce)
+            self._record_quadratic_variance(predictive_variance)
+        predictive_variance = max(predictive_variance, 0.0)
+        denom = observation_variance + predictive_variance
         gain = Ce / denom
-        innovation = float(y) - float(e @ self.a)
-        self.a = self.a + gain * innovation
-        self.C = self.C - np.outer(gain, Ce)
-        self.C = 0.5 * (self.C + self.C.T)
+        innovation = y - float(e @ self.a)
+        updated_mean = self.a + gain * innovation
+        updated_covariance = self.C - np.outer(Ce, Ce) / denom
+        updated_covariance = 0.5 * (updated_covariance + updated_covariance.T)
+        if not np.all(np.isfinite(updated_mean)):
+            raise FloatingPointError("non-finite GPR mean after rank-one update")
+        if not np.all(np.isfinite(updated_covariance)):
+            raise FloatingPointError("non-finite GPR covariance after rank-one update")
+        self.a = updated_mean
+        self.C = updated_covariance
+        if float(np.min(np.diag(self.C))) < -self._negative_variance_tolerance(
+                np.diag(self.C)):
+            self._project_covariance_psd()
         self._invalidate_backend_cache()
+
+    def numerical_diagnostics(self):
+        covariance = 0.5 * (np.asarray(self.C) + np.asarray(self.C).T)
+        eigenvalues = np.linalg.eigvalsh(covariance)
+        minimum_seen = float(getattr(
+            self, "_min_quadratic_variance_seen", float("inf")))
+        return {
+            "finite_state": bool(
+                np.all(np.isfinite(self.a)) and np.all(np.isfinite(self.C))
+            ),
+            "basis_dim": int(self.p),
+            "state_dim": int(len(self.a)),
+            "covariance_projection_count": int(getattr(
+                self, "_covariance_projection_count", 0)),
+            "covariance_min_eigenvalue": float(np.min(eigenvalues)),
+            "covariance_max_eigenvalue": float(np.max(eigenvalues)),
+            "minimum_quadratic_variance_seen": (
+                None if not np.isfinite(minimum_seen) else minimum_seen
+            ),
+            "max_abs_coefficient": float(np.max(np.abs(self.a))),
+            "max_abs_posterior_mean_seen": float(getattr(
+                self, "_max_abs_posterior_mean_seen", 0.0)),
+        }
 
     def enable_adaptive_sparsity(
         self,

@@ -3203,6 +3203,7 @@ class SingleOLHKGAlgorithm:
                 model.adaptive_sparsity_diagnostics()
                 for model in self.gpr
             ],
+            "gpr_numerics": [model.numerical_diagnostics() for model in self.gpr],
             "meta_basis": (
                 self.problem.meta_basis_diagnostics()
                 if hasattr(self.problem, "meta_basis_diagnostics")
