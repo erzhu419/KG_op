@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -13,7 +14,8 @@ from scheduler_node_policy import allowed_node_flags, parse_cpu_nodes
 
 
 DEFAULT_SCHEDULER = Path.home() / ".claude/skills/scheduler/scheduler.py"
-DEFAULT_DEPLOY = Path("/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
+DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
+DEFAULT_SYNC_SCRIPT = Path(__file__).with_name("sync_scolhkg_scheduler_deploy.sh")
 PYTHON = "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python"
 
 
@@ -176,6 +178,23 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"--meta_teacher_hvd_noise_floor_scale "
         f"{args.meta_teacher_hvd_noise_floor_scale} "
         f"--meta_universal_shape_count {args.meta_universal_shape_count} "
+        f"--meta_component_stage {args.meta_component_stage} "
+        f"--meta_spectral_active_dim {args.meta_spectral_active_dim} "
+        f"--meta_spectral_max_library_size {args.meta_spectral_max_library_size} "
+        f"--meta_spectral_low_frequency_components "
+        f"{args.meta_spectral_low_frequency_components} "
+        f"--meta_spectral_graph_neighbors {args.meta_spectral_graph_neighbors} "
+        f"--meta_spectral_relevance_floor {args.meta_spectral_relevance_floor} "
+        f"--meta_spectral_gate_boundary_weight "
+        f"{args.meta_spectral_gate_boundary_weight} "
+        f"--meta_spectral_gate_dangerous_weight "
+        f"{args.meta_spectral_gate_dangerous_weight} "
+        f"--meta_spectral_gate_selection_tolerance "
+        f"{args.meta_spectral_gate_selection_tolerance} "
+        f"--meta_spectral_gate_calibration_quantile "
+        f"{args.meta_spectral_gate_calibration_quantile} "
+        f"--meta_coordinate_mode {args.meta_coordinate_mode} "
+        f"--meta_coordinate_relevance_floor {args.meta_coordinate_relevance_floor} "
         f"--meta_source_augments {args.meta_source_augments} "
         f"--meta_source_sigma_jitter {args.meta_source_sigma_jitter} "
         f"--meta_source_alpha_jitter {args.meta_source_alpha_jitter} "
@@ -348,6 +367,29 @@ def main():
     parser.add_argument("--meta-hvd-noise-floor-scale", type=float, default=0.0)
     parser.add_argument("--meta-teacher-hvd-noise-floor-scale", type=float, default=1.0)
     parser.add_argument("--meta-universal-shape-count", type=int, default=64)
+    parser.add_argument(
+        "--meta-component-stage",
+        choices=["legacy_all", "coordinate", "spectral"],
+        default="legacy_all",
+    )
+    parser.add_argument("--meta-spectral-active-dim", type=int, default=6)
+    parser.add_argument("--meta-spectral-max-library-size", type=int, default=64)
+    parser.add_argument(
+        "--meta-spectral-low-frequency-components", type=int, default=8)
+    parser.add_argument("--meta-spectral-graph-neighbors", type=int, default=10)
+    parser.add_argument("--meta-spectral-relevance-floor", type=float, default=0.05)
+    parser.add_argument("--meta-spectral-gate-boundary-weight", type=float, default=2.0)
+    parser.add_argument("--meta-spectral-gate-dangerous-weight", type=float, default=3.0)
+    parser.add_argument(
+        "--meta-spectral-gate-selection-tolerance", type=float, default=0.02)
+    parser.add_argument(
+        "--meta-spectral-gate-calibration-quantile", type=float, default=0.90)
+    parser.add_argument(
+        "--meta-coordinate-mode",
+        choices=["pca", "stable_supervised"],
+        default="pca",
+    )
+    parser.add_argument("--meta-coordinate-relevance-floor", type=float, default=0.05)
     parser.add_argument("--meta-source-augments", type=int, default=1)
     parser.add_argument("--meta-source-sigma-jitter", type=float, default=0.20)
     parser.add_argument("--meta-source-alpha-jitter", type=float, default=0.25)
@@ -383,7 +425,22 @@ def main():
     parser.add_argument("--ram-mb", type=int, default=32768)
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--sync-remote",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Synchronize SC-OLH-KG to the remote deploy before submission.",
+    )
+    parser.add_argument(
+        "--bulk-submit",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Submit the full shard group atomically through submit-jsonl.",
+    )
     args = parser.parse_args()
+
+    if args.sync_remote and not args.dry_run:
+        run_cmd([DEFAULT_SYNC_SCRIPT])
 
     run_id = args.run_id or time.strftime("%Y%m%d_%H%M%S")
     cwd = args.deploy / "SC-OLH-KG"
@@ -407,6 +464,7 @@ def main():
         for preset in parse_csv(args.loss_presets)
         for shard_index in range(shard_start, shard_stop)
     ]
+    bulk_specs = []
     for idx, (N, preset, shard_index) in enumerate(suites):
         node = nodes[idx % len(nodes)]
         command = suite_command(
@@ -420,36 +478,77 @@ def main():
         cmd = "; ".join([
             "export LC_ALL=C LANG=C",
             "export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1",
-            command,
-            "echo DONE",
+            f"{command} && echo DONE",
         ])
-        out = run_cmd([
-            sys.executable, args.scheduler, "submit",
-            "--description",
-            (
+        description = (
                 f"SC-OLH-KG LODO meta-prior N={N} {preset} {run_id} "
                 f"shard={shard_index}/{num_shards}"
-            ),
-            "--cmd", cmd,
-            "--cwd", str(cwd),
-            "--signature",
-            (
+            )
+        signature = (
                 f"KG_op/scolhkg_lodo_meta/{run_id}/N{N}/{preset}/"
                 f"shard{shard_index}of{num_shards}"
-            ),
-            "--project", "KG-SYNTH",
-            "--vram", "0",
-            "--cpu", str(args.cpu),
-            "--ram-mb", str(args.ram_mb),
-            "--require-node", node,
-            *allowed_node_flags(nodes),
-            "--allow-duplicate",
-        ], dry_run=args.dry_run)
-        if out:
+            )
+        if args.bulk_submit:
+            bulk_specs.append({
+                "description": description,
+                "cmd": cmd,
+                "cwd": str(cwd),
+                "signature": signature,
+                "project": "KG-SYNTH",
+                "vram": 0,
+                "cpu": int(args.cpu),
+                "ram_mb": int(args.ram_mb),
+                "require_node": node,
+                "allowed_nodes": list(nodes),
+                "allow_duplicate": True,
+            })
+        else:
+            out = run_cmd([
+                sys.executable, args.scheduler, "submit",
+                "--description", description,
+                "--cmd", cmd,
+                "--cwd", str(cwd),
+                "--signature", signature,
+                "--project", "KG-SYNTH",
+                "--vram", "0",
+                "--cpu", str(args.cpu),
+                "--ram-mb", str(args.ram_mb),
+                "--require-node", node,
+                *allowed_node_flags(nodes),
+                "--allow-duplicate",
+            ], dry_run=args.dry_run)
+            if out:
+                print(out, end="")
+                parts = out.split()
+                if len(parts) > 1:
+                    task_ids.append(parts[1])
+    if args.bulk_submit and bulk_specs:
+        command = [
+            sys.executable,
+            str(args.scheduler),
+            "submit-jsonl",
+            "--stdin",
+            "--trusted",
+            "--json",
+            "--intent-label",
+            f"scolhkg-lodo-{run_id}",
+        ]
+        print("+", " ".join(map(str, command)), flush=True)
+        if args.dry_run:
+            print(json.dumps(bulk_specs, indent=2))
+        else:
+            out = subprocess.check_output(
+                command,
+                input=json.dumps(bulk_specs),
+                text=True,
+            )
             print(out, end="")
-            parts = out.split()
-            if len(parts) > 1:
-                task_ids.append(parts[1])
+            payload = json.loads(out)
+            task_ids.extend([
+                item["id"]
+                for item in payload.get("submitted", [])
+                if item.get("id")
+            ])
     if args.dispatch:
         run_cmd([sys.executable, args.scheduler, "dispatch"], dry_run=args.dry_run)
     print({"run_id": run_id, "task_ids": task_ids, "suites": suites})

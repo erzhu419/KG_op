@@ -126,11 +126,20 @@ def row_from_result(variant, seed, args, result):
         "encoder_kind": getattr(args, "encoder_kind", "synthetic"),
         "acquisition_mode": getattr(args, "acquisition_mode", ""),
         "beta_g": optional_float(getattr(args, "beta_g", None)),
+        "disable_problem_initial_samples": bool(
+            getattr(args, "disable_problem_initial_samples", False)),
+        "disable_boundary_initial_samples": bool(
+            getattr(args, "disable_boundary_initial_samples", False)),
+        "disable_recommendation_refinement": bool(
+            getattr(args, "disable_recommendation_refinement", False)),
         "certification_mode": getattr(args, "certification_mode", ""),
         "backend": result.get("backend", "lite"),
         "botorch_fit_failures": int(result.get("botorch_fit_failures", 0)),
         "botorch_candidate_failures": int(result.get("botorch_candidate_failures", 0)),
         "botorch_timeout_fallback": bool(result.get("botorch_timeout_fallback", False)),
+        "embedding_dim": optional_float(getattr(args, "embedding_dim", None)),
+        "embedding_dim_max": optional_float(getattr(args, "embedding_dim_max", None)),
+        "embedding_dim_final": optional_float(result.get("embedding_dim_final")),
     }
 
 
@@ -168,6 +177,9 @@ def run_olhkg(args, seed, use_sc):
         recommendation_calibration=not args.disable_recommendation_calibration,
         recommendation_calibration_ridge=args.recommendation_calibration_ridge,
         recommendation_axis_oracle=not args.disable_recommendation_axis_oracle,
+        use_problem_initial_samples=not args.disable_problem_initial_samples,
+        use_boundary_initial_samples=not args.disable_boundary_initial_samples,
+        use_recommendation_refinement=not args.disable_recommendation_refinement,
         acquisition_mode=args.acquisition_mode,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
         exact_kg_jobs=int(getattr(args, "exact_kg_jobs", 1)),
@@ -198,6 +210,12 @@ def run_olhkg(args, seed, use_sc):
         encoder_kind=args.encoder_kind,
         encoder_latent_dim=args.encoder_latent_dim,
         encoder_fit_pool_size=args.encoder_fit_pool_size,
+        lf_os_max_library_size=args.lf_os_max_library_size,
+        lf_os_low_frequency_components=args.lf_os_low_frequency_components,
+        lf_os_max_active=args.lf_os_max_active,
+        lf_os_graph_neighbors=args.lf_os_graph_neighbors,
+        lf_os_residual_floor_scale=args.lf_os_residual_floor_scale,
+        lf_os_use_problem_state_anchor=not args.disable_lf_os_problem_state_anchor,
         seed=seed,
     )
     result = SingleOLHKGAlgorithm(problem, config).run(verbose=False)
@@ -227,6 +245,16 @@ def run_baseline(args, seed, method):
                 method=lite_method,
                 batch_candidates=args.baseline_batch_candidates,
                 tr_radius_init=args.tr_radius_init,
+                tr_radius_min=args.tr_radius_min,
+                tr_radius_max=args.tr_radius_max,
+                tr_success_tolerance=args.tr_success_tolerance,
+                tr_failure_tolerance=args.tr_failure_tolerance,
+                embedding_dim=args.embedding_dim,
+                embedding_dim_max=args.embedding_dim_max,
+                use_problem_initial_samples=not args.disable_problem_initial_samples,
+                use_boundary_initial_samples=not args.disable_boundary_initial_samples,
+                progress_logging=bool(getattr(args, "progress_logging", False)),
+                progress_label=f"{method}:seed={int(seed)}",
             )
             result = SequentialBaseline(problem, config).run()
             result["method"] = method
@@ -255,6 +283,10 @@ def run_baseline(args, seed, method):
             saas_constrained=not args.saas_unconstrained,
             max_candidate_failures=args.botorch_max_candidate_failures,
             saas_fallback_after_failures=not args.disable_saas_failure_fallback,
+            use_problem_initial_samples=not args.disable_problem_initial_samples,
+            use_boundary_initial_samples=not args.disable_boundary_initial_samples,
+            progress_logging=bool(getattr(args, "progress_logging", False)),
+            progress_label=f"{method}:seed={int(seed)}",
         )
         result = BoTorchBaseline(problem, config).run()
         return row_from_result(method, seed, args, result)
@@ -265,6 +297,16 @@ def run_baseline(args, seed, method):
         method=method,
         batch_candidates=args.baseline_batch_candidates,
         tr_radius_init=args.tr_radius_init,
+        tr_radius_min=args.tr_radius_min,
+        tr_radius_max=args.tr_radius_max,
+        tr_success_tolerance=args.tr_success_tolerance,
+        tr_failure_tolerance=args.tr_failure_tolerance,
+        embedding_dim=args.embedding_dim,
+        embedding_dim_max=args.embedding_dim_max,
+        use_problem_initial_samples=not args.disable_problem_initial_samples,
+        use_boundary_initial_samples=not args.disable_boundary_initial_samples,
+        progress_logging=bool(getattr(args, "progress_logging", False)),
+        progress_label=f"{method}:seed={int(seed)}",
     )
     result = SequentialBaseline(problem, config).run()
     return row_from_result(method, seed, args, result)
@@ -506,10 +548,20 @@ def main():
             "ssl_hybrid",
             "hybrid_ssl",
             "contextual_manifold",
+            "lf_os",
+            "lf_orthogonal_sparse",
+            "low_frequency_orthogonal_sparse",
+            "orthogonal_sparse",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
+    parser.add_argument("--lf_os_max_library_size", type=int, default=30)
+    parser.add_argument("--lf_os_low_frequency_components", type=int, default=8)
+    parser.add_argument("--lf_os_max_active", type=int, default=8)
+    parser.add_argument("--lf_os_graph_neighbors", type=int, default=12)
+    parser.add_argument("--lf_os_residual_floor_scale", type=float, default=0.05)
+    parser.add_argument("--disable_lf_os_problem_state_anchor", action="store_true")
     parser.add_argument("--variance_mode", default="factor")
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
@@ -524,6 +576,9 @@ def main():
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
+    parser.add_argument("--disable_problem_initial_samples", action="store_true")
+    parser.add_argument("--disable_boundary_initial_samples", action="store_true")
+    parser.add_argument("--disable_recommendation_refinement", action="store_true")
     parser.add_argument("--acquisition_mode", default="exact_mc",
                         choices=["additive", "exact_mc", "blend"])
     parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
@@ -543,13 +598,15 @@ def main():
         "--baselines",
         default=(
             "sobol,random,hetgp_lite,rahbo_lite,safeopt_lite,"
-            "legacy_vepm_lite,turbo_lite,scbo_lite"
+            "legacy_vepm_lite,turbo_lite,scbo_lite,rembo_lite,baxus_lite"
         ),
     )
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
     parser.add_argument("--tr_radius_init", type=float, default=0.35)
     parser.add_argument("--tr_radius_min", type=float, default=0.04)
     parser.add_argument("--tr_radius_max", type=float, default=0.8)
+    parser.add_argument("--embedding_dim", type=int, default=8)
+    parser.add_argument("--embedding_dim_max", type=int, default=32)
     parser.add_argument("--tr_success_tolerance", type=int, default=3)
     parser.add_argument("--tr_failure_tolerance", type=int, default=5)
     parser.add_argument("--botorch_fallback", choices=("lite", "error"), default="lite")
@@ -567,6 +624,8 @@ def main():
     parser.add_argument("--disable_saas_failure_fallback", action="store_true")
     parser.add_argument("--include_olhkg", action="store_true", default=True)
     parser.add_argument("--include_sc", action="store_true", default=True)
+    parser.add_argument("--exclude_olhkg", dest="include_olhkg", action="store_false")
+    parser.add_argument("--exclude_sc", dest="include_sc", action="store_false")
     parser.add_argument("--seeds", default="")
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=5)

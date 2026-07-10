@@ -176,7 +176,10 @@ class ParametricGPR:
         if len(X) == 0:
             return np.empty((0, self.p), dtype=float)
         if self.basis_map is not None:
-            feats = np.vstack([self.basis_map.features(x) for x in X])
+            if hasattr(self.basis_map, "features_many"):
+                feats = np.asarray(self.basis_map.features_many(X), dtype=float)
+            else:
+                feats = np.vstack([self.basis_map.features(x) for x in X])
             return np.column_stack([np.ones(len(feats)), feats])
         X_arr = np.asarray(X, dtype=float)
         if X_arr.ndim == 1:

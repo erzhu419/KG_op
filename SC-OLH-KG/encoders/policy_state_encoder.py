@@ -14,6 +14,7 @@ from representation.manifold import (
     KernelManifoldEncoder,
     PCAManifoldEncoder,
 )
+from representation.orthogonal_sparse import LowFrequencyOrthogonalSparsePolicyEncoder
 from representation.ssl_encoder import (
     ContrastivePolicyEncoder,
     HybridSSLPolicyEncoder,
@@ -614,6 +615,21 @@ class StateCoupledFeatureMap:
         if self.mode in ("state", "manifold"):
             return rho
         return np.concatenate([raw, rho])
+
+    def features_many(self, X):
+        if len(X) == 0:
+            return np.empty((0, self.feature_dim), dtype=float)
+        raw = np.vstack([self._raw_features(x) for x in X])
+        if hasattr(self.encoder, "occupancy_many"):
+            rho_raw = self.encoder.occupancy_many(X)
+        else:
+            rho_raw = np.vstack([self.encoder.occupancy(x) for x in X])
+        rho = self.state_scale * np.asarray(rho_raw, dtype=float)
+        if self.mode == "raw":
+            return raw
+        if self.mode in ("state", "manifold"):
+            return rho
+        return np.hstack([raw, rho])
 
 
 class TrafficTrajectoryEncoder:

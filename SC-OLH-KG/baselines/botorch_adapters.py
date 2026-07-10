@@ -119,6 +119,10 @@ class BoTorchBaselineConfig:
     saas_constrained: bool = True
     max_candidate_failures: int = 8
     saas_fallback_after_failures: bool = True
+    use_problem_initial_samples: bool = True
+    use_boundary_initial_samples: bool = True
+    progress_logging: bool = False
+    progress_label: str = ""
 
 
 @dataclass
@@ -196,14 +200,15 @@ class BoTorchBaseline:
 
     def _initial_samples(self):
         rows = []
-        if hasattr(self.problem, "initial_samples"):
+        if self.config.use_problem_initial_samples and hasattr(self.problem, "initial_samples"):
             rows.extend(self.problem.initial_samples(n=self.config.n0, rng=self.rng))
             rows = unique_candidates(rows)
-        for x in boundary_solutions(self.problem):
-            if len(rows) >= self.config.n0:
-                break
-            rows.append(tuple(x))
-            rows = unique_candidates(rows)
+        if self.config.use_boundary_initial_samples:
+            for x in boundary_solutions(self.problem):
+                if len(rows) >= self.config.n0:
+                    break
+                rows.append(tuple(x))
+                rows = unique_candidates(rows)
         while len(rows) < self.config.n0:
             rows.append(self.problem.sample_random(self.rng))
             rows = unique_candidates(rows)
@@ -522,15 +527,39 @@ class BoTorchBaseline:
                 out["true_best_f2"] = float(true_best_vector[1])
         return out
 
+    def _progress_enabled(self):
+        return bool(getattr(self.config, "progress_logging", False))
+
+    def _progress_label(self):
+        label = str(getattr(self.config, "progress_label", "") or "").strip()
+        return label or f"{self.config.method}:seed={int(self.config.seed)}"
+
+    def _emit_progress(self, started_at):
+        if not self._progress_enabled():
+            return
+        total = max(1, int(self.config.N))
+        current = max(0, min(total, len(self.history)))
+        elapsed = max(0.0, time.time() - float(started_at))
+        done = max(1, current)
+        eta_sec = (elapsed / float(done)) * float(max(0, total - current))
+        print(
+            f"Iter {current}/{total} [kg-inner] "
+            f"kind=botorch label={self._progress_label()} "
+            f"Time: {elapsed:.1f}s ETA {eta_sec:.1f}s",
+            flush=True,
+        )
+
     def run(self):
         t_start = time.time()
         for x in self._initial_samples():
             y = self._simulate(x)
             self._update_tr_radius(y)
+            self._emit_progress(t_start)
         while len(self.history) < int(self.config.N):
             x = self._next_candidate()
             y = self._simulate(x)
             self._update_tr_radius(y)
+            self._emit_progress(t_start)
         x_best, y_best = self._recommendation()
         result = self._evaluate_recommendation(x_best, y_best)
         result.update({

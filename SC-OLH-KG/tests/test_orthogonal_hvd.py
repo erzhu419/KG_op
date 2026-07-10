@@ -19,6 +19,7 @@ from variance.orthogonal_hvd import (  # noqa: E402
     OrthogonalHVD,
     gaussian_square_subexp_params,
     sub_exponential_residual_square_radius,
+    sub_exponential_sample_mean_radius,
 )
 
 
@@ -52,10 +53,20 @@ class OrthogonalHVDTests(unittest.TestCase):
 
     def test_update_returns_diagnostics(self):
         model = OrthogonalHVD(mode="class", n_outputs=1)
-        detail = model.update(0, np.array([10, 0, 0]), 1.0, 0.8, problem=self.problem)
+        detail = model.update(
+            0,
+            np.array([10, 0, 0]),
+            1.0,
+            0.8,
+            problem=self.problem,
+            epistemic_var=0.01,
+        )
         self.assertEqual(detail["mode"], "class")
         self.assertIn("new_variance", detail)
         self.assertGreaterEqual(detail["new_variance"], 0.0)
+        self.assertAlmostEqual(detail["raw_innovation2"], 0.04)
+        self.assertAlmostEqual(detail["epistemic_correction"], 0.01)
+        self.assertAlmostEqual(detail["resid2"], 0.03)
 
     def test_residual_square_tail_radius_is_exposed(self):
         nu, b = gaussian_square_subexp_params(0.04)
@@ -69,6 +80,17 @@ class OrthogonalHVDTests(unittest.TestCase):
         tail = model.diagnostics()["residual_square_tail"]["0"]
         self.assertEqual(tail["delta"], 0.05)
         self.assertGreater(tail["radius"], 0.0)
+
+    def test_sample_mean_tail_uses_bernstein_branch_scaling(self):
+        nu, b = gaussian_square_subexp_params(0.04)
+        single = sub_exponential_residual_square_radius(nu, b, 0.05)
+        radius_4 = sub_exponential_sample_mean_radius(nu, b, 0.05, 4)
+        radius_16 = sub_exponential_sample_mean_radius(nu, b, 0.05, 16)
+        self.assertLess(radius_4, single)
+        self.assertLess(radius_16, radius_4)
+        self.assertLessEqual(radius_16, single / np.sqrt(16.0))
+        with self.assertRaises(ValueError):
+            sub_exponential_sample_mean_radius(nu, b, 0.05, 0)
 
     def test_orthogonal_delays_activation_until_enough_records(self):
         X = [(5, 0, 0), (10, 0, 0), (70, 0, 0)]

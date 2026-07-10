@@ -189,6 +189,28 @@ class HyperbolicAxisFeatureMap:
             ], dtype=float),
         ])
 
+    def features_many(self, X):
+        if len(X) == 0:
+            return np.empty((0, self.feature_dim), dtype=float)
+        X_arr = np.asarray(X, dtype=float)
+        if X_arr.ndim == 1:
+            X_arr = X_arr.reshape(1, -1)
+        lo, hi = self.problem.int_bounds()
+        scale = np.maximum(np.asarray(hi - lo, dtype=float), 1.0)
+        z = np.clip((X_arr - lo[None, :]) / scale[None, :], 0.0, 1.0)
+        denom = np.maximum(X_arr[:, 0] - float(lo[0]) + 1.0, 1.0)
+        inv = 1.0 / denom
+        tail_sum = np.sum(z[:, 1:], axis=1) if z.shape[1] > 1 else np.zeros(len(z))
+        x0_span = max(float(hi[0] - lo[0]), 1.0)
+        x0_log = np.log1p(np.maximum(X_arr[:, 0] - float(lo[0]), 0.0)) / np.log1p(x0_span)
+        extra = np.column_stack([
+            inv,
+            tail_sum * inv,
+            (1.0 + tail_sum) * inv,
+            x0_log,
+        ])
+        return np.hstack([z, z ** 2, extra])
+
 
 class RZDT5RR(TestProblem):
     """Enlarged-grid hyperbolic front from the current repo."""
@@ -472,6 +494,11 @@ class StatePolicyMetaFeatureMap:
             np.sin(np.pi * u),
             abs(q - reference_q),
         ], dtype=float)
+
+    def features_many(self, X):
+        if len(X) == 0:
+            return np.empty((0, self.feature_dim), dtype=float)
+        return np.vstack([self.features(x) for x in X])
 
 
 class HighDimStatePolicyRZDT1(TestProblem):

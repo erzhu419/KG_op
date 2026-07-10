@@ -17,7 +17,10 @@ from .meta_prior import (
     AdmissibleProblemAdapter,
     LearnedMetaPrior,
     MetaPriorProblemAdapter,
+    PilotGatedMetaPriorBasis,
 )
+from .orthogonal_sparse import LowFrequencyOrthogonalSparsePolicyEncoder
+from .transferable_spectral import SourceDomainBatch, TransferableSpectralBasis
 
 __all__ = [
     "AdmissibleProblemAdapter",
@@ -26,10 +29,14 @@ __all__ = [
     "HybridSSLPolicyEncoder",
     "KernelManifoldEncoder",
     "LearnedMetaPrior",
+    "LowFrequencyOrthogonalSparsePolicyEncoder",
     "ManifoldRiskDecomposer",
     "MaskedTrajectoryEncoder",
     "MetaPriorProblemAdapter",
     "NextRiskEncoder",
     "PCAManifoldEncoder",
+    "PilotGatedMetaPriorBasis",
     "SmallTransformerEncoder",
+    "SourceDomainBatch",
+    "TransferableSpectralBasis",
 ]

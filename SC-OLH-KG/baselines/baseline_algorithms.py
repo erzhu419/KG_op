@@ -26,10 +26,18 @@ class BaselineConfig:
     tr_radius_init: float = 0.35
     tr_radius_min: float = 0.04
     tr_radius_max: float = 0.8
+    tr_success_tolerance: int = 3
+    tr_failure_tolerance: int = 5
     nominal_sigma_scale: float = 1.0
     ridge: float = 1e-6
     risk_aversion: float = 0.5
     safe_beta: float = 2.0
+    embedding_dim: int = 8
+    embedding_dim_max: int = 32
+    use_problem_initial_samples: bool = True
+    use_boundary_initial_samples: bool = True
+    progress_logging: bool = False
+    progress_label: str = ""
 
 
 class SequentialBaseline:
@@ -44,6 +52,8 @@ class SequentialBaseline:
         "rahbo_lite",
         "safeopt_lite",
         "legacy_vepm_lite",
+        "rembo_lite",
+        "baxus_lite",
     }
 
     def __init__(self, problem, config: BaselineConfig):
@@ -61,6 +71,19 @@ class SequentialBaseline:
         )
         self._tr_radius = float(config.tr_radius_init)
         self._last_score = None
+        self._embedding_dim = max(1, min(int(config.embedding_dim), int(problem.d)))
+        self._embedding_dim_max = max(
+            self._embedding_dim,
+            min(int(config.embedding_dim_max), int(problem.d)),
+        )
+        self._embedding_matrix = self._make_embedding(self._embedding_dim)
+        self._embedding_failures = 0
+
+    def _make_embedding(self, k):
+        mat = self.rng.normal(size=(int(self.problem.d), int(k)))
+        scale = np.linalg.norm(mat, axis=0, keepdims=True)
+        mat = mat / np.maximum(scale, 1e-12)
+        return mat
 
     def _nominal_margin(self, y):
         sigma = float(getattr(self.problem, "sigma_level", 0.04))
@@ -75,10 +98,10 @@ class SequentialBaseline:
 
     def _initial_samples(self):
         rows = []
-        if hasattr(self.problem, "initial_samples"):
+        if self.config.use_problem_initial_samples and hasattr(self.problem, "initial_samples"):
             rows.extend(self.problem.initial_samples(n=self.config.n0, rng=self.rng))
             rows = unique_candidates(rows)
-        if len(rows) < self.config.n0:
+        if self.config.use_boundary_initial_samples and len(rows) < self.config.n0:
             for x in boundary_solutions(self.problem):
                 if len(rows) >= self.config.n0:
                     break
@@ -141,6 +164,8 @@ class SequentialBaseline:
             return self._trust_region_candidate(feasible_first=False)
         if method == "scbo_lite":
             return self._trust_region_candidate(feasible_first=True)
+        if method in ("rembo_lite", "baxus_lite"):
+            return self._embedding_candidate(adaptive=(method == "baxus_lite"))
         if method in ("hetgp_lite", "rahbo_lite", "safeopt_lite", "legacy_vepm_lite"):
             return self._surrogate_candidate(method)
         raise AssertionError(method)
@@ -153,6 +178,8 @@ class SequentialBaseline:
             "rahbo_lite",
             "safeopt_lite",
             "legacy_vepm_lite",
+            "rembo_lite",
+            "baxus_lite",
         ):
             return
         score = self._score_observation(y)
@@ -168,6 +195,24 @@ class SequentialBaseline:
                 float(self.config.tr_radius_min),
                 0.85 * self._tr_radius,
             )
+            if self.config.method == "baxus_lite":
+                self._embedding_failures += 1
+                if (
+                    self._embedding_failures >= max(2, self.config.tr_failure_tolerance)
+                    and self._embedding_dim < self._embedding_dim_max
+                ):
+                    self._expand_embedding()
+                    self._embedding_failures = 0
+
+    def _expand_embedding(self):
+        old = self._embedding_matrix
+        new_k = min(self._embedding_dim_max, max(self._embedding_dim + 1, 2 * self._embedding_dim))
+        if new_k <= self._embedding_dim:
+            return
+        extra = self._make_embedding(new_k - self._embedding_dim)
+        self._embedding_matrix = np.hstack([old, extra])
+        self._embedding_dim = new_k
+        self._tr_radius = min(float(self.config.tr_radius_max), 1.25 * self._tr_radius)
 
     def _basis(self, x):
         z = np.asarray(self.problem.normalize(x), dtype=float)
@@ -188,8 +233,9 @@ class SequentialBaseline:
 
     def _surrogate_pool(self):
         rows = []
-        rows.extend(boundary_solutions(self.problem))
-        if hasattr(self.problem, "structured_candidates"):
+        if self.config.use_boundary_initial_samples:
+            rows.extend(boundary_solutions(self.problem))
+        if self.config.use_problem_initial_samples and hasattr(self.problem, "structured_candidates"):
             rows.extend(self.problem.structured_candidates(
                 n=max(8, int(self.config.batch_candidates) // 2),
                 rng=self.rng,
@@ -213,6 +259,38 @@ class SequentialBaseline:
             )
             rows.append(self.problem.continuous_to_int(np.clip(z, 0.0, 1.0)))
         return unique_candidates(rows)
+
+    def _latent_from_x(self, x):
+        z = np.asarray(self.problem.normalize(x), dtype=float) - 0.5
+        try:
+            latent, *_ = np.linalg.lstsq(self._embedding_matrix, z, rcond=None)
+        except np.linalg.LinAlgError:
+            latent = self.rng.uniform(-1.0, 1.0, size=self._embedding_dim)
+        return np.clip(latent, -1.0, 1.0)
+
+    def _embedding_to_x(self, latent):
+        z = 0.5 + self._embedding_matrix @ np.asarray(latent, dtype=float)
+        return self.problem.continuous_to_int(np.clip(z, 0.0, 1.0))
+
+    def _embedding_candidate(self, adaptive=False):
+        seen = {x for x, _ in self.history}
+        center = self._latent_from_x(self._observed_best(feasible_first=True))
+        rows = []
+        for _ in range(max(8, int(self.config.batch_candidates))):
+            if adaptive:
+                noise = self.rng.normal(scale=self._tr_radius, size=self._embedding_dim)
+            else:
+                noise = self.rng.uniform(
+                    -self._tr_radius,
+                    self._tr_radius,
+                    size=self._embedding_dim,
+                )
+            latent = np.clip(center + noise, -1.0, 1.0)
+            rows.append(self._embedding_to_x(latent))
+        rows = [row for row in unique_candidates(rows) if row not in seen]
+        if rows:
+            return rows[int(self.rng.integers(0, len(rows)))]
+        return self.problem.sample_random(self.rng)
 
     def _class_noise_estimates(self, residuals):
         global_var = max(float(np.var(residuals)), 1e-8)
@@ -369,15 +447,39 @@ class SequentialBaseline:
                 out["true_best_f2"] = float(true_best_vector[1])
         return out
 
+    def _progress_enabled(self):
+        return bool(getattr(self.config, "progress_logging", False))
+
+    def _progress_label(self):
+        label = str(getattr(self.config, "progress_label", "") or "").strip()
+        return label or f"{self.config.method}:seed={int(self.config.seed)}"
+
+    def _emit_progress(self, started_at):
+        if not self._progress_enabled():
+            return
+        total = max(1, int(self.config.N))
+        current = max(0, min(total, len(self.history)))
+        elapsed = max(0.0, time.time() - float(started_at))
+        done = max(1, current)
+        eta_sec = (elapsed / float(done)) * float(max(0, total - current))
+        print(
+            f"Iter {current}/{total} [kg-inner] "
+            f"kind=baseline label={self._progress_label()} "
+            f"Time: {elapsed:.1f}s ETA {eta_sec:.1f}s",
+            flush=True,
+        )
+
     def run(self):
         t_start = time.time()
         for x in self._initial_samples():
             y = self._simulate(x)
             self._update_tr_radius(y)
+            self._emit_progress(t_start)
         while len(self.history) < int(self.config.N):
             x = self._next_candidate()
             y = self._simulate(x)
             self._update_tr_radius(y)
+            self._emit_progress(t_start)
         x_best, y_best = self._recommendation()
         result = self._evaluate_recommendation(x_best, y_best)
         result.update({
@@ -388,5 +490,6 @@ class SequentialBaseline:
             "n_simulations": int(len(self.history)),
             "n_distinct_solutions": int(len(set(x for x, _ in self.history))),
             "tr_radius_final": float(self._tr_radius),
+            "embedding_dim_final": int(self._embedding_dim),
         })
         return result

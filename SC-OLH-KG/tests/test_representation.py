@@ -10,13 +10,16 @@ sys.path.insert(0, str(ROOT))
 
 from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
 from encoders.policy_state_encoder import StateCoupledFeatureMap  # noqa: E402
-from problems.rzdt import HighDimStatePolicyRZDT1, StatePolicyRZDT1  # noqa: E402
+from problems.rzdt import HighDimStatePolicyRZDT1, RZDT2, StatePolicyRZDT1  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 from representation.manifold import (  # noqa: E402
     GraphLaplacianEncoder,
     KernelManifoldEncoder,
     ManifoldRiskDecomposer,
     PCAManifoldEncoder,
+)
+from representation.orthogonal_sparse import (  # noqa: E402
+    LowFrequencyOrthogonalSparsePolicyEncoder,
 )
 from representation.ssl_encoder import (  # noqa: E402
     ContrastivePolicyEncoder,
@@ -25,6 +28,7 @@ from representation.ssl_encoder import (  # noqa: E402
     NextRiskEncoder,
     SmallTransformerEncoder,
 )
+from variance.orthogonal_hvd import OrthogonalHVD  # noqa: E402
 
 
 def tiny_records():
@@ -193,6 +197,45 @@ class RepresentationTests(unittest.TestCase):
         self.assertTrue(np.all(np.isfinite(f1)))
         np.testing.assert_allclose(f1, f2)
 
+    def test_lfos_batch_features_match_pointwise_and_cache_inverse_pool(self):
+        problem = ScalarizedProblem(RZDT2(d=6, L=100, sigma=0.04))
+        encoder = LowFrequencyOrthogonalSparsePolicyEncoder(
+            problem,
+            latent_dim=4,
+            fit_pool_size=32,
+            max_library_size=16,
+            low_frequency_components=5,
+            max_active=4,
+            rng=np.random.default_rng(21),
+        )
+        rows = [
+            (20, 70, 70, 70, 70, 70),
+            (50, 50, 50, 50, 50, 50),
+            (80, 20, 20, 20, 20, 20),
+        ]
+        batch = encoder.features_many(rows)
+        point = np.vstack([encoder.features(x) for x in rows])
+        np.testing.assert_allclose(batch, point)
+
+        rng = np.random.default_rng(22)
+        first = encoder.inverse_candidates(
+            n_anchors=5,
+            inverse_pool_size=40,
+            inverse_neighbors=1,
+            rng=rng,
+        )
+        cache_size = encoder._inverse_pool_target_size_
+        second = encoder.inverse_candidates(
+            n_anchors=5,
+            inverse_pool_size=40,
+            inverse_neighbors=1,
+            rng=rng,
+        )
+        self.assertEqual(cache_size, 40)
+        self.assertEqual(encoder._inverse_pool_target_size_, 40)
+        self.assertTrue(first)
+        self.assertTrue(second)
+
     def test_masked_ssl_record_diagnostics_are_finite(self):
         encoder = MaskedTrajectoryEncoder(problem=None, latent_dim=4).fit(tiny_records())
         feat = encoder.features("p0")
@@ -250,6 +293,75 @@ class RepresentationTests(unittest.TestCase):
         self.assertEqual(feat.shape, (4,))
         self.assertTrue(np.all(np.isfinite(feat)))
         self.assertEqual(encoder.diagnostics()["encoder"], "ssl_hybrid")
+
+    def test_low_frequency_orthogonal_sparse_basis_is_finite(self):
+        encoder = LowFrequencyOrthogonalSparsePolicyEncoder(
+            self.problem,
+            latent_dim=4,
+            fit_pool_size=48,
+            max_library_size=20,
+            low_frequency_components=5,
+            max_active=4,
+            rng=np.random.default_rng(21),
+        )
+        x = (25, 70, 70, 70, 70)
+        feat = encoder.features(x)
+        diag = encoder.diagnostics()
+        self.assertEqual(feat.shape, (4,))
+        self.assertTrue(np.all(np.isfinite(feat)))
+        self.assertEqual(diag["encoder"], "lf_os")
+        self.assertLessEqual(diag["active_dim"], 4)
+        self.assertLess(diag["max_offdiag_gram"], 1e-5)
+        self.assertGreaterEqual(encoder.residual_floor(x), 0.0)
+
+    def test_low_frequency_encoder_integrates_with_single_runner(self):
+        alg = SingleOLHKGAlgorithm(
+            self.problem,
+            SingleOLHKGConfig(
+                use_state_coupling=True,
+                use_state_basis=True,
+                state_basis_mode="manifold",
+                encoder_kind="lf_os",
+                encoder_latent_dim=4,
+                encoder_fit_pool_size=32,
+                lf_os_max_library_size=16,
+                lf_os_low_frequency_components=4,
+                lf_os_max_active=4,
+                seed=22,
+            ),
+        )
+        self.assertIsInstance(
+            alg.encoder,
+            LowFrequencyOrthogonalSparsePolicyEncoder,
+        )
+        self.assertEqual(alg.gpr[0].basis_map.feature_dim, 4)
+
+    def test_hvd_certification_includes_low_frequency_residual_floor(self):
+        encoder = LowFrequencyOrthogonalSparsePolicyEncoder(
+            self.problem,
+            latent_dim=3,
+            fit_pool_size=40,
+            max_library_size=18,
+            low_frequency_components=4,
+            max_active=3,
+            residual_floor_scale=0.2,
+            rng=np.random.default_rng(23),
+        )
+        setattr(self.problem, "_scolhkg_representation_encoder", encoder)
+        model = OrthogonalHVD(mode="factor", n_outputs=2)
+        x = (25, 70, 70, 70, 70)
+        base = model.predict_variance(1, x, self.problem) + model.model_uncertainty(
+            1,
+            x,
+            self.problem,
+        )
+        floor = encoder.residual_floor(x)
+        cert = model.predict_certification_variance(1, x, self.problem)
+        self.assertGreaterEqual(cert + 1e-12, base + floor)
+        self.assertAlmostEqual(
+            model.predict_decomposition(1, x, self.problem)["high_frequency_floor"],
+            floor,
+        )
 
     def test_manifold_risk_decomposition_sums_to_total(self):
         encoder = PCAManifoldEncoder(

@@ -65,6 +65,30 @@ def sub_exponential_residual_square_radius(nu, b, delta):
     return float(max(np.sqrt(2.0 * nu * nu * log_term), 2.0 * b * log_term))
 
 
+def sub_exponential_sample_mean_radius(nu, b, delta, n):
+    """Bernstein radius for the mean of ``n`` centered residual squares.
+
+    For ``2 exp(-n min(r^2/(2 nu^2), r/(2 b))) <= delta``, the quadratic
+    branch contracts as ``n^-1/2`` while the linear branch contracts as
+    ``n^-1``.  Applying ``n^-1/2`` to the already inverted single-observation
+    radius is unnecessarily conservative in the linear branch.
+    """
+
+    nu = max(float(nu), 1e-12)
+    b = max(float(b), 1e-12)
+    delta = float(delta)
+    n = int(n)
+    if not 0.0 < delta < 2.0:
+        raise ValueError("delta must lie in (0, 2)")
+    if n <= 0:
+        raise ValueError("n must be positive")
+    log_term = float(np.log(2.0 / delta))
+    return float(max(
+        np.sqrt(2.0 * nu * nu * log_term / float(n)),
+        2.0 * b * log_term / float(n),
+    ))
+
+
 class OrthogonalHVD:
     """Variance decomposition model for simulation residuals."""
 
@@ -324,7 +348,48 @@ class OrthogonalHVD:
 
     def _residual_tail_uncertainty(self, i):
         n = max(int(len(self.records.get(int(i), []))), 0)
-        return float(self._residual_square_tail_radius(i) / np.sqrt(n + 1.0))
+        nu, b = gaussian_square_subexp_params(self.global_var.get(int(i), 0.01))
+        return float(sub_exponential_sample_mean_radius(
+            nu,
+            b,
+            self.config.residual_tail_delta,
+            n + 1,
+        ))
+
+    def _high_frequency_residual_floor(self, i, x, problem=None):
+        """Residual floor from pruned/low-pass representation components."""
+        i = int(i)
+        problem = problem or self._last_problem
+        floor = 0.0
+        if problem is not None and hasattr(problem, "hvd_high_frequency_floor"):
+            try:
+                floor = max(
+                    floor,
+                    float(problem.hvd_high_frequency_floor(x, output_index=int(i))),
+                )
+            except TypeError:
+                floor = max(floor, float(problem.hvd_high_frequency_floor(x)))
+            except (ValueError, AttributeError):
+                pass
+        encoder = getattr(problem, "_scolhkg_representation_encoder", None)
+        if encoder is not None and hasattr(encoder, "residual_floor"):
+            try:
+                floor = max(floor, float(encoder.residual_floor(x, output_index=int(i))))
+            except TypeError:
+                floor = max(floor, float(encoder.residual_floor(x)))
+            except (ValueError, AttributeError):
+                pass
+        if not np.isfinite(floor):
+            return 0.0
+        return float(max(floor, 0.0))
+
+    def _high_frequency_residual_floor_many(self, i, X, problem=None):
+        if len(X) == 0:
+            return np.zeros(0, dtype=float)
+        return np.asarray([
+            self._high_frequency_residual_floor(i, x, problem)
+            for x in X
+        ], dtype=float)
 
     def _orthogonal_active(self, i):
         """Whether smooth orthogonal variance is allowed for this output.
@@ -371,13 +436,24 @@ class OrthogonalHVD:
         for i in range(self.n_outputs):
             self._fit_output(i, problem)
 
-    def update(self, i, x, y, mu, gpr_model=None, problem=None):
+    def update(
+        self,
+        i,
+        x,
+        y,
+        mu,
+        gpr_model=None,
+        problem=None,
+        epistemic_var=None,
+    ):
         """Add one residual and refit lightweight summaries."""
         del gpr_model
         self._last_problem = problem or self._last_problem
         i = int(i)
         x_tuple = tuple(int(v) for v in np.asarray(x, dtype=int))
-        resid2 = self._safe_residual_square(float(y) - float(mu), i, problem)
+        raw_resid2 = self._safe_residual_square(float(y) - float(mu), i, problem)
+        epistemic_correction = max(float(epistemic_var or 0.0), 0.0)
+        resid2 = max(raw_resid2 - epistemic_correction, self.floor)
         self.records[i].append((x_tuple, resid2))
         old = self.predict_variance(i, x_tuple, problem)
         self._fit_output(i, problem)
@@ -386,6 +462,8 @@ class OrthogonalHVD:
             "mode": self.mode,
             "output_index": i,
             "x": list(x_tuple),
+            "raw_innovation2": float(raw_resid2),
+            "epistemic_correction": float(epistemic_correction),
             "resid2": float(resid2),
             "old_variance": float(old),
             "new_variance": float(new),
@@ -699,6 +777,7 @@ class OrthogonalHVD:
         )
         if self.mode == "factor" and self._cumulative_active(i):
             cert += self._residual_tail_uncertainty(i)
+        cert += self._high_frequency_residual_floor(i, x, problem)
         if self.mode in ("orthogonal", "factor"):
             # Smooth log-variance fits are allowed to guide learning, but
             # feasibility certification should not be more optimistic than the
@@ -711,6 +790,7 @@ class OrthogonalHVD:
         cert = base + self.model_uncertainty_many(i, X, problem, base)
         if self.mode == "factor" and self._cumulative_active(i):
             cert = cert + self._residual_tail_uncertainty(i)
+        cert = cert + self._high_frequency_residual_floor_many(i, X, problem)
         if self.mode in ("orthogonal", "factor"):
             cert = np.maximum(cert, self._class_variance_many(i, X, problem))
         return np.maximum(cert, self.floor)
@@ -801,6 +881,8 @@ class OrthogonalHVD:
                 "v_C_plus": float(self.predict_certification_variance(i, x, problem)),
                 "tail_guard": float(self._residual_tail_uncertainty(i))
                 if self._cumulative_active(i) else 0.0,
+                "high_frequency_floor": float(
+                    self._high_frequency_residual_floor(i, x, problem)),
                 "oracle": oracle,
                 "oracle_blocks": oracle_blocks,
             }
@@ -817,6 +899,8 @@ class OrthogonalHVD:
             "cumulative": cumulative,
             "model_uncertainty": float(self.model_uncertainty(i, x, problem)),
             "residual_tail_uncertainty": float(self._residual_tail_uncertainty(i)),
+            "high_frequency_floor": float(
+                self._high_frequency_residual_floor(i, x, problem)),
             "certification_variance": float(
                 self.predict_certification_variance(i, x, problem)),
         }
@@ -926,4 +1010,11 @@ class OrthogonalHVD:
                 str(i): self._residual_variance_cap(i)
                 for i in range(self.n_outputs)
             },
+            "uses_high_frequency_floor": bool(
+                getattr(
+                    getattr(self._last_problem, "_scolhkg_representation_encoder", None),
+                    "residual_floor",
+                    None,
+                )
+            ),
         }

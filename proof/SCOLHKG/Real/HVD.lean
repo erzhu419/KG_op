@@ -72,5 +72,27 @@ theorem conservative_variance_upper
     c.trueVariance ≤ certificationVariance c := by
   exact h
 
-end SCOLHKG.Real
+def deconvolvedResidualSquare
+    (innovationSq epistemicVariance floor : ℝ) : ℝ :=
+  max (innovationSq - epistemicVariance) floor
 
+theorem deconvolvedResidualSquare_nonnegative
+    {innovationSq epistemicVariance floor : ℝ}
+    (hFloor : 0 ≤ floor) :
+    0 ≤ deconvolvedResidualSquare innovationSq epistemicVariance floor := by
+  unfold deconvolvedResidualSquare
+  exact hFloor.trans (le_max_right _ _)
+
+theorem innovationSq_le_deconvolved_add_epistemic
+    {innovationSq epistemicVariance floor : ℝ} :
+    innovationSq ≤
+      deconvolvedResidualSquare innovationSq epistemicVariance floor
+        + epistemicVariance := by
+  unfold deconvolvedResidualSquare
+  have hLower :
+      innovationSq - epistemicVariance ≤
+        max (innovationSq - epistemicVariance) floor :=
+    le_max_left _ _
+  linarith
+
+end SCOLHKG.Real

@@ -215,6 +215,11 @@ def run_single_once(args, seed, use_state_coupling=False):
         encoder_kind=args.encoder_kind,
         encoder_latent_dim=args.encoder_latent_dim,
         encoder_fit_pool_size=args.encoder_fit_pool_size,
+        lf_os_max_library_size=args.lf_os_max_library_size,
+        lf_os_low_frequency_components=args.lf_os_low_frequency_components,
+        lf_os_max_active=args.lf_os_max_active,
+        lf_os_graph_neighbors=args.lf_os_graph_neighbors,
+        lf_os_residual_floor_scale=args.lf_os_residual_floor_scale,
         seed=seed,
     )
     alg = SingleOLHKGAlgorithm(problem, config)
@@ -537,10 +542,19 @@ def main():
             "ssl_hybrid",
             "hybrid_ssl",
             "contextual_manifold",
+            "lf_os",
+            "lf_orthogonal_sparse",
+            "low_frequency_orthogonal_sparse",
+            "orthogonal_sparse",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
+    parser.add_argument("--lf_os_max_library_size", type=int, default=30)
+    parser.add_argument("--lf_os_low_frequency_components", type=int, default=8)
+    parser.add_argument("--lf_os_max_active", type=int, default=8)
+    parser.add_argument("--lf_os_graph_neighbors", type=int, default=12)
+    parser.add_argument("--lf_os_residual_floor_scale", type=float, default=0.05)
     parser.add_argument("--always-run-legacy", action="store_true")
     parser.add_argument("--promote-if-pass", action="store_true")
     parser.add_argument("--out", default=None)

@@ -147,6 +147,9 @@ class BiObjectiveOLHKGSmoke:
 
             x_arr = np.asarray(x_selected, dtype=int)
             mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(3)]
+            epistemic_before = [
+                self.gpr[i].posterior_var(x_arr) for i in range(3)
+            ]
             sig2_before = [
                 self.variance_model.predict_variance(i, x_arr, self.problem)
                 for i in range(3)
@@ -160,7 +163,15 @@ class BiObjectiveOLHKGSmoke:
             for i in range(3):
                 self.gpr[i].update(x_arr, y[i], sig2_before[i])
             for i in range(3):
-                self.variance_model.update(i, x_arr, y[i], mu_before[i], self.gpr[i], self.problem)
+                self.variance_model.update(
+                    i,
+                    x_arr,
+                    y[i],
+                    mu_before[i],
+                    self.gpr[i],
+                    self.problem,
+                    epistemic_var=epistemic_before[i],
+                )
             row["t_update"] = time.time() - t0
 
             t0 = time.time()

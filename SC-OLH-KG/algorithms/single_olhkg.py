@@ -32,6 +32,7 @@ from encoders.policy_state_encoder import (
     GraphLaplacianEncoder,
     HybridSSLPolicyEncoder,
     KernelManifoldEncoder,
+    LowFrequencyOrthogonalSparsePolicyEncoder,
     MaskedTrajectoryEncoder,
     NextRiskEncoder,
     PCAManifoldEncoder,
@@ -113,6 +114,12 @@ class SingleOLHKGConfig:
     encoder_kind: str = "synthetic"
     encoder_latent_dim: int = 8
     encoder_fit_pool_size: int = 512
+    lf_os_max_library_size: int = 30
+    lf_os_low_frequency_components: int = 8
+    lf_os_max_active: int = 8
+    lf_os_graph_neighbors: int = 12
+    lf_os_residual_floor_scale: float = 0.05
+    lf_os_use_problem_state_anchor: bool = True
     acquisition_mode: str = "exact_mc"
     exact_kg_mc_samples: int = 8
     exact_kg_jobs: int = 1
@@ -189,7 +196,15 @@ class SingleOLHKGAlgorithm:
             "raw_plus_manifold",
         }
         basis_map = None
-        if self.config.use_state_basis and (
+        constraint_basis_map = None
+        direct_meta_basis = bool(
+            getattr(problem, "prefer_direct_gpr_basis", False)
+            and hasattr(problem, "gpr_basis_map")
+        )
+        if direct_meta_basis:
+            basis_map = problem.gpr_basis_map(output_index=0)
+            constraint_basis_map = problem.gpr_basis_map(output_index=1)
+        elif self.config.use_state_basis and (
             provider_available or explicit_representation_basis
         ):
             basis_map = StateCoupledFeatureMap(
@@ -209,17 +224,18 @@ class SingleOLHKGAlgorithm:
                 raw_basis_dim=self.config.raw_basis_dim,
                 raw_projection_seed=self.config.raw_projection_seed,
             )
-        constraint_basis_map = basis_map
-        constraint_basis_mode = str(
-            self.config.constraint_state_basis_mode or "").strip()
-        if constraint_basis_mode:
-            constraint_basis_map = StateCoupledFeatureMap(
-                problem,
-                self.encoder,
-                mode=constraint_basis_mode,
-                raw_basis_dim=self.config.raw_basis_dim,
-                raw_projection_seed=self.config.raw_projection_seed,
-            )
+        if constraint_basis_map is None:
+            constraint_basis_map = basis_map
+            constraint_basis_mode = str(
+                self.config.constraint_state_basis_mode or "").strip()
+            if constraint_basis_mode:
+                constraint_basis_map = StateCoupledFeatureMap(
+                    problem,
+                    self.encoder,
+                    mode=constraint_basis_mode,
+                    raw_basis_dim=self.config.raw_basis_dim,
+                    raw_projection_seed=self.config.raw_projection_seed,
+                )
         self._attach_representation_to_problem()
         self.gpr = [
             ParametricGPR(
@@ -365,6 +381,25 @@ class SingleOLHKGAlgorithm:
                 rng=self.rng,
                 records_or_policy_pool=trajectory_records,
             )
+        if kind in (
+            "lf_os",
+            "lf_orthogonal_sparse",
+            "low_frequency_orthogonal_sparse",
+            "orthogonal_sparse",
+        ):
+            return LowFrequencyOrthogonalSparsePolicyEncoder(
+                self.problem,
+                latent_dim=self.config.encoder_latent_dim,
+                fit_pool_size=self.config.encoder_fit_pool_size,
+                max_library_size=self.config.lf_os_max_library_size,
+                low_frequency_components=self.config.lf_os_low_frequency_components,
+                max_active=self.config.lf_os_max_active,
+                n_neighbors=self.config.lf_os_graph_neighbors,
+                residual_floor_scale=self.config.lf_os_residual_floor_scale,
+                use_problem_state_anchor=self.config.lf_os_use_problem_state_anchor,
+                rng=self.rng,
+                records_or_policy_pool=trajectory_records,
+            )
         return SyntheticPolicyStateEncoder(self.problem)
 
     def _attach_representation_to_problem(self):
@@ -388,6 +423,10 @@ class SingleOLHKGAlgorithm:
                 "hybrid_ssl",
                 "contextual_manifold",
                 "small_transformer",
+                "lf_os",
+                "lf_orthogonal_sparse",
+                "low_frequency_orthogonal_sparse",
+                "orthogonal_sparse",
             }
         ):
             setattr(self.problem, "_scolhkg_use_manifold_hvd", True)
@@ -429,6 +468,14 @@ class SingleOLHKGAlgorithm:
             self._simulate_and_store(x)
 
         for i in range(2):
+            basis_map = getattr(self.gpr[i], "basis_map", None)
+            if basis_map is not None and hasattr(
+                basis_map, "fit_from_observations"
+            ):
+                basis_map.fit_from_observations(
+                    self.observations,
+                    output_index=i,
+                )
             Phi = self.gpr[i].basis_matrix(samples)
             y_i = np.array([self.observations[x][0][i] for x in samples], dtype=float)
             try:
@@ -594,7 +641,17 @@ class SingleOLHKGAlgorithm:
         self.iteration_log = copy.deepcopy(payload.get("iteration_log", []))
         self.pre_sampling_log = copy.deepcopy(payload.get("pre_sampling_log"))
         self.final_log = copy.deepcopy(payload.get("final_log"))
-        for model, state in zip(self.gpr, payload.get("gpr", [])):
+        for output_index, (model, state) in enumerate(
+            zip(self.gpr, payload.get("gpr", []))
+        ):
+            basis_map = getattr(model, "basis_map", None)
+            if basis_map is not None and hasattr(
+                basis_map, "fit_from_observations"
+            ):
+                basis_map.fit_from_observations(
+                    self.observations,
+                    output_index=output_index,
+                )
             self._restore_gpr_checkpoint_state(model, state)
         variance_state = copy.deepcopy(payload.get("variance_model"))
         if variance_state is None:
@@ -633,6 +690,11 @@ class SingleOLHKGAlgorithm:
             "samples": [list(map(int, x)) for x in samples],
             "time_sec": float(time.time() - t0),
             "variance": self.variance_model.diagnostics(),
+            "meta_basis": (
+                self.problem.meta_basis_diagnostics()
+                if hasattr(self.problem, "meta_basis_diagnostics")
+                else None
+            ),
         }
         self._save_checkpoint(self.config.n0, reason="initial", force=True)
         return int(self.config.n0)
@@ -1085,10 +1147,13 @@ class SingleOLHKGAlgorithm:
         feature_mean=None,
         feature_scale=None,
     ):
-        raw = np.vstack([
-            np.asarray(basis.features(x), dtype=float).reshape(-1)
-            for x in xs
-        ])
+        if hasattr(basis, "features_many"):
+            raw = np.asarray(basis.features_many(xs), dtype=float)
+        else:
+            raw = np.vstack([
+                np.asarray(basis.features(x), dtype=float).reshape(-1)
+                for x in xs
+            ])
         if feature_mean is None or feature_scale is None:
             if self.config.calibration_standardize_features:
                 feature_mean = np.mean(raw, axis=0)
@@ -1207,21 +1272,13 @@ class SingleOLHKGAlgorithm:
             "leverage": leverage,
         }
 
-    def _recommendation_calibration_audit_scores(self, pool):
-        """Evaluate the empirical recommendation surrogate on a fixed pool.
-
-        This is diagnostics-only.  It mirrors the fallback model used by
-        `_calibrated_recommendation_index`, but it does not choose a point.
-        The audit lets us see whether a true-feasible pool member was missed
-        because the theory certificate, the calibrated surrogate, or the source
-        prior was too conservative.
-        """
+    def _recommendation_calibration_fit(self):
         if not self.config.recommendation_calibration:
             return None
         if not hasattr(self.problem, "surrogate_basis_map"):
             return None
         basis = self.problem.surrogate_basis_map()
-        if basis is None or not pool:
+        if basis is None:
             return None
         if len(self.observations) < int(self.config.recommendation_calibration_min_obs):
             return None
@@ -1242,24 +1299,18 @@ class SingleOLHKGAlgorithm:
         penalty = ridge * np.eye(Phi.shape[1], dtype=float)
         penalty[0, 0] = 0.0
         lhs = Phi.T @ Phi + penalty
+        rhs_obj = Phi.T @ y_obj
+        rhs_con = Phi.T @ y_con
         try:
-            beta_obj = np.linalg.solve(lhs, Phi.T @ y_obj)
-            beta_con = np.linalg.solve(lhs, Phi.T @ y_con)
+            beta_obj = np.linalg.solve(lhs, rhs_obj)
+            beta_con = np.linalg.solve(lhs, rhs_con)
         except np.linalg.LinAlgError:
-            beta_obj = np.linalg.lstsq(lhs, Phi.T @ y_obj, rcond=None)[0]
-            beta_con = np.linalg.lstsq(lhs, Phi.T @ y_con, rcond=None)[0]
+            beta_obj = np.linalg.lstsq(lhs, rhs_obj, rcond=None)[0]
+            beta_con = np.linalg.lstsq(lhs, rhs_con, rcond=None)[0]
         try:
             lhs_inv = np.linalg.pinv(lhs)
         except np.linalg.LinAlgError:
             lhs_inv = None
-        Phi_pool, _, _ = self._surrogate_feature_matrix(
-            basis,
-            pool,
-            feature_mean=feature_mean,
-            feature_scale=feature_scale,
-        )
-        pred_obj = Phi_pool @ beta_obj
-        pred_con = Phi_pool @ beta_con
         resid_con = y_con - Phi @ beta_con
         resid_sigma = float(np.sqrt(np.mean(resid_con ** 2))) if len(resid_con) else 0.0
         nominal_floor = (
@@ -1268,22 +1319,74 @@ class SingleOLHKGAlgorithm:
             * float(getattr(self.problem, "sigma_level", 0.0))
         )
         sigma_cal = max(resid_sigma, nominal_floor, 1e-8)
+        return {
+            "basis": basis,
+            "Phi_train": Phi,
+            "feature_mean": feature_mean,
+            "feature_scale": feature_scale,
+            "beta_obj": beta_obj,
+            "beta_con": beta_con,
+            "lhs_inv": lhs_inv,
+            "sigma": float(sigma_cal),
+            "resid_sigma": float(resid_sigma),
+            "n_train": int(len(train_x)),
+            "feature_dim": int(Phi.shape[1]),
+        }
+
+    def _recommendation_calibration_pool_features(self, fit, pool):
+        if fit is None or not pool:
+            return None
+        Phi_pool, _, _ = self._surrogate_feature_matrix(
+            fit["basis"],
+            pool,
+            feature_mean=fit["feature_mean"],
+            feature_scale=fit["feature_scale"],
+        )
+        return Phi_pool
+
+    def _recommendation_calibration_audit_scores(
+        self,
+        pool,
+        *,
+        fit=None,
+        phi_pool=None,
+    ):
+        """Evaluate the empirical recommendation surrogate on a fixed pool.
+
+        This is diagnostics-only.  It mirrors the fallback model used by
+        `_calibrated_recommendation_index`, but it does not choose a point.
+        The audit lets us see whether a true-feasible pool member was missed
+        because the theory certificate, the calibrated surrogate, or the source
+        prior was too conservative.
+        """
+        if not pool:
+            return None
+        fit = fit or self._recommendation_calibration_fit()
+        if fit is None:
+            return None
+        Phi_pool = (
+            phi_pool
+            if phi_pool is not None and len(phi_pool) == len(pool)
+            else self._recommendation_calibration_pool_features(fit, pool)
+        )
+        pred_obj = Phi_pool @ fit["beta_obj"]
+        pred_con = Phi_pool @ fit["beta_con"]
         z_alpha = float(norm.ppf(1 - self.problem.alpha))
-        margin = pred_con + z_alpha * sigma_cal - float(self.problem.tau)
-        if lhs_inv is None:
+        margin = pred_con + z_alpha * float(fit["sigma"]) - float(self.problem.tau)
+        if fit["lhs_inv"] is None:
             leverage = np.full(len(pool), np.nan, dtype=float)
         else:
-            leverage = np.sum((Phi_pool @ lhs_inv) * Phi_pool, axis=1)
+            leverage = np.sum((Phi_pool @ fit["lhs_inv"]) * Phi_pool, axis=1)
             leverage = np.maximum(np.asarray(leverage, dtype=float), 0.0)
         return {
             "pred_obj": np.asarray(pred_obj, dtype=float),
             "pred_con": np.asarray(pred_con, dtype=float),
             "margin": np.asarray(margin, dtype=float),
             "leverage": np.asarray(leverage, dtype=float),
-            "sigma": float(sigma_cal),
-            "resid_sigma": float(resid_sigma),
-            "n_train": int(len(train_x)),
-            "feature_dim": int(Phi.shape[1]),
+            "sigma": float(fit["sigma"]),
+            "resid_sigma": float(fit["resid_sigma"]),
+            "n_train": int(fit["n_train"]),
+            "feature_dim": int(fit["feature_dim"]),
             "n_feasible": int(np.sum(margin <= 0.0)),
         }
 
@@ -1293,55 +1396,16 @@ class SingleOLHKGAlgorithm:
         robust_margins,
         source_margins=None,
         guard_margins=None,
+        fit=None,
+        phi_pool=None,
     ):
-        if not self.config.recommendation_calibration:
-            return None, {}
-        if not hasattr(self.problem, "surrogate_basis_map"):
-            return None, {}
-        basis = self.problem.surrogate_basis_map()
-        if basis is None:
+        fit = fit or self._recommendation_calibration_fit()
+        if fit is None:
             return None, {}
         scope = str(self.config.recommendation_calibration_scope or "refinement").lower()
         refinement = self._recommendation_refinement_candidates()
         if scope not in ("pool", "full", "recommendation_pool") and not refinement:
             return None, {}
-        if len(self.observations) < int(self.config.recommendation_calibration_min_obs):
-            return None, {}
-
-        train_x = []
-        train_obj = []
-        train_con = []
-        for x, ys in self.observations.items():
-            train_x.append(tuple(int(v) for v in x))
-            y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
-            train_obj.append(float(y_bar[0]))
-            train_con.append(float(y_bar[1]))
-        Phi, feature_mean, feature_scale = self._surrogate_feature_matrix(
-            basis, train_x)
-        y_obj = np.asarray(train_obj, dtype=float)
-        y_con = np.asarray(train_con, dtype=float)
-        ridge = max(float(self.config.recommendation_calibration_ridge), 0.0)
-        penalty = ridge * np.eye(Phi.shape[1], dtype=float)
-        penalty[0, 0] = 0.0
-        lhs = Phi.T @ Phi + penalty
-        try:
-            beta_obj = np.linalg.solve(lhs, Phi.T @ y_obj)
-            beta_con = np.linalg.solve(lhs, Phi.T @ y_con)
-        except np.linalg.LinAlgError:
-            beta_obj = np.linalg.lstsq(
-                lhs,
-                Phi.T @ y_obj,
-                rcond=None,
-            )[0]
-            beta_con = np.linalg.lstsq(
-                lhs,
-                Phi.T @ y_con,
-                rcond=None,
-            )[0]
-        try:
-            lhs_inv = np.linalg.pinv(lhs)
-        except np.linalg.LinAlgError:
-            lhs_inv = None
 
         pool_index = {tuple(int(v) for v in x): i for i, x in enumerate(pool)}
         if scope in ("pool", "full", "recommendation_pool"):
@@ -1356,17 +1420,20 @@ class SingleOLHKGAlgorithm:
             scope_label = "refinement"
         if not candidate_indices:
             return None, {}
-        Phi_cand, _, _ = self._surrogate_feature_matrix(
-            basis,
-            [pool[i] for i in candidate_indices],
-            feature_mean=feature_mean,
-            feature_scale=feature_scale,
-        )
-        pred_obj = Phi_cand @ beta_obj
-        if lhs_inv is None:
+        if phi_pool is not None and len(phi_pool) == len(pool):
+            Phi_cand = np.asarray(phi_pool, dtype=float)[candidate_indices]
+        else:
+            Phi_cand, _, _ = self._surrogate_feature_matrix(
+                fit["basis"],
+                [pool[i] for i in candidate_indices],
+                feature_mean=fit["feature_mean"],
+                feature_scale=fit["feature_scale"],
+            )
+        pred_obj = Phi_cand @ fit["beta_obj"]
+        if fit["lhs_inv"] is None:
             leverage = np.full(len(candidate_indices), np.nan, dtype=float)
         else:
-            leverage = np.sum((Phi_cand @ lhs_inv) * Phi_cand, axis=1)
+            leverage = np.sum((Phi_cand @ fit["lhs_inv"]) * Phi_cand, axis=1)
             leverage = np.maximum(np.asarray(leverage, dtype=float), 0.0)
         decision_margin = np.asarray([
             robust_margins[i]
@@ -1485,15 +1552,8 @@ class SingleOLHKGAlgorithm:
         # as a fallback.  The returned posterior_feasible flag remains false;
         # this path is an empirical recommendation rescue, not a certification
         # claim.
-        pred_con = Phi_cand @ beta_con
-        resid_con = y_con - Phi @ beta_con
-        resid_sigma = float(np.sqrt(np.mean(resid_con ** 2))) if len(resid_con) else 0.0
-        nominal_floor = (
-            float(self.config.recommendation_noise_floor_scale)
-            * 0.35
-            * float(getattr(self.problem, "sigma_level", 0.0))
-        )
-        sigma_cal = max(resid_sigma, nominal_floor, 1e-8)
+        pred_con = Phi_cand @ fit["beta_con"]
+        sigma_cal = float(fit["sigma"])
         z_alpha = float(norm.ppf(1 - self.problem.alpha))
         calibrated_margin = (
             pred_con
@@ -1742,8 +1802,21 @@ class SingleOLHKGAlgorithm:
             )
         else:
             calibrated_margins = None
+        recommendation_calibration_fit = self._recommendation_calibration_fit()
+        recommendation_calibration_phi_pool = (
+            self._recommendation_calibration_pool_features(
+                recommendation_calibration_fit,
+                pool,
+            )
+            if recommendation_calibration_fit is not None
+            else None
+        )
         recommendation_calibration_audit = (
-            self._recommendation_calibration_audit_scores(pool)
+            self._recommendation_calibration_audit_scores(
+                pool,
+                fit=recommendation_calibration_fit,
+                phi_pool=recommendation_calibration_phi_pool,
+            )
         )
         feasible = robust_margins <= 0.0
         if np.any(feasible):
@@ -1844,6 +1917,8 @@ class SingleOLHKGAlgorithm:
             robust_margins,
             source_margins=source_margins,
             guard_margins=theory_margins + recommendation_slack,
+            fit=recommendation_calibration_fit,
+            phi_pool=recommendation_calibration_phi_pool,
         )
         if calibrated_idx is not None:
             keep_observed = False
@@ -2739,11 +2814,15 @@ class SingleOLHKGAlgorithm:
 
             x_arr = np.asarray(x_selected, dtype=int)
             mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]
+            epistemic_before = [
+                self.gpr[i].posterior_var(x_arr) for i in range(2)
+            ]
             sigma2_before = [
                 self.variance_model.predict_variance(i, x_arr, self.problem)
                 for i in range(2)
             ]
             row["mu_before"] = [float(v) for v in mu_before]
+            row["epistemic_before"] = [float(v) for v in epistemic_before]
             row["sigma2_before"] = [float(v) for v in sigma2_before]
 
             t0 = time.time()
@@ -2757,7 +2836,14 @@ class SingleOLHKGAlgorithm:
             hvd_details = []
             for i in range(2):
                 hvd_details.append(self.variance_model.update(
-                    i, x_arr, y[i], mu_before[i], self.gpr[i], self.problem))
+                    i,
+                    x_arr,
+                    y[i],
+                    mu_before[i],
+                    self.gpr[i],
+                    self.problem,
+                    epistemic_var=epistemic_before[i],
+                ))
             row["t_update"] = time.time() - t0
             row["hvd_update"] = hvd_details
             row["n_visited"] = len(self.gpr[0].sampled_set)
@@ -2836,6 +2922,11 @@ class SingleOLHKGAlgorithm:
             "llm_prior": llm_prior_summary,
             "truth_pool_diagnostics": self._summarize_truth_pool_diagnostics(),
             "variance": self.variance_model.diagnostics(),
+            "meta_basis": (
+                self.problem.meta_basis_diagnostics()
+                if hasattr(self.problem, "meta_basis_diagnostics")
+                else None
+            ),
             "cumulative_risk_provider": (
                 self.problem.cumulative_risk_provider_status()
                 if hasattr(self.problem, "cumulative_risk_provider_status")

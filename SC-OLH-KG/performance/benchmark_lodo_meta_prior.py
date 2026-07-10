@@ -152,6 +152,23 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
             else args_dict["meta_hvd_noise_floor_scale"]
         ),
         universal_shape_count=args_dict["meta_universal_shape_count"],
+        component_stage=args_dict["meta_component_stage"],
+        spectral_active_dim=args_dict["meta_spectral_active_dim"],
+        spectral_max_library_size=args_dict["meta_spectral_max_library_size"],
+        spectral_low_frequency_components=args_dict[
+            "meta_spectral_low_frequency_components"],
+        spectral_graph_neighbors=args_dict["meta_spectral_graph_neighbors"],
+        spectral_relevance_floor=args_dict["meta_spectral_relevance_floor"],
+        spectral_gate_boundary_weight=args_dict[
+            "meta_spectral_gate_boundary_weight"],
+        spectral_gate_dangerous_weight=args_dict[
+            "meta_spectral_gate_dangerous_weight"],
+        spectral_gate_selection_tolerance=args_dict[
+            "meta_spectral_gate_selection_tolerance"],
+        spectral_gate_calibration_quantile=args_dict[
+            "meta_spectral_gate_calibration_quantile"],
+        coordinate_mode=args_dict["meta_coordinate_mode"],
+        coordinate_relevance_floor=args_dict["meta_coordinate_relevance_floor"],
         seed=int(args_dict["meta_seed"]) + int(seed),
     )
     prior.fit_from_source_problems(
@@ -268,7 +285,14 @@ def run_one(task):
         numeric_backend_device=args_dict["numeric_backend_device"],
         torch_dtype=args_dict["torch_dtype"],
         torch_min_rows=args_dict["torch_min_rows"],
-        encoder_kind="synthetic",
+        encoder_kind=args_dict["encoder_kind"],
+        encoder_latent_dim=args_dict["encoder_latent_dim"],
+        encoder_fit_pool_size=args_dict["encoder_fit_pool_size"],
+        lf_os_max_library_size=args_dict["lf_os_max_library_size"],
+        lf_os_low_frequency_components=args_dict["lf_os_low_frequency_components"],
+        lf_os_max_active=args_dict["lf_os_max_active"],
+        lf_os_graph_neighbors=args_dict["lf_os_graph_neighbors"],
+        lf_os_residual_floor_scale=args_dict["lf_os_residual_floor_scale"],
         acquisition_mode=args_dict["acquisition_mode"],
         exact_kg_mc_samples=args_dict["exact_kg_mc_samples"],
         exact_kg_jobs=args_dict["exact_kg_jobs"],
@@ -372,6 +396,7 @@ def run_one(task):
         "state_basis_enabled": bool(args_dict["use_state_basis"]),
         "state_basis_mode": args_dict["state_basis_mode"],
         "constraint_state_basis_mode": args_dict["constraint_state_basis_mode"],
+        "meta_component_stage": args_dict["meta_component_stage"],
         "transfer_cell": f"{line}-{basis_label}",
         "variant": (
             f"{line}-{basis_label}:{heldout}"
@@ -381,6 +406,7 @@ def run_one(task):
         "audit_admissible_mainline": bool(audit.get("admissible_mainline", False)),
         "audit": audit,
         "meta_prior": meta_diag,
+        "meta_basis": result.get("meta_basis"),
         "true_feasible": true_feasible,
         "posterior_feasible": posterior_feasible,
         "false_feasible": bool(posterior_feasible and not true_feasible),
@@ -1080,6 +1106,14 @@ def main():
     parser.add_argument("--numeric_backend_device", default="auto")
     parser.add_argument("--torch_dtype", default="float64")
     parser.add_argument("--torch_min_rows", type=int, default=128)
+    parser.add_argument("--encoder_kind", default="synthetic")
+    parser.add_argument("--encoder_latent_dim", type=int, default=8)
+    parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
+    parser.add_argument("--lf_os_max_library_size", type=int, default=30)
+    parser.add_argument("--lf_os_low_frequency_components", type=int, default=8)
+    parser.add_argument("--lf_os_max_active", type=int, default=8)
+    parser.add_argument("--lf_os_graph_neighbors", type=int, default=12)
+    parser.add_argument("--lf_os_residual_floor_scale", type=float, default=0.05)
     parser.add_argument("--acquisition_mode", default="additive")
     parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
     parser.add_argument("--exact_kg_jobs", type=int, default=1)
@@ -1172,6 +1206,33 @@ def main():
     parser.add_argument("--meta_hvd_noise_floor_scale", type=float, default=0.0)
     parser.add_argument("--meta_teacher_hvd_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--meta_universal_shape_count", type=int, default=64)
+    parser.add_argument(
+        "--meta_component_stage",
+        choices=["legacy_all", "coordinate", "spectral"],
+        default="legacy_all",
+        help=(
+            "Isolate LODO learning stages. 'spectral' enables only the frozen "
+            "source-invariant low-frequency basis on top of psi coordinates."
+        ),
+    )
+    parser.add_argument("--meta_spectral_active_dim", type=int, default=6)
+    parser.add_argument("--meta_spectral_max_library_size", type=int, default=64)
+    parser.add_argument(
+        "--meta_spectral_low_frequency_components", type=int, default=8)
+    parser.add_argument("--meta_spectral_graph_neighbors", type=int, default=10)
+    parser.add_argument("--meta_spectral_relevance_floor", type=float, default=0.05)
+    parser.add_argument("--meta_spectral_gate_boundary_weight", type=float, default=2.0)
+    parser.add_argument("--meta_spectral_gate_dangerous_weight", type=float, default=3.0)
+    parser.add_argument(
+        "--meta_spectral_gate_selection_tolerance", type=float, default=0.02)
+    parser.add_argument(
+        "--meta_spectral_gate_calibration_quantile", type=float, default=0.90)
+    parser.add_argument(
+        "--meta_coordinate_mode",
+        choices=["pca", "stable_supervised"],
+        default="pca",
+    )
+    parser.add_argument("--meta_coordinate_relevance_floor", type=float, default=0.05)
     parser.add_argument("--meta_source_augments", type=int, default=1)
     parser.add_argument("--meta_source_sigma_jitter", type=float, default=0.20)
     parser.add_argument("--meta_source_alpha_jitter", type=float, default=0.25)

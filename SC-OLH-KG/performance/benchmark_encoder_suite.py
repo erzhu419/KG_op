@@ -217,7 +217,7 @@ def main():
     parser.add_argument(
         "--encoder_kinds",
         default=(
-            "synthetic,pca_manifold,kernel_manifold,graph_laplacian,ssl_masked,"
+            "synthetic,lf_os,pca_manifold,kernel_manifold,graph_laplacian,ssl_masked,"
             "ssl_contrastive,ssl_next_risk,ssl_transformer,ssl_hybrid"
         ),
     )
@@ -228,6 +228,11 @@ def main():
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
+    parser.add_argument("--lf_os_max_library_size", type=int, default=30)
+    parser.add_argument("--lf_os_low_frequency_components", type=int, default=8)
+    parser.add_argument("--lf_os_max_active", type=int, default=8)
+    parser.add_argument("--lf_os_graph_neighbors", type=int, default=12)
+    parser.add_argument("--lf_os_residual_floor_scale", type=float, default=0.05)
     parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
     parser.add_argument("--exact_kg_jobs", type=int, default=1)
     parser.add_argument("--exact_kg_use_score", action="store_true")

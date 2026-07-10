@@ -31,6 +31,11 @@ noncomputable def subExponentialResidualSquareRadius
     (Real.sqrt (2 * nu ^ 2 * Real.log (2 / delta)))
     (2 * b * Real.log (2 / delta))
 
+noncomputable def subExponentialSampleMeanRadius
+    (nu b delta : ℝ) (n : ℕ) : ℝ :=
+  subExponentialResidualSquareRadius
+    (nu / Real.sqrt n) (b / n) delta
+
 theorem subExponentialResidualSquareRadius_nonnegative
     {nu b delta : ℝ}
     (hb : 0 ≤ b)
@@ -133,6 +138,24 @@ theorem subExponentialResidualSquare_tail_default_radius_le
     _ = delta := by
           rw [hExpNegL]
           ring
+
+theorem subExponentialSampleMean_tail_default_radius_le
+    {nu b delta : ℝ} {n : ℕ}
+    (hnu : 0 < nu)
+    (hb : 0 < b)
+    (hn : 0 < n)
+    (hdelta0 : 0 < delta)
+    (hdelta2 : delta ≤ 2) :
+    subExponentialResidualSquareTail
+      (nu / Real.sqrt n)
+      (b / n)
+      (subExponentialSampleMeanRadius nu b delta n) ≤ delta := by
+  unfold subExponentialSampleMeanRadius
+  apply subExponentialResidualSquare_tail_default_radius_le
+  · exact div_pos hnu (Real.sqrt_pos.2 (by exact_mod_cast hn))
+  · exact div_pos hb (by exact_mod_cast hn)
+  · exact hdelta0
+  · exact hdelta2
 
 def HasSubExponentialResidualSquareTail
     (Z : Ω → ℝ)

@@ -203,6 +203,24 @@ def run_variant_once(args, variance_mode, seed, use_state_coupling, acquisition_
         encoder_kind=args.encoder_kind,
         encoder_latent_dim=args.encoder_latent_dim,
         encoder_fit_pool_size=args.encoder_fit_pool_size,
+        lf_os_max_library_size=int(getattr(args, "lf_os_max_library_size", 30)),
+        lf_os_low_frequency_components=int(getattr(
+            args,
+            "lf_os_low_frequency_components",
+            8,
+        )),
+        lf_os_max_active=int(getattr(args, "lf_os_max_active", 8)),
+        lf_os_graph_neighbors=int(getattr(args, "lf_os_graph_neighbors", 12)),
+        lf_os_residual_floor_scale=float(getattr(
+            args,
+            "lf_os_residual_floor_scale",
+            0.05,
+        )),
+        lf_os_use_problem_state_anchor=not bool(getattr(
+            args,
+            "disable_lf_os_problem_state_anchor",
+            False,
+        )),
         acquisition_mode=acquisition_mode,
         exact_kg_mc_samples=args.exact_kg_mc_samples,
         exact_kg_jobs=int(getattr(args, "exact_kg_jobs", 1)),
@@ -540,6 +558,11 @@ def run_benchmark(args):
             "encoder_kind": args.encoder_kind,
             "encoder_latent_dim": args.encoder_latent_dim,
             "encoder_fit_pool_size": args.encoder_fit_pool_size,
+            "disable_lf_os_problem_state_anchor": bool(getattr(
+                args,
+                "disable_lf_os_problem_state_anchor",
+                False,
+            )),
             "acquisition_modes": parse_csv(args.acquisition_modes),
             "exact_kg_mc_samples": args.exact_kg_mc_samples,
             "exact_kg_jobs": int(getattr(args, "exact_kg_jobs", 1)),
@@ -786,10 +809,20 @@ def main():
             "ssl_hybrid",
             "hybrid_ssl",
             "contextual_manifold",
+            "lf_os",
+            "lf_orthogonal_sparse",
+            "low_frequency_orthogonal_sparse",
+            "orthogonal_sparse",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
+    parser.add_argument("--lf_os_max_library_size", type=int, default=30)
+    parser.add_argument("--lf_os_low_frequency_components", type=int, default=8)
+    parser.add_argument("--lf_os_max_active", type=int, default=8)
+    parser.add_argument("--lf_os_graph_neighbors", type=int, default=12)
+    parser.add_argument("--lf_os_residual_floor_scale", type=float, default=0.05)
+    parser.add_argument("--disable_lf_os_problem_state_anchor", action="store_true")
     parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
     parser.add_argument(
         "--exact_kg_jobs",

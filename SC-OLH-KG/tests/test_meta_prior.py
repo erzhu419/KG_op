@@ -14,6 +14,11 @@ from representation.meta_prior import (  # noqa: E402
     AdmissibleProblemAdapter,
     LearnedMetaPrior,
     MetaPriorProblemAdapter,
+    PilotGatedMetaPriorBasis,
+)
+from representation.transferable_spectral import (  # noqa: E402
+    SourceDomainBatch,
+    TransferableSpectralBasis,
 )
 
 
@@ -118,6 +123,217 @@ class MetaPriorTests(unittest.TestCase):
         candidates = target.recommendation_refinement_candidates()
         self.assertGreater(len(candidates), 0)
         self.assertLessEqual(len(candidates), target.refinement_count)
+
+    def test_source_invariant_spectral_basis_is_orthogonal_and_frozen(self):
+        batches = []
+        for domain_idx in range(3):
+            rng = np.random.default_rng(100 + domain_idx)
+            psi = rng.normal(size=(96, 5))
+            shared = np.sin(np.pi * np.tanh(0.5 * psi[:, 0]))
+            nuisance = 0.08 * rng.normal(size=96)
+            signals = np.column_stack([
+                (1.0 + 0.1 * domain_idx) * shared + nuisance,
+                -0.8 * shared + 0.15 * np.tanh(0.5 * psi[:, 1]) + nuisance,
+            ])
+            batches.append(SourceDomainBatch(
+                domain=f"source{domain_idx}",
+                psi=psi,
+                signals=signals,
+            ))
+        basis = TransferableSpectralBasis(
+            active_dim=4,
+            low_frequency_components=10,
+            n_neighbors=12,
+        ).fit(batches)
+        diag = basis.diagnostics()
+        self.assertEqual(diag["status"], "fit")
+        self.assertLess(diag["max_offdiag_gram"], 1e-5)
+        self.assertLess(diag["max_diag_error"], 1e-5)
+        self.assertTrue(any("psi0" in name for name in diag["selected_names"]))
+        fingerprint = basis.fingerprint()
+        features = basis.transform(np.zeros(5, dtype=float))
+        self.assertEqual(features.shape, (4,))
+        self.assertTrue(np.all(np.isfinite(features)))
+        self.assertEqual(fingerprint, basis.fingerprint())
+
+    def test_spectral_stage_does_not_enable_later_meta_components(self):
+        rng = np.random.default_rng(31)
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem("FactorShockStatePolicyRZDT1")),
+            ("InventorySupplyChain", self._problem("InventorySupplyChain")),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="spectral",
+            spectral_active_dim=4,
+            seed=31,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=12,
+            rng=rng,
+        )
+        target = MetaPriorProblemAdapter(self._problem("QueueResourceControl"), prior)
+        diag = prior.diagnostics()
+        self.assertEqual(diag["enabled_components"], ["coordinate", "spectral"])
+        self.assertIsNotNone(diag["spectral_basis"])
+        self.assertIsNone(target.cumulative_hvd_prior_beta(1))
+        self.assertIsNone(target.source_mean_prior_predict_many(
+            [target.sample_random(np.random.default_rng(32))],
+            output_index=1,
+        ))
+        self.assertEqual(target.state_anchor_points(n=4), [])
+        x = target.sample_random(np.random.default_rng(33))
+        frozen = prior.spectral_basis.fingerprint()
+        features = target.surrogate_basis_map().features(x)
+        self.assertEqual(features.shape, (4,))
+        self.assertEqual(frozen, prior.spectral_basis.fingerprint())
+
+        basis = target.gpr_basis_map(output_index=1)
+        self.assertIs(target.surrogate_basis_map(), basis)
+        rng_gate = np.random.default_rng(34)
+        observations = {}
+        for _ in range(10):
+            x_gate = target.sample_random(rng_gate)
+            spectral = prior.spectral_features(target, x_gate)
+            observations[x_gate] = [np.array([0.0, float(spectral[0])])]
+        selected = basis.fit_from_observations(observations, output_index=1)
+        self.assertIn(selected, {"coordinate", "fixed_psi", "source_spectral"})
+        self.assertEqual(basis.features(next(iter(observations))).shape, (basis.feature_dim,))
+        self.assertEqual(basis.diagnostics()["status"], "fit")
+
+    def test_decision_aware_gate_selects_boundary_predictive_spectral_basis(self):
+        rng = np.random.default_rng(41)
+        prior = LearnedMetaPrior(
+            local_dim=2,
+            shared_dim=2,
+            component_stage="spectral",
+            spectral_active_dim=2,
+            spectral_gate_selection_tolerance=0.0,
+            seed=41,
+        ).fit_from_source_problems(
+            [
+                ("InventorySupplyChain", self._problem("InventorySupplyChain")),
+                ("QueueResourceControl", self._problem("QueueResourceControl")),
+            ],
+            n_records_per_domain=12,
+            rng=rng,
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("FactorShockStatePolicyRZDT1"), prior)
+        xs = []
+        for index in range(10):
+            row = [50] * target.d
+            row[0] = 5 + 10 * index
+            row[1] = int((37 * index + 11) % 100)
+            xs.append(tuple(row))
+
+        prior.spectral_features = lambda problem, x: np.asarray([
+            float(x[0]) / 100.0,
+            (float(x[0]) / 100.0) ** 2,
+        ])
+        prior.risk_coordinate = lambda problem, x: np.asarray([
+            float(x[1]) / 100.0,
+            (float(x[1]) / 100.0) ** 2,
+            0.0,
+            0.0,
+        ])
+        prior.coordinate_basis_features = lambda problem, x: np.asarray([
+            float(x[1]) / 100.0,
+            np.sin(float(x[1])),
+        ])
+        z_sigma = 1.6448536269514722 * float(target.sigma_level)
+        observations = {}
+        for x in xs:
+            latent = float(x[0]) / 100.0
+            constraint_mean = 0.55 - latent - z_sigma
+            observations[x] = [np.asarray([latent ** 2, constraint_mean])]
+
+        gate = PilotGatedMetaPriorBasis(prior, target, output_index=1, ridge=0.1)
+        selected = gate.fit_from_observations(observations, output_index=1)
+        diag = gate.diagnostics()
+        self.assertEqual(selected, "source_spectral")
+        self.assertEqual(diag["selection_metric"], "decision_aware_loo")
+        self.assertLess(
+            diag["decision_score"]["source_spectral"],
+            diag["decision_score"]["fixed_psi"],
+        )
+        self.assertLess(
+            diag["decision_score"]["source_spectral"],
+            diag["decision_score"]["coordinate"],
+        )
+        self.assertIn(
+            "dangerous_underprediction",
+            diag["decision_components"]["source_spectral"],
+        )
+
+        objective_gate = PilotGatedMetaPriorBasis(
+            prior, target, output_index=0, ridge=0.1)
+        objective_selected = objective_gate.fit_from_observations(
+            observations, output_index=0)
+        self.assertEqual(objective_selected, "coordinate")
+        self.assertEqual(
+            objective_gate.diagnostics()["eligible_bases"], ["coordinate"])
+        self.assertEqual(
+            objective_gate.diagnostics()["gate_scope"],
+            "constraint_boundary_only",
+        )
+
+    def test_decision_aware_gate_falls_back_to_coordinate_baseline(self):
+        rng = np.random.default_rng(42)
+        prior = LearnedMetaPrior(
+            local_dim=2,
+            shared_dim=2,
+            component_stage="spectral",
+            spectral_active_dim=2,
+            spectral_gate_selection_tolerance=0.0,
+            seed=42,
+        ).fit_from_source_problems(
+            [
+                ("InventorySupplyChain", self._problem("InventorySupplyChain")),
+                ("QueueResourceControl", self._problem("QueueResourceControl")),
+            ],
+            n_records_per_domain=12,
+            rng=rng,
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("FactorShockStatePolicyRZDT1"), prior)
+        xs = []
+        for index in range(10):
+            row = [50] * target.d
+            row[0] = 5 + 10 * index
+            row[1] = int((37 * index + 11) % 100)
+            xs.append(tuple(row))
+
+        prior.coordinate_basis_features = lambda problem, x: np.asarray([
+            float(x[0]) / 100.0,
+            (float(x[0]) / 100.0) ** 2,
+        ])
+        prior.spectral_features = lambda problem, x: np.asarray([
+            float(x[1]) / 100.0,
+            np.sin(float(x[1])),
+        ])
+        prior.risk_coordinate = lambda problem, x: np.asarray([
+            float(x[1]) / 100.0,
+            (float(x[1]) / 100.0) ** 2,
+            0.0,
+            0.0,
+        ])
+        z_sigma = 1.6448536269514722 * float(target.sigma_level)
+        observations = {}
+        for x in xs:
+            latent = float(x[0]) / 100.0
+            observations[x] = [np.asarray([latent ** 2, 0.55 - latent - z_sigma])]
+
+        gate = PilotGatedMetaPriorBasis(prior, target, output_index=1, ridge=0.1)
+        selected = gate.fit_from_observations(observations, output_index=1)
+        diag = gate.diagnostics()
+        self.assertEqual(selected, "coordinate")
+        self.assertEqual(diag["eligible_bases"], ["coordinate", "source_spectral"])
+        self.assertLessEqual(
+            diag["decision_score"]["coordinate"],
+            diag["decision_score"]["source_spectral"],
+        )
 
 
 if __name__ == "__main__":

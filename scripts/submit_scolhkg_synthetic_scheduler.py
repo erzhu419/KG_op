@@ -46,6 +46,12 @@ def suite_commands(args, run_id):
         f"--state_inverse_neighbors {args.state_inverse_neighbors} "
         f"--eval_pool_size {args.eval_pool_size} "
         f"--n_seeds {args.n_seeds} --jobs {args.jobs_per_suite} "
+        f"{'--disable_recommendation_calibration ' if args.disable_recommendation_calibration else ''}"
+        f"{'--disable_recommendation_axis_oracle ' if args.disable_recommendation_axis_oracle else ''}"
+        f"{'--disable_problem_initial_samples ' if args.disable_problem_initial_samples else ''}"
+        f"{'--disable_boundary_initial_samples ' if args.disable_boundary_initial_samples else ''}"
+        f"{'--disable_recommendation_refinement ' if args.disable_recommendation_refinement else ''}"
+        f"{'--disable_lf_os_problem_state_anchor ' if args.disable_lf_os_problem_state_anchor else ''}"
         f"{checkpoint_common}"
     )
     if args.use_state_basis:
@@ -84,6 +90,8 @@ def suite_commands(args, run_id):
                 f"--botorch_num_restarts {args.botorch_num_restarts} "
                 f"--botorch_maxiter {args.botorch_maxiter} "
                 f"--botorch_timeout_sec {args.botorch_timeout_sec} "
+                f"--embedding_dim {args.embedding_dim} "
+                f"--embedding_dim_max {args.embedding_dim_max} "
                 f"--checkpoint_dir {ckpt_root / 'sota'} "
                 f"--out_prefix paper_sota_{run_id}"
             ),
@@ -129,7 +137,7 @@ def main():
     parser.add_argument("--suites", default="exact,sota,hvd,encoder")
     parser.add_argument("--problems", default="RegimeRZDT1,RZDT2,FactorShockStatePolicyRZDT1,InventorySupplyChain,QueueResourceControl,StatePolicyRZDT1,PaperRZDT1,PaperRZDT2,PaperRZDT5_RR")
     parser.add_argument("--hvd-problems", default="RegimeRZDT1,RZDT2,FactorShockStatePolicyRZDT1,InventorySupplyChain,QueueResourceControl,StatePolicyRZDT1")
-    parser.add_argument("--baselines", default="sobol,random,hetgp_lite,rahbo_lite,safeopt_lite,legacy_vepm_lite,botorch_turbo,botorch_scbo,botorch_saasbo")
+    parser.add_argument("--baselines", default="sobol,random,hetgp_lite,rahbo_lite,safeopt_lite,legacy_vepm_lite,rembo_lite,baxus_lite,botorch_turbo,botorch_scbo,botorch_saasbo")
     parser.add_argument("--N", type=int, default=80)
     parser.add_argument("--exact-N", type=int, default=40)
     parser.add_argument("--n0", type=int, default=10)
@@ -142,6 +150,12 @@ def main():
     parser.add_argument("--state-inverse-pool-size", type=int, default=600)
     parser.add_argument("--state-inverse-neighbors", type=int, default=2)
     parser.add_argument("--eval-pool-size", type=int, default=500)
+    parser.add_argument("--disable-recommendation-calibration", action="store_true")
+    parser.add_argument("--disable-recommendation-axis-oracle", action="store_true")
+    parser.add_argument("--disable-problem-initial-samples", action="store_true")
+    parser.add_argument("--disable-boundary-initial-samples", action="store_true")
+    parser.add_argument("--disable-recommendation-refinement", action="store_true")
+    parser.add_argument("--disable-lf-os-problem-state-anchor", action="store_true")
     parser.add_argument("--use-state-basis", dest="use_state_basis", action="store_true", default=True)
     parser.add_argument("--disable-state-basis", dest="use_state_basis", action="store_false")
     parser.add_argument(
@@ -167,6 +181,8 @@ def main():
     parser.add_argument("--botorch-num-restarts", type=int, default=8)
     parser.add_argument("--botorch-maxiter", type=int, default=80)
     parser.add_argument("--botorch-timeout-sec", type=float, default=45.0)
+    parser.add_argument("--embedding-dim", type=int, default=8)
+    parser.add_argument("--embedding-dim-max", type=int, default=32)
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=32768)
     parser.add_argument("--dispatch", action="store_true")
@@ -184,8 +200,7 @@ def main():
             "export LC_ALL=C LANG=C",
             "export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1",
             f"export PYTHONPATH={args.botorch_overlay}:$PYTHONPATH",
-            command,
-            "echo DONE",
+            f"{command} && echo DONE",
         ])
         out = run_cmd([
             sys.executable, args.scheduler, "submit",

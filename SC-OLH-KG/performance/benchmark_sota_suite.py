@@ -54,6 +54,12 @@ def _problem_args(args, problem):
         "encoder_kind": args.encoder_kind,
         "encoder_latent_dim": args.encoder_latent_dim,
         "encoder_fit_pool_size": args.encoder_fit_pool_size,
+        "lf_os_max_library_size": args.lf_os_max_library_size,
+        "lf_os_low_frequency_components": args.lf_os_low_frequency_components,
+        "lf_os_max_active": args.lf_os_max_active,
+        "lf_os_graph_neighbors": args.lf_os_graph_neighbors,
+        "lf_os_residual_floor_scale": args.lf_os_residual_floor_scale,
+        "disable_lf_os_problem_state_anchor": args.disable_lf_os_problem_state_anchor,
         "variance_mode": args.variance_mode,
         "lambda_feas": args.lambda_feas,
         "lambda_var": args.lambda_var,
@@ -67,6 +73,9 @@ def _problem_args(args, problem):
         "disable_recommendation_calibration": args.disable_recommendation_calibration,
         "recommendation_calibration_ridge": args.recommendation_calibration_ridge,
         "disable_recommendation_axis_oracle": args.disable_recommendation_axis_oracle,
+        "disable_problem_initial_samples": args.disable_problem_initial_samples,
+        "disable_boundary_initial_samples": args.disable_boundary_initial_samples,
+        "disable_recommendation_refinement": args.disable_recommendation_refinement,
         "acquisition_mode": args.acquisition_mode,
         "exact_kg_mc_samples": args.exact_kg_mc_samples,
         "exact_kg_jobs": args.exact_kg_jobs,
@@ -91,6 +100,8 @@ def _problem_args(args, problem):
         "tr_radius_max": args.tr_radius_max,
         "tr_success_tolerance": args.tr_success_tolerance,
         "tr_failure_tolerance": args.tr_failure_tolerance,
+        "embedding_dim": args.embedding_dim,
+        "embedding_dim_max": args.embedding_dim_max,
         "botorch_fallback": args.botorch_fallback,
         "botorch_raw_samples": args.botorch_raw_samples,
         "botorch_num_restarts": args.botorch_num_restarts,
@@ -241,10 +252,20 @@ def main():
             "ssl_hybrid",
             "hybrid_ssl",
             "contextual_manifold",
+            "lf_os",
+            "lf_orthogonal_sparse",
+            "low_frequency_orthogonal_sparse",
+            "orthogonal_sparse",
         ],
     )
     parser.add_argument("--encoder_latent_dim", type=int, default=8)
     parser.add_argument("--encoder_fit_pool_size", type=int, default=512)
+    parser.add_argument("--lf_os_max_library_size", type=int, default=30)
+    parser.add_argument("--lf_os_low_frequency_components", type=int, default=8)
+    parser.add_argument("--lf_os_max_active", type=int, default=8)
+    parser.add_argument("--lf_os_graph_neighbors", type=int, default=12)
+    parser.add_argument("--lf_os_residual_floor_scale", type=float, default=0.05)
+    parser.add_argument("--disable_lf_os_problem_state_anchor", action="store_true")
     parser.add_argument("--raw_basis_dim", type=int, default=-1)
     parser.add_argument("--raw_projection_seed", type=int, default=314159)
     parser.add_argument(
@@ -273,6 +294,9 @@ def main():
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
+    parser.add_argument("--disable_problem_initial_samples", action="store_true")
+    parser.add_argument("--disable_boundary_initial_samples", action="store_true")
+    parser.add_argument("--disable_recommendation_refinement", action="store_true")
     parser.add_argument("--acquisition_mode", default="exact_mc",
                         choices=["additive", "exact_mc", "blend"])
     parser.add_argument("--exact_kg_mc_samples", type=int, default=8)
@@ -292,7 +316,8 @@ def main():
         "--baselines",
         default=(
             "sobol,random,hetgp_lite,rahbo_lite,safeopt_lite,"
-            "legacy_vepm_lite,botorch_turbo,botorch_scbo,botorch_saasbo"
+            "legacy_vepm_lite,rembo_lite,baxus_lite,"
+            "botorch_turbo,botorch_scbo,botorch_saasbo"
         ),
     )
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
@@ -301,6 +326,8 @@ def main():
     parser.add_argument("--tr_radius_max", type=float, default=0.8)
     parser.add_argument("--tr_success_tolerance", type=int, default=3)
     parser.add_argument("--tr_failure_tolerance", type=int, default=5)
+    parser.add_argument("--embedding_dim", type=int, default=8)
+    parser.add_argument("--embedding_dim_max", type=int, default=32)
     parser.add_argument("--botorch_fallback", choices=("lite", "error"), default="error")
     parser.add_argument("--botorch_raw_samples", type=int, default=64)
     parser.add_argument("--botorch_num_restarts", type=int, default=5)
@@ -316,6 +343,8 @@ def main():
     parser.add_argument("--disable_saas_failure_fallback", action="store_true")
     parser.add_argument("--include_olhkg", action="store_true", default=True)
     parser.add_argument("--include_sc", action="store_true", default=True)
+    parser.add_argument("--exclude_olhkg", dest="include_olhkg", action="store_false")
+    parser.add_argument("--exclude_sc", dest="include_sc", action="store_false")
     parser.add_argument("--seeds", default="")
     parser.add_argument("--seed_start", type=int, default=0)
     parser.add_argument("--n_seeds", type=int, default=20)
