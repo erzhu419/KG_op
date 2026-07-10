@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import copy
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, asdict
+import multiprocessing
 import os
 from pathlib import Path
 import pickle
@@ -43,7 +44,32 @@ from encoders.policy_state_encoder import (
 )
 from representation.llm_structural_prior import LLMStructuralPriorAdvisor
 from representation.manifold import ManifoldRiskDecomposer
+from representation.task_posterior import (
+    FiniteTaskModelEnsemble,
+    FiniteTaskPosterior,
+    TaskExpertState,
+)
 from variance.orthogonal_hvd import OrthogonalHVD
+
+
+_FORK_EXACT_KG_CONTEXT = None
+
+
+def _fork_exact_kg_candidate(x):
+    """Evaluate one exact-KG candidate from a fork-inherited context."""
+    if _FORK_EXACT_KG_CONTEXT is None:
+        raise RuntimeError("fork exact-KG worker has no inherited context")
+    algorithm, common_z, terminal_pool, current_value, expert_uniform = (
+        _FORK_EXACT_KG_CONTEXT
+    )
+    return algorithm._exact_posterior_update_score_one(
+        x,
+        common_z,
+        terminal_pool,
+        current_value,
+        expert_uniform,
+        True,
+    )
 
 
 @dataclass
@@ -123,8 +149,25 @@ class SingleOLHKGConfig:
     acquisition_mode: str = "exact_mc"
     exact_kg_mc_samples: int = 8
     exact_kg_jobs: int = 1
+    exact_kg_parallel_backend: str = "thread"
     exact_kg_use_score: bool = False
     exact_kg_blend: float = 0.0
+    task_posterior_mode: str = "off"
+    task_posterior_initial_design: bool = True
+    task_posterior_pilot_count: int = -1
+    task_posterior_temperature: float = 0.5
+    task_posterior_temperature_decay: float = 0.5
+    task_posterior_boundary_score_weight: float = 0.25
+    task_posterior_objective_score_weight: float = 0.25
+    task_posterior_constraint_score_weight: float = 1.0
+    task_posterior_kl_radius_numerator: float = 0.5
+    task_posterior_confidence_delta: float = 0.05
+    task_posterior_max_kl_radius: float = 4.0
+    task_posterior_candidate_count: int = 0
+    task_posterior_recommendation_count: int = 0
+    task_posterior_proposal_pool_size: int = 1024
+    task_posterior_proposal_exploration: float = 0.10
+    task_posterior_proposal_min_per_expert: int = 2
     constraint_uncertain_candidate_count: int = 0
     constraint_uncertain_pool_size: int = 300
     constraint_uncertain_state_pool_fraction: float = 0.25
@@ -289,6 +332,14 @@ class SingleOLHKGAlgorithm:
             "gate": 0.0,
             "n_regions": 0,
         }
+        self._last_task_proposal_info = {
+            "status": "not_called",
+            "requested": 0,
+        }
+        self._task_initial_design_info = {
+            "status": "not_called",
+            "requested": 0,
+        }
 
         self.observations: dict[tuple[int, ...], list[np.ndarray]] = {}
         self.history: list[tuple[tuple[int, ...], np.ndarray]] = []
@@ -296,6 +347,7 @@ class SingleOLHKGAlgorithm:
         self.pre_sampling_log: dict | None = None
         self.final_log: dict | None = None
         self._true_best_feasible_cache = None
+        self.task_ensemble: FiniteTaskModelEnsemble | None = None
 
     def _build_encoder(self):
         needs_encoder = (
@@ -439,15 +491,74 @@ class SingleOLHKGAlgorithm:
                 ManifoldRiskDecomposer(self.encoder),
             )
 
+    def _task_prior_initial_samples(self, n):
+        n = max(0, int(n))
+        required = (
+            "task_posterior_expert_specs",
+            "task_expert_proposal_candidates",
+        )
+        if (
+            n == 0
+            or not self._task_posterior_requested()
+            or not self.config.task_posterior_initial_design
+            or any(not hasattr(self.problem, name) for name in required)
+        ):
+            self._task_initial_design_info = {
+                "status": "disabled",
+                "requested": int(n),
+            }
+            return []
+        specs = list(self.problem.task_posterior_expert_specs())
+        prior = FiniteTaskPosterior(
+            [str(spec["name"]) for spec in specs],
+            [float(spec.get("prior_weight", 1.0)) for spec in specs],
+            temperature=0.0,
+        )
+        allocation = prior.proposal_allocation(
+            n,
+            exploration=1.0,
+            minimum_per_expert=(
+                self.config.task_posterior_proposal_min_per_expert),
+        )
+        rows = []
+        generated = {}
+        for name in prior.expert_names:
+            count = int(allocation.get(name, 0))
+            expert_rows = self.problem.task_expert_proposal_candidates(
+                name,
+                n=count,
+                rng=self.rng,
+                pool_size=max(
+                    count,
+                    int(self.config.task_posterior_proposal_pool_size),
+                ),
+            ) if count > 0 else []
+            expert_rows = unique_candidates(expert_rows)[:count]
+            generated[name] = int(len(expert_rows))
+            rows.extend(expert_rows)
+        rows = unique_candidates(rows)
+        self._task_initial_design_info = {
+            "status": "generated",
+            "requested": int(n),
+            "allocation": allocation,
+            "generated": generated,
+            "n_unique": int(len(rows)),
+            "source_only": True,
+            "target_oracle_used": False,
+        }
+        return rows[:n]
+
     def _initial_samples(self):
         samples = []
         if self.config.use_problem_initial_samples and hasattr(
             self.problem, "initial_samples"
         ):
-            samples.extend(self.problem.initial_samples(
-                n=self.config.n0,
-                rng=self.rng,
-            ))
+            samples.extend(self._task_prior_initial_samples(self.config.n0))
+            if len(samples) < self.config.n0:
+                samples.extend(self.problem.initial_samples(
+                    n=self.config.n0 - len(samples),
+                    rng=self.rng,
+                ))
             samples = unique_candidates(samples)
         if len(samples) < self.config.n0 and self.config.use_boundary_initial_samples:
             for x in boundary_solutions(self.problem):
@@ -483,6 +594,149 @@ class SingleOLHKGAlgorithm:
 
         self.variance_model.initialize(
             samples, self.observations, self.gpr, self.problem)
+        self._initialize_task_ensemble(samples)
+
+    def _task_posterior_requested(self):
+        mode = str(self.config.task_posterior_mode or "off").lower()
+        return mode not in ("", "off", "none", "disabled")
+
+    def _fit_initial_task_expert_gpr(self, model, output_index, samples):
+        y = np.asarray([
+            float(np.asarray(self.observations[tuple(x)][0], dtype=float)[
+                int(output_index)])
+            for x in samples
+        ], dtype=float)
+        phi = model.basis_matrix(samples)
+        basis_map = getattr(model, "basis_map", None)
+        try:
+            if basis_map is not None and hasattr(
+                basis_map, "initial_parametric_coefficients"
+            ):
+                beta = basis_map.initial_parametric_coefficients(phi, y)
+            else:
+                beta = np.linalg.lstsq(phi, y, rcond=1e-3)[0]
+        except np.linalg.LinAlgError:
+            beta = np.zeros(phi.shape[1], dtype=float)
+        residual = y - phi @ beta
+        nominal_noise = max(
+            float(getattr(self.problem, "sigma_level", 0.0)) ** 2,
+            1e-6,
+        )
+        lambda_data = max(float(np.var(residual)), nominal_noise)
+        prior_var = max(float(np.var(beta)), 1e-6)
+        model.set_parametric_prior(beta, lambda_data, prior_var)
+        # The pilot labels define the empirical prior mean, but the GPR state
+        # still has to be conditioned on them so solution-specific deviations
+        # and covariance reflect actually observed points.
+        for x, target in zip(samples, y):
+            model.update(x, float(target), lambda_data)
+
+    def _initialize_task_ensemble(self, samples):
+        if not self._task_posterior_requested():
+            self.task_ensemble = None
+            return None
+        mode = str(self.config.task_posterior_mode).lower()
+        if mode not in ("finite", "finite_expert", "finite-expert"):
+            raise ValueError(f"unknown task posterior mode {mode!r}")
+        required = (
+            "task_posterior_expert_specs",
+            "task_expert_basis_map",
+            "task_expert_problem_view",
+        )
+        missing = [name for name in required if not hasattr(self.problem, name)]
+        if missing:
+            raise RuntimeError(
+                "finite task posterior requires a source-trained admissible "
+                f"meta-prior provider; missing {missing}"
+            )
+        samples = [tuple(int(v) for v in x) for x in samples]
+        if not samples:
+            raise RuntimeError("finite task posterior requires pilot observations")
+        configured_pilot = int(self.config.task_posterior_pilot_count)
+        if configured_pilot < 0:
+            pilot_count = min(4, len(samples))
+            if len(samples) > 1:
+                pilot_count = min(pilot_count, len(samples) - 1)
+        else:
+            pilot_count = int(np.clip(
+                configured_pilot,
+                1,
+                len(samples),
+            ))
+        pilot_samples = samples[:pilot_count]
+        specs = list(self.problem.task_posterior_expert_specs())
+        states = []
+        for spec in specs:
+            name = str(spec["name"])
+            expert_problem = self.problem.task_expert_problem_view(name)
+            expert_gpr = []
+            for output_index in range(2):
+                basis_map = self.problem.task_expert_basis_map(
+                    name, output_index=output_index)
+                model = ParametricGPR(
+                    self.problem.d,
+                    self.config.lambda_i,
+                    self.config.prior_var,
+                    normalize_func=self.problem.normalize,
+                    basis_map=basis_map,
+                    numeric_backend=self.config.numeric_backend,
+                    numeric_backend_device=self.config.numeric_backend_device,
+                    torch_dtype=self.config.torch_dtype,
+                    torch_min_rows=self.config.torch_min_rows,
+                )
+                self._fit_initial_task_expert_gpr(
+                    model, output_index, pilot_samples)
+                expert_gpr.append(model)
+            variance_model = OrthogonalHVD(
+                mode=str(spec.get("variance_mode", "factor")),
+                n_outputs=2,
+                floor=1e-8,
+            )
+            variance_model.initialize(
+                pilot_samples,
+                self.observations,
+                expert_gpr,
+                expert_problem,
+            )
+            states.append(TaskExpertState(
+                name=name,
+                gpr_models=expert_gpr,
+                variance_model=variance_model,
+                problem=expert_problem,
+            ))
+        posterior = FiniteTaskPosterior(
+            [state.name for state in states],
+            [float(spec.get("prior_weight", 1.0)) for spec in specs],
+            temperature=self.config.task_posterior_temperature,
+            temperature_decay=self.config.task_posterior_temperature_decay,
+            output_score_weights=[
+                self.config.task_posterior_objective_score_weight,
+                self.config.task_posterior_constraint_score_weight,
+            ],
+            boundary_score_weight=(
+                self.config.task_posterior_boundary_score_weight),
+        )
+        self.task_ensemble = FiniteTaskModelEnsemble(
+            states,
+            posterior,
+            kl_radius_numerator=(
+                self.config.task_posterior_kl_radius_numerator),
+            confidence_delta=(
+                self.config.task_posterior_confidence_delta),
+            maximum_kl_radius=self.config.task_posterior_max_kl_radius,
+            pilot_count=pilot_count,
+        )
+        # Score the remaining initial observations prequentially: each label
+        # updates Q before it is inserted into any expert GPR/HVD.
+        for x in samples[pilot_count:]:
+            y = np.asarray(self.observations[x][0], dtype=float)
+            self.task_ensemble.update(
+                x,
+                y,
+                existing_observations=[],
+                tau=self.problem.tau,
+            )
+        return self.task_ensemble
 
     def _rebuild_gpr_from_history(self, output_index, replay_sequential=True):
         """Rebuild one GPR after its feature semantics change.
@@ -638,6 +892,57 @@ class SingleOLHKGAlgorithm:
         model._state_version = int(state.get("state_version", 0)) + 1
         model._torch_cache = {}
 
+    def _task_ensemble_checkpoint_state(self):
+        if self.task_ensemble is None:
+            return None
+        return {
+            "posterior": copy.deepcopy(self.task_ensemble.posterior),
+            "last_update": copy.deepcopy(self.task_ensemble.last_update),
+            "pilot_count": int(self.task_ensemble.pilot_count),
+            "states": [
+                {
+                    "name": state.name,
+                    "gpr": [
+                        self._gpr_checkpoint_state(model)
+                        for model in state.gpr_models
+                    ],
+                    "variance_model": copy.deepcopy(
+                        state.variance_model.__getstate__()),
+                }
+                for state in self.task_ensemble.states
+            ],
+        }
+
+    def _restore_task_ensemble_checkpoint_state(self, state):
+        if state is None:
+            self.task_ensemble = None
+            return
+        samples = [
+            tuple(int(v) for v in x)
+            for x, _ in self.history[: int(self.config.n0)]
+        ]
+        self._initialize_task_ensemble(samples)
+        if self.task_ensemble is None:
+            raise RuntimeError("checkpoint contains a task posterior but config disables it")
+        saved_states = list(state.get("states", []))
+        saved_names = [str(item.get("name")) for item in saved_states]
+        current_names = [item.name for item in self.task_ensemble.states]
+        if saved_names != current_names:
+            raise ValueError("checkpoint task experts do not match current source prior")
+        for expert, saved in zip(self.task_ensemble.states, saved_states):
+            for model, model_state in zip(
+                expert.gpr_models, saved.get("gpr", [])
+            ):
+                self._restore_gpr_checkpoint_state(model, model_state)
+            expert.variance_model.__setstate__(copy.deepcopy(
+                saved["variance_model"]))
+            expert.variance_model._last_problem = expert.problem
+        self.task_ensemble.posterior = copy.deepcopy(state["posterior"])
+        self.task_ensemble.pilot_count = int(state.get(
+            "pilot_count", self.task_ensemble.pilot_count))
+        self.task_ensemble.last_update = copy.deepcopy(
+            state.get("last_update", {"status": "restored"}))
+
     def _clone_gpr_for_exact_kg(self, model):
         """Clone mutable GPR state without deep-copying simulator/provider handles."""
         clone = object.__new__(model.__class__)
@@ -668,11 +973,12 @@ class SingleOLHKGAlgorithm:
         clone._torch_cache = {}
         return clone
 
-    def _clone_variance_model_for_exact_kg(self):
-        state = copy.deepcopy(self.variance_model.__getstate__())
-        clone = object.__new__(self.variance_model.__class__)
+    def _clone_variance_model_for_exact_kg(self, model=None, problem=None):
+        model = self.variance_model if model is None else model
+        state = copy.deepcopy(model.__getstate__())
+        clone = object.__new__(model.__class__)
         clone.__setstate__(state)
-        clone._last_problem = self.problem
+        clone._last_problem = self.problem if problem is None else problem
         return clone
 
     def _runtime_checkpoint_payload(self, next_stage_n, reason):
@@ -689,8 +995,11 @@ class SingleOLHKGAlgorithm:
             "iteration_log": copy.deepcopy(self.iteration_log),
             "pre_sampling_log": copy.deepcopy(self.pre_sampling_log),
             "final_log": copy.deepcopy(self.final_log),
+            "task_initial_design": copy.deepcopy(
+                self._task_initial_design_info),
             "gpr": [self._gpr_checkpoint_state(model) for model in self.gpr],
             "variance_model": copy.deepcopy(self.variance_model.__getstate__()),
+            "task_ensemble": self._task_ensemble_checkpoint_state(),
         }
 
     def _write_pickle_atomic(self, path, payload):
@@ -747,6 +1056,9 @@ class SingleOLHKGAlgorithm:
         self._attach_representation_to_problem()
         self.variance_model._last_problem = self.problem
         self.acquisition.encoder = self.encoder
+        if self.task_ensemble is not None:
+            for state in self.task_ensemble.states:
+                state.variance_model._last_problem = state.problem
 
     def _load_checkpoint_payload(self, payload):
         if int(payload.get("schema_version", 0)) != 1:
@@ -758,6 +1070,10 @@ class SingleOLHKGAlgorithm:
         self.iteration_log = copy.deepcopy(payload.get("iteration_log", []))
         self.pre_sampling_log = copy.deepcopy(payload.get("pre_sampling_log"))
         self.final_log = copy.deepcopy(payload.get("final_log"))
+        self._task_initial_design_info = copy.deepcopy(payload.get(
+            "task_initial_design",
+            {"status": "checkpoint_legacy", "requested": 0},
+        ))
         for output_index, (model, state) in enumerate(
             zip(self.gpr, payload.get("gpr", []))
         ):
@@ -774,6 +1090,15 @@ class SingleOLHKGAlgorithm:
         if variance_state is None:
             raise ValueError("checkpoint is missing variance model state")
         self.variance_model.__setstate__(variance_state)
+        task_state = copy.deepcopy(payload.get("task_ensemble"))
+        if task_state is not None:
+            self._restore_task_ensemble_checkpoint_state(task_state)
+        elif self._task_posterior_requested():
+            samples = [
+                tuple(int(v) for v in x)
+                for x, _ in self.history[: int(self.config.n0)]
+            ]
+            self._initialize_task_ensemble(samples)
         self._reattach_runtime_handles_after_checkpoint()
         return int(payload.get("next_stage_n", self.config.n0))
 
@@ -811,6 +1136,11 @@ class SingleOLHKGAlgorithm:
                 self.problem.meta_basis_diagnostics()
                 if hasattr(self.problem, "meta_basis_diagnostics")
                 else None
+            ),
+            "task_posterior": (
+                None
+                if self.task_ensemble is None
+                else self.task_ensemble.diagnostics()
             ),
         }
         self._save_checkpoint(self.config.n0, reason="initial", force=True)
@@ -962,13 +1292,35 @@ class SingleOLHKGAlgorithm:
         except (AttributeError, TypeError, ValueError):
             return 0.0
 
-    def _certification_result(self, mu_con, candidates, v_con=None):
-        if v_con is None:
-            v_con = self.variance_model.predict_certification_variance_many(
-                1, candidates, self.problem)
-        epistemic = self.gpr[1].posterior_var_many(candidates)
+    def _objective_posterior_mean_many(self, candidates):
+        if self.task_ensemble is None:
+            return self.gpr[0].posterior_mean_many(candidates)
+        return self.task_ensemble.mixture_moments_many(
+            0, candidates, certification=False).mean
+
+    def _certification_result(
+        self,
+        mu_con,
+        candidates,
+        v_con=None,
+        epistemic=None,
+    ):
+        task_robust = None
+        if self.task_ensemble is not None:
+            task_robust = self.task_ensemble.robust_moments_many(
+                1, candidates, certification=True)
+            mu_con = task_robust.mean_upper
+            epistemic = task_robust.epistemic_upper
+            v_con = task_robust.aleatoric_upper
+        else:
+            if v_con is None:
+                v_con = self.variance_model.predict_certification_variance_many(
+                    1, candidates, self.problem)
+            if epistemic is None:
+                epistemic = self.gpr[1].posterior_var_many(candidates)
+        guard = 0.0 if task_robust is not None else self._pilot_constraint_guard()
         return conservative_chance_margin(
-            np.asarray(mu_con, dtype=float) + self._pilot_constraint_guard(),
+            np.asarray(mu_con, dtype=float) + guard,
             epistemic,
             v_con,
             tau=self.problem.tau,
@@ -1036,7 +1388,7 @@ class SingleOLHKGAlgorithm:
             return []
         try:
             mu_con = self.gpr[1].posterior_mean_many(pool)
-            mu_obj = self.gpr[0].posterior_mean_many(pool)
+            mu_obj = self._objective_posterior_mean_many(pool)
             v_con = self.variance_model.predict_certification_variance_many(
                 1, pool, self.problem)
             cert = self._certification_result(mu_con, pool, v_con)
@@ -1250,6 +1602,73 @@ class SingleOLHKGAlgorithm:
         order = np.argsort(-np.nan_to_num(score, nan=-np.inf))
         return [pool[int(position)] for position in order[:n_replicate]]
 
+    def _task_expert_proposal_batches(self, n, rng, *, record=False):
+        """Draw candidates from the posterior mixture of frozen experts."""
+        n = max(0, int(n))
+        if (
+            n == 0
+            or self.task_ensemble is None
+            or not hasattr(self.problem, "task_expert_proposal_candidates")
+        ):
+            if record:
+                self._last_task_proposal_info = {
+                    "status": "disabled",
+                    "requested": int(n),
+                }
+            return []
+        posterior = self.task_ensemble.posterior
+        exploration = float(np.clip(
+            self.config.task_posterior_proposal_exploration,
+            0.0,
+            1.0,
+        ))
+        allocation = posterior.proposal_allocation(
+            n,
+            exploration=exploration,
+            minimum_per_expert=(
+                self.config.task_posterior_proposal_min_per_expert),
+        )
+        batches = []
+        generated = {}
+        for name in posterior.expert_names:
+            count = int(allocation.get(name, 0))
+            if count <= 0:
+                generated[name] = 0
+                continue
+            rows = self.problem.task_expert_proposal_candidates(
+                name,
+                n=count,
+                rng=rng,
+                pool_size=max(
+                    count,
+                    int(self.config.task_posterior_proposal_pool_size),
+                ),
+            )
+            rows = unique_candidates(rows)[:count]
+            generated[name] = int(len(rows))
+            if rows:
+                batches.append((name, rows))
+        if record:
+            proposal_weights = posterior.proposal_weights(
+                exploration=exploration)
+            self._last_task_proposal_info = {
+                "status": "generated",
+                "requested": int(n),
+                "exploration": float(exploration),
+                "proposal_weights": {
+                    name: float(weight)
+                    for name, weight in zip(
+                        posterior.expert_names,
+                        proposal_weights,
+                    )
+                },
+                "allocation": allocation,
+                "generated": generated,
+                "source_only": True,
+                "target_oracle_used": False,
+            }
+        return batches
+
     def _generate_candidates(self, iteration):
         candidates = []
         sources = {}
@@ -1283,6 +1702,12 @@ class SingleOLHKGAlgorithm:
                 rng=self.rng,
                     observed=[x for x, _ in self.history],
             ), "state")
+        for expert_name, rows in self._task_expert_proposal_batches(
+            self.config.task_posterior_candidate_count,
+            self.rng,
+            record=True,
+        ):
+            add(rows, f"task_expert:{expert_name}")
         add(self._constraint_uncertain_candidates(), "constraint_uncertain")
         add(self._replication_candidates(), "replication")
         add(self._safe_interior_candidates(), "safe_interior")
@@ -1358,6 +1783,13 @@ class SingleOLHKGAlgorithm:
                 pool.add(tuple(x))
         for x in self._recommendation_refinement_candidates():
             pool.add(tuple(x))
+        for _, rows in self._task_expert_proposal_batches(
+            self.config.task_posterior_recommendation_count,
+            self.rec_rng,
+            record=False,
+        ):
+            for x in rows:
+                pool.add(tuple(x))
         for x in self._observed_neighbor_candidates(
             n=max(0, int(self.config.observed_neighbor_candidate_count)),
             rng=self.rec_rng,
@@ -1955,11 +2387,23 @@ class SingleOLHKGAlgorithm:
 
     def _solve_posterior_recommendation(self):
         pool = self._recommendation_pool()
-        mu_obj = self.gpr[0].posterior_mean_many(pool)
-        mu_con = self.gpr[1].posterior_mean_many(pool)
-        v_con = self.variance_model.predict_certification_variance_many(
-            1, pool, self.problem)
-        cert = self._certification_result(mu_con, pool, v_con)
+        mu_obj = self._objective_posterior_mean_many(pool)
+        if self.task_ensemble is None:
+            mu_con = self.gpr[1].posterior_mean_many(pool)
+            v_con = self.variance_model.predict_certification_variance_many(
+                1, pool, self.problem)
+            cert = self._certification_result(mu_con, pool, v_con)
+        else:
+            task_robust = self.task_ensemble.robust_moments_many(
+                1, pool, certification=True)
+            mu_con = task_robust.mean_upper
+            v_con = task_robust.aleatoric_upper
+            cert = self._certification_result(
+                mu_con,
+                pool,
+                v_con,
+                epistemic=task_robust.epistemic_upper,
+            )
         margins = cert.margin
         sig_con = np.sqrt(np.maximum(cert.aleatoric_var, 1e-12))
         if cert.mode == "theory":
@@ -1980,7 +2424,11 @@ class SingleOLHKGAlgorithm:
         effective_epistemic = np.asarray(cert.epistemic_var, dtype=float)
         effective_aleatoric = np.asarray(cert.aleatoric_var, dtype=float)
         certification_sources = np.full(len(pool), "theory", dtype=object)
-        calibrated_cert = self._calibrated_certification_result(pool, v_con)
+        calibrated_cert = (
+            None
+            if self.task_ensemble is not None
+            else self._calibrated_certification_result(pool, v_con)
+        )
         calibration_policy = str(
             self.config.certification_calibration_policy or "conservative"
         ).lower()
@@ -2050,7 +2498,11 @@ class SingleOLHKGAlgorithm:
             )
         else:
             calibrated_margins = None
-        recommendation_calibration_fit = self._recommendation_calibration_fit()
+        recommendation_calibration_fit = (
+            None
+            if self.task_ensemble is not None
+            else self._recommendation_calibration_fit()
+        )
         recommendation_calibration_phi_pool = (
             self._recommendation_calibration_pool_features(
                 recommendation_calibration_fit,
@@ -2130,6 +2582,8 @@ class SingleOLHKGAlgorithm:
             "source_mean_prior_guard_n_feasible": None,
         }
         if (
+            self.task_ensemble is None
+            and
             self.config.source_mean_prior_fallback
             and hasattr(self.problem, "source_mean_prior_predict_many")
         ):
@@ -2160,14 +2614,23 @@ class SingleOLHKGAlgorithm:
                 source_margins = None
         calibrated_recommendation_used = False
         calibrated_details = {}
-        calibrated_idx, calibrated_details = self._calibrated_recommendation_index(
-            pool,
-            robust_margins,
-            source_margins=source_margins,
-            guard_margins=theory_margins + recommendation_slack,
-            fit=recommendation_calibration_fit,
-            phi_pool=recommendation_calibration_phi_pool,
-        )
+        if self.task_ensemble is None:
+            calibrated_idx, calibrated_details = (
+                self._calibrated_recommendation_index(
+                    pool,
+                    robust_margins,
+                    source_margins=source_margins,
+                    guard_margins=theory_margins + recommendation_slack,
+                    fit=recommendation_calibration_fit,
+                    phi_pool=recommendation_calibration_phi_pool,
+                )
+            )
+        else:
+            calibrated_idx = None
+            calibrated_details = {
+                "calibrated_recommendation_reason": (
+                    "disabled_for_task_posterior_robust_certificate")
+            }
         if calibrated_idx is not None:
             keep_observed = False
             if used_observed_incumbent and observed_idx is not None:
@@ -2207,6 +2670,8 @@ class SingleOLHKGAlgorithm:
                                 source_margins[local]),
                         })
         if (
+            self.task_ensemble is None
+            and
             self.config.source_mean_prior_fallback
             and not np.any(feasible)
             and not calibrated_recommendation_used
@@ -2316,6 +2781,28 @@ class SingleOLHKGAlgorithm:
             "recommendation_observed_fallback": bool(
                 self.config.recommendation_observed_fallback),
             "recommendation_calibration": bool(self.config.recommendation_calibration),
+            "task_posterior_mode": str(self.config.task_posterior_mode),
+            "task_posterior_active": bool(self.task_ensemble is not None),
+            "task_posterior_weights": (
+                None
+                if self.task_ensemble is None
+                else self.task_ensemble.posterior.posterior_weights().tolist()
+            ),
+            "task_posterior_experts": (
+                None
+                if self.task_ensemble is None
+                else list(self.task_ensemble.posterior.expert_names)
+            ),
+            "task_posterior_entropy": (
+                None
+                if self.task_ensemble is None
+                else self.task_ensemble.posterior.entropy()
+            ),
+            "task_posterior_kl_radius": (
+                None
+                if self.task_ensemble is None
+                else self.task_ensemble.effective_kl_radius()
+            ),
             "calibrated_recommendation_used": bool(calibrated_recommendation_used),
             "source_prior_recommendation_used": bool(source_prior_recommendation_used),
             **calibration_details,
@@ -2372,7 +2859,13 @@ class SingleOLHKGAlgorithm:
             ),
         }
 
-    def _terminal_value_from_models(self, gpr_models, variance_model, pool):
+    def _terminal_value_from_models(
+        self,
+        gpr_models,
+        variance_model,
+        pool,
+        task_ensemble=None,
+    ):
         """Terminal certified value used by the optional exact-update KG.
 
         Lower is better.  If the fixed terminal pool has no robust-feasible
@@ -2381,13 +2874,24 @@ class SingleOLHKGAlgorithm:
         """
         if len(pool) == 0:
             return 0.0
-        mu_obj = gpr_models[0].posterior_mean_many(pool)
-        mu_con = gpr_models[1].posterior_mean_many(pool)
-        v_con = variance_model.predict_certification_variance_many(
-            1, pool, self.problem)
-        epistemic = gpr_models[1].posterior_var_many(pool)
+        if task_ensemble is None:
+            mu_obj = gpr_models[0].posterior_mean_many(pool)
+            mu_con = gpr_models[1].posterior_mean_many(pool)
+            v_con = variance_model.predict_certification_variance_many(
+                1, pool, self.problem)
+            epistemic = gpr_models[1].posterior_var_many(pool)
+            guard = self._pilot_constraint_guard()
+        else:
+            mu_obj = task_ensemble.mixture_moments_many(
+                0, pool, certification=False).mean
+            robust = task_ensemble.robust_moments_many(
+                1, pool, certification=True)
+            mu_con = robust.mean_upper
+            v_con = robust.aleatoric_upper
+            epistemic = robust.epistemic_upper
+            guard = 0.0
         cert = conservative_chance_margin(
-            np.asarray(mu_con, dtype=float) + self._pilot_constraint_guard(),
+            np.asarray(mu_con, dtype=float) + guard,
             epistemic,
             v_con,
             tau=self.problem.tau,
@@ -2451,8 +2955,76 @@ class SingleOLHKGAlgorithm:
         common_z,
         terminal_pool,
         current_value,
+        common_expert_uniform=None,
+        return_diagnostics=False,
     ):
         x_arr = np.asarray(x, dtype=int)
+        existing_observations = list(self.observations.get(
+            tuple(int(v) for v in x_arr), []))
+        if self.task_ensemble is not None:
+            uniforms = (
+                np.asarray(common_expert_uniform, dtype=float)
+                if common_expert_uniform is not None
+                else np.full(len(common_z), 0.5, dtype=float)
+            )
+            gains = []
+            entropy_gains = []
+            weight_movements = []
+            timing = {
+                "clone": 0.0,
+                "predictive_sample": 0.0,
+                "joint_update": 0.0,
+                "robust_terminal": 0.0,
+            }
+            entropy_before = self.task_ensemble.posterior.entropy()
+            weights_before = self.task_ensemble.posterior.posterior_weights()
+            for z_vec, expert_uniform in zip(common_z, uniforms):
+                started = time.perf_counter()
+                ensemble_clone = self.task_ensemble.clone(
+                    gpr_cloner=self._clone_gpr_for_exact_kg,
+                    variance_cloner=lambda model: (
+                        self._clone_variance_model_for_exact_kg(model)
+                    ),
+                )
+                timing["clone"] += time.perf_counter() - started
+                started = time.perf_counter()
+                y, _ = self.task_ensemble.predictive_sample(
+                    x_arr, z_vec, expert_uniform)
+                timing["predictive_sample"] += time.perf_counter() - started
+                started = time.perf_counter()
+                ensemble_clone.update(
+                    x_arr,
+                    y,
+                    existing_observations=existing_observations,
+                    tau=self.problem.tau,
+                )
+                timing["joint_update"] += time.perf_counter() - started
+                started = time.perf_counter()
+                future_value = self._terminal_value_from_models(
+                    None,
+                    None,
+                    terminal_pool,
+                    task_ensemble=ensemble_clone,
+                )
+                timing["robust_terminal"] += time.perf_counter() - started
+                gains.append(current_value - future_value)
+                entropy_gains.append(
+                    entropy_before - ensemble_clone.posterior.entropy())
+                weight_movements.append(float(np.sum(np.abs(
+                    ensemble_clone.posterior.posterior_weights()
+                    - weights_before
+                ))))
+            result = {
+                "score": max(float(np.mean(gains)), 0.0),
+                "task_entropy_gain": float(np.mean(entropy_gains)),
+                "task_weight_movement": float(np.mean(weight_movements)),
+                **{
+                    f"time_{name}": float(value / max(len(common_z), 1))
+                    for name, value in timing.items()
+                },
+            }
+            return result if return_diagnostics else result["score"]
+
         mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]
         sigma2_before = [
             self.variance_model.predict_variance(i, x_arr, self.problem)
@@ -2466,8 +3038,6 @@ class SingleOLHKGAlgorithm:
             for i in range(2)
         ]
         gains = []
-        existing_observations = list(self.observations.get(
-            tuple(int(v) for v in x_arr), []))
         for z_vec in common_z:
             gpr_clone = [
                 self._clone_gpr_for_exact_kg(model)
@@ -2502,7 +3072,16 @@ class SingleOLHKGAlgorithm:
             future_value = self._terminal_value_from_models(
                 gpr_clone, var_clone, terminal_pool)
             gains.append(current_value - future_value)
-        return max(float(np.mean(gains)), 0.0)
+        result = {
+            "score": max(float(np.mean(gains)), 0.0),
+            "task_entropy_gain": 0.0,
+            "task_weight_movement": 0.0,
+            "time_clone": 0.0,
+            "time_predictive_sample": 0.0,
+            "time_joint_update": 0.0,
+            "time_robust_terminal": 0.0,
+        }
+        return result if return_diagnostics else result["score"]
 
     def _exact_posterior_update_scores(self, candidates, terminal_pool):
         """Monte Carlo exact posterior-update KG over a fixed terminal pool.
@@ -2511,18 +3090,45 @@ class SingleOLHKGAlgorithm:
         predictive observations, applies the same GPR update and HVD residual
         update as the main loop, and measures current terminal value minus
         updated terminal value.  Candidate-level work is embarrassingly
-        parallel; thread workers avoid process pickling of SUMO/problem handles.
+        parallel. Threads remain the portable/live-simulator option; synthetic
+        workloads can explicitly use a Linux fork pool to bypass the GIL
+        without pickling simulator/provider handles.
         """
         mc = self._effective_exact_kg_mc_samples()
         if mc <= 0 or len(candidates) == 0:
             return np.zeros(len(candidates), dtype=float)
         current_value = self._terminal_value_from_models(
-            self.gpr, self.variance_model, terminal_pool)
+            self.gpr,
+            self.variance_model,
+            terminal_pool,
+            task_ensemble=self.task_ensemble,
+        )
         self._last_exact_kg_current_value = float(current_value)
         common_z = self.rng.standard_normal((mc, 2))
+        common_expert_uniform = self.rng.random(mc)
         out = np.zeros(len(candidates), dtype=float)
+        entropy_gain = np.zeros(len(candidates), dtype=float)
+        weight_movement = np.zeros(len(candidates), dtype=float)
+        task_timing = {
+            name: np.zeros(len(candidates), dtype=float)
+            for name in (
+                "clone",
+                "predictive_sample",
+                "joint_update",
+                "robust_terminal",
+            )
+        }
+
+        def record_result(index, result):
+            out[index] = result["score"]
+            entropy_gain[index] = result["task_entropy_gain"]
+            weight_movement[index] = result["task_weight_movement"]
+            for name, values in task_timing.items():
+                values[index] = result[f"time_{name}"]
         jobs = max(1, int(self.config.exact_kg_jobs))
         jobs = min(jobs, len(candidates))
+        parallel_backend = str(
+            self.config.exact_kg_parallel_backend or "thread").lower()
         stage_n = int(getattr(self, "_progress_stage_n", len(self.history)))
         step_started_at = float(
             getattr(self, "_progress_step_started_at", time.perf_counter()))
@@ -2536,12 +3142,22 @@ class SingleOLHKGAlgorithm:
             kind="exact_kg_start",
             started_at=step_started_at,
             run_started_at=run_started_at,
-            extra=f"candidates={len(candidates)} mc={int(mc)} jobs={int(jobs)}",
+            extra=(
+                f"candidates={len(candidates)} mc={int(mc)} jobs={int(jobs)} "
+                f"backend={parallel_backend}"
+            ),
         )
         if jobs <= 1:
             for j, x in enumerate(candidates):
-                out[j] = self._exact_posterior_update_score_one(
-                    x, common_z, terminal_pool, current_value)
+                result = self._exact_posterior_update_score_one(
+                    x,
+                    common_z,
+                    terminal_pool,
+                    current_value,
+                    common_expert_uniform,
+                    return_diagnostics=True,
+                )
+                record_result(j, result)
                 done = j + 1
                 if done == len(candidates) or done % emit_every == 0:
                     frac = 0.35 + 0.55 * (float(done) / float(len(candidates)))
@@ -2553,32 +3169,68 @@ class SingleOLHKGAlgorithm:
                         run_started_at=run_started_at,
                         extra=f"candidates_done={done}/{len(candidates)}",
                     )
+            self._last_exact_kg_task_entropy_gain = entropy_gain
+            self._last_exact_kg_task_weight_movement = weight_movement
+            self._last_exact_kg_task_timing = task_timing
             return out
-        with ThreadPoolExecutor(max_workers=jobs) as pool:
-            futures = {
-                pool.submit(
-                    self._exact_posterior_update_score_one,
-                    x,
-                    common_z,
-                    terminal_pool,
-                    current_value,
-                ): j
-                for j, x in enumerate(candidates)
-            }
-            done = 0
-            for future in as_completed(futures):
-                out[futures[future]] = future.result()
-                done += 1
-                if done == len(candidates) or done % emit_every == 0:
-                    frac = 0.35 + 0.55 * (float(done) / float(len(candidates)))
-                    self._progress_emit(
-                        n=stage_n,
-                        frac=frac,
-                        kind="exact_kg_candidates",
-                        started_at=step_started_at,
-                        run_started_at=run_started_at,
-                        extra=f"candidates_done={done}/{len(candidates)}",
-                    )
+        global _FORK_EXACT_KG_CONTEXT
+        if parallel_backend in ("process_fork", "fork", "process"):
+            if "fork" not in multiprocessing.get_all_start_methods():
+                raise RuntimeError("exact_kg process_fork backend requires Linux fork")
+            _FORK_EXACT_KG_CONTEXT = (
+                self,
+                common_z,
+                terminal_pool,
+                current_value,
+                common_expert_uniform,
+            )
+            executor = ProcessPoolExecutor(
+                max_workers=jobs,
+                mp_context=multiprocessing.get_context("fork"),
+            )
+            submit = lambda pool, x: pool.submit(_fork_exact_kg_candidate, x)
+        elif parallel_backend in ("thread", "threads"):
+            executor = ThreadPoolExecutor(max_workers=jobs)
+            submit = lambda pool, x: pool.submit(
+                self._exact_posterior_update_score_one,
+                x,
+                common_z,
+                terminal_pool,
+                current_value,
+                common_expert_uniform,
+                True,
+            )
+        else:
+            raise ValueError(
+                f"unknown exact KG parallel backend {parallel_backend!r}")
+        try:
+            with executor as pool:
+                futures = {
+                    submit(pool, x): j
+                    for j, x in enumerate(candidates)
+                }
+                done = 0
+                for future in as_completed(futures):
+                    index = futures[future]
+                    result = future.result()
+                    record_result(index, result)
+                    done += 1
+                    if done == len(candidates) or done % emit_every == 0:
+                        frac = 0.35 + 0.55 * (float(done) / float(len(candidates)))
+                        self._progress_emit(
+                            n=stage_n,
+                            frac=frac,
+                            kind="exact_kg_candidates",
+                            started_at=step_started_at,
+                            run_started_at=run_started_at,
+                            extra=f"candidates_done={done}/{len(candidates)}",
+                        )
+        finally:
+            if parallel_backend in ("process_fork", "fork", "process"):
+                _FORK_EXACT_KG_CONTEXT = None
+        self._last_exact_kg_task_entropy_gain = entropy_gain
+        self._last_exact_kg_task_weight_movement = weight_movement
+        self._last_exact_kg_task_timing = task_timing
         return out
 
     def _evaluate_recommendation(self, x_best):
@@ -2972,6 +3624,12 @@ class SingleOLHKGAlgorithm:
             self._progress_step_started_at = float(t_iter_progress)
             self._progress_run_started_at = float(t_progress_start)
 
+            row["task_posterior_before"] = (
+                None
+                if self.task_ensemble is None
+                else self.task_ensemble.posterior.diagnostics()
+            )
+
             row["sequential_basis_refresh"] = self._refresh_sequential_basis()
 
             t0 = time.time()
@@ -2985,6 +3643,8 @@ class SingleOLHKGAlgorithm:
             row["t_candidate_gen"] = time.time() - t0
             row["n_candidates"] = len(candidates)
             row["llm_prior"] = dict(self._last_llm_prior_info)
+            row["task_expert_proposals"] = copy.deepcopy(
+                self._last_task_proposal_info)
 
             t0 = time.time()
             score = self.acquisition.score(
@@ -3005,7 +3665,7 @@ class SingleOLHKGAlgorithm:
                 row["exact_kg_mc_samples"] = int(exact_mc_samples)
                 row["exact_kg_jobs"] = int(max(1, self.config.exact_kg_jobs))
                 row["exact_kg_parallel_backend"] = (
-                    "thread"
+                    str(self.config.exact_kg_parallel_backend)
                     if int(self.config.exact_kg_jobs) > 1 and len(candidates) > 1
                     else "serial"
                 )
@@ -3041,13 +3701,23 @@ class SingleOLHKGAlgorithm:
                 selected=x_selected,
                 prefix="candidate",
             ))
-            row["v_C_plus_selected"] = float(
-                self.variance_model.predict_certification_variance(
-                    1,
-                    x_selected,
-                    self.problem,
+            if self.task_ensemble is None:
+                row["v_C_plus_selected"] = float(
+                    self.variance_model.predict_certification_variance(
+                        1,
+                        x_selected,
+                        self.problem,
+                    )
                 )
-            )
+            else:
+                selected_robust = self.task_ensemble.robust_moments_many(
+                    1, [x_selected], certification=True)
+                row["v_C_plus_selected"] = float(
+                    selected_robust.aleatoric_upper[0])
+                row["task_between_mean_variance_selected"] = float(
+                    selected_robust.nominal.between_mean[0])
+                row["task_robust_epistemic_selected"] = float(
+                    selected_robust.epistemic_upper[0])
             selected_decomp = self.variance_model.predict_decomposition(
                 1,
                 x_selected,
@@ -3055,9 +3725,13 @@ class SingleOLHKGAlgorithm:
             )
             selected_cumulative = selected_decomp.get("cumulative") or {}
             row["v_C_plus_source"] = (
-                "provider_cumulative"
-                if selected_cumulative.get("provider_active")
-                else "fallback_hvd"
+                "task_posterior_robust_cumulative"
+                if self.task_ensemble is not None
+                else (
+                    "provider_cumulative"
+                    if selected_cumulative.get("provider_active")
+                    else "fallback_hvd"
+                )
             )
             row["selected_cumulative_blocks"] = selected_cumulative.get("fitted_blocks")
             row["kg_obj_selected"] = float(score["kg_obj"][selected_idx])
@@ -3073,6 +3747,23 @@ class SingleOLHKGAlgorithm:
                 score["kg_coupling_gate"][selected_idx])
             if "exact_kg" in score:
                 row["exact_kg_selected"] = float(score["exact_kg"][selected_idx])
+                task_entropy_gain = getattr(
+                    self, "_last_exact_kg_task_entropy_gain", None)
+                task_weight_movement = getattr(
+                    self, "_last_exact_kg_task_weight_movement", None)
+                if task_entropy_gain is not None:
+                    row["exact_kg_task_entropy_gain_selected"] = float(
+                        task_entropy_gain[selected_idx])
+                    row["exact_kg_task_weight_movement_selected"] = float(
+                        task_weight_movement[selected_idx])
+                task_timing = getattr(
+                    self, "_last_exact_kg_task_timing", None)
+                if task_timing is not None:
+                    for name, values in task_timing.items():
+                        row[f"exact_kg_time_{name}_selected"] = float(
+                            values[selected_idx])
+                        row[f"exact_kg_time_{name}_mean"] = float(
+                            np.mean(values))
 
             x_arr = np.asarray(x_selected, dtype=int)
             mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]
@@ -3121,8 +3812,24 @@ class SingleOLHKGAlgorithm:
                     epistemic_var=epistemic_before[i],
                     replicate_variance=replicate_variance,
                 ))
+            task_update = None
+            if self.task_ensemble is not None:
+                stored = self.observations.get(
+                    tuple(int(v) for v in x_selected), [])
+                task_update = self.task_ensemble.update(
+                    x_arr,
+                    y,
+                    existing_observations=stored[:-1],
+                    tau=self.problem.tau,
+                )
             row["t_update"] = time.time() - t0
             row["hvd_update"] = hvd_details
+            row["task_posterior_update"] = task_update
+            row["task_posterior_after"] = (
+                None
+                if self.task_ensemble is None
+                else self.task_ensemble.posterior.diagnostics()
+            )
             row["n_visited"] = len(self.gpr[0].sampled_set)
 
             t0 = time.time()
@@ -3196,6 +3903,8 @@ class SingleOLHKGAlgorithm:
             "n_distinct_solutions": int(len(self.gpr[0].sampled_set)),
             "stage_times": summarize_stage_times(self.iteration_log),
             "candidate_source_counts": candidate_source_counts,
+            "task_initial_design": copy.deepcopy(
+                self._task_initial_design_info),
             "llm_prior": llm_prior_summary,
             "truth_pool_diagnostics": self._summarize_truth_pool_diagnostics(),
             "variance": self.variance_model.diagnostics(),
@@ -3209,6 +3918,11 @@ class SingleOLHKGAlgorithm:
                 if hasattr(self.problem, "meta_basis_diagnostics")
                 else None
             ),
+            "task_posterior": (
+                None
+                if self.task_ensemble is None
+                else self.task_ensemble.diagnostics()
+            ),
             "cumulative_risk_provider": (
                 self.problem.cumulative_risk_provider_status()
                 if hasattr(self.problem, "cumulative_risk_provider_status")
@@ -3220,6 +3934,10 @@ class SingleOLHKGAlgorithm:
                 and self.config.use_state_coupling
                 and self.config.use_state_basis
                 and str(self.config.acquisition_mode).lower() == "exact_mc"
+                and (
+                    not self._task_posterior_requested()
+                    or self.task_ensemble is not None
+                )
             ),
             "numeric_backend": self.gpr[0].backend_status(),
             "config": asdict(self.config),

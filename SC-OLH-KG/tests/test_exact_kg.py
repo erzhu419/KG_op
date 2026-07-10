@@ -1,5 +1,6 @@
 import copy
 import math
+import multiprocessing
 import sys
 import unittest
 from pathlib import Path
@@ -92,6 +93,48 @@ class ExactKGTests(unittest.TestCase):
         scores_parallel = alg_parallel._exact_posterior_update_scores(
             candidates, alg_parallel._recommendation_pool())
         np.testing.assert_allclose(scores_serial, scores_parallel, rtol=0.0, atol=1e-12)
+
+    @unittest.skipUnless(
+        "fork" in multiprocessing.get_all_start_methods(),
+        "fork backend requires Linux",
+    )
+    def test_fork_process_exact_scores_match_serial_scores(self):
+        problem_a = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        problem_b = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        base = dict(
+            N=5,
+            n0=4,
+            K1=4,
+            K2=0,
+            exact_kg_mc_samples=2,
+            exact_kg_use_score=True,
+            eval_pool_size=12,
+            seed=29,
+        )
+        serial = SingleOLHKGAlgorithm(
+            problem_a,
+            SingleOLHKGConfig(**base, exact_kg_jobs=1),
+        )
+        forked = SingleOLHKGAlgorithm(
+            problem_b,
+            SingleOLHKGConfig(
+                **base,
+                exact_kg_jobs=3,
+                exact_kg_parallel_backend="process_fork",
+            ),
+        )
+        serial_samples = serial._initial_samples()
+        forked_samples = forked._initial_samples()
+        self.assertEqual(serial_samples, forked_samples)
+        serial._fit_initial_belief(serial_samples)
+        forked._fit_initial_belief(forked_samples)
+        candidates = [(0, 0, 0), (10, 0, 0), (20, 0, 0), (15, 2, 1)]
+        serial_scores = serial._exact_posterior_update_scores(
+            candidates, serial._recommendation_pool())
+        forked_scores = forked._exact_posterior_update_scores(
+            candidates, forked._recommendation_pool())
+        np.testing.assert_allclose(
+            serial_scores, forked_scores, rtol=0.0, atol=1e-12)
 
     def test_optional_exact_posterior_update_runner_smoke(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))

@@ -18,6 +18,9 @@
 | Boundary-aligned LODO representation | `BoundaryAlignedRiskSubspaces`, compact source-expert mixture, frozen source-boundary episode admission, target nested-LOO diagnostics | Implemented; paired N=40 KG promotion matrix is running |
 | Traffic occupancy encoder | `TrafficTrajectoryEncoder` plus `sumo_sim.py` trajectory logger | Implemented for fresh-seed CSV schema; large trajectory table requires server-generated logs |
 | Exact terminal KG | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | Main default via `acquisition_mode=exact_mc`; additive is an ablation/proxy |
+| Finite task-structure posterior `Q_t(xi)` | `representation.task_posterior.FiniteTaskPosterior` | Implemented behind `task_posterior_mode=finite`; FactorShock N=20 Gate 1 promoted on 2026-07-11, cross-domain Gate 2 pending |
+| Expert-specific surrogate state | `FiniteTaskModelEnsemble` / `TaskExpertState` | Frozen source expert basis plus independent GPR/HVD per expert |
+| Task-robust cumulative certificate | `FiniteTaskModelEnsemble.robust_moments_many` | Within/between variance plus forward-KL robust upper moments |
 
 ## Implementation Notes
 
@@ -91,6 +94,11 @@ an ablation.
 | posterior coefficient draw law | sampled parametric coefficient vector with mean/covariance from GPR posterior | `SCOLHKG.Measure.PosteriorMultivariateGaussian` uses mathlib `multivariateGaussian` to prove the draw law, mean, covariance, and Gaussian linear scores |
 | finite candidate/kernel budget | scalar information gain `0.5 log(1+var/noise)` accumulated over finite steps | `SCOLHKG.Real.FiniteKernelInformationGain.finiteInformationGain_le_uniform_cap`, `finiteInformationGain_eq_determinantInformationGain_product`, `SCOLHKG.Real.KernelDeterminantBridge.finiteInformationGain_le_determinant_cap`, and `SCOLHKG.Real.FeatureKernelDeterminantCap.finiteInformationGain_le_feature_map_norm_cap` |
 | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | MC estimate of current terminal certified value minus updated terminal certified value after GPR/HVD update | `SCOLHKG.Measure.PosteriorUpdateKG.posterior_update_kg_maximizer_is_exact_kg_maximizer` defines the exact target; `SCOLHKG.Real.ExactKGImplementation.exact_mc_estimator_maximizer_gap` bridges uniformly accurate MC estimates; `SCOLHKG.Measure.ExactMCConcentration.exactMC_constant_radius_bad_event_le_sum` gives finite-pool concentration |
+| `FiniteTaskPosterior.update_from_predictive` | positive generalized-Bayes expert mass followed by simplex normalization | `SCOLHKG.Real.TaskPosterior.generalizedBayes_normalized_support` and `normalizeFiniteWeights_sum_eq_one` |
+| `FiniteTaskPosterior.proposal_weights` plus expert-mixture initial/sequential/terminal proposals | `(1-epsilon) Q_t + epsilon Pi` is normalized and retains at least `epsilon * Pi(xi)` mass on every prior-supported expert | `SCOLHKG.Real.TaskPosterior.finite_task_proposal_normalized`, `finite_task_proposal_preserves_prior_support`, and `finite_task_proposal_positive_of_prior_positive` |
+| `FiniteTaskPosterior.mixture_moments` | `E_Q[s_k^2] + Var_Q[m_k] + E_Q[v_k]` | `SCOLHKG.Real.TaskPosterior.task_total_variance_is_within_between_aleatoric` |
+| `FiniteTaskPosterior.kl_robust_expectation` and robust certification | entropic dual upper bound over `KL(q||p) <= rho`, followed by robust moment certification | `SCOLHKG.Real.TaskPosterior.finiteTaskKL_nonnegative`, `kl_ball_entropic_upper`, `finite_pac_bayes_bound_on_moment_event`, `SCOLHKG.Measure.TaskPACBayes`, and `robust_certificate_holds_for_every_admissible_task_posterior` |
+| finite task-posterior exact-MC branch | sample expert identity, clone/update task weights plus every expert GPR/HVD, then recompute robust terminal value | `SCOLHKG.Real.TaskPosterior.joint_task_exact_mc_zero_error_is_one_step_optimal` plus the existing MC concentration layer |
 | `TrafficTrajectoryEncoder` fresh CSV aggregate | state-action occupancy plus queue/wait/flow and demand-shock exposure | `SCOLHKG.Real.TrafficTrajectoryModel.totalRisk_decomposition`, `sharedShock_omission_underestimates`, and `TrafficLogSchemaRow` formalize the finite traffic risk model and CSV schema semantics |
 
 The exact posterior-update SC-OLH-KG object is formalized in

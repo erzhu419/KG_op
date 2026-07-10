@@ -2572,7 +2572,7 @@ class LearnedMetaPrior:
             L = int(getattr(problem, "L", 100))
             return tuple(int(np.clip(round(v * L), 0, L)) for v in z)
 
-    def universal_shape_candidates(self, problem, n=0, rng=None):
+    def universal_shape_candidates(self, problem, n=0, rng=None, force=False):
         """Admissible low-complexity policy shapes shared by all domains.
 
         These candidates use only bounds and dimension, not held-out target
@@ -2580,7 +2580,7 @@ class LearnedMetaPrior:
         weak smoothness/low-complexity prior: constants, one-control-plus-tail,
         piecewise thirds, and monotone ramps.
         """
-        if not self.component_enabled("proposal"):
+        if not force and not self.component_enabled("proposal"):
             return []
         n_take = max(0, int(n))
         if n_take <= 0:
@@ -4888,6 +4888,171 @@ class AdmissibleProblemAdapter:
         return self.base.simulate(x, rng)
 
 
+class FixedTaskExpertBasis:
+    """Frozen source-only basis used by one finite task expert."""
+
+    def __init__(self, meta_prior, problem, variant, output_index=0):
+        self.meta_prior = meta_prior
+        self.problem = problem
+        self.variant = str(variant)
+        self.output_index = int(output_index)
+        lo, _ = problem.int_bounds()
+        self.feature_dim = int(len(self._raw_features(tuple(lo))))
+
+    def _raw_features(self, x):
+        variant = self.variant
+        if variant == "universal_coordinate":
+            return self.meta_prior.coordinate_basis_features(self.problem, x)
+        if variant == "null_universal":
+            descriptor = self.meta_prior.descriptor(self.problem, x)
+            return self.meta_prior._scaled_descriptor(descriptor)
+        if variant == "source_spectral":
+            return self.meta_prior.stage1_spectral_features(self.problem, x)
+        if variant == "risk_aligned_coordinate":
+            return self.meta_prior.frozen_risk_aligned_coordinate(
+                self.problem, x)
+        if variant == "risk_aligned_spectral":
+            return self.meta_prior.risk_aligned_spectral_features(
+                self.problem, x, adapter=None)
+        if variant == "orthogonal_additive":
+            base = self.meta_prior.stage1_spectral_features(self.problem, x)
+            bank = self.meta_prior.spectral_additive_bank
+            if bank is None:
+                raise RuntimeError("orthogonal additive expert is unavailable")
+            psi = self.meta_prior.risk_coordinate(self.problem, x)
+            return np.concatenate([base, bank.transform(psi)])
+        raise ValueError(f"unknown fixed task expert basis {variant!r}")
+
+    def features(self, x):
+        values = np.asarray(self._raw_features(x), dtype=float).reshape(-1)
+        if len(values) != self.feature_dim:
+            raise RuntimeError("fixed task expert basis changed dimension")
+        return values
+
+    def features_many(self, X):
+        if len(X) == 0:
+            return np.empty((0, self.feature_dim), dtype=float)
+        return np.vstack([self.features(x) for x in X])
+
+    def initial_parametric_coefficients(self, phi, target):
+        matrix = np.asarray(phi, dtype=float)
+        values = np.asarray(target, dtype=float).reshape(-1)
+        return np.linalg.lstsq(matrix, values, rcond=1e-3)[0]
+
+    def diagnostics(self):
+        return {
+            "status": "frozen_task_expert",
+            "expert": self.variant,
+            "output_index": self.output_index,
+            "feature_dim": self.feature_dim,
+            "source_only": True,
+            "target_oracle_used": False,
+        }
+
+
+class TaskExpertProblemView:
+    """Expert-specific cumulative-risk view of an admissible LODO target."""
+
+    ALIGNED_EXPERTS = {"risk_aligned_coordinate", "risk_aligned_spectral"}
+
+    def __init__(self, problem, expert_name):
+        self.problem = problem
+        self.meta_prior = problem.meta_prior
+        self.expert_name = str(expert_name)
+        self.problem_name = f"{problem.problem_name}_{self.expert_name}"
+
+    def __getattr__(self, name):
+        return getattr(self.problem, name)
+
+    @property
+    def aligned(self):
+        return self.expert_name in self.ALIGNED_EXPERTS
+
+    def risk_exposures(self, x, output_index=1):
+        if self.aligned:
+            return self.meta_prior.cumulative_risk_exposure(
+                self.problem, x, output_index=output_index)
+        return self.meta_prior.risk_exposure(
+            self.problem, x, output_index=output_index)
+
+    def cumulative_risk_features(self, x, output_index=1):
+        del output_index
+        return cumulative_feature_vector(self.risk_exposures(x))
+
+    def cumulative_risk_feature_names(self, output_index=1):
+        del output_index
+        lo, _ = self.int_bounds()
+        return cumulative_feature_names(self.risk_exposures(tuple(lo)))
+
+    def cumulative_risk_provider_status(self):
+        return {
+            "status": "available",
+            "provider": "TaskExpertProblemView",
+            "expert": self.expert_name,
+            "coordinate": (
+                "frozen_source_boundary_alignment"
+                if self.aligned else "frozen_unaligned_source_coordinate"
+            ),
+            "source_domains": list(self.meta_prior.source_domains),
+            "target_data_used": False,
+        }
+
+    def risk_class(self, x):
+        exposure = self.risk_exposures(x)
+        return int(np.argmax(exposure.N)) if len(exposure.N) else 0
+
+    def hvd_features(self, x):
+        exposure = self.risk_exposures(x)
+        return np.concatenate([
+            np.array([1.0], dtype=float),
+            exposure.A,
+            exposure.A ** 2,
+            exposure.N,
+            exposure.N ** 2,
+        ])
+
+    def cumulative_hvd_prior_beta(self, output_index=1, feature_dim=None):
+        if not self.aligned:
+            return None
+        return self.problem.cumulative_hvd_prior_beta(
+            output_index=output_index,
+            feature_dim=feature_dim,
+        )
+
+    def cumulative_hvd_prior_precision(self, output_index=1):
+        if not self.aligned:
+            return None
+        return self.problem.cumulative_hvd_prior_precision(output_index)
+
+    def cumulative_hvd_prior_scale_mean(self, output_index=1):
+        if not self.aligned:
+            return None
+        return self.problem.cumulative_hvd_prior_scale_mean(output_index)
+
+    def cumulative_hvd_prior_upper_scale(self, output_index=1):
+        if not self.aligned:
+            return None
+        return self.problem.cumulative_hvd_prior_upper_scale(output_index)
+
+    def cumulative_hvd_prior_min_records(self):
+        if not self.aligned:
+            return None
+        return self.problem.cumulative_hvd_prior_min_records()
+
+    def pilot_constraint_guard(self):
+        if not self.aligned:
+            return 0.0
+        alignment = self.meta_prior.risk_subspace_alignment
+        if alignment is None:
+            return 0.0
+        scale = max(
+            abs(float(self.tau)),
+            float(self.sigma_level),
+            1e-6,
+        )
+        return float(max(alignment.source_residual_guard_ * scale, 0.0))
+
+
 class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
     """Held-out target adapter using only a frozen source-trained meta-prior."""
 
@@ -5035,6 +5200,145 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             )
             for index, basis in self._gpr_basis_maps.items()
         }
+
+    def task_posterior_expert_specs(self):
+        """Return only source-identifiable finite experts for this target."""
+        specs = [
+            {
+                "name": "universal_coordinate",
+                "basis": "universal_coordinate",
+                "variance_mode": "factor",
+                "prior_weight": 0.20,
+            },
+            {
+                "name": "null_universal",
+                "basis": "null_universal",
+                "variance_mode": "pooled",
+                "prior_weight": 0.10,
+            },
+        ]
+        if self.meta_prior.stage1_spectral_basis is not None:
+            specs.append({
+                "name": "source_spectral",
+                "basis": "source_spectral",
+                "variance_mode": "factor",
+                "prior_weight": 0.25,
+            })
+        if self.meta_prior.risk_subspace_alignment is not None:
+            specs.extend([
+                {
+                    "name": "risk_aligned_coordinate",
+                    "basis": "risk_aligned_coordinate",
+                    "variance_mode": "factor",
+                    "prior_weight": 0.20,
+                },
+                {
+                    "name": "risk_aligned_spectral",
+                    "basis": "risk_aligned_spectral",
+                    "variance_mode": "factor",
+                    "prior_weight": 0.20,
+                },
+            ])
+        if self.meta_prior.spectral_additive_bank is not None:
+            specs.append({
+                "name": "orthogonal_additive",
+                "basis": "orthogonal_additive",
+                "variance_mode": "factor",
+                "prior_weight": 0.05,
+            })
+        total = float(sum(spec["prior_weight"] for spec in specs))
+        for spec in specs:
+            spec["prior_weight"] = float(spec["prior_weight"] / total)
+        return specs
+
+    def task_expert_basis_map(self, expert_name, output_index=0):
+        spec = next(
+            (
+                item for item in self.task_posterior_expert_specs()
+                if item["name"] == str(expert_name)
+            ),
+            None,
+        )
+        if spec is None:
+            raise KeyError(f"unknown task expert {expert_name!r}")
+        if spec["basis"] is None:
+            return None
+        return FixedTaskExpertBasis(
+            self.meta_prior,
+            self,
+            spec["basis"],
+            output_index=output_index,
+        )
+
+    def task_expert_problem_view(self, expert_name):
+        return TaskExpertProblemView(self, expert_name)
+
+    def task_expert_proposal_candidates(
+        self,
+        expert_name,
+        n=1,
+        rng=None,
+        pool_size=1024,
+    ):
+        """Generate source-admissible proposals for one task expert.
+
+        Every branch is frozen before the held-out run.  In particular, this
+        method never calls the target problem's ``initial_samples``,
+        ``structured_candidates``, state anchors, refinement grid, objective,
+        constraint, or variance oracle.
+        """
+        name = str(expert_name)
+        n = max(0, int(n))
+        if n == 0:
+            return []
+        rng = rng or np.random.default_rng(self.meta_prior.seed)
+        rows = []
+        if name == "universal_coordinate":
+            rows.extend(self.meta_prior.universal_shape_candidates(
+                self,
+                n=n,
+                rng=rng,
+                force=True,
+            ))
+        elif name == "null_universal":
+            rows.extend(self.sample_random(rng) for _ in range(n))
+        elif name == "source_spectral":
+            rows.extend(self.meta_prior.alignment_profile_candidates(
+                self,
+                n=n,
+                rng=rng,
+            ))
+        elif name in {"risk_aligned_coordinate", "risk_aligned_spectral"}:
+            if self.meta_prior.alignment_latent_proposal_supported():
+                rows.extend(self.meta_prior.alignment_latent_candidates(
+                    self,
+                    n=n,
+                    rng=rng,
+                    pool_size=max(int(pool_size), n),
+                ))
+            else:
+                rows.extend(self.meta_prior.alignment_profile_candidates(
+                    self,
+                    n=n,
+                    rng=rng,
+                ))
+        elif name == "orthogonal_additive":
+            rows.extend(self.meta_prior.universal_shape_candidates(
+                self,
+                n=n,
+                rng=rng,
+                force=True,
+            ))
+        else:
+            raise KeyError(f"unknown task proposal expert {name!r}")
+
+        rows = unique_candidates(rows)
+        attempts = 0
+        while len(rows) < n and attempts < 8 * n:
+            rows.append(tuple(self.sample_random(rng)))
+            rows = unique_candidates(rows)
+            attempts += 1
+        return rows[:n]
 
     def pilot_constraint_guard(self):
         basis = self._gpr_basis_maps.get(1)

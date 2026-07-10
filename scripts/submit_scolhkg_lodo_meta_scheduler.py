@@ -110,7 +110,36 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"--acquisition_mode {args.acquisition_mode} "
         f"--exact_kg_mc_samples {args.exact_kg_mc_samples} "
         f"--exact_kg_jobs {args.exact_kg_jobs} "
+        f"--exact_kg_parallel_backend {args.exact_kg_parallel_backend} "
         f"--exact_kg_blend {args.exact_kg_blend} "
+        f"--task_posterior_mode {args.task_posterior_mode} "
+        f"{'--task_posterior_initial_design' if args.task_posterior_initial_design else '--no-task_posterior_initial_design'} "
+        f"--task_posterior_pilot_count {args.task_posterior_pilot_count} "
+        f"--task_posterior_temperature {args.task_posterior_temperature} "
+        f"--task_posterior_temperature_decay "
+        f"{args.task_posterior_temperature_decay} "
+        f"--task_posterior_boundary_score_weight "
+        f"{args.task_posterior_boundary_score_weight} "
+        f"--task_posterior_objective_score_weight "
+        f"{args.task_posterior_objective_score_weight} "
+        f"--task_posterior_constraint_score_weight "
+        f"{args.task_posterior_constraint_score_weight} "
+        f"--task_posterior_kl_radius_numerator "
+        f"{args.task_posterior_kl_radius_numerator} "
+        f"--task_posterior_confidence_delta "
+        f"{args.task_posterior_confidence_delta} "
+        f"--task_posterior_max_kl_radius "
+        f"{args.task_posterior_max_kl_radius} "
+        f"--task_posterior_candidate_count "
+        f"{args.task_posterior_candidate_count} "
+        f"--task_posterior_recommendation_count "
+        f"{args.task_posterior_recommendation_count} "
+        f"--task_posterior_proposal_pool_size "
+        f"{args.task_posterior_proposal_pool_size} "
+        f"--task_posterior_proposal_exploration "
+        f"{args.task_posterior_proposal_exploration} "
+        f"--task_posterior_proposal_min_per_expert "
+        f"{args.task_posterior_proposal_min_per_expert} "
         f"--constraint_uncertain_candidate_count {args.constraint_uncertain_candidate_count} "
         f"--constraint_uncertain_pool_size {args.constraint_uncertain_pool_size} "
         f"--constraint_uncertain_state_pool_fraction "
@@ -343,7 +372,40 @@ def main():
     parser.add_argument("--acquisition-mode", default="exact_mc")
     parser.add_argument("--exact-kg-mc-samples", type=int, default=2)
     parser.add_argument("--exact-kg-jobs", type=int, default=1)
+    parser.add_argument("--exact-kg-parallel-backend", default="thread")
     parser.add_argument("--exact-kg-blend", type=float, default=0.0)
+    parser.add_argument("--task-posterior-mode", default="off")
+    parser.add_argument(
+        "--task-posterior-initial-design",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument("--task-posterior-pilot-count", type=int, default=-1)
+    parser.add_argument("--task-posterior-temperature", type=float, default=0.5)
+    parser.add_argument(
+        "--task-posterior-temperature-decay", type=float, default=0.5)
+    parser.add_argument(
+        "--task-posterior-boundary-score-weight", type=float, default=0.25)
+    parser.add_argument(
+        "--task-posterior-objective-score-weight", type=float, default=0.25)
+    parser.add_argument(
+        "--task-posterior-constraint-score-weight", type=float, default=1.0)
+    parser.add_argument(
+        "--task-posterior-kl-radius-numerator", type=float, default=0.5)
+    parser.add_argument(
+        "--task-posterior-confidence-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--task-posterior-max-kl-radius", type=float, default=4.0)
+    parser.add_argument(
+        "--task-posterior-candidate-count", type=int, default=0)
+    parser.add_argument(
+        "--task-posterior-recommendation-count", type=int, default=0)
+    parser.add_argument(
+        "--task-posterior-proposal-pool-size", type=int, default=1024)
+    parser.add_argument(
+        "--task-posterior-proposal-exploration", type=float, default=0.10)
+    parser.add_argument(
+        "--task-posterior-proposal-min-per-expert", type=int, default=2)
     parser.add_argument("--constraint-uncertain-candidate-count", type=int, default=8)
     parser.add_argument("--constraint-uncertain-pool-size", type=int, default=180)
     parser.add_argument(

@@ -203,20 +203,96 @@ Proof sketch: decompose regret into posterior mean error, acquisition/search
 error, and feasibility certification error.  Use information-gain bounds for
 the surrogate and Theorem 5-6 for variance/certification.
 
+## Assumption A3: Transferable Task-Structure Family
+
+The held-out task has a latent structure
+
+```text
+xi = (R, S, theta_v)
+```
+
+in the support of a source-trained hyper-prior `Pi`. The target algorithm may
+update `Q_t(xi)` only with target observations charged to its evaluation
+budget. It may not use target truth, optimum, boundary, or hidden simulator
+parameters.
+
+## Theorem 9: Hierarchical Task-Posterior Cumulative Variance
+
+For a finite task posterior `Q_t`,
+
+```text
+Var(C(x) | D_t)
+  = E_Q[v_C(x; xi)] + E_Q[s_C(x; xi)^2]
+    + Var_Q[m_C(x; xi)].
+```
+
+The final term is representation/transfer uncertainty. Therefore an alignment
+that is individually overconfident cannot make the mixture overconfident while
+other supported experts disagree. The finite algebra and implementation bridge
+are Lean-proved in `SCOLHKG/Real/TaskPosterior.lean`.
+
+### Proposition 9a: Prior-Supported Expert Proposal Mixture
+
+The initial design, sequential candidate pool, and terminal pool use
+
+```text
+q_t^prop(xi) = (1 - epsilon) Q_t(xi) + epsilon Pi(xi).
+```
+
+For `0 < epsilon <= 1`, this mixture is normalized and satisfies
+`q_t^prop(xi) >= epsilon Pi(xi) > 0` for every prior-supported expert. Thus a
+small target sample cannot irreversibly remove a transferable proposal family;
+the task posterior controls exploitation while the frozen source prior retains
+identification support. Both claims are Lean-proved in
+`SCOLHKG/Real/TaskPosterior.lean`.
+
+## Theorem 10: Ambiguity-Robust Task Certification
+
+If robust upper moments dominate every normalized task posterior in an
+admissible ambiguity set and
+
+```text
+mu_upper + sqrt(beta) sqrt(epistemic_upper)
+         + z_alpha sqrt(aleatoric_upper) <= tau,
+```
+
+then the same upper-moment certificate holds for every posterior in that set.
+Finite KL nonnegativity, the change-of-measure inequality, the entropic dual
+upper bound, source-prior exponential-moment aggregation, the Markov bad-event
+bound, and the robust-envelope implication are Lean-proved. The resulting
+finite radius is `(source_slack + KL(Q_t||Pi) + log(1/delta))/n_evidence`.
+Its sharpness remains conditional on the source-task exponential-moment model;
+domain-specific slack must be validated empirically.
+
+## Theorem 11: Joint Task-Posterior Exact KG
+
+The exact hypothetical update state contains `Q_t`, every expert objective and
+constraint GPR, and every expert cumulative HVD. Each predictive draw samples
+one shared expert identity, updates the whole joint state, and recomputes the
+robust terminal certified value. A zero-error MC maximizer is therefore a
+one-step maximizer for this joint terminal gain; finite-MC error continues to
+use the existing `2 eta` and concentration bridges.
+
 ## Current Empirical Closure Items
 
-1. The code now has a factor-shock synthetic and factor-HVD cumulative feature
+1. Finite task-posterior Stage A-C passed the paired FactorShock N=20 Gate 1:
+   `4/7` true-feasible and `1/7` false-feasible versus `0/7` and `1/7` for the
+   baseline, with lower mean violation and median regret. Inventory/Queue Gate
+   2 and repair of the seed-0 false-feasible case remain mandatory before
+   continuous Stiefel/Grassmann inference.
+2. The code now has a factor-shock synthetic and factor-HVD cumulative feature
    path that feeds `v_C^+` in theory certification.  Exact-MC/blend are
    implemented and concentration-bridged, including an MC-schedule variance
-   theorem.  Current probes show a large runtime multiplier, so the benchmark
-   matrix must decide between `exact_mc`, `blend`, and additive plus the
-   `2 eta` approximation theorem.
-2. The traffic trajectory encoder/log schema and SUMO trajectory logger are
+   theorem. Batched KL-dual evaluation plus process-parallel candidate updates
+   reduced the exact path to about 763 seconds per N=20 seed in Gate 1; the
+   large matrix must still decide between `exact_mc`, `blend`, and additive
+   plus the `2 eta` approximation theorem.
+3. The traffic trajectory encoder/log schema and SUMO trajectory logger are
    implemented.  The remaining task is to generate the fresh-seed trajectory
    CSV on the server and include its encoded table.
-3. The manuscript still needs a final choice between bounded,
+4. The manuscript still needs a final choice between bounded,
    sub-exponential, or Gaussian-derived residual-square tails.
-4. The full recursive `compute_h` sorted-stack fold/output theorem is now
+5. The full recursive `compute_h` sorted-stack fold/output theorem is now
    Lean-proved for the sorted/collapsed active-line loop.
 
 ## Lean4 Status
@@ -278,6 +354,8 @@ versions needed by the manuscript:
 | Target boundary-evidence gate | `SCOLHKG/Real/RiskAlignedRepresentation.lean` | Lean-proved exact Stage-1 fallback when the target pilot has no observed feasible or no observed infeasible chance margin |
 | Frozen source-boundary episode admission | `SCOLHKG/Real/RiskAlignedRepresentation.lean` | Lean-proved that source support may replace target gain evidence only; two-sided target support and target safety remain necessary, and source-only proposals are target-label invariant |
 | Transactional representation switching | `SCOLHKG/Real/RiskAlignedRepresentation.lean` | Lean-proved exact rejection fallback and ordered posterior replay/commit semantics for admitted feature changes |
+| Finite task posterior and hierarchical variance | `SCOLHKG/Real/TaskPosterior.lean` | Lean-proved normalization, positive support, prior-supported proposal-mixture lower bound, within/between/aleatoric variance, robust-envelope implication, and joint exact-MC optimizer bridge |
+| Finite unseen-task PAC-Bayes concentration | `SCOLHKG/Measure/TaskPACBayes.lean` | Lean-proved source-prior exponential-moment aggregation and bad-event probability `<= delta`; pointwise radius bound is in `Real/TaskPosterior.lean` |
 
 The aligned representation remains experimental.  A five-seed, three-domain
 source-only sequential replay activated the frozen coordinate five times and

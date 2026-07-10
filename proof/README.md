@@ -128,9 +128,17 @@ mathlib and its cache; later builds should be fast.
   covariance, and linear-score Gaussianity facts.
 - `SCOLHKG/Measure/SafeRegretEvent.lean`: high-probability transfer from bad
   events to safe-regret failure events.
+- `SCOLHKG/Measure/TaskPACBayes.lean`: finite source-prior exponential-moment
+  aggregation and Markov bad-event bound feeding the task-posterior PAC-Bayes
+  radius.
 - `SCOLHKG/Real/TrafficTrajectoryModel.lean`: finite fresh-seed traffic
   state-action occupancy, demand-shock risk decomposition, and schema-row
   field semantics for the fresh CSV contract.
+- `SCOLHKG/Real/TaskPosterior.lean`: finite generalized-Bayes task-weight
+  normalization and positive-support preservation, prior-supported proposal
+  mixture normalization/support lower bounds, hierarchical
+  within/between/aleatoric variance, robust-envelope certification for every
+  admissible posterior, and the joint task-state exact-MC optimizer bridge.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
   manuscript-level theory.
 - `code_map.md`: mapping from mathematical objects to the current
@@ -273,20 +281,42 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 74. A representation switch is transactional: rejected proposals preserve the
     old posterior exactly, while admitted proposals commit a posterior rebuilt
     by replaying the recorded updates in their original order.
+75. Positive finite generalized-Bayes expert masses normalize to a simplex and
+    preserve positive support.
+76. Task-posterior predictive variance is exactly expert-within epistemic plus
+    between-expert mean variance plus expert-averaged aleatoric risk.
+77. A pointwise upper envelope controls every normalized nonnegative posterior
+    in an abstract ambiguity set, and therefore supports robust certification.
+78. A zero-error MC estimator over the joint task/GPR/HVD update state recovers
+    the one-step exact-KG maximizer.
+79. Finite task KL is nonnegative, and every posterior satisfying
+    `KL(q||p) <= rho` obeys the entropic robust upper bound minimized by the
+    Python `kl_robust_expectation` dual.
+80. Source-expert exponential moments bounded by one remain bounded after a
+    source-prior mixture; Markov gives the target-task moment bad event
+    probability at most `delta`.
+81. On that event, every finite hyper-posterior obeys the explicit
+    `(KL + log(1/delta))/n` PAC-Bayes generalization-gap bound.
 
-Remaining model-specific work is empirical/binding rather than missing Lean
-theorems:
+Remaining work is empirical/binding and assumption validation:
 
-1. Generate and archive the real fresh-seed trajectory CSV logs with the SUMO
+1. Validate or conservatively upper-bound the source-task exponential-moment
+   slack used by the proved finite PAC-Bayes radius; sharp domain-specific
+   constants are empirical/model assumptions, not free theorems.
+2. Generate and archive the real fresh-seed trajectory CSV logs with the SUMO
    logger now implemented in `sumo_sim.py`.
-2. Decide empirically whether `exact_mc`, `blend`, or additive-with-`2 eta`
+3. Run Inventory/Queue cross-domain Gate 2 for the finite task-posterior
+   exact-MC path. FactorShock Gate 1 passed with the same false-feasible count,
+   but its seed-0 false-feasible case remains an explicit safety failure.
+4. Decide empirically whether `exact_mc`, `blend`, or additive-with-`2 eta`
    should be the main runner after the large benchmark matrix finishes.
-3. If the final manuscript chooses a less conservative traffic feature map
+5. If the final manuscript chooses a less conservative traffic feature map
    than the current ingolstadt21 cap, add that sharper numeric cap.
 
 ## Current Math-Depth Assessment
 
-The current package is now paper-grade at the finite-model interface layer:
+The current package is paper-grade for the previously fixed finite-model
+interface layer:
 cumulative variance decomposition, factor-HVD block aggregation, conservative
 theory certification, ridge/HVD oracle steps, exact/additive/MC KG bridges,
 posterior candidate envelopes, mathlib multivariate-Gaussian coefficient
@@ -296,11 +326,10 @@ fresh-log schema semantics, exact-MC concentration, and safe-regret accounting
 all build in Lean without `sorry`.  The boundary-aligned representation layer
 now also has rotation-invariant projector, identifiable-rank whitening,
 simplex-expert, nested-LOO noninterference, and strong-heredity bridges.  The
-representation implementation is deliberately not promoted yet.  Its frozen
-source-boundary sequential replay passed the offline gate (five activations,
-five gains, no false-feasibility increase), while unsupported Inventory cases
-returned to Stage 1.  A paired N=40 sequential KG matrix is now the promotion
-gate.  The remaining hard work is experimental
-closure and manuscript selection, not a missing proof skeleton: run the
-trajectory logger, finish the exact/additive decision, and keep the numeric
-feature cap synchronized with the final code path.
+representation implementation remains conditional on empirical gates. The
+finite task-posterior layer closes the algebraic, PAC-Bayes, and deterministic
+implementation bridges and has passed FactorShock Gate 1. The next closure
+work is cross-domain Gate 2, explicit repair of the remaining seed-0
+false-feasible case, the trajectory logger table, the exact/additive
+large-budget decision, and synchronization of the numeric feature cap with
+the final code path.
