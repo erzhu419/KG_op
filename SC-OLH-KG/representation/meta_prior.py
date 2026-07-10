@@ -13,6 +13,7 @@ source-trained structural prior:
 
 from __future__ import annotations
 
+import copy
 from dataclasses import dataclass
 
 import numpy as np
@@ -32,6 +33,15 @@ from core.cumulative_risk import (
 from representation.transferable_spectral import (
     SourceDomainBatch,
     TransferableSpectralBasis,
+)
+from representation.adaptive_sparsity import AdaptiveSpikeSlabPosterior
+from representation.additive_groups import TransferableAdditiveGroupBank
+from representation.risk_aligned_subspace import (
+    BoundaryAlignedRiskSubspaces,
+    TargetRiskAlignment,
+)
+from representation.source_boundary_episodes import (
+    SourceBoundaryEpisodePrior,
 )
 
 
@@ -122,7 +132,12 @@ class SourceRecord:
 class LearnedMetaPrior:
     """Frozen source-trained prior used by held-out target adapters."""
 
-    VALID_COMPONENT_STAGES = {"legacy_all", "coordinate", "spectral"}
+    VALID_COMPONENT_STAGES = {
+        "legacy_all",
+        "coordinate",
+        "spectral",
+        "spectral_hvd",
+    }
 
     def __init__(
         self,
@@ -157,6 +172,51 @@ class LearnedMetaPrior:
         spectral_gate_dangerous_weight=3.0,
         spectral_gate_selection_tolerance=0.02,
         spectral_gate_calibration_quantile=0.90,
+        spectral_frequency_adaptation=False,
+        spectral_frequency_cutoffs=(3, 5, 8, 12),
+        spectral_frequency_ridges=(1e-4, 1e-2, 1.0),
+        spectral_frequency_source_penalty=0.05,
+        spectral_frequency_temperature=0.5,
+        spectral_frequency_refit_interval=5,
+        spectral_risk_alignment=False,
+        spectral_alignment_active_dim=4,
+        spectral_alignment_subspace_dim=2,
+        spectral_alignment_domain_penalty=0.5,
+        spectral_alignment_source_procrustes=False,
+        spectral_alignment_target_ridge=5.0,
+        spectral_alignment_target_min_gain=0.02,
+        spectral_alignment_target_min_bins=3,
+        spectral_alignment_refit_interval=5,
+        spectral_alignment_source_episodes=0,
+        spectral_alignment_admission=True,
+        spectral_alignment_latent_proposals=False,
+        spectral_alignment_inverse_pool_size=1024,
+        spectral_alignment_episode_pilot_size=10,
+        spectral_alignment_episode_evaluation_size=24,
+        spectral_alignment_episode_ridge=0.1,
+        spectral_additive_adaptation=False,
+        spectral_additive_max_groups=8,
+        spectral_additive_target_max_groups=2,
+        spectral_additive_source_penalty=0.05,
+        spectral_additive_complexity_penalty=0.05,
+        spectral_additive_temperature=0.5,
+        spectral_additive_refit_interval=5,
+        spectral_additive_max_saturation_fraction=0.20,
+        spectral_coefficient_shrinkage=False,
+        spectral_shrinkage_strength=1.0,
+        spectral_shrinkage_floor=0.05,
+        spectral_adaptive_sparsity=False,
+        spectral_adaptive_min_pip=0.05,
+        spectral_adaptive_max_pip=0.95,
+        spectral_adaptive_spike_ratio=0.05,
+        spectral_adaptive_damping=0.5,
+        spectral_adaptive_max_iter=40,
+        spectral_adaptive_tolerance=1e-5,
+        spectral_adaptive_residual_floor_scale=0.05,
+        spectral_adaptive_gate_tolerance=0.05,
+        spectral_adaptive_multiplicity_correction=1.0,
+        spectral_adaptive_max_effective_fraction=0.35,
+        spectral_adaptive_saturation_fraction=0.90,
         coordinate_mode="pca",
         coordinate_relevance_floor=0.05,
         seed=123,
@@ -199,6 +259,112 @@ class LearnedMetaPrior:
             spectral_gate_selection_tolerance)
         self.spectral_gate_calibration_quantile = float(
             spectral_gate_calibration_quantile)
+        self.spectral_frequency_adaptation = bool(
+            spectral_frequency_adaptation)
+        self.spectral_frequency_cutoffs = self._positive_grid(
+            spectral_frequency_cutoffs,
+            int,
+            self.spectral_low_frequency_components,
+        )
+        self.spectral_frequency_ridges = self._positive_grid(
+            spectral_frequency_ridges,
+            float,
+            1.0,
+        )
+        self.spectral_frequency_source_penalty = max(
+            float(spectral_frequency_source_penalty), 0.0)
+        self.spectral_frequency_temperature = max(
+            float(spectral_frequency_temperature), 1e-8)
+        self.spectral_frequency_refit_interval = max(
+            1, int(spectral_frequency_refit_interval))
+        self.spectral_risk_alignment = bool(spectral_risk_alignment)
+        self.spectral_alignment_active_dim = max(
+            1, int(spectral_alignment_active_dim))
+        self.spectral_alignment_subspace_dim = max(
+            1, int(spectral_alignment_subspace_dim))
+        self.spectral_alignment_domain_penalty = max(
+            float(spectral_alignment_domain_penalty), 0.0)
+        self.spectral_alignment_source_procrustes = bool(
+            spectral_alignment_source_procrustes)
+        self.spectral_alignment_target_ridge = max(
+            float(spectral_alignment_target_ridge), 0.0)
+        self.spectral_alignment_target_min_gain = max(
+            float(spectral_alignment_target_min_gain), 0.0)
+        self.spectral_alignment_target_min_bins = max(
+            2, int(spectral_alignment_target_min_bins))
+        self.spectral_alignment_refit_interval = max(
+            1, int(spectral_alignment_refit_interval))
+        self.spectral_alignment_source_episodes = max(
+            0, int(spectral_alignment_source_episodes))
+        self.spectral_alignment_admission = bool(
+            spectral_alignment_admission)
+        self.spectral_alignment_latent_proposals = bool(
+            spectral_alignment_latent_proposals)
+        self.spectral_alignment_inverse_pool_size = max(
+            64, int(spectral_alignment_inverse_pool_size))
+        self.spectral_alignment_episode_pilot_size = max(
+            6, int(spectral_alignment_episode_pilot_size))
+        self.spectral_alignment_episode_evaluation_size = max(
+            8, int(spectral_alignment_episode_evaluation_size))
+        self.spectral_alignment_episode_ridge = max(
+            float(spectral_alignment_episode_ridge), 1e-10)
+        self.spectral_additive_adaptation = bool(
+            spectral_additive_adaptation)
+        self.spectral_additive_max_groups = max(
+            1, int(spectral_additive_max_groups))
+        self.spectral_additive_target_max_groups = max(
+            1, int(spectral_additive_target_max_groups))
+        self.spectral_additive_source_penalty = max(
+            float(spectral_additive_source_penalty), 0.0)
+        self.spectral_additive_complexity_penalty = max(
+            float(spectral_additive_complexity_penalty), 0.0)
+        self.spectral_additive_temperature = max(
+            float(spectral_additive_temperature), 1e-8)
+        self.spectral_additive_refit_interval = max(
+            1, int(spectral_additive_refit_interval))
+        self.spectral_additive_max_saturation_fraction = float(np.clip(
+            spectral_additive_max_saturation_fraction, 0.0, 1.0))
+        self.spectral_coefficient_shrinkage = bool(
+            spectral_coefficient_shrinkage)
+        self.spectral_shrinkage_strength = max(
+            float(spectral_shrinkage_strength), 0.0)
+        self.spectral_shrinkage_floor = float(np.clip(
+            spectral_shrinkage_floor, 1e-6, 1.0))
+        self.spectral_adaptive_sparsity = bool(spectral_adaptive_sparsity)
+        active_adaptations = sum((
+            self.spectral_frequency_adaptation,
+            self.spectral_additive_adaptation,
+            self.spectral_adaptive_sparsity,
+        ))
+        if active_adaptations > 1:
+            raise ValueError(
+                "frequency, additive, and coefficient adaptation are separate stages"
+            )
+        self.spectral_adaptive_min_pip = float(spectral_adaptive_min_pip)
+        self.spectral_adaptive_max_pip = float(spectral_adaptive_max_pip)
+        if not (
+            0.0 < self.spectral_adaptive_min_pip
+            < self.spectral_adaptive_max_pip
+            < 1.0
+        ):
+            raise ValueError("adaptive PIP bounds must satisfy 0 < min < max < 1")
+        self.spectral_adaptive_spike_ratio = float(
+            spectral_adaptive_spike_ratio)
+        self.spectral_adaptive_damping = float(spectral_adaptive_damping)
+        self.spectral_adaptive_max_iter = max(
+            1, int(spectral_adaptive_max_iter))
+        self.spectral_adaptive_tolerance = max(
+            float(spectral_adaptive_tolerance), 1e-12)
+        self.spectral_adaptive_residual_floor_scale = max(
+            float(spectral_adaptive_residual_floor_scale), 0.0)
+        self.spectral_adaptive_gate_tolerance = max(
+            float(spectral_adaptive_gate_tolerance), 0.0)
+        self.spectral_adaptive_multiplicity_correction = max(
+            float(spectral_adaptive_multiplicity_correction), 0.0)
+        self.spectral_adaptive_max_effective_fraction = float(np.clip(
+            spectral_adaptive_max_effective_fraction, 0.05, 1.0))
+        self.spectral_adaptive_saturation_fraction = float(np.clip(
+            spectral_adaptive_saturation_fraction, 0.5, 1.0))
         self.coordinate_mode = str(coordinate_mode)
         if self.coordinate_mode not in {"pca", "stable_supervised"}:
             raise ValueError("coordinate_mode must be 'pca' or 'stable_supervised'")
@@ -213,14 +379,45 @@ class LearnedMetaPrior:
         self.anchor_meta = []
         self.profile_templates = []
         self.beta_prior = {}
+        self.beta_prior_precision = {}
+        self.beta_prior_reference_mean = {}
+        self.beta_prior_upper_scale = {}
         self.mean_prior = {}
         self.mean_prior_sigma = {}
         self.spectral_basis: TransferableSpectralBasis | None = None
+        self.stage1_spectral_basis: TransferableSpectralBasis | None = None
+        self.spectral_feature_dim = 0
+        self.spectral_always_active_count = 0
+        self.spectral_frequency_bank = []
+        self.spectral_frequency_diagnostics = {"status": "not_requested"}
+        self.risk_subspace_alignment: BoundaryAlignedRiskSubspaces | None = None
+        self.risk_aligned_spectral_basis: TransferableSpectralBasis | None = None
+        self.risk_aligned_frequency_bank = []
+        self.risk_aligned_additive_bank: TransferableAdditiveGroupBank | None = None
+        self.risk_alignment_diagnostics = {"status": "not_requested"}
+        self.alignment_episode_prior: SourceBoundaryEpisodePrior | None = None
+        self.alignment_episode_diagnostics = {"status": "not_requested"}
+        self.alignment_profile_templates = []
+        self.spectral_additive_bank: TransferableAdditiveGroupBank | None = None
+        self.spectral_additive_diagnostics = {"status": "not_requested"}
+        self.spectral_coefficient_prior = {}
+        self.spectral_adaptive_calibration = {"status": "not_requested"}
         self.source_domains = []
         self.n_records = 0
         self.fit_status = "unfit"
         self.training_diagnostics = {}
         self.coordinate_diagnostics = {"mode": self.coordinate_mode}
+
+    @staticmethod
+    def _positive_grid(values, cast, required):
+        if isinstance(values, str):
+            values = [item.strip() for item in values.split(",") if item.strip()]
+        parsed = [cast(value) for value in values]
+        parsed.append(cast(required))
+        parsed = sorted({value for value in parsed if float(value) > 0.0})
+        if not parsed:
+            raise ValueError("frequency adaptation grids must be positive")
+        return tuple(parsed)
 
     def component_enabled(self, name):
         name = str(name)
@@ -228,7 +425,9 @@ class LearnedMetaPrior:
             return True
         if self.component_stage == "legacy_all":
             return name in {"hvd", "mean", "proposal"}
-        if self.component_stage == "spectral":
+        if self.component_stage in {"spectral", "spectral_hvd"}:
+            if name == "hvd":
+                return self.component_stage == "spectral_hvd"
             return name == "spectral"
         return False
 
@@ -464,6 +663,83 @@ class LearnedMetaPrior:
             meta={"provider": "LearnedMetaPrior", "source_domains": list(self.source_domains)},
         )
 
+    def aligned_cumulative_risk_exposure_from_descriptor(
+        self,
+        descriptor,
+        *,
+        domain=None,
+    ):
+        """Nonnegative cumulative-risk blocks in the frozen aligned space.
+
+        The four compact source-alignment statistics are semantic rather than
+        named latent axes: boundary score, score magnitude, source-expert
+        disagreement, and heteroscedastic risk correction.  Local exposures
+        encode magnitudes; shared exposures are a soft regime occupancy.  The
+        mapping is source-frozen and never reads held-out target labels.
+        """
+
+        if self.risk_subspace_alignment is None:
+            return self.risk_exposure_from_descriptor(descriptor)
+        compact = np.asarray(
+            self.risk_subspace_alignment.transform_compact(
+                np.asarray(descriptor, dtype=float),
+                domain=domain,
+                adapter=None,
+            ),
+            dtype=float,
+        ).reshape(-1)
+        compact = np.pad(compact, (0, max(0, 4 - len(compact))))[:4]
+        score, score_magnitude, disagreement, correction = compact
+        local_semantics = np.asarray([
+            np.clip(score_magnitude / 2.0, 0.0, 1.0),
+            np.clip(disagreement / 2.0, 0.0, 1.0),
+            np.clip(abs(correction) / 2.0, 0.0, 1.0),
+            np.clip(abs(score - correction) / 4.0, 0.0, 1.0),
+        ], dtype=float)
+        A = np.zeros(self.local_dim, dtype=float)
+        A[: min(len(A), len(local_semantics))] = local_semantics[: len(A)]
+
+        shared_logits = np.asarray([
+            score,
+            -score,
+            correction,
+            -correction,
+            0.0,
+        ], dtype=float)
+        logits = np.zeros(self.shared_dim, dtype=float)
+        logits[: min(len(logits), len(shared_logits))] = shared_logits[: len(logits)]
+        logits -= float(np.max(logits)) if len(logits) else 0.0
+        N = np.exp(np.clip(logits, -50.0, 0.0))
+        N /= max(float(np.sum(N)), 1e-12)
+        return RiskExposure(
+            A,
+            N,
+            local_names=tuple(
+                f"aligned_local_risk_{index}" for index in range(self.local_dim)
+            ),
+            shared_names=tuple(
+                f"aligned_regime_{index}" for index in range(self.shared_dim)
+            ),
+            meta={
+                "provider": "LearnedMetaPrior",
+                "coordinate": "frozen_source_boundary_alignment",
+                "source_domains": list(self.source_domains),
+                "source_domain": None if domain is None else str(domain),
+                "target_data_used": False,
+            },
+        )
+
+    def cumulative_risk_exposure_from_descriptor(self, descriptor, *, domain=None):
+        if (
+            self.component_stage == "spectral_hvd"
+            and self.risk_subspace_alignment is not None
+        ):
+            return self.aligned_cumulative_risk_exposure_from_descriptor(
+                descriptor,
+                domain=domain,
+            )
+        return self.risk_exposure_from_descriptor(descriptor)
+
     def risk_coordinate_from_descriptor(self, descriptor):
         exposure = self.risk_exposure_from_descriptor(descriptor)
         return np.concatenate([exposure.A, exposure.N]).astype(float)
@@ -472,21 +748,36 @@ class LearnedMetaPrior:
         del output_index
         return self.risk_exposure_from_descriptor(self.descriptor(problem, x))
 
+    def cumulative_risk_exposure(self, problem, x, output_index=1):
+        del output_index
+        return self.cumulative_risk_exposure_from_descriptor(
+            self.descriptor(problem, x))
+
     def risk_coordinate(self, problem, x):
         exposure = self.risk_exposure(problem, x)
         return np.concatenate([exposure.A, exposure.N]).astype(float)
 
     def cumulative_features(self, problem, x, output_index=1):
-        del output_index
-        return cumulative_feature_vector(self.risk_exposure(problem, x))
+        return cumulative_feature_vector(self.cumulative_risk_exposure(
+            problem, x, output_index=output_index))
 
     def cumulative_feature_names(self):
+        aligned = (
+            self.component_stage == "spectral_hvd"
+            and self.risk_subspace_alignment is not None
+        )
         return cumulative_feature_names(
             RiskExposure(
                 np.zeros(self.local_dim),
                 np.zeros(self.shared_dim),
-                local_names=tuple(f"meta_A{j}" for j in range(self.local_dim)),
-                shared_names=tuple(f"meta_N{j}" for j in range(self.shared_dim)),
+                local_names=tuple(
+                    ("aligned_local_risk_" if aligned else "meta_A") + str(j)
+                    for j in range(self.local_dim)
+                ),
+                shared_names=tuple(
+                    ("aligned_regime_" if aligned else "meta_N") + str(j)
+                    for j in range(self.shared_dim)
+                ),
             )
         )
 
@@ -770,6 +1061,11 @@ class LearnedMetaPrior:
         self._record_training_diagnostics(records, weights)
         if self.component_enabled("spectral"):
             self._fit_spectral_basis(records)
+            if (
+                self.spectral_coefficient_shrinkage
+                or self.spectral_adaptive_sparsity
+            ):
+                self._fit_spectral_coefficient_prior(records)
         if self.component_enabled("hvd") or self.component_enabled("mean"):
             self._fit_hvd_beta_priors(records)
         if self.component_enabled("proposal"):
@@ -787,6 +1083,7 @@ class LearnedMetaPrior:
         for rec in records:
             by_domain.setdefault(rec.domain, []).append(rec)
         batches = []
+        alignment_batches = []
         for domain, domain_records in sorted(by_domain.items()):
             psi = np.vstack([
                 self.risk_coordinate_from_descriptor(rec.descriptor)
@@ -799,6 +1096,36 @@ class LearnedMetaPrior:
                 self._source_margin(rec) / self._source_margin_scale(rec)
                 for rec in domain_records
             ], dtype=float)
+            observable_constraint = np.asarray([
+                (
+                    float(rec.y[1])
+                    + norm.ppf(1.0 - float(rec.alpha))
+                    * float(rec.sigma_level)
+                    - float(rec.tau)
+                ) / max(
+                    abs(float(rec.tau)),
+                    float(rec.sigma_level),
+                    1e-6,
+                )
+                for rec in domain_records
+            ], dtype=float)
+            risk_correction = np.asarray([
+                norm.ppf(1.0 - float(rec.alpha))
+                * (
+                    float(
+                        rec.constraint_sigma
+                        if rec.constraint_sigma is not None
+                        else rec.sigma_level
+                    )
+                    - float(rec.sigma_level)
+                ) / max(
+                    abs(float(rec.tau)),
+                    float(rec.sigma_level),
+                    1e-6,
+                )
+                for rec in domain_records
+            ], dtype=float)
+            transferable_constraint = observable_constraint + risk_correction
             objective_scale = max(float(np.std(objective)), 1e-8)
             objective_z = (objective - float(np.median(objective))) / objective_scale
             temperature = max(float(self.boundary_temperature), 1e-6)
@@ -814,8 +1141,34 @@ class LearnedMetaPrior:
                 boundary_sign,
                 decision,
             ])
+            transferable_boundary_sign = np.tanh(
+                transferable_constraint / temperature)
+            transferable_decision = (
+                objective_z
+                + self.feasible_penalty
+                * np.maximum(transferable_constraint, 0.0)
+                + 0.25 * np.abs(transferable_constraint)
+            )
+            alignment_signals = np.column_stack([
+                objective,
+                transferable_constraint,
+                transferable_boundary_sign,
+                transferable_decision,
+                risk_correction,
+            ])
             sample_weight = np.asarray([
                 self._boundary_sample_weight(rec) for rec in domain_records
+            ], dtype=float)
+            alignment_sample_weight = np.asarray([
+                (
+                    1.0
+                    + self.boundary_weight * np.exp(
+                        -0.5
+                        * (value / max(self.boundary_temperature, 1e-6)) ** 2
+                    )
+                    + 0.25 * max(float(value), 0.0)
+                ) * max(float(rec.sample_weight), 1e-8)
+                for rec, value in zip(domain_records, transferable_constraint)
             ], dtype=float)
             batches.append(SourceDomainBatch(
                 domain=str(domain),
@@ -824,23 +1177,967 @@ class LearnedMetaPrior:
                 sample_weight=sample_weight,
                 signal_weight=np.asarray([0.35, 1.0, 1.25, 0.75]),
             ))
-        self.spectral_basis = TransferableSpectralBasis(
-            active_dim=self.spectral_active_dim,
+            alignment_batches.append(SourceDomainBatch(
+                domain=str(domain),
+                psi=np.vstack([rec.descriptor for rec in domain_records]),
+                signals=alignment_signals,
+                sample_weight=alignment_sample_weight,
+                signal_weight=np.asarray([0.35, 1.0, 1.25, 0.75, 0.50]),
+            ))
+        if (
+            self.spectral_frequency_adaptation
+            or self.spectral_additive_adaptation
+        ):
+            # Adaptation must challenge the same full Stage-1 model used by
+            # the no-adaptation control.  Otherwise merely enabling a module
+            # changes the fallback before the target gate makes a decision.
+            self.spectral_basis = TransferableSpectralBasis(
+                active_dim=max(1, self.spectral_active_dim),
+                max_library_size=self.spectral_max_library_size,
+                low_frequency_components=self.spectral_low_frequency_components,
+                n_neighbors=self.spectral_graph_neighbors,
+                relevance_floor=self.spectral_relevance_floor,
+                ridge=self.ridge,
+            ).fit(batches)
+            self.stage1_spectral_basis = self.spectral_basis
+            self.spectral_feature_dim = int(self.spectral_basis.feature_dim)
+            self.spectral_always_active_count = 0
+        elif self.spectral_adaptive_sparsity:
+            self.stage1_spectral_basis = TransferableSpectralBasis(
+                active_dim=min(2, max(1, self.spectral_active_dim)),
+                max_library_size=self.spectral_max_library_size,
+                low_frequency_components=4,
+                n_neighbors=self.spectral_graph_neighbors,
+                relevance_floor=self.spectral_relevance_floor,
+                ridge=self.ridge,
+            ).fit(batches)
+            residual_dim = max(
+                self.spectral_active_dim
+                - int(self.stage1_spectral_basis.feature_dim),
+                0,
+            )
+            if residual_dim:
+                self.spectral_basis = TransferableSpectralBasis(
+                    active_dim=residual_dim,
+                    max_library_size=self.spectral_max_library_size,
+                    low_frequency_components=self.spectral_low_frequency_components,
+                    n_neighbors=self.spectral_graph_neighbors,
+                    relevance_floor=self.spectral_relevance_floor,
+                    ridge=self.ridge,
+                    orthogonalization="ordered_cholesky",
+                ).fit(batches)
+            else:
+                self.spectral_basis = self.stage1_spectral_basis
+            self.spectral_feature_dim = int(
+                self.stage1_spectral_basis.feature_dim
+            ) + (
+                0
+                if self.spectral_basis is self.stage1_spectral_basis
+                else int(self.spectral_basis.feature_dim)
+            )
+            self.spectral_always_active_count = int(
+                self.stage1_spectral_basis.feature_dim)
+        else:
+            self.spectral_basis = TransferableSpectralBasis(
+                active_dim=self.spectral_active_dim,
+                max_library_size=self.spectral_max_library_size,
+                low_frequency_components=self.spectral_low_frequency_components,
+                n_neighbors=self.spectral_graph_neighbors,
+                relevance_floor=self.spectral_relevance_floor,
+                ridge=self.ridge,
+            ).fit(batches)
+            self.stage1_spectral_basis = self.spectral_basis
+            self.spectral_feature_dim = int(self.spectral_basis.feature_dim)
+            self.spectral_always_active_count = 0
+        if self.spectral_risk_alignment:
+            self._fit_risk_aligned_spectral_basis(alignment_batches)
+        if self.spectral_frequency_adaptation:
+            self._fit_spectral_frequency_bank(batches)
+        if self.spectral_additive_adaptation:
+            self._fit_spectral_additive_bank(batches)
+        if (
+            self.spectral_risk_alignment
+            and self.spectral_alignment_source_episodes > 0
+        ):
+            self._fit_alignment_episode_prior(records)
+
+    def _fit_risk_aligned_spectral_basis(self, batches):
+        psi_dim = int(batches[0].psi.shape[1])
+        self.risk_subspace_alignment = BoundaryAlignedRiskSubspaces(
+            active_dim=min(self.spectral_alignment_active_dim, psi_dim),
+            subspace_dim=self.spectral_alignment_subspace_dim,
+            boundary_signal_index=1,
+            boundary_temperature=self.boundary_temperature,
+            domain_penalty=self.spectral_alignment_domain_penalty,
+            ridge=self.ridge,
+            apply_source_procrustes=self.spectral_alignment_source_procrustes,
+            target_adapter_ridge=self.spectral_alignment_target_ridge,
+            target_min_gain=self.spectral_alignment_target_min_gain,
+            target_min_bins=self.spectral_alignment_target_min_bins,
+        ).fit(batches)
+        aligned_batches = self.risk_subspace_alignment.transform_batches(batches)
+        aligned_active_dim = min(
+            max(1, int(self.stage1_spectral_basis.feature_dim)),
+            int(self.risk_subspace_alignment.feature_dim),
+        )
+        self.risk_aligned_spectral_basis = TransferableSpectralBasis(
+            active_dim=aligned_active_dim,
             max_library_size=self.spectral_max_library_size,
             low_frequency_components=self.spectral_low_frequency_components,
             n_neighbors=self.spectral_graph_neighbors,
             relevance_floor=self.spectral_relevance_floor,
             ridge=self.ridge,
+        ).fit(aligned_batches)
+        if self.spectral_frequency_adaptation:
+            self._fit_risk_aligned_frequency_bank(aligned_batches)
+        if self.spectral_additive_adaptation:
+            self.risk_aligned_additive_bank = TransferableAdditiveGroupBank(
+                max_groups=self.spectral_additive_max_groups,
+                max_library_size=self.spectral_max_library_size,
+                low_frequency_components=self.spectral_low_frequency_components,
+                n_neighbors=self.spectral_graph_neighbors,
+                relevance_floor=self.spectral_relevance_floor,
+                temperature=self.spectral_additive_temperature,
+                ridge=self.ridge,
+                base_basis=self.risk_aligned_spectral_basis,
+                strong_heredity=True,
+                max_interactions=min(2, self.spectral_additive_target_max_groups),
+            ).fit(aligned_batches)
+        self.risk_alignment_diagnostics = {
+            "status": "fit",
+            "target_data_used": False,
+            "input_space": "universal_observable_descriptor",
+            "alignment": self.risk_subspace_alignment.diagnostics(),
+            "spectral_basis": self.risk_aligned_spectral_basis.diagnostics(),
+            "frequency_entries": [
+                {
+                    key: value
+                    for key, value in entry.items()
+                    if key != "basis"
+                }
+                for entry in self.risk_aligned_frequency_bank
+            ],
+            "additive": (
+                None
+                if self.risk_aligned_additive_bank is None
+                else self.risk_aligned_additive_bank.diagnostics()
+            ),
+        }
+
+    def _fit_alignment_episode_prior(self, records):
+        # Keep one source history row per policy.  If both a random record and
+        # a source historical-teacher record exist, retain the latter because
+        # it carries the deliberately acquired boundary observation.
+        unique = {}
+        for rec in records:
+            key = (str(rec.domain), tuple(rec.x))
+            previous = unique.get(key)
+            if previous is None or float(rec.sample_weight) > float(
+                previous.sample_weight
+            ):
+                unique[key] = rec
+        episode_records = list(unique.values())
+        domains = np.asarray([
+            str(rec.domain) for rec in episode_records], dtype=str)
+        margins = np.asarray([
+            self._source_margin(rec) / self._source_margin_scale(rec)
+            for rec in episode_records
+        ], dtype=float)
+        baseline = np.vstack([
+            self.stage1_spectral_features_from_descriptor(rec.descriptor)
+            for rec in episode_records
+        ])
+        # `domain=...` applies leave-that-domain-out expert weights.  Thus the
+        # pseudo-target source domain cannot replay its own fitted expert.
+        aligned = np.vstack([
+            self.risk_subspace_alignment.transform_compact(
+                rec.descriptor, domain=str(rec.domain))
+            for rec in episode_records
+        ])
+        self.alignment_episode_prior = SourceBoundaryEpisodePrior(
+            pilot_size=self.spectral_alignment_episode_pilot_size,
+            pilot_sizes=(
+                self.spectral_alignment_episode_pilot_size,
+                2 * self.spectral_alignment_episode_pilot_size,
+                4 * self.spectral_alignment_episode_pilot_size,
+            ),
+            evaluation_size=self.spectral_alignment_episode_evaluation_size,
+            episodes_per_domain=self.spectral_alignment_source_episodes,
+            ridge=self.spectral_alignment_episode_ridge,
+            seed=self.seed + 17041,
+        ).fit(domains, margins, baseline, aligned)
+        self.alignment_episode_diagnostics = (
+            self.alignment_episode_prior.diagnostics())
+        self.risk_alignment_diagnostics[
+            "source_boundary_episode_admission"
+        ] = dict(self.alignment_episode_diagnostics)
+        self._fit_alignment_profile_templates(episode_records)
+
+    def _fit_alignment_profile_templates(self, records):
+        templates = []
+        seen = set()
+        by_domain = {}
+        for rec in records:
+            if rec.profile is not None and len(rec.profile):
+                by_domain.setdefault(str(rec.domain), []).append(rec)
+        for domain, domain_records in sorted(by_domain.items()):
+            rows = sorted(
+                domain_records,
+                key=lambda rec: (
+                    0 if self._source_margin(rec) <= 0.0 else 1,
+                    abs(self._source_margin(rec) / self._source_margin_scale(rec)),
+                    float(rec.y[0]),
+                ),
+            )
+            feasible = [rec for rec in rows if self._source_margin(rec) <= 0.0]
+            infeasible = [rec for rec in rows if self._source_margin(rec) > 0.0]
+            selected = feasible[:8] + infeasible[:8]
+            for rec in selected:
+                profile = np.clip(
+                    np.asarray(rec.profile, dtype=float).reshape(-1), 0.0, 1.0)
+                key = tuple(np.round(profile, 4))
+                if key in seen:
+                    continue
+                seen.add(key)
+                templates.append({
+                    "profile": profile,
+                    "domain": domain,
+                    "feasible": bool(self._source_margin(rec) <= 0.0),
+                    "scaled_margin": float(
+                        self._source_margin(rec) / self._source_margin_scale(rec)),
+                    "origin": str(rec.origin),
+                    "aligned_coordinate": np.asarray(
+                        self.risk_subspace_alignment.transform_compact(
+                            rec.descriptor,
+                            domain=domain,
+                        ),
+                        dtype=float,
+                    ),
+                })
+        self.alignment_profile_templates = templates
+        self.alignment_episode_diagnostics["profile_template_count"] = int(
+            len(templates))
+        self.alignment_episode_diagnostics[
+            "profile_template_source_only"
+        ] = True
+        self.risk_alignment_diagnostics[
+            "source_boundary_episode_admission"
+        ] = dict(self.alignment_episode_diagnostics)
+
+    def alignment_profile_candidates(self, problem, n=16, rng=None):
+        """Replay frozen source boundary profiles without target-side hooks."""
+        n = max(0, int(n))
+        if n == 0 or not self.alignment_profile_templates:
+            return []
+        rng = rng or np.random.default_rng(self.seed)
+        templates = list(self.alignment_profile_templates)
+        # Balance source domains and source feasibility labels before thinning.
+        buckets = {}
+        for row in templates:
+            buckets.setdefault(
+                (str(row["domain"]), bool(row["feasible"])), []).append(row)
+        for rows in buckets.values():
+            rows.sort(key=lambda row: abs(float(row["scaled_margin"])))
+        ordered = []
+        keys = sorted(buckets)
+        while any(buckets[key] for key in keys):
+            for key in keys:
+                if buckets[key]:
+                    ordered.append(buckets[key].pop(0))
+        if len(ordered) > n:
+            head_count = max(1, min(n, n // 2))
+            head = ordered[:head_count]
+            tail = ordered[head_count:]
+            need = n - len(head)
+            if need > 0 and tail:
+                pick = rng.permutation(len(tail))[:need]
+                head.extend(tail[int(index)] for index in pick)
+            ordered = head
+        d = max(1, int(getattr(problem, "d", 1)))
+        candidates = []
+        for row in ordered[:n]:
+            profile = np.asarray(row["profile"], dtype=float).reshape(-1)
+            if len(profile) != d:
+                profile = np.interp(
+                    np.linspace(0.0, 1.0, d),
+                    np.linspace(0.0, 1.0, len(profile)),
+                    profile,
+                )
+            candidates.append(self._continuous_to_tuple(
+                problem, np.clip(profile, 0.0, 1.0)))
+        return unique_candidates(candidates)[:n]
+
+    def _alignment_inverse_pool(self, problem, rng, pool_size):
+        d = max(1, int(getattr(problem, "d", 1)))
+        pool_size = max(64, int(pool_size))
+        rows = self.alignment_profile_candidates(
+            problem,
+            n=min(len(self.alignment_profile_templates), pool_size),
+            rng=rng,
+        )
+        rows = unique_candidates(rows)
+        seen = {tuple(row) for row in rows}
+
+        def add(row):
+            key = tuple(row)
+            if key not in seen:
+                seen.add(key)
+                rows.append(key)
+
+        templates = list(self.alignment_profile_templates)
+        n_random = max(8, pool_size // 4)
+        for _ in range(n_random):
+            add(problem.sample_random(rng))
+        grid = np.linspace(0.0, 1.0, d)
+        knot_grid = np.linspace(0.0, 1.0, 5)
+        attempts = 0
+        while len(rows) < pool_size and attempts < 8 * pool_size:
+            index = len(rows)
+            if templates and index % 2 == 0:
+                template = templates[index % len(templates)]
+                profile = np.asarray(
+                    template["profile"], dtype=float).reshape(-1)
+                base = np.interp(
+                    grid,
+                    np.linspace(0.0, 1.0, len(profile)),
+                    profile,
+                )
+                perturbation = np.interp(
+                    grid,
+                    knot_grid,
+                    rng.normal(0.0, 0.10, size=len(knot_grid)),
+                )
+                z = base + perturbation
+            else:
+                z = np.interp(
+                    grid,
+                    knot_grid,
+                    rng.uniform(0.05, 0.95, size=len(knot_grid)),
+                )
+            if index % 5 == 0:
+                z[0] = rng.uniform(0.0, 1.0)
+            add(self._continuous_to_tuple(
+                problem, np.clip(z, 0.0, 1.0)))
+            attempts += 1
+        return rows[:pool_size]
+
+    def alignment_latent_candidates(
+        self, problem, n=16, rng=None, pool_size=None,
+    ):
+        """Invert frozen source boundary coordinates without target labels."""
+
+        n = max(0, int(n))
+        if (
+            n == 0
+            or self.risk_subspace_alignment is None
+            or not self.alignment_profile_templates
+        ):
+            return []
+        rng = rng or np.random.default_rng(self.seed)
+        pool_size = max(
+            64,
+            int(pool_size or self.spectral_alignment_inverse_pool_size),
+        )
+        pool = self._alignment_inverse_pool(problem, rng, pool_size)
+        coordinates = np.vstack([
+            self.frozen_risk_aligned_coordinate(problem, x) for x in pool
+        ])
+        targets = [
+            row for row in self.alignment_profile_templates
+            if row.get("aligned_coordinate") is not None
+            and np.all(np.isfinite(row["aligned_coordinate"]))
+        ]
+        targets.sort(key=lambda row: (
+            not bool(row["feasible"]),
+            abs(float(row["scaled_margin"])),
+            str(row["domain"]),
+        ))
+        if not targets:
+            return []
+        target_matrix = np.vstack([
+            np.asarray(row["aligned_coordinate"], dtype=float)
+            for row in targets
+        ])
+        scale = np.std(target_matrix, axis=0)
+        scale = np.where(scale < 0.10, 0.10, scale)
+        selected = []
+        used = set()
+        cursor = 0
+        while len(selected) < min(n, len(pool)):
+            target = target_matrix[cursor % len(target_matrix)]
+            distance = np.linalg.norm(
+                (coordinates - target[None, :]) / scale[None, :],
+                axis=1,
+            )
+            for position in np.argsort(distance):
+                key = tuple(pool[int(position)])
+                if key not in used:
+                    used.add(key)
+                    selected.append(key)
+                    break
+            cursor += 1
+            if cursor > len(target_matrix) + len(pool):
+                break
+        self.alignment_episode_diagnostics["last_latent_inverse"] = {
+            "status": "ok",
+            "n_candidates": int(len(selected)),
+            "pool_size": int(len(pool)),
+            "n_source_targets": int(len(targets)),
+            "n_source_feasible_targets": int(sum(
+                bool(row["feasible"]) for row in targets)),
+            "target_labels_used": False,
+            "target_oracle_used": False,
+        }
+        return selected[:n]
+
+    def alignment_latent_proposal_supported(self):
+        prior = self.alignment_episode_prior
+        diagnostics = (
+            prior.diagnostics() if prior is not None else {})
+        threshold = (
+            float(prior.min_global_win_rate)
+            if prior is not None
+            else (2.0 / 3.0)
+        )
+        win_rate = diagnostics.get("evaluation_win_rate")
+        accepted = bool(
+            diagnostics.get("status") == "fit"
+            and win_rate is not None
+            and float(win_rate) >= threshold
+        )
+        self.alignment_episode_diagnostics[
+            "latent_proposal_source_gate"
+        ] = {
+            "status": "accepted" if accepted else "fallback_direct",
+            "source_evaluation_win_rate": (
+                None if win_rate is None else float(win_rate)),
+            "minimum_source_win_rate": float(threshold),
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+        return accepted
+
+    def _fit_risk_aligned_frequency_bank(self, aligned_batches):
+        active_dim = int(self.risk_aligned_spectral_basis.feature_dim)
+        basis_by_cutoff = {}
+        entries = []
+        for cutoff in self.spectral_frequency_cutoffs:
+            if int(cutoff) == int(self.spectral_low_frequency_components):
+                basis = self.risk_aligned_spectral_basis
+            else:
+                basis = TransferableSpectralBasis(
+                    active_dim=active_dim,
+                    max_library_size=self.spectral_max_library_size,
+                    low_frequency_components=int(cutoff),
+                    n_neighbors=self.spectral_graph_neighbors,
+                    relevance_floor=self.spectral_relevance_floor,
+                    ridge=self.ridge,
+                ).fit(aligned_batches)
+            basis_by_cutoff[int(cutoff)] = basis
+            diag = basis.diagnostics()
+            cv_loss = np.asarray(
+                diag.get("selected_pilot_cv_loss", []), dtype=float)
+            source_score = (
+                float(np.mean(cv_loss)) if len(cv_loss) else float("inf"))
+            for ridge in self.spectral_frequency_ridges:
+                entries.append({
+                    "cutoff": int(cutoff),
+                    "ridge": float(ridge),
+                    "basis": basis_by_cutoff[int(cutoff)],
+                    "source_score": source_score,
+                    "is_stage1_baseline": bool(
+                        int(cutoff) == int(self.spectral_low_frequency_components)
+                        and np.isclose(float(ridge), 1.0)
+                    ),
+                    "base_variant": "risk_aligned_spectral",
+                })
+        scores = np.asarray([entry["source_score"] for entry in entries], dtype=float)
+        finite = np.isfinite(scores)
+        reference = float(np.min(scores[finite])) if np.any(finite) else 0.0
+        logits = np.where(
+            finite,
+            -(scores - reference) / self.spectral_frequency_temperature,
+            -50.0,
+        )
+        logits -= float(np.max(logits))
+        weights = np.exp(np.clip(logits, -50.0, 0.0))
+        weights /= max(float(np.sum(weights)), 1e-12)
+        for index, (entry, weight) in enumerate(zip(entries, weights)):
+            entry["index"] = int(index)
+            entry["variant"] = f"aligned_frequency_band_{index:02d}"
+            entry["source_weight"] = float(weight)
+        if sum(bool(entry["is_stage1_baseline"]) for entry in entries) != 1:
+            raise RuntimeError(
+                "aligned frequency bank must contain exactly one fallback")
+        self.risk_aligned_frequency_bank = entries
+
+    def risk_aligned_coordinate_from_descriptor(self, descriptor, adapter=None):
+        if self.risk_subspace_alignment is None:
+            raise RuntimeError("risk-aligned subspace representation is not enabled")
+        return self.risk_subspace_alignment.transform_compact(
+            np.asarray(descriptor, dtype=float), adapter=adapter)
+
+    def frozen_risk_aligned_coordinate_from_descriptor(self, descriptor):
+        if self.risk_subspace_alignment is None:
+            raise RuntimeError("risk-aligned subspace representation is not enabled")
+        return self.risk_subspace_alignment.transform_compact(
+            np.asarray(descriptor, dtype=float), domain=None, adapter=None)
+
+    def frozen_risk_aligned_coordinate(self, problem, x):
+        return self.frozen_risk_aligned_coordinate_from_descriptor(
+            self.descriptor(problem, x))
+
+    def risk_aligned_full_coordinate_from_descriptor(
+        self, descriptor, adapter=None,
+    ):
+        if self.risk_subspace_alignment is None:
+            raise RuntimeError("risk-aligned subspace representation is not enabled")
+        return self.risk_subspace_alignment.transform(
+            np.asarray(descriptor, dtype=float), adapter=adapter)
+
+    def risk_aligned_coordinate(self, problem, x, adapter=None):
+        return self.risk_aligned_coordinate_from_descriptor(
+            self.descriptor(problem, x), adapter=adapter)
+
+    def risk_aligned_spectral_features(self, problem, x, adapter=None):
+        if self.risk_aligned_spectral_basis is None:
+            raise RuntimeError("risk-aligned spectral basis is not enabled")
+        coordinate = self.risk_aligned_full_coordinate_from_descriptor(
+            self.descriptor(problem, x), adapter=adapter)
+        return self.risk_aligned_spectral_basis.transform(coordinate)
+
+    def risk_aligned_frequency_features(self, problem, x, index, adapter=None):
+        coordinate = self.risk_aligned_full_coordinate_from_descriptor(
+            self.descriptor(problem, x), adapter=adapter)
+        entry = self.risk_aligned_frequency_bank[int(index)]
+        return entry["basis"].transform(coordinate)
+
+    def risk_aligned_additive_features(
+        self, problem, x, indices, adapter=None,
+    ):
+        if self.risk_aligned_additive_bank is None:
+            raise RuntimeError("risk-aligned additive bank is not enabled")
+        coordinate = self.risk_aligned_full_coordinate_from_descriptor(
+            self.descriptor(problem, x), adapter=adapter)
+        return self.risk_aligned_additive_bank.transform_groups(
+            coordinate, indices)
+
+    def fit_target_risk_alignment(self, problem, observations):
+        if self.risk_subspace_alignment is None:
+            return None
+        xs = list(observations)
+        psi = np.vstack([self.descriptor(problem, x) for x in xs])
+        observed = np.vstack([
+            np.mean(np.asarray(observations[x], dtype=float), axis=0)
+            for x in xs
+        ])
+        tau = float(getattr(problem, "tau", 0.0))
+        alpha = float(getattr(problem, "alpha", 0.05))
+        sigma = max(float(getattr(problem, "sigma_level", 0.0)), 1e-8)
+        chance_shift = norm.ppf(1.0 - alpha) * sigma
+        scale = max(abs(tau), sigma, 1e-6)
+        margins = (observed[:, 1] + chance_shift - tau) / scale
+        return self.risk_subspace_alignment.fit_target_adapter(psi, margins)
+
+    def _fit_spectral_frequency_bank(self, batches):
+        active_dim = int(self.stage1_spectral_basis.feature_dim)
+        entries = []
+        basis_by_cutoff = {}
+        for cutoff in self.spectral_frequency_cutoffs:
+            if (
+                int(cutoff) == int(self.spectral_low_frequency_components)
+                and int(self.stage1_spectral_basis.feature_dim) == active_dim
+            ):
+                basis_by_cutoff[int(cutoff)] = self.stage1_spectral_basis
+            else:
+                basis_by_cutoff[int(cutoff)] = TransferableSpectralBasis(
+                    active_dim=active_dim,
+                    max_library_size=self.spectral_max_library_size,
+                    low_frequency_components=int(cutoff),
+                    n_neighbors=self.spectral_graph_neighbors,
+                    relevance_floor=self.spectral_relevance_floor,
+                    ridge=self.ridge,
+                ).fit(batches)
+            for ridge in self.spectral_frequency_ridges:
+                is_baseline = bool(
+                    int(cutoff) == int(self.spectral_low_frequency_components)
+                    and np.isclose(float(ridge), 1.0)
+                    and int(self.stage1_spectral_basis.feature_dim) == active_dim
+                )
+                basis = basis_by_cutoff[int(cutoff)]
+                diag = basis.diagnostics()
+                cv_loss = np.asarray(
+                    diag.get("selected_pilot_cv_loss", []), dtype=float)
+                source_score = float(
+                    np.mean(cv_loss)) if len(cv_loss) else float("inf")
+                entries.append({
+                    "cutoff": int(cutoff),
+                    "ridge": float(ridge),
+                    "basis": basis,
+                    "source_score": source_score,
+                    "is_stage1_baseline": is_baseline,
+                    "base_variant": "source_spectral",
+                })
+        finite_scores = np.asarray([
+            entry["source_score"] for entry in entries
+        ], dtype=float)
+        finite = np.isfinite(finite_scores)
+        reference = float(np.min(finite_scores[finite])) if np.any(finite) else 0.0
+        logits = np.where(
+            finite,
+            -(finite_scores - reference) / self.spectral_frequency_temperature,
+            -50.0,
+        )
+        logits -= float(np.max(logits))
+        weights = np.exp(np.clip(logits, -50.0, 0.0))
+        weights /= max(float(np.sum(weights)), 1e-12)
+        for index, (entry, weight) in enumerate(zip(entries, weights)):
+            entry["index"] = int(index)
+            entry["variant"] = f"frequency_band_{index:02d}"
+            entry["source_weight"] = float(weight)
+        baseline_count = sum(
+            bool(entry["is_stage1_baseline"]) for entry in entries
+        )
+        if baseline_count != 1:
+            raise RuntimeError(
+                "frequency bank must contain exactly one Stage-1 fallback"
+            )
+        self.spectral_frequency_bank = entries
+        self.spectral_frequency_diagnostics = {
+            "status": "fit",
+            "method": "source_cv_finite_band_hyperprior",
+            "target_data_used": False,
+            "active_dim": int(active_dim),
+            "source_penalty": float(self.spectral_frequency_source_penalty),
+            "temperature": float(self.spectral_frequency_temperature),
+            "entries": [
+                {
+                    "index": entry["index"],
+                    "variant": entry["variant"],
+                    "cutoff": entry["cutoff"],
+                    "ridge": entry["ridge"],
+                    "source_score": entry["source_score"],
+                    "source_weight": entry["source_weight"],
+                    "is_stage1_baseline": entry["is_stage1_baseline"],
+                    "fingerprint": entry["basis"].fingerprint(),
+                    "selected_names": entry["basis"].diagnostics().get(
+                        "selected_names", []),
+                }
+                for entry in entries
+            ],
+        }
+
+    def spectral_frequency_features(self, problem, x, index):
+        entry = self.spectral_frequency_bank[int(index)]
+        psi = self.risk_coordinate(problem, x)
+        return entry["basis"].transform(psi)
+
+    def _fit_spectral_additive_bank(self, batches):
+        self.spectral_additive_bank = TransferableAdditiveGroupBank(
+            max_groups=self.spectral_additive_max_groups,
+            max_library_size=self.spectral_max_library_size,
+            low_frequency_components=self.spectral_low_frequency_components,
+            n_neighbors=self.spectral_graph_neighbors,
+            relevance_floor=self.spectral_relevance_floor,
+            temperature=self.spectral_additive_temperature,
+            ridge=self.ridge,
+            base_basis=self.stage1_spectral_basis,
+            strong_heredity=True,
+            max_interactions=min(2, self.spectral_additive_target_max_groups),
         ).fit(batches)
+        self.spectral_additive_diagnostics = (
+            self.spectral_additive_bank.diagnostics())
+
+    def spectral_additive_features(self, problem, x, indices):
+        if self.spectral_additive_bank is None:
+            raise RuntimeError("source additive group bank is not enabled")
+        psi = self.risk_coordinate(problem, x)
+        return self.spectral_additive_bank.transform_groups(psi, indices)
 
     def spectral_features_from_descriptor(self, descriptor):
         if self.spectral_basis is None:
             raise RuntimeError("source-invariant spectral basis is not enabled")
         psi = self.risk_coordinate_from_descriptor(descriptor)
-        return self.spectral_basis.transform(psi)
+        residual = self.spectral_basis.transform(psi)
+        if (
+            self.spectral_adaptive_sparsity
+            and self.stage1_spectral_basis is not self.spectral_basis
+        ):
+            prefix = self.stage1_spectral_basis.transform(psi)
+            return np.concatenate([prefix, residual])
+        return residual
 
     def spectral_features(self, problem, x):
         return self.spectral_features_from_descriptor(self.descriptor(problem, x))
+
+    def stage1_spectral_features_from_descriptor(self, descriptor):
+        if self.stage1_spectral_basis is None:
+            raise RuntimeError("Stage-1 spectral baseline is not enabled")
+        if self.stage1_spectral_basis is self.spectral_basis:
+            return self.spectral_features_from_descriptor(descriptor)
+        psi = self.risk_coordinate_from_descriptor(descriptor)
+        return self.stage1_spectral_basis.transform(psi)
+
+    def stage1_spectral_features(self, problem, x):
+        if self.stage1_spectral_basis is self.spectral_basis:
+            return self.spectral_features(problem, x)
+        return self.stage1_spectral_features_from_descriptor(
+            self.descriptor(problem, x))
+
+    def _fit_spectral_coefficient_prior(self, records):
+        """Estimate source-only coefficient inclusion evidence.
+
+        Coefficients are fit separately within each source domain after
+        standardizing both the frozen spectral features and the response.  The
+        resulting z evidence is dimensionless, so it can transfer across
+        domains without importing target-specific objective or constraint
+        scales.
+        """
+
+        by_domain = {}
+        for rec in records:
+            by_domain.setdefault(rec.domain, []).append(rec)
+        domain_stats = {0: [], 1: []}
+        for domain, domain_records in sorted(by_domain.items()):
+            features = np.vstack([
+                self.spectral_features_from_descriptor(rec.descriptor)
+                for rec in domain_records
+            ])
+            feature_mean = np.mean(features, axis=0)
+            feature_scale = np.std(features, axis=0)
+            feature_scale = np.where(feature_scale < 1e-8, 1.0, feature_scale)
+            X = (features - feature_mean) / feature_scale
+            design = np.column_stack([np.ones(len(X), dtype=float), X])
+            weights = np.asarray([
+                max(float(rec.sample_weight), 1e-8)
+                * self._boundary_sample_weight(rec)
+                for rec in domain_records
+            ], dtype=float)
+            root_w = np.sqrt(weights / max(float(np.mean(weights)), 1e-8))
+            weighted_design = design * root_w[:, None]
+            penalty = self.ridge * np.eye(design.shape[1], dtype=float)
+            penalty[0, 0] = 0.0
+            lhs = weighted_design.T @ weighted_design + penalty
+            try:
+                lhs_inv = np.linalg.pinv(lhs)
+            except np.linalg.LinAlgError:
+                lhs_inv = np.eye(lhs.shape[0], dtype=float)
+            for output_index in (0, 1):
+                if output_index == 0:
+                    target = np.asarray([
+                        float(rec.y[0]) for rec in domain_records
+                    ], dtype=float)
+                else:
+                    target = np.asarray([
+                        self._source_margin(rec) / self._source_margin_scale(rec)
+                        for rec in domain_records
+                    ], dtype=float)
+                target_scale = max(float(np.std(target)), 1e-8)
+                target_z = (target - float(np.mean(target))) / target_scale
+                weighted_target = target_z * root_w
+                beta = lhs_inv @ weighted_design.T @ weighted_target
+                residual = target_z - design @ beta
+                dof = max(len(target_z) - design.shape[1], 1)
+                sigma2 = max(float(np.sum(weights * residual ** 2) / dof), 1e-10)
+                se = np.sqrt(np.maximum(sigma2 * np.diag(lhs_inv), 1e-12))
+                z_score = np.abs(beta[1:]) / np.maximum(se[1:], 1e-8)
+                domain_stats[output_index].append({
+                    "domain": str(domain),
+                    "coefficient": np.asarray(beta[1:], dtype=float),
+                    "z_score": np.asarray(z_score, dtype=float),
+                })
+
+        self.spectral_coefficient_prior = {
+            output_index: self._aggregate_spectral_coefficient_prior(rows)
+            for output_index, rows in domain_stats.items()
+            if rows
+        }
+        if self.spectral_adaptive_sparsity:
+            self._calibrate_adaptive_sparsity(records, domain_stats[1])
+
+    def _aggregate_spectral_coefficient_prior(self, rows):
+        coefficients = np.vstack([row["coefficient"] for row in rows])
+        z_scores = np.vstack([row["z_score"] for row in rows])
+        evidence = 1.0 - np.exp(-0.5 * z_scores ** 2)
+        nonzero = np.abs(coefficients) > 1e-10
+        positive = np.mean(coefficients > 0.0, axis=0)
+        negative = np.mean(coefficients < 0.0, axis=0)
+        sign_consistency = np.maximum(positive, negative)
+        sign_consistency = np.where(
+            np.any(nonzero, axis=0), sign_consistency, 0.0)
+        adjusted_evidence = evidence * (0.5 + 0.5 * sign_consistency)
+        pip = np.clip(np.mean(adjusted_evidence, axis=0), 0.0, 1.0)
+        beta_alpha = 1.0 + np.sum(adjusted_evidence, axis=0)
+        beta_beta = 1.0 + len(rows) - np.sum(adjusted_evidence, axis=0)
+        prior_pip = np.clip(
+            beta_alpha / np.maximum(beta_alpha + beta_beta, 1e-12),
+            self.spectral_adaptive_min_pip,
+            self.spectral_adaptive_max_pip,
+        )
+        median_abs = np.median(np.abs(coefficients), axis=0)
+        positive_scale = median_abs[median_abs > 1e-8]
+        reference_scale = (
+            float(np.median(positive_scale)) if len(positive_scale) else 1.0
+        )
+        slab_scale = np.clip(
+            median_abs / max(reference_scale, 1e-8),
+            0.10,
+            5.0,
+        )
+        weight = self.spectral_shrinkage_floor + (
+            1.0 - self.spectral_shrinkage_floor
+        ) * pip ** self.spectral_shrinkage_strength
+        max_weight = max(float(np.max(weight)), self.spectral_shrinkage_floor)
+        weight = np.clip(
+            weight / max_weight,
+            self.spectral_shrinkage_floor,
+            1.0,
+        )
+        return {
+            "pip": pip,
+            "prior_pip": prior_pip,
+            "beta_alpha": beta_alpha,
+            "beta_beta": beta_beta,
+            "weight": np.asarray(weight, dtype=float),
+            "slab_scale": np.asarray(slab_scale, dtype=float),
+            "sign_consistency": np.asarray(sign_consistency, dtype=float),
+            "median_abs_coefficient": median_abs,
+            "median_z_score": np.median(z_scores, axis=0),
+            "source_domains": [row["domain"] for row in rows],
+            "normalization": "max_one",
+        }
+
+    def _calibrate_adaptive_sparsity(self, records, constraint_domain_stats):
+        """Nested source-LODO calibration; the held-out target is never read."""
+
+        base_domain = lambda name: str(name).split("#aug", 1)[0]
+        domains = sorted({
+            base_domain(row["domain"]) for row in constraint_domain_stats
+        })
+        by_domain = {}
+        for rec in records:
+            by_domain.setdefault(base_domain(rec.domain), []).append(rec)
+        if len(domains) < 2:
+            self.spectral_adaptive_calibration = {
+                "status": "insufficient_source_domains",
+                "selected_spike_ratio": float(
+                    self.spectral_adaptive_spike_ratio),
+            }
+            return
+        base = float(np.clip(self.spectral_adaptive_spike_ratio, 0.01, 0.30))
+        candidates = sorted({
+            float(np.clip(0.5 * base, 0.01, 0.30)),
+            base,
+            float(np.clip(2.0 * base, 0.01, 0.30)),
+        })
+        candidate_scores = {}
+        fold_rows = []
+        for spike_ratio in candidates:
+            scores = []
+            for heldout in domains:
+                source_rows = [
+                    row for row in constraint_domain_stats
+                    if base_domain(row["domain"]) != heldout
+                ]
+                target_records = by_domain.get(heldout, [])
+                if not source_rows or len(target_records) < 12:
+                    continue
+                hyper = self._aggregate_spectral_coefficient_prior(source_rows)
+                features = np.vstack([
+                    self.spectral_features_from_descriptor(rec.descriptor)
+                    for rec in target_records
+                ])
+                target = np.asarray([
+                    self._source_margin(rec) / self._source_margin_scale(rec)
+                    for rec in target_records
+                ])
+                seed = sum(ord(ch) for ch in heldout) + self.seed
+                order = np.random.default_rng(seed).permutation(len(target_records))
+                pilot_count = min(10, max(6, len(order) // 3))
+                train = order[:pilot_count]
+                test = order[pilot_count:]
+                if len(test) < 2:
+                    continue
+                noise = max(0.05 * float(np.var(target[train])), 1e-4)
+                posterior = AdaptiveSpikeSlabPosterior(
+                    hyper["prior_pip"],
+                    hyper["slab_scale"],
+                    min_pip=self.spectral_adaptive_min_pip,
+                    max_pip=self.spectral_adaptive_max_pip,
+                    spike_ratio=spike_ratio,
+                    damping=self.spectral_adaptive_damping,
+                    max_iter=self.spectral_adaptive_max_iter,
+                    tolerance=self.spectral_adaptive_tolerance,
+                    residual_floor_scale=(
+                        self.spectral_adaptive_residual_floor_scale),
+                    multiplicity_correction=(
+                        self.spectral_adaptive_multiplicity_correction),
+                    max_effective_fraction=(
+                        self.spectral_adaptive_max_effective_fraction),
+                    always_active_count=self.spectral_always_active_count,
+                    allowed_mask=np.concatenate([
+                        np.ones(
+                            self.spectral_always_active_count,
+                            dtype=bool,
+                        ),
+                        np.asarray(hyper["prior_pip"], dtype=float)[
+                            self.spectral_always_active_count:
+                        ] >= 0.5,
+                    ]),
+                ).fit(
+                    features[train],
+                    target[train],
+                    np.full(len(train), noise),
+                    [target_records[index].x for index in train],
+                    deviation_variance=max(0.05 * noise, 1e-6),
+                )
+                prediction = np.asarray(
+                    posterior.predict_parametric_mean(features[test]))
+                truth = target[test]
+                scale = max(float(np.var(truth)), 1e-8)
+                nmse = float(np.mean((truth - prediction) ** 2) / scale)
+                infeasible = truth > 0.0
+                false_feasible = (
+                    float(np.mean(prediction[infeasible] <= 0.0))
+                    if np.any(infeasible) else 0.0
+                )
+                feasible = ~infeasible
+                false_infeasible = (
+                    float(np.mean(prediction[feasible] > 0.0))
+                    if np.any(feasible) else 0.0
+                )
+                score = nmse + 3.0 * false_feasible + 0.25 * false_infeasible
+                scores.append(float(score))
+                fold_rows.append({
+                    "heldout_source": heldout,
+                    "spike_ratio": float(spike_ratio),
+                    "score": float(score),
+                    "false_feasible_rate": float(false_feasible),
+                })
+            candidate_scores[str(spike_ratio)] = (
+                float(np.mean(scores)) if scores else float("inf"))
+        selected = min(
+            candidates,
+            key=lambda value: (candidate_scores[str(value)], abs(value - base)),
+        )
+        self.spectral_adaptive_spike_ratio = float(selected)
+        self.spectral_adaptive_calibration = {
+            "status": "fit",
+            "method": "nested_source_lodo_decision_loss",
+            "candidate_scores": candidate_scores,
+            "selected_spike_ratio": float(selected),
+            "configured_spike_ratio": float(base),
+            "folds": fold_rows,
+            "target_data_used": False,
+        }
+
+    def spectral_shrinkage_weights(self, output_index=1):
+        if not self.spectral_coefficient_shrinkage:
+            return None
+        prior = self.spectral_coefficient_prior.get(int(output_index))
+        if prior is None:
+            return None
+        return np.asarray(prior["weight"], dtype=float).copy()
 
     def coordinate_basis_features(self, problem, x):
         desc = self._scaled_descriptor(self.descriptor(problem, x))
@@ -854,9 +2151,12 @@ class LearnedMetaPrior:
         for rec in records:
             by_domain.setdefault(rec.domain, []).append(rec)
         beta_by_output = {0: [], 1: []}
+        beta_domains_by_output = {0: [], 1: []}
+        variance_targets_by_output_domain = {0: {}, 1: {}}
         mean_by_output = {0: [], 1: []}
         sigma_by_output = {0: [], 1: []}
-        for domain_records in by_domain.values():
+        cumulative_features_by_domain = {}
+        for domain, domain_records in by_domain.items():
             X_desc = np.vstack([
                 np.concatenate([[1.0], self._scaled_descriptor(rec.descriptor)])
                 for rec in domain_records
@@ -870,10 +2170,14 @@ class LearnedMetaPrior:
             ])
             F = np.vstack([
                 cumulative_feature_vector(
-                    self.risk_exposure_from_descriptor(rec.descriptor)
+                    self.cumulative_risk_exposure_from_descriptor(
+                        rec.descriptor,
+                        domain=rec.domain,
+                    )
                 )
                 for rec in domain_records
             ])
+            cumulative_features_by_domain[str(domain)] = F
             weights = np.asarray([
                 self._boundary_sample_weight(rec) for rec in domain_records
             ], dtype=float)
@@ -915,8 +2219,25 @@ class LearnedMetaPrior:
                 sigma_by_output[out_idx].append(float(
                     np.sqrt(np.mean(resid_meta ** 2)) if len(resid_meta) else 0.0
                 ))
-                resid2 = np.maximum((y - X_desc @ beta_mean) ** 2, 1e-10)
-                if self.hvd_noise_floor_scale > 0.0:
+                source_variance_labels = None
+                if out_idx == 1 and all(
+                    rec.constraint_sigma is not None for rec in domain_records
+                ):
+                    source_variance_labels = np.asarray([
+                        float(rec.constraint_sigma) ** 2
+                        for rec in domain_records
+                    ], dtype=float)
+                if source_variance_labels is not None:
+                    resid2 = np.maximum(source_variance_labels, 1e-10)
+                else:
+                    resid2 = np.maximum(
+                        (y - X_desc @ beta_mean) ** 2,
+                        1e-10,
+                    )
+                if (
+                    source_variance_labels is None
+                    and self.hvd_noise_floor_scale > 0.0
+                ):
                     sigmas = []
                     for rec in domain_records:
                         if out_idx == 1 and rec.constraint_sigma is not None:
@@ -944,9 +2265,73 @@ class LearnedMetaPrior:
                     beta = np.linalg.lstsq(Fw.T @ Fw + reg_var, Fw.T @ rw, rcond=None)[0]
                 beta = _project_psd_features(beta, self.local_dim, self.shared_dim)
                 beta_by_output[out_idx].append(beta)
+                beta_domains_by_output[out_idx].append(str(domain))
+                variance_targets_by_output_domain[out_idx][str(domain)] = np.asarray(
+                    resid2,
+                    dtype=float,
+                )
+                self.training_diagnostics.setdefault(
+                    "hvd_variance_label_source", {})[str(out_idx)] = (
+                        "source_fresh_seed_variance"
+                        if source_variance_labels is not None
+                        else "source_residual_square_fallback"
+                    )
         for out_idx, rows in beta_by_output.items():
             if rows:
-                self.beta_prior[out_idx] = np.mean(np.vstack(rows), axis=0)
+                stack = np.vstack(rows)
+                mean_beta = np.mean(stack, axis=0)
+                self.beta_prior[out_idx] = mean_beta
+                reference_predictions = np.concatenate([
+                    np.maximum(F @ mean_beta, 1e-12)
+                    for F in cumulative_features_by_domain.values()
+                ])
+                self.beta_prior_reference_mean[out_idx] = float(max(
+                    float(np.mean(reference_predictions)),
+                    1e-12,
+                ))
+                signal = float(np.mean(mean_beta ** 2))
+                dispersion = float(np.mean((stack - mean_beta) ** 2))
+                learned_precision = signal / max(
+                    dispersion + 0.1 * signal,
+                    1e-12,
+                )
+                self.beta_prior_precision[out_idx] = float(np.clip(
+                    learned_precision,
+                    0.05,
+                    5.0,
+                ))
+                lodo_ratios = []
+                domains = beta_domains_by_output[out_idx]
+                for heldout_index, heldout_domain in enumerate(domains):
+                    if len(stack) <= 1:
+                        lodo_beta = mean_beta
+                    else:
+                        lodo_beta = np.mean(np.delete(
+                            stack,
+                            heldout_index,
+                            axis=0,
+                        ), axis=0)
+                    F_heldout = cumulative_features_by_domain[heldout_domain]
+                    target_variance = variance_targets_by_output_domain[
+                        out_idx][heldout_domain]
+                    shape = np.maximum(F_heldout @ lodo_beta, 1e-12)
+                    shape /= max(float(np.mean(shape)), 1e-12)
+                    amplitude = max(float(np.mean(target_variance)), 1e-12)
+                    prediction = np.maximum(amplitude * shape, 1e-12)
+                    ratio = target_variance / prediction
+                    lodo_ratios.extend(
+                        float(value) for value in ratio if np.isfinite(value)
+                    )
+                if lodo_ratios:
+                    ordered = np.sort(np.asarray(lodo_ratios, dtype=float))
+                    conformal_index = min(
+                        len(ordered) - 1,
+                        max(0, int(np.ceil(0.95 * (len(ordered) + 1))) - 1),
+                    )
+                    self.beta_prior_upper_scale[out_idx] = float(max(
+                        1.0,
+                        ordered[conformal_index],
+                    ))
         for out_idx, rows in mean_by_output.items():
             if rows:
                 self.mean_prior[out_idx] = np.mean(np.vstack(rows), axis=0)
@@ -1342,9 +2727,34 @@ class LearnedMetaPrior:
     def proposal_candidates(self, problem, n=32, rng=None, pool_size=1024):
         if not self.component_enabled("proposal"):
             rng = rng or np.random.default_rng(self.seed)
-            return unique_candidates([
-                problem.sample_random(rng) for _ in range(max(0, int(n)))
-            ])
+            n_target = max(0, int(n))
+            n_alignment = min(
+                len(self.alignment_profile_templates),
+                int(np.ceil(0.75 * n_target)),
+            )
+            if (
+                self.spectral_alignment_latent_proposals
+                and self.alignment_latent_proposal_supported()
+            ):
+                rows = self.alignment_latent_candidates(
+                    problem,
+                    n=n_alignment,
+                    rng=rng,
+                    pool_size=max(
+                        int(pool_size),
+                        self.spectral_alignment_inverse_pool_size,
+                    ),
+                )
+            else:
+                rows = self.alignment_profile_candidates(
+                    problem,
+                    n=n_alignment,
+                    rng=rng,
+                )
+            while len(rows) < n_target:
+                rows.append(problem.sample_random(rng))
+                rows = unique_candidates(rows)
+            return rows[:n_target]
         rng = rng or np.random.default_rng(self.seed)
         n_target = max(0, int(n))
         rows = []
@@ -1388,9 +2798,36 @@ class LearnedMetaPrior:
         if beta is None:
             return None
         beta = np.asarray(beta, dtype=float)
+        if self.component_stage == "spectral_hvd":
+            beta = beta / max(
+                float(self.beta_prior_reference_mean.get(
+                    int(output_index), 1.0)),
+                1e-12,
+            )
         if feature_dim is not None and len(beta) != int(feature_dim):
             return None
         return beta.copy()
+
+    def cumulative_hvd_prior_precision(self, output_index=1):
+        if self.component_stage != "spectral_hvd":
+            return None
+        value = self.beta_prior_precision.get(int(output_index))
+        return None if value is None else float(value)
+
+    def cumulative_hvd_prior_scale_mean(self, output_index=1):
+        if self.component_stage != "spectral_hvd":
+            return None
+        value = self.beta_prior_reference_mean.get(int(output_index))
+        return None if value is None else float(value)
+
+    def cumulative_hvd_prior_upper_scale(self, output_index=1):
+        if self.component_stage != "spectral_hvd":
+            return None
+        value = self.beta_prior_upper_scale.get(int(output_index))
+        return None if value is None else float(value)
+
+    def cumulative_hvd_prior_min_records(self):
+        return 5 if self.component_stage == "spectral_hvd" else None
 
     def source_calibrated_recommendation_slack(self):
         if not self.component_enabled("proposal"):
@@ -1416,10 +2853,24 @@ class LearnedMetaPrior:
             "shared_dim": int(self.shared_dim),
             "n_anchors": int(len(self.anchor_psi)),
             "n_profile_templates": int(len(self.profile_templates)),
+            "n_alignment_profile_templates": int(
+                len(self.alignment_profile_templates)),
             "universal_shape_count": int(self.universal_shape_count),
             "has_beta_prior": {
                 str(key): value is not None
                 for key, value in self.beta_prior.items()
+            },
+            "beta_prior_precision": {
+                str(key): float(value)
+                for key, value in self.beta_prior_precision.items()
+            },
+            "beta_prior_reference_mean": {
+                str(key): float(value)
+                for key, value in self.beta_prior_reference_mean.items()
+            },
+            "beta_prior_upper_scale": {
+                str(key): float(value)
+                for key, value in self.beta_prior_upper_scale.items()
             },
             "has_mean_prior": {
                 str(key): value is not None
@@ -1430,6 +2881,80 @@ class LearnedMetaPrior:
                 if self.spectral_basis is None
                 else self.spectral_basis.diagnostics()
             ),
+            "stage1_spectral_basis": (
+                None
+                if self.stage1_spectral_basis is None
+                else self.stage1_spectral_basis.diagnostics()
+            ),
+            "spectral_coefficient_shrinkage": bool(
+                self.spectral_coefficient_shrinkage),
+            "spectral_adaptive_sparsity": bool(
+                self.spectral_adaptive_sparsity),
+            "spectral_frequency_adaptation": bool(
+                self.spectral_frequency_adaptation),
+            "spectral_frequency": dict(
+                self.spectral_frequency_diagnostics),
+            "spectral_risk_alignment": bool(
+                self.spectral_risk_alignment),
+            "risk_alignment": dict(self.risk_alignment_diagnostics),
+            "alignment_episode_admission": dict(
+                self.alignment_episode_diagnostics),
+            "spectral_alignment_source_episodes": int(
+                self.spectral_alignment_source_episodes),
+            "spectral_alignment_admission": bool(
+                self.spectral_alignment_admission),
+            "spectral_alignment_latent_proposals": bool(
+                self.spectral_alignment_latent_proposals),
+            "spectral_alignment_inverse_pool_size": int(
+                self.spectral_alignment_inverse_pool_size),
+            "spectral_alignment_refit_interval": int(
+                self.spectral_alignment_refit_interval),
+            "spectral_frequency_refit_interval": int(
+                self.spectral_frequency_refit_interval),
+            "spectral_additive_adaptation": bool(
+                self.spectral_additive_adaptation),
+            "spectral_additive": dict(
+                self.spectral_additive_diagnostics),
+            "spectral_additive_refit_interval": int(
+                self.spectral_additive_refit_interval),
+            "spectral_additive_max_saturation_fraction": float(
+                self.spectral_additive_max_saturation_fraction),
+            "spectral_feature_dim": int(self.spectral_feature_dim),
+            "spectral_always_active_count": int(
+                self.spectral_always_active_count),
+            "spectral_adaptive_config": {
+                "min_pip": float(self.spectral_adaptive_min_pip),
+                "max_pip": float(self.spectral_adaptive_max_pip),
+                "spike_ratio": float(self.spectral_adaptive_spike_ratio),
+                "damping": float(self.spectral_adaptive_damping),
+                "max_iter": int(self.spectral_adaptive_max_iter),
+                "tolerance": float(self.spectral_adaptive_tolerance),
+                "residual_floor_scale": float(
+                    self.spectral_adaptive_residual_floor_scale),
+                "pilot_gate_tolerance": float(
+                    self.spectral_adaptive_gate_tolerance),
+                "multiplicity_correction": float(
+                    self.spectral_adaptive_multiplicity_correction),
+                "max_effective_fraction": float(
+                    self.spectral_adaptive_max_effective_fraction),
+                "saturation_fraction": float(
+                    self.spectral_adaptive_saturation_fraction),
+            },
+            "spectral_adaptive_calibration": dict(
+                self.spectral_adaptive_calibration),
+            "spectral_coefficient_prior": {
+                str(output_index): {
+                    key: (
+                        value.tolist()
+                        if isinstance(value, np.ndarray)
+                        else list(value)
+                        if isinstance(value, tuple)
+                        else value
+                    )
+                    for key, value in prior.items()
+                }
+                for output_index, prior in self.spectral_coefficient_prior.items()
+            },
             "coordinate": dict(self.coordinate_diagnostics),
             "training": dict(self.training_diagnostics),
         }
@@ -1450,14 +2975,14 @@ class MetaPriorSurrogateBasis:
             + meta_prior.shared_dim
         )
         self.feature_dim = (
-            int(meta_prior.spectral_basis.feature_dim)
+            int(meta_prior.stage1_spectral_basis.feature_dim)
             if meta_prior.component_enabled("spectral")
             else descriptor_dim + 2 * psi_dim + cumulative_dim - 1
         )
 
     def features(self, x):
         if self.meta_prior.component_enabled("spectral"):
-            return self.meta_prior.spectral_features(self.problem, x)
+            return self.meta_prior.stage1_spectral_features(self.problem, x)
         return self.meta_prior.coordinate_basis_features(self.problem, x)
 
     def features_many(self, X):
@@ -1496,25 +3021,289 @@ class PilotGatedMetaPriorBasis:
             + meta_prior.shared_dim * (meta_prior.shared_dim + 1) // 2
             + meta_prior.shared_dim
         )
+        frequency_dim = max(
+            (
+                int(entry["basis"].feature_dim)
+                for entry in meta_prior.spectral_frequency_bank
+            ),
+            default=0,
+        )
+        aligned_frequency_dim = max(
+            (
+                int(entry["basis"].feature_dim)
+                for entry in meta_prior.risk_aligned_frequency_bank
+            ),
+            default=0,
+        )
+        coordinate_dim = descriptor_dim + 2 * psi_dim + cumulative_dim - 1
+        additive_dim = (
+            max(
+                coordinate_dim,
+                int(meta_prior.stage1_spectral_basis.feature_dim),
+            )
+            + int(meta_prior.spectral_additive_bank.feature_dim)
+            if meta_prior.spectral_additive_bank is not None
+            else 0
+        )
+        aligned_additive_dim = (
+            max(
+                coordinate_dim,
+                int(meta_prior.risk_aligned_spectral_basis.feature_dim),
+            ) + int(meta_prior.risk_aligned_additive_bank.feature_dim)
+            if meta_prior.risk_aligned_additive_bank is not None
+            and meta_prior.risk_aligned_spectral_basis is not None
+            else 0
+        )
+        aligned_dim = (
+            int(meta_prior.risk_aligned_spectral_basis.feature_dim)
+            if meta_prior.risk_aligned_spectral_basis is not None
+            else 0
+        )
+        aligned_coordinate_dim = (
+            int(meta_prior.risk_subspace_alignment.feature_dim)
+            if meta_prior.risk_subspace_alignment is not None
+            else 0
+        )
         self.feature_dim = max(
-            descriptor_dim + 2 * psi_dim + cumulative_dim - 1,
+            coordinate_dim,
             self.identity_dim,
-            int(meta_prior.spectral_basis.feature_dim),
+            int(meta_prior.spectral_feature_dim),
+            int(meta_prior.stage1_spectral_basis.feature_dim),
+            frequency_dim,
+            aligned_frequency_dim,
+            additive_dim,
+            aligned_additive_dim,
+            aligned_dim,
+            aligned_coordinate_dim,
         )
         self.selected_basis = "coordinate"
+        self.selected_parametric_ridge = 0.0
         self.gate_diagnostics = {
             "status": "unfit",
             "selected_basis": self.selected_basis,
             "output_index": self.output_index,
         }
+        self._adaptive_sparsity_diagnostics = {"status": "not_requested"}
+        self._adaptive_gate_posterior_diagnostics = {"status": "not_fit"}
+        self._adaptive_loo_support_diagnostics = {"status": "not_fit"}
+        self._adaptive_allowed_mask = None
+        self._frequency_gate_diagnostics = {"status": "not_requested"}
+        self._last_frequency_refit_n = 0
+        self._risk_alignment_gate_diagnostics = {"status": "not_requested"}
+        self._target_risk_alignment = None
+        self._nested_alignment_fold_cache = None
+        self._last_alignment_refit_n = 0
+        self._locked_alignment_stage1_basis = None
+        self._locked_alignment_stage1_guard = None
+        self._additive_gate_diagnostics = {"status": "not_requested"}
+        self._additive_base_basis = "source_spectral"
+        self._additive_bank_kind = "raw"
+        self._locked_additive_base_basis = None
+        self.selected_additive_groups = []
+        self._last_additive_refit_n = 0
+        self._additive_refit_count = 0
 
     def _variant_features(self, x, variant):
+        return self._variant_features_with_alignment(
+            x, variant, self._target_risk_alignment)
+
+    def _variant_features_with_alignment(self, x, variant, alignment):
         if variant == "coordinate":
             return self.meta_prior.coordinate_basis_features(self.problem, x)
         if variant == "source_spectral":
+            return self.meta_prior.stage1_spectral_features(self.problem, x)
+        if variant == "adaptive_spectral":
             return self.meta_prior.spectral_features(self.problem, x)
+        if variant.startswith("frequency_band_"):
+            return self.meta_prior.spectral_frequency_features(
+                self.problem,
+                x,
+                int(variant.rsplit("_", 1)[1]),
+            )
+        if variant.startswith("aligned_frequency_band_"):
+            return self.meta_prior.risk_aligned_frequency_features(
+                self.problem,
+                x,
+                int(variant.rsplit("_", 1)[1]),
+                adapter=alignment,
+            )
+        if variant == "risk_aligned_spectral":
+            return self.meta_prior.risk_aligned_spectral_features(
+                self.problem,
+                x,
+                adapter=alignment,
+            )
+        if variant == "risk_aligned_coordinate":
+            return self.meta_prior.risk_aligned_coordinate(
+                self.problem,
+                x,
+                adapter=alignment,
+            )
+        if variant == "frozen_risk_aligned_coordinate":
+            return self.meta_prior.frozen_risk_aligned_coordinate(
+                self.problem, x)
+        if variant == "source_additive":
+            base = self._variant_features(x, self._additive_base_basis)
+            bank = self._selected_additive_bank()
+            extra = np.zeros(bank.feature_dim, dtype=float)
+            if self.selected_additive_groups:
+                extra[self.selected_additive_groups] = self._additive_features(
+                    x, self.selected_additive_groups)
+            return np.concatenate([base, extra])
         psi = self.meta_prior.risk_coordinate(self.problem, x)
         return np.asarray(psi[: self.identity_dim], dtype=float)
+
+    @staticmethod
+    def _uses_target_alignment(variant):
+        return bool(
+            str(variant).startswith("risk_aligned_")
+            or str(variant).startswith("aligned_frequency_band_")
+        )
+
+    def _nested_alignment_loo_predictions(
+        self,
+        xs,
+        observations,
+        target,
+        variant,
+        ridge=None,
+    ):
+        """LOO predictions with the target alignment refit inside each fold.
+
+        Fitting the alignment once on the full pilot and only cross-validating
+        the downstream ridge leaks the held-out constraint through the learned
+        feature direction.  This nested version keeps the complete
+        representation-learning pipeline honest.
+        """
+        target = np.asarray(target, dtype=float).reshape(-1)
+        predictions = []
+        fold_diagnostics = []
+        if self._nested_alignment_fold_cache is None:
+            cache = []
+            for heldout in range(len(xs)):
+                train_indices = [i for i in range(len(xs)) if i != heldout]
+                train_observations = {
+                    xs[i]: observations[xs[i]] for i in train_indices
+                }
+                alignment = self.meta_prior.fit_target_risk_alignment(
+                    self.problem, train_observations)
+                cache.append((train_indices, alignment))
+            self._nested_alignment_fold_cache = cache
+        for heldout, (train_indices, alignment) in enumerate(
+            self._nested_alignment_fold_cache
+        ):
+            train_features = np.vstack([
+                self._variant_features_with_alignment(
+                    xs[i], variant, alignment)
+                for i in train_indices
+            ])
+            test_features = np.asarray(
+                self._variant_features_with_alignment(
+                    xs[heldout], variant, alignment),
+                dtype=float,
+            ).reshape(1, -1)
+            prediction = self._ridge_predict(
+                train_features,
+                target[train_indices],
+                test_features,
+                ridge=ridge,
+            )[0]
+            predictions.append(float(prediction))
+            fold_diagnostics.append({
+                "heldout": int(heldout),
+                "alignment_accepted": bool(
+                    alignment is not None and alignment.accepted),
+                "alignment_status": (
+                    alignment.diagnostics.get("status", "unknown")
+                    if alignment is not None else "missing"
+                ),
+                "boundary_axis_status": (
+                    alignment.diagnostics.get("boundary_axis", {}).get(
+                        "status", "missing")
+                    if alignment is not None else "missing"
+                ),
+            })
+        accepted_rate = float(np.mean([
+            row["alignment_accepted"] for row in fold_diagnostics
+        ])) if fold_diagnostics else 0.0
+        return np.asarray(predictions, dtype=float), {
+            "method": "nested_alignment_loo",
+            "n_folds": int(len(fold_diagnostics)),
+            "adapter_cache_reused_across_variants": True,
+            "alignment_accepted_rate": accepted_rate,
+            "folds": fold_diagnostics,
+            "target_oracle_used": False,
+        }
+
+    def _nested_aligned_additive_loo_predictions(
+        self,
+        xs,
+        observations,
+        target,
+        base_variant,
+        groups,
+    ):
+        if self._nested_alignment_fold_cache is None:
+            self._nested_alignment_loo_predictions(
+                xs,
+                observations,
+                target,
+                "risk_aligned_coordinate",
+            )
+        bank = self.meta_prior.risk_aligned_additive_bank
+        predictions = []
+        for heldout, (train_indices, alignment) in enumerate(
+            self._nested_alignment_fold_cache
+        ):
+            def features(index):
+                x = xs[index]
+                base = np.asarray(
+                    self._variant_features_with_alignment(
+                        x, base_variant, alignment),
+                    dtype=float,
+                ).reshape(-1)
+                coordinate = (
+                    self.meta_prior.risk_aligned_full_coordinate_from_descriptor(
+                        self.meta_prior.descriptor(self.problem, x),
+                        adapter=alignment,
+                    )
+                )
+                extra = bank.transform_groups(coordinate, groups)
+                return np.concatenate([base, extra])
+
+            train_features = np.vstack([
+                features(index) for index in train_indices
+            ])
+            test_features = features(heldout).reshape(1, -1)
+            predictions.append(float(self._ridge_predict(
+                train_features,
+                np.asarray(target, dtype=float)[train_indices],
+                test_features,
+                ridge=self.ridge,
+            )[0]))
+        return np.asarray(predictions, dtype=float)
+
+    def _selected_additive_bank(self):
+        if self._additive_bank_kind == "aligned":
+            return self.meta_prior.risk_aligned_additive_bank
+        return self.meta_prior.spectral_additive_bank
+
+    def _additive_features(self, x, indices):
+        if self._additive_bank_kind == "aligned":
+            return self.meta_prior.risk_aligned_additive_features(
+                self.problem,
+                x,
+                indices,
+                adapter=self._target_risk_alignment,
+            )
+        return self.meta_prior.spectral_additive_features(
+            self.problem, x, indices)
+
+    def _additive_coordinate(self, x):
+        if self._additive_bank_kind == "aligned":
+            return self.meta_prior.risk_aligned_coordinate(
+                self.problem, x, adapter=self._target_risk_alignment)
+        return self.meta_prior.risk_coordinate(self.problem, x)
 
     def features(self, x):
         values = np.asarray(
@@ -1530,6 +3319,13 @@ class PilotGatedMetaPriorBasis:
 
     def fit_from_observations(self, observations, output_index=None):
         output_index = self.output_index if output_index is None else int(output_index)
+        self._adaptive_allowed_mask = None
+        self._nested_alignment_fold_cache = None
+        self.selected_parametric_ridge = 0.0
+        self._frequency_gate_diagnostics = {"status": "not_requested"}
+        self._risk_alignment_gate_diagnostics = {"status": "not_requested"}
+        self._additive_gate_diagnostics = {"status": "not_requested"}
+        self.selected_additive_groups = []
         xs = list(observations)
         if len(xs) < 5:
             self.gate_diagnostics = {
@@ -1539,6 +3335,18 @@ class PilotGatedMetaPriorBasis:
                 "n_observations": int(len(xs)),
             }
             return self.selected_basis
+        if (
+            self.meta_prior.spectral_risk_alignment
+            and self.meta_prior.spectral_alignment_admission
+        ):
+            self._target_risk_alignment = (
+                self.meta_prior.fit_target_risk_alignment(
+                    self.problem, observations)
+            )
+            self._risk_alignment_gate_diagnostics = dict(
+                self._target_risk_alignment.diagnostics)
+            self._last_alignment_refit_n = int(len(xs))
+        self._last_additive_refit_n = int(len(xs))
         observed = np.vstack([
             np.mean(np.asarray(observations[x], dtype=float), axis=0)
             for x in xs
@@ -1547,12 +3355,45 @@ class PilotGatedMetaPriorBasis:
         scores = {}
         nmse_scores = {}
         component_scores = {}
-        for variant in ("coordinate", "fixed_psi", "source_spectral"):
+        predictions = {}
+        decision_predictions = {}
+        nested_alignment_diagnostics = {}
+        base_variants = ["coordinate", "fixed_psi", "source_spectral"]
+        if (
+            output_index == 1
+            and self.meta_prior.spectral_risk_alignment
+            and self.meta_prior.spectral_alignment_admission
+        ):
+            base_variants.extend([
+                "frozen_risk_aligned_coordinate",
+                "risk_aligned_coordinate",
+                "risk_aligned_spectral",
+            ])
+        for variant in base_variants:
             matrix = np.vstack([self._variant_features(x, variant) for x in xs])
-            prediction = self._ridge_loo_predictions(matrix, target)
+            if self._uses_target_alignment(variant):
+                prediction, nested_diag = (
+                    self._nested_alignment_loo_predictions(
+                        xs,
+                        observations,
+                        target,
+                        variant,
+                    )
+                )
+                nested_alignment_diagnostics[variant] = nested_diag
+            else:
+                prediction = self._ridge_loo_predictions(matrix, target)
             nmse_scores[variant] = self._normalized_mse(target, prediction)
+            decision_prediction = np.asarray(prediction, dtype=float)
+            if (
+                output_index == 1
+                and variant == "frozen_risk_aligned_coordinate"
+            ):
+                decision_prediction = (
+                    decision_prediction + self._risk_alignment_source_guard())
             if output_index == 1:
-                components = self._constraint_decision_score(target, prediction)
+                components = self._constraint_decision_score(
+                    target, decision_prediction)
             else:
                 components = self._objective_decision_score(
                     target,
@@ -1561,16 +3402,18 @@ class PilotGatedMetaPriorBasis:
                 )
             component_scores[variant] = components
             scores[variant] = float(components["total"])
-        # Stage 1 is an incremental learned-prior ablation: it may replace the
-        # Stage-0 coordinate basis only when target pilot evidence supports the
-        # frozen source-spectral basis.  The compact fixed-psi model remains an
-        # audit diagnostic, but is not a behavior-changing fallback.
-        eligible = (
-            ("coordinate", "source_spectral")
-            if output_index == 1
-            else ("coordinate",)
-        )
-        tie_order = {"coordinate": 0, "source_spectral": 1}
+            predictions[variant] = prediction
+            decision_predictions[variant] = decision_prediction
+        # Reproduce the promoted Stage-1 gate first.  The expanded adaptive
+        # dictionary is a challenger; rejecting it must return exactly this
+        # coordinate-or-2D-spectral decision.
+        eligible = ["coordinate"]
+        if output_index == 1:
+            eligible.append("source_spectral")
+        tie_order = {
+            "coordinate": 0,
+            "source_spectral": 1,
+        }
         selected = min(
             eligible, key=lambda name: (scores[name], tie_order[name]))
         baseline_score = float(scores["coordinate"])
@@ -1581,7 +3424,7 @@ class PilotGatedMetaPriorBasis:
             and float(scores[selected]) >= baseline_score - tolerance
         ):
             selected = "coordinate"
-        if output_index == 1 and selected == "source_spectral":
+        if output_index == 1 and selected != "coordinate":
             baseline_components = component_scores["coordinate"]
             selected_components = component_scores[selected]
             raw_false_feasible_worse = (
@@ -1597,6 +3440,614 @@ class PilotGatedMetaPriorBasis:
                 or selected_components["dangerous_underprediction"] > dangerous_limit
             ):
                 selected = "coordinate"
+        current_stage1_selected = selected
+        if output_index == 1 and self.meta_prior.spectral_risk_alignment:
+            if self._locked_alignment_stage1_basis is None:
+                self._locked_alignment_stage1_basis = current_stage1_selected
+                self._locked_alignment_stage1_guard = float(
+                    component_scores[current_stage1_selected][
+                        "calibration_guard"])
+            stage1_selected = str(self._locked_alignment_stage1_basis)
+            selected = stage1_selected
+        else:
+            stage1_selected = current_stage1_selected
+        if (
+            output_index == 1
+            and self.meta_prior.spectral_risk_alignment
+            and self.meta_prior.spectral_alignment_admission
+        ):
+            alignment_truth_margin = self._chance_margin(target)
+            alignment_boundary_support = {
+                "n_feasible": int(np.sum(alignment_truth_margin <= 0.0)),
+                "n_infeasible": int(np.sum(alignment_truth_margin > 0.0)),
+                "min_margin": float(np.min(alignment_truth_margin)),
+                "max_margin": float(np.max(alignment_truth_margin)),
+            }
+            source_episode_prior = self.meta_prior.alignment_episode_prior
+            source_episode_prior_fit = bool(
+                source_episode_prior is not None
+                and source_episode_prior.diagnostics().get("status") == "fit"
+            )
+            alignment_variants = (
+                ("frozen_risk_aligned_coordinate",)
+                if source_episode_prior_fit
+                else ("risk_aligned_coordinate", "risk_aligned_spectral")
+            )
+            challenger = min(
+                alignment_variants,
+                key=lambda name: (scores[name], name),
+            )
+            alignment_reasons = []
+            if (
+                self._target_risk_alignment is None
+                or not self._target_risk_alignment.accepted
+            ) and challenger != "frozen_risk_aligned_coordinate":
+                alignment_reasons.append("target_alignment_not_accepted")
+            if (
+                alignment_boundary_support["n_feasible"] == 0
+                or alignment_boundary_support["n_infeasible"] == 0
+            ):
+                alignment_reasons.append("one_sided_boundary_support")
+            current_components = component_scores[stage1_selected]
+            challenger_components = component_scores[challenger]
+            if scores[challenger] >= scores[stage1_selected] - tolerance:
+                alignment_reasons.append("insufficient_decision_gain")
+            if (
+                challenger_components["raw_false_feasible_rate"]
+                > current_components["raw_false_feasible_rate"] + 0.05
+            ):
+                alignment_reasons.append("raw_false_feasible_worse")
+            dangerous_limit = max(
+                1.25 * current_components["dangerous_underprediction"],
+                current_components["dangerous_underprediction"] + 0.05,
+            )
+            if (
+                challenger_components["dangerous_underprediction"]
+                > dangerous_limit
+            ):
+                alignment_reasons.append("dangerous_underprediction")
+            stability = self._subsample_decision_stability(
+                target,
+                decision_predictions[stage1_selected],
+                decision_predictions[challenger],
+            )
+            if (
+                stability["win_rate"] < (2.0 / 3.0)
+                or stability["median_gain"] <= 0.0
+            ):
+                alignment_reasons.append("unstable_decision_gain")
+            source_episode_admission = {"status": "not_requested"}
+            if source_episode_prior_fit:
+                source_decision = source_episode_prior.admit(
+                    alignment_truth_margin,
+                    self._chance_margin(decision_predictions[stage1_selected]),
+                    self._chance_margin(decision_predictions[challenger]),
+                )
+                source_episode_admission = dict(source_decision.diagnostics)
+                if source_decision.accepted:
+                    # Source episodes provide the held-out gain evidence that
+                    # a tiny target LOO estimate cannot.  They may replace
+                    # gain/stability objections, but never target safety
+                    # objections such as one-sided support, false feasibility,
+                    # or dangerous underprediction.
+                    alignment_reasons = [
+                        reason for reason in alignment_reasons
+                        if reason not in {
+                            "insufficient_decision_gain",
+                            "unstable_decision_gain",
+                        }
+                    ]
+                    source_episode_admission[
+                        "overrides_target_gain_only"
+                    ] = True
+                else:
+                    alignment_reasons.append(
+                        "source_episode_admission_rejected")
+            if not alignment_reasons:
+                selected = challenger
+            self._risk_alignment_gate_diagnostics = {
+                **self._risk_alignment_gate_diagnostics,
+                "challenger_variant": challenger,
+                "selected_variant": selected,
+                "stage1_selected_basis": stage1_selected,
+                "current_stage1_challenger": current_stage1_selected,
+                "stage1_basis_locked": True,
+                "rejection_reasons": alignment_reasons,
+                "stability": stability,
+                "boundary_support": alignment_boundary_support,
+                "source_episode_admission": source_episode_admission,
+                "nested_loo": nested_alignment_diagnostics,
+                "target_data_used": True,
+                "target_oracle_used": False,
+            }
+        if output_index == 1 and self.meta_prior.spectral_additive_adaptation:
+            if self._locked_additive_base_basis is None:
+                self._locked_additive_base_basis = selected
+            selected = self._locked_additive_base_basis
+        spectral_score_model = (
+            "boundary_aligned_projector_plus_target_gate"
+            if (
+                str(selected).startswith("risk_aligned_")
+                or selected == "frozen_risk_aligned_coordinate"
+            )
+            else "stage1_dense_ridge"
+        )
+        frequency_variants = []
+        if output_index == 1 and self.meta_prior.spectral_frequency_adaptation:
+            self._last_frequency_refit_n = int(len(xs))
+            frequency_baseline_selected = selected
+            source_adjusted = {}
+            entry_by_variant = {}
+            frequency_entries = list(
+                self.meta_prior.spectral_frequency_bank
+            ) + list(self.meta_prior.risk_aligned_frequency_bank)
+            for entry in frequency_entries:
+                variant = entry["variant"]
+                entry_by_variant[variant] = entry
+                frequency_variants.append(variant)
+                if entry["is_stage1_baseline"]:
+                    base_variant = entry.get(
+                        "base_variant", "source_spectral")
+                    components = component_scores[base_variant]
+                    raw_score = float(scores[base_variant])
+                    nmse = float(nmse_scores[base_variant])
+                else:
+                    matrix = np.vstack([
+                        self._variant_features(x, variant) for x in xs
+                    ])
+                    if self._uses_target_alignment(variant):
+                        prediction, nested_diag = (
+                            self._nested_alignment_loo_predictions(
+                                xs,
+                                observations,
+                                target,
+                                variant,
+                                ridge=entry["ridge"],
+                            )
+                        )
+                        self._risk_alignment_gate_diagnostics.setdefault(
+                            "nested_loo", {})[variant] = nested_diag
+                    else:
+                        prediction = self._ridge_loo_predictions(
+                            matrix,
+                            target,
+                            ridge=entry["ridge"],
+                        )
+                    components = self._constraint_decision_score(
+                        target, prediction)
+                    raw_score = float(components["total"])
+                    nmse = self._normalized_mse(target, prediction)
+                    component_scores[variant] = components
+                    scores[variant] = raw_score
+                    nmse_scores[variant] = float(nmse)
+                    predictions[variant] = prediction
+                source_adjusted[variant] = raw_score + (
+                    self.meta_prior.spectral_frequency_source_penalty
+                    * -np.log(max(float(entry["source_weight"]), 1e-12))
+                )
+            best_variant = min(
+                frequency_variants,
+                key=lambda name: (source_adjusted[name], name),
+            )
+            best_entry = entry_by_variant[best_variant]
+            baseline_entry = next(
+                entry for entry in frequency_entries
+                if entry["is_stage1_baseline"]
+                and entry.get("base_variant", "source_spectral")
+                == best_entry.get("base_variant", "source_spectral")
+            )
+            baseline_variant = baseline_entry["variant"]
+            frequency_reasons = []
+            stage1_components = component_scores[frequency_baseline_selected]
+            challenger_components = (
+                component_scores[best_entry.get(
+                    "base_variant", "source_spectral")]
+                if best_entry["is_stage1_baseline"]
+                else component_scores[best_variant]
+            )
+            challenger_score = (
+                float(scores[best_entry.get(
+                    "base_variant", "source_spectral")])
+                if best_entry["is_stage1_baseline"]
+                else float(scores[best_variant])
+            )
+            frequency_tolerance = (
+                self.meta_prior.spectral_gate_selection_tolerance
+                * max(abs(float(scores[frequency_baseline_selected])), 1.0)
+            )
+            if best_entry["is_stage1_baseline"]:
+                frequency_reasons.append("stage1_is_best_band")
+            if challenger_score >= (
+                float(scores[frequency_baseline_selected]) - frequency_tolerance
+            ):
+                frequency_reasons.append("insufficient_decision_gain")
+            if source_adjusted[best_variant] >= (
+                source_adjusted[baseline_variant] - frequency_tolerance
+            ):
+                frequency_reasons.append("insufficient_source_adjusted_gain")
+            if (
+                challenger_components["raw_false_feasible_rate"]
+                > stage1_components["raw_false_feasible_rate"] + 0.05
+            ):
+                frequency_reasons.append("raw_false_feasible_worse")
+            dangerous_limit = max(
+                1.25 * stage1_components["dangerous_underprediction"],
+                stage1_components["dangerous_underprediction"] + 0.05,
+            )
+            if (
+                challenger_components["dangerous_underprediction"]
+                > dangerous_limit
+            ):
+                frequency_reasons.append("dangerous_underprediction")
+            baseline_prediction = predictions[frequency_baseline_selected]
+            challenger_prediction = (
+                predictions[best_entry.get(
+                    "base_variant", "source_spectral")]
+                if best_entry["is_stage1_baseline"]
+                else predictions[best_variant]
+            )
+            stability = self._subsample_decision_stability(
+                target,
+                baseline_prediction,
+                challenger_prediction,
+            )
+            if (
+                stability["win_rate"] < (2.0 / 3.0)
+                or stability["median_gain"] <= 0.0
+            ):
+                frequency_reasons.append("unstable_decision_gain")
+            truth_margin = self._chance_margin(target)
+            boundary_support = {
+                "n_feasible": int(np.sum(truth_margin <= 0.0)),
+                "n_infeasible": int(np.sum(truth_margin > 0.0)),
+                "min_margin": float(np.min(truth_margin)),
+                "max_margin": float(np.max(truth_margin)),
+            }
+            # A target-selected pass band is not identifiable when the pilot
+            # only sees one side of the chance boundary.  The frozen source
+            # basis remains available as the exact Stage-1 fallback and this
+            # gate is reconsidered after more target observations arrive.
+            if (
+                boundary_support["n_feasible"] == 0
+                or boundary_support["n_infeasible"] == 0
+            ):
+                frequency_reasons.append("one_sided_boundary_support")
+            family_entries = [
+                entry for entry in frequency_entries
+                if entry.get("base_variant", "source_spectral")
+                == best_entry.get("base_variant", "source_spectral")
+            ]
+            minimum_source_weight = 0.9 / max(len(family_entries), 1)
+            if float(best_entry["source_weight"]) < minimum_source_weight:
+                frequency_reasons.append("weak_source_domain_support")
+            if (
+                self._uses_target_alignment(best_variant)
+                and (
+                    self._target_risk_alignment is None
+                    or not self._target_risk_alignment.accepted
+                )
+            ):
+                frequency_reasons.append("target_alignment_not_accepted")
+            if not frequency_reasons:
+                selected = best_variant
+                self.selected_parametric_ridge = float(best_entry["ridge"])
+                spectral_score_model = "source_band_hyperprior_plus_target_gate"
+            self._frequency_gate_diagnostics = {
+                "status": "selected" if not frequency_reasons else "fallback_stage1",
+                "selected_variant": (
+                    best_variant
+                    if not frequency_reasons else frequency_baseline_selected
+                ),
+                "challenger_variant": best_variant,
+                "stage1_selected_basis": stage1_selected,
+                "frequency_baseline_basis": frequency_baseline_selected,
+                "rejection_reasons": frequency_reasons,
+                "source_adjusted_score": {
+                    name: float(value) for name, value in source_adjusted.items()
+                },
+                "selected_cutoff": (
+                    int(best_entry["cutoff"]) if not frequency_reasons else None
+                ),
+                "selected_ridge": (
+                    float(best_entry["ridge"]) if not frequency_reasons else 0.0
+                ),
+                "selected_family": best_entry.get(
+                    "base_variant", "source_spectral"),
+                "source_weight": float(best_entry["source_weight"]),
+                "minimum_source_weight": float(minimum_source_weight),
+                "stability": stability,
+                "boundary_support": boundary_support,
+                "target_data_used": True,
+                "target_oracle_used": False,
+            }
+        if output_index == 1 and self.meta_prior.spectral_additive_adaptation:
+            self._additive_refit_count += 1
+            additive_baseline = selected
+            self._additive_bank_kind = (
+                "aligned"
+                if additive_baseline == "risk_aligned_spectral"
+                and self.meta_prior.risk_aligned_additive_bank is not None
+                else "raw"
+            )
+            bank = self._selected_additive_bank()
+            self._additive_base_basis = additive_baseline
+            base_matrix = np.vstack([
+                self._variant_features(x, additive_baseline) for x in xs
+            ])
+            selected_groups = []
+            current_components = component_scores[additive_baseline]
+            current_score = float(scores[additive_baseline])
+            current_adjusted = current_score
+            current_prediction = (
+                predictions[additive_baseline]
+                if self._additive_bank_kind == "aligned"
+                and additive_baseline in predictions
+                else self._ridge_loo_predictions(
+                    base_matrix, target, ridge=self.ridge)
+            )
+            selection_trace = []
+            maximum = min(
+                int(self.meta_prior.spectral_additive_target_max_groups),
+                int(bank.feature_dim),
+            )
+            for step in range(maximum):
+                candidates = []
+                for group_index in range(bank.feature_dim):
+                    if group_index in selected_groups:
+                        continue
+                    trial_groups = selected_groups + [group_index]
+                    extra = np.vstack([
+                        self._additive_features(
+                            x, trial_groups)
+                        for x in xs
+                    ])
+                    matrix = np.hstack([base_matrix, extra])
+                    prediction = (
+                        self._nested_aligned_additive_loo_predictions(
+                            xs,
+                            observations,
+                            target,
+                            additive_baseline,
+                            trial_groups,
+                        )
+                        if self._additive_bank_kind == "aligned"
+                        else self._ridge_loo_predictions(
+                            matrix, target, ridge=self.ridge)
+                    )
+                    components = self._constraint_decision_score(
+                        target, prediction)
+                    raw_score = float(components["total"])
+                    prior_cost = self.meta_prior.spectral_additive_source_penalty * sum(
+                        -np.log(max(bank.source_weight(index), 1e-12))
+                        for index in trial_groups
+                    )
+                    complexity_cost = (
+                        self.meta_prior.spectral_additive_complexity_penalty
+                        * len(trial_groups)
+                        * np.log(max(len(xs), 2))
+                        / max(len(xs), 1)
+                    )
+                    saturation_fraction = float(np.mean([
+                        bank.support_saturation(
+                            self._additive_coordinate(x),
+                            group_index,
+                        )
+                        for x in xs
+                    ]))
+                    adjusted = raw_score + prior_cost + complexity_cost
+                    candidates.append({
+                        "group_index": int(group_index),
+                        "trial_groups": list(trial_groups),
+                        "prediction": prediction,
+                        "components": components,
+                        "raw_score": raw_score,
+                        "adjusted_score": float(adjusted),
+                        "prior_cost": float(prior_cost),
+                        "complexity_cost": float(complexity_cost),
+                        "saturation_fraction": saturation_fraction,
+                    })
+                if not candidates:
+                    break
+                challenger = min(
+                    candidates,
+                    key=lambda item: (
+                        item["adjusted_score"], item["group_index"]),
+                )
+                tolerance = (
+                    self.meta_prior.spectral_gate_selection_tolerance
+                    * max(abs(current_score), 1.0)
+                )
+                rejection_reasons = []
+                if challenger["raw_score"] >= current_score - tolerance:
+                    rejection_reasons.append("insufficient_decision_gain")
+                if challenger["adjusted_score"] >= current_adjusted - tolerance:
+                    rejection_reasons.append("insufficient_penalized_gain")
+                if (
+                    challenger["components"]["raw_false_feasible_rate"]
+                    > current_components["raw_false_feasible_rate"] + 0.05
+                ):
+                    rejection_reasons.append("raw_false_feasible_worse")
+                dangerous_limit = max(
+                    1.25 * current_components["dangerous_underprediction"],
+                    current_components["dangerous_underprediction"] + 0.05,
+                )
+                if (
+                    challenger["components"]["dangerous_underprediction"]
+                    > dangerous_limit
+                ):
+                    rejection_reasons.append("dangerous_underprediction")
+                if (
+                    challenger["saturation_fraction"]
+                    > self.meta_prior.spectral_additive_max_saturation_fraction
+                ):
+                    rejection_reasons.append("outside_source_support")
+                minimum_source_weight = 0.9 / max(int(bank.feature_dim), 1)
+                if (
+                    bank.source_weight(challenger["group_index"])
+                    < minimum_source_weight
+                ):
+                    rejection_reasons.append("weak_source_domain_support")
+                stability = self._subsample_decision_stability(
+                    target,
+                    current_prediction,
+                    challenger["prediction"],
+                )
+                if (
+                    stability["win_rate"] < (2.0 / 3.0)
+                    or stability["median_gain"] <= 0.0
+                ):
+                    rejection_reasons.append("unstable_decision_gain")
+                group_index = int(challenger["group_index"])
+                selection_trace.append({
+                    "step": int(step),
+                    "group_index": group_index,
+                    "group_name": bank.group_names_[group_index],
+                    "function_name": bank.function_names_[group_index],
+                    "source_weight": float(bank.source_weight(group_index)),
+                    "minimum_source_weight": float(minimum_source_weight),
+                    "raw_score": float(challenger["raw_score"]),
+                    "adjusted_score": float(challenger["adjusted_score"]),
+                    "prior_cost": float(challenger["prior_cost"]),
+                    "complexity_cost": float(challenger["complexity_cost"]),
+                    "saturation_fraction": float(
+                        challenger["saturation_fraction"]),
+                    "stability": stability,
+                    "rejection_reasons": list(rejection_reasons),
+                })
+                if rejection_reasons:
+                    break
+                selected_groups = list(challenger["trial_groups"])
+                current_components = challenger["components"]
+                current_score = float(challenger["raw_score"])
+                current_adjusted = float(challenger["adjusted_score"])
+                current_prediction = challenger["prediction"]
+            if selected_groups:
+                self.selected_additive_groups = selected_groups
+                selected = "source_additive"
+                self.selected_parametric_ridge = max(float(self.ridge), 0.0)
+                scores[selected] = float(current_score)
+                component_scores[selected] = current_components
+                nmse_scores[selected] = self._normalized_mse(
+                    target, current_prediction)
+                spectral_score_model = (
+                    "source_orthogonal_anova_prior_plus_target_forward_gate"
+                )
+            self._additive_gate_diagnostics = {
+                "status": "selected" if selected_groups else "fallback_stage1",
+                "selected_variant": (
+                    "source_additive" if selected_groups else additive_baseline
+                ),
+                "stage1_selected_basis": stage1_selected,
+                "additive_baseline_basis": additive_baseline,
+                "selected_group_indices": list(selected_groups),
+                "selected_group_names": [
+                    bank.group_names_[index] for index in selected_groups
+                ],
+                "selected_function_names": [
+                    bank.function_names_[index] for index in selected_groups
+                ],
+                "bank_kind": self._additive_bank_kind,
+                "strong_heredity": bool(
+                    getattr(bank, "strong_heredity", False)),
+                "selection_trace": selection_trace,
+                "target_data_used": True,
+                "target_oracle_used": False,
+            }
+        adaptive_rejection_reasons = []
+        if output_index == 1 and self.meta_prior.spectral_adaptive_sparsity:
+            spec = self._source_adaptive_sparsity_spec()
+            if spec is not None:
+                adaptive_matrix = np.vstack([
+                    self._variant_features(x, "adaptive_spectral") for x in xs
+                ])
+                adaptive_prediction = self._adaptive_loo_predictions(
+                    adaptive_matrix,
+                    target,
+                    xs,
+                    spec,
+                )
+                adaptive_components = self._constraint_decision_score(
+                    target, adaptive_prediction)
+                component_scores["adaptive_spectral"] = adaptive_components
+                scores["adaptive_spectral"] = float(adaptive_components["total"])
+                nmse_scores["adaptive_spectral"] = self._normalized_mse(
+                    target, adaptive_prediction)
+                self._adaptive_gate_posterior_diagnostics = (
+                    self._fit_adaptive_posterior(
+                        adaptive_matrix,
+                        target,
+                        xs,
+                        spec,
+                    ).diagnostics()
+                )
+                spectral_score_model = "stage1_plus_adaptive_challenger"
+                stage1_components = component_scores[stage1_selected]
+                stage1_score = float(scores[stage1_selected])
+                adaptive_tolerance = (
+                    self.meta_prior.spectral_gate_selection_tolerance
+                    * max(abs(stage1_score), 1.0)
+                )
+                if scores["adaptive_spectral"] >= stage1_score - adaptive_tolerance:
+                    adaptive_rejection_reasons.append("insufficient_decision_gain")
+                if (
+                    adaptive_components["raw_false_feasible_rate"]
+                    > stage1_components["raw_false_feasible_rate"] + 0.05
+                ):
+                    adaptive_rejection_reasons.append("raw_false_feasible_worse")
+                dangerous_limit = max(
+                    1.25 * stage1_components["dangerous_underprediction"],
+                    stage1_components["dangerous_underprediction"] + 0.05,
+                )
+                if adaptive_components["dangerous_underprediction"] > dangerous_limit:
+                    adaptive_rejection_reasons.append("dangerous_underprediction")
+                adaptive_diag = self._adaptive_gate_posterior_diagnostics
+                if int(adaptive_diag.get(
+                    "adaptive_active_count_0_5",
+                    adaptive_diag.get("active_count_0_5", 0),
+                )) < 1:
+                    adaptive_rejection_reasons.append(
+                        "no_identified_active_coefficient")
+                posterior_pip = np.asarray(
+                    adaptive_diag.get("posterior_pip", []), dtype=float)
+                always_active = int(spec.get("always_active_count", 0))
+                active_extra = np.where(
+                    posterior_pip[always_active:] >= 0.5
+                )[0]
+                inclusion_frequency = np.asarray(
+                    self._adaptive_loo_support_diagnostics.get(
+                        "adaptive_inclusion_frequency", []),
+                    dtype=float,
+                )
+                selected_frequency = (
+                    inclusion_frequency[active_extra]
+                    if len(inclusion_frequency) and len(active_extra)
+                    else np.asarray([], dtype=float)
+                )
+                min_selected_frequency = (
+                    float(np.min(selected_frequency))
+                    if len(selected_frequency) else 0.0
+                )
+                self._adaptive_loo_support_diagnostics[
+                    "full_support_min_frequency"
+                ] = min_selected_frequency
+                if len(active_extra) and min_selected_frequency < 0.60:
+                    adaptive_rejection_reasons.append(
+                        "unstable_adaptive_support")
+                effective = float(adaptive_diag.get("effective_dimension", 0.0))
+                maximum = max(float(
+                    adaptive_diag.get("max_effective_dimension", np.inf)), 1e-12)
+                if effective >= (
+                    self.meta_prior.spectral_adaptive_saturation_fraction * maximum
+                ):
+                    adaptive_rejection_reasons.append("cardinality_saturated")
+                if not adaptive_rejection_reasons:
+                    admitted = np.zeros(len(posterior_pip), dtype=bool)
+                    admitted[:always_active] = True
+                    admitted[always_active + active_extra] = True
+                    self._adaptive_allowed_mask = admitted
+                    selected = "adaptive_spectral"
+                else:
+                    self._adaptive_allowed_mask = None
         self.selected_basis = selected
         self.gate_diagnostics = {
             "status": "fit",
@@ -1604,33 +4055,539 @@ class PilotGatedMetaPriorBasis:
             "output_index": output_index,
             "n_observations": int(len(xs)),
             "selection_metric": "decision_aware_loo",
+            "spectral_score_model": spectral_score_model,
+            "stage1_selected_basis": stage1_selected,
+            "adaptive_rejection_reasons": adaptive_rejection_reasons,
+            "adaptive_pilot_posterior": dict(
+                self._adaptive_gate_posterior_diagnostics),
+            "adaptive_support_stability": dict(
+                self._adaptive_loo_support_diagnostics),
+            "frequency_adaptation": dict(self._frequency_gate_diagnostics),
+            "risk_alignment": dict(
+                self._risk_alignment_gate_diagnostics),
+            "additive_adaptation": dict(self._additive_gate_diagnostics),
             "gate_scope": "constraint_boundary_only",
             "decision_score": {name: float(value) for name, value in scores.items()},
             "decision_components": component_scores,
             "loo_nmse": {name: float(value) for name, value in nmse_scores.items()},
             "selection_tolerance": float(tolerance),
-            "eligible_bases": list(eligible),
-            "pilot_constraint_guard": (
-                float(component_scores[self.selected_basis]["calibration_guard"])
+            "eligible_bases": list(eligible) + (
+                ["adaptive_spectral"]
+                if output_index == 1 and self.meta_prior.spectral_adaptive_sparsity
+                else []
+            ) + (
+                [
+                    "frozen_risk_aligned_coordinate",
+                    "risk_aligned_coordinate",
+                    "risk_aligned_spectral",
+                ]
                 if output_index == 1
-                else 0.0
+                and self.meta_prior.spectral_risk_alignment
+                and self.meta_prior.spectral_alignment_admission
+                else []
+            ) + frequency_variants + (
+                ["source_additive"]
+                if output_index == 1
+                and self.meta_prior.spectral_additive_adaptation
+                else []
             ),
+            "selected_parametric_ridge": float(
+                self.selected_parametric_ridge),
+            "sequential_refit_count": int(self._additive_refit_count),
+            "pilot_constraint_guard": self._selected_certification_guard(
+                component_scores, output_index),
         }
         return self.selected_basis
 
+    def _selected_certification_guard(self, component_scores, output_index):
+        if int(output_index) != 1:
+            return 0.0
+        aligned = self.selected_basis in {
+            "frozen_risk_aligned_coordinate",
+            "risk_aligned_coordinate",
+            "risk_aligned_spectral",
+        }
+        if (
+            not aligned
+            and self._locked_alignment_stage1_basis is not None
+            and self.selected_basis == self._locked_alignment_stage1_basis
+            and self._locked_alignment_stage1_guard is not None
+        ):
+            return max(float(self._locked_alignment_stage1_guard), 0.0)
+        return max(
+            float(component_scores[self.selected_basis]["calibration_guard"]),
+            self._risk_alignment_source_guard() if aligned else 0.0,
+        )
+
     def diagnostics(self):
-        return dict(self.gate_diagnostics)
+        out = dict(self.gate_diagnostics)
+        out["adaptive_sparsity"] = dict(
+            self._adaptive_sparsity_diagnostics)
+        return out
+
+    def should_refit_from_observations(self, observations):
+        if self.output_index != 1 or len(observations) < 5:
+            return False
+        additive_due = bool(
+            self.meta_prior.spectral_additive_adaptation and (
+                len(observations) - int(self._last_additive_refit_n)
+                >= int(self.meta_prior.spectral_additive_refit_interval)
+            )
+        )
+        alignment_due = bool(
+            self.meta_prior.spectral_risk_alignment
+            and self.meta_prior.spectral_alignment_admission and (
+                len(observations) - int(self._last_alignment_refit_n)
+                >= int(self.meta_prior.spectral_alignment_refit_interval)
+            )
+        )
+        frequency_due = bool(
+            self.meta_prior.spectral_frequency_adaptation and (
+                len(observations) - int(self._last_frequency_refit_n)
+                >= int(self.meta_prior.spectral_frequency_refit_interval)
+            )
+        )
+        return additive_due or alignment_due or frequency_due
+
+    def runtime_state(self):
+        return {
+            "selected_basis": self.selected_basis,
+            "selected_parametric_ridge": float(
+                self.selected_parametric_ridge),
+            "selected_additive_groups": list(self.selected_additive_groups),
+            "additive_base_basis": self._additive_base_basis,
+            "additive_bank_kind": self._additive_bank_kind,
+            "locked_additive_base_basis": self._locked_additive_base_basis,
+            "last_additive_refit_n": int(self._last_additive_refit_n),
+            "last_alignment_refit_n": int(self._last_alignment_refit_n),
+            "locked_alignment_stage1_basis": (
+                self._locked_alignment_stage1_basis),
+            "locked_alignment_stage1_guard": (
+                self._locked_alignment_stage1_guard),
+            "last_frequency_refit_n": int(self._last_frequency_refit_n),
+            "additive_refit_count": int(self._additive_refit_count),
+            "target_risk_alignment": (
+                None
+                if self._target_risk_alignment is None
+                else {
+                    "matrix": np.asarray(
+                        self._target_risk_alignment.matrix, dtype=float).copy(),
+                    "accepted": bool(self._target_risk_alignment.accepted),
+                    "diagnostics": copy.deepcopy(
+                        self._target_risk_alignment.diagnostics),
+                    "boundary_axis": (
+                        None
+                        if self._target_risk_alignment.boundary_axis is None
+                        else np.asarray(
+                            self._target_risk_alignment.boundary_axis,
+                            dtype=float,
+                        ).copy()
+                    ),
+                    "expert_weights": (
+                        None
+                        if self._target_risk_alignment.expert_weights is None
+                        else np.asarray(
+                            self._target_risk_alignment.expert_weights,
+                            dtype=float,
+                        ).copy()
+                    ),
+                }
+            ),
+            "gate_diagnostics": copy.deepcopy(self.gate_diagnostics),
+        }
+
+    def load_runtime_state(self, state):
+        self.selected_basis = str(state.get(
+            "selected_basis", self.selected_basis))
+        self.selected_parametric_ridge = float(state.get(
+            "selected_parametric_ridge", self.selected_parametric_ridge))
+        self.selected_additive_groups = [
+            int(index) for index in state.get(
+                "selected_additive_groups", self.selected_additive_groups)
+        ]
+        self._additive_base_basis = str(state.get(
+            "additive_base_basis", self._additive_base_basis))
+        self._additive_bank_kind = str(state.get(
+            "additive_bank_kind", self._additive_bank_kind))
+        self._locked_additive_base_basis = state.get(
+            "locked_additive_base_basis", self._locked_additive_base_basis)
+        self._last_additive_refit_n = int(state.get(
+            "last_additive_refit_n", self._last_additive_refit_n))
+        self._last_alignment_refit_n = int(state.get(
+            "last_alignment_refit_n", self._last_alignment_refit_n))
+        self._locked_alignment_stage1_basis = state.get(
+            "locked_alignment_stage1_basis",
+            self._locked_alignment_stage1_basis,
+        )
+        locked_guard = state.get(
+            "locked_alignment_stage1_guard",
+            self._locked_alignment_stage1_guard,
+        )
+        self._locked_alignment_stage1_guard = (
+            None if locked_guard is None else float(locked_guard))
+        self._last_frequency_refit_n = int(state.get(
+            "last_frequency_refit_n", self._last_frequency_refit_n))
+        self._additive_refit_count = int(state.get(
+            "additive_refit_count", self._additive_refit_count))
+        alignment = state.get("target_risk_alignment")
+        if alignment is not None:
+            self._target_risk_alignment = TargetRiskAlignment(
+                matrix=np.asarray(alignment["matrix"], dtype=float),
+                accepted=bool(alignment.get("accepted", False)),
+                diagnostics=copy.deepcopy(alignment.get("diagnostics", {})),
+                boundary_axis=(
+                    None
+                    if alignment.get("boundary_axis") is None
+                    else np.asarray(alignment["boundary_axis"], dtype=float)
+                ),
+                expert_weights=(
+                    None
+                    if alignment.get("expert_weights") is None
+                    else np.asarray(alignment["expert_weights"], dtype=float)
+                ),
+            )
+            self._risk_alignment_gate_diagnostics = copy.deepcopy(
+                self._target_risk_alignment.diagnostics)
+        self.gate_diagnostics = copy.deepcopy(state.get(
+            "gate_diagnostics", self.gate_diagnostics))
+
+    def _risk_alignment_source_guard(self):
+        if self.meta_prior.risk_subspace_alignment is None:
+            return 0.0
+        scale = max(
+            abs(float(getattr(self.problem, "tau", 0.0))),
+            float(getattr(self.problem, "sigma_level", 0.0)),
+            1e-6,
+        )
+        return float(
+            self.meta_prior.risk_subspace_alignment.source_residual_guard_
+            * scale
+        )
 
     def certification_guard(self):
         if self.output_index != 1:
             return 0.0
         return max(float(self.gate_diagnostics.get("pilot_constraint_guard", 0.0)), 0.0)
 
+    def initial_parametric_coefficients(self, phi, target):
+        """Fit the target-selected ridge model in the raw GPR basis."""
+
+        matrix = np.asarray(phi, dtype=float)
+        values = np.asarray(target, dtype=float).reshape(-1)
+        ridge = max(float(self.selected_parametric_ridge), 0.0)
+        if ridge <= 0.0:
+            return np.linalg.lstsq(matrix, values, rcond=None)[0]
+        features = matrix[:, 1:]
+        feature_mean = np.mean(features, axis=0)
+        feature_scale = np.std(features, axis=0)
+        feature_scale = np.where(feature_scale < 1e-8, 1.0, feature_scale)
+        standardized = (features - feature_mean) / feature_scale
+        design = np.column_stack([
+            np.ones(len(standardized), dtype=float),
+            standardized,
+        ])
+        value_mean = float(np.mean(values))
+        value_scale = max(float(np.std(values)), 1e-8)
+        response = (values - value_mean) / value_scale
+        penalty = ridge * np.eye(design.shape[1], dtype=float)
+        penalty[0, 0] = 0.0
+        try:
+            standardized_beta = np.linalg.solve(
+                design.T @ design + penalty,
+                design.T @ response,
+            )
+        except np.linalg.LinAlgError:
+            standardized_beta = np.linalg.lstsq(
+                design.T @ design + penalty,
+                design.T @ response,
+                rcond=None,
+            )[0]
+        slopes = value_scale * standardized_beta[1:] / feature_scale
+        intercept = (
+            value_mean
+            + value_scale * standardized_beta[0]
+            - float(feature_mean @ slopes)
+        )
+        return np.concatenate([[intercept], slopes])
+
+    def adaptive_sparsity_spec(self, observations=None):
+        """Return a source hyper-prior only when the target pilot admits it."""
+
+        if (
+            not self.meta_prior.spectral_adaptive_sparsity
+            or self.output_index != 1
+            or self.selected_basis != "adaptive_spectral"
+        ):
+            self._adaptive_sparsity_diagnostics = {
+                "status": "fallback_stage1",
+                "reason": (
+                    "disabled"
+                    if not self.meta_prior.spectral_adaptive_sparsity
+                    else "non_spectral_gate"
+                ),
+                "selected_basis": self.selected_basis,
+            }
+            return None
+        spec = self._source_adaptive_sparsity_spec()
+        if spec is None:
+            self._adaptive_sparsity_diagnostics = {
+                "status": "fallback_stage1",
+                "reason": "missing_source_hyperprior",
+            }
+            return None
+        if self._adaptive_allowed_mask is None:
+            self._adaptive_sparsity_diagnostics = {
+                "status": "fallback_stage1",
+                "reason": "missing_pilot_admitted_support",
+            }
+            return None
+        spec["allowed_mask"] = self._adaptive_allowed_mask.tolist()
+        del observations
+        self._adaptive_sparsity_diagnostics = {
+            **self._adaptive_sparsity_diagnostics,
+            "status": "enabled",
+            "method": "target_adaptive_variational_spike_slab",
+            "dictionary_dim": int(spec["dictionary_dim"]),
+            "source_hyperprior_only": True,
+            "stage1_fallback": self.gate_diagnostics.get(
+                "stage1_selected_basis"),
+            "pilot_admitted_adaptive_count": int(np.sum(
+                self._adaptive_allowed_mask[
+                    int(spec.get("always_active_count", 0)):
+                ]
+            )),
+        }
+        return spec
+
+    def _source_adaptive_sparsity_spec(self):
+        source = self.meta_prior.spectral_coefficient_prior.get(self.output_index)
+        if source is None:
+            return None
+        source_pip = np.asarray(source["prior_pip"], dtype=float).copy()
+        always_active = int(self.meta_prior.spectral_always_active_count)
+        allowed_mask = source_pip >= 0.5
+        allowed_mask[:always_active] = True
+        return {
+            "source_pip": source_pip,
+            "source_slab_scale": np.asarray(
+                source["slab_scale"], dtype=float).copy(),
+            "min_pip": float(self.meta_prior.spectral_adaptive_min_pip),
+            "max_pip": float(self.meta_prior.spectral_adaptive_max_pip),
+            "spike_ratio": float(
+                self.meta_prior.spectral_adaptive_spike_ratio),
+            "damping": float(self.meta_prior.spectral_adaptive_damping),
+            "max_iter": int(self.meta_prior.spectral_adaptive_max_iter),
+            "tolerance": float(self.meta_prior.spectral_adaptive_tolerance),
+            "residual_floor_scale": float(
+                self.meta_prior.spectral_adaptive_residual_floor_scale),
+            "multiplicity_correction": float(
+                self.meta_prior.spectral_adaptive_multiplicity_correction),
+            "max_effective_fraction": float(
+                self.meta_prior.spectral_adaptive_max_effective_fraction),
+            "always_active_count": int(
+                self.meta_prior.spectral_always_active_count),
+            "allowed_mask": allowed_mask.tolist(),
+            "dictionary_dim": int(len(source["prior_pip"])),
+            "source_domains": list(source.get("source_domains", [])),
+        }
+
+    def _adaptive_loo_predictions(self, features, target, xs, spec):
+        predictions = []
+        posterior_pips = []
+        for heldout in range(len(xs)):
+            train = np.arange(len(xs)) != heldout
+            train_y = np.asarray(target, dtype=float)[train]
+            noise = max(
+                float(getattr(self.problem, "sigma_level", 0.0)) ** 2,
+                1e-6,
+            )
+            posterior = AdaptiveSpikeSlabPosterior(
+                spec["source_pip"],
+                spec["source_slab_scale"],
+                min_pip=spec["min_pip"],
+                max_pip=spec["max_pip"],
+                spike_ratio=spec["spike_ratio"],
+                damping=spec["damping"],
+                max_iter=spec["max_iter"],
+                tolerance=spec["tolerance"],
+                residual_floor_scale=spec["residual_floor_scale"],
+                multiplicity_correction=spec["multiplicity_correction"],
+                max_effective_fraction=spec["max_effective_fraction"],
+                always_active_count=spec.get("always_active_count", 0),
+                allowed_mask=spec.get("allowed_mask"),
+            ).fit(
+                np.asarray(features, dtype=float)[train],
+                train_y,
+                np.full(np.sum(train), noise, dtype=float),
+                [xs[index] for index in np.where(train)[0]],
+                deviation_variance=max(noise, 1e-6),
+            )
+            predictions.append(float(
+                posterior.predict_parametric_mean(
+                    np.asarray(features, dtype=float)[heldout])))
+            posterior_pips.append(np.asarray(
+                posterior.diagnostics()["posterior_pip"], dtype=float))
+        always_active = int(spec.get("always_active_count", 0))
+        pip_matrix = np.vstack(posterior_pips)
+        adaptive_support = pip_matrix[:, always_active:] >= 0.5
+        inclusion_frequency = np.mean(adaptive_support, axis=0)
+        pairwise_jaccard = []
+        for first in range(len(adaptive_support)):
+            for second in range(first + 1, len(adaptive_support)):
+                union = np.logical_or(
+                    adaptive_support[first], adaptive_support[second])
+                intersection = np.logical_and(
+                    adaptive_support[first], adaptive_support[second])
+                pairwise_jaccard.append(
+                    1.0 if not np.any(union)
+                    else float(np.sum(intersection) / np.sum(union))
+                )
+        self._adaptive_loo_support_diagnostics = {
+            "status": "fit",
+            "n_folds": int(len(pip_matrix)),
+            "adaptive_inclusion_frequency": inclusion_frequency.tolist(),
+            "mean_pairwise_jaccard": float(
+                np.mean(pairwise_jaccard)) if pairwise_jaccard else 1.0,
+            "median_adaptive_support_size": float(np.median(
+                np.sum(adaptive_support, axis=1))),
+        }
+        return np.asarray(predictions, dtype=float)
+
+    def _fit_adaptive_posterior(self, features, target, xs, spec):
+        target = np.asarray(target, dtype=float)
+        noise = max(
+            float(getattr(self.problem, "sigma_level", 0.0)) ** 2,
+            1e-6,
+        )
+        return AdaptiveSpikeSlabPosterior(
+            spec["source_pip"],
+            spec["source_slab_scale"],
+            min_pip=spec["min_pip"],
+            max_pip=spec["max_pip"],
+            spike_ratio=spec["spike_ratio"],
+            damping=spec["damping"],
+            max_iter=spec["max_iter"],
+            tolerance=spec["tolerance"],
+            residual_floor_scale=spec["residual_floor_scale"],
+            multiplicity_correction=spec["multiplicity_correction"],
+            max_effective_fraction=spec["max_effective_fraction"],
+            always_active_count=spec.get("always_active_count", 0),
+            allowed_mask=spec.get("allowed_mask"),
+        ).fit(
+            features,
+            target,
+            np.full(len(target), noise, dtype=float),
+            xs,
+            deviation_variance=max(noise, 1e-6),
+        )
+
+    def _adaptive_pilot_accepts(self, observations, spec):
+        xs = list(observations)
+        if len(xs) < 6:
+            self._adaptive_sparsity_diagnostics = {
+                "status": "fallback_stage1",
+                "reason": "insufficient_adaptive_pilot",
+                "n_observations": int(len(xs)),
+            }
+            return False
+        target = np.asarray([
+            float(np.mean(np.asarray(observations[x], dtype=float), axis=0)[1])
+            for x in xs
+        ])
+        features = np.vstack([
+            self.meta_prior.spectral_features(self.problem, x) for x in xs
+        ])
+        coordinate_features = np.vstack([
+            self.meta_prior.coordinate_basis_features(self.problem, x) for x in xs
+        ])
+        baseline_prediction = self._ridge_loo_predictions(
+            coordinate_features, target)
+        baseline = self._constraint_decision_score(target, baseline_prediction)
+        adaptive_prediction = self._adaptive_loo_predictions(
+            features, target, xs, spec)
+        adaptive = self._constraint_decision_score(target, adaptive_prediction)
+        posterior_diag = self._fit_adaptive_posterior(
+            features, target, xs, spec).diagnostics()
+        effective = float(posterior_diag.get("effective_dimension", 0.0))
+        maximum = max(float(
+            posterior_diag.get("max_effective_dimension", np.inf)), 1e-12)
+        nonsaturated = bool(
+            effective
+            < self.meta_prior.spectral_adaptive_saturation_fraction * maximum
+        )
+        tolerance = self.meta_prior.spectral_adaptive_gate_tolerance * max(
+            abs(float(baseline["total"])), 1.0)
+        accepted = bool(
+            np.isfinite(adaptive["total"])
+            and adaptive["total"] <= baseline["total"] + tolerance
+            and adaptive["raw_false_feasible_rate"]
+            <= baseline["raw_false_feasible_rate"] + 0.05
+            and nonsaturated
+        )
+        self._adaptive_sparsity_diagnostics = {
+            "status": "pilot_accepted" if accepted else "fallback_stage1",
+            "reason": "adaptive_loo_gate" if accepted else "adaptive_loo_worse",
+            "n_observations": int(len(xs)),
+            "baseline_decision": baseline,
+            "adaptive_decision": adaptive,
+            "adaptive_posterior": posterior_diag,
+            "nonsaturated": nonsaturated,
+            "gate_tolerance": float(tolerance),
+        }
+        return accepted
+
+    def record_adaptive_sparsity_diagnostics(self, diagnostics):
+        pilot = dict(self._adaptive_sparsity_diagnostics)
+        self._adaptive_sparsity_diagnostics = {
+            "status": "fit",
+            "pilot": pilot,
+            "posterior": dict(diagnostics),
+        }
+
+    def apply_coefficient_prior(self, beta_mean, prior_var):
+        """Apply the frozen source shrinkage prior after the pilot gate.
+
+        The coordinate path is returned byte-for-byte unchanged.  Stage 2 is
+        therefore an isolated ablation on top of the promoted Stage-1 gate.
+        """
+
+        beta = np.asarray(beta_mean, dtype=float).copy()
+        base_var = max(float(prior_var), 1e-12)
+        if self.output_index != 1 or self.selected_basis != "source_spectral":
+            self.gate_diagnostics["coefficient_prior_applied"] = False
+            return beta, base_var
+        weights = self.meta_prior.spectral_shrinkage_weights(self.output_index)
+        if weights is None or len(weights) == 0:
+            self.gate_diagnostics["coefficient_prior_applied"] = False
+            return beta, base_var
+        n_active = min(len(weights), max(len(beta) - 1, 0))
+        weights = np.asarray(weights[:n_active], dtype=float)
+        prior_diag = np.full(len(beta), base_var, dtype=float)
+        covariance_weight = np.maximum(
+            weights ** 2,
+            float(self.meta_prior.spectral_shrinkage_floor),
+        )
+        prior_diag[1:1 + n_active] *= covariance_weight
+        source_prior = self.meta_prior.spectral_coefficient_prior.get(
+            self.output_index, {})
+        self.gate_diagnostics.update({
+            "coefficient_prior_applied": True,
+            "coefficient_prior_mode": "variance_only",
+            "coefficient_prior_mean_shrunk": False,
+            "coefficient_prior_active_dim": int(n_active),
+            "coefficient_prior_weights": weights.tolist(),
+            "coefficient_prior_pip": np.asarray(
+                source_prior.get("pip", []), dtype=float
+            )[:n_active].tolist(),
+            "coefficient_prior_variance_ratio": covariance_weight.tolist(),
+        })
+        return beta, prior_diag
+
     def _ridge_loo_score(self, features, target):
         prediction = self._ridge_loo_predictions(features, target)
         return self._normalized_mse(target, prediction)
 
-    def _ridge_loo_predictions(self, features, target):
+    def _ridge_loo_predictions(self, features, target, ridge=None):
         predictions = []
         for heldout in range(len(features)):
             train = np.arange(len(features)) != heldout
@@ -1638,6 +4595,7 @@ class PilotGatedMetaPriorBasis:
                 features[train],
                 target[train],
                 features[heldout:heldout + 1],
+                ridge=ridge,
             )[0]
             predictions.append(float(prediction))
         return np.asarray(predictions, dtype=float)
@@ -1766,6 +4724,8 @@ class PilotGatedMetaPriorBasis:
         )
         return {
             "total": float(total),
+            "n_observed_feasible": int(np.sum(feasible)),
+            "n_observed_infeasible": int(np.sum(infeasible)),
             "margin_nmse": float(margin_nmse),
             "boundary_mse": float(boundary_mse),
             "rank_loss": float(rank_loss),
@@ -1777,6 +4737,46 @@ class PilotGatedMetaPriorBasis:
             "margin_scale": float(scale),
             "calibration_guard": float(max(
                 np.quantile(residual, quantile), 0.0)),
+        }
+
+    def _subsample_decision_stability(
+        self,
+        target,
+        baseline_prediction,
+        challenger_prediction,
+    ):
+        target = np.asarray(target, dtype=float)
+        baseline_prediction = np.asarray(baseline_prediction, dtype=float)
+        challenger_prediction = np.asarray(challenger_prediction, dtype=float)
+        if len(target) < 6:
+            gain = (
+                self._constraint_decision_score(
+                    target, baseline_prediction)["total"]
+                - self._constraint_decision_score(
+                    target, challenger_prediction)["total"]
+            )
+            return {
+                "fold_gains": [float(gain)],
+                "median_gain": float(gain),
+                "win_rate": float(gain > 0.0),
+            }
+        gains = []
+        fold_count = min(3, max(2, len(target) // 3))
+        positions = np.arange(len(target))
+        for fold in range(fold_count):
+            keep = positions % fold_count == fold
+            if np.sum(keep) < 2:
+                continue
+            baseline_score = self._constraint_decision_score(
+                target[keep], baseline_prediction[keep])["total"]
+            challenger_score = self._constraint_decision_score(
+                target[keep], challenger_prediction[keep])["total"]
+            gains.append(float(baseline_score - challenger_score))
+        values = np.asarray(gains, dtype=float)
+        return {
+            "fold_gains": [float(value) for value in values],
+            "median_gain": float(np.median(values)) if len(values) else 0.0,
+            "win_rate": float(np.mean(values > 0.0)) if len(values) else 0.0,
         }
 
     def _objective_decision_score(self, target, prediction, constraint_mean):
@@ -1805,7 +4805,7 @@ class PilotGatedMetaPriorBasis:
             "n_observed_feasible": int(len(feasible)),
         }
 
-    def _ridge_predict(self, train_x, train_y, test_x):
+    def _ridge_predict(self, train_x, train_y, test_x, ridge=None):
         mean = np.mean(train_x, axis=0)
         scale = np.std(train_x, axis=0)
         scale = np.where(scale < 1e-8, 1.0, scale)
@@ -1816,7 +4816,8 @@ class PilotGatedMetaPriorBasis:
         y_mean = float(np.mean(train_y))
         y_scale = max(float(np.std(train_y)), 1e-8)
         y = (np.asarray(train_y, dtype=float) - y_mean) / y_scale
-        penalty = self.ridge * np.eye(X.shape[1], dtype=float)
+        ridge = self.ridge if ridge is None else max(float(ridge), 0.0)
+        penalty = ridge * np.eye(X.shape[1], dtype=float)
         penalty[0, 0] = 0.0
         try:
             beta = np.linalg.solve(X.T @ X + penalty, X.T @ y)
@@ -1881,9 +4882,11 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         self.proposal_pool_size = int(proposal_pool_size)
         self.refinement_count = int(refinement_count)
         self.prefer_direct_gpr_basis = self.meta_prior.component_stage in {
-            "coordinate", "spectral"
+            "coordinate", "spectral", "spectral_hvd"
         }
         self._gpr_basis_maps = {}
+        self._hvd_shape_reference_mean = {}
+        self._hvd_shape_reference_pool_size = 256
 
     def admissibility_audit(self):
         out = lodo_meta_prior_audit().to_dict()
@@ -1891,15 +4894,25 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         return out
 
     def cumulative_risk_provider_status(self):
+        aligned = self.meta_prior.component_stage == "spectral_hvd"
         return {
             "status": "available",
             "provider": "LearnedMetaPrior",
-            "coordinate": "frozen_source_trained_psi=(A,N)",
+            "coordinate": (
+                "frozen_source_boundary_aligned_psi=(A,N)"
+                if aligned
+                else "frozen_source_trained_psi=(A,N)"
+            ),
             "source_domains": list(self.meta_prior.source_domains),
+            "target_data_used": False,
+            "unlabeled_target_shape_reference_pool_size": (
+                self._hvd_shape_reference_pool_size if aligned else 0
+            ),
         }
 
     def risk_exposures(self, x, output_index=1):
-        return self.meta_prior.risk_exposure(self, x, output_index=output_index)
+        return self.meta_prior.cumulative_risk_exposure(
+            self, x, output_index=output_index)
 
     def risk_class(self, x):
         return self.meta_prior.risk_class(self, x)
@@ -1912,10 +4925,51 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         return self.meta_prior.cumulative_feature_names()
 
     def cumulative_hvd_prior_beta(self, output_index=1, feature_dim=None):
-        return self.meta_prior.cumulative_hvd_prior_beta(
+        beta = self.meta_prior.cumulative_hvd_prior_beta(
             output_index=output_index,
             feature_dim=feature_dim,
         )
+        if beta is None or self.meta_prior.component_stage != "spectral_hvd":
+            return beta
+        output_index = int(output_index)
+        cache_key = (output_index, len(beta))
+        if cache_key not in self._hvd_shape_reference_mean:
+            rng = np.random.default_rng(
+                self.meta_prior.seed + 104729 + 7919 * output_index)
+            rows = [
+                self.base.sample_random(rng)
+                for _ in range(self._hvd_shape_reference_pool_size)
+            ]
+            features = np.vstack([
+                self.meta_prior.cumulative_features(
+                    self,
+                    x,
+                    output_index=output_index,
+                )
+                for x in rows
+            ])
+            reference = float(np.mean(np.maximum(
+                features @ beta,
+                1e-12,
+            )))
+            self._hvd_shape_reference_mean[cache_key] = max(reference, 1e-12)
+        return np.asarray(beta, dtype=float) / self._hvd_shape_reference_mean[
+            cache_key]
+
+    def cumulative_hvd_prior_precision(self, output_index=1):
+        return self.meta_prior.cumulative_hvd_prior_precision(
+            output_index=output_index)
+
+    def cumulative_hvd_prior_scale_mean(self, output_index=1):
+        return self.meta_prior.cumulative_hvd_prior_scale_mean(
+            output_index=output_index)
+
+    def cumulative_hvd_prior_upper_scale(self, output_index=1):
+        return self.meta_prior.cumulative_hvd_prior_upper_scale(
+            output_index=output_index)
+
+    def cumulative_hvd_prior_min_records(self):
+        return self.meta_prior.cumulative_hvd_prior_min_records()
 
     def source_calibrated_recommendation_slack(self):
         return self.meta_prior.source_calibrated_recommendation_slack()

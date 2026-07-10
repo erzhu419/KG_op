@@ -130,6 +130,9 @@ class SingleOLHKGConfig:
     constraint_uncertain_state_pool_fraction: float = 0.25
     constraint_uncertain_use_calibration: bool = False
     constraint_epistemic_margin_softening: float = 3.0
+    replication_candidate_count: int = 0
+    replication_max_per_solution: int = 5
+    replication_margin_softening: float = 3.0
     safe_interior_candidate_count: int = 0
     safe_interior_pool_size: int = 300
     safe_interior_margin: float = 0.0
@@ -476,23 +479,99 @@ class SingleOLHKGAlgorithm:
                     self.observations,
                     output_index=i,
                 )
-            Phi = self.gpr[i].basis_matrix(samples)
-            y_i = np.array([self.observations[x][0][i] for x in samples], dtype=float)
-            try:
-                beta = np.linalg.lstsq(Phi, y_i, rcond=None)[0]
-            except np.linalg.LinAlgError:
-                beta = np.zeros(Phi.shape[1], dtype=float)
-            resid = y_i - Phi @ beta
-            lambda_data = max(float(np.var(resid)), 1e-6)
-            prior_var = max(float(np.var(beta)), 1e-6)
-            self.gpr[i].set_parametric_prior(beta, lambda_data, prior_var)
-
-        for x in samples:
-            for model in self.gpr:
-                model.dimension_augment(x)
+            self._rebuild_gpr_from_history(i, replay_sequential=False)
 
         self.variance_model.initialize(
             samples, self.observations, self.gpr, self.problem)
+
+    def _rebuild_gpr_from_history(self, output_index, replay_sequential=True):
+        """Rebuild one GPR after its feature semantics change.
+
+        The first ``n0`` records reproduce the original empirical-prior fit.
+        Every later rank-one update is replayed with the observation variance
+        recorded when that sample was selected.  Coefficients from an old
+        basis are therefore never interpreted in a new basis.
+        """
+
+        output_index = int(output_index)
+        model = self.gpr[output_index]
+        n_initial = int(self.config.n0)
+        if len(self.history) < n_initial:
+            raise RuntimeError("cannot rebuild GPR before the initial history exists")
+        initial_history = self.history[:n_initial]
+        samples = [tuple(int(v) for v in x) for x, _ in initial_history]
+        y_i = np.asarray([
+            float(np.asarray(y, dtype=float)[output_index])
+            for _, y in initial_history
+        ])
+        Phi = model.basis_matrix(samples)
+        basis_map = getattr(model, "basis_map", None)
+        try:
+            if basis_map is not None and hasattr(
+                basis_map, "initial_parametric_coefficients"
+            ):
+                beta = basis_map.initial_parametric_coefficients(Phi, y_i)
+            else:
+                beta = np.linalg.lstsq(Phi, y_i, rcond=None)[0]
+        except np.linalg.LinAlgError:
+            beta = np.zeros(Phi.shape[1], dtype=float)
+        resid = y_i - Phi @ beta
+        lambda_data = max(float(np.var(resid)), 1e-6)
+        prior_var = max(float(np.var(beta)), 1e-6)
+        adaptive_spec = None
+        if basis_map is not None and hasattr(
+            basis_map, "adaptive_sparsity_spec"
+        ):
+            adaptive_spec = basis_map.adaptive_sparsity_spec(
+                self.observations)
+        if adaptive_spec is not None:
+            known_sigma = max(
+                float(getattr(self.problem, "sigma_level", 0.0)),
+                1e-3,
+            )
+            initial_noise = max(lambda_data, known_sigma ** 2)
+            model.enable_adaptive_sparsity(
+                adaptive_spec,
+                samples,
+                y_i,
+                np.full(len(samples), initial_noise, dtype=float),
+                deviation_variance=max(lambda_data, initial_noise),
+            )
+        else:
+            if basis_map is not None and hasattr(
+                basis_map, "apply_coefficient_prior"
+            ):
+                beta, prior_var = basis_map.apply_coefficient_prior(
+                    beta, prior_var)
+            model.set_parametric_prior(beta, lambda_data, prior_var)
+            for x in samples:
+                model.dimension_augment(x)
+
+        replayed = 0
+        if replay_sequential:
+            sequential_history = self.history[n_initial:]
+            if len(sequential_history) != len(self.iteration_log):
+                raise RuntimeError(
+                    "sequential history and iteration log disagree during GPR replay"
+                )
+            for (history_x, history_y), row in zip(
+                sequential_history, self.iteration_log
+            ):
+                row_x = tuple(int(v) for v in row["x_selected"])
+                history_x = tuple(int(v) for v in history_x)
+                if row_x != history_x:
+                    raise RuntimeError(
+                        "iteration log candidate does not match GPR history"
+                    )
+                sigma2 = float(row["sigma2_before"][output_index])
+                observed = float(np.asarray(history_y, dtype=float)[output_index])
+                model.update(history_x, observed, sigma2)
+                replayed += 1
+        return {
+            "initial_records": int(len(initial_history)),
+            "replayed_updates": int(replayed),
+            "basis_dim": int(model.p),
+        }
 
     def _checkpoint_root(self):
         root = str(self.config.checkpoint_dir or "").strip()
@@ -501,6 +580,7 @@ class SingleOLHKGAlgorithm:
         return Path(root)
 
     def _gpr_checkpoint_state(self, model):
+        basis_map = getattr(model, "basis_map", None)
         return {
             "d": int(model.d),
             "p": int(model.p),
@@ -513,6 +593,18 @@ class SingleOLHKGAlgorithm:
                 for key, value in model.sol_to_idx.items()
             },
             "state_version": int(getattr(model, "_state_version", 0)),
+            "adaptive_sparsity": copy.deepcopy(
+                getattr(model, "_adaptive_sparsity", None)),
+            "adaptive_records": copy.deepcopy(
+                getattr(model, "_adaptive_records", [])),
+            "adaptive_spec": copy.deepcopy(
+                getattr(model, "_adaptive_spec", None)),
+            "basis_runtime_state": (
+                copy.deepcopy(basis_map.runtime_state())
+                if basis_map is not None
+                and hasattr(basis_map, "runtime_state")
+                else None
+            ),
         }
 
     def _restore_gpr_checkpoint_state(self, model, state):
@@ -531,6 +623,18 @@ class SingleOLHKGAlgorithm:
             tuple(int(v) for v in key): int(value)
             for key, value in state.get("sol_to_idx", {}).items()
         }
+        model._adaptive_sparsity = copy.deepcopy(
+            state.get("adaptive_sparsity"))
+        model._adaptive_records = copy.deepcopy(
+            state.get("adaptive_records", []))
+        model._adaptive_spec = copy.deepcopy(state.get("adaptive_spec"))
+        basis_state = state.get("basis_runtime_state")
+        if (
+            basis_state is not None
+            and model.basis_map is not None
+            and hasattr(model.basis_map, "load_runtime_state")
+        ):
+            model.basis_map.load_runtime_state(copy.deepcopy(basis_state))
         model._state_version = int(state.get("state_version", 0)) + 1
         model._torch_cache = {}
 
@@ -548,6 +652,19 @@ class SingleOLHKGAlgorithm:
             tuple(int(v) for v in key): int(value)
             for key, value in getattr(model, "sol_to_idx", {}).items()
         }
+        clone._adaptive_sparsity = copy.deepcopy(
+            getattr(model, "_adaptive_sparsity", None))
+        clone._adaptive_records = copy.deepcopy(
+            getattr(model, "_adaptive_records", []))
+        clone._adaptive_spec = copy.deepcopy(
+            getattr(model, "_adaptive_spec", None))
+        if clone._adaptive_sparsity is not None and model.basis_map is not None:
+            basis_clone = object.__new__(model.basis_map.__class__)
+            basis_clone.__dict__ = model.basis_map.__dict__.copy()
+            if hasattr(model.basis_map, "_adaptive_sparsity_diagnostics"):
+                basis_clone._adaptive_sparsity_diagnostics = copy.deepcopy(
+                    model.basis_map._adaptive_sparsity_diagnostics)
+            clone.basis_map = basis_clone
         clone._torch_cache = {}
         return clone
 
@@ -699,6 +816,86 @@ class SingleOLHKGAlgorithm:
         self._save_checkpoint(self.config.n0, reason="initial", force=True)
         return int(self.config.n0)
 
+    def _refresh_sequential_basis(self):
+        refresh = []
+        for output_index, model in enumerate(self.gpr):
+            basis_map = getattr(model, "basis_map", None)
+            if (
+                basis_map is None
+                or not hasattr(basis_map, "should_refit_from_observations")
+                or not basis_map.should_refit_from_observations(
+                    self.observations)
+            ):
+                continue
+            snapshot = self._gpr_checkpoint_state(model)
+            before = (
+                basis_map.runtime_state()
+                if hasattr(basis_map, "runtime_state")
+                else {"selected_basis": getattr(
+                    basis_map, "selected_basis", None)}
+            )
+            try:
+                basis_map.fit_from_observations(
+                    self.observations,
+                    output_index=output_index,
+                )
+                after = (
+                    basis_map.runtime_state()
+                    if hasattr(basis_map, "runtime_state")
+                    else {"selected_basis": getattr(
+                        basis_map, "selected_basis", None)}
+                )
+                changed = bool(
+                    self._basis_semantic_signature(before)
+                    != self._basis_semantic_signature(after)
+                )
+                rebuild = (
+                    self._rebuild_gpr_from_history(
+                        output_index, replay_sequential=True)
+                    if changed
+                    else {
+                        "initial_records": 0,
+                        "replayed_updates": 0,
+                        "basis_dim": int(model.p),
+                    }
+                )
+            except Exception:
+                self._restore_gpr_checkpoint_state(model, snapshot)
+                raise
+            refresh.append({
+                "output_index": int(output_index),
+                "before_basis": before.get("selected_basis"),
+                "after_basis": after.get("selected_basis"),
+                "before_groups": before.get("selected_additive_groups", []),
+                "after_groups": after.get("selected_additive_groups", []),
+                "changed": changed,
+                "gpr_rebuilt": changed,
+                "replayed_updates": int(rebuild["replayed_updates"]),
+                "rebuild_initial_records": int(rebuild["initial_records"]),
+                "n_observations": int(len(self.observations)),
+            })
+        return refresh
+
+    @staticmethod
+    def _basis_semantic_signature(state):
+        selected = str(state.get("selected_basis", ""))
+        alignment = state.get("target_risk_alignment") or {}
+        matrix_signature = b""
+        if selected in {"risk_aligned_coordinate", "risk_aligned_spectral"}:
+            matrix = alignment.get("matrix")
+            if matrix is not None:
+                matrix_signature = np.asarray(
+                    matrix, dtype=np.float64).tobytes()
+        return (
+            selected,
+            float(state.get("selected_parametric_ridge", 0.0)),
+            tuple(int(value) for value in state.get(
+                "selected_additive_groups", [])),
+            str(state.get("additive_base_basis", "")),
+            str(state.get("additive_bank_kind", "")),
+            matrix_signature,
+        )
+
     def _progress_enabled(self):
         return bool(getattr(self.config, "progress_logging", False))
 
@@ -757,13 +954,21 @@ class SingleOLHKGAlgorithm:
             self._true_best_feasible_cache = self.problem.true_best_feasible()
         return self._true_best_feasible_cache
 
+    def _pilot_constraint_guard(self):
+        if not hasattr(self.problem, "pilot_constraint_guard"):
+            return 0.0
+        try:
+            return max(float(self.problem.pilot_constraint_guard()), 0.0)
+        except (AttributeError, TypeError, ValueError):
+            return 0.0
+
     def _certification_result(self, mu_con, candidates, v_con=None):
         if v_con is None:
             v_con = self.variance_model.predict_certification_variance_many(
                 1, candidates, self.problem)
         epistemic = self.gpr[1].posterior_var_many(candidates)
         return conservative_chance_margin(
-            mu_con,
+            np.asarray(mu_con, dtype=float) + self._pilot_constraint_guard(),
             epistemic,
             v_con,
             tau=self.problem.tau,
@@ -1003,6 +1208,48 @@ class SingleOLHKGAlgorithm:
         order = np.argsort(-np.nan_to_num(score, nan=-np.inf))
         return [pool[int(i)] for i in order[:n_uncertain]]
 
+    def _replication_candidates(self):
+        n_replicate = max(0, int(self.config.replication_candidate_count))
+        if n_replicate == 0 or not self.observations:
+            return []
+        max_per_solution = max(
+            1, int(self.config.replication_max_per_solution))
+        pool = [
+            tuple(int(v) for v in x)
+            for x, values in self.observations.items()
+            if len(values) < max_per_solution
+        ]
+        if not pool:
+            return []
+        mu_con = self.gpr[1].posterior_mean_many(pool)
+        epistemic = self.gpr[1].posterior_var_many(pool)
+        v_con = self.variance_model.predict_certification_variance_many(
+            1, pool, self.problem)
+        cert = self._certification_result(mu_con, pool, v_con)
+        total_var = (
+            np.maximum(cert.aleatoric_var, 1e-12)
+            + max(float(cert.beta_g), 0.0)
+            * np.maximum(cert.epistemic_var, 0.0)
+        )
+        sig = np.sqrt(np.maximum(total_var, 1e-12))
+        softened = max(
+            float(self.config.replication_margin_softening), 1e-8) * sig
+        boundary = np.exp(
+            -0.5 * (np.asarray(cert.margin) / softened) ** 2)
+        observation_noise = np.maximum(cert.aleatoric_var, 1e-12)
+        epistemic = np.maximum(np.asarray(epistemic, dtype=float), 0.0)
+        expected_reduction = epistemic ** 2 / np.maximum(
+            epistemic + observation_noise, 1e-12)
+        nominal_scale = np.sqrt(np.maximum(observation_noise, 1e-12))
+        nominal_safe = 1.0 / (1.0 + np.exp(np.clip(
+            np.asarray(mu_con, dtype=float) / nominal_scale,
+            -60.0,
+            60.0,
+        )))
+        score = expected_reduction * (0.25 + boundary) * (0.5 + nominal_safe)
+        order = np.argsort(-np.nan_to_num(score, nan=-np.inf))
+        return [pool[int(position)] for position in order[:n_replicate]]
+
     def _generate_candidates(self, iteration):
         candidates = []
         sources = {}
@@ -1037,6 +1284,7 @@ class SingleOLHKGAlgorithm:
                     observed=[x for x, _ in self.history],
             ), "state")
         add(self._constraint_uncertain_candidates(), "constraint_uncertain")
+        add(self._replication_candidates(), "replication")
         add(self._safe_interior_candidates(), "safe_interior")
         add(self._observed_neighbor_candidates(), "observed_neighbor")
         self._last_llm_prior_info = {
@@ -1249,7 +1497,7 @@ class SingleOLHKGAlgorithm:
             aleatoric = np.maximum(hvd, aleatoric)
         beta = max(float(self.config.certification_calibration_beta), 0.0)
         cert = conservative_chance_margin(
-            mu,
+            mu + self._pilot_constraint_guard(),
             epistemic,
             aleatoric,
             tau=self.problem.tau,
@@ -2139,7 +2387,7 @@ class SingleOLHKGAlgorithm:
             1, pool, self.problem)
         epistemic = gpr_models[1].posterior_var_many(pool)
         cert = conservative_chance_margin(
-            mu_con,
+            np.asarray(mu_con, dtype=float) + self._pilot_constraint_guard(),
             epistemic,
             v_con,
             tau=self.problem.tau,
@@ -2218,6 +2466,8 @@ class SingleOLHKGAlgorithm:
             for i in range(2)
         ]
         gains = []
+        existing_observations = list(self.observations.get(
+            tuple(int(v) for v in x_arr), []))
         for z_vec in common_z:
             gpr_clone = [
                 self._clone_gpr_for_exact_kg(model)
@@ -2231,6 +2481,15 @@ class SingleOLHKGAlgorithm:
             for i in range(2):
                 gpr_clone[i].update(x_arr, y[i], sigma2_before[i])
             for i in range(2):
+                replicate_values = [
+                    float(np.asarray(observed, dtype=float)[i])
+                    for observed in existing_observations
+                ] + [float(y[i])]
+                replicate_variance = (
+                    float(np.var(replicate_values, ddof=1))
+                    if len(replicate_values) >= 2
+                    else None
+                )
                 var_clone.update(
                     i,
                     x_arr,
@@ -2238,6 +2497,7 @@ class SingleOLHKGAlgorithm:
                     mu_before[i],
                     gpr_clone[i],
                     self.problem,
+                    replicate_variance=replicate_variance,
                 )
             future_value = self._terminal_value_from_models(
                 gpr_clone, var_clone, terminal_pool)
@@ -2712,6 +2972,8 @@ class SingleOLHKGAlgorithm:
             self._progress_step_started_at = float(t_iter_progress)
             self._progress_run_started_at = float(t_progress_start)
 
+            row["sequential_basis_refresh"] = self._refresh_sequential_basis()
+
             t0 = time.time()
             rec_x, rec_details = self._solve_posterior_recommendation()
             row["t_posterior_solve"] = time.time() - t0
@@ -2833,8 +3095,22 @@ class SingleOLHKGAlgorithm:
             t0 = time.time()
             for i in range(2):
                 self.gpr[i].update(x_arr, y[i], sigma2_before[i])
+            row["adaptive_sparsity"] = [
+                model.adaptive_sparsity_diagnostics()
+                for model in self.gpr
+            ]
             hvd_details = []
             for i in range(2):
+                replicate_values = [
+                    float(np.asarray(observed, dtype=float)[i])
+                    for observed in self.observations.get(
+                        tuple(int(v) for v in x_selected), [])
+                ]
+                replicate_variance = (
+                    float(np.var(replicate_values, ddof=1))
+                    if len(replicate_values) >= 2
+                    else None
+                )
                 hvd_details.append(self.variance_model.update(
                     i,
                     x_arr,
@@ -2843,6 +3119,7 @@ class SingleOLHKGAlgorithm:
                     self.gpr[i],
                     self.problem,
                     epistemic_var=epistemic_before[i],
+                    replicate_variance=replicate_variance,
                 ))
             row["t_update"] = time.time() - t0
             row["hvd_update"] = hvd_details
@@ -2922,6 +3199,10 @@ class SingleOLHKGAlgorithm:
             "llm_prior": llm_prior_summary,
             "truth_pool_diagnostics": self._summarize_truth_pool_diagnostics(),
             "variance": self.variance_model.diagnostics(),
+            "adaptive_sparsity": [
+                model.adaptive_sparsity_diagnostics()
+                for model in self.gpr
+            ],
             "meta_basis": (
                 self.problem.meta_basis_diagnostics()
                 if hasattr(self.problem, "meta_basis_diagnostics")

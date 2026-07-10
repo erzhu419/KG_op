@@ -109,6 +109,27 @@ class OrthogonalHVD:
         self.cumulative_params = {i: None for i in range(self.n_outputs)}
         self.cumulative_provider_active = {i: False for i in range(self.n_outputs)}
         self.cumulative_fit_rmse = {i: None for i in range(self.n_outputs)}
+        self.cumulative_prior_used = {i: False for i in range(self.n_outputs)}
+        self.cumulative_prior_precision = {i: None for i in range(self.n_outputs)}
+        self.cumulative_prior_scale = {i: None for i in range(self.n_outputs)}
+        self.cumulative_prior_scale_se = {i: None for i in range(self.n_outputs)}
+        self.cumulative_prior_target_weight = {
+            i: 0 for i in range(self.n_outputs)
+        }
+        self.cumulative_prior_scale_source = {
+            i: "none" for i in range(self.n_outputs)
+        }
+        self.cumulative_prior_upper_scale = {
+            i: 1.0 for i in range(self.n_outputs)
+        }
+        self.cumulative_activation_records = {
+            i: int(self.config.activation_min_records)
+            for i in range(self.n_outputs)
+        }
+        self.replicated_keys = {i: set() for i in range(self.n_outputs)}
+        self.cumulative_prior_replication_only = {
+            i: False for i in range(self.n_outputs)
+        }
         self.factor_energy = {i: [] for i in range(self.n_outputs)}
         self._last_problem = None
 
@@ -300,7 +321,14 @@ class OrthogonalHVD:
             return False
         if self.cumulative_beta.get(int(i)) is None:
             return False
-        return len(self.records.get(int(i), [])) >= int(self.config.activation_min_records)
+        threshold = int(self.cumulative_activation_records.get(
+            int(i), self.config.activation_min_records))
+        return len(self.records.get(int(i), [])) >= threshold
+
+    def _variance_model_active(self, i):
+        if self.mode == "factor" and self._cumulative_active(i):
+            return True
+        return self._orthogonal_active(i)
 
     def _residual_variance_cap(self, i, problem=None):
         problem = problem or self._last_problem
@@ -431,7 +459,8 @@ class OrthogonalHVD:
             for y_vec in obs_list:
                 for i in range(self.n_outputs):
                     mu = float(gpr_models[i].posterior_mean(x_arr))
-                    resid2 = self._safe_residual_square(float(y_vec[i]) - mu, i, problem)
+                    resid2 = self._safe_residual_square(
+                        float(y_vec[i]) - mu, i, problem)
                     self.records[i].append((tuple(x_tuple), resid2))
         for i in range(self.n_outputs):
             self._fit_output(i, problem)
@@ -445,6 +474,7 @@ class OrthogonalHVD:
         gpr_model=None,
         problem=None,
         epistemic_var=None,
+        replicate_variance=None,
     ):
         """Add one residual and refit lightweight summaries."""
         del gpr_model
@@ -453,8 +483,19 @@ class OrthogonalHVD:
         x_tuple = tuple(int(v) for v in np.asarray(x, dtype=int))
         raw_resid2 = self._safe_residual_square(float(y) - float(mu), i, problem)
         epistemic_correction = max(float(epistemic_var or 0.0), 0.0)
-        resid2 = max(raw_resid2 - epistemic_correction, self.floor)
-        self.records[i].append((x_tuple, resid2))
+        if replicate_variance is None:
+            resid2 = max(raw_resid2 - epistemic_correction, self.floor)
+            variance_source = "innovation_minus_epistemic"
+            self.records[i].append((x_tuple, resid2))
+        else:
+            resid2 = max(float(replicate_variance), self.floor)
+            variance_source = "within_solution_replication"
+            self.records[i] = [
+                record for record in self.records[i]
+                if tuple(record[0]) != x_tuple
+            ]
+            self.records[i].append((x_tuple, resid2))
+            self.replicated_keys[i].add(x_tuple)
         old = self.predict_variance(i, x_tuple, problem)
         self._fit_output(i, problem)
         new = self.predict_variance(i, x_tuple, problem)
@@ -465,6 +506,7 @@ class OrthogonalHVD:
             "raw_innovation2": float(raw_resid2),
             "epistemic_correction": float(epistemic_correction),
             "resid2": float(resid2),
+            "variance_source": variance_source,
             "old_variance": float(old),
             "new_variance": float(new),
             "risk_class": int(self.risk_class(x_tuple, problem)),
@@ -498,7 +540,50 @@ class OrthogonalHVD:
         self.cumulative_params[i] = None
         self.cumulative_provider_active[i] = False
         self.cumulative_fit_rmse[i] = None
-        if self.mode == "factor" and len(recs) >= int(self.config.activation_min_records):
+        self.cumulative_prior_used[i] = False
+        self.cumulative_prior_precision[i] = None
+        self.cumulative_prior_scale[i] = None
+        self.cumulative_prior_scale_se[i] = None
+        self.cumulative_prior_target_weight[i] = 0
+        self.cumulative_prior_scale_source[i] = "none"
+        self.cumulative_prior_upper_scale[i] = 1.0
+        activation_records = int(self.config.activation_min_records)
+        prior_replication_only = False
+        problem_ref = problem or self._last_problem
+        prior_beta_probe = None
+        if self.mode == "factor" and problem_ref is not None and recs:
+            feature_probe = self._cumulative_features(
+                recs[0][0], problem, output_index=i)
+            if (
+                feature_probe is not None
+                and hasattr(problem_ref, "cumulative_hvd_prior_beta")
+            ):
+                try:
+                    prior_beta_probe = problem_ref.cumulative_hvd_prior_beta(
+                        output_index=i,
+                        feature_dim=len(feature_probe),
+                    )
+                except TypeError:
+                    prior_beta_probe = problem_ref.cumulative_hvd_prior_beta(i)
+                if prior_beta_probe is not None:
+                    prior_beta_probe = np.asarray(prior_beta_probe, dtype=float)
+                    if prior_beta_probe.shape != (len(feature_probe),):
+                        prior_beta_probe = None
+            if (
+                prior_beta_probe is not None
+                and hasattr(problem_ref, "cumulative_hvd_prior_min_records")
+            ):
+                prior_min = problem_ref.cumulative_hvd_prior_min_records()
+                if prior_min is not None:
+                    prior_replication_only = True
+                    activation_records = min(
+                        activation_records,
+                        max(1, int(prior_min)),
+                    )
+        self.cumulative_prior_replication_only[i] = bool(
+            prior_replication_only)
+        self.cumulative_activation_records[i] = int(activation_records)
+        if self.mode == "factor" and len(recs) >= activation_records:
             X_c = []
             y_c = []
             exposure_layout_ref = None
@@ -520,33 +605,143 @@ class OrthogonalHVD:
                 y_c = np.asarray(y_c, dtype=float)
                 ridge_alpha = float(self.config.ridge_alpha)
                 reg = ridge_alpha * np.eye(X_c.shape[1])
-                prior_beta = None
-                problem_ref = problem or self._last_problem
-                if (
-                    problem_ref is not None
-                    and hasattr(problem_ref, "cumulative_hvd_prior_beta")
-                ):
-                    try:
-                        prior_beta = problem_ref.cumulative_hvd_prior_beta(
-                            output_index=i,
-                            feature_dim=X_c.shape[1],
-                        )
-                    except TypeError:
-                        prior_beta = problem_ref.cumulative_hvd_prior_beta(i)
-                    if prior_beta is not None:
-                        prior_beta = np.asarray(prior_beta, dtype=float)
-                        if prior_beta.shape != (X_c.shape[1],):
-                            prior_beta = None
+                prior_beta = prior_beta_probe
                 if prior_beta is None:
+                    X_fit = X_c
+                    y_fit = y_c
                     reg[0, 0] = 0.0
-                    rhs = X_c.T @ y_c
+                    rhs = X_fit.T @ y_fit
+                    solve_gram = X_fit.T @ X_fit + reg
                 else:
-                    rhs = X_c.T @ y_c + reg @ prior_beta
+                    prior_precision = ridge_alpha
+                    if hasattr(problem_ref, "cumulative_hvd_prior_precision"):
+                        learned_precision = problem_ref.cumulative_hvd_prior_precision(
+                            output_index=i)
+                        if learned_precision is not None:
+                            prior_precision = max(
+                                float(learned_precision),
+                                ridge_alpha,
+                            )
+                    if hasattr(problem_ref, "cumulative_hvd_prior_upper_scale"):
+                        upper_scale = problem_ref.cumulative_hvd_prior_upper_scale(
+                            output_index=i)
+                        if upper_scale is not None:
+                            self.cumulative_prior_upper_scale[i] = float(max(
+                                float(upper_scale),
+                                1.0,
+                            ))
+                    if prior_replication_only:
+                        replicate_mask = np.asarray([
+                            tuple(x) in self.replicated_keys.get(i, set())
+                            for x, _ in recs
+                        ], dtype=bool)
+                        X_fit = X_c[replicate_mask]
+                        y_fit = y_c[replicate_mask]
+                    else:
+                        X_fit = X_c
+                        y_fit = y_c
+                    source_prediction = np.maximum(
+                        X_c @ prior_beta,
+                        self.floor,
+                    )
+                    informative = y_c > 10.0 * self.floor
+                    if prior_replication_only and np.any(replicate_mask):
+                        target_values = y_c[replicate_mask]
+                        target_source_prediction = source_prediction[
+                            replicate_mask]
+                        scale_source = "within_solution_replication"
+                    else:
+                        identifiable = int(np.sum(informative)) >= max(
+                            2,
+                            int(np.ceil(0.5 * len(y_c))),
+                        )
+                        target_values = (
+                            y_c if identifiable else np.zeros(0, dtype=float)
+                        )
+                        target_source_prediction = (
+                            source_prediction
+                            if identifiable
+                            else np.zeros(0, dtype=float)
+                        )
+                        scale_source = (
+                            "cross_sectional_moment"
+                            if identifiable
+                            else "source_prior_fallback"
+                        )
+                    ratios = np.asarray(
+                        target_values / target_source_prediction,
+                        dtype=float,
+                    ) if len(target_values) else np.zeros(0, dtype=float)
+                    ratios = ratios[np.isfinite(ratios)]
+                    source_scale_mean = None
+                    if hasattr(problem_ref, "cumulative_hvd_prior_scale_mean"):
+                        source_scale_mean = problem_ref.cumulative_hvd_prior_scale_mean(
+                            output_index=i)
+                    normalized_shape = source_scale_mean is not None
+                    scale_prior_mean = (
+                        max(float(source_scale_mean), self.floor)
+                        if normalized_shape
+                        else 1.0
+                    )
+                    scale_lower = self.floor if normalized_shape else 0.05
+                    scale_upper = (
+                        20.0 * max(
+                            scale_prior_mean,
+                            float(np.mean(y_c)),
+                            self.floor,
+                        )
+                        if normalized_shape
+                        else 20.0
+                    )
+                    ratios = np.clip(ratios, scale_lower, scale_upper)
+                    if len(ratios):
+                        moment_ratio = (
+                            float(np.mean(y_c))
+                            if normalized_shape
+                            else float(
+                                np.mean(target_values) / max(
+                                    float(np.mean(target_source_prediction)),
+                                    self.floor,
+                                )
+                            )
+                        )
+                        if normalized_shape:
+                            moment_ratio = float(np.mean(target_values))
+                        moment_ratio = float(np.clip(
+                            moment_ratio, scale_lower, scale_upper))
+                        prior_scale = float(
+                            (
+                                len(target_values) * moment_ratio
+                                + prior_precision * scale_prior_mean
+                            )
+                            / (len(target_values) + prior_precision)
+                        )
+                        prior_scale = float(np.clip(
+                            prior_scale, scale_lower, scale_upper))
+                        prior_scale_se = float(
+                            np.std(ratios, ddof=1) / np.sqrt(len(ratios))
+                            if len(ratios) > 1
+                            else 0.0
+                        )
+                    else:
+                        prior_scale = scale_prior_mean
+                        prior_scale_se = 0.0
+                    centered_prior = prior_scale * prior_beta
+                    reg = prior_precision * np.eye(X_c.shape[1])
+                    rhs = X_fit.T @ y_fit + reg @ centered_prior
+                    solve_gram = X_fit.T @ X_fit + reg
+                    self.cumulative_prior_used[i] = True
+                    self.cumulative_prior_precision[i] = float(prior_precision)
+                    self.cumulative_prior_scale[i] = float(prior_scale)
+                    self.cumulative_prior_scale_se[i] = float(prior_scale_se)
+                    self.cumulative_prior_target_weight[i] = int(
+                        len(target_values))
+                    self.cumulative_prior_scale_source[i] = scale_source
                 try:
-                    beta_c = np.linalg.solve(X_c.T @ X_c + reg, rhs)
+                    beta_c = np.linalg.solve(solve_gram, rhs)
                 except np.linalg.LinAlgError:
                     beta_c = np.linalg.lstsq(
-                        X_c.T @ X_c + reg,
+                        solve_gram,
                         rhs,
                         rcond=None,
                     )[0]
@@ -581,8 +776,10 @@ class OrthogonalHVD:
                 self.cumulative_beta[i] = beta_c
                 self.cumulative_params[i] = params
                 self.cumulative_provider_active[i] = bool(provider_active)
-                pred_c = np.maximum(X_c @ beta_c, self.floor)
-                self.cumulative_fit_rmse[i] = float(np.sqrt(np.mean((pred_c - y_c) ** 2)))
+                if len(X_fit):
+                    pred_c = np.maximum(X_fit @ beta_c, self.floor)
+                    self.cumulative_fit_rmse[i] = float(np.sqrt(
+                        np.mean((pred_c - y_fit) ** 2)))
                 energy = beta_c[1:] ** 2
                 total = float(np.sum(energy))
                 if total > 0:
@@ -730,9 +927,7 @@ class OrthogonalHVD:
             return float(base)
         class_unc = 1.0 / np.sqrt(n_c + 1.0)
         total_unc = 1.0 / np.sqrt(n_total + 1.0)
-        activation_penalty = 1.0 if (
-            self.mode in ("orthogonal", "factor") and not self._orthogonal_active(i)
-        ) else 0.25
+        activation_penalty = 1.0 if not self._variance_model_active(i) else 0.25
         return float(
             max(float(self.config.certification_kappa), 0.0)
             * base
@@ -759,9 +954,7 @@ class OrthogonalHVD:
             return base.copy()
         class_unc = 1.0 / np.sqrt(n_c + 1.0)
         total_unc = 1.0 / np.sqrt(n_total + 1.0)
-        activation_penalty = 1.0 if (
-            self.mode in ("orthogonal", "factor") and not self._orthogonal_active(i)
-        ) else 0.25
+        activation_penalty = 1.0 if not self._variance_model_active(i) else 0.25
         scale = (
             max(float(self.config.certification_kappa), 0.0)
             * np.maximum(class_unc, total_unc)
@@ -778,7 +971,18 @@ class OrthogonalHVD:
         if self.mode == "factor" and self._cumulative_active(i):
             cert += self._residual_tail_uncertainty(i)
         cert += self._high_frequency_residual_floor(i, x, problem)
-        if self.mode in ("orthogonal", "factor"):
+        source_prior_active = bool(
+            self.mode == "factor"
+            and self._cumulative_active(i)
+            and self.cumulative_prior_used.get(int(i), False)
+            and self.cumulative_prior_replication_only.get(int(i), False)
+        )
+        if source_prior_active:
+            cert += (
+                max(float(self.cumulative_prior_upper_scale.get(i, 1.0)), 1.0)
+                - 1.0
+            ) * self.predict_variance(i, x, problem)
+        if self.mode in ("orthogonal", "factor") and not source_prior_active:
             # Smooth log-variance fits are allowed to guide learning, but
             # feasibility certification should not be more optimistic than the
             # coarse regime evidence in small-budget runs.
@@ -791,7 +995,18 @@ class OrthogonalHVD:
         if self.mode == "factor" and self._cumulative_active(i):
             cert = cert + self._residual_tail_uncertainty(i)
         cert = cert + self._high_frequency_residual_floor_many(i, X, problem)
-        if self.mode in ("orthogonal", "factor"):
+        source_prior_active = bool(
+            self.mode == "factor"
+            and self._cumulative_active(i)
+            and self.cumulative_prior_used.get(int(i), False)
+            and self.cumulative_prior_replication_only.get(int(i), False)
+        )
+        if source_prior_active:
+            cert = cert + (
+                max(float(self.cumulative_prior_upper_scale.get(i, 1.0)), 1.0)
+                - 1.0
+            ) * base
+        if self.mode in ("orthogonal", "factor") and not source_prior_active:
             cert = np.maximum(cert, self._class_variance_many(i, X, problem))
         return np.maximum(cert, self.floor)
 
@@ -991,6 +1206,59 @@ class OrthogonalHVD:
                     None if self.cumulative_fit_rmse.get(i) is None
                     else float(self.cumulative_fit_rmse[i])
                 )
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_used": {
+                str(i): bool(self.cumulative_prior_used.get(i, False))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_precision": {
+                str(i): (
+                    None
+                    if self.cumulative_prior_precision.get(i) is None
+                    else float(self.cumulative_prior_precision[i])
+                )
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_scale": {
+                str(i): (
+                    None
+                    if self.cumulative_prior_scale.get(i) is None
+                    else float(self.cumulative_prior_scale[i])
+                )
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_scale_se": {
+                str(i): (
+                    None
+                    if self.cumulative_prior_scale_se.get(i) is None
+                    else float(self.cumulative_prior_scale_se[i])
+                )
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_target_weight": {
+                str(i): int(self.cumulative_prior_target_weight.get(i, 0))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_scale_source": {
+                str(i): str(self.cumulative_prior_scale_source.get(i, "none"))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_upper_scale": {
+                str(i): float(self.cumulative_prior_upper_scale.get(i, 1.0))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_replication_only": {
+                str(i): bool(self.cumulative_prior_replication_only.get(i, False))
+                for i in range(self.n_outputs)
+            },
+            "replicated_solution_count": {
+                str(i): int(len(self.replicated_keys.get(i, set())))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_activation_records": {
+                str(i): int(self.cumulative_activation_records.get(
+                    i, self.config.activation_min_records))
                 for i in range(self.n_outputs)
             },
             "orthogonal_active": {

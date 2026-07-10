@@ -10,6 +10,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from acquisition.olhkg import OLHKGAcquisition  # noqa: E402
+from algorithms.single_olhkg import (  # noqa: E402
+    SingleOLHKGAlgorithm,
+    SingleOLHKGConfig,
+)
 from core.gpr import ParametricGPR  # noqa: E402
 from core.kg import compute_kg_vectorized  # noqa: E402
 from problems.rzdt import RegimeRZDT1  # noqa: E402
@@ -41,6 +45,32 @@ class AcquisitionTests(unittest.TestCase):
         kg = compute_kg_vectorized(self.obj, self.candidates, sig2)
         np.testing.assert_allclose(score["total"], kg, rtol=1e-12, atol=1e-12)
         np.testing.assert_allclose(score["kg_obj_scaled"], kg, rtol=1e-12, atol=1e-12)
+
+    def test_parametric_gpr_accepts_diagonal_prior_variance(self):
+        model = ParametricGPR(2)
+        beta = np.linspace(0.0, 1.0, model.p)
+        prior_diag = np.linspace(0.1, 0.1 * model.p, model.p)
+        model.set_parametric_prior(
+            beta,
+            lambda_i=0.2,
+            prior_var=prior_diag,
+        )
+        np.testing.assert_allclose(model.a, beta)
+        np.testing.assert_allclose(np.diag(model.C), prior_diag)
+        np.testing.assert_allclose(
+            model.C - np.diag(np.diag(model.C)),
+            0.0,
+        )
+
+    def test_parametric_gpr_accepts_full_prior_covariance(self):
+        model = ParametricGPR(2)
+        beta = np.linspace(0.0, 1.0, model.p)
+        root = np.eye(model.p)
+        root[0, 1] = 0.2
+        covariance = root @ root.T
+        model.set_parametric_prior(beta, lambda_i=0.2, prior_var=covariance)
+        np.testing.assert_allclose(model.a, beta)
+        np.testing.assert_allclose(model.C, covariance, rtol=1e-12, atol=1e-12)
 
     def test_optional_torch_backend_matches_numpy_kg(self):
         try:
@@ -122,6 +152,24 @@ class AcquisitionTests(unittest.TestCase):
         expected = mu + norm.ppf(1 - alpha) * np.sqrt(variance) - tau
         got = OLHKGAcquisition.chance_margin(mu, variance, tau, alpha)
         self.assertAlmostEqual(got, expected, places=12)
+
+    def test_source_alignment_guard_enters_theory_certification(self):
+        self.problem.pilot_constraint_guard = lambda: 0.20
+        algorithm = SingleOLHKGAlgorithm(
+            self.problem,
+            SingleOLHKGConfig(N=4, n0=2, K1=2, K2=0, beta_g=0.0),
+        )
+        algorithm.gpr[1].posterior_var_many = lambda candidates: np.zeros(
+            len(candidates), dtype=float)
+        variance = np.full(1, 0.01, dtype=float)
+        result = algorithm._certification_result(
+            np.asarray([-0.10]), [self.candidates[0]], variance)
+        expected = (
+            -0.10 + 0.20 + norm.ppf(0.95) * np.sqrt(0.01)
+            - float(self.problem.tau)
+        )
+        self.assertAlmostEqual(float(result.margin[0]), expected)
+        self.assertAlmostEqual(float(result.mu[0]), 0.10)
 
     def test_coupling_gate_penalizes_risky_chance_margins(self):
         acq = OLHKGAcquisition(

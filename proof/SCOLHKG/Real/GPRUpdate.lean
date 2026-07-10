@@ -82,4 +82,51 @@ theorem kg_sigma_tilde_matches_code_formula
       covarianceResponse s sample target / denom := by
   rfl
 
+/-!
+Repeated evaluation is an admissible exact-KG action. At an already observed
+design with epistemic variance `q` and observation variance `r`, the scalar
+rank-one update removes `q^2 / (q + r)` from the epistemic variance. This is
+the quantity used to rank the optional replication candidates in
+`algorithms/single_olhkg.py`; it only proposes candidates, while exact KG still
+decides whether evaluating one is preferable to a new design.
+-/
+
+noncomputable def replicationVarianceReduction (q r : ℝ) : ℝ :=
+  q ^ 2 / (q + r)
+
+theorem replication_variance_update_identity
+    {q r : ℝ}
+    (hq : 0 ≤ q)
+    (hr : 0 < r) :
+    q - replicationVarianceReduction q r = q * r / (q + r) := by
+  have hsum : q + r ≠ 0 := ne_of_gt (add_pos_of_nonneg_of_pos hq hr)
+  unfold replicationVarianceReduction
+  field_simp [hsum]
+  ring
+
+theorem replication_variance_reduction_nonnegative
+    {q r : ℝ}
+    (hq : 0 ≤ q)
+    (hr : 0 < r) :
+    0 ≤ replicationVarianceReduction q r := by
+  unfold replicationVarianceReduction
+  exact div_nonneg (sq_nonneg q) (le_of_lt (add_pos_of_nonneg_of_pos hq hr))
+
+theorem replication_variance_reduction_le_epistemic
+    {q r : ℝ}
+    (hq : 0 ≤ q)
+    (hr : 0 < r) :
+    replicationVarianceReduction q r ≤ q := by
+  have hsum : 0 < q + r := add_pos_of_nonneg_of_pos hq hr
+  unfold replicationVarianceReduction
+  rw [div_le_iff₀ hsum]
+  nlinarith [mul_nonneg hq (le_of_lt hr)]
+
+theorem replication_updated_variance_nonnegative
+    {q r : ℝ}
+    (hq : 0 ≤ q)
+    (hr : 0 < r) :
+    0 ≤ q - replicationVarianceReduction q r := by
+  exact sub_nonneg.mpr (replication_variance_reduction_le_epistemic hq hr)
+
 end SCOLHKG.Real

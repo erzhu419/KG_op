@@ -43,6 +43,7 @@ class TransferableSpectralBasis:
         pilot_cv_size=10,
         pilot_cv_repeats=3,
         pilot_cv_weight=1.0,
+        orthogonalization="symmetric",
     ):
         self.active_dim = int(active_dim)
         self.max_library_size = int(max_library_size)
@@ -53,6 +54,11 @@ class TransferableSpectralBasis:
         self.pilot_cv_size = int(pilot_cv_size)
         self.pilot_cv_repeats = int(pilot_cv_repeats)
         self.pilot_cv_weight = float(pilot_cv_weight)
+        self.orthogonalization = str(orthogonalization)
+        if self.orthogonalization not in {"symmetric", "ordered_cholesky"}:
+            raise ValueError(
+                "orthogonalization must be 'symmetric' or 'ordered_cholesky'"
+            )
 
         self.psi_mean_: np.ndarray | None = None
         self.psi_scale_: np.ndarray | None = None
@@ -125,9 +131,37 @@ class TransferableSpectralBasis:
         selected_idx = []
         selected_cv_loss = []
         remaining = list(range(len(score)))
+        selection_library = np.vstack(standardized_libraries)
+        selection_weights = np.concatenate(pooled_weights)
+        selection_weights = np.clip(selection_weights, 1e-8, np.inf)
+        selection_weights = selection_weights / float(np.sum(selection_weights))
         for _ in range(n_select):
             candidates = []
             for feature_idx in remaining:
+                candidate = selection_library[:, feature_idx]
+                total_energy = float(np.sum(
+                    selection_weights * candidate ** 2))
+                independence = 1.0
+                if (
+                    self.active_dim > 6
+                    and selected_idx
+                    and total_energy > 1e-14
+                ):
+                    selected_design = selection_library[:, selected_idx]
+                    gram = selected_design.T @ (
+                        selected_design * selection_weights[:, None])
+                    rhs = selected_design.T @ (selection_weights * candidate)
+                    try:
+                        projection = np.linalg.solve(
+                            gram + 1e-12 * np.eye(len(selected_idx)), rhs)
+                    except np.linalg.LinAlgError:
+                        projection = np.linalg.pinv(gram) @ rhs
+                    residual = candidate - selected_design @ projection
+                    independence = float(np.sum(
+                        selection_weights * residual ** 2
+                    ) / total_energy)
+                if independence <= 1e-10:
+                    continue
                 subset = selected_idx + [feature_idx]
                 cv_loss = self._pilot_cv_loss(
                     batches,
@@ -135,9 +169,11 @@ class TransferableSpectralBasis:
                     subset,
                 )
                 structural = max(float(score[feature_idx]), 1e-12)
-                value = structural / (
+                value = structural * np.sqrt(max(independence, 0.0)) / (
                     1.0 + max(self.pilot_cv_weight, 0.0) * cv_loss)
                 candidates.append((-value, cv_loss, feature_idx))
+            if not candidates:
+                break
             _, cv_loss, chosen = min(candidates)
             selected_idx.append(int(chosen))
             selected_cv_loss.append(float(cv_loss))
@@ -153,12 +189,34 @@ class TransferableSpectralBasis:
         try:
             eigenvalues, eigenvectors = np.linalg.eigh(covariance)
         except np.linalg.LinAlgError:
-            eigenvalues = np.ones(n_select, dtype=float)
-            eigenvectors = np.eye(n_select, dtype=float)
-        eigenvalues = np.maximum(eigenvalues, self.ridge)
-        self.whitening_ = (
-            eigenvectors * (1.0 / np.sqrt(eigenvalues))[None, :]
-        ) @ eigenvectors.T
+            eigenvalues = np.ones(len(self.selected_idx_), dtype=float)
+            eigenvectors = np.eye(len(self.selected_idx_), dtype=float)
+        rank_threshold = max(
+            float(np.max(eigenvalues)) * 1e-12,
+            1e-14,
+        )
+        retained = eigenvalues > rank_threshold
+        if not np.any(retained):
+            retained[int(np.argmax(eigenvalues))] = True
+        retained_eigenvalues = eigenvalues[retained]
+        retained_eigenvectors = eigenvectors[:, retained]
+        if self.orthogonalization == "ordered_cholesky" and np.all(retained):
+            try:
+                lower = np.linalg.cholesky(covariance)
+                self.whitening_ = np.linalg.solve(
+                    lower.T,
+                    np.eye(len(self.selected_idx_), dtype=float),
+                )
+            except np.linalg.LinAlgError:
+                self.whitening_ = (
+                    retained_eigenvectors
+                    * (1.0 / np.sqrt(retained_eigenvalues))[None, :]
+                )
+        else:
+            self.whitening_ = (
+                retained_eigenvectors
+                * (1.0 / np.sqrt(retained_eigenvalues))[None, :]
+            )
         transformed = selected @ self.whitening_
         gram = transformed.T @ (transformed * weights[:, None])
         offdiag = gram - np.diag(np.diag(gram))
@@ -174,6 +232,9 @@ class TransferableSpectralBasis:
             "psi_dim": int(psi_dim),
             "library_dim": int(len(self.library_names_)),
             "active_dim": int(self.feature_dim),
+            "requested_active_dim": int(n_select),
+            "source_identifiable_rank": int(np.sum(retained)),
+            "rank_truncated": bool(np.sum(retained) < n_select),
             "selected_names": selected_names,
             "selected_scores": [float(score[i]) for i in self.selected_idx_],
             "selected_low_frequency": [float(low_stable[i]) for i in self.selected_idx_],
@@ -186,6 +247,7 @@ class TransferableSpectralBasis:
             "pilot_cv_size": int(self.pilot_cv_size),
             "pilot_cv_repeats": int(self.pilot_cv_repeats),
             "pilot_cv_weight": float(self.pilot_cv_weight),
+            "orthogonalization": self.orthogonalization,
             "max_offdiag_gram": float(np.max(np.abs(offdiag))) if offdiag.size else 0.0,
             "max_diag_error": float(np.max(np.abs(np.diag(gram) - 1.0))),
             "fingerprint": self.fingerprint(),
@@ -208,6 +270,7 @@ class TransferableSpectralBasis:
 
     def fingerprint(self):
         digest = hashlib.sha256()
+        digest.update(self.orthogonalization.encode("ascii"))
         for value in (
             self.psi_mean_,
             self.psi_scale_,

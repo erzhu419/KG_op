@@ -36,6 +36,34 @@ def UniformResidualSquareConcentration
     (radius : ℝ) : Prop :=
   ∀ theta, |trueRisk theta - empiricalRisk theta| ≤ radius
 
+def PriorCenteredPenalty (theta sourcePrior : ℝ) : ℝ :=
+  (theta - sourcePrior) ^ 2
+
+theorem priorCenteredPenalty_nonnegative (theta sourcePrior : ℝ) :
+    0 ≤ PriorCenteredPenalty theta sourcePrior := by
+  unfold PriorCenteredPenalty
+  exact sq_nonneg _
+
+noncomputable def hierarchicalVarianceScale
+    (targetWeight sourcePrecision targetMoment sourceScale : ℝ) : ℝ :=
+  (targetWeight * targetMoment + sourcePrecision * sourceScale)
+    / (targetWeight + sourcePrecision)
+
+theorem hierarchicalVarianceScale_nonnegative
+    {targetWeight sourcePrecision targetMoment sourceScale : ℝ}
+    (hTargetWeight : 0 ≤ targetWeight)
+    (hSourcePrecision : 0 ≤ sourcePrecision)
+    (hTargetMoment : 0 ≤ targetMoment)
+    (hSourceScale : 0 ≤ sourceScale) :
+    0 ≤ hierarchicalVarianceScale
+      targetWeight sourcePrecision targetMoment sourceScale := by
+  unfold hierarchicalVarianceScale
+  exact div_nonneg
+    (add_nonneg
+      (mul_nonneg hTargetWeight hTargetMoment)
+      (mul_nonneg hSourcePrecision hSourceScale))
+    (add_nonneg hTargetWeight hSourcePrecision)
+
 theorem ridge_basic_inequality
     {Param : Type u}
     {empiricalRisk penalty : Param → ℝ}

@@ -233,13 +233,14 @@ versions needed by the manuscript:
 | Low-rank truncation bookkeeping | `SCOLHKG/Real/CumulativeRisk.lean` | Lean-proved over `R` |
 | Information refinement / law of total variance | `SCOLHKG/Real/ConditionalVariance.lean` | Lean-proved for two-cell and arbitrary finite partitions |
 | Policy/trajectory occupancy decomposition | `SCOLHKG/Real/OccupancyDecomposition.lean` | Lean-proved as occupancy cumulative risk plus remainder plus explained trajectory variance |
-| GPR rank-one update / KG slope | `SCOLHKG/Real/GPRUpdate.lean` | Lean-proved; matches `ParametricGPR.update` and `compute_kg_vectorized` slope |
+| GPR rank-one update / KG slope / replication VOI | `SCOLHKG/Real/GPRUpdate.lean` | Lean-proved; matches `ParametricGPR.update`, `compute_kg_vectorized`, and proves the observed-point variance reduction `q^2/(q+r)` is in `[0,q]` |
 | Chance certification | `SCOLHKG/Real/Certification.lean` | Lean-proved from GP-confidence and variance-upper events |
 | Theory certification implementation | `SCOLHKG/Real/CertificationImplementation.lean` | Lean-proved for `mu + sqrt(beta)s + z sqrt(v_C^+) <= tau`, with legacy mode dominated by theory mode |
 | HVD oracle inequality | `SCOLHKG/Real/HVD.lean` | Lean-proved from residual-square concentration event |
 | HVD implementation guards | `SCOLHKG/Real/HVDImplementation.lean` | Lean-proved for residual squares, nonnegative linear variance, clipping, and certification variance |
 | Factor cumulative block implementation | `SCOLHKG/Real/CumulativeRiskImplementation.lean` | Lean-proved for `floor/independent/shared/linear/total` aggregation and shared-shock omission underestimation |
 | Ridge-HVD oracle inequality | `SCOLHKG/Real/RidgeHVD.lean` | Lean-proved from ridge minimizer and uniform residual-square concentration |
+| Source-prior HVD calibration | `SCOLHKG/Real/RidgeHVD.lean`, `SCOLHKG/Real/HVDImplementation.lean` | Lean-proved nonnegativity for prior-centered penalty, hierarchical variance scale, and within-policy sample variance |
 | Posterior recommendation | `SCOLHKG/Real/PosteriorRecommendation.lean` | Lean-proved for robust-feasible posterior certification and objective argmin |
 | Exact KG maximizer | `SCOLHKG/Real/KG.lean` | Lean-proved for expected terminal gain |
 | Line-envelope KG | `SCOLHKG/Real/LineEnvelopeKG.lean` | Lean-proved at certificate level for active hull regions and `compute_h` sum formula |
@@ -273,8 +274,19 @@ versions needed by the manuscript:
 | Exact-MC estimator concentration | `SCOLHKG/Measure/ExactMCConcentration.lean` | Lean-proved finite candidate-pool uniform-error probability bound from centered sub-Gaussian MC errors, plus MC-schedule variance scaling |
 | High-probability safe regret | `SCOLHKG/Measure/SafeRegretEvent.lean` | Lean-proved by bad-event containment |
 | Traffic finite stochastic model | `SCOLHKG/Real/TrafficTrajectoryModel.lean` | Lean-proved finite state-action occupancy plus shared demand-shock decomposition, schema-row field semantics, and SUMO snapshot row bridge |
+| Boundary-aligned risk representation | `SCOLHKG/Real/RiskAlignedRepresentation.lean` | Lean-proved projector rotation invariance, retained-rank whitening, simplex expert bounds, nested-LOO noninterference, strong heredity, and exact weak-support fallback |
+| Target boundary-evidence gate | `SCOLHKG/Real/RiskAlignedRepresentation.lean` | Lean-proved exact Stage-1 fallback when the target pilot has no observed feasible or no observed infeasible chance margin |
+| Frozen source-boundary episode admission | `SCOLHKG/Real/RiskAlignedRepresentation.lean` | Lean-proved that source support may replace target gain evidence only; two-sided target support and target safety remain necessary, and source-only proposals are target-label invariant |
+| Transactional representation switching | `SCOLHKG/Real/RiskAlignedRepresentation.lean` | Lean-proved exact rejection fallback and ordered posterior replay/commit semantics for admitted feature changes |
 
-The next frontier is no longer missing formal structure.  It is to keep the
+The aligned representation remains experimental.  A five-seed, three-domain
+source-only sequential replay activated the frozen coordinate five times and
+won all five activations without increasing false feasibility; unsupported
+Inventory episodes fell back to Stage 1.  This is offline admission evidence,
+not a KG result.  No representation gain is promoted until the paired N=40 KG
+control/admission matrix shows no domain-level negative transfer.  The next
+frontier is no longer
+missing formal structure.  It is to keep the
 manuscript honest about the final empirical choice: if exact-MC is not the main
 runner, the main text should state additive is an approximation and cite the
 `2 eta` theorem; if exact-MC/blend wins after the large benchmark, cite the

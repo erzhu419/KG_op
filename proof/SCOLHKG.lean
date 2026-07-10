@@ -16,6 +16,7 @@ import SCOLHKG.Measure.ProbabilityEvents
 import SCOLHKG.Measure.SafeRegretEvent
 import SCOLHKG.Optimization
 import SCOLHKG.Real.AdditiveApproxKG
+import SCOLHKG.Real.AdaptiveCoefficientSparsity
 import SCOLHKG.Real.Certification
 import SCOLHKG.Real.CertificationImplementation
 import SCOLHKG.Real.ConditionalVariance
@@ -26,6 +27,7 @@ import SCOLHKG.Real.FeatureKernelDeterminantCap
 import SCOLHKG.Real.FiniteKernelInformationGain
 import SCOLHKG.Real.GPRUpdate
 import SCOLHKG.Real.HVD
+import SCOLHKG.Real.CoefficientShrinkage
 import SCOLHKG.Real.HVDImplementation
 import SCOLHKG.Real.InformationGainRegret
 import SCOLHKG.Real.KernelDeterminantBridge
@@ -37,8 +39,10 @@ import SCOLHKG.Real.LineEnvelopeIntersection
 import SCOLHKG.Real.LineEnvelopeKG
 import SCOLHKG.Real.LineEnvelopeStack
 import SCOLHKG.Real.OccupancyDecomposition
+import SCOLHKG.Real.OrthogonalAdditiveGroups
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.RidgeHVD
+import SCOLHKG.Real.RiskAlignedRepresentation
 import SCOLHKG.Real.SafeRegret
 import SCOLHKG.Real.TrafficTrajectoryModel
 import SCOLHKG.Scalarization

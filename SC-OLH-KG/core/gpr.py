@@ -7,6 +7,8 @@ from typing import Callable, Optional, Union
 
 import numpy as np
 
+from representation.adaptive_sparsity import AdaptiveSpikeSlabPosterior
+
 
 ArrayLike = Union[np.ndarray, list, tuple]
 
@@ -63,6 +65,9 @@ class ParametricGPR:
         self.sol_to_idx: dict[tuple[int, ...], int] = {}
         self._state_version = 0
         self._torch_cache = {}
+        self._adaptive_sparsity = None
+        self._adaptive_records = []
+        self._adaptive_spec = None
         if self.numeric_backend in ("torch", "torch_cuda", "cuda"):
             if self._import_torch() is None:
                 raise RuntimeError(
@@ -241,6 +246,7 @@ class ParametricGPR:
         var = float(e @ self.C @ e)
         if x_tuple not in self.sol_to_idx:
             var += self.lambda_i
+        var += self.adaptive_model_uncertainty(x)
         return max(var, 1e-12)
 
     def posterior_var_many(self, X: list[ArrayLike] | np.ndarray) -> np.ndarray:
@@ -264,6 +270,7 @@ class ParametricGPR:
         ], dtype=bool)
         var = np.asarray(var, dtype=float)
         var[unseen] += self.lambda_i
+        var += self.adaptive_model_uncertainty_many(X)
         return np.maximum(var, 1e-12)
 
     def dimension_augment(self, x: ArrayLike) -> None:
@@ -286,21 +293,64 @@ class ParametricGPR:
         self,
         beta_mean: np.ndarray,
         lambda_i: float,
-        prior_var: float,
+        prior_var: float | np.ndarray,
     ) -> None:
-        """Reset to a data-driven parametric prior."""
+        """Reset to a data-driven parametric prior.
+
+        ``prior_var`` may be a scalar, a diagonal covariance vector, or a full
+        covariance matrix.  The matrix path is used by the adaptive
+        spike-and-slab posterior after transforming its standardized basis back
+        to the raw GPR feature coordinates.
+        """
         beta_mean = np.asarray(beta_mean, dtype=float)
         if len(beta_mean) != self.p:
             raise ValueError(f"beta length {len(beta_mean)} != basis dim {self.p}")
         self.lambda_i = max(float(lambda_i), 1e-12)
         self.a = beta_mean.copy()
-        self.C = max(float(prior_var), 1e-12) * np.eye(self.p)
+        prior = np.asarray(prior_var, dtype=float)
+        if prior.ndim == 0:
+            prior_diag = np.full(self.p, max(float(prior), 1e-12), dtype=float)
+            covariance = np.diag(prior_diag)
+        elif prior.ndim == 1:
+            prior_diag = prior.reshape(-1)
+            if len(prior_diag) != self.p:
+                raise ValueError(
+                    f"prior variance length {len(prior_diag)} != basis dim {self.p}")
+            if not np.all(np.isfinite(prior_diag)):
+                raise ValueError("prior variance must be finite")
+            prior_diag = np.maximum(prior_diag, 1e-12)
+            covariance = np.diag(prior_diag)
+        elif prior.ndim == 2:
+            if prior.shape != (self.p, self.p):
+                raise ValueError(
+                    f"prior covariance shape {prior.shape} != ({self.p}, {self.p})")
+            if not np.all(np.isfinite(prior)):
+                raise ValueError("prior covariance must be finite")
+            covariance = 0.5 * (prior + prior.T)
+            eigenvalues, eigenvectors = np.linalg.eigh(covariance)
+            covariance = (
+                eigenvectors * np.maximum(eigenvalues, 1e-12)
+            ) @ eigenvectors.T
+        else:
+            raise ValueError("prior variance must be scalar, vector, or matrix")
+        self.C = covariance
         self.sampled_set = []
         self.sol_to_idx = {}
+        self._adaptive_sparsity = None
+        self._adaptive_records = []
+        self._adaptive_spec = None
         self._invalidate_backend_cache()
 
     def update(self, x: ArrayLike, y: float, sigma2_hat: float) -> None:
         """Rank-one Kalman update using the plug-in observation variance."""
+        if self._adaptive_sparsity is not None:
+            self._adaptive_records.append({
+                "x": tuple(int(v) for v in np.asarray(x, dtype=int)),
+                "y": float(y),
+                "sigma2": max(float(sigma2_hat), 1e-12),
+            })
+            self._refit_adaptive_sparsity()
+            return
         self.dimension_augment(x)
         e = self.augmented_feature(x)
         Ce = self.C @ e
@@ -311,6 +361,133 @@ class ParametricGPR:
         self.C = self.C - np.outer(gain, Ce)
         self.C = 0.5 * (self.C + self.C.T)
         self._invalidate_backend_cache()
+
+    def enable_adaptive_sparsity(
+        self,
+        spec,
+        X,
+        y,
+        noise_variance,
+        *,
+        deviation_variance,
+    ):
+        """Enable a target-updated sparse posterior over the fixed basis.
+
+        Every subsequent ``update`` refits from ``_adaptive_records``.  Exact KG
+        clones therefore update their own PIPs under each fantasy observation,
+        while the live model remains unchanged.
+        """
+
+        if self.basis_map is None:
+            raise ValueError("adaptive sparsity requires an explicit fixed basis")
+        rows = list(X)
+        values = np.asarray(y, dtype=float).reshape(-1)
+        noise = np.asarray(noise_variance, dtype=float).reshape(-1)
+        if len(noise) == 1 and len(rows) > 1:
+            noise = np.full(len(rows), float(noise[0]), dtype=float)
+        if len(rows) != len(values) or len(rows) != len(noise):
+            raise ValueError("adaptive initial observations must align")
+        self.lambda_i = max(float(deviation_variance), 1e-12)
+        self._adaptive_spec = dict(spec)
+        self._adaptive_sparsity = AdaptiveSpikeSlabPosterior(
+            self._adaptive_spec["source_pip"],
+            self._adaptive_spec["source_slab_scale"],
+            min_pip=self._adaptive_spec.get("min_pip", 0.05),
+            max_pip=self._adaptive_spec.get("max_pip", 0.95),
+            spike_ratio=self._adaptive_spec.get("spike_ratio", 0.05),
+            damping=self._adaptive_spec.get("damping", 0.5),
+            max_iter=self._adaptive_spec.get("max_iter", 40),
+            tolerance=self._adaptive_spec.get("tolerance", 1e-5),
+            residual_floor_scale=self._adaptive_spec.get(
+                "residual_floor_scale", 0.05),
+            multiplicity_correction=self._adaptive_spec.get(
+                "multiplicity_correction", 1.0),
+            max_effective_fraction=self._adaptive_spec.get(
+                "max_effective_fraction", 0.35),
+            always_active_count=self._adaptive_spec.get(
+                "always_active_count", 0),
+            allowed_mask=self._adaptive_spec.get("allowed_mask"),
+        )
+        self._adaptive_records = [
+            {
+                "x": tuple(int(v) for v in np.asarray(x, dtype=int)),
+                "y": float(value),
+                "sigma2": max(float(sigma2), 1e-12),
+            }
+            for x, value, sigma2 in zip(rows, values, noise)
+        ]
+        self._refit_adaptive_sparsity()
+
+    def _refit_adaptive_sparsity(self):
+        if self._adaptive_sparsity is None or not self._adaptive_records:
+            return
+        X = [row["x"] for row in self._adaptive_records]
+        dictionary_dim = min(
+            int(self._adaptive_spec.get("dictionary_dim", self.p - 1)),
+            self.p - 1,
+        )
+        features = self.basis_matrix(X)[:, 1:1 + dictionary_dim]
+        response = np.asarray([row["y"] for row in self._adaptive_records])
+        noise = np.asarray([row["sigma2"] for row in self._adaptive_records])
+        self._adaptive_sparsity.fit(
+            features,
+            response,
+            noise,
+            X,
+            deviation_variance=self.lambda_i,
+        )
+        result = self._adaptive_sparsity.result_
+        self.sampled_set = list(result.sampled_set)
+        self.sol_to_idx = dict(result.sol_to_idx)
+        n_sampled = len(self.sampled_set)
+        full_dim = self.p + n_sampled
+        active_parametric_dim = 1 + dictionary_dim
+        source_indices = list(range(active_parametric_dim)) + list(range(
+            active_parametric_dim,
+            active_parametric_dim + n_sampled,
+        ))
+        target_indices = list(range(active_parametric_dim)) + list(range(
+            self.p,
+            self.p + n_sampled,
+        ))
+        self.a = np.zeros(full_dim, dtype=float)
+        self.a[target_indices] = np.asarray(result.mean, dtype=float)[source_indices]
+        self.C = 1e-12 * np.eye(full_dim, dtype=float)
+        self.C[np.ix_(target_indices, target_indices)] = np.asarray(
+            result.covariance, dtype=float)[np.ix_(source_indices, source_indices)]
+        basis_map = self.basis_map
+        if hasattr(basis_map, "record_adaptive_sparsity_diagnostics"):
+            basis_map.record_adaptive_sparsity_diagnostics(result.diagnostics)
+        self._invalidate_backend_cache()
+
+    def adaptive_sparsity_enabled(self):
+        return self._adaptive_sparsity is not None
+
+    def adaptive_model_uncertainty(self, x):
+        if self._adaptive_sparsity is None:
+            return 0.0
+        dictionary_dim = min(
+            int(self._adaptive_spec.get("dictionary_dim", self.p - 1)),
+            self.p - 1,
+        )
+        features = self.basis_matrix([x])[:, 1:1 + dictionary_dim]
+        return float(self._adaptive_sparsity.mask_uncertainty(features)[0])
+
+    def adaptive_model_uncertainty_many(self, X):
+        if self._adaptive_sparsity is None or len(X) == 0:
+            return np.zeros(len(X), dtype=float)
+        dictionary_dim = min(
+            int(self._adaptive_spec.get("dictionary_dim", self.p - 1)),
+            self.p - 1,
+        )
+        features = self.basis_matrix(X)[:, 1:1 + dictionary_dim]
+        return np.asarray(
+            self._adaptive_sparsity.mask_uncertainty(features), dtype=float)
+
+    def adaptive_sparsity_diagnostics(self):
+        if self._adaptive_sparsity is None:
+            return {"status": "disabled"}
+        return self._adaptive_sparsity.diagnostics()
 
     def torch_state(self, rows=0, force=False):
         ctx = self._torch_context(rows=rows, force=force)

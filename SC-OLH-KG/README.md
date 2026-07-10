@@ -14,6 +14,8 @@ contains a minimal, testable implementation path:
 6. Add deterministic state-policy coupling and fresh-log traffic encoding.
 7. Compare deterministic, self-supervised, and transformer-style state
    encoders as SC coupling ablations.
+8. Learn frozen source-domain chance-boundary coordinates and a cumulative-HVD
+   shape prior under leave-one-domain-out evaluation.
 
 Generated outputs should go under `results/`, `profiles/`, or `checkpoints/`;
 those directories are ignored by git.
@@ -55,6 +57,25 @@ is kept only for ablation.
 and HVD states before recomputing the terminal theory-certified value.  If
 `exact_mc` or `blend` is selected without an explicit sample count, the runner
 uses a small default MC count for a real exact-KG code path.
+
+## LODO Aligned HVD
+
+`benchmark_lodo_meta_prior.py --meta_component_stage spectral_hvd` adds one
+isolated module to the source-frozen spectral baseline. Source-domain variance
+labels learn a dimensionless cumulative-HVD shape in boundary-aligned
+coordinates. A held-out target uses only an unlabeled policy pool to normalize
+that shape and ordinary pilot residuals to recover one nonnegative amplitude.
+Target variance-shape corrections require repeated evaluations of the same
+policy; singleton residuals cannot masquerade as aleatoric labels. The source
+LODO upper residual quantile remains in `v_C_plus` as a certification guard.
+
+The `spectral` stage remains the control: it learns the same coordinate and
+spectral representation but transfers no HVD parameters.
+
+The LODO benchmark and scheduler default to the promoted
+`spectral_hvd + exact_mc(2) + three replication candidates` configuration.
+Pass explicit flags to recover the `spectral`, additive, or no-replication
+ablations.
 
 ## State Encoders
 

@@ -51,8 +51,8 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/HVD.lean`: real-valued residual-square concentration event to
   HVD oracle-inequality implication.
 - `SCOLHKG/Real/HVDImplementation.lean`: code-level HVD bridges for residual
-  square records, nonnegative cumulative beta predictions, clipping, and
-  certification variance.
+  square records, nonnegative within-policy sample variance, nonnegative
+  cumulative beta predictions, clipping, and certification variance.
 - `SCOLHKG/Real/CumulativeRiskImplementation.lean`: factor-HVD feature-block
   bridge for `floor/independent/shared/linear/total`, the provider-based
   `psi=(A,N)` bridge, `v_C^+ = total + tail_guard`, and the shared-shock
@@ -60,7 +60,8 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/PosteriorRecommendation.lean`: robust posterior recommendation
   logic used in `SingleOLHKGAlgorithm._solve_posterior_recommendation`.
 - `SCOLHKG/Real/RidgeHVD.lean`: concrete ridge empirical minimizer plus
-  residual-square uniform concentration to HVD oracle inequality.
+  residual-square uniform concentration to HVD oracle inequality, including
+  nonnegative prior-centered penalties and hierarchical source/target scale.
 - `SCOLHKG/Real/KG.lean`: real-valued exact KG and additive-proxy relation.
 - `SCOLHKG/Real/LineEnvelopeKG.lean`: certificate-level line-envelope KG
   theorem for the `compute_h` calculation once active hull intervals are
@@ -245,6 +246,31 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 64. The traffic schema bridge includes simulator snapshot constructors proving
     that rows emitted by the SUMO logger expose the required policy, state,
     action, cell-key, and demand-shock fields.
+65. State/risk subspace projectors are invariant to any orthogonal rotation of
+    the retained basis, so domain-dependent axis names do not change the
+    transferred subspace object.
+66. Rank-truncated whitening is orthonormal on exactly the retained,
+    identifiable eigendirections; numerically null directions are not inflated
+    into surrogate features.
+67. A simplex mixture of source risk experts remains inside the pointwise
+    expert prediction envelope.
+68. Nested leave-one-out representation refitting is noninterfering with
+    changes to the held-out label.
+69. Strong heredity survives interaction filtering: every retained interaction
+    keeps both parent main effects.
+70. An additive group below the source-domain support floor is an exact
+    fallback to the pre-group model.
+71. A target-adapted risk representation or frequency band with observations
+    on only one side of the chance boundary is an exact fallback to the frozen
+    Stage-1 model.
+72. Frozen source-boundary episodes may replace unstable target gain evidence,
+    but cannot bypass two-sided target support or target safety; unsafe and
+    one-sided cases are exact Stage-1 fallback.
+73. A source-only proposal builder is invariant to every change in held-out
+    target labels.
+74. A representation switch is transactional: rejected proposals preserve the
+    old posterior exactly, while admitted proposals commit a posterior rebuilt
+    by replaying the recorded updates in their original order.
 
 Remaining model-specific work is empirical/binding rather than missing Lean
 theorems:
@@ -265,7 +291,14 @@ posterior candidate envelopes, mathlib multivariate-Gaussian coefficient
 sampling, residual-square tails, line-envelope KG correctness,
 feature/kernel information-gain caps, traffic occupancy-risk decomposition,
 fresh-log schema semantics, exact-MC concentration, and safe-regret accounting
-all build in Lean without `sorry`.  The remaining hard work is now experimental
+all build in Lean without `sorry`.  The boundary-aligned representation layer
+now also has rotation-invariant projector, identifiable-rank whitening,
+simplex-expert, nested-LOO noninterference, and strong-heredity bridges.  The
+representation implementation is deliberately not promoted yet.  Its frozen
+source-boundary sequential replay passed the offline gate (five activations,
+five gains, no false-feasibility increase), while unsupported Inventory cases
+returned to Stage 1.  A paired N=40 sequential KG matrix is now the promotion
+gate.  The remaining hard work is experimental
 closure and manuscript selection, not a missing proof skeleton: run the
 trajectory logger, finish the exact/additive decision, and keep the numeric
 feature cap synchronized with the final code path.

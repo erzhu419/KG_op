@@ -20,6 +20,34 @@ theorem residualSquare_nonnegative (y mu : ℝ) :
   unfold residualSquare
   exact sq_nonneg _
 
+def replicateSampleVarianceNumerator (values : List ℝ) (mean : ℝ) : ℝ :=
+  (values.map fun value => (value - mean) ^ 2).sum
+
+theorem replicateSampleVarianceNumerator_nonnegative
+    (values : List ℝ)
+    (mean : ℝ) :
+    0 ≤ replicateSampleVarianceNumerator values mean := by
+  unfold replicateSampleVarianceNumerator
+  apply List.sum_nonneg
+  intro value hvalue
+  simp only [List.mem_map] at hvalue
+  obtain ⟨source, _, rfl⟩ := hvalue
+  exact sq_nonneg (source - mean)
+
+noncomputable def replicateSampleVariance
+    (values : List ℝ)
+    (mean : ℝ) : ℝ :=
+  replicateSampleVarianceNumerator values mean / values.length
+
+theorem replicateSampleVariance_nonnegative
+    (values : List ℝ)
+    (mean : ℝ) :
+    0 ≤ replicateSampleVariance values mean := by
+  unfold replicateSampleVariance
+  exact div_nonneg
+    (replicateSampleVarianceNumerator_nonnegative values mean)
+    (Nat.cast_nonneg values.length)
+
 def clippedVariance (floor pred : ℝ) : ℝ :=
   max pred floor
 

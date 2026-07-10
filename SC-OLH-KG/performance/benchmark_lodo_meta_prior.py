@@ -97,11 +97,22 @@ def _source_augmented_problem_specs(args_dict, source_names, seed):
     return specs
 
 
+def meta_source_seed(args_dict, target_seed):
+    mode = str(args_dict.get("meta_source_seed_mode", "frozen")).lower()
+    if mode == "frozen":
+        return 0
+    if mode == "per_target":
+        return int(target_seed)
+    raise ValueError(
+        "meta_source_seed_mode must be 'frozen' or 'per_target'")
+
+
 def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
     domains = parse_csv(args_dict["domains"])
     source_names = [name for name in domains if name != heldout]
     if not source_names:
         raise ValueError(f"heldout={heldout} leaves no source domains")
+    source_seed = meta_source_seed(args_dict, seed)
     source_problems = [
         (
             label,
@@ -117,7 +128,7 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
         for label, name, sigma, alpha, weights in _source_augmented_problem_specs(
             args_dict,
             source_names,
-            seed,
+            source_seed,
         )
     ]
     prior = LearnedMetaPrior(
@@ -167,15 +178,114 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
             "meta_spectral_gate_selection_tolerance"],
         spectral_gate_calibration_quantile=args_dict[
             "meta_spectral_gate_calibration_quantile"],
+        spectral_frequency_adaptation=args_dict[
+            "meta_spectral_frequency_adaptation"],
+        spectral_frequency_cutoffs=args_dict[
+            "meta_spectral_frequency_cutoffs"],
+        spectral_frequency_ridges=args_dict[
+            "meta_spectral_frequency_ridges"],
+        spectral_frequency_source_penalty=args_dict[
+            "meta_spectral_frequency_source_penalty"],
+        spectral_frequency_temperature=args_dict[
+            "meta_spectral_frequency_temperature"],
+        spectral_frequency_refit_interval=args_dict[
+            "meta_spectral_frequency_refit_interval"],
+        spectral_risk_alignment=args_dict[
+            "meta_spectral_risk_alignment"],
+        spectral_alignment_active_dim=args_dict[
+            "meta_spectral_alignment_active_dim"],
+        spectral_alignment_subspace_dim=args_dict[
+            "meta_spectral_alignment_subspace_dim"],
+        spectral_alignment_domain_penalty=args_dict[
+            "meta_spectral_alignment_domain_penalty"],
+        spectral_alignment_source_procrustes=args_dict[
+            "meta_spectral_alignment_source_procrustes"],
+        spectral_alignment_target_ridge=args_dict[
+            "meta_spectral_alignment_target_ridge"],
+        spectral_alignment_target_min_gain=args_dict[
+            "meta_spectral_alignment_target_min_gain"],
+        spectral_alignment_target_min_bins=args_dict[
+            "meta_spectral_alignment_target_min_bins"],
+        spectral_alignment_refit_interval=args_dict[
+            "meta_spectral_alignment_refit_interval"],
+        spectral_alignment_source_episodes=args_dict[
+            "meta_spectral_alignment_source_episodes"],
+        spectral_alignment_admission=args_dict[
+            "meta_spectral_alignment_admission"],
+        spectral_alignment_latent_proposals=args_dict[
+            "meta_spectral_alignment_latent_proposals"],
+        spectral_alignment_inverse_pool_size=args_dict[
+            "meta_spectral_alignment_inverse_pool_size"],
+        spectral_alignment_episode_pilot_size=args_dict[
+            "meta_spectral_alignment_episode_pilot_size"],
+        spectral_alignment_episode_evaluation_size=args_dict[
+            "meta_spectral_alignment_episode_evaluation_size"],
+        spectral_alignment_episode_ridge=args_dict[
+            "meta_spectral_alignment_episode_ridge"],
+        spectral_additive_adaptation=args_dict[
+            "meta_spectral_additive_adaptation"],
+        spectral_additive_max_groups=args_dict[
+            "meta_spectral_additive_max_groups"],
+        spectral_additive_target_max_groups=args_dict[
+            "meta_spectral_additive_target_max_groups"],
+        spectral_additive_source_penalty=args_dict[
+            "meta_spectral_additive_source_penalty"],
+        spectral_additive_complexity_penalty=args_dict[
+            "meta_spectral_additive_complexity_penalty"],
+        spectral_additive_temperature=args_dict[
+            "meta_spectral_additive_temperature"],
+        spectral_additive_refit_interval=args_dict[
+            "meta_spectral_additive_refit_interval"],
+        spectral_additive_max_saturation_fraction=args_dict[
+            "meta_spectral_additive_max_saturation_fraction"],
+        spectral_coefficient_shrinkage=args_dict[
+            "meta_spectral_coefficient_shrinkage"],
+        spectral_shrinkage_strength=args_dict[
+            "meta_spectral_shrinkage_strength"],
+        spectral_shrinkage_floor=args_dict[
+            "meta_spectral_shrinkage_floor"],
+        spectral_adaptive_sparsity=args_dict[
+            "meta_spectral_adaptive_sparsity"],
+        spectral_adaptive_min_pip=args_dict[
+            "meta_spectral_adaptive_min_pip"],
+        spectral_adaptive_max_pip=args_dict[
+            "meta_spectral_adaptive_max_pip"],
+        spectral_adaptive_spike_ratio=args_dict[
+            "meta_spectral_adaptive_spike_ratio"],
+        spectral_adaptive_damping=args_dict[
+            "meta_spectral_adaptive_damping"],
+        spectral_adaptive_max_iter=args_dict[
+            "meta_spectral_adaptive_max_iter"],
+        spectral_adaptive_tolerance=args_dict[
+            "meta_spectral_adaptive_tolerance"],
+        spectral_adaptive_residual_floor_scale=args_dict[
+            "meta_spectral_adaptive_residual_floor_scale"],
+        spectral_adaptive_gate_tolerance=args_dict[
+            "meta_spectral_adaptive_gate_tolerance"],
+        spectral_adaptive_multiplicity_correction=args_dict[
+            "meta_spectral_adaptive_multiplicity_correction"],
+        spectral_adaptive_max_effective_fraction=args_dict[
+            "meta_spectral_adaptive_max_effective_fraction"],
+        spectral_adaptive_saturation_fraction=args_dict[
+            "meta_spectral_adaptive_saturation_fraction"],
         coordinate_mode=args_dict["meta_coordinate_mode"],
         coordinate_relevance_floor=args_dict["meta_coordinate_relevance_floor"],
-        seed=int(args_dict["meta_seed"]) + int(seed),
+        seed=int(args_dict["meta_seed"]) + int(source_seed),
     )
     prior.fit_from_source_problems(
         source_problems,
         n_records_per_domain=args_dict["source_records_per_domain"],
-        rng=np.random.default_rng(int(args_dict["meta_seed"]) + 1009 * int(seed)),
+        rng=np.random.default_rng(
+            int(args_dict["meta_seed"]) + 1009 * int(source_seed)),
     )
+    prior.training_diagnostics.update({
+        "source_seed_mode": str(args_dict.get(
+            "meta_source_seed_mode", "frozen")),
+        "source_seed": int(source_seed),
+        "target_seed_used_for_source_training": bool(
+            str(args_dict.get(
+                "meta_source_seed_mode", "frozen")).lower() == "per_target"),
+    })
     return prior
 
 
@@ -307,6 +417,12 @@ def run_one(task):
             args_dict["constraint_uncertain_use_calibration"]),
         constraint_epistemic_margin_softening=args_dict[
             "constraint_epistemic_margin_softening"],
+        replication_candidate_count=args_dict[
+            "replication_candidate_count"],
+        replication_max_per_solution=args_dict[
+            "replication_max_per_solution"],
+        replication_margin_softening=args_dict[
+            "replication_margin_softening"],
         safe_interior_candidate_count=args_dict["safe_interior_candidate_count"],
         safe_interior_pool_size=args_dict["safe_interior_pool_size"],
         safe_interior_margin=args_dict["safe_interior_margin"],
@@ -407,6 +523,7 @@ def run_one(task):
         "audit": audit,
         "meta_prior": meta_diag,
         "meta_basis": result.get("meta_basis"),
+        "adaptive_sparsity": result.get("adaptive_sparsity"),
         "true_feasible": true_feasible,
         "posterior_feasible": posterior_feasible,
         "false_feasible": bool(posterior_feasible and not true_feasible),
@@ -1114,8 +1231,8 @@ def main():
     parser.add_argument("--lf_os_max_active", type=int, default=8)
     parser.add_argument("--lf_os_graph_neighbors", type=int, default=12)
     parser.add_argument("--lf_os_residual_floor_scale", type=float, default=0.05)
-    parser.add_argument("--acquisition_mode", default="additive")
-    parser.add_argument("--exact_kg_mc_samples", type=int, default=0)
+    parser.add_argument("--acquisition_mode", default="exact_mc")
+    parser.add_argument("--exact_kg_mc_samples", type=int, default=2)
     parser.add_argument("--exact_kg_jobs", type=int, default=1)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
@@ -1124,6 +1241,9 @@ def main():
     parser.add_argument("--constraint_uncertain_state_pool_fraction", type=float, default=0.25)
     parser.add_argument("--constraint_uncertain_use_calibration", action="store_true")
     parser.add_argument("--constraint_epistemic_margin_softening", type=float, default=3.0)
+    parser.add_argument("--replication_candidate_count", type=int, default=3)
+    parser.add_argument("--replication_max_per_solution", type=int, default=5)
+    parser.add_argument("--replication_margin_softening", type=float, default=3.0)
     parser.add_argument("--safe_interior_candidate_count", type=int, default=0)
     parser.add_argument("--safe_interior_pool_size", type=int, default=300)
     parser.add_argument("--safe_interior_margin", type=float, default=0.0)
@@ -1208,11 +1328,13 @@ def main():
     parser.add_argument("--meta_universal_shape_count", type=int, default=64)
     parser.add_argument(
         "--meta_component_stage",
-        choices=["legacy_all", "coordinate", "spectral"],
-        default="legacy_all",
+        choices=["legacy_all", "coordinate", "spectral", "spectral_hvd"],
+        default="spectral_hvd",
         help=(
             "Isolate LODO learning stages. 'spectral' enables only the frozen "
-            "source-invariant low-frequency basis on top of psi coordinates."
+            "source-invariant low-frequency basis; 'spectral_hvd' additionally "
+            "transfers a source-fitted cumulative-HVD prior in aligned risk "
+            "coordinates."
         ),
     )
     parser.add_argument("--meta_spectral_active_dim", type=int, default=6)
@@ -1228,6 +1350,134 @@ def main():
     parser.add_argument(
         "--meta_spectral_gate_calibration_quantile", type=float, default=0.90)
     parser.add_argument(
+        "--meta_spectral_frequency_adaptation",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_spectral_frequency_cutoffs", default="3,5,8,12")
+    parser.add_argument(
+        "--meta_spectral_frequency_ridges", default="0.0001,0.01,1.0")
+    parser.add_argument(
+        "--meta_spectral_frequency_source_penalty", type=float, default=0.05)
+    parser.add_argument(
+        "--meta_spectral_frequency_temperature", type=float, default=0.5)
+    parser.add_argument(
+        "--meta_spectral_frequency_refit_interval", type=int, default=5)
+    parser.add_argument(
+        "--meta_spectral_risk_alignment",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_spectral_alignment_active_dim", type=int, default=4)
+    parser.add_argument(
+        "--meta_spectral_alignment_subspace_dim", type=int, default=2)
+    parser.add_argument(
+        "--meta_spectral_alignment_domain_penalty", type=float, default=0.5)
+    parser.add_argument(
+        "--meta_spectral_alignment_source_procrustes",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_spectral_alignment_target_ridge", type=float, default=5.0)
+    parser.add_argument(
+        "--meta_spectral_alignment_target_min_gain", type=float, default=0.02)
+    parser.add_argument(
+        "--meta_spectral_alignment_target_min_bins", type=int, default=3)
+    parser.add_argument(
+        "--meta_spectral_alignment_refit_interval", type=int, default=5)
+    parser.add_argument(
+        "--meta_spectral_alignment_source_episodes", type=int, default=0)
+    parser.add_argument(
+        "--meta_spectral_alignment_admission",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument(
+        "--meta_spectral_alignment_latent_proposals",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_spectral_alignment_inverse_pool_size",
+        type=int,
+        default=1024,
+    )
+    parser.add_argument(
+        "--meta_spectral_alignment_episode_pilot_size", type=int, default=10)
+    parser.add_argument(
+        "--meta_spectral_alignment_episode_evaluation_size",
+        type=int,
+        default=24,
+    )
+    parser.add_argument(
+        "--meta_spectral_alignment_episode_ridge", type=float, default=0.1)
+    parser.add_argument(
+        "--meta_spectral_additive_adaptation",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_spectral_additive_max_groups", type=int, default=8)
+    parser.add_argument(
+        "--meta_spectral_additive_target_max_groups", type=int, default=2)
+    parser.add_argument(
+        "--meta_spectral_additive_source_penalty", type=float, default=0.05)
+    parser.add_argument(
+        "--meta_spectral_additive_complexity_penalty", type=float, default=0.05)
+    parser.add_argument(
+        "--meta_spectral_additive_temperature", type=float, default=0.5)
+    parser.add_argument(
+        "--meta_spectral_additive_refit_interval", type=int, default=5)
+    parser.add_argument(
+        "--meta_spectral_additive_max_saturation_fraction",
+        type=float,
+        default=0.20,
+    )
+    parser.add_argument(
+        "--meta_spectral_coefficient_shrinkage",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_spectral_shrinkage_strength", type=float, default=1.0)
+    parser.add_argument(
+        "--meta_spectral_shrinkage_floor", type=float, default=0.05)
+    parser.add_argument(
+        "--meta_spectral_adaptive_sparsity",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument("--meta_spectral_adaptive_min_pip", type=float, default=0.05)
+    parser.add_argument("--meta_spectral_adaptive_max_pip", type=float, default=0.95)
+    parser.add_argument(
+        "--meta_spectral_adaptive_spike_ratio", type=float, default=0.05)
+    parser.add_argument("--meta_spectral_adaptive_damping", type=float, default=0.5)
+    parser.add_argument("--meta_spectral_adaptive_max_iter", type=int, default=40)
+    parser.add_argument(
+        "--meta_spectral_adaptive_tolerance", type=float, default=1e-5)
+    parser.add_argument(
+        "--meta_spectral_adaptive_residual_floor_scale", type=float, default=0.05)
+    parser.add_argument(
+        "--meta_spectral_adaptive_gate_tolerance", type=float, default=0.05)
+    parser.add_argument(
+        "--meta_spectral_adaptive_multiplicity_correction",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--meta_spectral_adaptive_max_effective_fraction",
+        type=float,
+        default=0.35,
+    )
+    parser.add_argument(
+        "--meta_spectral_adaptive_saturation_fraction",
+        type=float,
+        default=0.90,
+    )
+    parser.add_argument(
         "--meta_coordinate_mode",
         choices=["pca", "stable_supervised"],
         default="pca",
@@ -1238,6 +1488,11 @@ def main():
     parser.add_argument("--meta_source_alpha_jitter", type=float, default=0.25)
     parser.add_argument("--meta_source_weight_jitter", type=float, default=0.05)
     parser.add_argument("--meta_seed", type=int, default=20260706)
+    parser.add_argument(
+        "--meta_source_seed_mode",
+        choices=["frozen", "per_target"],
+        default="frozen",
+    )
     parser.add_argument("--meta_proposal_pool_size", type=int, default=512)
     parser.add_argument("--meta_refinement_count", type=int, default=96)
     parser.add_argument("--seeds", default="")

@@ -117,6 +117,9 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"{args.constraint_uncertain_state_pool_fraction} "
         f"--constraint_epistemic_margin_softening "
         f"{args.constraint_epistemic_margin_softening} "
+        f"--replication_candidate_count {args.replication_candidate_count} "
+        f"--replication_max_per_solution {args.replication_max_per_solution} "
+        f"--replication_margin_softening {args.replication_margin_softening} "
         f"--safe_interior_candidate_count {args.safe_interior_candidate_count} "
         f"--safe_interior_pool_size {args.safe_interior_pool_size} "
         f"--safe_interior_margin {args.safe_interior_margin} "
@@ -193,6 +196,74 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"{args.meta_spectral_gate_selection_tolerance} "
         f"--meta_spectral_gate_calibration_quantile "
         f"{args.meta_spectral_gate_calibration_quantile} "
+        f"{'--meta_spectral_frequency_adaptation' if args.meta_spectral_frequency_adaptation else '--no-meta_spectral_frequency_adaptation'} "
+        f"--meta_spectral_frequency_cutoffs "
+        f"{args.meta_spectral_frequency_cutoffs} "
+        f"--meta_spectral_frequency_ridges "
+        f"{args.meta_spectral_frequency_ridges} "
+        f"--meta_spectral_frequency_source_penalty "
+        f"{args.meta_spectral_frequency_source_penalty} "
+        f"--meta_spectral_frequency_temperature "
+        f"{args.meta_spectral_frequency_temperature} "
+        f"--meta_spectral_frequency_refit_interval "
+        f"{args.meta_spectral_frequency_refit_interval} "
+        f"{'--meta_spectral_risk_alignment' if args.meta_spectral_risk_alignment else '--no-meta_spectral_risk_alignment'} "
+        f"--meta_spectral_alignment_active_dim {args.meta_spectral_alignment_active_dim} "
+        f"--meta_spectral_alignment_subspace_dim {args.meta_spectral_alignment_subspace_dim} "
+        f"--meta_spectral_alignment_domain_penalty {args.meta_spectral_alignment_domain_penalty} "
+        f"{'--meta_spectral_alignment_source_procrustes' if args.meta_spectral_alignment_source_procrustes else '--no-meta_spectral_alignment_source_procrustes'} "
+        f"--meta_spectral_alignment_target_ridge {args.meta_spectral_alignment_target_ridge} "
+        f"--meta_spectral_alignment_target_min_gain {args.meta_spectral_alignment_target_min_gain} "
+        f"--meta_spectral_alignment_target_min_bins {args.meta_spectral_alignment_target_min_bins} "
+        f"--meta_spectral_alignment_refit_interval {args.meta_spectral_alignment_refit_interval} "
+        f"--meta_spectral_alignment_source_episodes "
+        f"{args.meta_spectral_alignment_source_episodes} "
+        f"{'--meta_spectral_alignment_admission' if args.meta_spectral_alignment_admission else '--no-meta_spectral_alignment_admission'} "
+        f"{'--meta_spectral_alignment_latent_proposals' if args.meta_spectral_alignment_latent_proposals else '--no-meta_spectral_alignment_latent_proposals'} "
+        f"--meta_spectral_alignment_inverse_pool_size "
+        f"{args.meta_spectral_alignment_inverse_pool_size} "
+        f"--meta_spectral_alignment_episode_pilot_size "
+        f"{args.meta_spectral_alignment_episode_pilot_size} "
+        f"--meta_spectral_alignment_episode_evaluation_size "
+        f"{args.meta_spectral_alignment_episode_evaluation_size} "
+        f"--meta_spectral_alignment_episode_ridge "
+        f"{args.meta_spectral_alignment_episode_ridge} "
+        f"{'--meta_spectral_additive_adaptation' if args.meta_spectral_additive_adaptation else '--no-meta_spectral_additive_adaptation'} "
+        f"--meta_spectral_additive_max_groups "
+        f"{args.meta_spectral_additive_max_groups} "
+        f"--meta_spectral_additive_target_max_groups "
+        f"{args.meta_spectral_additive_target_max_groups} "
+        f"--meta_spectral_additive_source_penalty "
+        f"{args.meta_spectral_additive_source_penalty} "
+        f"--meta_spectral_additive_complexity_penalty "
+        f"{args.meta_spectral_additive_complexity_penalty} "
+        f"--meta_spectral_additive_temperature "
+        f"{args.meta_spectral_additive_temperature} "
+        f"--meta_spectral_additive_refit_interval "
+        f"{args.meta_spectral_additive_refit_interval} "
+        f"--meta_spectral_additive_max_saturation_fraction "
+        f"{args.meta_spectral_additive_max_saturation_fraction} "
+        f"{'--meta_spectral_coefficient_shrinkage' if args.meta_spectral_coefficient_shrinkage else '--no-meta_spectral_coefficient_shrinkage'} "
+        f"--meta_spectral_shrinkage_strength "
+        f"{args.meta_spectral_shrinkage_strength} "
+        f"--meta_spectral_shrinkage_floor {args.meta_spectral_shrinkage_floor} "
+        f"{'--meta_spectral_adaptive_sparsity' if args.meta_spectral_adaptive_sparsity else '--no-meta_spectral_adaptive_sparsity'} "
+        f"--meta_spectral_adaptive_min_pip {args.meta_spectral_adaptive_min_pip} "
+        f"--meta_spectral_adaptive_max_pip {args.meta_spectral_adaptive_max_pip} "
+        f"--meta_spectral_adaptive_spike_ratio {args.meta_spectral_adaptive_spike_ratio} "
+        f"--meta_spectral_adaptive_damping {args.meta_spectral_adaptive_damping} "
+        f"--meta_spectral_adaptive_max_iter {args.meta_spectral_adaptive_max_iter} "
+        f"--meta_spectral_adaptive_tolerance {args.meta_spectral_adaptive_tolerance} "
+        f"--meta_spectral_adaptive_residual_floor_scale "
+        f"{args.meta_spectral_adaptive_residual_floor_scale} "
+        f"--meta_spectral_adaptive_gate_tolerance "
+        f"{args.meta_spectral_adaptive_gate_tolerance} "
+        f"--meta_spectral_adaptive_multiplicity_correction "
+        f"{args.meta_spectral_adaptive_multiplicity_correction} "
+        f"--meta_spectral_adaptive_max_effective_fraction "
+        f"{args.meta_spectral_adaptive_max_effective_fraction} "
+        f"--meta_spectral_adaptive_saturation_fraction "
+        f"{args.meta_spectral_adaptive_saturation_fraction} "
         f"--meta_coordinate_mode {args.meta_coordinate_mode} "
         f"--meta_coordinate_relevance_floor {args.meta_coordinate_relevance_floor} "
         f"--meta_source_augments {args.meta_source_augments} "
@@ -200,6 +271,7 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"--meta_source_alpha_jitter {args.meta_source_alpha_jitter} "
         f"--meta_source_weight_jitter {args.meta_source_weight_jitter} "
         f"--meta_seed {args.meta_seed} "
+        f"--meta_source_seed_mode {args.meta_source_seed_mode} "
         f"--meta_proposal_pool_size {args.meta_proposal_pool_size} "
         f"--meta_refinement_count {args.meta_refinement_count} "
         f"--seed_start {args.seed_start} --n_seeds {args.n_seeds} "
@@ -267,8 +339,8 @@ def main():
     parser.add_argument("--numeric-backend-device", default="auto")
     parser.add_argument("--torch-dtype", default="float64")
     parser.add_argument("--torch-min-rows", type=int, default=128)
-    parser.add_argument("--acquisition-mode", default="additive")
-    parser.add_argument("--exact-kg-mc-samples", type=int, default=0)
+    parser.add_argument("--acquisition-mode", default="exact_mc")
+    parser.add_argument("--exact-kg-mc-samples", type=int, default=2)
     parser.add_argument("--exact-kg-jobs", type=int, default=1)
     parser.add_argument("--exact-kg-blend", type=float, default=0.0)
     parser.add_argument("--constraint-uncertain-candidate-count", type=int, default=8)
@@ -283,6 +355,9 @@ def main():
         type=float,
         default=3.0,
     )
+    parser.add_argument("--replication-candidate-count", type=int, default=3)
+    parser.add_argument("--replication-max-per-solution", type=int, default=5)
+    parser.add_argument("--replication-margin-softening", type=float, default=3.0)
     parser.add_argument("--safe-interior-candidate-count", type=int, default=0)
     parser.add_argument("--safe-interior-pool-size", type=int, default=300)
     parser.add_argument("--safe-interior-margin", type=float, default=0.0)
@@ -369,8 +444,8 @@ def main():
     parser.add_argument("--meta-universal-shape-count", type=int, default=64)
     parser.add_argument(
         "--meta-component-stage",
-        choices=["legacy_all", "coordinate", "spectral"],
-        default="legacy_all",
+        choices=["legacy_all", "coordinate", "spectral", "spectral_hvd"],
+        default="spectral_hvd",
     )
     parser.add_argument("--meta-spectral-active-dim", type=int, default=6)
     parser.add_argument("--meta-spectral-max-library-size", type=int, default=64)
@@ -385,6 +460,134 @@ def main():
     parser.add_argument(
         "--meta-spectral-gate-calibration-quantile", type=float, default=0.90)
     parser.add_argument(
+        "--meta-spectral-frequency-adaptation",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-spectral-frequency-cutoffs", default="3,5,8,12")
+    parser.add_argument(
+        "--meta-spectral-frequency-ridges", default="0.0001,0.01,1.0")
+    parser.add_argument(
+        "--meta-spectral-frequency-source-penalty", type=float, default=0.05)
+    parser.add_argument(
+        "--meta-spectral-frequency-temperature", type=float, default=0.5)
+    parser.add_argument(
+        "--meta-spectral-frequency-refit-interval", type=int, default=5)
+    parser.add_argument(
+        "--meta-spectral-risk-alignment",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-spectral-alignment-active-dim", type=int, default=4)
+    parser.add_argument(
+        "--meta-spectral-alignment-subspace-dim", type=int, default=2)
+    parser.add_argument(
+        "--meta-spectral-alignment-domain-penalty", type=float, default=0.5)
+    parser.add_argument(
+        "--meta-spectral-alignment-source-procrustes",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-spectral-alignment-target-ridge", type=float, default=5.0)
+    parser.add_argument(
+        "--meta-spectral-alignment-target-min-gain", type=float, default=0.02)
+    parser.add_argument(
+        "--meta-spectral-alignment-target-min-bins", type=int, default=3)
+    parser.add_argument(
+        "--meta-spectral-alignment-refit-interval", type=int, default=5)
+    parser.add_argument(
+        "--meta-spectral-alignment-source-episodes", type=int, default=0)
+    parser.add_argument(
+        "--meta-spectral-alignment-admission",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument(
+        "--meta-spectral-alignment-latent-proposals",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-spectral-alignment-inverse-pool-size",
+        type=int,
+        default=1024,
+    )
+    parser.add_argument(
+        "--meta-spectral-alignment-episode-pilot-size", type=int, default=10)
+    parser.add_argument(
+        "--meta-spectral-alignment-episode-evaluation-size",
+        type=int,
+        default=24,
+    )
+    parser.add_argument(
+        "--meta-spectral-alignment-episode-ridge", type=float, default=0.1)
+    parser.add_argument(
+        "--meta-spectral-additive-adaptation",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-spectral-additive-max-groups", type=int, default=8)
+    parser.add_argument(
+        "--meta-spectral-additive-target-max-groups", type=int, default=2)
+    parser.add_argument(
+        "--meta-spectral-additive-source-penalty", type=float, default=0.05)
+    parser.add_argument(
+        "--meta-spectral-additive-complexity-penalty", type=float, default=0.05)
+    parser.add_argument(
+        "--meta-spectral-additive-temperature", type=float, default=0.5)
+    parser.add_argument(
+        "--meta-spectral-additive-refit-interval", type=int, default=5)
+    parser.add_argument(
+        "--meta-spectral-additive-max-saturation-fraction",
+        type=float,
+        default=0.20,
+    )
+    parser.add_argument(
+        "--meta-spectral-coefficient-shrinkage",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-spectral-shrinkage-strength", type=float, default=1.0)
+    parser.add_argument(
+        "--meta-spectral-shrinkage-floor", type=float, default=0.05)
+    parser.add_argument(
+        "--meta-spectral-adaptive-sparsity",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument("--meta-spectral-adaptive-min-pip", type=float, default=0.05)
+    parser.add_argument("--meta-spectral-adaptive-max-pip", type=float, default=0.95)
+    parser.add_argument(
+        "--meta-spectral-adaptive-spike-ratio", type=float, default=0.05)
+    parser.add_argument("--meta-spectral-adaptive-damping", type=float, default=0.5)
+    parser.add_argument("--meta-spectral-adaptive-max-iter", type=int, default=40)
+    parser.add_argument(
+        "--meta-spectral-adaptive-tolerance", type=float, default=1e-5)
+    parser.add_argument(
+        "--meta-spectral-adaptive-residual-floor-scale", type=float, default=0.05)
+    parser.add_argument(
+        "--meta-spectral-adaptive-gate-tolerance", type=float, default=0.05)
+    parser.add_argument(
+        "--meta-spectral-adaptive-multiplicity-correction",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--meta-spectral-adaptive-max-effective-fraction",
+        type=float,
+        default=0.35,
+    )
+    parser.add_argument(
+        "--meta-spectral-adaptive-saturation-fraction",
+        type=float,
+        default=0.90,
+    )
+    parser.add_argument(
         "--meta-coordinate-mode",
         choices=["pca", "stable_supervised"],
         default="pca",
@@ -395,6 +598,11 @@ def main():
     parser.add_argument("--meta-source-alpha-jitter", type=float, default=0.25)
     parser.add_argument("--meta-source-weight-jitter", type=float, default=0.05)
     parser.add_argument("--meta-seed", type=int, default=20260706)
+    parser.add_argument(
+        "--meta-source-seed-mode",
+        choices=["frozen", "per_target"],
+        default="frozen",
+    )
     parser.add_argument("--meta-proposal-pool-size", type=int, default=1024)
     parser.add_argument("--meta-refinement-count", type=int, default=192)
     parser.add_argument("--runtime-checkpoint-interval", type=int, default=1)

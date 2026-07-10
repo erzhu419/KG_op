@@ -68,6 +68,23 @@ class OrthogonalHVDTests(unittest.TestCase):
         self.assertAlmostEqual(detail["epistemic_correction"], 0.01)
         self.assertAlmostEqual(detail["resid2"], 0.03)
 
+    def test_replication_replaces_singleton_residual_with_sample_variance(self):
+        model = OrthogonalHVD(mode="factor", n_outputs=1)
+        x = np.asarray([10, 0, 0])
+        model.update(0, x, 1.0, 0.8, problem=self.problem)
+        detail = model.update(
+            0,
+            x,
+            0.9,
+            0.8,
+            problem=self.problem,
+            replicate_variance=0.005,
+        )
+        self.assertEqual(detail["variance_source"], "within_solution_replication")
+        self.assertEqual(len(model.records[0]), 1)
+        self.assertAlmostEqual(model.records[0][0][1], 0.005)
+        self.assertEqual(model.diagnostics()["replicated_solution_count"]["0"], 1)
+
     def test_residual_square_tail_radius_is_exposed(self):
         nu, b = gaussian_square_subexp_params(0.04)
         loose = sub_exponential_residual_square_radius(nu, b, 0.20)
