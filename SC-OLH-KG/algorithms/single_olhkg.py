@@ -47,6 +47,7 @@ from representation.manifold import ManifoldRiskDecomposer
 from representation.task_posterior import (
     FiniteTaskModelEnsemble,
     FiniteTaskPosterior,
+    FiniteTaskSensitivityPosterior,
     TaskExpertState,
 )
 from variance.orthogonal_hvd import OrthogonalHVD
@@ -59,16 +60,22 @@ def _fork_exact_kg_candidate(x):
     """Evaluate one exact-KG candidate from a fork-inherited context."""
     if _FORK_EXACT_KG_CONTEXT is None:
         raise RuntimeError("fork exact-KG worker has no inherited context")
-    algorithm, common_z, terminal_pool, current_value, expert_uniform = (
-        _FORK_EXACT_KG_CONTEXT
-    )
+    (
+        algorithm,
+        common_z,
+        terminal_pool,
+        current_value,
+        expert_uniform,
+        sample_weights,
+    ) = _FORK_EXACT_KG_CONTEXT
     return algorithm._exact_posterior_update_score_one(
         x,
         common_z,
         terminal_pool,
         current_value,
         expert_uniform,
-        True,
+        sample_weights,
+        return_diagnostics=True,
     )
 
 
@@ -107,6 +114,7 @@ class SingleOLHKGConfig:
     recommendation_calibration: bool = True
     recommendation_calibration_scope: str = "refinement"
     recommendation_calibration_ridge: float = 1e-6
+    recommendation_calibration_max_effective_fraction: float = 0.35
     recommendation_calibration_min_obs: int = 8
     recommendation_calibration_max_leverage: float = 0.0
     recommendation_calibration_max_theory_margin: float = 0.0
@@ -150,24 +158,40 @@ class SingleOLHKGConfig:
     exact_kg_mc_samples: int = 8
     exact_kg_jobs: int = 1
     exact_kg_parallel_backend: str = "thread"
+    exact_kg_sampling_mode: str = "iid"
+    exact_kg_clip_negative: bool = True
     exact_kg_use_score: bool = False
     exact_kg_blend: float = 0.0
+    exact_kg_terminal_mode: str = "hard_certified"
+    terminal_bayes_violation_penalty: float = 5.0
+    terminal_frontier_candidate_count: int = 0
     task_posterior_mode: str = "off"
     task_posterior_initial_design: bool = True
+    task_posterior_boundary_bracket_fraction: float = 0.0
+    task_posterior_mandatory_universal_count: int = 0
     task_posterior_pilot_count: int = -1
     task_posterior_temperature: float = 0.5
     task_posterior_temperature_decay: float = 0.5
     task_posterior_boundary_score_weight: float = 0.25
     task_posterior_objective_score_weight: float = 0.25
     task_posterior_constraint_score_weight: float = 1.0
+    task_posterior_safe_generalized: bool = False
+    task_posterior_safe_boundary_score_weight: float = 1.0
+    task_posterior_safe_pairwise_score_weight: float = 1.0
+    task_posterior_safe_pairwise_max_history: int = 16
+    task_posterior_safe_pairwise_probability_floor: float = 1e-6
     task_posterior_kl_radius_numerator: float = 0.5
     task_posterior_confidence_delta: float = 0.05
     task_posterior_max_kl_radius: float = 4.0
+    task_posterior_prior_protection_numerator: float = 0.0
+    task_posterior_prior_protection_max: float = 0.5
+    task_posterior_local_kernel_expert: bool = False
     task_posterior_candidate_count: int = 0
     task_posterior_recommendation_count: int = 0
     task_posterior_proposal_pool_size: int = 1024
     task_posterior_proposal_exploration: float = 0.10
     task_posterior_proposal_min_per_expert: int = 2
+    task_posterior_sensitivity_mode: str = "off"
     constraint_uncertain_candidate_count: int = 0
     constraint_uncertain_pool_size: int = 300
     constraint_uncertain_state_pool_fraction: float = 0.25
@@ -176,6 +200,19 @@ class SingleOLHKGConfig:
     replication_candidate_count: int = 0
     replication_max_per_solution: int = 5
     replication_margin_softening: float = 3.0
+    certification_recheck_top_k: int = 0
+    certification_recheck_min_replicates: int = 3
+    certification_recheck_soft_margin_scale: float = 2.0
+    certification_recheck_variance_prior_df: float = 2.0
+    finalist_replication_budget: int = 0
+    finalist_replication_count: int = 2
+    finalist_replication_min_replicates: int = 2
+    finalist_replication_delta: float = 0.05
+    finalist_replication_variance_prior_df: float = 2.0
+    finalist_replication_expert_stratified: bool = False
+    finalist_replication_adaptive_race: bool = False
+    finalist_replication_fixed_universe: bool = False
+    observed_incumbent_use_replicate_variance: bool = False
     safe_interior_candidate_count: int = 0
     safe_interior_pool_size: int = 300
     safe_interior_margin: float = 0.0
@@ -340,6 +377,16 @@ class SingleOLHKGAlgorithm:
             "status": "not_called",
             "requested": 0,
         }
+        self._certification_recheck_targets: list[tuple[int, ...]] = []
+        self._finalist_replication_initialized = False
+        self._finalist_replication_targets: list[tuple[int, ...]] = []
+        self._finalist_replication_labels: list[str] = []
+        self._finalist_replication_frozen_stage: int | None = None
+        self._finalist_replication_active_target: tuple[int, ...] | None = None
+        self._finalist_replication_active_label: str | None = None
+        self._finalist_replication_refresh_history: list[dict] = []
+        self._finalist_replication_pool: list[tuple[int, ...]] = []
+        self._last_terminal_pool: list[tuple[int, ...]] = []
 
         self.observations: dict[tuple[int, ...], list[np.ndarray]] = {}
         self.history: list[tuple[tuple[int, ...], np.ndarray]] = []
@@ -508,21 +555,97 @@ class SingleOLHKGAlgorithm:
                 "requested": int(n),
             }
             return []
-        specs = list(self.problem.task_posterior_expert_specs())
+        try:
+            specs = list(self.problem.task_posterior_expert_specs(
+                include_local_kernel=bool(
+                    self.config.task_posterior_local_kernel_expert),
+            ))
+        except TypeError:
+            specs = list(self.problem.task_posterior_expert_specs())
         prior = FiniteTaskPosterior(
             [str(spec["name"]) for spec in specs],
             [float(spec.get("prior_weight", 1.0)) for spec in specs],
             temperature=0.0,
         )
-        allocation = prior.proposal_allocation(
+        mandatory_requested = min(
             n,
-            exploration=1.0,
-            minimum_per_expert=(
-                self.config.task_posterior_proposal_min_per_expert),
+            max(0, int(
+                self.config.task_posterior_mandatory_universal_count)),
         )
-        rows = []
-        generated = {}
-        for name in prior.expert_names:
+        mandatory_rows = []
+        if (
+            mandatory_requested > 0
+            and "universal_coordinate" in prior.expert_names
+        ):
+            mandatory_rows = unique_candidates(
+                self.problem.task_expert_proposal_candidates(
+                    "universal_coordinate",
+                    n=mandatory_requested,
+                    rng=self.rng,
+                    pool_size=max(
+                        mandatory_requested,
+                        int(self.config.task_posterior_proposal_pool_size),
+                    ),
+                )
+            )[:mandatory_requested]
+        bracket_fraction = float(np.clip(
+            self.config.task_posterior_boundary_bracket_fraction,
+            0.0,
+            1.0,
+        ))
+        bracket_desired = int(round(bracket_fraction * n))
+        bracket_requested = min(
+            bracket_desired,
+            max(0, n - len(mandatory_rows)),
+        )
+        bracket_rows = []
+        if bracket_requested > 0 and hasattr(
+            self.problem, "task_boundary_bracket_candidates"
+        ):
+            bracket_rows = unique_candidates(
+                self.problem.task_boundary_bracket_candidates(
+                    n=bracket_requested,
+                    rng=self.rng,
+                    pool_size=max(
+                        int(self.config.task_posterior_proposal_pool_size),
+                        16 * bracket_requested,
+                    ),
+                )
+            )[:bracket_requested]
+        rows = unique_candidates(mandatory_rows + bracket_rows)
+        expert_budget = max(0, n - len(rows))
+        residual_names = [
+            name for name in prior.expert_names
+            if not (mandatory_rows and name == "universal_coordinate")
+        ]
+        spec_by_name = {
+            str(spec["name"]): spec for spec in specs
+        }
+        if expert_budget > 0 and residual_names:
+            residual_prior = FiniteTaskPosterior(
+                residual_names,
+                [
+                    float(spec_by_name[name].get("prior_weight", 1.0))
+                    for name in residual_names
+                ],
+                temperature=0.0,
+            )
+            residual_allocation = residual_prior.proposal_allocation(
+                expert_budget,
+                exploration=1.0,
+                minimum_per_expert=(
+                    self.config.task_posterior_proposal_min_per_expert),
+            )
+        else:
+            residual_allocation = {name: 0 for name in residual_names}
+        allocation = {
+            name: int(residual_allocation.get(name, 0))
+            for name in prior.expert_names
+        }
+        generated = {
+            "universal_coordinate": int(len(mandatory_rows))
+        } if mandatory_rows else {}
+        for name in residual_names:
             count = int(allocation.get(name, 0))
             expert_rows = self.problem.task_expert_proposal_candidates(
                 name,
@@ -534,12 +657,23 @@ class SingleOLHKGAlgorithm:
                 ),
             ) if count > 0 else []
             expert_rows = unique_candidates(expert_rows)[:count]
-            generated[name] = int(len(expert_rows))
+            generated[name] = int(generated.get(name, 0) + len(expert_rows))
             rows.extend(expert_rows)
         rows = unique_candidates(rows)
         self._task_initial_design_info = {
             "status": "generated",
             "requested": int(n),
+            "mandatory_universal_requested": int(mandatory_requested),
+            "mandatory_universal_generated": int(len(mandatory_rows)),
+            "boundary_bracket_fraction": float(bracket_fraction),
+            "boundary_bracket_desired": int(bracket_desired),
+            "boundary_bracket_requested": int(bracket_requested),
+            "boundary_bracket_generated": int(len(bracket_rows)),
+            "boundary_bracket_diagnostics": (
+                self.problem.task_boundary_bracket_diagnostics()
+                if hasattr(self.problem, "task_boundary_bracket_diagnostics")
+                else {"status": "unavailable"}
+            ),
             "allocation": allocation,
             "generated": generated,
             "n_unique": int(len(rows)),
@@ -595,6 +729,7 @@ class SingleOLHKGAlgorithm:
         self.variance_model.initialize(
             samples, self.observations, self.gpr, self.problem)
         self._initialize_task_ensemble(samples)
+        self._initialize_certification_recheck_targets(samples)
 
     def _task_posterior_requested(self):
         mode = str(self.config.task_posterior_mode or "off").lower()
@@ -624,6 +759,21 @@ class SingleOLHKGAlgorithm:
         )
         lambda_data = max(float(np.var(residual)), nominal_noise)
         prior_var = max(float(np.var(beta)), 1e-6)
+        adaptive_spec = None
+        if basis_map is not None and hasattr(
+            basis_map, "adaptive_sparsity_spec"
+        ):
+            adaptive_spec = basis_map.adaptive_sparsity_spec(
+                self.observations)
+        if adaptive_spec is not None:
+            model.enable_adaptive_sparsity(
+                adaptive_spec,
+                samples,
+                y,
+                np.full(len(samples), lambda_data, dtype=float),
+                deviation_variance=lambda_data,
+            )
+            return
         model.set_parametric_prior(beta, lambda_data, prior_var)
         # The pilot labels define the empirical prior mean, but the GPR state
         # still has to be conditioned on them so solution-specific deviations
@@ -664,7 +814,13 @@ class SingleOLHKGAlgorithm:
                 len(samples),
             ))
         pilot_samples = samples[:pilot_count]
-        specs = list(self.problem.task_posterior_expert_specs())
+        try:
+            specs = list(self.problem.task_posterior_expert_specs(
+                include_local_kernel=bool(
+                    self.config.task_posterior_local_kernel_expert),
+            ))
+        except TypeError:
+            specs = list(self.problem.task_posterior_expert_specs())
         states = []
         for spec in specs:
             name = str(spec["name"])
@@ -715,7 +871,69 @@ class SingleOLHKGAlgorithm:
             ],
             boundary_score_weight=(
                 self.config.task_posterior_boundary_score_weight),
+            decision_prior_protection_numerator=(
+                self.config.task_posterior_prior_protection_numerator),
+            decision_prior_protection_max=(
+                self.config.task_posterior_prior_protection_max),
+            safe_generalized=(
+                self.config.task_posterior_safe_generalized),
+            safe_boundary_score_weight=(
+                self.config.task_posterior_safe_boundary_score_weight),
+            safe_pairwise_score_weight=(
+                self.config.task_posterior_safe_pairwise_score_weight),
         )
+        sensitivity_posterior = None
+        sensitivity_mode = str(
+            self.config.task_posterior_sensitivity_mode or "off"
+        ).lower()
+        if sensitivity_mode not in ("off", "none", "disabled"):
+            if sensitivity_mode not in (
+                "finite",
+                "latent",
+                "finite_latent",
+                "fixed",
+                "fixed_balanced",
+                "no_latent",
+            ):
+                raise ValueError(
+                    "unknown task sensitivity posterior mode "
+                    f"{sensitivity_mode!r}"
+                )
+            fixed = sensitivity_mode in (
+                "fixed", "fixed_balanced", "no_latent")
+            prior = ({
+                "class_names": ("fixed",),
+                "scales": (1.0,),
+                "decision_penalties": (5.0,),
+                "empirical_trust": (0.25,),
+                "prior_weights": (1.0,),
+            } if fixed else (
+                self.problem.task_sensitivity_prior()
+                if hasattr(self.problem, "task_sensitivity_prior")
+                else {}
+            ))
+            sensitivity_posterior = FiniteTaskSensitivityPosterior(
+                class_names=prior.get(
+                    "class_names", ("stable", "balanced", "sensitive")),
+                scales=prior.get("scales", (0.5, 1.0, 2.0)),
+                decision_penalties=prior.get(
+                    "decision_penalties", (2.0, 5.0, 20.0)),
+                empirical_trust=prior.get(
+                    "empirical_trust", (1.0, 0.25, 0.0)),
+                prior_weights=prior.get("prior_weights"),
+                temperature=(
+                    0.0 if fixed else self.config.task_posterior_temperature),
+                temperature_decay=(
+                    0.0
+                    if fixed
+                    else self.config.task_posterior_temperature_decay
+                ),
+                boundary_score_weight=(
+                    0.0
+                    if fixed
+                    else self.config.task_posterior_boundary_score_weight
+                ),
+            )
         self.task_ensemble = FiniteTaskModelEnsemble(
             states,
             posterior,
@@ -725,6 +943,11 @@ class SingleOLHKGAlgorithm:
                 self.config.task_posterior_confidence_delta),
             maximum_kl_radius=self.config.task_posterior_max_kl_radius,
             pilot_count=pilot_count,
+            sensitivity_posterior=sensitivity_posterior,
+            safe_pairwise_max_history=(
+                self.config.task_posterior_safe_pairwise_max_history),
+            safe_pairwise_probability_floor=(
+                self.config.task_posterior_safe_pairwise_probability_floor),
         )
         # Score the remaining initial observations prequentially: each label
         # updates Q before it is inserted into any expert GPR/HVD.
@@ -899,6 +1122,8 @@ class SingleOLHKGAlgorithm:
             "posterior": copy.deepcopy(self.task_ensemble.posterior),
             "last_update": copy.deepcopy(self.task_ensemble.last_update),
             "pilot_count": int(self.task_ensemble.pilot_count),
+            "safe_history": copy.deepcopy(
+                self.task_ensemble.safe_history),
             "states": [
                 {
                     "name": state.name,
@@ -940,6 +1165,8 @@ class SingleOLHKGAlgorithm:
         self.task_ensemble.posterior = copy.deepcopy(state["posterior"])
         self.task_ensemble.pilot_count = int(state.get(
             "pilot_count", self.task_ensemble.pilot_count))
+        self.task_ensemble.safe_history = copy.deepcopy(state.get(
+            "safe_history", self.task_ensemble.safe_history))
         self.task_ensemble.last_update = copy.deepcopy(
             state.get("last_update", {"status": "restored"}))
 
@@ -997,6 +1224,35 @@ class SingleOLHKGAlgorithm:
             "final_log": copy.deepcopy(self.final_log),
             "task_initial_design": copy.deepcopy(
                 self._task_initial_design_info),
+            "certification_recheck_targets": [
+                list(map(int, x))
+                for x in self._certification_recheck_targets
+            ],
+            "finalist_replication": {
+                "initialized": bool(self._finalist_replication_initialized),
+                "targets": [
+                    list(map(int, x))
+                    for x in self._finalist_replication_targets
+                ],
+                "labels": list(self._finalist_replication_labels),
+                "frozen_stage": self._finalist_replication_frozen_stage,
+                "active_target": (
+                    None
+                    if self._finalist_replication_active_target is None
+                    else list(map(
+                        int, self._finalist_replication_active_target))
+                ),
+                "active_label": self._finalist_replication_active_label,
+                "refresh_history": copy.deepcopy(
+                    self._finalist_replication_refresh_history),
+                "fixed_universe_pool": [
+                    list(map(int, x))
+                    for x in self._finalist_replication_pool
+                ],
+            },
+            "last_terminal_pool": [
+                list(map(int, x)) for x in self._last_terminal_pool
+            ],
             "gpr": [self._gpr_checkpoint_state(model) for model in self.gpr],
             "variance_model": copy.deepcopy(self.variance_model.__getstate__()),
             "task_ensemble": self._task_ensemble_checkpoint_state(),
@@ -1074,6 +1330,51 @@ class SingleOLHKGAlgorithm:
             "task_initial_design",
             {"status": "checkpoint_legacy", "requested": 0},
         ))
+        saved_recheck = payload.get("certification_recheck_targets")
+        if saved_recheck is None:
+            initial_samples = [
+                tuple(int(v) for v in x)
+                for x, _ in self.history[: int(self.config.n0)]
+            ]
+            self._initialize_certification_recheck_targets(initial_samples)
+        else:
+            self._certification_recheck_targets = [
+                tuple(int(v) for v in x) for x in saved_recheck
+            ]
+        saved_finalists = payload.get("finalist_replication") or {}
+        self._finalist_replication_initialized = bool(
+            saved_finalists.get("initialized", False))
+        self._finalist_replication_targets = [
+            tuple(int(v) for v in x)
+            for x in saved_finalists.get("targets", [])
+        ]
+        self._finalist_replication_labels = [
+            str(value) for value in saved_finalists.get("labels", [])
+        ]
+        frozen_stage = saved_finalists.get("frozen_stage")
+        self._finalist_replication_frozen_stage = (
+            None if frozen_stage is None else int(frozen_stage)
+        )
+        active_target = saved_finalists.get("active_target")
+        self._finalist_replication_active_target = (
+            None
+            if active_target is None
+            else tuple(int(v) for v in active_target)
+        )
+        active_label = saved_finalists.get("active_label")
+        self._finalist_replication_active_label = (
+            None if active_label is None else str(active_label)
+        )
+        self._finalist_replication_refresh_history = copy.deepcopy(
+            saved_finalists.get("refresh_history", []))
+        self._finalist_replication_pool = [
+            tuple(int(v) for v in x)
+            for x in saved_finalists.get("fixed_universe_pool", [])
+        ]
+        self._last_terminal_pool = [
+            tuple(int(v) for v in x)
+            for x in payload.get("last_terminal_pool", [])
+        ]
         for output_index, (model, state) in enumerate(
             zip(self.gpr, payload.get("gpr", []))
         ):
@@ -1127,6 +1428,13 @@ class SingleOLHKGAlgorithm:
         samples = self._initial_samples()
         t0 = time.time()
         self._fit_initial_belief(samples)
+        initial_truth_audit = self._truth_pool_diagnostics(
+            samples,
+            prefix="initial_design",
+        )
+        if initial_truth_audit:
+            self._task_initial_design_info["truth_audit"] = copy.deepcopy(
+                initial_truth_audit)
         self.pre_sampling_log = {
             "n0": self.config.n0,
             "samples": [list(map(int, x)) for x in samples],
@@ -1142,6 +1450,7 @@ class SingleOLHKGAlgorithm:
                 if self.task_ensemble is None
                 else self.task_ensemble.diagnostics()
             ),
+            "initial_design_truth_audit": initial_truth_audit,
         }
         self._save_checkpoint(self.config.n0, reason="initial", force=True)
         return int(self.config.n0)
@@ -1803,20 +2112,602 @@ class SingleOLHKGAlgorithm:
         margin_limit = float(self.config.observed_incumbent_margin_scale) * sigma_floor
         best = None
         for x, ys in self.observations.items():
-            y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
-            margin = float(y_bar[1] + z * sigma_floor - self.problem.tau)
+            values = np.asarray(ys, dtype=float)
+            y_bar = np.mean(values, axis=0)
+            sigma_used = sigma_floor
+            sigma_source = "global_floor"
+            if (
+                self.config.observed_incumbent_use_replicate_variance
+                and len(values)
+                >= max(2, int(
+                    self.config.certification_recheck_min_replicates))
+            ):
+                sample_var = float(np.var(values[:, 1], ddof=1))
+                prior_df = max(float(
+                    self.config.certification_recheck_variance_prior_df), 0.0)
+                numerator = (
+                    (len(values) - 1) * max(sample_var, 0.0)
+                    + prior_df * sigma_floor ** 2
+                )
+                denominator = max(len(values) - 1 + prior_df, 1.0)
+                sigma_used = float(np.sqrt(max(
+                    numerator / denominator,
+                    1e-12,
+                )))
+                sigma_source = "replicate_shrinkage"
+            margin = float(y_bar[1] + z * sigma_used - self.problem.tau)
             if margin > margin_limit:
                 continue
-            item = (float(y_bar[0]), margin, tuple(int(v) for v in x))
+            item = (
+                float(y_bar[0]),
+                margin,
+                tuple(int(v) for v in x),
+                float(sigma_used),
+                str(sigma_source),
+                int(len(values)),
+            )
             if best is None or item < best:
                 best = item
         if best is None:
             return None
-        obj, margin, x = best
+        obj, margin, x, sigma_used, sigma_source, replicate_count = best
         return {
             "x": x,
             "empirical_objective": float(obj),
             "empirical_chance_margin": float(margin),
+            "empirical_sigma": float(sigma_used),
+            "empirical_sigma_source": str(sigma_source),
+            "replicate_count": int(replicate_count),
+        }
+
+    def _initialize_certification_recheck_targets(self, samples):
+        top_k = max(0, int(self.config.certification_recheck_top_k))
+        self._certification_recheck_targets = []
+        if top_k == 0:
+            return []
+        z_alpha = float(norm.ppf(1 - self.problem.alpha))
+        sigma_floor = max(
+            float(getattr(self.problem, "sigma_level", 0.0)), 1e-8)
+        soft_limit = (
+            float(self.config.certification_recheck_soft_margin_scale)
+            * sigma_floor
+        )
+        scored = []
+        for x in unique_candidates(samples):
+            key = tuple(int(v) for v in x)
+            values = self.observations.get(key, [])
+            if not values:
+                continue
+            y_bar = np.mean(np.asarray(values, dtype=float), axis=0)
+            proxy_margin = float(
+                y_bar[1] + z_alpha * sigma_floor - self.problem.tau)
+            if proxy_margin > soft_limit:
+                continue
+            scored.append((
+                abs(proxy_margin),
+                float(y_bar[0]),
+                proxy_margin,
+                key,
+            ))
+        scored.sort()
+        self._certification_recheck_targets = [
+            row[3] for row in scored[:top_k]
+        ]
+        self._task_initial_design_info["certification_recheck"] = {
+            "status": (
+                "initialized"
+                if self._certification_recheck_targets
+                else "no_soft_boundary_target"
+            ),
+            "top_k": int(top_k),
+            "min_replicates": int(max(
+                1, self.config.certification_recheck_min_replicates)),
+            "soft_margin_scale": float(
+                self.config.certification_recheck_soft_margin_scale),
+            "n_targets": int(len(self._certification_recheck_targets)),
+            "targets": [
+                list(map(int, x)) for x in self._certification_recheck_targets
+            ],
+            "ranking": "absolute_empirical_chance_margin_then_objective",
+            "selection_data": "budgeted_initial_observations",
+            "target_oracle_used": False,
+        }
+        return list(self._certification_recheck_targets)
+
+    def _certification_recheck_candidate(self):
+        min_replicates = max(
+            1, int(self.config.certification_recheck_min_replicates))
+        candidates = []
+        for x in self._certification_recheck_targets:
+            values = self.observations.get(tuple(x), [])
+            if not values or len(values) >= min_replicates:
+                continue
+            y_bar = np.mean(np.asarray(values, dtype=float), axis=0)
+            candidates.append((
+                int(len(values)),
+                float(y_bar[1]),
+                float(y_bar[0]),
+                tuple(x),
+            ))
+        if not candidates:
+            return None, {"status": "not_due"}
+        candidates.sort()
+        replicate_count, mean_constraint, mean_objective, x = candidates[0]
+        return x, {
+            "status": "forced_recheck",
+            "replicate_count_before": int(replicate_count),
+            "target_replicates": int(min_replicates),
+            "empirical_constraint_mean": float(mean_constraint),
+            "empirical_objective_mean": float(mean_objective),
+            "target_oracle_used": False,
+        }
+
+    def _finalist_replication_start_stage(self):
+        budget = max(0, int(self.config.finalist_replication_budget))
+        return max(int(self.config.n0), int(self.config.N) - budget)
+
+    def _finalist_replication_active(self, stage):
+        return bool(
+            int(self.config.finalist_replication_budget) > 0
+            and int(stage) >= self._finalist_replication_start_stage()
+        )
+
+    def _finalist_expert_safety_nominations(self, candidates):
+        candidates = [tuple(int(v) for v in x) for x in candidates]
+        if self.task_ensemble is None or not candidates:
+            return []
+        con_mu, con_epistemic, con_aleatoric = (
+            self.task_ensemble.expert_moments_many(
+                1, candidates, certification=True)
+        )
+        z_alpha = float(norm.ppf(1.0 - self.problem.alpha))
+        expert_margin = (
+            np.asarray(con_mu, dtype=float)
+            + z_alpha * np.sqrt(np.maximum(con_aleatoric, 0.0))
+            - float(self.problem.tau)
+        )
+        expert_violation = self._normal_positive_part(
+            expert_margin,
+            np.maximum(con_epistemic, 0.0),
+        )
+        nominations = []
+        for expert, name in enumerate(
+            self.task_ensemble.posterior.expert_names
+        ):
+            values = np.asarray(expert_violation[expert], dtype=float)
+            if not np.any(np.isfinite(values)):
+                continue
+            index = int(np.nanargmin(values))
+            nominations.append((
+                float(values[index]),
+                int(expert),
+                str(name),
+                int(index),
+            ))
+        nominations.sort()
+        return nominations
+
+    def _refresh_finalist_replication_targets(self, stage, pool):
+        source_pool = pool
+        if (
+            bool(self.config.finalist_replication_fixed_universe)
+            and self._finalist_replication_pool
+        ):
+            source_pool = self._finalist_replication_pool
+        candidates = [tuple(int(v) for v in x) for x in source_pool]
+        nominations = self._finalist_expert_safety_nominations(candidates)
+        chosen = None
+        for value, expert, name, index in nominations:
+            target = candidates[int(index)]
+            # Keep a distinct safety challenger when the Bayes action also
+            # happens to be an expert's first nomination.
+            if (
+                len(self._finalist_replication_targets) > 1
+                and target == self._finalist_replication_targets[0]
+            ):
+                continue
+            chosen = (value, expert, name, index, target)
+            break
+        if chosen is None and nominations:
+            value, expert, name, index = nominations[0]
+            chosen = (
+                value, expert, name, index, candidates[int(index)])
+        if chosen is None:
+            return {
+                "status": "adaptive_refresh_no_nomination",
+                "frozen_stage": self._finalist_replication_frozen_stage,
+                "target_oracle_used": False,
+            }
+
+        value, expert, name, index, target = chosen
+        label = f"expert_safety_nomination:{name}"
+        is_new = target not in self._finalist_replication_targets
+        if is_new:
+            self._finalist_replication_targets.append(target)
+            self._finalist_replication_labels.append(label)
+        self._finalist_replication_active_target = target
+        self._finalist_replication_active_label = label
+        event = {
+            "stage": int(stage),
+            "history_size_before_observation": int(len(self.history)),
+            "label": str(label),
+            "expert_index": int(expert),
+            "candidate_index": int(index),
+            "predicted_positive_violation": float(value),
+            "target": list(map(int, target)),
+            "new_archive_target": bool(is_new),
+            "replicate_count_before": int(len(
+                self.observations.get(target, []))),
+            "target_oracle_used": False,
+        }
+        self._finalist_replication_refresh_history.append(event)
+        return {
+            "status": "adaptive_refreshed",
+            "frozen_stage": self._finalist_replication_frozen_stage,
+            "active_target": list(map(int, target)),
+            "active_label": str(label),
+            "archive_target_count": int(len(
+                self._finalist_replication_targets)),
+            "refresh_event": copy.deepcopy(event),
+            "target_oracle_used": False,
+        }
+
+    def _initialize_finalist_replication_targets(self, stage, pool):
+        if self._finalist_replication_initialized:
+            if (
+                bool(self.config.finalist_replication_adaptive_race)
+                and self._finalist_replication_active(stage)
+            ):
+                return self._refresh_finalist_replication_targets(
+                    stage, pool)
+            return {
+                "status": "already_frozen",
+                "frozen_stage": self._finalist_replication_frozen_stage,
+                "targets": [
+                    list(map(int, x))
+                    for x in self._finalist_replication_targets
+                ],
+                "labels": list(self._finalist_replication_labels),
+                "target_oracle_used": False,
+            }
+        if not self._finalist_replication_active(stage):
+            return {"status": "not_due", "target_oracle_used": False}
+        self._finalist_replication_initialized = True
+        self._finalist_replication_frozen_stage = int(stage)
+        count = max(0, int(self.config.finalist_replication_count))
+        candidates = [tuple(int(v) for v in x) for x in pool]
+        if (
+            bool(self.config.finalist_replication_adaptive_race)
+            and bool(self.config.finalist_replication_fixed_universe)
+        ):
+            self._finalist_replication_pool = list(candidates)
+        if count <= 0 or not candidates:
+            return {
+                "status": "no_targets_requested",
+                "frozen_stage": int(stage),
+                "target_oracle_used": False,
+            }
+        components = self._terminal_bayes_risk_components(
+            self.gpr,
+            self.variance_model,
+            candidates,
+            task_ensemble=self.task_ensemble,
+        )
+        targets = []
+        labels = []
+        frozen_metrics = []
+
+        def add_target(label, index, value, source):
+            target = candidates[int(index)]
+            if target in targets or len(targets) >= count:
+                return False
+            targets.append(target)
+            labels.append(str(label))
+            frozen_metrics.append({
+                "label": str(label),
+                "index": int(index),
+                "value": float(value),
+                "source": str(source),
+                "replicate_count_at_freeze": int(len(
+                    self.observations.get(target, []))),
+            })
+            return True
+
+        risk = np.asarray(components["risk"], dtype=float)
+        if np.any(np.isfinite(risk)):
+            index = int(np.nanargmin(risk))
+            add_target(
+                "minimum_bayes_risk", index, risk[index], "mixture")
+
+        if (
+            bool(self.config.finalist_replication_expert_stratified)
+            and self.task_ensemble is not None
+            and len(targets) < count
+        ):
+            nominations = self._finalist_expert_safety_nominations(
+                candidates)
+            for value, _expert, name, index in nominations:
+                add_target(
+                    f"expert_safety_nomination:{name}",
+                    index,
+                    value,
+                    "expert_stratified",
+                )
+                if len(targets) >= count:
+                    break
+
+        criteria = [
+            (
+                "minimum_nominal_expected_violation",
+                components["nominal_expected_violation"],
+            ),
+            ("minimum_robust_expected_violation",
+             components["expected_violation"]),
+            ("maximum_model_disagreement",
+             -np.asarray(components["model_disagreement"], dtype=float)),
+        ]
+        for label, values in criteria:
+            if len(targets) >= count:
+                break
+            values = np.asarray(values, dtype=float)
+            if len(values) != len(candidates) or not np.any(np.isfinite(values)):
+                continue
+            index = int(np.nanargmin(values))
+            add_target(label, index, values[index], "mixture_fallback")
+        self._finalist_replication_targets = targets
+        self._finalist_replication_labels = labels
+        active_index = next((
+            index for index, label in enumerate(labels)
+            if str(label).startswith("expert_safety_nomination:")
+        ), None)
+        if active_index is None and targets:
+            active_index = len(targets) - 1
+        if active_index is not None:
+            self._finalist_replication_active_target = targets[active_index]
+            self._finalist_replication_active_label = labels[active_index]
+        if bool(self.config.finalist_replication_adaptive_race) and targets:
+            self._finalist_replication_refresh_history.append({
+                "stage": int(stage),
+                "history_size_before_observation": int(len(self.history)),
+                "label": str(self._finalist_replication_active_label),
+                "target": list(map(
+                    int, self._finalist_replication_active_target)),
+                "new_archive_target": True,
+                "replicate_count_before": int(len(self.observations.get(
+                    self._finalist_replication_active_target, []))),
+                "initial_refresh": True,
+                "target_oracle_used": False,
+            })
+        return {
+            "status": "frozen" if targets else "no_finite_target",
+            "frozen_stage": int(stage),
+            "selection_data": "charged_posterior_before_new_label",
+            "expert_stratified": bool(
+                self.config.finalist_replication_expert_stratified),
+            "adaptive_race": bool(
+                self.config.finalist_replication_adaptive_race),
+            "fixed_universe": bool(
+                self.config.finalist_replication_fixed_universe),
+            "fixed_universe_size": int(len(
+                self._finalist_replication_pool)),
+            "active_target": (
+                None
+                if self._finalist_replication_active_target is None
+                else list(map(
+                    int, self._finalist_replication_active_target))
+            ),
+            "active_label": self._finalist_replication_active_label,
+            "targets": [list(map(int, x)) for x in targets],
+            "labels": list(labels),
+            "frozen_metrics": frozen_metrics,
+            "target_oracle_used": False,
+        }
+
+    def _finalist_replication_candidate(self, stage, pool):
+        initialization = self._initialize_finalist_replication_targets(
+            stage, pool)
+        if not self._finalist_replication_active(stage):
+            return None, initialization
+        minimum = max(
+            1, int(self.config.finalist_replication_min_replicates))
+        if (
+            bool(self.config.finalist_replication_adaptive_race)
+            and self._finalist_replication_active_target is not None
+        ):
+            active = tuple(self._finalist_replication_active_target)
+            replicate_count = int(len(self.observations.get(active, [])))
+            if replicate_count < minimum:
+                return active, {
+                    **initialization,
+                    "status": "forced_adaptive_finalist_replication",
+                    "label": str(self._finalist_replication_active_label),
+                    "replicate_count_before": int(replicate_count),
+                    "minimum_replicates": int(minimum),
+                    "reserved_budget": int(max(
+                        0, self.config.finalist_replication_budget)),
+                    "expert_stratified": bool(
+                        self.config.finalist_replication_expert_stratified),
+                    "adaptive_race": True,
+                    "archive_target_count": int(len(
+                        self._finalist_replication_targets)),
+                    "target_oracle_used": False,
+                }
+        pending = []
+        for order, (label, x) in enumerate(zip(
+            self._finalist_replication_labels,
+            self._finalist_replication_targets,
+        )):
+            replicate_count = int(len(self.observations.get(tuple(x), [])))
+            if replicate_count >= minimum:
+                continue
+            pending.append((replicate_count, order, str(label), tuple(x)))
+        if not pending:
+            return None, {
+                **initialization,
+                "status": "targets_sufficiently_replicated",
+                "minimum_replicates": int(minimum),
+                "replicate_counts": [
+                    int(len(self.observations.get(tuple(x), [])))
+                    for x in self._finalist_replication_targets
+                ],
+                "target_oracle_used": False,
+            }
+        pending.sort()
+        replicate_count, _, label, x = pending[0]
+        return x, {
+            **initialization,
+            "status": "forced_finalist_replication",
+            "label": str(label),
+            "replicate_count_before": int(replicate_count),
+            "minimum_replicates": int(minimum),
+            "reserved_budget": int(max(
+                0, self.config.finalist_replication_budget)),
+            "expert_stratified": bool(
+                self.config.finalist_replication_expert_stratified),
+            "adaptive_race": bool(
+                self.config.finalist_replication_adaptive_race),
+            "fixed_universe": bool(
+                self.config.finalist_replication_fixed_universe),
+            "target_oracle_used": False,
+        }
+
+    def _replicated_finalist_statistics(self, x):
+        key = tuple(int(v) for v in x)
+        values = np.asarray(self.observations.get(key, []), dtype=float)
+        if values.ndim != 2 or len(values) == 0 or values.shape[1] < 2:
+            return None
+        replicate_count = int(len(values))
+        if self.task_ensemble is None:
+            prior_variance = float(
+                self.variance_model.predict_certification_variance(
+                    1, key, self.problem))
+        else:
+            robust = self.task_ensemble.robust_moments_many(
+                1, [key], certification=True)
+            prior_variance = float(robust.aleatoric_upper[0])
+        prior_variance = max(prior_variance, 1e-12)
+        sample_variance = (
+            float(np.var(values[:, 1], ddof=1))
+            if replicate_count >= 2
+            else prior_variance
+        )
+        prior_df = max(
+            float(self.config.finalist_replication_variance_prior_df), 0.0)
+        denominator = max(replicate_count - 1 + prior_df, 1.0)
+        shrunk_variance = (
+            (replicate_count - 1) * max(sample_variance, 0.0)
+            + prior_df * prior_variance
+        ) / denominator
+        shrunk_variance = max(float(shrunk_variance), 1e-12)
+        nominal_delta = float(np.clip(
+            self.config.finalist_replication_delta, 1e-12, 0.5))
+        familywise_multiplicity = 1
+        if bool(self.config.finalist_replication_adaptive_race):
+            familywise_multiplicity = max(
+                1,
+                int(self.config.finalist_replication_count)
+                + int(self.config.finalist_replication_budget),
+            )
+        delta = float(np.clip(
+            nominal_delta / familywise_multiplicity, 1e-12, 0.5))
+        z_delta = float(norm.ppf(1.0 - delta))
+        z_alpha = float(norm.ppf(1.0 - self.problem.alpha))
+        sigma = float(np.sqrt(shrunk_variance))
+        mean_radius = float(z_delta * sigma / np.sqrt(replicate_count))
+        objective_mean = float(np.mean(values[:, 0]))
+        constraint_mean = float(np.mean(values[:, 1]))
+        upper_margin = float(
+            constraint_mean
+            + z_alpha * sigma
+            + mean_radius
+            - float(self.problem.tau)
+        )
+        return {
+            "x": list(map(int, key)),
+            "replicate_count": int(replicate_count),
+            "objective_mean": objective_mean,
+            "constraint_mean": constraint_mean,
+            "prior_variance": float(prior_variance),
+            "sample_variance": float(sample_variance),
+            "shrunk_variance": float(shrunk_variance),
+            "mean_confidence_radius": mean_radius,
+            "upper_chance_margin": upper_margin,
+            "delta": delta,
+            "nominal_delta": nominal_delta,
+            "familywise_multiplicity": int(familywise_multiplicity),
+            "target_oracle_used": False,
+        }
+
+    def _replicated_finalist_recommendation_index(self, pool):
+        if (
+            not self._finalist_replication_initialized
+            or not self._finalist_replication_targets
+        ):
+            return None, {"replicated_finalist_used": False}
+        minimum = max(
+            1, int(self.config.finalist_replication_min_replicates))
+        rows = []
+        incomplete = []
+        for order, x in enumerate(self._finalist_replication_targets):
+            stats = self._replicated_finalist_statistics(x)
+            if stats is None or int(stats["replicate_count"]) < minimum:
+                if bool(self.config.finalist_replication_adaptive_race):
+                    incomplete.append({
+                        "order": int(order),
+                        "x": list(map(int, x)),
+                        "replicate_count": (
+                            0 if stats is None
+                            else int(stats["replicate_count"])
+                        ),
+                    })
+                    continue
+                return None, {
+                    "replicated_finalist_used": False,
+                    "replicated_finalist_reason": "incomplete_replication",
+                }
+            rows.append((order, tuple(x), stats))
+        if not rows:
+            return None, {
+                "replicated_finalist_used": False,
+                "replicated_finalist_reason": "no_completed_finalist",
+                "replicated_finalist_incomplete_rows": incomplete,
+            }
+        feasible = [row for row in rows if row[2]["upper_chance_margin"] <= 0.0]
+        if feasible:
+            chosen = min(feasible, key=lambda row: (
+                row[2]["objective_mean"],
+                row[2]["upper_chance_margin"],
+                row[0],
+            ))
+            reason = "replicated_upper_bound_feasible"
+        else:
+            chosen = min(rows, key=lambda row: (
+                row[2]["upper_chance_margin"],
+                row[2]["objective_mean"],
+                row[0],
+            ))
+            reason = "minimum_replicated_upper_margin"
+        pool_lookup = {
+            tuple(int(v) for v in x): index for index, x in enumerate(pool)
+        }
+        if chosen[1] not in pool_lookup:
+            return None, {
+                "replicated_finalist_used": False,
+                "replicated_finalist_reason": "target_missing_from_pool",
+            }
+        return int(pool_lookup[chosen[1]]), {
+            "replicated_finalist_used": True,
+            "replicated_finalist_reason": str(reason),
+            "replicated_finalist_empirical_certificate": bool(
+                chosen[2]["upper_chance_margin"] <= 0.0),
+            "replicated_finalist_selected": copy.deepcopy(chosen[2]),
+            "replicated_finalist_rows": [
+                copy.deepcopy(row[2]) for row in rows
+            ],
+            "replicated_finalist_incomplete_rows": incomplete,
+            "replicated_finalist_adaptive_race": bool(
+                self.config.finalist_replication_adaptive_race),
+            "replicated_finalist_target_oracle_used": False,
         }
 
     def _surrogate_feature_matrix(
@@ -1826,6 +2717,7 @@ class SingleOLHKGAlgorithm:
         *,
         feature_mean=None,
         feature_scale=None,
+        force_standardize=False,
     ):
         if hasattr(basis, "features_many"):
             raw = np.asarray(basis.features_many(xs), dtype=float)
@@ -1835,7 +2727,7 @@ class SingleOLHKGAlgorithm:
                 for x in xs
             ])
         if feature_mean is None or feature_scale is None:
-            if self.config.calibration_standardize_features:
+            if self.config.calibration_standardize_features or force_standardize:
                 feature_mean = np.mean(raw, axis=0)
                 feature_scale = np.std(raw, axis=0)
                 feature_scale = np.where(feature_scale < 1e-8, 1.0, feature_scale)
@@ -1845,6 +2737,122 @@ class SingleOLHKGAlgorithm:
         scaled = (raw - feature_mean) / feature_scale
         Phi = np.column_stack([np.ones(len(scaled), dtype=float), scaled])
         return Phi, np.asarray(feature_mean, dtype=float), np.asarray(feature_scale, dtype=float)
+
+    @staticmethod
+    def _calibration_standardize(raw_train, raw_test=None):
+        raw_train = np.asarray(raw_train, dtype=float)
+        feature_mean = np.mean(raw_train, axis=0)
+        feature_scale = np.std(raw_train, axis=0)
+        feature_scale = np.where(feature_scale < 1e-8, 1.0, feature_scale)
+        train_scaled = (raw_train - feature_mean) / feature_scale
+        Phi_train = np.column_stack([
+            np.ones(len(train_scaled), dtype=float),
+            train_scaled,
+        ])
+        Phi_test = None
+        if raw_test is not None:
+            raw_test = np.asarray(raw_test, dtype=float)
+            test_scaled = (raw_test - feature_mean) / feature_scale
+            Phi_test = np.column_stack([
+                np.ones(len(test_scaled), dtype=float),
+                test_scaled,
+            ])
+        return Phi_train, Phi_test, feature_mean, feature_scale
+
+    @staticmethod
+    def _calibration_ridge_fit(Phi, target, ridge):
+        penalty = float(ridge) * np.eye(Phi.shape[1], dtype=float)
+        penalty[0, 0] = 0.0
+        lhs = Phi.T @ Phi + penalty
+        lhs_inv = np.linalg.pinv(lhs)
+        beta = lhs_inv @ (Phi.T @ np.asarray(target, dtype=float))
+        hat_diag = np.sum((Phi @ lhs_inv) * Phi, axis=1)
+        effective_rank = float(np.sum(np.clip(hat_diag, 0.0, 1.0)))
+        return beta, lhs_inv, effective_rank
+
+    def _nested_calibration_ridge_candidate(
+        self,
+        raw,
+        y_obj,
+        y_con,
+        ridge,
+        max_effective_fraction,
+    ):
+        """Refit preprocessing and ridge inside every held-out fold."""
+        raw = np.asarray(raw, dtype=float)
+        y_obj = np.asarray(y_obj, dtype=float)
+        y_con = np.asarray(y_con, dtype=float)
+        n = len(raw)
+        pred_obj = np.empty(n, dtype=float)
+        pred_con = np.empty(n, dtype=float)
+        fold_ranks = []
+        admissible = True
+        for heldout in range(n):
+            train = np.asarray([i for i in range(n) if i != heldout], dtype=int)
+            Phi_train, Phi_test, _, _ = self._calibration_standardize(
+                raw[train], raw[[heldout]])
+            beta_obj, _, rank_obj = self._calibration_ridge_fit(
+                Phi_train, y_obj[train], ridge)
+            beta_con, _, rank_con = self._calibration_ridge_fit(
+                Phi_train, y_con[train], ridge)
+            fold_rank = max(rank_obj, rank_con)
+            fold_ranks.append(float(fold_rank))
+            rank_cap = max(
+                2,
+                int(np.floor(max_effective_fraction * len(train))),
+            )
+            admissible &= bool(fold_rank <= rank_cap + 1e-8)
+            pred_obj[heldout] = float((Phi_test @ beta_obj)[0])
+            pred_con[heldout] = float((Phi_test @ beta_con)[0])
+
+        Phi, _, feature_mean, feature_scale = self._calibration_standardize(raw)
+        beta_obj, lhs_inv_obj, rank_obj = self._calibration_ridge_fit(
+            Phi, y_obj, ridge)
+        beta_con, lhs_inv_con, rank_con = self._calibration_ridge_fit(
+            Phi, y_con, ridge)
+        effective_rank = max(rank_obj, rank_con)
+        full_rank_cap = max(
+            2,
+            int(np.floor(max_effective_fraction * n)),
+        )
+        admissible &= bool(effective_rank <= full_rank_cap + 1e-8)
+
+        con_scale = max(float(np.var(y_con)), 1e-8)
+        obj_scale = max(float(np.var(y_obj)), 1e-8)
+        con_mse = float(np.mean((y_con - pred_con) ** 2)) / con_scale
+        obj_mse = float(np.mean((y_obj - pred_obj) ** 2)) / obj_scale
+        dangerous = float(np.mean(np.maximum(y_con - pred_con, 0.0) ** 2))
+        dangerous /= con_scale
+        upper = np.triu_indices(n, k=1)
+        true_diff = (y_con[:, None] - y_con[None, :])[upper]
+        pred_diff = (pred_con[:, None] - pred_con[None, :])[upper]
+        informative = np.abs(true_diff) > 1e-10
+        rank_loss = (
+            float(np.mean(true_diff[informative] * pred_diff[informative] < 0.0))
+            if np.any(informative)
+            else 0.0
+        )
+        score = con_mse + 0.10 * obj_mse + 0.50 * dangerous + 0.25 * rank_loss
+        return {
+            "ridge": float(ridge),
+            "score": float(score),
+            "con_mse": float(con_mse),
+            "obj_mse": float(obj_mse),
+            "dangerous_underprediction": float(dangerous),
+            "rank_loss": float(rank_loss),
+            "effective_rank": float(effective_rank),
+            "fold_max_effective_rank": float(max(fold_ranks, default=0.0)),
+            "rank_cap": int(full_rank_cap),
+            "admissible": bool(admissible),
+            "Phi": Phi,
+            "feature_mean": feature_mean,
+            "feature_scale": feature_scale,
+            "beta_obj": beta_obj,
+            "beta_con": beta_con,
+            "lhs_inv": lhs_inv_con,
+            "nested_pred_obj": pred_obj,
+            "nested_pred_con": pred_con,
+        }
 
     def _constraint_calibration_fit(self):
         if not self.config.certification_calibration:
@@ -1971,34 +2979,160 @@ class SingleOLHKGAlgorithm:
             y_bar = np.mean(np.asarray(ys, dtype=float), axis=0)
             train_obj.append(float(y_bar[0]))
             train_con.append(float(y_bar[1]))
-        Phi, feature_mean, feature_scale = self._surrogate_feature_matrix(
-            basis, train_x)
+        strategy = str(
+            self.config.recommendation_infeasible_strategy).lower()
+        task_adaptive = bool(
+            self.task_ensemble is not None
+            and self.task_ensemble.sensitivity_posterior is not None
+            and strategy
+            in ("task_adaptive", "task-adaptive", "sensitivity_posterior")
+        )
         y_obj = np.asarray(train_obj, dtype=float)
         y_con = np.asarray(train_con, dtype=float)
-        ridge = max(float(self.config.recommendation_calibration_ridge), 0.0)
-        penalty = ridge * np.eye(Phi.shape[1], dtype=float)
-        penalty[0, 0] = 0.0
-        lhs = Phi.T @ Phi + penalty
-        rhs_obj = Phi.T @ y_obj
-        rhs_con = Phi.T @ y_con
-        try:
-            beta_obj = np.linalg.solve(lhs, rhs_obj)
-            beta_con = np.linalg.solve(lhs, rhs_con)
-        except np.linalg.LinAlgError:
-            beta_obj = np.linalg.lstsq(lhs, rhs_obj, rcond=None)[0]
-            beta_con = np.linalg.lstsq(lhs, rhs_con, rcond=None)[0]
-        try:
-            lhs_inv = np.linalg.pinv(lhs)
-        except np.linalg.LinAlgError:
-            lhs_inv = None
+        base_ridge = max(
+            float(self.config.recommendation_calibration_ridge), 0.0)
+        if task_adaptive:
+            if hasattr(basis, "features_many"):
+                raw = np.asarray(basis.features_many(train_x), dtype=float)
+            else:
+                raw = np.vstack([
+                    np.asarray(basis.features(x), dtype=float).reshape(-1)
+                    for x in train_x
+                ])
+            ridge_grid = sorted(set([
+                1e-4, 1e-2, 1.0, 10.0, 100.0, 1e3, 1e4, base_ridge,
+            ]))
+            max_effective_fraction = float(np.clip(
+                self.config.recommendation_calibration_max_effective_fraction,
+                0.05,
+                0.95,
+            ))
+            ridge_candidates = [
+                self._nested_calibration_ridge_candidate(
+                    raw,
+                    y_obj,
+                    y_con,
+                    candidate_ridge,
+                    max_effective_fraction,
+                )
+                for candidate_ridge in ridge_grid
+            ]
+            admissible = [
+                item for item in ridge_candidates if item["admissible"]
+            ]
+            selection_pool = admissible or ridge_candidates
+            chosen_fit = min(
+                selection_pool,
+                key=lambda item: (
+                    item["score"] if item["admissible"] else float("inf"),
+                    item["effective_rank"],
+                    -item["ridge"],
+                ),
+            )
+        else:
+            # Preserve the original calibration path for non-task-adaptive
+            # baselines.  The nested/rank-constrained fit is an explicit
+            # challenger, not a silent change to every historical result.
+            Phi, feature_mean, feature_scale = self._surrogate_feature_matrix(
+                basis, train_x)
+            penalty = base_ridge * np.eye(Phi.shape[1], dtype=float)
+            penalty[0, 0] = 0.0
+            lhs = Phi.T @ Phi + penalty
+            try:
+                beta_obj = np.linalg.solve(lhs, Phi.T @ y_obj)
+                beta_con = np.linalg.solve(lhs, Phi.T @ y_con)
+            except np.linalg.LinAlgError:
+                beta_obj = np.linalg.lstsq(lhs, Phi.T @ y_obj, rcond=None)[0]
+                beta_con = np.linalg.lstsq(lhs, Phi.T @ y_con, rcond=None)[0]
+            try:
+                lhs_inv = np.linalg.pinv(lhs)
+            except np.linalg.LinAlgError:
+                lhs_inv = None
+            effective_rank = (
+                float(np.sum(np.clip(
+                    np.sum((Phi @ lhs_inv) * Phi, axis=1), 0.0, 1.0)))
+                if lhs_inv is not None
+                else float(Phi.shape[1])
+            )
+            chosen_fit = {
+                "ridge": float(base_ridge),
+                "score": float("nan"),
+                "con_mse": float("nan"),
+                "obj_mse": float("nan"),
+                "dangerous_underprediction": float("nan"),
+                "rank_loss": float("nan"),
+                "effective_rank": float(effective_rank),
+                "fold_max_effective_rank": float("nan"),
+                "rank_cap": None,
+                "admissible": None,
+                "Phi": Phi,
+                "feature_mean": feature_mean,
+                "feature_scale": feature_scale,
+                "beta_obj": beta_obj,
+                "beta_con": beta_con,
+                "lhs_inv": lhs_inv,
+            }
+            ridge_candidates = [chosen_fit]
+        ridge = float(chosen_fit["ridge"])
+        Phi = chosen_fit["Phi"]
+        feature_mean = chosen_fit["feature_mean"]
+        feature_scale = chosen_fit["feature_scale"]
+        lhs_inv = chosen_fit["lhs_inv"]
+        beta_obj = chosen_fit["beta_obj"]
+        beta_con = chosen_fit["beta_con"]
         resid_con = y_con - Phi @ beta_con
         resid_sigma = float(np.sqrt(np.mean(resid_con ** 2))) if len(resid_con) else 0.0
+        if task_adaptive:
+            loo_residual = y_con - np.asarray(
+                chosen_fit["nested_pred_con"], dtype=float)
+            loo_sigma = float(np.sqrt(np.mean(loo_residual ** 2)))
+            ordered_abs = np.sort(np.abs(loo_residual))
+            conformal_index = min(
+                len(ordered_abs) - 1,
+                max(
+                    0,
+                    int(np.ceil(
+                        (1.0 - float(self.problem.alpha))
+                        * (len(ordered_abs) + 1)
+                    )) - 1,
+                ),
+            )
+            conformal_radius = float(ordered_abs[conformal_index])
+            z_alpha = max(float(norm.ppf(1 - self.problem.alpha)), 1e-8)
+            conformal_sigma = conformal_radius / z_alpha
+        elif lhs_inv is None or not len(resid_con):
+            loo_sigma = float(resid_sigma)
+            conformal_sigma = float(resid_sigma)
+        else:
+            hat_diag = np.sum((Phi @ lhs_inv) * Phi, axis=1)
+            loo_denom = np.maximum(1.0 - np.clip(hat_diag, 0.0, 0.95), 0.05)
+            loo_residual = resid_con / loo_denom
+            loo_sigma = float(np.sqrt(np.mean(loo_residual ** 2)))
+            ordered_abs = np.sort(np.abs(loo_residual))
+            conformal_index = min(
+                len(ordered_abs) - 1,
+                max(
+                    0,
+                    int(np.ceil(
+                        (1.0 - float(self.problem.alpha))
+                        * (len(ordered_abs) + 1)
+                    )) - 1,
+                ),
+            )
+            conformal_radius = float(ordered_abs[conformal_index])
+            z_alpha = max(float(norm.ppf(1 - self.problem.alpha)), 1e-8)
+            conformal_sigma = conformal_radius / z_alpha
         nominal_floor = (
             float(self.config.recommendation_noise_floor_scale)
             * 0.35
             * float(getattr(self.problem, "sigma_level", 0.0))
         )
         sigma_cal = max(resid_sigma, nominal_floor, 1e-8)
+        prequential_sigma = max(
+            sigma_cal,
+            loo_sigma,
+            conformal_sigma,
+        )
         return {
             "basis": basis,
             "Phi_train": Phi,
@@ -2008,9 +3142,51 @@ class SingleOLHKGAlgorithm:
             "beta_con": beta_con,
             "lhs_inv": lhs_inv,
             "sigma": float(sigma_cal),
+            "prequential_sigma": float(prequential_sigma),
+            "loo_sigma": float(loo_sigma),
+            "conformal_sigma": float(conformal_sigma),
             "resid_sigma": float(resid_sigma),
             "n_train": int(len(train_x)),
             "feature_dim": int(Phi.shape[1]),
+            "selected_ridge": float(ridge),
+            "effective_rank": float(chosen_fit["effective_rank"]),
+            "effective_rank_cap": (
+                None
+                if chosen_fit["rank_cap"] is None
+                else int(chosen_fit["rank_cap"])
+            ),
+            "rank_cap_satisfied": (
+                None
+                if chosen_fit["admissible"] is None
+                else bool(chosen_fit["admissible"])
+            ),
+            "nested_refit": bool(task_adaptive),
+            "ridge_scores": [
+                {
+                    "ridge": float(item["ridge"]),
+                    "score": float(item["score"]),
+                    "effective_rank": float(item["effective_rank"]),
+                    "fold_max_effective_rank": float(
+                        item["fold_max_effective_rank"]),
+                    "rank_cap": (
+                        None
+                        if item["rank_cap"] is None
+                        else int(item["rank_cap"])
+                    ),
+                    "admissible": (
+                        None
+                        if item["admissible"] is None
+                        else bool(item["admissible"])
+                    ),
+                    "con_mse": float(item["con_mse"]),
+                    "dangerous_underprediction": float(
+                        item["dangerous_underprediction"]),
+                    "rank_loss": float(item["rank_loss"]),
+                }
+                for item in ridge_candidates
+            ],
+            "features_standardized": bool(
+                self.config.calibration_standardize_features or task_adaptive),
         }
 
     def _recommendation_calibration_pool_features(self, fit, pool):
@@ -2067,7 +3243,205 @@ class SingleOLHKGAlgorithm:
             "resid_sigma": float(fit["resid_sigma"]),
             "n_train": int(fit["n_train"]),
             "feature_dim": int(fit["feature_dim"]),
+            "selected_ridge": float(fit.get(
+                "selected_ridge",
+                self.config.recommendation_calibration_ridge,
+            )),
+            "effective_rank": float(fit.get(
+                "effective_rank", fit["feature_dim"])),
+            "effective_rank_cap": fit.get("effective_rank_cap"),
+            "rank_cap_satisfied": fit.get("rank_cap_satisfied"),
+            "nested_refit": bool(fit.get("nested_refit", False)),
+            "ridge_scores": copy.deepcopy(fit.get("ridge_scores", [])),
+            "features_standardized": bool(fit.get(
+                "features_standardized",
+                self.config.calibration_standardize_features,
+            )),
             "n_feasible": int(np.sum(margin <= 0.0)),
+        }
+
+    def _task_adaptive_recommendation_index(
+        self,
+        pool,
+        robust_margins,
+        *,
+        guard_margins=None,
+        model_objective=None,
+        model_aleatoric=None,
+        fit=None,
+        phi_pool=None,
+    ):
+        """Minimize posterior expected violation loss on an empirical boundary.
+
+        This fallback is used only when the theory certificate has no feasible
+        point.  The latent task class changes calibration-error scale and the
+        cost of a violation, but never changes the certificate itself.
+        """
+        sensitivity = (
+            None
+            if self.task_ensemble is None
+            else self.task_ensemble.sensitivity_posterior
+        )
+        fit = fit or self._recommendation_calibration_fit()
+        if sensitivity is None or fit is None or not pool:
+            return None, {
+                "calibrated_recommendation_reason": (
+                    "task_adaptive_empirical_model_unavailable")
+            }
+        Phi_pool = (
+            np.asarray(phi_pool, dtype=float)
+            if phi_pool is not None and len(phi_pool) == len(pool)
+            else self._recommendation_calibration_pool_features(fit, pool)
+        )
+        pred_obj = np.asarray(Phi_pool @ fit["beta_obj"], dtype=float)
+        pred_con = np.asarray(Phi_pool @ fit["beta_con"], dtype=float)
+        if fit["lhs_inv"] is None:
+            return None, {
+                "calibrated_recommendation_reason": (
+                    "task_adaptive_leverage_unavailable")
+            }
+        leverage = np.sum((Phi_pool @ fit["lhs_inv"]) * Phi_pool, axis=1)
+        leverage = np.maximum(np.asarray(leverage, dtype=float), 0.0)
+        theory_margin = np.asarray(
+            robust_margins if guard_margins is None else guard_margins,
+            dtype=float,
+        )
+        guard = np.isfinite(leverage) & np.isfinite(theory_margin)
+        max_leverage = float(
+            self.config.recommendation_calibration_max_leverage)
+        max_theory_margin = float(
+            self.config.recommendation_calibration_max_theory_margin)
+        if max_leverage > 0.0:
+            guard &= leverage <= max_leverage
+        if max_theory_margin > 0.0:
+            guard &= theory_margin <= max_theory_margin
+        if not np.any(guard):
+            return None, {
+                "calibrated_recommendation_reason": (
+                    "no_task_adaptive_candidate_after_guard"),
+                "n_calibration_candidates": int(len(pool)),
+                "n_calibration_guarded": 0,
+            }
+
+        risk = sensitivity.posterior_violation_decision_risk(
+            pred_con,
+            fit.get("prequential_sigma", fit["sigma"]),
+            leverage,
+            tau=self.problem.tau,
+            aleatoric_variance=model_aleatoric,
+        )
+        violation_probability = np.asarray(
+            risk["posterior_violation_probability"], dtype=float)
+        violation_loss = np.asarray(
+            risk["posterior_expected_decision_risk"], dtype=float)
+        empirical_objective_loss = pred_obj - float(np.min(pred_obj[guard]))
+        objective_span = float(np.max(empirical_objective_loss[guard]))
+        if objective_span > 1e-12:
+            empirical_objective_loss /= objective_span
+        else:
+            empirical_objective_loss[:] = 0.0
+        robust_objective = np.asarray(
+            pred_obj if model_objective is None else model_objective,
+            dtype=float,
+        )
+        robust_objective_loss = robust_objective - float(
+            np.min(robust_objective[guard]))
+        robust_objective_span = float(np.max(robust_objective_loss[guard]))
+        if robust_objective_span > 1e-12:
+            robust_objective_loss /= robust_objective_span
+        else:
+            robust_objective_loss[:] = 0.0
+        robust_margin_loss = np.maximum(
+            np.asarray(robust_margins, dtype=float), 0.0)
+        robust_margin_span = float(np.max(robust_margin_loss[guard]))
+        if robust_margin_span > 1e-12:
+            robust_margin_loss /= robust_margin_span
+        else:
+            robust_margin_loss[:] = 0.0
+
+        class_weights = sensitivity.posterior_weights()
+        class_penalties = sensitivity.decision_penalties
+        class_trust = sensitivity.empirical_trust
+        class_violation_probability = np.asarray(
+            risk["class_violation_probability"], dtype=float)
+        robust_class_loss = (
+            robust_objective_loss[:, None]
+            + robust_margin_loss[:, None] * class_penalties[None, :]
+        )
+        empirical_class_loss = (
+            empirical_objective_loss[:, None]
+            + class_violation_probability * class_penalties[None, :]
+        )
+        robust_component = np.sum(
+            robust_class_loss
+            * (class_weights * (1.0 - class_trust))[None, :],
+            axis=1,
+        )
+        empirical_component = np.sum(
+            empirical_class_loss
+            * (class_weights * class_trust)[None, :],
+            axis=1,
+        )
+        total_loss = robust_component + empirical_component
+        chosen = int(np.argmin(np.where(guard, total_loss, np.inf)))
+        z_alpha = float(norm.ppf(1 - self.problem.alpha))
+        empirical_sigma = float(fit.get("prequential_sigma", fit["sigma"]))
+        calibrated_margin = (
+            pred_con + z_alpha * empirical_sigma - float(self.problem.tau)
+        )
+        chance_feasible = violation_probability <= float(self.problem.alpha)
+        return chosen, {
+            "calibrated_recommendation_reason": (
+                "task_posterior_expected_violation_loss"),
+            "calibrated_objective": float(pred_obj[chosen]),
+            "calibrated_constraint_margin": float(calibrated_margin[chosen]),
+            "calibrated_guarded_constraint_margin": float(
+                calibrated_margin[chosen]),
+            "calibrated_constraint_feasible": bool(chance_feasible[chosen]),
+            "calibrated_constraint_sigma": empirical_sigma,
+            "calibrated_recommendation_scope": "pool",
+            "n_calibration_candidates": int(len(pool)),
+            "n_calibration_certified": 0,
+            "n_calibration_certified_guarded": 0,
+            "n_calibration_guarded": int(np.sum(guard)),
+            "n_calibration_feasible": int(np.sum(chance_feasible & guard)),
+            "n_calibration_raw_feasible": int(np.sum(chance_feasible)),
+            "calibration_max_leverage": (
+                None if max_leverage <= 0.0 else max_leverage),
+            "calibration_max_theory_margin": (
+                None if max_theory_margin <= 0.0 else max_theory_margin),
+            "calibration_selected_leverage": float(leverage[chosen]),
+            "calibration_selected_theory_margin": float(
+                theory_margin[chosen]),
+            "calibration_min_leverage": float(np.min(leverage[guard])),
+            "calibration_median_leverage": float(np.median(leverage[guard])),
+            "calibration_min_theory_margin": float(
+                np.min(theory_margin[guard])),
+            "task_adaptive_violation_probability": float(
+                violation_probability[chosen]),
+            "task_adaptive_expected_violation_loss": float(
+                violation_loss[chosen]),
+            "task_adaptive_objective_loss": float(
+                empirical_objective_loss[chosen]),
+            "task_adaptive_robust_component": float(
+                robust_component[chosen]),
+            "task_adaptive_empirical_component": float(
+                empirical_component[chosen]),
+            "task_adaptive_total_loss": float(total_loss[chosen]),
+            "task_adaptive_class_weights": np.asarray(
+                risk["posterior_weights"], dtype=float).tolist(),
+            "task_adaptive_expected_empirical_trust": float(
+                sensitivity.expected_empirical_trust()),
+            "task_adaptive_prequential_sigma": empirical_sigma,
+            "task_adaptive_loo_sigma": float(fit.get("loo_sigma", fit["sigma"])),
+            "task_adaptive_conformal_sigma": float(
+                fit.get("conformal_sigma", fit["sigma"])),
+            "task_adaptive_empirical_hvd_variance": (
+                None
+                if model_aleatoric is None
+                else float(np.asarray(model_aleatoric, dtype=float)[chosen])
+            ),
+            "task_adaptive_affects_theory_certificate": False,
         }
 
     def _calibrated_recommendation_index(
@@ -2385,15 +3759,28 @@ class SingleOLHKGAlgorithm:
             **source_details,
         }
 
-    def _solve_posterior_recommendation(self):
-        pool = self._recommendation_pool()
+    def _solve_posterior_recommendation(
+        self,
+        pool=None,
+        terminal_frontier_count=0,
+    ):
+        pool = (
+            self._recommendation_pool()
+            if pool is None
+            else [tuple(int(v) for v in x) for x in pool]
+        )
         mu_obj = self._objective_posterior_mean_many(pool)
+        empirical_aleatoric = None
         if self.task_ensemble is None:
             mu_con = self.gpr[1].posterior_mean_many(pool)
             v_con = self.variance_model.predict_certification_variance_many(
                 1, pool, self.problem)
             cert = self._certification_result(mu_con, pool, v_con)
         else:
+            task_nominal = self.task_ensemble.mixture_moments_many(
+                1, pool, certification=True)
+            empirical_aleatoric = np.asarray(
+                task_nominal.aleatoric, dtype=float)
             task_robust = self.task_ensemble.robust_moments_many(
                 1, pool, certification=True)
             mu_con = task_robust.mean_upper
@@ -2498,10 +3885,18 @@ class SingleOLHKGAlgorithm:
             )
         else:
             calibrated_margins = None
+        infeasible_strategy = str(
+            self.config.recommendation_infeasible_strategy).lower()
+        task_adaptive_empirical = bool(
+            self.task_ensemble is not None
+            and self.task_ensemble.sensitivity_posterior is not None
+            and infeasible_strategy
+            in ("task_adaptive", "task-adaptive", "sensitivity_posterior")
+        )
         recommendation_calibration_fit = (
-            None
-            if self.task_ensemble is not None
-            else self._recommendation_calibration_fit()
+            self._recommendation_calibration_fit()
+            if self.task_ensemble is None or task_adaptive_empirical
+            else None
         )
         recommendation_calibration_phi_pool = (
             self._recommendation_calibration_pool_features(
@@ -2518,10 +3913,52 @@ class SingleOLHKGAlgorithm:
                 phi_pool=recommendation_calibration_phi_pool,
             )
         )
+        effective_infeasible_penalty = float(
+            self.config.recommendation_infeasible_penalty)
+        if (
+            infeasible_strategy
+            in ("task_adaptive", "task-adaptive", "sensitivity_posterior")
+            and self.task_ensemble is not None
+        ):
+            effective_infeasible_penalty = (
+                self.task_ensemble.adaptive_infeasible_penalty(
+                    fallback=effective_infeasible_penalty)
+            )
         feasible = robust_margins <= 0.0
+        bayes_risk_details = {
+            "posterior_bayes_risk_used": False,
+            "posterior_bayes_risk": None,
+            "posterior_bayes_objective": None,
+            "posterior_bayes_expected_violation": None,
+            "posterior_bayes_kl_radius": None,
+        }
+        bayes_components = None
         if np.any(feasible):
             local = int(np.argmin(np.where(feasible, mu_obj, np.inf)))
-        elif str(self.config.recommendation_infeasible_strategy).lower() in (
+        elif infeasible_strategy in (
+            "bayes_risk",
+            "bayes-risk",
+            "posterior_bayes_risk",
+        ):
+            components = self._terminal_bayes_risk_components(
+                self.gpr,
+                self.variance_model,
+                pool,
+                task_ensemble=self.task_ensemble,
+            )
+            bayes_components = components
+            local = int(np.argmin(components["risk"]))
+            bayes_risk_details = {
+                "posterior_bayes_risk_used": True,
+                "posterior_bayes_risk": float(components["risk"][local]),
+                "posterior_bayes_objective": float(
+                    components["objective"][local]),
+                "posterior_bayes_expected_violation": float(
+                    components["expected_violation"][local]),
+                "posterior_bayes_kl_radius": float(
+                    components["kl_radius"]),
+            }
+        elif infeasible_strategy in (
             "min_margin",
             "lexicographic",
         ):
@@ -2539,7 +3976,7 @@ class SingleOLHKGAlgorithm:
                 scaled_margin = scaled_margin / margin_span
             local = int(np.argmin(
                 scaled_obj
-                + self.config.recommendation_infeasible_penalty * scaled_margin
+                + effective_infeasible_penalty * scaled_margin
             ))
         used_observed_incumbent = False
         observed_incumbent_rejected = False
@@ -2625,6 +4062,18 @@ class SingleOLHKGAlgorithm:
                     phi_pool=recommendation_calibration_phi_pool,
                 )
             )
+        elif task_adaptive_empirical and not np.any(feasible):
+            calibrated_idx, calibrated_details = (
+                self._task_adaptive_recommendation_index(
+                    pool,
+                    robust_margins,
+                    guard_margins=theory_margins + recommendation_slack,
+                    model_objective=mu_obj,
+                    model_aleatoric=empirical_aleatoric,
+                    fit=recommendation_calibration_fit,
+                    phi_pool=recommendation_calibration_phi_pool,
+                )
+            )
         else:
             calibrated_idx = None
             calibrated_details = {
@@ -2695,6 +4144,38 @@ class SingleOLHKGAlgorithm:
                     "source_mean_prior_used": True,
                     "source_mean_prior_selected_margin": float(source_margins[local]),
                 })
+        replicated_finalist_details = {
+            "replicated_finalist_used": False,
+        }
+        if not np.any(feasible):
+            replicated_idx, replicated_finalist_details = (
+                self._replicated_finalist_recommendation_index(pool)
+            )
+            if replicated_idx is not None:
+                local = int(replicated_idx)
+                used_observed_incumbent = False
+                calibrated_recommendation_used = False
+                source_prior_recommendation_used = False
+                if bayes_components is not None:
+                    bayes_risk_details.update({
+                        "posterior_bayes_risk": float(
+                            bayes_components["risk"][local]),
+                        "posterior_bayes_objective": float(
+                            bayes_components["objective"][local]),
+                        "posterior_bayes_expected_violation": float(
+                            bayes_components["expected_violation"][local]),
+                    })
+        frontier_indices, frontier_labels = self._terminal_frontier_indices(
+            mu_obj,
+            robust_margins,
+            local,
+            terminal_frontier_count,
+            bayes_components=bayes_components,
+        )
+        frontier_candidates = [
+            tuple(int(v) for v in pool[index])
+            for index in frontier_indices
+        ]
         x_best = tuple(int(v) for v in pool[local])
         calibration_details = {}
         if calibrated_cert is not None:
@@ -2742,6 +4223,21 @@ class SingleOLHKGAlgorithm:
                     recommendation_calibration_audit["n_train"]),
                 "recommendation_calibration_feature_dim": int(
                     recommendation_calibration_audit["feature_dim"]),
+                "recommendation_calibration_selected_ridge": float(
+                    recommendation_calibration_audit["selected_ridge"]),
+                "recommendation_calibration_effective_rank": float(
+                    recommendation_calibration_audit["effective_rank"]),
+                "recommendation_calibration_effective_rank_cap": (
+                    recommendation_calibration_audit["effective_rank_cap"]),
+                "recommendation_calibration_rank_cap_satisfied": (
+                    recommendation_calibration_audit["rank_cap_satisfied"]),
+                "recommendation_calibration_nested_refit": bool(
+                    recommendation_calibration_audit["nested_refit"]),
+                "recommendation_calibration_ridge_scores": copy.deepcopy(
+                    recommendation_calibration_audit["ridge_scores"]),
+                "recommendation_calibration_features_standardized": bool(
+                    recommendation_calibration_audit[
+                        "features_standardized"]),
                 "recommendation_calibration_n_feasible": int(
                     recommendation_calibration_audit["n_feasible"]),
                 "recommendation_selected_calibrated_rec_margin": float(
@@ -2778,6 +4274,10 @@ class SingleOLHKGAlgorithm:
             "recommendation_slack": float(recommendation_slack),
             "recommendation_infeasible_penalty": float(
                 self.config.recommendation_infeasible_penalty),
+            "recommendation_effective_infeasible_penalty": float(
+                effective_infeasible_penalty),
+            "recommendation_infeasible_strategy": str(
+                self.config.recommendation_infeasible_strategy),
             "recommendation_observed_fallback": bool(
                 self.config.recommendation_observed_fallback),
             "recommendation_calibration": bool(self.config.recommendation_calibration),
@@ -2805,10 +4305,12 @@ class SingleOLHKGAlgorithm:
             ),
             "calibrated_recommendation_used": bool(calibrated_recommendation_used),
             "source_prior_recommendation_used": bool(source_prior_recommendation_used),
+            **bayes_risk_details,
             **calibration_details,
             **recommendation_calibration_details,
             **calibrated_details,
             **source_prior_details,
+            **replicated_finalist_details,
             "observed_incumbent_used": bool(used_observed_incumbent),
             "observed_incumbent_rejected": bool(observed_incumbent_rejected),
             "observed_incumbent_reason": observed_incumbent_reason,
@@ -2820,10 +4322,30 @@ class SingleOLHKGAlgorithm:
                 None if observed_incumbent is None
                 else float(observed_incumbent["empirical_chance_margin"])
             ),
+            "observed_incumbent_sigma": (
+                None if observed_incumbent is None
+                else float(observed_incumbent["empirical_sigma"])
+            ),
+            "observed_incumbent_sigma_source": (
+                None if observed_incumbent is None
+                else str(observed_incumbent["empirical_sigma_source"])
+            ),
+            "observed_incumbent_replicate_count": (
+                None if observed_incumbent is None
+                else int(observed_incumbent["replicate_count"])
+            ),
             "posterior_feasible": bool(feasible[local]),
             "n_pool": int(len(pool)),
             "n_posterior_feasible": int(np.sum(feasible)),
             "n_theory_posterior_feasible": int(np.sum(theory_margins <= 0.0)),
+            "terminal_frontier_candidate_count": int(
+                len(frontier_candidates)),
+            "terminal_frontier_labels": list(frontier_labels),
+            **(
+                {"_terminal_frontier_candidates": frontier_candidates}
+                if int(terminal_frontier_count) > 0
+                else {}
+            ),
             **self._truth_pool_diagnostics(
                 pool,
                 selected=x_best,
@@ -2859,6 +4381,186 @@ class SingleOLHKGAlgorithm:
             ),
         }
 
+    @staticmethod
+    def _normal_positive_part(mean, variance):
+        """Expected positive part of a Gaussian latent chance margin."""
+        mean = np.asarray(mean, dtype=float)
+        variance = np.maximum(np.asarray(variance, dtype=float), 0.0)
+        sd = np.sqrt(variance)
+        safe_sd = np.maximum(sd, 1e-12)
+        standardized = mean / safe_sd
+        value = (
+            safe_sd * norm.pdf(standardized)
+            + mean * norm.cdf(standardized)
+        )
+        return np.where(sd > 1e-12, value, np.maximum(mean, 0.0))
+
+    def _terminal_bayes_risk_components(
+        self,
+        gpr_models,
+        variance_model,
+        pool,
+        task_ensemble=None,
+    ):
+        """Fixed posterior Bayes risk used by smooth constrained KG.
+
+        The chance-margin mean includes cumulative aleatoric risk while the
+        Gaussian positive-part expectation integrates epistemic uncertainty.
+        With a task ensemble, only the violation loss is KL-robustified; the
+        objective remains its posterior expectation.
+        """
+        if len(pool) == 0:
+            empty = np.asarray([], dtype=float)
+            return {
+                "objective": empty,
+                "expected_violation": empty,
+                "nominal_expected_violation": empty,
+                "risk": empty,
+                "model_disagreement": empty,
+                "kl_radius": 0.0,
+            }
+        z_alpha = float(norm.ppf(1 - self.problem.alpha))
+        if task_ensemble is None:
+            objective = np.asarray(
+                gpr_models[0].posterior_mean_many(pool), dtype=float)
+            mu_con = np.asarray(
+                gpr_models[1].posterior_mean_many(pool), dtype=float)
+            if hasattr(self.problem, "pilot_constraint_guard"):
+                mu_con = mu_con + max(
+                    float(self.problem.pilot_constraint_guard()), 0.0)
+            epistemic = np.maximum(np.asarray(
+                gpr_models[1].posterior_var_many(pool), dtype=float), 0.0)
+            aleatoric = np.maximum(np.asarray(
+                variance_model.predict_certification_variance_many(
+                    1, pool, self.problem),
+                dtype=float,
+            ), 0.0)
+            margin_mean = (
+                mu_con + z_alpha * np.sqrt(aleatoric) - self.problem.tau)
+            expected_violation = self._normal_positive_part(
+                margin_mean, epistemic)
+            nominal_violation = np.asarray(
+                expected_violation, dtype=float)
+            model_disagreement = np.sqrt(epistemic)
+            kl_radius = 0.0
+        else:
+            obj_mu, _, _ = task_ensemble.expert_moments_many(
+                0, pool, certification=False)
+            con_mu, con_epistemic, con_aleatoric = (
+                task_ensemble.expert_moments_many(
+                    1, pool, certification=True)
+            )
+            decision_weights = task_ensemble.posterior.decision_weights()
+            objective_weights = (
+                task_ensemble.posterior.posterior_weights()
+                if task_ensemble.posterior.safe_generalized
+                else decision_weights
+            )
+            objective = np.asarray(objective_weights @ obj_mu, dtype=float)
+            expert_margin_mean = (
+                np.asarray(con_mu, dtype=float)
+                + z_alpha * np.sqrt(np.maximum(con_aleatoric, 0.0))
+                - self.problem.tau
+            )
+            expert_violation = self._normal_positive_part(
+                expert_margin_mean,
+                np.maximum(con_epistemic, 0.0),
+            )
+            kl_radius = float(task_ensemble.effective_kl_radius())
+            expected_violation = np.asarray(
+                task_ensemble.posterior.kl_robust_expectation(
+                    expert_violation,
+                    kl_radius,
+                ),
+                dtype=float,
+            )
+            nominal_violation = np.asarray(
+                decision_weights @ expert_violation,
+                dtype=float,
+            )
+            model_disagreement = np.sqrt(np.maximum(
+                decision_weights @ (
+                    expert_violation
+                    - nominal_violation[None, :]
+                ) ** 2,
+                0.0,
+            ))
+        penalty = max(
+            float(self.config.terminal_bayes_violation_penalty), 0.0)
+        risk = objective + penalty * expected_violation
+        return {
+            "objective": np.asarray(objective, dtype=float),
+            "expected_violation": np.asarray(
+                expected_violation, dtype=float),
+            "nominal_expected_violation": np.asarray(
+                nominal_violation, dtype=float),
+            "risk": np.asarray(risk, dtype=float),
+            "model_disagreement": np.asarray(
+                model_disagreement, dtype=float),
+            "kl_radius": float(kl_radius),
+        }
+
+    @staticmethod
+    def _terminal_frontier_indices(
+        mu_obj,
+        robust_margins,
+        chosen,
+        count,
+        bayes_components=None,
+    ):
+        """Select posterior-only terminal actions worth discriminating.
+
+        The returned actions cover the current Bayes decision, the safest
+        model action, the smallest predicted violation, and an uncertain
+        low-risk action.  Target truth is deliberately absent from this API.
+        """
+        count = max(0, int(count))
+        n = len(mu_obj)
+        if count <= 0 or n == 0:
+            return [], []
+        mu_obj = np.asarray(mu_obj, dtype=float)
+        robust_margins = np.asarray(robust_margins, dtype=float)
+        indices = []
+        labels = []
+
+        def add(index, label):
+            index = int(index)
+            if 0 <= index < n and index not in indices:
+                indices.append(index)
+                labels.append(str(label))
+
+        add(chosen, "bayes_action")
+        if len(indices) < count:
+            add(np.argmin(robust_margins), "minimum_theory_margin")
+        if bayes_components is not None and len(indices) < count:
+            expected = np.asarray(
+                bayes_components["expected_violation"], dtype=float)
+            add(np.argmin(expected), "minimum_expected_violation")
+        if bayes_components is not None and len(indices) < count:
+            risk = np.asarray(bayes_components["risk"], dtype=float)
+            disagreement = np.asarray(
+                bayes_components["model_disagreement"], dtype=float)
+            finite = np.isfinite(risk) & np.isfinite(disagreement)
+            if np.any(finite):
+                cutoff = float(np.quantile(risk[finite], 0.5))
+                supported = finite & (risk <= cutoff)
+                add(
+                    np.argmax(np.where(supported, disagreement, -np.inf)),
+                    "maximum_supported_disagreement",
+                )
+        if bayes_components is not None:
+            order = np.argsort(
+                np.asarray(bayes_components["risk"], dtype=float),
+                kind="stable",
+            )
+        else:
+            order = np.lexsort((mu_obj, robust_margins))
+        for index in order:
+            if len(indices) >= count:
+                break
+            add(index, "risk_frontier_fill")
+        return indices[:count], labels[:count]
+
     def _terminal_value_from_models(
         self,
         gpr_models,
@@ -2874,6 +4576,29 @@ class SingleOLHKGAlgorithm:
         """
         if len(pool) == 0:
             return 0.0
+        terminal_mode = str(
+            self.config.exact_kg_terminal_mode or "hard_certified"
+        ).lower()
+        if terminal_mode in (
+            "bayes_risk",
+            "bayes-risk",
+            "posterior_bayes_risk",
+        ):
+            components = self._terminal_bayes_risk_components(
+                gpr_models,
+                variance_model,
+                pool,
+                task_ensemble=task_ensemble,
+            )
+            return float(np.min(components["risk"]))
+        if terminal_mode not in (
+            "hard_certified",
+            "hard-certified",
+            "certified",
+            "legacy",
+        ):
+            raise ValueError(
+                f"unknown exact KG terminal mode {terminal_mode!r}")
         if task_ensemble is None:
             mu_obj = gpr_models[0].posterior_mean_many(pool)
             mu_con = gpr_models[1].posterior_mean_many(pool)
@@ -2931,9 +4656,18 @@ class SingleOLHKGAlgorithm:
         margin_span = float(np.max(scaled_margin))
         if margin_span > 1e-12:
             scaled_margin = scaled_margin / margin_span
+        infeasible_penalty = float(
+            self.config.recommendation_infeasible_penalty)
+        if (
+            str(self.config.recommendation_infeasible_strategy).lower()
+            in ("task_adaptive", "task-adaptive", "sensitivity_posterior")
+            and task_ensemble is not None
+        ):
+            infeasible_penalty = task_ensemble.adaptive_infeasible_penalty(
+                fallback=infeasible_penalty)
         penalized = (
             scaled_obj
-            + self.config.recommendation_infeasible_penalty * scaled_margin
+            + infeasible_penalty * scaled_margin
         )
         return float(np.min(penalized))
 
@@ -2956,9 +4690,26 @@ class SingleOLHKGAlgorithm:
         terminal_pool,
         current_value,
         common_expert_uniform=None,
+        common_sample_weights=None,
         return_diagnostics=False,
     ):
         x_arr = np.asarray(x, dtype=int)
+        sample_weights = (
+            np.asarray(common_sample_weights, dtype=float).reshape(-1)
+            if common_sample_weights is not None
+            else np.ones(len(common_z), dtype=float)
+        )
+        if len(sample_weights) != len(common_z):
+            raise ValueError("exact KG sample weights must match common samples")
+        weight_total = float(np.sum(sample_weights))
+        if (
+            weight_total <= 0.0
+            or not np.all(np.isfinite(sample_weights))
+            or np.any(sample_weights < 0.0)
+        ):
+            raise ValueError(
+                "exact KG sample weights must be finite and nonnegative")
+        sample_weights = sample_weights / weight_total
         existing_observations = list(self.observations.get(
             tuple(int(v) for v in x_arr), []))
         if self.task_ensemble is not None:
@@ -2977,7 +4728,8 @@ class SingleOLHKGAlgorithm:
                 "robust_terminal": 0.0,
             }
             entropy_before = self.task_ensemble.posterior.entropy()
-            weights_before = self.task_ensemble.posterior.posterior_weights()
+            weights_before = (
+                self.task_ensemble.posterior.decision_posterior_weights())
             for z_vec, expert_uniform in zip(common_z, uniforms):
                 started = time.perf_counter()
                 ensemble_clone = self.task_ensemble.clone(
@@ -3011,13 +4763,21 @@ class SingleOLHKGAlgorithm:
                 entropy_gains.append(
                     entropy_before - ensemble_clone.posterior.entropy())
                 weight_movements.append(float(np.sum(np.abs(
-                    ensemble_clone.posterior.posterior_weights()
+                    ensemble_clone.posterior.decision_posterior_weights()
                     - weights_before
                 ))))
+            raw_score = float(np.dot(sample_weights, gains))
             result = {
-                "score": max(float(np.mean(gains)), 0.0),
-                "task_entropy_gain": float(np.mean(entropy_gains)),
-                "task_weight_movement": float(np.mean(weight_movements)),
+                "score": (
+                    max(raw_score, 0.0)
+                    if self.config.exact_kg_clip_negative
+                    else raw_score
+                ),
+                "raw_score": raw_score,
+                "task_entropy_gain": float(np.dot(
+                    sample_weights, entropy_gains)),
+                "task_weight_movement": float(np.dot(
+                    sample_weights, weight_movements)),
                 **{
                     f"time_{name}": float(value / max(len(common_z), 1))
                     for name, value in timing.items()
@@ -3072,8 +4832,14 @@ class SingleOLHKGAlgorithm:
             future_value = self._terminal_value_from_models(
                 gpr_clone, var_clone, terminal_pool)
             gains.append(current_value - future_value)
+        raw_score = float(np.dot(sample_weights, gains))
         result = {
-            "score": max(float(np.mean(gains)), 0.0),
+            "score": (
+                max(raw_score, 0.0)
+                if self.config.exact_kg_clip_negative
+                else raw_score
+            ),
+            "raw_score": raw_score,
             "task_entropy_gain": 0.0,
             "task_weight_movement": 0.0,
             "time_clone": 0.0,
@@ -3082,6 +4848,96 @@ class SingleOLHKGAlgorithm:
             "time_robust_terminal": 0.0,
         }
         return result if return_diagnostics else result["score"]
+
+    def _exact_kg_common_samples(self, mc):
+        """Draw shared predictive innovations for every design candidate."""
+        mc = max(0, int(mc))
+        mode = str(self.config.exact_kg_sampling_mode or "iid").lower()
+        if mode in ("iid", "random"):
+            return (
+                self.rng.standard_normal((mc, 2)),
+                self.rng.random(mc),
+            )
+        if mode in ("antithetic", "paired", "antithetic_pairs"):
+            n_pairs = mc // 2
+            base_z = self.rng.standard_normal((n_pairs, 2))
+            base_u = self.rng.random(n_pairs)
+            z_rows = []
+            uniforms = []
+            for z_vec, expert_uniform in zip(base_z, base_u):
+                z_rows.extend([z_vec, -z_vec])
+                uniforms.extend([expert_uniform, 1.0 - expert_uniform])
+            if mc % 2:
+                z_rows.append(np.zeros(2, dtype=float))
+                uniforms.append(0.5)
+            return (
+                np.asarray(z_rows, dtype=float).reshape(mc, 2),
+                np.asarray(uniforms, dtype=float),
+            )
+        raise ValueError(
+            f"unknown exact KG sampling mode {self.config.exact_kg_sampling_mode!r}")
+
+    def _exact_kg_sample_plan(self, mc):
+        """Return predictive innovations, expert selectors, and quadrature weights.
+
+        Ordinary IID and antithetic modes use equal Monte Carlo weights.  The
+        stratified-expert mode enumerates every finite task expert exactly and
+        uses common antithetic Gaussian innovations within each expert.  This
+        Rao-Blackwellizes the categorical task identity without changing the
+        posterior predictive distribution being integrated.
+        """
+
+        mc = max(0, int(mc))
+        mode = str(self.config.exact_kg_sampling_mode or "iid").lower()
+        stratified_modes = {
+            "stratified_expert",
+            "expert_stratified",
+            "stratified_expert_antithetic",
+        }
+        if mode not in stratified_modes:
+            z_rows, uniforms = self._exact_kg_common_samples(mc)
+            weights = np.full(mc, 1.0 / max(mc, 1), dtype=float)
+            return z_rows, uniforms, weights
+        if self.task_ensemble is None:
+            raise ValueError(
+                "stratified-expert exact KG requires a finite task ensemble")
+        if mc <= 0:
+            return (
+                np.empty((0, 2), dtype=float),
+                np.empty(0, dtype=float),
+                np.empty(0, dtype=float),
+            )
+
+        n_pairs = mc // 2
+        base = self.rng.standard_normal((n_pairs, 2))
+        gaussian_rows = []
+        for z_vec in base:
+            gaussian_rows.extend([z_vec, -z_vec])
+        if mc % 2:
+            gaussian_rows.append(np.zeros(2, dtype=float))
+        gaussian_rows = np.asarray(gaussian_rows, dtype=float).reshape(mc, 2)
+
+        expert_weights = np.asarray(
+            self.task_ensemble.posterior.decision_weights(), dtype=float)
+        expert_weights = np.clip(expert_weights, 0.0, np.inf)
+        expert_weights /= max(float(np.sum(expert_weights)), 1e-15)
+        edges = np.concatenate([[0.0], np.cumsum(expert_weights)])
+        z_blocks = []
+        uniform_blocks = []
+        weight_blocks = []
+        for expert_index, expert_weight in enumerate(expert_weights):
+            if expert_weight <= 0.0:
+                continue
+            midpoint = 0.5 * (edges[expert_index] + edges[expert_index + 1])
+            z_blocks.append(gaussian_rows)
+            uniform_blocks.append(np.full(mc, midpoint, dtype=float))
+            weight_blocks.append(np.full(
+                mc, expert_weight / float(mc), dtype=float))
+        return (
+            np.vstack(z_blocks),
+            np.concatenate(uniform_blocks),
+            np.concatenate(weight_blocks),
+        )
 
     def _exact_posterior_update_scores(self, candidates, terminal_pool):
         """Monte Carlo exact posterior-update KG over a fixed terminal pool.
@@ -3096,6 +4952,8 @@ class SingleOLHKGAlgorithm:
         """
         mc = self._effective_exact_kg_mc_samples()
         if mc <= 0 or len(candidates) == 0:
+            self._last_exact_kg_raw_scores = np.zeros(
+                len(candidates), dtype=float)
             return np.zeros(len(candidates), dtype=float)
         current_value = self._terminal_value_from_models(
             self.gpr,
@@ -3104,9 +4962,13 @@ class SingleOLHKGAlgorithm:
             task_ensemble=self.task_ensemble,
         )
         self._last_exact_kg_current_value = float(current_value)
-        common_z = self.rng.standard_normal((mc, 2))
-        common_expert_uniform = self.rng.random(mc)
+        (
+            common_z,
+            common_expert_uniform,
+            common_sample_weights,
+        ) = self._exact_kg_sample_plan(mc)
         out = np.zeros(len(candidates), dtype=float)
+        raw_out = np.zeros(len(candidates), dtype=float)
         entropy_gain = np.zeros(len(candidates), dtype=float)
         weight_movement = np.zeros(len(candidates), dtype=float)
         task_timing = {
@@ -3121,6 +4983,7 @@ class SingleOLHKGAlgorithm:
 
         def record_result(index, result):
             out[index] = result["score"]
+            raw_out[index] = result["raw_score"]
             entropy_gain[index] = result["task_entropy_gain"]
             weight_movement[index] = result["task_weight_movement"]
             for name, values in task_timing.items():
@@ -3144,7 +5007,7 @@ class SingleOLHKGAlgorithm:
             run_started_at=run_started_at,
             extra=(
                 f"candidates={len(candidates)} mc={int(mc)} jobs={int(jobs)} "
-                f"backend={parallel_backend}"
+                f"effective_samples={len(common_z)} backend={parallel_backend}"
             ),
         )
         if jobs <= 1:
@@ -3155,6 +5018,7 @@ class SingleOLHKGAlgorithm:
                     terminal_pool,
                     current_value,
                     common_expert_uniform,
+                    common_sample_weights,
                     return_diagnostics=True,
                 )
                 record_result(j, result)
@@ -3172,6 +5036,7 @@ class SingleOLHKGAlgorithm:
             self._last_exact_kg_task_entropy_gain = entropy_gain
             self._last_exact_kg_task_weight_movement = weight_movement
             self._last_exact_kg_task_timing = task_timing
+            self._last_exact_kg_raw_scores = raw_out
             return out
         global _FORK_EXACT_KG_CONTEXT
         if parallel_backend in ("process_fork", "fork", "process"):
@@ -3183,6 +5048,7 @@ class SingleOLHKGAlgorithm:
                 terminal_pool,
                 current_value,
                 common_expert_uniform,
+                common_sample_weights,
             )
             executor = ProcessPoolExecutor(
                 max_workers=jobs,
@@ -3198,6 +5064,7 @@ class SingleOLHKGAlgorithm:
                 terminal_pool,
                 current_value,
                 common_expert_uniform,
+                common_sample_weights,
                 True,
             )
         else:
@@ -3231,6 +5098,7 @@ class SingleOLHKGAlgorithm:
         self._last_exact_kg_task_entropy_gain = entropy_gain
         self._last_exact_kg_task_weight_movement = weight_movement
         self._last_exact_kg_task_timing = task_timing
+        self._last_exact_kg_raw_scores = raw_out
         return out
 
     def _evaluate_recommendation(self, x_best):
@@ -3465,6 +5333,8 @@ class SingleOLHKGAlgorithm:
         idx = np.where(feasible & np.isfinite(regrets))[0]
         if len(idx):
             best_pos = int(idx[int(np.nanargmin(regrets[idx]))])
+            out[f"{prefix}_best_true_feasible_x"] = list(
+                map(int, pool[best_pos]))
             out[f"{prefix}_best_true_feasible_decision_margin"] = float(
                 decision_margins[best_pos])
             out[f"{prefix}_best_true_feasible_decision_feasible"] = bool(
@@ -3562,6 +5432,54 @@ class SingleOLHKGAlgorithm:
                     break
         return out
 
+    def _truth_acquisition_score_audit(self, pool, scores, selected_index):
+        """Post-decision score audit; synthetic truth never changes selection."""
+        if not self.config.truth_pool_diagnostics or not pool:
+            return {}
+        scores = np.asarray(scores, dtype=float)
+        if len(pool) != len(scores):
+            return {}
+        feasible_indices = []
+        objectives = np.full(len(pool), np.inf, dtype=float)
+        for index, x in enumerate(pool):
+            try:
+                if self._true_chance_margin(x) <= 0.0:
+                    feasible_indices.append(index)
+                    objectives[index] = float(self.problem.true_objective(x))
+            except Exception:
+                continue
+        if not feasible_indices:
+            return {
+                "acquisition_truth_score_audit_available": True,
+                "acquisition_true_feasible_candidate_count": 0,
+            }
+        feasible_indices = np.asarray(feasible_indices, dtype=int)
+        best_objective_index = int(feasible_indices[
+            np.argmin(objectives[feasible_indices])
+        ])
+        best_score_index = int(feasible_indices[
+            np.argmax(scores[feasible_indices])
+        ])
+        descending = np.argsort(-scores, kind="stable")
+        ranks = np.empty(len(scores), dtype=int)
+        ranks[descending] = np.arange(1, len(scores) + 1)
+        selected_index = int(selected_index)
+        return {
+            "acquisition_truth_score_audit_available": True,
+            "acquisition_true_feasible_candidate_count": int(
+                len(feasible_indices)),
+            "acquisition_best_true_feasible_score": float(
+                scores[best_objective_index]),
+            "acquisition_best_true_feasible_score_rank": int(
+                ranks[best_objective_index]),
+            "acquisition_highest_score_true_feasible": float(
+                scores[best_score_index]),
+            "acquisition_highest_score_true_feasible_rank": int(
+                ranks[best_score_index]),
+            "acquisition_selected_minus_highest_feasible_score": float(
+                scores[selected_index] - scores[best_score_index]),
+        }
+
     def _summarize_truth_pool_diagnostics(self):
         if not self.iteration_log:
             return {}
@@ -3606,6 +5524,14 @@ class SingleOLHKGAlgorithm:
                 "candidate_best_true_feasible_posterior_feasible"),
             "recommendation_has_true_feasible_rate": mean_bool(
                 "rec_recommendation_has_true_feasible"),
+            "mean_best_true_feasible_score_rank": mean_float(
+                "acquisition_best_true_feasible_score_rank"),
+            "mean_highest_score_true_feasible_rank": mean_float(
+                "acquisition_highest_score_true_feasible_rank"),
+            "mean_selected_minus_highest_feasible_score": mean_float(
+                "acquisition_selected_minus_highest_feasible_score"),
+            "terminal_frontier_selected_rate": mean_bool(
+                "terminal_frontier_selected"),
         }
 
     def run(self, verbose=False):
@@ -3633,15 +5559,74 @@ class SingleOLHKGAlgorithm:
             row["sequential_basis_refresh"] = self._refresh_sequential_basis()
 
             t0 = time.time()
-            rec_x, rec_details = self._solve_posterior_recommendation()
+            recheck_x, recheck_info = self._certification_recheck_candidate()
+            candidates, candidate_sources = self._generate_candidates(iteration)
+            if recheck_x is not None:
+                recheck_x = tuple(int(v) for v in recheck_x)
+                if recheck_x not in candidates:
+                    candidates.append(recheck_x)
+                candidate_sources[recheck_x] = "certification_recheck"
+            base_candidate_time = time.time() - t0
+
+            terminal_pool = list(dict.fromkeys([
+                tuple(int(v) for v in x)
+                for x in self._recommendation_pool()
+            ] + [
+                tuple(int(v) for v in x) for x in candidates
+            ] + [
+                tuple(int(v) for v in x)
+                for x in self._finalist_replication_targets
+            ]))
+            self._last_terminal_pool = list(terminal_pool)
+
+            t0 = time.time()
+            rec_x, rec_details = self._solve_posterior_recommendation(
+                pool=terminal_pool,
+                terminal_frontier_count=(
+                    self.config.terminal_frontier_candidate_count),
+            )
+            frontier_candidates = rec_details.pop(
+                "_terminal_frontier_candidates", [])
+            frontier_labels = list(rec_details.get(
+                "terminal_frontier_labels", []))
             row["t_posterior_solve"] = time.time() - t0
             row["recommendation_before"] = list(map(int, rec_x))
             row.update({f"rec_{k}": v for k, v in rec_details.items()})
 
-            t0 = time.time()
-            candidates, candidate_sources = self._generate_candidates(iteration)
-            row["t_candidate_gen"] = time.time() - t0
+            terminal_frontier = {}
+            for label, x in zip(frontier_labels, frontier_candidates):
+                x = tuple(int(v) for v in x)
+                terminal_frontier[x] = str(label)
+                if x not in candidate_sources:
+                    candidates.append(x)
+                    candidate_sources[x] = (
+                        "terminal_frontier_replication"
+                        if x in self.observations
+                        else "terminal_frontier"
+                    )
+            finalist_x, finalist_info = self._finalist_replication_candidate(
+                n, terminal_pool)
+            for target in self._finalist_replication_targets:
+                target = tuple(int(v) for v in target)
+                if target not in terminal_pool:
+                    terminal_pool.append(target)
+            self._last_terminal_pool = list(terminal_pool)
+            if finalist_x is not None:
+                finalist_x = tuple(int(v) for v in finalist_x)
+                if finalist_x not in candidates:
+                    candidates.append(finalist_x)
+                candidate_sources[finalist_x] = "finalist_replication"
+            row["t_candidate_gen"] = float(base_candidate_time)
             row["n_candidates"] = len(candidates)
+            row["terminal_pool_shared"] = True
+            row["terminal_pool_size"] = int(len(terminal_pool))
+            row["terminal_frontier_candidate_count"] = int(
+                len(terminal_frontier))
+            row["terminal_frontier_candidates_in_action_set"] = int(sum(
+                x in candidate_sources for x in terminal_frontier
+            ))
+            row["certification_recheck"] = copy.deepcopy(recheck_info)
+            row["finalist_replication"] = copy.deepcopy(finalist_info)
             row["llm_prior"] = dict(self._last_llm_prior_info)
             row["task_expert_proposals"] = copy.deepcopy(
                 self._last_task_proposal_info)
@@ -3657,8 +5642,9 @@ class SingleOLHKGAlgorithm:
             )
             exact_mc_samples = self._effective_exact_kg_mc_samples()
             acquisition_mode = str(self.config.acquisition_mode or "additive").lower()
-            if exact_mc_samples > 0:
-                terminal_pool = self._recommendation_pool()
+            forced_selection = (
+                recheck_x if recheck_x is not None else finalist_x)
+            if exact_mc_samples > 0 and forced_selection is None:
                 exact_kg = self._exact_posterior_update_scores(
                     candidates, terminal_pool)
                 score["exact_kg"] = exact_kg
@@ -3670,6 +5656,23 @@ class SingleOLHKGAlgorithm:
                     else "serial"
                 )
                 row["acquisition_mode"] = acquisition_mode
+                row["exact_kg_sampling_mode"] = str(
+                    self.config.exact_kg_sampling_mode)
+                row["exact_kg_clip_negative"] = bool(
+                    self.config.exact_kg_clip_negative)
+                row["exact_kg_terminal_mode"] = str(
+                    self.config.exact_kg_terminal_mode)
+                raw_exact_kg = np.asarray(getattr(
+                    self,
+                    "_last_exact_kg_raw_scores",
+                    exact_kg,
+                ), dtype=float)
+                row["exact_kg_raw_min"] = float(np.min(raw_exact_kg))
+                row["exact_kg_raw_max"] = float(np.max(raw_exact_kg))
+                row["exact_kg_raw_negative_fraction"] = float(np.mean(
+                    raw_exact_kg < 0.0))
+                row["exact_kg_zero_fraction"] = float(np.mean(
+                    np.asarray(exact_kg, dtype=float) == 0.0))
                 row["certified_terminal_value_before"] = float(getattr(
                     self,
                     "_last_exact_kg_current_value",
@@ -3689,17 +5692,46 @@ class SingleOLHKGAlgorithm:
                         (1.0 - blend) * score["total"]
                         + blend * exact_kg
                     )
-            selected_idx = int(np.argmax(score["total"]))
+            elif exact_mc_samples > 0:
+                row["exact_kg_skipped_reason"] = (
+                    "forced_certification_recheck"
+                    if recheck_x is not None
+                    else "forced_finalist_replication"
+                )
+            if recheck_x is None:
+                if finalist_x is None:
+                    selected_idx = int(np.argmax(score["total"]))
+                    row["selection_policy"] = "acquisition"
+                else:
+                    selected_idx = candidates.index(finalist_x)
+                    row["selection_policy"] = "finalist_replication"
+            else:
+                selected_idx = candidates.index(recheck_x)
+                row["selection_policy"] = "certification_recheck"
             x_selected = candidates[selected_idx]
             row["t_kg_compute"] = time.time() - t0
             row["x_selected"] = list(map(int, x_selected))
             row["candidate_source_selected"] = candidate_sources.get(
                 tuple(x_selected), "unknown")
+            row["terminal_frontier_selected"] = bool(
+                tuple(x_selected) in terminal_frontier)
+            row["terminal_frontier_selected_label"] = terminal_frontier.get(
+                tuple(x_selected))
             row["score_selected"] = float(score["total"][selected_idx])
+            if "exact_kg" in score:
+                raw_exact_kg = np.asarray(
+                    self._last_exact_kg_raw_scores, dtype=float)
+                row["exact_kg_raw_selected"] = float(
+                    raw_exact_kg[selected_idx])
             row.update(self._truth_pool_diagnostics(
                 candidates,
                 selected=x_selected,
                 prefix="candidate",
+            ))
+            row.update(self._truth_acquisition_score_audit(
+                candidates,
+                score["total"],
+                selected_idx,
             ))
             if self.task_ensemble is None:
                 row["v_C_plus_selected"] = float(
@@ -3837,7 +5869,8 @@ class SingleOLHKGAlgorithm:
             if eval_interval > 0 and (
                 iteration % eval_interval == 0 or n == self.config.N - 1
             ):
-                rec_x_after, rec_after = self._solve_posterior_recommendation()
+                rec_x_after, rec_after = self._solve_posterior_recommendation(
+                    pool=terminal_pool)
                 eval_after = self._evaluate_recommendation(rec_x_after)
                 row["recommendation_after"] = list(map(int, rec_x_after))
                 row["eval"] = {**rec_after, **eval_after}
@@ -3892,8 +5925,95 @@ class SingleOLHKGAlgorithm:
             "gate_mean": float(np.mean(llm_gates)) if llm_gates else 0.0,
             "gate_max": float(np.max(llm_gates)) if llm_gates else 0.0,
         }
+        exact_rows = [
+            row for row in self.iteration_log
+            if row.get("exact_kg_mc_samples") is not None
+        ]
+        exact_kg_summary = {
+            "sampling_mode": str(self.config.exact_kg_sampling_mode),
+            "clip_negative": bool(self.config.exact_kg_clip_negative),
+            "n_iterations": int(len(exact_rows)),
+            "mean_raw_negative_fraction": (
+                float(np.mean([
+                    row["exact_kg_raw_negative_fraction"]
+                    for row in exact_rows
+                ]))
+                if exact_rows
+                else None
+            ),
+            "mean_zero_fraction": (
+                float(np.mean([
+                    row["exact_kg_zero_fraction"] for row in exact_rows
+                ]))
+                if exact_rows
+                else None
+            ),
+            "mean_raw_selected": (
+                float(np.mean([
+                    row["exact_kg_raw_selected"] for row in exact_rows
+                ]))
+                if exact_rows
+                else None
+            ),
+        }
+        finalist_replication_summary = {
+            "enabled": bool(self.config.finalist_replication_budget > 0),
+            "reserved_budget": int(max(
+                0, self.config.finalist_replication_budget)),
+            "initialized": bool(self._finalist_replication_initialized),
+            "frozen_stage": self._finalist_replication_frozen_stage,
+            "adaptive_race": bool(
+                self.config.finalist_replication_adaptive_race),
+            "fixed_universe": bool(
+                self.config.finalist_replication_fixed_universe),
+            "fixed_universe_size": int(len(
+                self._finalist_replication_pool)),
+            "active_target": (
+                None
+                if self._finalist_replication_active_target is None
+                else list(map(
+                    int, self._finalist_replication_active_target))
+            ),
+            "active_label": self._finalist_replication_active_label,
+            "refresh_history": copy.deepcopy(
+                self._finalist_replication_refresh_history),
+            "minimum_replicates": int(max(
+                1, self.config.finalist_replication_min_replicates)),
+            "targets": [
+                list(map(int, x))
+                for x in self._finalist_replication_targets
+            ],
+            "labels": list(self._finalist_replication_labels),
+            "replicate_counts": [
+                int(len(self.observations.get(tuple(x), [])))
+                for x in self._finalist_replication_targets
+            ],
+            "completed_target_count": int(sum(
+                len(self.observations.get(tuple(x), [])) >= max(
+                    1, self.config.finalist_replication_min_replicates)
+                for x in self._finalist_replication_targets
+            )),
+            "statistics": [
+                self._replicated_finalist_statistics(x)
+                for x in self._finalist_replication_targets
+            ],
+            "forced_evaluations": int(sum(
+                row.get("selection_policy") == "finalist_replication"
+                for row in self.iteration_log
+            )),
+            "target_oracle_used": False,
+        }
 
-        final_x, final_post = self._solve_posterior_recommendation()
+        final_pool = (
+            list(self._last_terminal_pool)
+            if self._last_terminal_pool
+            else self._recommendation_pool()
+        )
+        final_x, final_post = self._solve_posterior_recommendation(
+            pool=final_pool)
+        final_post["terminal_pool_shared"] = bool(
+            self._last_terminal_pool)
+        final_post["terminal_pool_size"] = int(len(final_pool))
         final_eval = self._evaluate_recommendation(final_x)
         self.final_log = {
             **final_post,
@@ -3903,6 +6023,8 @@ class SingleOLHKGAlgorithm:
             "n_distinct_solutions": int(len(self.gpr[0].sampled_set)),
             "stage_times": summarize_stage_times(self.iteration_log),
             "candidate_source_counts": candidate_source_counts,
+            "exact_kg_diagnostics": exact_kg_summary,
+            "finalist_replication": finalist_replication_summary,
             "task_initial_design": copy.deepcopy(
                 self._task_initial_design_info),
             "llm_prior": llm_prior_summary,

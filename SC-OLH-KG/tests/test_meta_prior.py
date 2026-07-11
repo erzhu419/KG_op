@@ -96,6 +96,309 @@ class MetaPriorTests(unittest.TestCase):
         self.assertGreater(len(profiles), 0)
         self.assertTrue(all(len(x) == target.d for x in profiles))
 
+    def test_ordered_cumulative_expert_uses_source_learned_low_rank_coordinate(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            anchor_count=5,
+            ordered_cumulative_exposure=True,
+            ordered_exposure_max_frequency=6,
+            ordered_exposure_active_dim=2,
+            seed=29,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=10,
+            rng=np.random.default_rng(29),
+        )
+        ordered_diag = prior.diagnostics()["ordered_cumulative_exposure"]
+        self.assertEqual(ordered_diag["status"], "fit")
+        self.assertEqual(len(ordered_diag["selected_frequencies"]), 2)
+        self.assertFalse(ordered_diag["target_data_used"])
+
+        target = MetaPriorProblemAdapter(
+            self._problem("InventorySupplyChain", d=12), prior)
+        x = target.sample_random(np.random.default_rng(30))
+        view = target.task_expert_problem_view("ordered_cumulative")
+        exposure = view.risk_exposures(x)
+        self.assertEqual(exposure.A.shape, (4,))
+        self.assertEqual(exposure.N.shape, (2,))
+        self.assertTrue(np.all(np.isfinite(exposure.A)))
+        self.assertAlmostEqual(float(np.sum(exposure.N)), 1.0, places=7)
+        self.assertEqual(
+            len(view.cumulative_risk_features(x)),
+            1 + 4 + 2 * (2 + 1) // 2 + 2,
+        )
+        basis = target.task_expert_basis_map("ordered_cumulative")
+        self.assertEqual(basis.feature_dim, 4 + 4 * (4 + 1) // 2 + 2)
+        self.assertIsNone(view.cumulative_hvd_prior_beta(1))
+        self.assertIn(
+            "ordered_cumulative",
+            [spec["name"] for spec in target.task_posterior_expert_specs()],
+        )
+
+    def test_ordered_sparse_expert_replaces_local_without_growing_ensemble(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            anchor_count=5,
+            ordered_cumulative_exposure=True,
+            ordered_exposure_max_frequency=6,
+            ordered_exposure_active_dim=2,
+            ordered_exposure_basis_mode="diagonal_quadratic",
+            ordered_exposure_adaptive_sparsity=True,
+            ordered_exposure_replace_local_kernel=True,
+            seed=31,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=10,
+            rng=np.random.default_rng(31),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("InventorySupplyChain", d=12), prior)
+        specs = target.task_posterior_expert_specs(include_local_kernel=True)
+        names = [spec["name"] for spec in specs]
+        self.assertIn("ordered_cumulative", names)
+        self.assertNotIn("local_risk_kernel", names)
+
+        basis = target.task_expert_basis_map(
+            "ordered_cumulative", output_index=1)
+        self.assertEqual(basis.feature_dim, 4 + 4 + 2)
+        sparse = basis.adaptive_sparsity_spec()
+        self.assertEqual(sparse["dictionary_dim"], basis.feature_dim)
+        self.assertEqual(sparse["always_active_count"], 4)
+        self.assertEqual(len(sparse["source_pip"]), basis.feature_dim)
+        ordered_diag = prior.diagnostics()["ordered_cumulative_exposure"]
+        self.assertEqual(ordered_diag["basis_mode"], "diagonal_quadratic")
+        self.assertTrue(ordered_diag["adaptive_sparsity"])
+
+    def test_ordered_semiparametric_residual_is_orthogonal_single_expert(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            anchor_count=5,
+            ordered_cumulative_exposure=True,
+            ordered_exposure_max_frequency=6,
+            ordered_exposure_active_dim=2,
+            ordered_exposure_basis_mode="diagonal_quadratic",
+            ordered_exposure_adaptive_sparsity=True,
+            ordered_exposure_replace_local_kernel=True,
+            ordered_exposure_semiparametric_residual=True,
+            seed=41,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=10,
+            rng=np.random.default_rng(41),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("InventorySupplyChain", d=12), prior)
+        specs = target.task_posterior_expert_specs(include_local_kernel=True)
+        names = [spec["name"] for spec in specs]
+        self.assertIn("ordered_semiparametric", names)
+        self.assertNotIn("ordered_cumulative", names)
+        self.assertNotIn("local_risk_kernel", names)
+
+        basis = target.task_expert_basis_map(
+            "ordered_semiparametric", output_index=1)
+        self.assertEqual(basis.feature_dim, 4 + 4 + 2 + 6)
+        features = basis.features_many([
+            target.sample_random(np.random.default_rng(seed))
+            for seed in range(4)
+        ])
+        self.assertEqual(features.shape, (4, basis.feature_dim))
+        self.assertTrue(np.all(np.isfinite(features)))
+        diagnostics = basis.diagnostics()
+        projection = diagnostics["ordered_residual_projection"]
+        self.assertFalse(projection["target_labels_used"])
+        self.assertEqual(
+            projection["residualization_mode"],
+            "bounded_coefficient_nullspace",
+        )
+        self.assertEqual(projection["residual_dim"], 6)
+        self.assertGreaterEqual(projection["nullspace_dim"], 6)
+        self.assertLess(projection["orthogonality_relative"], 1e-10)
+        self.assertLess(projection["projection_orthonormal_error"], 1e-10)
+
+        residual = features[:, -projection["residual_dim"]:]
+        self.assertTrue(np.all(
+            np.linalg.norm(residual, axis=1)
+            <= projection["global_l2_bound"] + 1e-10
+        ))
+        broad_features = basis.features_many([
+            tuple([value] * target.d)
+            for value in range(0, 101, 5)
+        ])
+        broad_residual = broad_features[:, -projection["residual_dim"]:]
+        self.assertTrue(np.all(
+            np.linalg.norm(broad_residual, axis=1)
+            <= projection["global_l2_bound"] + 1e-10
+        ))
+
+        sparse = basis.adaptive_sparsity_spec()
+        self.assertEqual(sparse["dictionary_dim"], basis.feature_dim)
+        self.assertEqual(sparse["always_active_count"], 4)
+        np.testing.assert_allclose(sparse["source_pip"][-6:], 0.5)
+        provider = target.task_expert_problem_view(
+            "ordered_semiparametric")
+        self.assertEqual(
+            provider.cumulative_risk_provider_status()["coordinate"],
+            "frozen_source_learned_ordered_cumulative",
+        )
+
+    def test_ordered_local_structure_is_a_six_expert_latent_choice(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="spectral_hvd",
+            spectral_risk_alignment=True,
+            ordered_cumulative_exposure=True,
+            ordered_exposure_active_dim=2,
+            ordered_exposure_basis_mode="diagonal_quadratic",
+            ordered_exposure_adaptive_sparsity=True,
+            ordered_exposure_replace_local_kernel=False,
+            ordered_exposure_latent_structure_selection=True,
+            seed=42,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=10,
+            rng=np.random.default_rng(42),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("InventorySupplyChain", d=12), prior)
+        specs = target.task_posterior_expert_specs(include_local_kernel=True)
+        names = [spec["name"] for spec in specs]
+        self.assertEqual(len(names), 6)
+        self.assertIn("ordered_cumulative", names)
+        self.assertIn("local_risk_kernel", names)
+        self.assertIn("risk_aligned_spectral", names)
+        self.assertNotIn("risk_aligned_coordinate", names)
+        self.assertNotIn("ordered_semiparametric", names)
+        self.assertAlmostEqual(sum(
+            spec["prior_weight"] for spec in specs), 1.0)
+        self.assertTrue(
+            prior.diagnostics()["ordered_cumulative_exposure"][
+                "latent_structure_selection"])
+
+        with self.assertRaisesRegex(ValueError, "mutually exclusive"):
+            LearnedMetaPrior(
+                ordered_exposure_semiparametric_residual=True,
+                ordered_exposure_latent_structure_selection=True,
+            )
+
+    def test_ordered_group_shrinkage_learns_group_strength_not_direction(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="spectral_hvd",
+            spectral_risk_alignment=True,
+            ordered_cumulative_exposure=True,
+            ordered_exposure_active_dim=2,
+            ordered_exposure_basis_mode="diagonal_quadratic",
+            ordered_exposure_adaptive_sparsity=True,
+            ordered_exposure_latent_structure_selection=True,
+            ordered_exposure_group_shared_shrinkage=True,
+            seed=43,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=10,
+            rng=np.random.default_rng(43),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("InventorySupplyChain", d=12), prior)
+        basis = target.task_expert_basis_map(
+            "ordered_cumulative", output_index=1)
+        spec = basis.adaptive_sparsity_spec()
+        self.assertEqual(
+            spec["shared_shrinkage_groups"],
+            [-1] * 4 + [0] * 4 + [1] * 2,
+        )
+        self.assertTrue(
+            basis.diagnostics()["ordered_group_shared_shrinkage"])
+        self.assertTrue(
+            prior.diagnostics()["ordered_cumulative_exposure"][
+                "group_shared_shrinkage"])
+
+        with self.assertRaisesRegex(ValueError, "mutually exclusive"):
+            LearnedMetaPrior(
+                ordered_exposure_semiparametric_residual=True,
+                ordered_exposure_group_shared_shrinkage=True,
+            )
+
+    def test_ordered_group_ridge_selects_complexity_from_target_data(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="spectral_hvd",
+            spectral_risk_alignment=True,
+            ordered_cumulative_exposure=True,
+            ordered_exposure_active_dim=2,
+            ordered_exposure_basis_mode="diagonal_quadratic",
+            ordered_exposure_adaptive_sparsity=True,
+            ordered_exposure_latent_structure_selection=True,
+            ordered_exposure_group_ridge_learning=True,
+            seed=44,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=10,
+            rng=np.random.default_rng(44),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("InventorySupplyChain", d=12), prior)
+        specs = target.task_posterior_expert_specs(include_local_kernel=True)
+        self.assertEqual(len(specs), 6)
+        basis = target.task_expert_basis_map(
+            "ordered_cumulative", output_index=1)
+        spec = basis.adaptive_sparsity_spec()
+        self.assertEqual(spec["method"], "nested_loo_group_ridge")
+        self.assertEqual(
+            spec["group_ids"], [0] * 4 + [1] * 4 + [2] * 2)
+        self.assertNotIn("max_effective_fraction", spec)
+        self.assertFalse(spec["oracle_used"])
+        self.assertTrue(
+            basis.diagnostics()["ordered_group_ridge_learning"])
+
+        with self.assertRaisesRegex(ValueError, "mutually exclusive"):
+            LearnedMetaPrior(
+                ordered_exposure_adaptive_sparsity=True,
+                ordered_exposure_group_shared_shrinkage=True,
+                ordered_exposure_group_ridge_learning=True,
+            )
+
     def test_teacher_distillation_uses_source_hooks_without_exposing_target_hooks(self):
         rng = np.random.default_rng(11)
         sources = [
@@ -262,6 +565,11 @@ class MetaPriorTests(unittest.TestCase):
             target.cumulative_hvd_prior_precision(output_index=1), 0.0)
         self.assertGreaterEqual(
             target.cumulative_hvd_prior_upper_scale(output_index=1), 1.0)
+        sensitivity = target.task_sensitivity_prior()
+        self.assertEqual(sensitivity["status"], "fit")
+        self.assertAlmostEqual(
+            sum(sensitivity["prior_weights"]), 1.0, places=12)
+        self.assertFalse(sensitivity["target_data_used"])
         x = target.sample_random(np.random.default_rng(312))
         exposure = target.risk_exposures(x)
         self.assertTrue(np.all(exposure.A >= 0.0))
@@ -294,6 +602,29 @@ class MetaPriorTests(unittest.TestCase):
             hvd_diagnostics["cumulative_prior_scale"]["1"], 0.0)
         self.assertTrue(
             hvd_diagnostics["cumulative_prior_replication_only"]["1"])
+
+        for expert_name in ("universal_coordinate", "source_spectral"):
+            expert_problem = target.task_expert_problem_view(expert_name)
+            expert_beta = expert_problem.cumulative_hvd_prior_beta(1)
+            self.assertIsNotNone(expert_beta)
+            self.assertEqual(
+                len(expert_beta),
+                len(expert_problem.cumulative_risk_features(samples[0])),
+            )
+            expert_hvd = OrthogonalHVD(mode="factor", n_outputs=2)
+            expert_hvd.fit_from_residuals(
+                samples,
+                residuals,
+                output_index=1,
+                problem=expert_problem,
+            )
+            expert_diagnostics = expert_hvd.diagnostics()
+            self.assertTrue(
+                expert_diagnostics["cumulative_prior_used"]["1"])
+            self.assertTrue(
+                expert_diagnostics["cumulative_provider_active"]["1"])
+            self.assertTrue(
+                expert_diagnostics["cumulative_active"]["1"])
         hvd.update(
             1,
             samples[0],
@@ -1205,6 +1536,49 @@ class MetaPriorTests(unittest.TestCase):
         self.assertAlmostEqual(gate.certification_guard(), first_guard)
         self.assertTrue(
             diagnostics["risk_alignment"]["stage1_basis_locked"])
+
+    def test_source_boundary_bracket_is_lodo_fit_and_target_label_free(self):
+        prior = LearnedMetaPrior(
+            local_dim=2,
+            shared_dim=2,
+            component_stage="spectral_hvd",
+            spectral_active_dim=4,
+            spectral_risk_alignment=True,
+            spectral_alignment_source_episodes=2,
+            teacher_records_per_domain=8,
+            teacher_pool_size=128,
+            seed=611,
+        ).fit_from_source_problems(
+            [
+                ("InventorySupplyChain", self._problem("InventorySupplyChain")),
+                ("QueueResourceControl", self._problem("QueueResourceControl")),
+                ("StatePolicyRZDT1", self._problem("StatePolicyRZDT1")),
+            ],
+            n_records_per_domain=24,
+            rng=np.random.default_rng(612),
+        )
+        model = prior.diagnostics()["source_boundary_bracket"]
+        self.assertEqual(model["status"], "fit")
+        self.assertEqual(
+            model["method"], "source_domain_lodo_boundary_ordering")
+        self.assertFalse(model["target_data_used"])
+        self.assertFalse(model["target_oracle_used"])
+        self.assertGreaterEqual(model["n_domains"], 2)
+
+        target = MetaPriorProblemAdapter(
+            self._problem("FactorShockStatePolicyRZDT1"), prior)
+        candidates = target.task_boundary_bracket_candidates(
+            n=5,
+            rng=np.random.default_rng(613),
+            pool_size=96,
+        )
+        self.assertEqual(len(candidates), 5)
+        self.assertEqual(len(set(candidates)), 5)
+        diagnostics = target.task_boundary_bracket_diagnostics()
+        self.assertEqual(diagnostics["status"], "ok")
+        self.assertFalse(diagnostics["target_labels_used"])
+        self.assertFalse(diagnostics["target_oracle_used"])
+        self.assertLess(diagnostics["score_min"], diagnostics["score_max"])
 
 
 if __name__ == "__main__":

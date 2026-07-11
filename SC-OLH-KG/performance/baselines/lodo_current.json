@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-12T05:31:24+08:00",
+  "baseline_policy": "Promote only after the unchanged 7+7 LODO gate passes: FactorShock must be 7/7 truly feasible with zero mean violation; Inventory must be at least 4/7 truly feasible with at most one false certificate; every nested group-ridge selection must be valid.",
+  "promoted_candidate": {
+    "name": "v32_fixed_universe_adaptive_expert_race",
+    "run_id": "lodo_v32_fixed_universe_n20_gate1_20260712",
+    "source_manifest": "SC-OLH-KG/performance/manifests/v18b_exactkg_mcdiag.json",
+    "line": "lodo_teacher",
+    "heldouts": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain"
+    ],
+    "seeds": [0, 1, 2, 3, 4, 5, 6],
+    "config": {
+      "N": 20,
+      "n0": 10,
+      "exact_kg_mc_samples": 2,
+      "exact_kg_jobs": 32,
+      "exact_kg_parallel_backend": "process_fork",
+      "exact_kg_sampling_mode": "iid",
+      "ordered_cumulative_exposure": true,
+      "ordered_max_frequency": 8,
+      "ordered_active_dim": 2,
+      "ordered_frequency_penalty": 0.1,
+      "ordered_basis_mode": "diagonal_quadratic",
+      "ordered_adaptive_sparsity": true,
+      "ordered_replace_local_kernel": false,
+      "ordered_latent_structure_selection": true,
+      "ordered_group_shared_shrinkage": false,
+      "ordered_group_ridge_learning": true,
+      "task_posterior_safe_generalized": true,
+      "finalist_replication_budget": 3,
+      "finalist_replication_count": 2,
+      "finalist_replication_min_replicates": 2,
+      "finalist_replication_delta": 0.05,
+      "finalist_replication_expert_stratified": true,
+      "finalist_replication_adaptive_race": true,
+      "finalist_replication_fixed_universe": true
+    },
+    "metrics": {
+      "FactorShockStatePolicyRZDT1": {
+        "true_feasible_count": 7,
+        "false_feasible_count": 0,
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_constraint_violation": 0.0,
+        "median_true_chance_margin": -0.033201874624488065,
+        "median_wall_time_sec": 941.9093625545502
+      },
+      "InventorySupplyChain": {
+        "true_feasible_count": 5,
+        "false_feasible_count": 0,
+        "median_feasible_regret": 0.005687624000000002,
+        "mean_constraint_violation": 0.0015819720316545306,
+        "median_true_chance_margin": -0.02690566743014431,
+        "median_wall_time_sec": 874.2967555522919
+      }
+    }
+  },
+  "acceptance_gates": {
+    "complete_7_plus_7": true,
+    "factor_true_feasible_7_of_7": true,
+    "factor_zero_mean_violation": true,
+    "inventory_true_feasible_at_least_4_of_7": true,
+    "inventory_false_feasible_at_most_1_of_7": true,
+    "all_group_ridge_selections_valid": true,
+    "all_pass": true
+  },
+  "challenged_baseline": {
+    "name": "v30_frozen_expert_stratified_finalists",
+    "run_id": "lodo_v30_expert_stratified_n20_gate1_20260712",
+    "FactorShockStatePolicyRZDT1": {
+      "true_feasible_count": 7,
+      "median_feasible_regret": 0.00824999999999998,
+      "median_wall_time_sec": 985.7883927822113
+    },
+    "InventorySupplyChain": {
+      "true_feasible_count": 3,
+      "false_feasible_count": 0,
+      "median_feasible_regret": 0.005687624000000002,
+      "mean_constraint_violation": 0.05305598089477762,
+      "median_wall_time_sec": 877.2805407047272
+    }
+  },
+  "verification": {
+    "python": "204 passed, 3 subtests passed",
+    "lean": "lake build completed successfully (8618 jobs)",
+    "lean_placeholders": 0,
+    "target_oracle_used_for_selection": false,
+    "runtime_checkpoints_synced_locally": false
+  }
+}

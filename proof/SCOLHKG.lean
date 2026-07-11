@@ -15,6 +15,7 @@ import SCOLHKG.Measure.TaskPACBayes
 import SCOLHKG.Measure.PosteriorKG
 import SCOLHKG.Measure.ProbabilityEvents
 import SCOLHKG.Measure.SafeRegretEvent
+import SCOLHKG.Measure.SharedTerminalPoolKG
 import SCOLHKG.Optimization
 import SCOLHKG.Real.AdditiveApproxKG
 import SCOLHKG.Real.AdaptiveCoefficientSparsity
@@ -26,7 +27,10 @@ import SCOLHKG.Real.CumulativeRiskImplementation
 import SCOLHKG.Real.ExactKGImplementation
 import SCOLHKG.Real.FeatureKernelDeterminantCap
 import SCOLHKG.Real.FiniteKernelInformationGain
+import SCOLHKG.Real.FinalistReplication
 import SCOLHKG.Real.GPRUpdate
+import SCOLHKG.Real.GroupSharedShrinkage
+import SCOLHKG.Real.GroupRidgeComplexity
 import SCOLHKG.Real.HVD
 import SCOLHKG.Real.CoefficientShrinkage
 import SCOLHKG.Real.HVDImplementation
@@ -41,11 +45,15 @@ import SCOLHKG.Real.LineEnvelopeKG
 import SCOLHKG.Real.LineEnvelopeStack
 import SCOLHKG.Real.OccupancyDecomposition
 import SCOLHKG.Real.OrthogonalAdditiveGroups
+import SCOLHKG.Real.OrderedCumulativeExposure
+import SCOLHKG.Real.OrthogonalSemiparametric
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.RidgeHVD
 import SCOLHKG.Real.RiskAlignedRepresentation
+import SCOLHKG.Real.SafeGeneralizedTaskPosterior
 import SCOLHKG.Real.SafeRegret
 import SCOLHKG.Real.TrafficTrajectoryModel
 import SCOLHKG.Real.TaskPosterior
+import SCOLHKG.Real.StratifiedExpertKG
 import SCOLHKG.Scalarization
 import SCOLHKG.Variance

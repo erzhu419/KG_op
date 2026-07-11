@@ -7,7 +7,10 @@ from typing import Callable, Optional, Union
 
 import numpy as np
 
-from representation.adaptive_sparsity import AdaptiveSpikeSlabPosterior
+from representation.adaptive_sparsity import (
+    AdaptiveGroupRidgePosterior,
+    AdaptiveSpikeSlabPosterior,
+)
 
 
 ArrayLike = Union[np.ndarray, list, tuple]
@@ -505,25 +508,43 @@ class ParametricGPR:
             raise ValueError("adaptive initial observations must align")
         self.lambda_i = max(float(deviation_variance), 1e-12)
         self._adaptive_spec = dict(spec)
-        self._adaptive_sparsity = AdaptiveSpikeSlabPosterior(
-            self._adaptive_spec["source_pip"],
-            self._adaptive_spec["source_slab_scale"],
-            min_pip=self._adaptive_spec.get("min_pip", 0.05),
-            max_pip=self._adaptive_spec.get("max_pip", 0.95),
-            spike_ratio=self._adaptive_spec.get("spike_ratio", 0.05),
-            damping=self._adaptive_spec.get("damping", 0.5),
-            max_iter=self._adaptive_spec.get("max_iter", 40),
-            tolerance=self._adaptive_spec.get("tolerance", 1e-5),
-            residual_floor_scale=self._adaptive_spec.get(
-                "residual_floor_scale", 0.05),
-            multiplicity_correction=self._adaptive_spec.get(
-                "multiplicity_correction", 1.0),
-            max_effective_fraction=self._adaptive_spec.get(
-                "max_effective_fraction", 0.35),
-            always_active_count=self._adaptive_spec.get(
-                "always_active_count", 0),
-            allowed_mask=self._adaptive_spec.get("allowed_mask"),
-        )
+        method = str(self._adaptive_spec.get(
+            "method", "variational_spike_slab_bma"))
+        if method == "nested_loo_group_ridge":
+            self._adaptive_sparsity = AdaptiveGroupRidgePosterior(
+                self._adaptive_spec["group_ids"],
+                penalty_grid=self._adaptive_spec.get(
+                    "penalty_grid", (1e-4, 1e-2, 0.1, 1.0, 10.0, 100.0, 1000.0)),
+                initial_feature_penalty=self._adaptive_spec.get(
+                    "initial_feature_penalty"),
+                coordinate_passes=self._adaptive_spec.get(
+                    "coordinate_passes", 2),
+                safety_weight=self._adaptive_spec.get("safety_weight", 2.0),
+                residual_floor_scale=self._adaptive_spec.get(
+                    "residual_floor_scale", 0.05),
+            )
+        else:
+            self._adaptive_sparsity = AdaptiveSpikeSlabPosterior(
+                self._adaptive_spec["source_pip"],
+                self._adaptive_spec["source_slab_scale"],
+                min_pip=self._adaptive_spec.get("min_pip", 0.05),
+                max_pip=self._adaptive_spec.get("max_pip", 0.95),
+                spike_ratio=self._adaptive_spec.get("spike_ratio", 0.05),
+                damping=self._adaptive_spec.get("damping", 0.5),
+                max_iter=self._adaptive_spec.get("max_iter", 40),
+                tolerance=self._adaptive_spec.get("tolerance", 1e-5),
+                residual_floor_scale=self._adaptive_spec.get(
+                    "residual_floor_scale", 0.05),
+                multiplicity_correction=self._adaptive_spec.get(
+                    "multiplicity_correction", 1.0),
+                max_effective_fraction=self._adaptive_spec.get(
+                    "max_effective_fraction", 0.35),
+                always_active_count=self._adaptive_spec.get(
+                    "always_active_count", 0),
+                allowed_mask=self._adaptive_spec.get("allowed_mask"),
+                shared_shrinkage_groups=self._adaptive_spec.get(
+                    "shared_shrinkage_groups"),
+            )
         self._adaptive_records = [
             {
                 "x": tuple(int(v) for v in np.asarray(x, dtype=int)),

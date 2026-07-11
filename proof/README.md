@@ -118,6 +118,10 @@ mathlib and its cache; later builds should be fast.
   as a Bochner integral.
 - `SCOLHKG/Measure/PosteriorUpdateKG.lean`: exact posterior-update SC-OLH-KG
   value as an integral over updated terminal certified value.
+- `SCOLHKG/Measure/SharedTerminalPoolKG.lean`: current, hypothetical-update,
+  and realized terminal values share the pre-observation action pool; adding
+  posterior frontier actions preserves both frontier and original experiment
+  sets by finite-set inclusion.
 - `SCOLHKG/Measure/PosteriorSamplingCandidates.lean`: random posterior-sampled
   candidate sets controlled by deterministic finite envelope pools.
 - `SCOLHKG/Measure/PosteriorCoefficientSampler.lean`: code-facing
@@ -139,6 +143,29 @@ mathlib and its cache; later builds should be fast.
   mixture normalization/support lower bounds, hierarchical
   within/between/aleatoric variance, robust-envelope certification for every
   admissible posterior, and the joint task-state exact-MC optimizer bridge.
+- `SCOLHKG/Real/SafeGeneralizedTaskPosterior.lean`: separate normalized
+  predictive and safe-decision generalized-Bayes masses, finite clipped
+  Bernoulli/pairwise log-loss radius, bounded composite-loss propagation,
+  PAC-Bayes specialization centred on the safe posterior, and the dual-weight
+  joint-state exact-KG implementation bridge.
+- `SCOLHKG/Real/StratifiedExpertKG.lean`: exact finite-expert posterior
+  summation and a weighted error theorem showing that categorical expert
+  sampling error is zero; only within-expert Gaussian approximation error
+  remains.
+- `SCOLHKG/Real/OrderedCumulativeExposure.lean`: finite positional exposure
+  transform, aggregate zero-frequency special case, selected-frequency
+  support, and bridge back to the same cumulative-risk decomposition.
+- `SCOLHKG/Real/GroupSharedShrinkage.lean`: isotropic semantic-group
+  spike/slab penalty, invariance under every within-group linear isometry, and
+  shared-PIP effective-dimension accounting.
+- `SCOLHKG/Real/GroupRidgeComplexity.lean`: spectral ridge effective degrees
+  of freedom and the finite nested-refit selector's `2 epsilon` oracle bound.
+- `SCOLHKG/Real/FinalistReplication.lean`: budgeted frozen and adaptive
+  finalist ranking-and-selection, replicated chance-upper-bound soundness on
+  the joint mean/variance confidence event, adaptive archive support and size,
+  fixed-universe subset/cardinality invariants, completed-candidate filtering,
+  finite bad-event union bounds,
+  replicate-deficit decrease, and reserved suffix budget accounting.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
   manuscript-level theory.
 - `code_map.md`: mapping from mathematical objects to the current
@@ -297,6 +324,44 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
     probability at most `delta`.
 81. On that event, every finite hyper-posterior obeys the explicit
     `(KL + log(1/delta))/n` PAC-Bayes generalization-gap bound.
+82. Enumerating every finite expert under its normalized posterior mass is the
+    exact categorical expectation, with no expert-identity sampling error.
+83. If every within-expert Gaussian estimator has absolute error at most
+    `epsilon`, the posterior-weighted stratified estimator also has absolute
+    error at most `epsilon`.
+84. The constant positional basis reproduces aggregate occupancy exactly, so
+    the previous state-coupled coordinate is the zero-frequency special case
+    of the ordered coordinate.
+85. Selected positional frequencies preserve the finite linear exposure map,
+    and unselected frequencies contribute exactly zero.
+86. Replacing local exposure by the ordered finite basis leaves the same
+    `floor + independent + shared + linear` cumulative-risk decomposition.
+87. The adaptive spike-and-slab budget is a bound on total effective
+    dimension, including the always-active prefix; an optional coefficient
+    budget of `rho * N - fixed` therefore implies total dimension at most
+    `rho * N`.
+88. A bounded local-kernel coefficient vector in the nullspace of the frozen
+    ordered/kernel cross matrix makes every resulting residual feature
+    orthogonal to the ordered feature span, establishing the corrected V24
+    semiparametric direct-sum bridge.
+89. Uniformly bounded kernel entries and bounded projection coefficients give
+    every V24 residual feature a candidate-independent finite amplitude bound;
+    V23's pool-external polynomial subtraction is not used by the bridge.
+90. Sharing one inclusion probability and isotropic spike/slab precision over
+    a semantic coefficient group makes its prior penalty invariant to every
+    orthogonal rotation of that group's coordinates.
+91. A group with `m` coordinates and shared inclusion probability `q` consumes
+    exactly `m q` effective dimensions, so group selection does not evade the
+    total coefficient budget.
+92. When the aggregate minimum-PIP floor fits the optional budget, it provides
+    a feasible cardinality-projection endpoint; convex damping of two
+    budget-feasible PIP vectors remains budget feasible.
+93. Ridge effective dimension is a sum of spectral fractions in `[0,1]`, so it
+    is nonnegative and never exceeds the feature count without imposing one
+    universal rank on every task.
+94. On a uniform finite-model risk-deviation event, the nested-refit group
+    penalty minimizer has true risk at most the best finite penalty model plus
+    `2 epsilon`.
 
 Remaining work is empirical/binding and assumption validation:
 
@@ -305,9 +370,12 @@ Remaining work is empirical/binding and assumption validation:
    constants are empirical/model assumptions, not free theorems.
 2. Generate and archive the real fresh-seed trajectory CSV logs with the SUMO
    logger now implemented in `sumo_sim.py`.
-3. Run Inventory/Queue cross-domain Gate 2 for the finite task-posterior
-   exact-MC path. FactorShock Gate 1 passed with the same false-feasible count,
-   but its seed-0 false-feasible case remains an explicit safety failure.
+3. Repair the Inventory cross-domain failure before opening Queue. V19 shows a
+   mixed exact-KG-estimator and representation error, V20 removes finite-expert
+   identity sampling error, and V21a shows that a high-capacity 17-feature
+   ordered coordinate is not identifiable at `N=20`. V22 therefore tests an
+   11-feature diagonal coordinate with total effective dimension at most
+   `0.35 N`, replacing rather than stacking the local-kernel expert.
 4. Decide empirically whether `exact_mc`, `blend`, or additive-with-`2 eta`
    should be the main runner after the large benchmark matrix finishes.
 5. If the final manuscript chooses a less conservative traffic feature map
@@ -327,9 +395,9 @@ all build in Lean without `sorry`.  The boundary-aligned representation layer
 now also has rotation-invariant projector, identifiable-rank whitening,
 simplex-expert, nested-LOO noninterference, and strong-heredity bridges.  The
 representation implementation remains conditional on empirical gates. The
-finite task-posterior layer closes the algebraic, PAC-Bayes, and deterministic
-implementation bridges and has passed FactorShock Gate 1. The next closure
-work is cross-domain Gate 2, explicit repair of the remaining seed-0
-false-feasible case, the trajectory logger table, the exact/additive
-large-budget decision, and synchronization of the numeric feature cap with
-the final code path.
+finite task-posterior layer closes the algebraic, PAC-Bayes, deterministic,
+and stratified finite-expert implementation bridges and has passed FactorShock
+Gate 1. The next closure work is the failed Inventory side of cross-domain
+Gate 2, ordered cumulative-risk identification, the trajectory logger table,
+the exact/additive large-budget decision, and synchronization of the numeric
+feature cap with the final code path.

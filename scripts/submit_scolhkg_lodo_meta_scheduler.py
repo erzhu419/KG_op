@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import shlex
 import subprocess
 import sys
 import time
@@ -67,8 +68,12 @@ def preset_flags(name):
     return " ".join(f"--{key} {value}" for key, value in LOSS_PRESETS[name].items())
 
 
+def checkpoint_root(args, run_id):
+    return args.deploy / "SC-OLH-KG" / "checkpoints" / run_id / "lodo_meta"
+
+
 def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
-    ckpt_root = args.deploy / "SC-OLH-KG" / "checkpoints" / run_id / "lodo_meta"
+    ckpt_root = checkpoint_root(args, run_id)
     base_prefix = f"lodo_meta_{run_id}_N{N}_{preset}"
     if int(num_shards) > 1:
         shard_suffix = f"_shard{int(shard_index):02d}of{int(num_shards):02d}"
@@ -111,9 +116,20 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"--exact_kg_mc_samples {args.exact_kg_mc_samples} "
         f"--exact_kg_jobs {args.exact_kg_jobs} "
         f"--exact_kg_parallel_backend {args.exact_kg_parallel_backend} "
+        f"--exact_kg_sampling_mode {args.exact_kg_sampling_mode} "
+        f"{'--exact_kg_clip_negative ' if args.exact_kg_clip_negative else '--no-exact_kg_clip_negative ' }"
         f"--exact_kg_blend {args.exact_kg_blend} "
+        f"--exact_kg_terminal_mode {args.exact_kg_terminal_mode} "
+        f"--terminal_bayes_violation_penalty "
+        f"{args.terminal_bayes_violation_penalty} "
+        f"--terminal_frontier_candidate_count "
+        f"{args.terminal_frontier_candidate_count} "
         f"--task_posterior_mode {args.task_posterior_mode} "
         f"{'--task_posterior_initial_design' if args.task_posterior_initial_design else '--no-task_posterior_initial_design'} "
+        f"--task_posterior_boundary_bracket_fraction "
+        f"{args.task_posterior_boundary_bracket_fraction} "
+        f"--task_posterior_mandatory_universal_count "
+        f"{args.task_posterior_mandatory_universal_count} "
         f"--task_posterior_pilot_count {args.task_posterior_pilot_count} "
         f"--task_posterior_temperature {args.task_posterior_temperature} "
         f"--task_posterior_temperature_decay "
@@ -124,12 +140,26 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"{args.task_posterior_objective_score_weight} "
         f"--task_posterior_constraint_score_weight "
         f"{args.task_posterior_constraint_score_weight} "
+        f"{'--task_posterior_safe_generalized ' if args.task_posterior_safe_generalized else '--no-task_posterior_safe_generalized '}"
+        f"--task_posterior_safe_boundary_score_weight "
+        f"{args.task_posterior_safe_boundary_score_weight} "
+        f"--task_posterior_safe_pairwise_score_weight "
+        f"{args.task_posterior_safe_pairwise_score_weight} "
+        f"--task_posterior_safe_pairwise_max_history "
+        f"{args.task_posterior_safe_pairwise_max_history} "
+        f"--task_posterior_safe_pairwise_probability_floor "
+        f"{args.task_posterior_safe_pairwise_probability_floor} "
         f"--task_posterior_kl_radius_numerator "
         f"{args.task_posterior_kl_radius_numerator} "
         f"--task_posterior_confidence_delta "
         f"{args.task_posterior_confidence_delta} "
         f"--task_posterior_max_kl_radius "
         f"{args.task_posterior_max_kl_radius} "
+        f"--task_posterior_prior_protection_numerator "
+        f"{args.task_posterior_prior_protection_numerator} "
+        f"--task_posterior_prior_protection_max "
+        f"{args.task_posterior_prior_protection_max} "
+        f"{'--task_posterior_local_kernel_expert ' if args.task_posterior_local_kernel_expert else '--no-task_posterior_local_kernel_expert '}"
         f"--task_posterior_candidate_count "
         f"{args.task_posterior_candidate_count} "
         f"--task_posterior_recommendation_count "
@@ -140,6 +170,8 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"{args.task_posterior_proposal_exploration} "
         f"--task_posterior_proposal_min_per_expert "
         f"{args.task_posterior_proposal_min_per_expert} "
+        f"--task_posterior_sensitivity_mode "
+        f"{args.task_posterior_sensitivity_mode} "
         f"--constraint_uncertain_candidate_count {args.constraint_uncertain_candidate_count} "
         f"--constraint_uncertain_pool_size {args.constraint_uncertain_pool_size} "
         f"--constraint_uncertain_state_pool_fraction "
@@ -149,6 +181,24 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"--replication_candidate_count {args.replication_candidate_count} "
         f"--replication_max_per_solution {args.replication_max_per_solution} "
         f"--replication_margin_softening {args.replication_margin_softening} "
+        f"--certification_recheck_top_k {args.certification_recheck_top_k} "
+        f"--certification_recheck_min_replicates "
+        f"{args.certification_recheck_min_replicates} "
+        f"--certification_recheck_soft_margin_scale "
+        f"{args.certification_recheck_soft_margin_scale} "
+        f"--certification_recheck_variance_prior_df "
+        f"{args.certification_recheck_variance_prior_df} "
+        f"--finalist_replication_budget {args.finalist_replication_budget} "
+        f"--finalist_replication_count {args.finalist_replication_count} "
+        f"--finalist_replication_min_replicates "
+        f"{args.finalist_replication_min_replicates} "
+        f"--finalist_replication_delta {args.finalist_replication_delta} "
+        f"--finalist_replication_variance_prior_df "
+        f"{args.finalist_replication_variance_prior_df} "
+        f"{'--finalist_replication_expert_stratified ' if args.finalist_replication_expert_stratified else '--no-finalist_replication_expert_stratified '}"
+        f"{'--finalist_replication_adaptive_race ' if args.finalist_replication_adaptive_race else '--no-finalist_replication_adaptive_race '}"
+        f"{'--finalist_replication_fixed_universe ' if args.finalist_replication_fixed_universe else '--no-finalist_replication_fixed_universe '}"
+        f"{'--observed_incumbent_use_replicate_variance ' if args.observed_incumbent_use_replicate_variance else '--no-observed_incumbent_use_replicate_variance '}"
         f"--safe_interior_candidate_count {args.safe_interior_candidate_count} "
         f"--safe_interior_pool_size {args.safe_interior_pool_size} "
         f"--safe_interior_margin {args.safe_interior_margin} "
@@ -164,6 +214,8 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"{'--recommend_observed_only ' if args.recommend_observed_only else ''}"
         f"{'--recommendation_calibration ' if args.recommendation_calibration else ''}"
         f"--recommendation_calibration_scope {args.recommendation_calibration_scope} "
+        f"--recommendation_calibration_max_effective_fraction "
+        f"{args.recommendation_calibration_max_effective_fraction} "
         f"--recommendation_calibration_min_obs {args.recommendation_calibration_min_obs} "
         f"--recommendation_calibration_max_theory_margin "
         f"{args.recommendation_calibration_max_theory_margin} "
@@ -194,6 +246,21 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"--source_records_per_domain {args.source_records_per_domain} "
         f"--meta_local_dim {args.meta_local_dim} "
         f"--meta_shared_dim {args.meta_shared_dim} "
+        f"{'--meta_ordered_cumulative_exposure ' if args.meta_ordered_cumulative_exposure else '--no-meta_ordered_cumulative_exposure '}"
+        f"--meta_ordered_exposure_max_frequency "
+        f"{args.meta_ordered_exposure_max_frequency} "
+        f"--meta_ordered_exposure_active_dim "
+        f"{args.meta_ordered_exposure_active_dim} "
+        f"--meta_ordered_exposure_frequency_penalty "
+        f"{args.meta_ordered_exposure_frequency_penalty} "
+        f"--meta_ordered_exposure_basis_mode "
+        f"{args.meta_ordered_exposure_basis_mode} "
+        f"{'--meta_ordered_exposure_adaptive_sparsity ' if args.meta_ordered_exposure_adaptive_sparsity else '--no-meta_ordered_exposure_adaptive_sparsity '}"
+        f"{'--meta_ordered_exposure_replace_local_kernel ' if args.meta_ordered_exposure_replace_local_kernel else '--no-meta_ordered_exposure_replace_local_kernel '}"
+        f"{'--meta_ordered_exposure_semiparametric_residual ' if args.meta_ordered_exposure_semiparametric_residual else '--no-meta_ordered_exposure_semiparametric_residual '}"
+        f"{'--meta_ordered_exposure_latent_structure_selection ' if args.meta_ordered_exposure_latent_structure_selection else '--no-meta_ordered_exposure_latent_structure_selection '}"
+        f"{'--meta_ordered_exposure_group_shared_shrinkage ' if args.meta_ordered_exposure_group_shared_shrinkage else '--no-meta_ordered_exposure_group_shared_shrinkage '}"
+        f"{'--meta_ordered_exposure_group_ridge_learning ' if args.meta_ordered_exposure_group_ridge_learning else '--no-meta_ordered_exposure_group_ridge_learning '}"
         f"--meta_anchor_count {args.meta_anchor_count} "
         f"--meta_kmeans_iters {args.meta_kmeans_iters} "
         f"--meta_soft_temperature {args.meta_soft_temperature} "
@@ -319,6 +386,67 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
     )
 
 
+def exact_kg_diagnostic_command(
+    args,
+    run_id,
+    N,
+    preset,
+    shard_index,
+    num_shards,
+):
+    heldouts = parse_csv(args.heldouts)
+    lines = parse_csv(args.lines)
+    if len(heldouts) != 1 or len(lines) != 1:
+        raise ValueError(
+            "post-run exact-KG diagnostics require one heldout and one line"
+        )
+    if args.basis_pair_grid:
+        raise ValueError(
+            "post-run exact-KG diagnostics do not support --basis-pair-grid"
+        )
+    if int(num_shards) != int(args.n_seeds):
+        raise ValueError(
+            "post-run exact-KG diagnostics require num_shards == n_seeds "
+            "so every shard contains exactly one seed"
+        )
+    seed = int(args.seed_start) + int(shard_index)
+    basis_label = "state"
+    safe_variant = f"{lines[0]}_{heldouts[0]}_{basis_label}_seed{seed}"
+    safe_variant = "".join(
+        ch if ch.isalnum() or ch in ("-", "_") else "_"
+        for ch in safe_variant
+    )
+    checkpoint = (
+        checkpoint_root(args, run_id)
+        / "runtime"
+        / safe_variant
+        / f"checkpoint_stage_{int(N) - 1:05d}.pkl"
+    )
+    output = (
+        args.deploy
+        / "SC-OLH-KG"
+        / "profiles"
+        / (
+            f"exactkg_mcdiag_{run_id}_N{int(N)}_{preset}_"
+            f"{heldouts[0]}_seed{seed}.json"
+        )
+    )
+    return " ".join([
+        PYTHON,
+        "performance/diagnose_exact_kg_checkpoint.py",
+        "--manifest", shlex.quote(str(args.exact_kg_diagnostic_manifest)),
+        "--seed", str(seed),
+        "--checkpoint", shlex.quote(str(checkpoint)),
+        "--mc-samples", shlex.quote(str(args.exact_kg_diagnostic_mc_samples)),
+        "--sampling-modes",
+        shlex.quote(str(args.exact_kg_diagnostic_sampling_modes)),
+        "--repeats", str(args.exact_kg_diagnostic_repeats),
+        "--exact-jobs", str(args.exact_kg_jobs),
+        "--parallel-backend", shlex.quote(str(args.exact_kg_parallel_backend)),
+        "--out", shlex.quote(str(output)),
+    ])
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scheduler", default=str(DEFAULT_SCHEDULER))
@@ -373,12 +501,34 @@ def main():
     parser.add_argument("--exact-kg-mc-samples", type=int, default=2)
     parser.add_argument("--exact-kg-jobs", type=int, default=1)
     parser.add_argument("--exact-kg-parallel-backend", default="thread")
+    parser.add_argument("--exact-kg-sampling-mode", default="iid")
+    parser.add_argument(
+        "--exact-kg-clip-negative",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     parser.add_argument("--exact-kg-blend", type=float, default=0.0)
+    parser.add_argument(
+        "--exact-kg-terminal-mode", default="hard_certified")
+    parser.add_argument(
+        "--terminal-bayes-violation-penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--terminal-frontier-candidate-count", type=int, default=0)
     parser.add_argument("--task-posterior-mode", default="off")
     parser.add_argument(
         "--task-posterior-initial-design",
         action=argparse.BooleanOptionalAction,
         default=True,
+    )
+    parser.add_argument(
+        "--task-posterior-boundary-bracket-fraction",
+        type=float,
+        default=0.0,
+    )
+    parser.add_argument(
+        "--task-posterior-mandatory-universal-count",
+        type=int,
+        default=0,
     )
     parser.add_argument("--task-posterior-pilot-count", type=int, default=-1)
     parser.add_argument("--task-posterior-temperature", type=float, default=0.5)
@@ -391,11 +541,48 @@ def main():
     parser.add_argument(
         "--task-posterior-constraint-score-weight", type=float, default=1.0)
     parser.add_argument(
+        "--task-posterior-safe-generalized",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--task-posterior-safe-boundary-score-weight",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--task-posterior-safe-pairwise-score-weight",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--task-posterior-safe-pairwise-max-history",
+        type=int,
+        default=16,
+    )
+    parser.add_argument(
+        "--task-posterior-safe-pairwise-probability-floor",
+        type=float,
+        default=1e-6,
+    )
+    parser.add_argument(
         "--task-posterior-kl-radius-numerator", type=float, default=0.5)
     parser.add_argument(
         "--task-posterior-confidence-delta", type=float, default=0.05)
     parser.add_argument(
         "--task-posterior-max-kl-radius", type=float, default=4.0)
+    parser.add_argument(
+        "--task-posterior-prior-protection-numerator",
+        type=float,
+        default=0.0,
+    )
+    parser.add_argument(
+        "--task-posterior-prior-protection-max", type=float, default=0.5)
+    parser.add_argument(
+        "--task-posterior-local-kernel-expert",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
     parser.add_argument(
         "--task-posterior-candidate-count", type=int, default=0)
     parser.add_argument(
@@ -406,6 +593,8 @@ def main():
         "--task-posterior-proposal-exploration", type=float, default=0.10)
     parser.add_argument(
         "--task-posterior-proposal-min-per-expert", type=int, default=2)
+    parser.add_argument(
+        "--task-posterior-sensitivity-mode", default="off")
     parser.add_argument("--constraint-uncertain-candidate-count", type=int, default=8)
     parser.add_argument("--constraint-uncertain-pool-size", type=int, default=180)
     parser.add_argument(
@@ -421,6 +610,41 @@ def main():
     parser.add_argument("--replication-candidate-count", type=int, default=3)
     parser.add_argument("--replication-max-per-solution", type=int, default=5)
     parser.add_argument("--replication-margin-softening", type=float, default=3.0)
+    parser.add_argument("--certification-recheck-top-k", type=int, default=0)
+    parser.add_argument(
+        "--certification-recheck-min-replicates", type=int, default=3)
+    parser.add_argument(
+        "--certification-recheck-soft-margin-scale", type=float, default=2.0)
+    parser.add_argument(
+        "--certification-recheck-variance-prior-df", type=float, default=2.0)
+    parser.add_argument("--finalist-replication-budget", type=int, default=0)
+    parser.add_argument("--finalist-replication-count", type=int, default=2)
+    parser.add_argument(
+        "--finalist-replication-min-replicates", type=int, default=2)
+    parser.add_argument(
+        "--finalist-replication-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--finalist-replication-variance-prior-df", type=float, default=2.0)
+    parser.add_argument(
+        "--finalist-replication-expert-stratified",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--finalist-replication-adaptive-race",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--finalist-replication-fixed-universe",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--observed-incumbent-use-replicate-variance",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
     parser.add_argument("--safe-interior-candidate-count", type=int, default=0)
     parser.add_argument("--safe-interior-pool-size", type=int, default=300)
     parser.add_argument("--safe-interior-margin", type=float, default=0.0)
@@ -436,6 +660,11 @@ def main():
         default=True,
     )
     parser.add_argument("--recommendation-calibration-scope", default="pool")
+    parser.add_argument(
+        "--recommendation-calibration-max-effective-fraction",
+        type=float,
+        default=0.35,
+    )
     parser.add_argument("--recommendation-calibration-min-obs", type=int, default=8)
     parser.add_argument(
         "--recommendation-calibration-max-theory-margin",
@@ -493,6 +722,52 @@ def main():
     parser.add_argument("--source-records-per-domain", type=int, default=256)
     parser.add_argument("--meta-local-dim", type=int, default=3)
     parser.add_argument("--meta-shared-dim", type=int, default=3)
+    parser.add_argument(
+        "--meta-ordered-cumulative-exposure",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-ordered-exposure-max-frequency", type=int, default=8)
+    parser.add_argument(
+        "--meta-ordered-exposure-active-dim", type=int, default=2)
+    parser.add_argument(
+        "--meta-ordered-exposure-frequency-penalty", type=float, default=0.10)
+    parser.add_argument(
+        "--meta-ordered-exposure-basis-mode",
+        choices=["full_quadratic", "diagonal_quadratic"],
+        default="full_quadratic",
+    )
+    parser.add_argument(
+        "--meta-ordered-exposure-adaptive-sparsity",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-ordered-exposure-replace-local-kernel",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-ordered-exposure-semiparametric-residual",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-ordered-exposure-latent-structure-selection",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-ordered-exposure-group-shared-shrinkage",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta-ordered-exposure-group-ridge-learning",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
     parser.add_argument("--meta-anchor-count", type=int, default=32)
     parser.add_argument("--meta-kmeans-iters", type=int, default=35)
     parser.add_argument("--meta-soft-temperature", type=float, default=0.75)
@@ -682,6 +957,25 @@ def main():
     )
     parser.add_argument("--progress-units-per-iteration", type=int, default=100)
     parser.add_argument("--progress-exact-updates", type=int, default=10)
+    parser.add_argument(
+        "--post-run-exact-kg-diagnostic",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "After each one-seed shard, rescore the N-1 checkpoint with "
+            "multiple exact-KG Monte Carlo schedules on the same node."
+        ),
+    )
+    parser.add_argument(
+        "--exact-kg-diagnostic-manifest",
+        default="performance/manifests/v18b_exactkg_mcdiag.json",
+    )
+    parser.add_argument("--exact-kg-diagnostic-mc-samples", default="2,8")
+    parser.add_argument(
+        "--exact-kg-diagnostic-sampling-modes",
+        default="iid,antithetic",
+    )
+    parser.add_argument("--exact-kg-diagnostic-repeats", type=int, default=1)
     parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=10)
     parser.add_argument("--jobs-per-suite", type=int, default=10)
@@ -752,11 +1046,23 @@ def main():
             shard_index=shard_index,
             num_shards=num_shards,
         )
+        if args.post_run_exact_kg_diagnostic:
+            diagnostic = exact_kg_diagnostic_command(
+                args,
+                run_id,
+                N,
+                preset,
+                shard_index,
+                num_shards,
+            )
+            payload_command = f"{command} && {diagnostic}"
+        else:
+            payload_command = command
         cmd = "; ".join([
             "export LC_ALL=C LANG=C",
             "export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1",
             f"export SCOLHKG_OFFLINE={'1' if args.offline_only else '0'}",
-            f"{command} && echo DONE",
+            f"{payload_command} && echo DONE",
         ])
         description = (
                 f"SC-OLH-KG LODO meta-prior N={N} {preset} {run_id} "
@@ -778,6 +1084,11 @@ def main():
                 "ram_mb": int(args.ram_mb),
                 "require_node": node,
                 "allowed_nodes": list(nodes),
+                # The benchmark owns resume semantics internally. Registering
+                # the directory here protects it from launch rsync --delete.
+                "ckpt_dir": str(checkpoint_root(args, run_id)),
+                "allow_no_resume": True,
+                "allow_shared_ckpt_dir": True,
                 "allow_duplicate": True,
             })
         else:
@@ -791,6 +1102,9 @@ def main():
                 "--vram", "0",
                 "--cpu", str(args.cpu),
                 "--ram-mb", str(args.ram_mb),
+                "--ckpt-dir", str(checkpoint_root(args, run_id)),
+                "--allow-no-resume",
+                "--allow-shared-ckpt-dir",
                 "--require-node", node,
                 *allowed_node_flags(nodes),
                 "--allow-duplicate",

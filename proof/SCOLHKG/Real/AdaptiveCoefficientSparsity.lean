@@ -183,4 +183,54 @@ theorem cardinality_projection_preserves_budget
     effectiveSparseDimension pip ≤ budget := by
   exact hProjected
 
+def totalEffectiveDimension
+    (fixed adaptive : ℝ) : ℝ :=
+  fixed + adaptive
+
+theorem fixed_prefix_and_optional_budget_control_total_dimension
+    (fixed adaptive totalBudget : ℝ)
+    (hAdaptive : adaptive ≤ totalBudget - fixed) :
+    totalEffectiveDimension fixed adaptive ≤ totalBudget := by
+  unfold totalEffectiveDimension
+  linarith
+
+theorem fraction_budget_controls_total_dimension
+    (fixed adaptive fraction sampleSize : ℝ)
+    (hAdaptive : adaptive ≤ fraction * sampleSize - fixed) :
+    totalEffectiveDimension fixed adaptive ≤ fraction * sampleSize := by
+  exact fixed_prefix_and_optional_budget_control_total_dimension
+    fixed adaptive (fraction * sampleSize) hAdaptive
+
+theorem constant_inclusion_floor_is_budget_feasible
+    {n : ℕ}
+    (floor budget : ℝ)
+    (hFloorMass : (n : ℝ) * floor ≤ budget) :
+    effectiveSparseDimension (fun _ : Fin n => floor) ≤ budget := by
+  simpa [effectiveSparseDimension] using hFloorMass
+
+theorem effectiveSparseDimension_damped
+    {n : ℕ}
+    (damping : ℝ)
+    (current proposal : Fin n → ℝ) :
+    effectiveSparseDimension (fun i =>
+        dampedInclusionProbability damping (current i) (proposal i)) =
+      damping * effectiveSparseDimension current
+        + (1 - damping) * effectiveSparseDimension proposal := by
+  simp only [effectiveSparseDimension, dampedInclusionProbability]
+  rw [Finset.sum_add_distrib, Finset.mul_sum, Finset.mul_sum]
+
+theorem damping_preserves_effective_dimension_budget
+    {n : ℕ}
+    (damping budget : ℝ)
+    (current proposal : Fin n → ℝ)
+    (hDampingNonnegative : 0 ≤ damping)
+    (hDampingAtMostOne : damping ≤ 1)
+    (hCurrent : effectiveSparseDimension current ≤ budget)
+    (hProposal : effectiveSparseDimension proposal ≤ budget) :
+    effectiveSparseDimension (fun i =>
+        dampedInclusionProbability damping (current i) (proposal i)) ≤
+      budget := by
+  rw [effectiveSparseDimension_damped]
+  nlinarith
+
 end SCOLHKG.Real

@@ -269,6 +269,28 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
             "meta_spectral_adaptive_max_effective_fraction"],
         spectral_adaptive_saturation_fraction=args_dict[
             "meta_spectral_adaptive_saturation_fraction"],
+        ordered_cumulative_exposure=bool(args_dict.get(
+            "meta_ordered_cumulative_exposure", False)),
+        ordered_exposure_max_frequency=int(args_dict.get(
+            "meta_ordered_exposure_max_frequency", 8)),
+        ordered_exposure_active_dim=int(args_dict.get(
+            "meta_ordered_exposure_active_dim", 2)),
+        ordered_exposure_frequency_penalty=float(args_dict.get(
+            "meta_ordered_exposure_frequency_penalty", 0.10)),
+        ordered_exposure_basis_mode=str(args_dict.get(
+            "meta_ordered_exposure_basis_mode", "full_quadratic")),
+        ordered_exposure_adaptive_sparsity=bool(args_dict.get(
+            "meta_ordered_exposure_adaptive_sparsity", False)),
+        ordered_exposure_replace_local_kernel=bool(args_dict.get(
+            "meta_ordered_exposure_replace_local_kernel", False)),
+        ordered_exposure_semiparametric_residual=bool(args_dict.get(
+            "meta_ordered_exposure_semiparametric_residual", False)),
+        ordered_exposure_latent_structure_selection=bool(args_dict.get(
+            "meta_ordered_exposure_latent_structure_selection", False)),
+        ordered_exposure_group_shared_shrinkage=bool(args_dict.get(
+            "meta_ordered_exposure_group_shared_shrinkage", False)),
+        ordered_exposure_group_ridge_learning=bool(args_dict.get(
+            "meta_ordered_exposure_group_ridge_learning", False)),
         coordinate_mode=args_dict["meta_coordinate_mode"],
         coordinate_relevance_floor=args_dict["meta_coordinate_relevance_floor"],
         seed=int(args_dict["meta_seed"]) + int(source_seed),
@@ -408,8 +430,15 @@ def run_one(task):
         exact_kg_mc_samples=args_dict["exact_kg_mc_samples"],
         exact_kg_jobs=args_dict["exact_kg_jobs"],
         exact_kg_parallel_backend=args_dict["exact_kg_parallel_backend"],
+        exact_kg_sampling_mode=args_dict["exact_kg_sampling_mode"],
+        exact_kg_clip_negative=bool(args_dict["exact_kg_clip_negative"]),
         exact_kg_use_score=args_dict["exact_kg_use_score"],
         exact_kg_blend=args_dict["exact_kg_blend"],
+        exact_kg_terminal_mode=args_dict["exact_kg_terminal_mode"],
+        terminal_bayes_violation_penalty=args_dict[
+            "terminal_bayes_violation_penalty"],
+        terminal_frontier_candidate_count=args_dict[
+            "terminal_frontier_candidate_count"],
         task_posterior_mode=(
             args_dict["task_posterior_mode"]
             if line in ("lodo", "lodo_teacher")
@@ -417,6 +446,10 @@ def run_one(task):
         ),
         task_posterior_initial_design=args_dict[
             "task_posterior_initial_design"],
+        task_posterior_boundary_bracket_fraction=args_dict[
+            "task_posterior_boundary_bracket_fraction"],
+        task_posterior_mandatory_universal_count=args_dict[
+            "task_posterior_mandatory_universal_count"],
         task_posterior_pilot_count=args_dict[
             "task_posterior_pilot_count"],
         task_posterior_temperature=args_dict["task_posterior_temperature"],
@@ -428,12 +461,28 @@ def run_one(task):
             "task_posterior_objective_score_weight"],
         task_posterior_constraint_score_weight=args_dict[
             "task_posterior_constraint_score_weight"],
+        task_posterior_safe_generalized=bool(args_dict[
+            "task_posterior_safe_generalized"]),
+        task_posterior_safe_boundary_score_weight=args_dict[
+            "task_posterior_safe_boundary_score_weight"],
+        task_posterior_safe_pairwise_score_weight=args_dict[
+            "task_posterior_safe_pairwise_score_weight"],
+        task_posterior_safe_pairwise_max_history=args_dict[
+            "task_posterior_safe_pairwise_max_history"],
+        task_posterior_safe_pairwise_probability_floor=args_dict[
+            "task_posterior_safe_pairwise_probability_floor"],
         task_posterior_kl_radius_numerator=args_dict[
             "task_posterior_kl_radius_numerator"],
         task_posterior_confidence_delta=args_dict[
             "task_posterior_confidence_delta"],
         task_posterior_max_kl_radius=args_dict[
             "task_posterior_max_kl_radius"],
+        task_posterior_prior_protection_numerator=args_dict[
+            "task_posterior_prior_protection_numerator"],
+        task_posterior_prior_protection_max=args_dict[
+            "task_posterior_prior_protection_max"],
+        task_posterior_local_kernel_expert=bool(args_dict[
+            "task_posterior_local_kernel_expert"]),
         task_posterior_candidate_count=args_dict[
             "task_posterior_candidate_count"],
         task_posterior_recommendation_count=args_dict[
@@ -444,6 +493,8 @@ def run_one(task):
             "task_posterior_proposal_exploration"],
         task_posterior_proposal_min_per_expert=args_dict[
             "task_posterior_proposal_min_per_expert"],
+        task_posterior_sensitivity_mode=args_dict[
+            "task_posterior_sensitivity_mode"],
         constraint_uncertain_candidate_count=args_dict[
             "constraint_uncertain_candidate_count"],
         constraint_uncertain_pool_size=args_dict["constraint_uncertain_pool_size"],
@@ -459,6 +510,32 @@ def run_one(task):
             "replication_max_per_solution"],
         replication_margin_softening=args_dict[
             "replication_margin_softening"],
+        certification_recheck_top_k=args_dict[
+            "certification_recheck_top_k"],
+        certification_recheck_min_replicates=args_dict[
+            "certification_recheck_min_replicates"],
+        certification_recheck_soft_margin_scale=args_dict[
+            "certification_recheck_soft_margin_scale"],
+        certification_recheck_variance_prior_df=args_dict[
+            "certification_recheck_variance_prior_df"],
+        finalist_replication_budget=args_dict[
+            "finalist_replication_budget"],
+        finalist_replication_count=args_dict[
+            "finalist_replication_count"],
+        finalist_replication_min_replicates=args_dict[
+            "finalist_replication_min_replicates"],
+        finalist_replication_delta=args_dict[
+            "finalist_replication_delta"],
+        finalist_replication_variance_prior_df=args_dict[
+            "finalist_replication_variance_prior_df"],
+        finalist_replication_expert_stratified=bool(args_dict[
+            "finalist_replication_expert_stratified"]),
+        finalist_replication_adaptive_race=bool(args_dict[
+            "finalist_replication_adaptive_race"]),
+        finalist_replication_fixed_universe=bool(args_dict[
+            "finalist_replication_fixed_universe"]),
+        observed_incumbent_use_replicate_variance=bool(args_dict[
+            "observed_incumbent_use_replicate_variance"]),
         safe_interior_candidate_count=args_dict["safe_interior_candidate_count"],
         safe_interior_pool_size=args_dict["safe_interior_pool_size"],
         safe_interior_margin=args_dict["safe_interior_margin"],
@@ -475,6 +552,8 @@ def run_one(task):
         recommendation_slack_initial=args_dict["recommendation_slack_initial"],
         recommendation_slack_decay=args_dict["recommendation_slack_decay"],
         recommendation_calibration_scope=args_dict["recommendation_calibration_scope"],
+        recommendation_calibration_max_effective_fraction=args_dict[
+            "recommendation_calibration_max_effective_fraction"],
         recommendation_calibration_min_obs=args_dict["recommendation_calibration_min_obs"],
         recommendation_calibration_max_leverage=args_dict[
             "recommendation_calibration_max_leverage"],
@@ -531,6 +610,8 @@ def run_one(task):
     result = alg.run(verbose=False)
     true_feasible = bool(result["true_feasible"])
     posterior_feasible = bool(result.get("posterior_feasible", False))
+    initial_design = result.get("task_initial_design") or {}
+    initial_truth = initial_design.get("truth_audit") or {}
     audit = (
         problem.admissibility_audit()
         if hasattr(problem, "admissibility_audit")
@@ -549,6 +630,67 @@ def run_one(task):
         "state_basis_mode": args_dict["state_basis_mode"],
         "constraint_state_basis_mode": args_dict["constraint_state_basis_mode"],
         "meta_component_stage": args_dict["meta_component_stage"],
+        "task_posterior_sensitivity_mode": args_dict[
+            "task_posterior_sensitivity_mode"],
+        "task_posterior_safe_generalized": bool(args_dict[
+            "task_posterior_safe_generalized"]),
+        "task_posterior_boundary_bracket_fraction": float(args_dict[
+            "task_posterior_boundary_bracket_fraction"]),
+        "task_posterior_mandatory_universal_count": int(args_dict[
+            "task_posterior_mandatory_universal_count"]),
+        "task_posterior_prior_protection_numerator": float(args_dict[
+            "task_posterior_prior_protection_numerator"]),
+        "task_posterior_prior_protection_max": float(args_dict[
+            "task_posterior_prior_protection_max"]),
+        "task_posterior_local_kernel_expert": bool(args_dict[
+            "task_posterior_local_kernel_expert"]),
+        "exact_kg_terminal_mode": str(args_dict[
+            "exact_kg_terminal_mode"]),
+        "exact_kg_sampling_mode": str(args_dict[
+            "exact_kg_sampling_mode"]),
+        "exact_kg_clip_negative": bool(args_dict[
+            "exact_kg_clip_negative"]),
+        "exact_kg_diagnostics": result.get("exact_kg_diagnostics"),
+        "terminal_bayes_violation_penalty": float(args_dict[
+            "terminal_bayes_violation_penalty"]),
+        "terminal_frontier_candidate_count": int(args_dict[
+            "terminal_frontier_candidate_count"]),
+        "terminal_pool_shared": bool(result.get(
+            "terminal_pool_shared", False)),
+        "terminal_pool_size": result.get("terminal_pool_size"),
+        "certification_recheck_top_k": int(args_dict[
+            "certification_recheck_top_k"]),
+        "certification_recheck_min_replicates": int(args_dict[
+            "certification_recheck_min_replicates"]),
+        "certification_recheck_soft_margin_scale": float(args_dict[
+            "certification_recheck_soft_margin_scale"]),
+        "finalist_replication_budget": int(args_dict[
+            "finalist_replication_budget"]),
+        "finalist_replication_count": int(args_dict[
+            "finalist_replication_count"]),
+        "finalist_replication_min_replicates": int(args_dict[
+            "finalist_replication_min_replicates"]),
+        "finalist_replication_delta": float(args_dict[
+            "finalist_replication_delta"]),
+        "finalist_replication_expert_stratified": bool(args_dict[
+            "finalist_replication_expert_stratified"]),
+        "finalist_replication_adaptive_race": bool(args_dict[
+            "finalist_replication_adaptive_race"]),
+        "finalist_replication_fixed_universe": bool(args_dict[
+            "finalist_replication_fixed_universe"]),
+        "finalist_replication": result.get("finalist_replication"),
+        "replicated_finalist_used": result.get(
+            "replicated_finalist_used"),
+        "replicated_finalist_reason": result.get(
+            "replicated_finalist_reason"),
+        "replicated_finalist_empirical_certificate": result.get(
+            "replicated_finalist_empirical_certificate"),
+        "replicated_finalist_selected": result.get(
+            "replicated_finalist_selected"),
+        "replicated_finalist_rows": result.get(
+            "replicated_finalist_rows"),
+        "observed_incumbent_use_replicate_variance": bool(args_dict[
+            "observed_incumbent_use_replicate_variance"]),
         "transfer_cell": f"{line}-{basis_label}",
         "variant": (
             f"{line}-{basis_label}:{heldout}"
@@ -560,7 +702,21 @@ def run_one(task):
         "meta_prior": meta_diag,
         "meta_basis": result.get("meta_basis"),
         "task_posterior": result.get("task_posterior"),
-        "task_initial_design": result.get("task_initial_design"),
+        "task_initial_design": initial_design,
+        "initial_boundary_bracket_generated": initial_design.get(
+            "boundary_bracket_generated"),
+        "initial_mandatory_universal_generated": initial_design.get(
+            "mandatory_universal_generated"),
+        "initial_true_feasible_count": initial_truth.get(
+            "initial_design_true_feasible_count"),
+        "initial_true_feasible_rate": initial_truth.get(
+            "initial_design_true_feasible_rate"),
+        "initial_has_true_feasible": initial_truth.get(
+            "initial_design_has_true_feasible"),
+        "initial_true_min_margin": initial_truth.get(
+            "initial_design_true_min_margin"),
+        "initial_true_median_margin": initial_truth.get(
+            "initial_design_true_median_margin"),
         "adaptive_sparsity": result.get("adaptive_sparsity"),
         "gpr_numerics": result.get("gpr_numerics"),
         "true_feasible": true_feasible,
@@ -579,7 +735,20 @@ def run_one(task):
         "posterior_calibrated_chance_margin": result.get(
             "posterior_calibrated_chance_margin"),
         "posterior_certification_source": result.get("posterior_certification_source"),
+        "posterior_bayes_risk_used": result.get(
+            "posterior_bayes_risk_used"),
+        "posterior_bayes_risk": result.get("posterior_bayes_risk"),
+        "posterior_bayes_objective": result.get(
+            "posterior_bayes_objective"),
+        "posterior_bayes_expected_violation": result.get(
+            "posterior_bayes_expected_violation"),
+        "posterior_bayes_kl_radius": result.get(
+            "posterior_bayes_kl_radius"),
         "recommendation_slack": result.get("recommendation_slack"),
+        "recommendation_infeasible_strategy": result.get(
+            "recommendation_infeasible_strategy"),
+        "recommendation_effective_infeasible_penalty": result.get(
+            "recommendation_effective_infeasible_penalty"),
         "recommend_observed_only": bool(args_dict["recommend_observed_only"]),
         "observed_neighbor_candidate_count": int(
             args_dict["observed_neighbor_candidate_count"]),
@@ -619,12 +788,48 @@ def run_one(task):
         "calibration_median_leverage": result.get("calibration_median_leverage"),
         "calibration_min_theory_margin": result.get(
             "calibration_min_theory_margin"),
+        "task_adaptive_violation_probability": result.get(
+            "task_adaptive_violation_probability"),
+        "task_adaptive_expected_violation_loss": result.get(
+            "task_adaptive_expected_violation_loss"),
+        "task_adaptive_objective_loss": result.get(
+            "task_adaptive_objective_loss"),
+        "task_adaptive_robust_component": result.get(
+            "task_adaptive_robust_component"),
+        "task_adaptive_empirical_component": result.get(
+            "task_adaptive_empirical_component"),
+        "task_adaptive_total_loss": result.get("task_adaptive_total_loss"),
+        "task_adaptive_class_weights": result.get(
+            "task_adaptive_class_weights"),
+        "task_adaptive_affects_theory_certificate": result.get(
+            "task_adaptive_affects_theory_certificate"),
+        "task_adaptive_expected_empirical_trust": result.get(
+            "task_adaptive_expected_empirical_trust"),
+        "task_adaptive_prequential_sigma": result.get(
+            "task_adaptive_prequential_sigma"),
+        "task_adaptive_loo_sigma": result.get("task_adaptive_loo_sigma"),
+        "task_adaptive_conformal_sigma": result.get(
+            "task_adaptive_conformal_sigma"),
+        "task_adaptive_empirical_hvd_variance": result.get(
+            "task_adaptive_empirical_hvd_variance"),
         "recommendation_calibration_audit_available": result.get(
             "recommendation_calibration_audit_available"),
         "recommendation_calibration_n_feasible": result.get(
             "recommendation_calibration_n_feasible"),
         "recommendation_calibration_sigma": result.get(
             "recommendation_calibration_sigma"),
+        "recommendation_calibration_selected_ridge": result.get(
+            "recommendation_calibration_selected_ridge"),
+        "recommendation_calibration_effective_rank": result.get(
+            "recommendation_calibration_effective_rank"),
+        "recommendation_calibration_effective_rank_cap": result.get(
+            "recommendation_calibration_effective_rank_cap"),
+        "recommendation_calibration_rank_cap_satisfied": result.get(
+            "recommendation_calibration_rank_cap_satisfied"),
+        "recommendation_calibration_nested_refit": result.get(
+            "recommendation_calibration_nested_refit"),
+        "recommendation_calibration_features_standardized": result.get(
+            "recommendation_calibration_features_standardized"),
         "recommendation_selected_calibrated_rec_margin": result.get(
             "recommendation_selected_calibrated_rec_margin"),
         "recommendation_selected_calibrated_rec_objective": result.get(
@@ -673,6 +878,8 @@ def run_one(task):
             "recommendation_true_best_feasible_regret"),
         "recommendation_best_true_feasible_decision_margin": result.get(
             "recommendation_best_true_feasible_decision_margin"),
+        "recommendation_best_true_feasible_x": result.get(
+            "recommendation_best_true_feasible_x"),
         "recommendation_best_true_feasible_decision_feasible": result.get(
             "recommendation_best_true_feasible_decision_feasible"),
         "recommendation_selected_decision_margin": result.get(
@@ -721,6 +928,15 @@ def run_one(task):
         "observed_incumbent_reason": result.get("observed_incumbent_reason"),
         "observed_incumbent_chance_margin": result.get(
             "observed_incumbent_chance_margin"),
+        "observed_incumbent_sigma": result.get(
+            "observed_incumbent_sigma"),
+        "observed_incumbent_sigma_source": result.get(
+            "observed_incumbent_sigma_source"),
+        "observed_incumbent_replicate_count": result.get(
+            "observed_incumbent_replicate_count"),
+        "certification_recheck_selected_count": int(
+            result.get("candidate_source_counts", {}).get(
+                "certification_recheck", 0)),
         "n_simulations": int(result["n_simulations"]),
         "n_distinct_solutions": int(result["n_distinct_solutions"]),
         "n_pool": int(result.get("n_pool", 0)),
@@ -763,6 +979,18 @@ def summarize(rows):
             "true_feasible_rate": mean_bool(row["true_feasible"] for row in items),
             "posterior_feasible_rate": mean_bool(row["posterior_feasible"] for row in items),
             "false_feasible_rate": mean_bool(row["false_feasible"] for row in items),
+            "initial_has_true_feasible_rate": finite_stats(
+                row.get("initial_has_true_feasible", None) for row in items),
+            "initial_true_feasible_count": finite_stats(
+                row.get("initial_true_feasible_count", None) for row in items),
+            "initial_true_feasible_rate": finite_stats(
+                row.get("initial_true_feasible_rate", None) for row in items),
+            "initial_boundary_bracket_generated": finite_stats(
+                row.get("initial_boundary_bracket_generated", None)
+                for row in items),
+            "initial_mandatory_universal_generated": finite_stats(
+                row.get("initial_mandatory_universal_generated", None)
+                for row in items),
             "simple_regret": finite_stats(row["simple_regret"] for row in items),
             "feasible_simple_regret": finite_stats(
                 row["feasible_simple_regret"] for row in items),
@@ -909,6 +1137,18 @@ def summarize(rows):
                 for row in items),
             "recommendation_calibration_sigma": finite_stats(
                 row.get("recommendation_calibration_sigma", None) for row in items),
+            "recommendation_calibration_selected_ridge": finite_stats(
+                row.get("recommendation_calibration_selected_ridge", None)
+                for row in items),
+            "recommendation_calibration_effective_rank": finite_stats(
+                row.get("recommendation_calibration_effective_rank", None)
+                for row in items),
+            "recommendation_calibration_effective_rank_cap": finite_stats(
+                row.get("recommendation_calibration_effective_rank_cap", None)
+                for row in items),
+            "recommendation_calibration_rank_cap_satisfied_rate": finite_stats(
+                row.get("recommendation_calibration_rank_cap_satisfied", None)
+                for row in items),
             "n_calibration_guarded": finite_stats(
                 row.get("n_calibration_guarded", None) for row in items),
             "n_calibration_certified_guarded": finite_stats(
@@ -960,6 +1200,11 @@ def flatten_summary(summary):
         "constraint_violation",
         "true_chance_margin",
         "wall_time_sec",
+        "initial_has_true_feasible_rate",
+        "initial_true_feasible_count",
+        "initial_true_feasible_rate",
+        "initial_boundary_bracket_generated",
+        "initial_mandatory_universal_generated",
         "llm_prior_ok_count",
         "llm_prior_selected_count",
         "llm_prior_gate_mean",
@@ -1006,12 +1251,27 @@ def flatten_summary(summary):
         "recommendation_selected_source_margin",
         "recommendation_calibration_n_feasible",
         "recommendation_calibration_sigma",
+        "recommendation_calibration_selected_ridge",
+        "recommendation_calibration_effective_rank",
+        "recommendation_calibration_effective_rank_cap",
+        "recommendation_calibration_rank_cap_satisfied_rate",
         "n_calibration_guarded",
         "n_calibration_certified_guarded",
         "n_calibration_feasible",
         "n_calibration_raw_feasible",
         "calibrated_constraint_margin",
         "calibrated_guarded_constraint_margin",
+        "task_adaptive_violation_probability",
+        "task_adaptive_expected_violation_loss",
+        "task_adaptive_objective_loss",
+        "task_adaptive_robust_component",
+        "task_adaptive_empirical_component",
+        "task_adaptive_total_loss",
+        "task_adaptive_expected_empirical_trust",
+        "task_adaptive_prequential_sigma",
+        "task_adaptive_loo_sigma",
+        "task_adaptive_conformal_sigma",
+        "task_adaptive_empirical_hvd_variance",
         "calibration_selected_leverage",
         "calibration_selected_theory_margin",
         "calibration_min_leverage",
@@ -1274,13 +1534,35 @@ def main():
     parser.add_argument("--exact_kg_mc_samples", type=int, default=2)
     parser.add_argument("--exact_kg_jobs", type=int, default=1)
     parser.add_argument("--exact_kg_parallel_backend", default="thread")
+    parser.add_argument("--exact_kg_sampling_mode", default="iid")
+    parser.add_argument(
+        "--exact_kg_clip_negative",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
+    parser.add_argument(
+        "--exact_kg_terminal_mode", default="hard_certified")
+    parser.add_argument(
+        "--terminal_bayes_violation_penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--terminal_frontier_candidate_count", type=int, default=0)
     parser.add_argument("--task_posterior_mode", default="off")
     parser.add_argument(
         "--task_posterior_initial_design",
         action=argparse.BooleanOptionalAction,
         default=True,
+    )
+    parser.add_argument(
+        "--task_posterior_boundary_bracket_fraction",
+        type=float,
+        default=0.0,
+    )
+    parser.add_argument(
+        "--task_posterior_mandatory_universal_count",
+        type=int,
+        default=0,
     )
     parser.add_argument("--task_posterior_pilot_count", type=int, default=-1)
     parser.add_argument("--task_posterior_temperature", type=float, default=0.5)
@@ -1293,11 +1575,48 @@ def main():
     parser.add_argument(
         "--task_posterior_constraint_score_weight", type=float, default=1.0)
     parser.add_argument(
+        "--task_posterior_safe_generalized",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--task_posterior_safe_boundary_score_weight",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--task_posterior_safe_pairwise_score_weight",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--task_posterior_safe_pairwise_max_history",
+        type=int,
+        default=16,
+    )
+    parser.add_argument(
+        "--task_posterior_safe_pairwise_probability_floor",
+        type=float,
+        default=1e-6,
+    )
+    parser.add_argument(
         "--task_posterior_kl_radius_numerator", type=float, default=0.5)
     parser.add_argument(
         "--task_posterior_confidence_delta", type=float, default=0.05)
     parser.add_argument(
         "--task_posterior_max_kl_radius", type=float, default=4.0)
+    parser.add_argument(
+        "--task_posterior_prior_protection_numerator",
+        type=float,
+        default=0.0,
+    )
+    parser.add_argument(
+        "--task_posterior_prior_protection_max", type=float, default=0.5)
+    parser.add_argument(
+        "--task_posterior_local_kernel_expert",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
     parser.add_argument(
         "--task_posterior_candidate_count", type=int, default=0)
     parser.add_argument(
@@ -1308,6 +1627,8 @@ def main():
         "--task_posterior_proposal_exploration", type=float, default=0.10)
     parser.add_argument(
         "--task_posterior_proposal_min_per_expert", type=int, default=2)
+    parser.add_argument(
+        "--task_posterior_sensitivity_mode", default="off")
     parser.add_argument("--constraint_uncertain_candidate_count", type=int, default=0)
     parser.add_argument("--constraint_uncertain_pool_size", type=int, default=300)
     parser.add_argument("--constraint_uncertain_state_pool_fraction", type=float, default=0.25)
@@ -1316,6 +1637,41 @@ def main():
     parser.add_argument("--replication_candidate_count", type=int, default=3)
     parser.add_argument("--replication_max_per_solution", type=int, default=5)
     parser.add_argument("--replication_margin_softening", type=float, default=3.0)
+    parser.add_argument("--certification_recheck_top_k", type=int, default=0)
+    parser.add_argument(
+        "--certification_recheck_min_replicates", type=int, default=3)
+    parser.add_argument(
+        "--certification_recheck_soft_margin_scale", type=float, default=2.0)
+    parser.add_argument(
+        "--certification_recheck_variance_prior_df", type=float, default=2.0)
+    parser.add_argument("--finalist_replication_budget", type=int, default=0)
+    parser.add_argument("--finalist_replication_count", type=int, default=2)
+    parser.add_argument(
+        "--finalist_replication_min_replicates", type=int, default=2)
+    parser.add_argument(
+        "--finalist_replication_delta", type=float, default=0.05)
+    parser.add_argument(
+        "--finalist_replication_variance_prior_df", type=float, default=2.0)
+    parser.add_argument(
+        "--finalist_replication_expert_stratified",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--finalist_replication_adaptive_race",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--finalist_replication_fixed_universe",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--observed_incumbent_use_replicate_variance",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
     parser.add_argument("--safe_interior_candidate_count", type=int, default=0)
     parser.add_argument("--safe_interior_pool_size", type=int, default=300)
     parser.add_argument("--safe_interior_margin", type=float, default=0.0)
@@ -1329,6 +1685,11 @@ def main():
     parser.add_argument("--recommendation_slack_decay", default="sqrt")
     parser.add_argument("--recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_scope", default="refinement")
+    parser.add_argument(
+        "--recommendation_calibration_max_effective_fraction",
+        type=float,
+        default=0.35,
+    )
     parser.add_argument("--recommendation_calibration_min_obs", type=int, default=8)
     parser.add_argument("--recommendation_calibration_max_leverage", type=float, default=0.0)
     parser.add_argument(
@@ -1379,6 +1740,52 @@ def main():
     parser.add_argument("--source_records_per_domain", type=int, default=96)
     parser.add_argument("--meta_local_dim", type=int, default=3)
     parser.add_argument("--meta_shared_dim", type=int, default=3)
+    parser.add_argument(
+        "--meta_ordered_cumulative_exposure",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_ordered_exposure_max_frequency", type=int, default=8)
+    parser.add_argument(
+        "--meta_ordered_exposure_active_dim", type=int, default=2)
+    parser.add_argument(
+        "--meta_ordered_exposure_frequency_penalty", type=float, default=0.10)
+    parser.add_argument(
+        "--meta_ordered_exposure_basis_mode",
+        choices=["full_quadratic", "diagonal_quadratic"],
+        default="full_quadratic",
+    )
+    parser.add_argument(
+        "--meta_ordered_exposure_adaptive_sparsity",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_ordered_exposure_replace_local_kernel",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_ordered_exposure_semiparametric_residual",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_ordered_exposure_latent_structure_selection",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_ordered_exposure_group_shared_shrinkage",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_ordered_exposure_group_ridge_learning",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
     parser.add_argument("--meta_anchor_count", type=int, default=24)
     parser.add_argument("--meta_kmeans_iters", type=int, default=25)
     parser.add_argument("--meta_soft_temperature", type=float, default=0.75)

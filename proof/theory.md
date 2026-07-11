@@ -86,6 +86,50 @@ Proof sketch: apply the law of total variance over trajectories and use the
 occupancy approximation to replace random exposures by their policy-state
 means.
 
+## Proposition 2A: Rotation-Invariant Semantic Group Prior
+
+Partition the ordered mean features into an always-active linear exposure
+block and optional semantic blocks such as local curvature `A^2` and shared
+exposure `N`.  Within optional block `G`, use one inclusion probability `q_G`
+and one isotropic spike/slab precision.  For every orthogonal change of basis
+`R_G`,
+
+```text
+penalty(R_G beta_G) = penalty(beta_G),
+dim_eff(G) = |G| q_G.
+```
+
+Thus source domains transfer whether a semantic block is useful and its scale,
+but do not transfer a coordinate direction that may rotate or permute across
+domains.  The held-out target learns `beta_G` from its charged observations,
+and the effective-dimension budget still counts every coordinate in the block.
+The real-valued invariance and dimension identities are proved in
+`SCOLHKG/Real/GroupSharedShrinkage.lean`.
+
+## Proposition 2B: Task-Adaptive Group-Ridge Complexity
+
+A universal hard effective-rank cap can exclude a necessary risk block.  V27
+instead selects one nonnegative ridge precision for each semantic block from a
+fixed finite grid using full nested refits on charged target observations.
+For information eigenvalue `s_j` and ridge precision `lambda_j`, define
+
+```text
+df_eff = sum_j s_j / (s_j + lambda_j).
+```
+
+Every summand lies in `[0,1]`; hence `0 <= df_eff <= feature_dim`.  On an event
+where nested-refit empirical risk is uniformly within `epsilon` of target risk
+over the finite penalty class, the selected model obeys
+
+```text
+R(selected) <= min_h R(h) + 2 epsilon.
+```
+
+This learns whether a held-out task needs curvature or shared-shock mean
+features without a target-specific task label or oracle query.  Exact-KG
+fantasy clones execute the same posterior refit, so complexity-parameter VOI
+is included rather than frozen outside acquisition.
+
 ## Proposition 3: Information Refinement Reduces Apparent Aleatoric Variance
 
 Let `F_0 subset F_1` be two information sigma-fields for the same simulation
@@ -185,6 +229,14 @@ value with the same provider `v_C^+`.  `additive` is now only an ablation/proxy
 and is justified by a uniform approximation gap.  `blend` is the controlled
 interpolation used for robustness checks.
 
+For each history `D_t`, the implementation now constructs one measurable
+terminal action pool `C_t`.  The current value, every hypothetical update, and
+the realized post-update recommendation all use this identical `C_t`; only the
+next history may construct `C_{t+1}`.  Posterior risk-frontier actions are
+closed into the experiment set before KG maximization.  The shared-pool gain
+identity, one-step maximizer statement, and both finite-set inclusion claims
+are Lean-proved in `SCOLHKG/Measure/SharedTerminalPoolKG.lean`.
+
 ## Theorem 8: Finite-Budget Safe Simple-Regret Bound
 
 Let `x_N` be the final certified recommendation and `x_*` the best feasible
@@ -263,6 +315,76 @@ bound, and the robust-envelope implication are Lean-proved. The resulting
 finite radius is `(source_slack + KL(Q_t||Pi) + log(1/delta))/n_evidence`.
 Its sharpness remains conditional on the source-task exponential-moment model;
 domain-specific slack must be validated empirically.
+
+### Proposition 10a: Separate Safe Generalized Posterior
+
+V28 maintains independently normalized predictive and safe-decision masses
+from the same frozen source prior. Probability clipping at
+`epsilon in (0, 1/2]` bounds each threshold or pairwise log loss in
+`[0, -log(epsilon)]`; nonnegative weighted sums preserve the corresponding
+component bounds. The Gaussian constraint score remains governed by the
+exponential-moment premise above rather than being incorrectly declared
+globally bounded. Candidate allocation, robust certification, and exact KG are
+centred on `Q_safe`, while objective aggregation may retain `Q_pred`. These
+claims are Lean-proved in
+`SCOLHKG/Real/SafeGeneralizedTaskPosterior.lean`.
+
+### Proposition 10b: Budgeted Replicated-Finalist Safety
+
+Let the final `R` evaluations be reserved inside the original budget `N`, and
+freeze a finite finalist set before observing those new labels. For finalist
+`x`, define
+
+```text
+U_x = ybar_g(x) + z_alpha sigma_plus(x)
+      + z_delta sigma_plus(x) / sqrt(r_x) - tau.
+```
+
+On the joint event that the replicated mean upper bound dominates the latent
+constraint mean and `sigma_plus` dominates the true aleatoric standard
+deviation, `U_x <= 0` implies the original chance constraint. If no finalist
+passes this empirical upper bound, the fallback minimizes `U_x` before the
+objective and does not claim theory certification. Lean proves this event-wise
+soundness, target-freezing contract, strict replicate-deficit decrease, and
+that every reserved update remains inside `N` in
+`SCOLHKG/Real/FinalistReplication.lean`.
+
+### Proposition 10c: Expert-Stratified Nomination Support
+
+Let every finite structural expert nominate one action from the frozen
+terminal pool. The union of expert nominations contains each expert's action
+independently of its current task-posterior mass. Consequently, ranking the
+finite nominations by their expert-specific safety score cannot erase an
+entire supported structural family merely because generalized Bayes assigned
+it small mixture mass. The finite-support statement is Lean-proved in
+`SCOLHKG/Real/FinalistReplication.lean`; empirical usefulness of each
+nomination remains a benchmark question resolved by charged replication.
+
+### Proposition 10d: Bounded Adaptive Expert Race
+
+Let each reserved-stage nomination be a function of the history immediately
+before the next paid observation. Insert every nominated action into an
+archive, but admit an action to the final empirical race only after it reaches
+the declared minimum replication count. After `R` refreshes, the archive has
+cardinality at most its initial cardinality plus `R`; it contains every action
+actually nominated, while an incomplete action cannot enter the completed
+race. Splitting the final error budget across that deterministic finite upper
+bound and applying a finite union bound controls whichever completed action is
+selected. Event-wise chance-bound soundness then follows from Proposition
+10b. These archive, filtering, cardinality, union-bound, and selected-action
+claims are Lean-proved in `SCOLHKG/Real/FinalistReplication.lean`.
+
+For V32, if the initial archive and every later nomination belong to one
+candidate universe fixed before the reserved observations, the entire archive
+remains a subset of that universe and its cardinality is at most the fixed
+universe cardinality. Lean proves both the subset and cardinality forms, so the
+confidence allocation can be chosen from the pre-observation universe rather
+than inferred after the adaptive race.
+
+This result does not certify V31's empirical fallback as the main theory
+certificate. It proves the adaptive finite-selection contract under the stated
+per-candidate confidence events; the main GP/HVD theory certificate retains
+precedence in the implementation.
 
 ## Theorem 11: Joint Task-Posterior Exact KG
 
@@ -355,6 +477,10 @@ versions needed by the manuscript:
 | Frozen source-boundary episode admission | `SCOLHKG/Real/RiskAlignedRepresentation.lean` | Lean-proved that source support may replace target gain evidence only; two-sided target support and target safety remain necessary, and source-only proposals are target-label invariant |
 | Transactional representation switching | `SCOLHKG/Real/RiskAlignedRepresentation.lean` | Lean-proved exact rejection fallback and ordered posterior replay/commit semantics for admitted feature changes |
 | Finite task posterior and hierarchical variance | `SCOLHKG/Real/TaskPosterior.lean` | Lean-proved normalization, positive support, prior-supported proposal-mixture lower bound, within/between/aleatoric variance, robust-envelope implication, and joint exact-MC optimizer bridge |
+| Stratified finite-expert exact KG | `SCOLHKG/Real/StratifiedExpertKG.lean` | Lean-proved exact categorical posterior summation and posterior-weighted inheritance of the maximum within-expert Gaussian approximation error |
+| Ordered cumulative-risk coordinate | `SCOLHKG/Real/OrderedCumulativeExposure.lean` | Lean-proved aggregate zero-frequency special case, finite positional linearity/selection, and reuse of the unchanged cumulative-risk decomposition |
+| Orthogonal ordered/local semiparametric mean | `SCOLHKG/Real/OrthogonalSemiparametric.lean` | Lean-proved coefficient-nullspace projection gives zero finite-design ordered/local cross inner product; bounded kernel and bounded projection coefficients also give a global finite feature-amplitude bound |
+| Total adaptive coefficient budget | `SCOLHKG/Real/AdaptiveCoefficientSparsity.lean` | Lean-proved that budgeting optional inclusion mass by `rho N - fixed` bounds the complete effective dimension, including the fixed prefix, by `rho N` |
 | Finite unseen-task PAC-Bayes concentration | `SCOLHKG/Measure/TaskPACBayes.lean` | Lean-proved source-prior exponential-moment aggregation and bad-event probability `<= delta`; pointwise radius bound is in `Real/TaskPosterior.lean` |
 
 The aligned representation remains experimental.  A five-seed, three-domain

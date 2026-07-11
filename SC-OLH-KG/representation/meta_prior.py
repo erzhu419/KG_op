@@ -217,6 +217,17 @@ class LearnedMetaPrior:
         spectral_adaptive_multiplicity_correction=1.0,
         spectral_adaptive_max_effective_fraction=0.35,
         spectral_adaptive_saturation_fraction=0.90,
+        ordered_cumulative_exposure=False,
+        ordered_exposure_max_frequency=8,
+        ordered_exposure_active_dim=2,
+        ordered_exposure_frequency_penalty=0.10,
+        ordered_exposure_basis_mode="full_quadratic",
+        ordered_exposure_adaptive_sparsity=False,
+        ordered_exposure_replace_local_kernel=False,
+        ordered_exposure_semiparametric_residual=False,
+        ordered_exposure_latent_structure_selection=False,
+        ordered_exposure_group_shared_shrinkage=False,
+        ordered_exposure_group_ridge_learning=False,
         coordinate_mode="pca",
         coordinate_relevance_floor=0.05,
         seed=123,
@@ -365,6 +376,76 @@ class LearnedMetaPrior:
             spectral_adaptive_max_effective_fraction, 0.05, 1.0))
         self.spectral_adaptive_saturation_fraction = float(np.clip(
             spectral_adaptive_saturation_fraction, 0.5, 1.0))
+        self.ordered_cumulative_exposure = bool(ordered_cumulative_exposure)
+        self.ordered_exposure_max_frequency = max(
+            1, int(ordered_exposure_max_frequency))
+        self.ordered_exposure_active_dim = max(
+            1, min(
+                int(ordered_exposure_active_dim),
+                self.ordered_exposure_max_frequency,
+            ),
+        )
+        self.ordered_exposure_frequency_penalty = max(
+            float(ordered_exposure_frequency_penalty), 0.0)
+        self.ordered_exposure_basis_mode = str(ordered_exposure_basis_mode)
+        if self.ordered_exposure_basis_mode not in {
+            "full_quadratic", "diagonal_quadratic",
+        }:
+            raise ValueError(
+                "ordered exposure basis mode must be full_quadratic or "
+                "diagonal_quadratic")
+        self.ordered_exposure_adaptive_sparsity = bool(
+            ordered_exposure_adaptive_sparsity)
+        self.ordered_exposure_replace_local_kernel = bool(
+            ordered_exposure_replace_local_kernel)
+        self.ordered_exposure_semiparametric_residual = bool(
+            ordered_exposure_semiparametric_residual)
+        self.ordered_exposure_latent_structure_selection = bool(
+            ordered_exposure_latent_structure_selection)
+        self.ordered_exposure_group_shared_shrinkage = bool(
+            ordered_exposure_group_shared_shrinkage)
+        self.ordered_exposure_group_ridge_learning = bool(
+            ordered_exposure_group_ridge_learning)
+        if (
+            self.ordered_exposure_latent_structure_selection
+            and self.ordered_exposure_semiparametric_residual
+        ):
+            raise ValueError(
+                "latent ordered/local structure selection is mutually "
+                "exclusive with a semiparametric direct-sum residual"
+            )
+        if (
+            self.ordered_exposure_group_shared_shrinkage
+            and self.ordered_exposure_semiparametric_residual
+        ):
+            raise ValueError(
+                "ordered group shared shrinkage is mutually exclusive with "
+                "a semiparametric direct-sum residual"
+            )
+        if (
+            self.ordered_exposure_group_ridge_learning
+            and self.ordered_exposure_semiparametric_residual
+        ):
+            raise ValueError(
+                "ordered group ridge learning is mutually exclusive with "
+                "a semiparametric direct-sum residual"
+            )
+        if (
+            self.ordered_exposure_group_ridge_learning
+            and self.ordered_exposure_group_shared_shrinkage
+        ):
+            raise ValueError(
+                "ordered group ridge learning and group spike-slab "
+                "shrinkage are mutually exclusive"
+            )
+        if (
+            self.ordered_exposure_group_ridge_learning
+            and not self.ordered_exposure_adaptive_sparsity
+        ):
+            raise ValueError(
+                "ordered group ridge learning requires adaptive sparsity "
+                "posterior wiring"
+            )
         self.coordinate_mode = str(coordinate_mode)
         if self.coordinate_mode not in {"pca", "stable_supervised"}:
             raise ValueError("coordinate_mode must be 'pca' or 'stable_supervised'")
@@ -382,6 +463,19 @@ class LearnedMetaPrior:
         self.beta_prior_precision = {}
         self.beta_prior_reference_mean = {}
         self.beta_prior_upper_scale = {}
+        self.unaligned_beta_prior = {}
+        self.unaligned_beta_prior_precision = {}
+        self.unaligned_beta_prior_reference_mean = {}
+        self.unaligned_beta_prior_upper_scale = {}
+        self.task_sensitivity_prior_ = {
+            "status": "unfit",
+            "class_names": ["stable", "balanced", "sensitive"],
+            "scales": [0.5, 1.0, 2.0],
+            "decision_penalties": [2.0, 5.0, 20.0],
+            "empirical_trust": [1.0, 0.25, 0.0],
+            "prior_weights": [1.0 / 3.0] * 3,
+            "target_data_used": False,
+        }
         self.mean_prior = {}
         self.mean_prior_sigma = {}
         self.spectral_basis: TransferableSpectralBasis | None = None
@@ -398,10 +492,15 @@ class LearnedMetaPrior:
         self.alignment_episode_prior: SourceBoundaryEpisodePrior | None = None
         self.alignment_episode_diagnostics = {"status": "not_requested"}
         self.alignment_profile_templates = []
+        self.source_boundary_bracket_model = {"status": "unfit"}
         self.spectral_additive_bank: TransferableAdditiveGroupBank | None = None
         self.spectral_additive_diagnostics = {"status": "not_requested"}
         self.spectral_coefficient_prior = {}
         self.spectral_adaptive_calibration = {"status": "not_requested"}
+        self.ordered_exposure_selected_frequencies = np.empty(0, dtype=int)
+        self.ordered_exposure_scale = np.ones(2, dtype=float)
+        self.ordered_exposure_diagnostics = {"status": "not_requested"}
+        self.ordered_coefficient_prior = {}
         self.source_domains = []
         self.n_records = 0
         self.fit_status = "unfit"
@@ -514,6 +613,283 @@ class LearnedMetaPrior:
             "segment2_mean", "segment2_std", "segment3_mean", "segment3_std",
             "hist0", "hist1", "hist2", "hist3", "hist4",
         ]
+
+    def _ordered_profile_library(self, profile):
+        """Dimension-invariant global and ordered cosine policy moments."""
+
+        z = np.asarray(profile, dtype=float).reshape(-1)
+        if len(z) == 0:
+            z = np.zeros(1, dtype=float)
+        centered = z - float(np.mean(z))
+        positions = (np.arange(len(z), dtype=float) + 0.5) / float(len(z))
+        coefficients = [
+            float(2.0 * np.mean(
+                centered * np.cos(np.pi * frequency * positions)
+            ))
+            for frequency in range(1, self.ordered_exposure_max_frequency + 1)
+        ]
+        return np.asarray([
+            float(np.mean(z)),
+            float(np.std(z)),
+            *coefficients,
+        ], dtype=float)
+
+    @staticmethod
+    def _weighted_abs_correlation(x, y, weights):
+        x = np.asarray(x, dtype=float).reshape(-1)
+        y = np.asarray(y, dtype=float).reshape(-1)
+        weights = np.clip(
+            np.asarray(weights, dtype=float).reshape(-1), 0.0, np.inf)
+        total = float(np.sum(weights))
+        if len(x) < 3 or total <= 0.0:
+            return 0.0, 0.0
+        weights = weights / total
+        x_centered = x - float(np.sum(weights * x))
+        y_centered = y - float(np.sum(weights * y))
+        denom = np.sqrt(
+            float(np.sum(weights * x_centered ** 2))
+            * float(np.sum(weights * y_centered ** 2))
+        )
+        if denom <= 1e-12:
+            return 0.0, 0.0
+        correlation = float(np.sum(
+            weights * x_centered * y_centered) / denom)
+        return abs(correlation), float(np.sign(correlation))
+
+    def _fit_ordered_exposure(self, records):
+        if not self.ordered_cumulative_exposure:
+            self.ordered_exposure_diagnostics = {"status": "not_requested"}
+            return
+        usable = [rec for rec in records if rec.profile is not None]
+        if not usable:
+            raise ValueError("ordered cumulative exposure needs source profiles")
+        library = np.vstack([
+            self._ordered_profile_library(rec.profile) for rec in usable
+        ])
+        by_domain = {}
+        for index, rec in enumerate(usable):
+            by_domain.setdefault(str(rec.domain), []).append(index)
+        domain_relevance = []
+        domain_sign = []
+        for indices in by_domain.values():
+            idx = np.asarray(indices, dtype=int)
+            margins = np.asarray([
+                self._source_margin(usable[index])
+                / self._source_margin_scale(usable[index])
+                for index in idx
+            ], dtype=float)
+            weights = np.asarray([
+                self._boundary_sample_weight(usable[index])
+                * float(usable[index].sample_weight)
+                for index in idx
+            ], dtype=float)
+            relevance = []
+            signs = []
+            for frequency_index in range(self.ordered_exposure_max_frequency):
+                value, sign = self._weighted_abs_correlation(
+                    library[idx, 2 + frequency_index], margins, weights)
+                relevance.append(value)
+                signs.append(sign)
+            domain_relevance.append(relevance)
+            domain_sign.append(signs)
+        relevance = np.asarray(domain_relevance, dtype=float)
+        signs = np.asarray(domain_sign, dtype=float)
+        relevance_mean = np.mean(relevance, axis=0)
+        relevance_std = np.std(relevance, axis=0)
+        prevalence = np.mean(relevance >= 0.05, axis=0)
+        sign_consistency = np.maximum(
+            np.mean(signs >= 0.0, axis=0),
+            np.mean(signs <= 0.0, axis=0),
+        )
+        frequencies = np.arange(
+            1, self.ordered_exposure_max_frequency + 1, dtype=int)
+        low_frequency_prior = 1.0 / (
+            1.0 + self.ordered_exposure_frequency_penalty * (frequencies - 1)
+        )
+        score = (
+            relevance_mean
+            / (1.0 + relevance_std)
+            * (0.5 + 0.5 * prevalence)
+            * (0.75 + 0.25 * sign_consistency)
+            * low_frequency_prior
+        )
+        order = sorted(
+            range(len(score)), key=lambda index: (-score[index], index))
+        selected = np.asarray([
+            frequencies[index]
+            for index in order[: self.ordered_exposure_active_dim]
+        ], dtype=int)
+        selected_columns = [0, 1] + [int(frequency) + 1 for frequency in selected]
+        selected_library = library[:, selected_columns]
+        record_weights = np.asarray([
+            self._boundary_sample_weight(rec) * float(rec.sample_weight)
+            for rec in usable
+        ], dtype=float)
+        record_weights = np.clip(record_weights, 1e-8, np.inf)
+        record_weights /= float(np.sum(record_weights))
+        scale = np.sqrt(np.sum(
+            record_weights[:, None] * selected_library ** 2, axis=0))
+        self.ordered_exposure_selected_frequencies = selected
+        self.ordered_exposure_scale = np.where(scale < 1e-6, 1.0, scale)
+        self.ordered_exposure_diagnostics = {
+            "status": "fit",
+            "source_only": True,
+            "target_data_used": False,
+            "semiparametric_residual": bool(
+                self.ordered_exposure_semiparametric_residual),
+            "latent_structure_selection": bool(
+                self.ordered_exposure_latent_structure_selection),
+            "group_shared_shrinkage": bool(
+                self.ordered_exposure_group_shared_shrinkage),
+            "group_ridge_learning": bool(
+                self.ordered_exposure_group_ridge_learning),
+            "max_frequency": int(self.ordered_exposure_max_frequency),
+            "active_dim": int(len(selected)),
+            "selected_frequencies": selected.tolist(),
+            "selected_scores": [
+                float(score[int(frequency) - 1]) for frequency in selected
+            ],
+            "selected_prevalence": [
+                float(prevalence[int(frequency) - 1]) for frequency in selected
+            ],
+            "selected_sign_consistency": [
+                float(sign_consistency[int(frequency) - 1])
+                for frequency in selected
+            ],
+            "scale": self.ordered_exposure_scale.tolist(),
+            "n_source_domains": int(len(by_domain)),
+            "n_source_records": int(len(usable)),
+        }
+
+    def _ordered_exposure_from_record(self, record):
+        library = self._ordered_profile_library(record.profile)
+        columns = [0, 1] + [
+            int(frequency) + 1
+            for frequency in self.ordered_exposure_selected_frequencies
+        ]
+        A = np.asarray(
+            library[columns] / self.ordered_exposure_scale, dtype=float)
+        if (
+            self.component_stage == "spectral_hvd"
+            and self.risk_subspace_alignment is not None
+        ):
+            base = self.aligned_cumulative_risk_exposure_from_descriptor(
+                record.descriptor,
+                domain=record.domain,
+            )
+        else:
+            base = self.risk_exposure_from_descriptor(record.descriptor)
+        return RiskExposure(A, base.N)
+
+    def _fit_ordered_coefficient_prior(self, records):
+        if not (
+            self.ordered_cumulative_exposure
+            and self.ordered_exposure_adaptive_sparsity
+        ):
+            self.ordered_coefficient_prior = {}
+            return
+        usable = [rec for rec in records if rec.profile is not None]
+        by_domain = {}
+        for rec in usable:
+            by_domain.setdefault(str(rec.domain), []).append(rec)
+        features_by_domain = {
+            domain: np.vstack([
+                self._ordered_basis_from_exposure(
+                    self._ordered_exposure_from_record(rec))
+                for rec in domain_records
+            ])
+            for domain, domain_records in by_domain.items()
+        }
+        priors = {}
+        for output_index in (0, 1):
+            relevance_rows = []
+            coefficient_rows = []
+            for domain, domain_records in by_domain.items():
+                X = features_by_domain[domain]
+                if output_index == 1:
+                    y = np.asarray([
+                        self._source_margin(rec)
+                        / self._source_margin_scale(rec)
+                        for rec in domain_records
+                    ], dtype=float)
+                else:
+                    y = np.asarray([
+                        float(rec.y[output_index]) for rec in domain_records
+                    ], dtype=float)
+                weights = np.asarray([
+                    self._boundary_sample_weight(rec)
+                    * float(rec.sample_weight)
+                    for rec in domain_records
+                ], dtype=float)
+                relevance_rows.append([
+                    self._weighted_abs_correlation(
+                        X[:, feature], y, weights)[0]
+                    for feature in range(X.shape[1])
+                ])
+                x_mean = np.average(X, axis=0, weights=weights)
+                x_scale = np.sqrt(np.average(
+                    (X - x_mean) ** 2, axis=0, weights=weights))
+                x_scale = np.where(x_scale < 1e-8, 1.0, x_scale)
+                y_mean = float(np.average(y, weights=weights))
+                y_scale = max(float(np.sqrt(np.average(
+                    (y - y_mean) ** 2, weights=weights))), 1e-8)
+                Z = (X - x_mean) / x_scale
+                target = (y - y_mean) / y_scale
+                sqrt_w = np.sqrt(np.clip(weights, 1e-8, np.inf))
+                Zw = Z * sqrt_w[:, None]
+                yw = target * sqrt_w
+                ridge = max(float(self.ridge), 1e-3)
+                beta = np.linalg.pinv(
+                    Zw.T @ Zw + ridge * np.eye(Z.shape[1])) @ Zw.T @ yw
+                coefficient_rows.append(beta)
+            relevance = np.asarray(relevance_rows, dtype=float)
+            coefficients = np.asarray(coefficient_rows, dtype=float)
+            relevance_mean = np.mean(relevance, axis=0)
+            relevance_std = np.std(relevance, axis=0)
+            prevalence = np.mean(relevance >= 0.05, axis=0)
+            score = relevance_mean / (1.0 + relevance_std) * (
+                0.5 + 0.5 * prevalence)
+            normalized_score = score / max(float(np.max(score)), 1e-12)
+            source_pip = (
+                self.spectral_adaptive_min_pip
+                + (
+                    self.spectral_adaptive_max_pip
+                    - self.spectral_adaptive_min_pip
+                ) * normalized_score
+            )
+            n_local = 2 + len(self.ordered_exposure_selected_frequencies)
+            source_pip[:n_local] = self.spectral_adaptive_max_pip
+            slab_scale = np.clip(
+                np.sqrt(np.mean(coefficients ** 2, axis=0)) + 0.10,
+                0.10,
+                5.0,
+            )
+            priors[output_index] = {
+                "source_pip": source_pip,
+                "source_slab_scale": slab_scale,
+                "allowed_mask": np.ones(len(source_pip), dtype=bool),
+                "always_active_count": int(n_local),
+                "feature_dim": int(len(source_pip)),
+                "source_domains": sorted(by_domain),
+                "source_relevance": relevance_mean,
+                "source_prevalence": prevalence,
+            }
+        self.ordered_coefficient_prior = priors
+        self.ordered_exposure_diagnostics.update({
+            "basis_mode": self.ordered_exposure_basis_mode,
+            "adaptive_sparsity": True,
+            "semiparametric_residual": bool(
+                self.ordered_exposure_semiparametric_residual),
+            "latent_structure_selection": bool(
+                self.ordered_exposure_latent_structure_selection),
+            "group_shared_shrinkage": bool(
+                self.ordered_exposure_group_shared_shrinkage),
+            "group_ridge_learning": bool(
+                self.ordered_exposure_group_ridge_learning),
+            "coefficient_prior_feature_dim": int(
+                len(priors.get(1, {}).get("source_pip", []))),
+            "coefficient_prior_source_only": True,
+        })
 
     def _fit_stable_descriptor_projection(self, Z, records):
         by_domain = {}
@@ -739,6 +1115,69 @@ class LearnedMetaPrior:
                 domain=domain,
             )
         return self.risk_exposure_from_descriptor(descriptor)
+
+    def ordered_local_exposure(self, problem, x):
+        if self.ordered_exposure_diagnostics.get("status") != "fit":
+            raise RuntimeError("ordered cumulative exposure is not fit")
+        profile = np.asarray(problem.normalize(x), dtype=float)
+        library = self._ordered_profile_library(profile)
+        columns = [0, 1] + [
+            int(frequency) + 1
+            for frequency in self.ordered_exposure_selected_frequencies
+        ]
+        return np.asarray(
+            library[columns] / self.ordered_exposure_scale, dtype=float)
+
+    def ordered_cumulative_risk_exposure(self, problem, x, output_index=1):
+        del output_index
+        descriptor = self.descriptor(problem, x)
+        if (
+            self.component_stage == "spectral_hvd"
+            and self.risk_subspace_alignment is not None
+        ):
+            base = self.aligned_cumulative_risk_exposure_from_descriptor(
+                descriptor,
+                domain=None,
+            )
+        else:
+            base = self.risk_exposure_from_descriptor(descriptor)
+        A = self.ordered_local_exposure(problem, x)
+        frequencies = self.ordered_exposure_selected_frequencies.tolist()
+        return RiskExposure(
+            A,
+            base.N,
+            local_names=("ordered_global_mean", "ordered_global_std") + tuple(
+                f"ordered_dct_{frequency}" for frequency in frequencies
+            ),
+            shared_names=base.shared_names,
+            meta={
+                **dict(base.meta),
+                "provider": "LearnedMetaPriorOrderedCumulative",
+                "selected_frequencies": frequencies,
+                "source_only": True,
+                "target_data_used": False,
+            },
+        )
+
+    def ordered_coordinate_basis_features(self, problem, x):
+        exposure = self.ordered_cumulative_risk_exposure(problem, x)
+        return self._ordered_basis_from_exposure(exposure)
+
+    def _ordered_basis_from_exposure(self, exposure):
+        A = np.asarray(exposure.A, dtype=float)
+        if self.ordered_exposure_basis_mode == "diagonal_quadratic":
+            interactions = A ** 2
+        else:
+            interactions = np.asarray([
+                A[i] * A[j]
+                for i in range(len(A))
+                for j in range(i, len(A))
+            ], dtype=float)
+        return np.concatenate([
+            A,
+            interactions,
+            np.asarray(exposure.N, dtype=float),
+        ])
 
     def risk_coordinate_from_descriptor(self, descriptor):
         exposure = self.risk_exposure_from_descriptor(descriptor)
@@ -1059,6 +1498,7 @@ class LearnedMetaPrior:
         self.fit_status = "fitting"
         weights = [self._boundary_sample_weight(rec) for rec in records]
         self._record_training_diagnostics(records, weights)
+        self._fit_ordered_exposure(records)
         if self.component_enabled("spectral"):
             self._fit_spectral_basis(records)
             if (
@@ -1066,6 +1506,7 @@ class LearnedMetaPrior:
                 or self.spectral_adaptive_sparsity
             ):
                 self._fit_spectral_coefficient_prior(records)
+        self._fit_ordered_coefficient_prior(records)
         if self.component_enabled("hvd") or self.component_enabled("mean"):
             self._fit_hvd_beta_priors(records)
         if self.component_enabled("proposal"):
@@ -1415,6 +1856,7 @@ class LearnedMetaPrior:
                     ),
                 })
         self.alignment_profile_templates = templates
+        self._fit_source_boundary_bracket_model()
         self.alignment_episode_diagnostics["profile_template_count"] = int(
             len(templates))
         self.alignment_episode_diagnostics[
@@ -1423,6 +1865,247 @@ class LearnedMetaPrior:
         self.risk_alignment_diagnostics[
             "source_boundary_episode_admission"
         ] = dict(self.alignment_episode_diagnostics)
+
+    @staticmethod
+    def _source_boundary_ridge_fit(train_x, train_y, ridge, test_x=None):
+        train_x = np.asarray(train_x, dtype=float)
+        train_y = np.asarray(train_y, dtype=float)
+        mean = np.mean(train_x, axis=0)
+        scale = np.std(train_x, axis=0)
+        scale = np.where(scale < 1e-8, 1.0, scale)
+        Phi = np.column_stack([
+            np.ones(len(train_x), dtype=float),
+            (train_x - mean) / scale,
+        ])
+        penalty = float(ridge) * np.eye(Phi.shape[1], dtype=float)
+        penalty[0, 0] = 0.0
+        lhs = Phi.T @ Phi + penalty
+        lhs_inv = np.linalg.pinv(lhs)
+        beta = lhs_inv @ (Phi.T @ train_y)
+        prediction = None
+        if test_x is not None:
+            test_x = np.asarray(test_x, dtype=float)
+            Phi_test = np.column_stack([
+                np.ones(len(test_x), dtype=float),
+                (test_x - mean) / scale,
+            ])
+            prediction = Phi_test @ beta
+        leverage = np.sum((Phi @ lhs_inv) * Phi, axis=1)
+        effective_rank = float(np.sum(np.clip(leverage, 0.0, 1.0)))
+        return beta, mean, scale, prediction, effective_rank
+
+    def _fit_source_boundary_bracket_model(self):
+        """Learn a source-only ordering of the chance boundary coordinate.
+
+        The fitted score is deliberately used only for quantile stratification
+        on an unlabeled held-out pool.  Its absolute zero is never interpreted
+        as the target task's feasibility threshold.
+        """
+        rows = [
+            row for row in self.alignment_profile_templates
+            if row.get("aligned_coordinate") is not None
+            and np.all(np.isfinite(row["aligned_coordinate"]))
+        ]
+        domains = np.asarray([str(row["domain"]) for row in rows], dtype=object)
+        unique_domains = sorted(set(domains.tolist()))
+        if len(rows) < 6 or len(unique_domains) < 2:
+            self.source_boundary_bracket_model = {
+                "status": "insufficient_source_support",
+                "n_records": int(len(rows)),
+                "n_domains": int(len(unique_domains)),
+                "target_data_used": False,
+                "target_oracle_used": False,
+            }
+            return
+        coordinates = np.vstack([
+            np.asarray(row["aligned_coordinate"], dtype=float) for row in rows
+        ])
+        target = np.clip(np.asarray([
+            float(row["scaled_margin"]) for row in rows
+        ], dtype=float), -4.0, 4.0)
+        target_scale = max(float(np.var(target)), 1e-8)
+        ridge_grid = (1e-3, 1e-2, 1e-1, 1.0, 10.0, 100.0, 1e3)
+        candidates = []
+
+        def add_candidate(prediction, *, kind, ridge):
+            prediction = np.asarray(prediction, dtype=float)
+            valid = np.isfinite(prediction)
+            if not np.any(valid):
+                return
+            nmse = float(np.mean(
+                (target[valid] - prediction[valid]) ** 2)) / target_scale
+            false_safe = float(np.mean(
+                (target[valid] > 0.0) & (prediction[valid] <= 0.0)))
+            pair_losses = []
+            for domain in unique_domains:
+                index = np.where((domains == domain) & valid)[0]
+                if len(index) < 2:
+                    continue
+                upper = np.triu_indices(len(index), k=1)
+                true_diff = (
+                    target[index, None] - target[None, index])[upper]
+                pred_diff = (
+                    prediction[index, None] - prediction[None, index])[upper]
+                informative = np.abs(true_diff) > 1e-10
+                if np.any(informative):
+                    pair_losses.extend(
+                        (true_diff[informative] * pred_diff[informative] < 0.0)
+                        .astype(float).tolist()
+                    )
+            rank_loss = float(np.mean(pair_losses)) if pair_losses else 0.5
+            # This model is used to order an unlabeled target pool, not to
+            # transfer an absolute target margin.  Ranking therefore dominates
+            # scale-sensitive NMSE during source LODO selection.
+            candidates.append({
+                "kind": str(kind),
+                "ridge": float(ridge),
+                "score": float(
+                    rank_loss + 0.25 * false_safe + 0.10 * nmse),
+                "lodo_nmse": float(nmse),
+                "lodo_rank_loss": float(rank_loss),
+                "lodo_false_safe_rate": float(false_safe),
+            })
+
+        # The first compact alignment coordinate is already a source-trained,
+        # leave-domain-out ensemble boundary score.  Keep it as a candidate so
+        # a second ridge layer cannot erase useful ordering by choosing a
+        # nearly constant high-penalty fit.
+        add_candidate(
+            coordinates[:, 0],
+            kind="direct_aligned_boundary_score",
+            ridge=0.0,
+        )
+        for ridge in ridge_grid:
+            prediction = np.full(len(rows), np.nan, dtype=float)
+            for heldout_domain in unique_domains:
+                test = domains == heldout_domain
+                train = ~test
+                if int(np.sum(train)) < 2:
+                    continue
+                _, _, _, fold_prediction, _ = self._source_boundary_ridge_fit(
+                    coordinates[train], target[train], ridge, coordinates[test])
+                prediction[test] = fold_prediction
+            add_candidate(
+                prediction,
+                kind="nested_ridge",
+                ridge=ridge,
+            )
+        if not candidates:
+            self.source_boundary_bracket_model = {
+                "status": "fit_failed",
+                "target_data_used": False,
+                "target_oracle_used": False,
+            }
+            return
+        selected = min(candidates, key=lambda row: (
+            row["score"], row["lodo_rank_loss"], row["ridge"]))
+        if selected["kind"] == "direct_aligned_boundary_score":
+            beta = np.zeros(coordinates.shape[1] + 1, dtype=float)
+            beta[1] = 1.0
+            mean = np.zeros(coordinates.shape[1], dtype=float)
+            scale = np.ones(coordinates.shape[1], dtype=float)
+            fitted = coordinates[:, 0]
+            effective_rank = 1.0
+        else:
+            beta, mean, scale, fitted, effective_rank = (
+                self._source_boundary_ridge_fit(
+                    coordinates,
+                    target,
+                    selected["ridge"],
+                    coordinates,
+                )
+            )
+        self.source_boundary_bracket_model = {
+            "status": "fit",
+            "method": "source_domain_lodo_boundary_ordering",
+            "beta": beta,
+            "feature_mean": mean,
+            "feature_scale": scale,
+            "score_kind": str(selected["kind"]),
+            "ridge": float(selected["ridge"]),
+            "effective_rank": float(effective_rank),
+            "n_records": int(len(rows)),
+            "n_domains": int(len(unique_domains)),
+            "source_domains": list(unique_domains),
+            "score": float(selected["score"]),
+            "lodo_nmse": float(selected["lodo_nmse"]),
+            "lodo_rank_loss": float(selected["lodo_rank_loss"]),
+            "lodo_false_safe_rate": float(selected["lodo_false_safe_rate"]),
+            "full_fit_rank_correlation_proxy": float(
+                1.0 - np.mean(
+                    ((target[:, None] - target[None, :])
+                     * (fitted[:, None] - fitted[None, :])) < 0.0
+                )
+            ),
+            "ridge_candidates": candidates,
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+
+    def source_boundary_bracket_candidates(
+        self, problem, n=5, rng=None, pool_size=None,
+    ):
+        """Cover source-predicted risk strata on an unlabeled target pool."""
+        n = max(0, int(n))
+        model = self.source_boundary_bracket_model
+        if n == 0 or model.get("status") != "fit":
+            return []
+        rng = rng or np.random.default_rng(self.seed)
+        pool_size = max(
+            64,
+            int(pool_size or self.spectral_alignment_inverse_pool_size),
+            16 * n,
+        )
+        pool = self._alignment_inverse_pool(problem, rng, pool_size)
+        if not pool:
+            return []
+        coordinates = np.vstack([
+            self.frozen_risk_aligned_coordinate(problem, x) for x in pool
+        ])
+        scaled = (
+            coordinates - np.asarray(model["feature_mean"], dtype=float)
+        ) / np.asarray(model["feature_scale"], dtype=float)
+        scores = np.column_stack([
+            np.ones(len(scaled), dtype=float), scaled
+        ]) @ np.asarray(model["beta"], dtype=float)
+        score_scale = max(float(np.std(scores)), 1e-8)
+        coordinate_scale = np.std(coordinates, axis=0)
+        coordinate_scale = np.where(coordinate_scale < 1e-8, 1.0, coordinate_scale)
+        quantile_cycle = (0.05, 0.25, 0.50, 0.75, 0.95)
+        selected = []
+        selected_index = []
+        for step in range(min(n, len(pool))):
+            quantile = quantile_cycle[step % len(quantile_cycle)]
+            target_score = float(np.quantile(scores, quantile))
+            merit = np.abs(scores - target_score) / score_scale
+            if selected_index:
+                previous = coordinates[np.asarray(selected_index, dtype=int)]
+                distance = np.linalg.norm(
+                    (coordinates[:, None, :] - previous[None, :, :])
+                    / coordinate_scale[None, None, :],
+                    axis=2,
+                )
+                merit -= 0.15 * np.minimum(np.min(distance, axis=1), 4.0)
+            if selected_index:
+                merit[np.asarray(selected_index, dtype=int)] = np.inf
+            position = int(np.argmin(merit))
+            selected_index.append(position)
+            selected.append(tuple(pool[position]))
+        self.alignment_episode_diagnostics["last_boundary_bracket"] = {
+            "status": "ok",
+            "method": "source_score_target_unlabeled_quantile_bracket",
+            "n_candidates": int(len(selected)),
+            "pool_size": int(len(pool)),
+            "score_min": float(np.min(scores)),
+            "score_median": float(np.median(scores)),
+            "score_max": float(np.max(scores)),
+            "quantile_cycle": list(quantile_cycle),
+            "source_score_kind": str(model.get("score_kind", "nested_ridge")),
+            "source_model_ridge": float(model["ridge"]),
+            "target_labels_used": False,
+            "target_oracle_used": False,
+        }
+        return unique_candidates(selected)[:n]
 
     def alignment_profile_candidates(self, problem, n=16, rng=None):
         """Replay frozen source boundary profiles without target-side hooks."""
@@ -1485,6 +2168,23 @@ class LearnedMetaPrior:
                 rows.append(key)
 
         templates = list(self.alignment_profile_templates)
+        universal_budget = min(32, max(8, pool_size // 8))
+        for row in self.universal_shape_candidates(
+            problem,
+            n=universal_budget,
+            rng=rng,
+            force=True,
+        ):
+            add(row)
+        for level in (0.0, 0.05, 0.95, 1.0):
+            add(self._continuous_to_tuple(
+                problem,
+                np.full(d, level, dtype=float),
+            ))
+        add(self._continuous_to_tuple(
+            problem, np.linspace(0.0, 1.0, d)))
+        add(self._continuous_to_tuple(
+            problem, np.linspace(1.0, 0.0, d)))
         n_random = max(8, pool_size // 4)
         for _ in range(n_random):
             add(problem.sample_random(rng))
@@ -2338,6 +3038,200 @@ class LearnedMetaPrior:
                 sigmas = np.asarray(sigma_by_output.get(out_idx, []), dtype=float)
                 self.mean_prior_sigma[out_idx] = float(
                     np.median(sigmas) if len(sigmas) else 0.0)
+        self._fit_unaligned_hvd_beta_priors(records)
+
+    def _fit_unaligned_hvd_beta_priors(self, records):
+        """Fit the HVD prior in the unaligned source coordinate system.
+
+        The aligned and unaligned task experts use different risk coordinates,
+        so sharing one coefficient vector would silently change its meaning.
+        This source-only fit mirrors the aligned prior construction while
+        keeping a separate coefficient family and LODO calibration constants.
+        """
+        by_domain = {}
+        for rec in records:
+            by_domain.setdefault(str(rec.domain), []).append(rec)
+        beta_rows = {0: [], 1: []}
+        beta_domains = {0: [], 1: []}
+        feature_by_domain = {}
+        target_by_output_domain = {0: {}, 1: {}}
+        for domain, domain_records in by_domain.items():
+            descriptors = np.vstack([
+                np.concatenate([[1.0], self._scaled_descriptor(rec.descriptor)])
+                for rec in domain_records
+            ])
+            features = np.vstack([
+                cumulative_feature_vector(
+                    self.risk_exposure_from_descriptor(rec.descriptor)
+                )
+                for rec in domain_records
+            ])
+            feature_by_domain[domain] = features
+            weights = np.clip(np.asarray([
+                self._boundary_sample_weight(rec) for rec in domain_records
+            ], dtype=float), 1e-4, 1e4)
+            sqrt_w = np.sqrt(weights)
+            mean_reg = self.ridge * np.eye(descriptors.shape[1], dtype=float)
+            mean_reg[0, 0] = 0.0
+            for output_index in (0, 1):
+                target = np.asarray([
+                    float(rec.y[output_index]) for rec in domain_records
+                ], dtype=float)
+                weighted_x = descriptors * sqrt_w[:, None]
+                weighted_y = target * sqrt_w
+                try:
+                    mean_beta = np.linalg.solve(
+                        weighted_x.T @ weighted_x + mean_reg,
+                        weighted_x.T @ weighted_y,
+                    )
+                except np.linalg.LinAlgError:
+                    mean_beta = np.linalg.lstsq(
+                        weighted_x.T @ weighted_x + mean_reg,
+                        weighted_x.T @ weighted_y,
+                        rcond=None,
+                    )[0]
+                variance_labels = None
+                if output_index == 1 and all(
+                    rec.constraint_sigma is not None for rec in domain_records
+                ):
+                    variance_labels = np.asarray([
+                        float(rec.constraint_sigma) ** 2
+                        for rec in domain_records
+                    ], dtype=float)
+                if variance_labels is None:
+                    variance_target = np.maximum(
+                        (target - descriptors @ mean_beta) ** 2,
+                        1e-10,
+                    )
+                else:
+                    variance_target = np.maximum(variance_labels, 1e-10)
+                if variance_labels is None and self.hvd_noise_floor_scale > 0.0:
+                    sigma = np.asarray([
+                        float(rec.sigma_level) for rec in domain_records
+                    ], dtype=float)
+                    variance_target = np.maximum(
+                        variance_target,
+                        (float(self.hvd_noise_floor_scale) * sigma) ** 2,
+                    )
+                target_by_output_domain[output_index][domain] = variance_target
+                residual_scale = max(
+                    float(np.median(variance_target)),
+                    float(np.mean(variance_target) + 1e-10),
+                    1e-12,
+                )
+                variance_weights = weights * (
+                    1.0
+                    + self.variance_weight
+                    * np.minimum(variance_target / residual_scale, 10.0)
+                )
+                sqrt_variance_weight = np.sqrt(np.clip(
+                    variance_weights, 1e-4, 1e4))
+                weighted_features = features * sqrt_variance_weight[:, None]
+                weighted_target = variance_target * sqrt_variance_weight
+                reg = self.ridge * np.eye(features.shape[1], dtype=float)
+                try:
+                    beta = np.linalg.solve(
+                        weighted_features.T @ weighted_features + reg,
+                        weighted_features.T @ weighted_target,
+                    )
+                except np.linalg.LinAlgError:
+                    beta = np.linalg.lstsq(
+                        weighted_features.T @ weighted_features + reg,
+                        weighted_features.T @ weighted_target,
+                        rcond=None,
+                    )[0]
+                beta = _project_psd_features(
+                    beta, self.local_dim, self.shared_dim)
+                beta_rows[output_index].append(beta)
+                beta_domains[output_index].append(domain)
+
+        sensitivity_ratios = []
+        for output_index, rows in beta_rows.items():
+            if not rows:
+                continue
+            stack = np.vstack(rows)
+            mean_beta = np.mean(stack, axis=0)
+            self.unaligned_beta_prior[output_index] = mean_beta
+            reference_predictions = np.concatenate([
+                np.maximum(matrix @ mean_beta, 1e-12)
+                for matrix in feature_by_domain.values()
+            ])
+            self.unaligned_beta_prior_reference_mean[output_index] = float(max(
+                float(np.mean(reference_predictions)), 1e-12))
+            signal = float(np.mean(mean_beta ** 2))
+            dispersion = float(np.mean((stack - mean_beta) ** 2))
+            self.unaligned_beta_prior_precision[output_index] = float(np.clip(
+                signal / max(dispersion + 0.1 * signal, 1e-12),
+                0.05,
+                5.0,
+            ))
+            lodo_ratios = []
+            domains = beta_domains[output_index]
+            for heldout_index, heldout_domain in enumerate(domains):
+                lodo_beta = (
+                    mean_beta
+                    if len(stack) <= 1
+                    else np.mean(np.delete(stack, heldout_index, axis=0), axis=0)
+                )
+                heldout_features = feature_by_domain[heldout_domain]
+                variance_target = target_by_output_domain[
+                    output_index][heldout_domain]
+                shape = np.maximum(heldout_features @ lodo_beta, 1e-12)
+                shape /= max(float(np.mean(shape)), 1e-12)
+                amplitude = max(float(np.mean(variance_target)), 1e-12)
+                prediction = np.maximum(amplitude * shape, 1e-12)
+                ratios = variance_target / prediction
+                lodo_ratios.extend(
+                    float(value) for value in ratios if np.isfinite(value)
+                )
+            if lodo_ratios:
+                ordered = np.sort(np.asarray(lodo_ratios, dtype=float))
+                conformal_index = min(
+                    len(ordered) - 1,
+                    max(0, int(np.ceil(0.95 * (len(ordered) + 1))) - 1),
+                )
+                self.unaligned_beta_prior_upper_scale[output_index] = float(max(
+                    1.0, ordered[conformal_index]))
+                if output_index == 1:
+                    sensitivity_ratios.extend(lodo_ratios)
+        self._fit_task_sensitivity_prior(sensitivity_ratios)
+
+    def _fit_task_sensitivity_prior(self, squared_standardized_residuals):
+        ratios = np.asarray(squared_standardized_residuals, dtype=float)
+        ratios = ratios[np.isfinite(ratios) & (ratios >= 0.0)]
+        names = ("stable", "balanced", "sensitive")
+        scales = np.asarray([0.5, 1.0, 2.0], dtype=float)
+        penalties = np.asarray([2.0, 5.0, 20.0], dtype=float)
+        if len(ratios):
+            clipped = np.clip(ratios, 0.0, 100.0)
+            log_score = np.asarray([
+                float(np.mean(-np.log(scale) - 0.5 * clipped / scale ** 2))
+                for scale in scales
+            ], dtype=float)
+            log_score -= float(np.max(log_score))
+            likelihood = np.exp(np.clip(log_score, -50.0, 0.0))
+            likelihood /= max(float(np.sum(likelihood)), 1e-12)
+            # Preserve support for every class before seeing the held-out task.
+            weights = 0.9 * likelihood + 0.1 / len(scales)
+            weights /= float(np.sum(weights))
+            status = "fit"
+        else:
+            log_score = np.zeros(len(scales), dtype=float)
+            weights = np.ones(len(scales), dtype=float) / len(scales)
+            status = "fallback_uniform"
+        self.task_sensitivity_prior_ = {
+            "status": status,
+            "method": "source_lodo_prequential_residual_scale_classes",
+            "class_names": list(names),
+            "scales": scales.tolist(),
+            "decision_penalties": penalties.tolist(),
+            "empirical_trust": [1.0, 0.25, 0.0],
+            "prior_weights": weights.tolist(),
+            "source_log_score": log_score.tolist(),
+            "n_source_residuals": int(len(ratios)),
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
 
     def _mean_prior_features_from_descriptor(self, descriptor):
         desc = self._scaled_descriptor(descriptor)
@@ -2791,16 +3685,41 @@ class LearnedMetaPrior:
             rows.append(problem.sample_random(rng))
         return unique_candidates(rows)[:n_target]
 
-    def cumulative_hvd_prior_beta(self, output_index=1, feature_dim=None):
+    def _hvd_prior_family(self, coordinate_variant="aligned"):
+        variant = str(coordinate_variant or "aligned").lower()
+        if variant in ("aligned", "risk_aligned", "cumulative"):
+            return (
+                self.beta_prior,
+                self.beta_prior_precision,
+                self.beta_prior_reference_mean,
+                self.beta_prior_upper_scale,
+            )
+        if variant in ("unaligned", "universal", "source"):
+            return (
+                self.unaligned_beta_prior,
+                self.unaligned_beta_prior_precision,
+                self.unaligned_beta_prior_reference_mean,
+                self.unaligned_beta_prior_upper_scale,
+            )
+        raise ValueError(f"unknown HVD coordinate variant {coordinate_variant!r}")
+
+    def cumulative_hvd_prior_beta(
+        self,
+        output_index=1,
+        feature_dim=None,
+        coordinate_variant="aligned",
+    ):
         if not self.component_enabled("hvd"):
             return None
-        beta = self.beta_prior.get(int(output_index))
+        beta_store, _, reference_store, _ = self._hvd_prior_family(
+            coordinate_variant)
+        beta = beta_store.get(int(output_index))
         if beta is None:
             return None
         beta = np.asarray(beta, dtype=float)
         if self.component_stage == "spectral_hvd":
             beta = beta / max(
-                float(self.beta_prior_reference_mean.get(
+                float(reference_store.get(
                     int(output_index), 1.0)),
                 1e-12,
             )
@@ -2808,26 +3727,35 @@ class LearnedMetaPrior:
             return None
         return beta.copy()
 
-    def cumulative_hvd_prior_precision(self, output_index=1):
+    def cumulative_hvd_prior_precision(
+        self, output_index=1, coordinate_variant="aligned"):
         if self.component_stage != "spectral_hvd":
             return None
-        value = self.beta_prior_precision.get(int(output_index))
+        _, precision_store, _, _ = self._hvd_prior_family(coordinate_variant)
+        value = precision_store.get(int(output_index))
         return None if value is None else float(value)
 
-    def cumulative_hvd_prior_scale_mean(self, output_index=1):
+    def cumulative_hvd_prior_scale_mean(
+        self, output_index=1, coordinate_variant="aligned"):
         if self.component_stage != "spectral_hvd":
             return None
-        value = self.beta_prior_reference_mean.get(int(output_index))
+        _, _, reference_store, _ = self._hvd_prior_family(coordinate_variant)
+        value = reference_store.get(int(output_index))
         return None if value is None else float(value)
 
-    def cumulative_hvd_prior_upper_scale(self, output_index=1):
+    def cumulative_hvd_prior_upper_scale(
+        self, output_index=1, coordinate_variant="aligned"):
         if self.component_stage != "spectral_hvd":
             return None
-        value = self.beta_prior_upper_scale.get(int(output_index))
+        _, _, _, upper_store = self._hvd_prior_family(coordinate_variant)
+        value = upper_store.get(int(output_index))
         return None if value is None else float(value)
 
     def cumulative_hvd_prior_min_records(self):
         return 5 if self.component_stage == "spectral_hvd" else None
+
+    def task_sensitivity_prior(self):
+        return copy.deepcopy(self.task_sensitivity_prior_)
 
     def source_calibrated_recommendation_slack(self):
         if not self.component_enabled("proposal"):
@@ -2872,6 +3800,24 @@ class LearnedMetaPrior:
                 str(key): float(value)
                 for key, value in self.beta_prior_upper_scale.items()
             },
+            "has_unaligned_beta_prior": {
+                str(key): value is not None
+                for key, value in self.unaligned_beta_prior.items()
+            },
+            "unaligned_beta_prior_precision": {
+                str(key): float(value)
+                for key, value in self.unaligned_beta_prior_precision.items()
+            },
+            "unaligned_beta_prior_reference_mean": {
+                str(key): float(value)
+                for key, value in self.unaligned_beta_prior_reference_mean.items()
+            },
+            "unaligned_beta_prior_upper_scale": {
+                str(key): float(value)
+                for key, value in self.unaligned_beta_prior_upper_scale.items()
+            },
+            "task_sensitivity_prior": copy.deepcopy(
+                self.task_sensitivity_prior_),
             "has_mean_prior": {
                 str(key): value is not None
                 for key, value in self.mean_prior.items()
@@ -2899,6 +3845,11 @@ class LearnedMetaPrior:
             "risk_alignment": dict(self.risk_alignment_diagnostics),
             "alignment_episode_admission": dict(
                 self.alignment_episode_diagnostics),
+            "source_boundary_bracket": {
+                key: copy.deepcopy(value)
+                for key, value in self.source_boundary_bracket_model.items()
+                if key not in {"beta", "feature_mean", "feature_scale"}
+            },
             "spectral_alignment_source_episodes": int(
                 self.spectral_alignment_source_episodes),
             "spectral_alignment_admission": bool(
@@ -2942,6 +3893,19 @@ class LearnedMetaPrior:
             },
             "spectral_adaptive_calibration": dict(
                 self.spectral_adaptive_calibration),
+            "ordered_cumulative_exposure": dict(
+                self.ordered_exposure_diagnostics),
+            "ordered_coefficient_prior": {
+                str(output_index): {
+                    key: (
+                        value.tolist()
+                        if isinstance(value, np.ndarray)
+                        else value
+                    )
+                    for key, value in prior.items()
+                }
+                for output_index, prior in self.ordered_coefficient_prior.items()
+            },
             "spectral_coefficient_prior": {
                 str(output_index): {
                     key: (
@@ -4891,13 +5855,170 @@ class AdmissibleProblemAdapter:
 class FixedTaskExpertBasis:
     """Frozen source-only basis used by one finite task expert."""
 
+    ORDERED_VARIANTS = {"ordered_cumulative", "ordered_semiparametric"}
+
     def __init__(self, meta_prior, problem, variant, output_index=0):
         self.meta_prior = meta_prior
         self.problem = problem
         self.variant = str(variant)
         self.output_index = int(output_index)
+        self._local_kernel = None
+        self._ordered_residual_projection = None
+        if self.variant in {"local_risk_kernel", "ordered_semiparametric"}:
+            self._local_kernel = self._build_local_kernel()
+        if self.variant == "ordered_semiparametric":
+            self._ordered_residual_projection = (
+                self._build_ordered_residual_projection())
         lo, _ = problem.int_bounds()
         self.feature_dim = int(len(self._raw_features(tuple(lo))))
+
+    def _kernel_coordinate(self, x):
+        if self.variant == "ordered_semiparametric":
+            exposure = self.meta_prior.ordered_cumulative_risk_exposure(
+                self.problem, x)
+            return np.concatenate([exposure.A, exposure.N]).astype(float)
+        return np.asarray(
+            self.meta_prior.risk_coordinate(self.problem, x), dtype=float)
+
+    def _build_local_kernel(self):
+        rng = np.random.default_rng(self.meta_prior.seed + 15485863)
+        rows = []
+        rows.extend(self.meta_prior.profile_template_candidates(
+            self.problem, n=32, rng=rng))
+        rows.extend(self.meta_prior.universal_shape_candidates(
+            self.problem, n=32, rng=rng, force=True))
+        rows.extend(self.meta_prior.alignment_profile_candidates(
+            self.problem, n=16, rng=rng))
+        rows = unique_candidates(rows)
+        if not rows:
+            rows = [self.problem.sample_random(rng) for _ in range(16)]
+            rows = unique_candidates(rows)
+        if self.variant == "ordered_semiparametric":
+            ordered_dim = int(len(
+                self.meta_prior.ordered_coordinate_basis_features(
+                    self.problem, rows[0])
+            ))
+            required_rows = ordered_dim + 1 + 6
+            attempts = 0
+            while len(rows) < required_rows and attempts < 512:
+                rows = unique_candidates([
+                    *rows,
+                    self.problem.sample_random(rng),
+                ])
+                attempts += 1
+        psi = np.vstack([self._kernel_coordinate(x) for x in rows])
+        mean = np.mean(psi, axis=0)
+        scale = np.std(psi, axis=0)
+        scale = np.where(scale < 1e-8, 1.0, scale)
+        z = (psi - mean) / scale
+        if self.variant == "ordered_semiparametric":
+            ordered_dim = int(len(
+                self.meta_prior.ordered_coordinate_basis_features(
+                    self.problem, rows[0])
+            ))
+            n_centers = min(ordered_dim + 1 + 6, len(z))
+        else:
+            n_centers = min(6, len(z))
+        center_indices = [int(np.argmin(np.sum(z ** 2, axis=1)))]
+        while len(center_indices) < n_centers:
+            distance = np.min(np.stack([
+                np.sum((z - z[index]) ** 2, axis=1)
+                for index in center_indices
+            ]), axis=0)
+            distance[center_indices] = -np.inf
+            center_indices.append(int(np.argmax(distance)))
+        centers = z[center_indices]
+        if len(centers) > 1:
+            pairwise = np.sqrt(np.sum(
+                (centers[:, None, :] - centers[None, :, :]) ** 2,
+                axis=2,
+            ))
+            positive = pairwise[pairwise > 1e-8]
+            lengthscale = (
+                float(np.median(positive)) if len(positive) else 1.0)
+        else:
+            lengthscale = 1.0
+        return {
+            "mean": mean,
+            "scale": scale,
+            "centers": centers,
+            "lengthscale": max(lengthscale, 1e-3),
+            "pool_size": int(len(rows)),
+            "rows": [tuple(int(value) for value in row) for row in rows],
+        }
+
+    def _local_kernel_features(self, x):
+        state = self._local_kernel
+        psi = self._kernel_coordinate(x)
+        z = (psi - state["mean"]) / state["scale"]
+        squared = np.sum((state["centers"] - z[None, :]) ** 2, axis=1)
+        return np.exp(
+            -0.5 * squared / max(state["lengthscale"] ** 2, 1e-12))
+
+    def _build_ordered_residual_projection(self):
+        rows = list(self._local_kernel["rows"])
+        ordered = np.vstack([
+            self.meta_prior.ordered_coordinate_basis_features(self.problem, x)
+            for x in rows
+        ])
+        kernel = np.vstack([self._local_kernel_features(x) for x in rows])
+        design = np.column_stack([np.ones(len(ordered)), ordered])
+        cross_dictionary = design.T @ kernel
+        _left, singular_values, right_t = np.linalg.svd(
+            cross_dictionary, full_matrices=True)
+        leading = (
+            float(singular_values[0]) if len(singular_values) else 0.0)
+        tolerance = max(cross_dictionary.shape) * np.finfo(float).eps * leading
+        rank = int(np.sum(singular_values > tolerance))
+        nullspace = np.asarray(right_t[rank:].T, dtype=float)
+        if nullspace.shape[1] < 1:
+            raise RuntimeError(
+                "ordered semiparametric dictionary has no orthogonal residual"
+            )
+        residual_dim = min(6, int(nullspace.shape[1]))
+        feature_projection = np.asarray(
+            nullspace[:, :residual_dim], dtype=float)
+        for column in range(feature_projection.shape[1]):
+            pivot = int(np.argmax(np.abs(feature_projection[:, column])))
+            if feature_projection[pivot, column] < 0.0:
+                feature_projection[:, column] *= -1.0
+        residual = kernel @ feature_projection
+        cross = design.T @ residual
+        denominator = max(
+            float(np.linalg.norm(design) * np.linalg.norm(residual)),
+            1e-12,
+        )
+        gram = feature_projection.T @ feature_projection
+        return {
+            "feature_projection": feature_projection,
+            "residualization_mode": "bounded_coefficient_nullspace",
+            "ordered_dim": int(ordered.shape[1]),
+            "parent_kernel_dim": int(kernel.shape[1]),
+            "cross_dictionary_rank": rank,
+            "nullspace_dim": int(nullspace.shape[1]),
+            "residual_dim": residual_dim,
+            "pool_size": int(len(rows)),
+            "orthogonality_fro": float(np.linalg.norm(cross)),
+            "orthogonality_relative": float(np.linalg.norm(cross) / denominator),
+            "projection_orthonormal_error": float(np.linalg.norm(
+                gram - np.eye(residual_dim))),
+            "finite_pool_max_l2": float(np.max(np.linalg.norm(
+                residual, axis=1))),
+            "global_l2_bound": float(np.sqrt(kernel.shape[1])),
+            "target_labels_used": False,
+        }
+
+    def _ordered_semiparametric_features(self, x):
+        ordered = np.asarray(
+            self.meta_prior.ordered_coordinate_basis_features(self.problem, x),
+            dtype=float,
+        )
+        kernel = self._local_kernel_features(x)
+        residual = (
+            kernel
+            @ self._ordered_residual_projection["feature_projection"]
+        )
+        return np.concatenate([ordered, residual])
 
     def _raw_features(self, x):
         variant = self.variant
@@ -4914,6 +6035,13 @@ class FixedTaskExpertBasis:
         if variant == "risk_aligned_spectral":
             return self.meta_prior.risk_aligned_spectral_features(
                 self.problem, x, adapter=None)
+        if variant == "local_risk_kernel":
+            return self._local_kernel_features(x)
+        if variant == "ordered_cumulative":
+            return self.meta_prior.ordered_coordinate_basis_features(
+                self.problem, x)
+        if variant == "ordered_semiparametric":
+            return self._ordered_semiparametric_features(x)
         if variant == "orthogonal_additive":
             base = self.meta_prior.stage1_spectral_features(self.problem, x)
             bank = self.meta_prior.spectral_additive_bank
@@ -4937,7 +6065,115 @@ class FixedTaskExpertBasis:
     def initial_parametric_coefficients(self, phi, target):
         matrix = np.asarray(phi, dtype=float)
         values = np.asarray(target, dtype=float).reshape(-1)
+        if self.variant == "local_risk_kernel":
+            penalty = np.eye(matrix.shape[1], dtype=float)
+            penalty[0, 0] = 0.0
+            return np.linalg.solve(
+                matrix.T @ matrix + penalty,
+                matrix.T @ values,
+            )
         return np.linalg.lstsq(matrix, values, rcond=1e-3)[0]
+
+    def adaptive_sparsity_spec(self, observations=None):
+        del observations
+        if (
+            self.variant not in self.ORDERED_VARIANTS
+            or not self.meta_prior.ordered_exposure_adaptive_sparsity
+        ):
+            return None
+        source = self.meta_prior.ordered_coefficient_prior.get(
+            self.output_index)
+        if source is None:
+            return None
+        source_pip = np.asarray(source["source_pip"], dtype=float)
+        source_slab_scale = np.asarray(
+            source["source_slab_scale"], dtype=float)
+        allowed_mask = np.asarray(source["allowed_mask"], dtype=bool)
+        if self.variant == "ordered_semiparametric":
+            residual_dim = int(
+                self._ordered_residual_projection["residual_dim"])
+            source_pip = np.concatenate([
+                source_pip,
+                np.full(residual_dim, 0.5, dtype=float),
+            ])
+            source_slab_scale = np.concatenate([
+                source_slab_scale,
+                np.ones(residual_dim, dtype=float),
+            ])
+            allowed_mask = np.concatenate([
+                allowed_mask,
+                np.ones(residual_dim, dtype=bool),
+            ])
+        shared_shrinkage_groups = None
+        n_local = int(source["always_active_count"])
+        if self.meta_prior.ordered_exposure_basis_mode == "diagonal_quadratic":
+            interaction_dim = n_local
+        else:
+            interaction_dim = n_local * (n_local + 1) // 2
+        n_shared = max(
+            len(source_pip) - n_local - interaction_dim, 0)
+        if (
+            self.variant == "ordered_cumulative"
+            and self.meta_prior.ordered_exposure_group_ridge_learning
+        ):
+            group_ids = (
+                [0] * n_local
+                + [1] * interaction_dim
+                + [2] * n_shared
+            )
+            initial_penalty = np.clip(
+                1.0 / np.maximum(source_slab_scale ** 2, 1e-8),
+                1e-4,
+                1000.0,
+            )
+            return {
+                "method": "nested_loo_group_ridge",
+                "group_ids": group_ids,
+                "penalty_grid": [
+                    1e-4, 1e-2, 0.1, 1.0, 10.0, 100.0, 1000.0,
+                ],
+                "initial_feature_penalty": initial_penalty.tolist(),
+                "coordinate_passes": 2,
+                "safety_weight": 2.0,
+                "residual_floor_scale": float(
+                    self.meta_prior.spectral_adaptive_residual_floor_scale),
+                "dictionary_dim": int(len(source_pip)),
+                "source_domains": list(source["source_domains"]),
+                "selection_data": "charged_target_observations",
+                "oracle_used": False,
+            }
+        if (
+            self.variant == "ordered_cumulative"
+            and self.meta_prior.ordered_exposure_group_shared_shrinkage
+        ):
+            shared_shrinkage_groups = (
+                [-1] * n_local
+                + [0] * interaction_dim
+                + [1] * n_shared
+            )
+        return {
+            "source_pip": source_pip,
+            "source_slab_scale": source_slab_scale,
+            "min_pip": float(self.meta_prior.spectral_adaptive_min_pip),
+            "max_pip": float(self.meta_prior.spectral_adaptive_max_pip),
+            "spike_ratio": float(
+                self.meta_prior.spectral_adaptive_spike_ratio),
+            "damping": float(self.meta_prior.spectral_adaptive_damping),
+            "max_iter": int(self.meta_prior.spectral_adaptive_max_iter),
+            "tolerance": float(
+                self.meta_prior.spectral_adaptive_tolerance),
+            "residual_floor_scale": float(
+                self.meta_prior.spectral_adaptive_residual_floor_scale),
+            "multiplicity_correction": float(
+                self.meta_prior.spectral_adaptive_multiplicity_correction),
+            "max_effective_fraction": float(
+                self.meta_prior.spectral_adaptive_max_effective_fraction),
+            "always_active_count": int(source["always_active_count"]),
+            "allowed_mask": allowed_mask.tolist(),
+            "dictionary_dim": int(len(source_pip)),
+            "source_domains": list(source["source_domains"]),
+            "shared_shrinkage_groups": shared_shrinkage_groups,
+        }
 
     def diagnostics(self):
         return {
@@ -4945,8 +6181,43 @@ class FixedTaskExpertBasis:
             "expert": self.variant,
             "output_index": self.output_index,
             "feature_dim": self.feature_dim,
+            "local_kernel_pool_size": (
+                None if self._local_kernel is None
+                else self._local_kernel["pool_size"]
+            ),
+            "local_kernel_lengthscale": (
+                None if self._local_kernel is None
+                else self._local_kernel["lengthscale"]
+            ),
             "source_only": True,
             "target_oracle_used": False,
+            "ordered_basis_mode": (
+                self.meta_prior.ordered_exposure_basis_mode
+                if self.variant in self.ORDERED_VARIANTS else None
+            ),
+            "ordered_adaptive_sparsity": bool(
+                self.variant in self.ORDERED_VARIANTS
+                and self.meta_prior.ordered_exposure_adaptive_sparsity
+            ),
+            "ordered_semiparametric": bool(
+                self.variant == "ordered_semiparametric"),
+            "ordered_group_shared_shrinkage": bool(
+                self.variant == "ordered_cumulative"
+                and self.meta_prior.ordered_exposure_group_shared_shrinkage
+            ),
+            "ordered_group_ridge_learning": bool(
+                self.variant == "ordered_cumulative"
+                and self.meta_prior.ordered_exposure_group_ridge_learning
+            ),
+            "ordered_residual_projection": (
+                None
+                if self._ordered_residual_projection is None
+                else {
+                    key: value
+                    for key, value in self._ordered_residual_projection.items()
+                    if key != "feature_projection"
+                }
+            ),
         }
 
 
@@ -4954,12 +6225,14 @@ class TaskExpertProblemView:
     """Expert-specific cumulative-risk view of an admissible LODO target."""
 
     ALIGNED_EXPERTS = {"risk_aligned_coordinate", "risk_aligned_spectral"}
+    ORDERED_EXPERTS = {"ordered_cumulative", "ordered_semiparametric"}
 
     def __init__(self, problem, expert_name):
         self.problem = problem
         self.meta_prior = problem.meta_prior
         self.expert_name = str(expert_name)
         self.problem_name = f"{problem.problem_name}_{self.expert_name}"
+        self._hvd_shape_reference_mean = {}
 
     def __getattr__(self, name):
         return getattr(self.problem, name)
@@ -4969,6 +6242,9 @@ class TaskExpertProblemView:
         return self.expert_name in self.ALIGNED_EXPERTS
 
     def risk_exposures(self, x, output_index=1):
+        if self.expert_name in self.ORDERED_EXPERTS:
+            return self.meta_prior.ordered_cumulative_risk_exposure(
+                self.problem, x, output_index=output_index)
         if self.aligned:
             return self.meta_prior.cumulative_risk_exposure(
                 self.problem, x, output_index=output_index)
@@ -4990,8 +6266,11 @@ class TaskExpertProblemView:
             "provider": "TaskExpertProblemView",
             "expert": self.expert_name,
             "coordinate": (
-                "frozen_source_boundary_alignment"
-                if self.aligned else "frozen_unaligned_source_coordinate"
+                "frozen_source_learned_ordered_cumulative"
+                if self.expert_name in self.ORDERED_EXPERTS
+                else "frozen_source_boundary_alignment"
+                if self.aligned
+                else "frozen_unaligned_source_coordinate"
             ),
             "source_domains": list(self.meta_prior.source_domains),
             "target_data_used": False,
@@ -5012,32 +6291,71 @@ class TaskExpertProblemView:
         ])
 
     def cumulative_hvd_prior_beta(self, output_index=1, feature_dim=None):
-        if not self.aligned:
+        if self.expert_name == "null_universal" or self.expert_name in self.ORDERED_EXPERTS:
             return None
-        return self.problem.cumulative_hvd_prior_beta(
+        coordinate_variant = "aligned" if self.aligned else "unaligned"
+        beta = self.meta_prior.cumulative_hvd_prior_beta(
             output_index=output_index,
             feature_dim=feature_dim,
+            coordinate_variant=coordinate_variant,
         )
+        if beta is None or self.meta_prior.component_stage != "spectral_hvd":
+            return beta
+        cache_key = (int(output_index), len(beta), coordinate_variant)
+        if cache_key not in self._hvd_shape_reference_mean:
+            lo, hi = self.int_bounds()
+            lo = np.asarray(lo, dtype=int)
+            hi = np.asarray(hi, dtype=int)
+            expert_seed = sum(
+                (index + 1) * ord(char)
+                for index, char in enumerate(self.expert_name)
+            )
+            rng = np.random.default_rng(
+                self.meta_prior.seed + 104729 + 7919 * int(output_index)
+                + expert_seed)
+            rows = [
+                tuple(int(value) for value in rng.integers(lo, hi + 1))
+                for _ in range(256)
+            ]
+            features = np.vstack([
+                self.cumulative_risk_features(
+                    x, output_index=output_index)
+                for x in rows
+            ])
+            reference = float(np.mean(np.maximum(
+                features @ beta, 1e-12)))
+            self._hvd_shape_reference_mean[cache_key] = max(reference, 1e-12)
+        return np.asarray(beta, dtype=float) / self._hvd_shape_reference_mean[
+            cache_key]
 
     def cumulative_hvd_prior_precision(self, output_index=1):
-        if not self.aligned:
+        if self.expert_name == "null_universal":
             return None
-        return self.problem.cumulative_hvd_prior_precision(output_index)
+        return self.meta_prior.cumulative_hvd_prior_precision(
+            output_index,
+            coordinate_variant=("aligned" if self.aligned else "unaligned"),
+        )
 
     def cumulative_hvd_prior_scale_mean(self, output_index=1):
-        if not self.aligned:
+        if self.expert_name == "null_universal":
             return None
-        return self.problem.cumulative_hvd_prior_scale_mean(output_index)
+        return self.meta_prior.cumulative_hvd_prior_scale_mean(
+            output_index,
+            coordinate_variant=("aligned" if self.aligned else "unaligned"),
+        )
 
     def cumulative_hvd_prior_upper_scale(self, output_index=1):
-        if not self.aligned:
+        if self.expert_name == "null_universal":
             return None
-        return self.problem.cumulative_hvd_prior_upper_scale(output_index)
+        return self.meta_prior.cumulative_hvd_prior_upper_scale(
+            output_index,
+            coordinate_variant=("aligned" if self.aligned else "unaligned"),
+        )
 
     def cumulative_hvd_prior_min_records(self):
-        if not self.aligned:
+        if self.expert_name == "null_universal":
             return None
-        return self.problem.cumulative_hvd_prior_min_records()
+        return self.meta_prior.cumulative_hvd_prior_min_records()
 
     def pilot_constraint_guard(self):
         if not self.aligned:
@@ -5158,6 +6476,29 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
     def cumulative_hvd_prior_min_records(self):
         return self.meta_prior.cumulative_hvd_prior_min_records()
 
+    def task_sensitivity_prior(self):
+        return self.meta_prior.task_sensitivity_prior()
+
+    def task_boundary_bracket_candidates(
+        self, n=5, rng=None, pool_size=None,
+    ):
+        return self.meta_prior.source_boundary_bracket_candidates(
+            self,
+            n=n,
+            rng=rng,
+            pool_size=(
+                self.proposal_pool_size if pool_size is None else pool_size
+            ),
+        )
+
+    def task_boundary_bracket_diagnostics(self):
+        return copy.deepcopy(
+            self.meta_prior.alignment_episode_diagnostics.get(
+                "last_boundary_bracket",
+                {"status": "not_run"},
+            )
+        )
+
     def source_calibrated_recommendation_slack(self):
         return self.meta_prior.source_calibrated_recommendation_slack()
 
@@ -5201,7 +6542,7 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             for index, basis in self._gpr_basis_maps.items()
         }
 
-    def task_posterior_expert_specs(self):
+    def task_posterior_expert_specs(self, include_local_kernel=False):
         """Return only source-identifiable finite experts for this target."""
         specs = [
             {
@@ -5224,27 +6565,54 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
                 "variance_mode": "factor",
                 "prior_weight": 0.25,
             })
+        ordered_active = (
+            self.meta_prior.ordered_exposure_diagnostics.get("status") == "fit")
+        latent_ordered = bool(
+            ordered_active
+            and self.meta_prior.ordered_exposure_latent_structure_selection)
         if self.meta_prior.risk_subspace_alignment is not None:
-            specs.extend([
-                {
+            if not latent_ordered:
+                specs.append({
                     "name": "risk_aligned_coordinate",
                     "basis": "risk_aligned_coordinate",
                     "variance_mode": "factor",
                     "prior_weight": 0.20,
-                },
-                {
-                    "name": "risk_aligned_spectral",
-                    "basis": "risk_aligned_spectral",
-                    "variance_mode": "factor",
-                    "prior_weight": 0.20,
-                },
-            ])
+                })
+            specs.append({
+                "name": "risk_aligned_spectral",
+                "basis": "risk_aligned_spectral",
+                "variance_mode": "factor",
+                "prior_weight": 0.20,
+            })
         if self.meta_prior.spectral_additive_bank is not None:
             specs.append({
                 "name": "orthogonal_additive",
                 "basis": "orthogonal_additive",
                 "variance_mode": "factor",
                 "prior_weight": 0.05,
+            })
+        if ordered_active:
+            ordered_name = (
+                "ordered_semiparametric"
+                if self.meta_prior.ordered_exposure_semiparametric_residual
+                else "ordered_cumulative"
+            )
+            specs.append({
+                "name": ordered_name,
+                "basis": ordered_name,
+                "variance_mode": "factor",
+                "prior_weight": 0.15,
+            })
+        if include_local_kernel and not (
+            ordered_active
+            and self.meta_prior.ordered_exposure_replace_local_kernel
+            and not latent_ordered
+        ):
+            specs.append({
+                "name": "local_risk_kernel",
+                "basis": "local_risk_kernel",
+                "variance_mode": "factor",
+                "prior_weight": 0.15,
             })
         total = float(sum(spec["prior_weight"] for spec in specs))
         for spec in specs:
@@ -5259,6 +6627,11 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             ),
             None,
         )
+        if spec is None and str(expert_name) == "local_risk_kernel":
+            spec = {
+                "name": "local_risk_kernel",
+                "basis": "local_risk_kernel",
+            }
         if spec is None:
             raise KeyError(f"unknown task expert {expert_name!r}")
         if spec["basis"] is None:
@@ -5328,6 +6701,20 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
                 n=n,
                 rng=rng,
                 force=True,
+            ))
+        elif name == "local_risk_kernel":
+            rows.extend(self.meta_prior.proposal_candidates(
+                self,
+                n=n,
+                rng=rng,
+                pool_size=max(int(pool_size), n),
+            ))
+        elif name in {"ordered_cumulative", "ordered_semiparametric"}:
+            rows.extend(self.meta_prior.proposal_candidates(
+                self,
+                n=n,
+                rng=rng,
+                pool_size=max(int(pool_size), n),
             ))
         else:
             raise KeyError(f"unknown task proposal expert {name!r}")
