@@ -14,7 +14,9 @@ from scheduler_node_policy import allowed_node_flags, parse_cpu_nodes
 
 
 DEFAULT_SCHEDULER = Path.home() / ".claude/skills/scheduler/scheduler.py"
-DEFAULT_DEPLOY = Path("/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
+# Scheduler staging starts from the local deploy mirror; node routing maps it
+# to the shared remote path after submission.
+DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
 PYTHON = "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python"
 BOTORCH_OVERLAY = "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310"
 
