@@ -293,6 +293,26 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
             "meta_ordered_exposure_group_ridge_learning", False)),
         coordinate_mode=args_dict["meta_coordinate_mode"],
         coordinate_relevance_floor=args_dict["meta_coordinate_relevance_floor"],
+        observable_mean_coordinate=bool(args_dict.get(
+            "meta_observable_mean_coordinate", False)),
+        observable_mean_ridges=args_dict.get(
+            "meta_observable_mean_ridges", "0.01,0.1,1.0,10.0,100.0"),
+        observable_mean_mode=str(args_dict.get(
+            "meta_observable_mean_mode", "latent")),
+        observable_mean_latent_dim=int(args_dict.get(
+            "meta_observable_mean_latent_dim", 2)),
+        observable_mean_training_target=str(args_dict.get(
+            "meta_observable_mean_training_target", "constraint_mean")),
+        source_observation_mode=str(args_dict.get(
+            "meta_source_observation_mode", "analytic")),
+        source_observation_replicates=int(args_dict.get(
+            "meta_source_observation_replicates", 1)),
+        source_design_mode=str(args_dict.get(
+            "meta_source_design_mode", "random")),
+        source_universal_fraction=float(args_dict.get(
+            "meta_source_universal_fraction", 0.75)),
+        source_consensus_template_count=int(args_dict.get(
+            "meta_source_consensus_template_count", 0)),
         seed=int(args_dict["meta_seed"]) + int(source_seed),
     )
     prior.fit_from_source_problems(
@@ -300,6 +320,33 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
         n_records_per_domain=args_dict["source_records_per_domain"],
         rng=np.random.default_rng(
             int(args_dict["meta_seed"]) + 1009 * int(source_seed)),
+        hierarchical_boundary_config=(
+            {
+                "descriptor_mode": args_dict["tcb_v2_descriptor_mode"],
+                "coordinate": args_dict["tcb_v2_coordinate"],
+                "geometry": args_dict["tcb_v2_geometry"],
+                "rank": args_dict["tcb_v2_rank"],
+                "ridge": args_dict["tcb_v2_ridge"],
+                "domain_penalty": args_dict["tcb_v2_domain_penalty"],
+                "boundary_temperature": args_dict[
+                    "tcb_v2_boundary_temperature"],
+                "adaptation_ridge": args_dict[
+                    "tcb_v2_adaptation_ridge"],
+                "upper_alpha": args_dict["tcb_v2_upper_alpha"],
+                "calibration_prior_df": args_dict[
+                    "tcb_v2_calibration_prior_df"],
+                "hierarchy_iterations": args_dict[
+                    "tcb_v2_hierarchy_iterations"],
+                "effect_ridge": args_dict["tcb_v2_effect_ridge"],
+                "rotation_mode": args_dict["tcb_v2_rotation_mode"],
+                "rotation_ridge": args_dict["tcb_v2_rotation_ridge"],
+                "target_residual_rank": args_dict[
+                    "tcb_v2_target_residual_rank"],
+                "residual_ridge": args_dict["tcb_v2_residual_ridge"],
+            }
+            if bool(args_dict.get("tcb_v2_enabled", False))
+            else None
+        ),
     )
     prior.training_diagnostics.update({
         "source_seed_mode": str(args_dict.get(
@@ -432,6 +479,8 @@ def run_one(task):
         exact_kg_parallel_backend=args_dict["exact_kg_parallel_backend"],
         exact_kg_sampling_mode=args_dict["exact_kg_sampling_mode"],
         exact_kg_clip_negative=bool(args_dict["exact_kg_clip_negative"]),
+        decision_contract_mode=args_dict.get(
+            "decision_contract_mode", "legacy"),
         exact_kg_use_score=args_dict["exact_kg_use_score"],
         exact_kg_blend=args_dict["exact_kg_blend"],
         exact_kg_terminal_mode=args_dict["exact_kg_terminal_mode"],
@@ -439,6 +488,18 @@ def run_one(task):
             "terminal_bayes_violation_penalty"],
         terminal_frontier_candidate_count=args_dict[
             "terminal_frontier_candidate_count"],
+        tcb_v2_mode=(
+            str(args_dict.get("tcb_v2_mode", "off"))
+            if (
+                line in ("lodo", "lodo_teacher")
+                and bool(args_dict.get("tcb_v2_enabled", False))
+            )
+            else "off"
+        ),
+        tcb_v2_frontier_count=int(args_dict.get(
+            "tcb_v2_frontier_count", 1)),
+        finalist_terminal_value_mode=str(args_dict.get(
+            "finalist_terminal_value_mode", "model_default")),
         task_posterior_mode=(
             args_dict["task_posterior_mode"]
             if line in ("lodo", "lodo_teacher")
@@ -495,6 +556,10 @@ def run_one(task):
             "task_posterior_proposal_min_per_expert"],
         task_posterior_sensitivity_mode=args_dict[
             "task_posterior_sensitivity_mode"],
+        task_latent_inference_mode=args_dict.get(
+            "task_latent_inference_mode", "shadow"),
+        task_latent_calibration_mode=args_dict.get(
+            "task_latent_calibration_mode", "source_profiles"),
         constraint_uncertain_candidate_count=args_dict[
             "constraint_uncertain_candidate_count"],
         constraint_uncertain_pool_size=args_dict["constraint_uncertain_pool_size"],
@@ -522,6 +587,8 @@ def run_one(task):
             "finalist_replication_budget"],
         finalist_replication_count=args_dict[
             "finalist_replication_count"],
+        finalist_observed_safety_count=int(args_dict.get(
+            "finalist_observed_safety_count", 1)),
         finalist_replication_min_replicates=args_dict[
             "finalist_replication_min_replicates"],
         finalist_replication_delta=args_dict[
@@ -534,6 +601,16 @@ def run_one(task):
             "finalist_replication_adaptive_race"]),
         finalist_replication_fixed_universe=bool(args_dict[
             "finalist_replication_fixed_universe"]),
+        finalist_replication_policy=args_dict.get(
+            "finalist_replication_policy", "legacy"),
+        finalist_empirical_override=args_dict.get(
+            "finalist_empirical_override", "legacy"),
+        finalist_frontier_policy=args_dict.get(
+            "finalist_frontier_policy", "legacy"),
+        finalist_terminal_max_arms=args_dict.get(
+            "finalist_terminal_max_arms", 4),
+        finalist_terminal_mc_samples=args_dict.get(
+            "finalist_terminal_mc_samples", 2),
         observed_incumbent_use_replicate_variance=bool(args_dict[
             "observed_incumbent_use_replicate_variance"]),
         safe_interior_candidate_count=args_dict["safe_interior_candidate_count"],
@@ -630,8 +707,30 @@ def run_one(task):
         "state_basis_mode": args_dict["state_basis_mode"],
         "constraint_state_basis_mode": args_dict["constraint_state_basis_mode"],
         "meta_component_stage": args_dict["meta_component_stage"],
+        "meta_observable_mean_coordinate": bool(args_dict.get(
+            "meta_observable_mean_coordinate", False)),
+        "meta_observable_mean_mode": str(args_dict.get(
+            "meta_observable_mean_mode", "latent")),
+        "meta_observable_mean_latent_dim": int(args_dict.get(
+            "meta_observable_mean_latent_dim", 2)),
+        "meta_observable_mean_training_target": str(args_dict.get(
+            "meta_observable_mean_training_target", "constraint_mean")),
+        "meta_source_observation_mode": str(args_dict.get(
+            "meta_source_observation_mode", "analytic")),
+        "meta_source_observation_replicates": int(args_dict.get(
+            "meta_source_observation_replicates", 1)),
+        "meta_source_design_mode": str(args_dict.get(
+            "meta_source_design_mode", "random")),
+        "meta_source_universal_fraction": float(args_dict.get(
+            "meta_source_universal_fraction", 0.75)),
+        "meta_source_consensus_template_count": int(args_dict.get(
+            "meta_source_consensus_template_count", 0)),
         "task_posterior_sensitivity_mode": args_dict[
             "task_posterior_sensitivity_mode"],
+        "task_latent_inference_mode": args_dict.get(
+            "task_latent_inference_mode", "shadow"),
+        "task_latent_calibration_mode": args_dict.get(
+            "task_latent_calibration_mode", "source_profiles"),
         "task_posterior_safe_generalized": bool(args_dict[
             "task_posterior_safe_generalized"]),
         "task_posterior_boundary_bracket_fraction": float(args_dict[
@@ -646,6 +745,8 @@ def run_one(task):
             "task_posterior_local_kernel_expert"]),
         "exact_kg_terminal_mode": str(args_dict[
             "exact_kg_terminal_mode"]),
+        "decision_contract_mode": str(args_dict.get(
+            "decision_contract_mode", "legacy")),
         "exact_kg_sampling_mode": str(args_dict[
             "exact_kg_sampling_mode"]),
         "exact_kg_clip_negative": bool(args_dict[
@@ -655,6 +756,14 @@ def run_one(task):
             "terminal_bayes_violation_penalty"]),
         "terminal_frontier_candidate_count": int(args_dict[
             "terminal_frontier_candidate_count"]),
+        "tcb_v2_enabled": bool(args_dict.get("tcb_v2_enabled", False)),
+        "tcb_v2_mode": str(args_dict.get("tcb_v2_mode", "off")),
+        "tcb_v2_frontier_count": int(args_dict.get(
+            "tcb_v2_frontier_count", 1)),
+        "tcb_v2_descriptor_mode": str(args_dict.get(
+            "tcb_v2_descriptor_mode", "learned_risk")),
+        "finalist_terminal_value_mode": str(args_dict.get(
+            "finalist_terminal_value_mode", "model_default")),
         "terminal_pool_shared": bool(result.get(
             "terminal_pool_shared", False)),
         "terminal_pool_size": result.get("terminal_pool_size"),
@@ -668,6 +777,8 @@ def run_one(task):
             "finalist_replication_budget"]),
         "finalist_replication_count": int(args_dict[
             "finalist_replication_count"]),
+        "finalist_observed_safety_count": int(args_dict.get(
+            "finalist_observed_safety_count", 1)),
         "finalist_replication_min_replicates": int(args_dict[
             "finalist_replication_min_replicates"]),
         "finalist_replication_delta": float(args_dict[
@@ -678,6 +789,16 @@ def run_one(task):
             "finalist_replication_adaptive_race"]),
         "finalist_replication_fixed_universe": bool(args_dict[
             "finalist_replication_fixed_universe"]),
+        "finalist_replication_policy": str(args_dict.get(
+            "finalist_replication_policy", "legacy")),
+        "finalist_empirical_override": str(args_dict.get(
+            "finalist_empirical_override", "legacy")),
+        "finalist_frontier_policy": str(args_dict.get(
+            "finalist_frontier_policy", "legacy")),
+        "finalist_terminal_max_arms": int(args_dict.get(
+            "finalist_terminal_max_arms", 4)),
+        "finalist_terminal_mc_samples": int(args_dict.get(
+            "finalist_terminal_mc_samples", 2)),
         "finalist_replication": result.get("finalist_replication"),
         "replicated_finalist_used": result.get(
             "replicated_finalist_used"),
@@ -701,7 +822,10 @@ def run_one(task):
         "audit": audit,
         "meta_prior": meta_diag,
         "meta_basis": result.get("meta_basis"),
+        "mean_risk_coordinate_contract": result.get(
+            "mean_risk_coordinate_contract"),
         "task_posterior": result.get("task_posterior"),
+        "task_meta_coherence": result.get("task_meta_coherence"),
         "task_initial_design": initial_design,
         "initial_boundary_bracket_generated": initial_design.get(
             "boundary_bracket_generated"),
@@ -1545,9 +1669,35 @@ def main():
     parser.add_argument(
         "--exact_kg_terminal_mode", default="hard_certified")
     parser.add_argument(
+        "--decision_contract_mode",
+        choices=("legacy", "certified_lexicographic"),
+        default="legacy",
+    )
+    parser.add_argument(
         "--terminal_bayes_violation_penalty", type=float, default=5.0)
     parser.add_argument(
         "--terminal_frontier_candidate_count", type=int, default=0)
+    parser.add_argument(
+        "--tcb_v2_mode",
+        choices=("off", "shadow", "frontier", "certified"),
+        default="off",
+    )
+    parser.add_argument("--tcb_v2_frontier_count", type=int, default=1)
+    parser.add_argument(
+        "--tcb_v2_descriptor_mode",
+        choices=(
+            "raw", "learned_coordinate", "raw+learned_coordinate",
+            "learned_risk", "raw+learned_risk",
+            "provider_coordinate", "raw+provider_coordinate",
+            "provider_risk", "raw+provider_risk",
+        ),
+        default="learned_risk",
+    )
+    parser.add_argument(
+        "--finalist_terminal_value_mode",
+        choices=("model_default", "certified_lexicographic"),
+        default="model_default",
+    )
     parser.add_argument("--task_posterior_mode", default="off")
     parser.add_argument(
         "--task_posterior_initial_design",
@@ -1629,6 +1779,44 @@ def main():
         "--task_posterior_proposal_min_per_expert", type=int, default=2)
     parser.add_argument(
         "--task_posterior_sensitivity_mode", default="off")
+    parser.add_argument(
+        "--task_latent_inference_mode",
+        choices=("shadow", "authoritative"),
+        default="shadow",
+    )
+    parser.add_argument(
+        "--task_latent_calibration_mode",
+        choices=("source_profiles", "expert_ridge"),
+        default="source_profiles",
+    )
+    parser.add_argument(
+        "--tcb_v2_enabled",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument("--tcb_v2_coordinate", default="boundary_latent")
+    parser.add_argument("--tcb_v2_geometry", default="low_rank_psd")
+    parser.add_argument("--tcb_v2_rank", type=int, default=2)
+    parser.add_argument("--tcb_v2_ridge", type=float, default=1e-3)
+    parser.add_argument(
+        "--tcb_v2_domain_penalty", type=float, default=0.5)
+    parser.add_argument(
+        "--tcb_v2_boundary_temperature", type=float, default=1.0)
+    parser.add_argument(
+        "--tcb_v2_adaptation_ridge", type=float, default=5.0)
+    parser.add_argument(
+        "--tcb_v2_upper_alpha", type=float, default=0.01)
+    parser.add_argument(
+        "--tcb_v2_calibration_prior_df", type=float, default=2.0)
+    parser.add_argument(
+        "--tcb_v2_hierarchy_iterations", type=int, default=5)
+    parser.add_argument(
+        "--tcb_v2_effect_ridge", type=float, default=1.0)
+    parser.add_argument(
+        "--tcb_v2_rotation_mode", choices=("none", "planar"), default="none")
+    parser.add_argument("--tcb_v2_rotation_ridge", type=float, default=5.0)
+    parser.add_argument("--tcb_v2_target_residual_rank", type=int, default=0)
+    parser.add_argument("--tcb_v2_residual_ridge", type=float, default=5.0)
     parser.add_argument("--constraint_uncertain_candidate_count", type=int, default=0)
     parser.add_argument("--constraint_uncertain_pool_size", type=int, default=300)
     parser.add_argument("--constraint_uncertain_state_pool_fraction", type=float, default=0.25)
@@ -1646,6 +1834,8 @@ def main():
         "--certification_recheck_variance_prior_df", type=float, default=2.0)
     parser.add_argument("--finalist_replication_budget", type=int, default=0)
     parser.add_argument("--finalist_replication_count", type=int, default=2)
+    parser.add_argument(
+        "--finalist_observed_safety_count", type=int, default=1)
     parser.add_argument(
         "--finalist_replication_min_replicates", type=int, default=2)
     parser.add_argument(
@@ -1666,6 +1856,28 @@ def main():
         "--finalist_replication_fixed_universe",
         action=argparse.BooleanOptionalAction,
         default=False,
+    )
+    parser.add_argument(
+        "--finalist_replication_policy",
+        choices=(
+            "legacy",
+            "commit_before_switch",
+            "terminal_kg_1step",
+            "terminal_kg_depth3",
+        ),
+        default="legacy",
+    )
+    parser.add_argument(
+        "--finalist_empirical_override",
+        choices=("legacy", "certified_only", "off"),
+        default="legacy",
+    )
+    parser.add_argument("--finalist_terminal_max_arms", type=int, default=4)
+    parser.add_argument("--finalist_terminal_mc_samples", type=int, default=2)
+    parser.add_argument(
+        "--finalist_frontier_policy",
+        choices=("legacy", "coverage_reserved", "observed_safety_reserved"),
+        default="legacy",
     )
     parser.add_argument(
         "--observed_incumbent_use_replicate_variance",
@@ -1811,6 +2023,57 @@ def main():
     parser.add_argument("--meta_hvd_noise_floor_scale", type=float, default=0.0)
     parser.add_argument("--meta_teacher_hvd_noise_floor_scale", type=float, default=1.0)
     parser.add_argument("--meta_universal_shape_count", type=int, default=64)
+    parser.add_argument(
+        "--meta_observable_mean_coordinate",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Use a source-learned observable eta coordinate for the constraint "
+            "mean while retaining psi=(A,N) only for cumulative risk."
+        ),
+    )
+    parser.add_argument(
+        "--meta_observable_mean_ridges",
+        default="0.01,0.1,1.0,10.0,100.0")
+    parser.add_argument(
+        "--meta_observable_mean_mode",
+        choices=["atoms", "aggregate", "latent", "consensus"],
+        default="latent",
+    )
+    parser.add_argument(
+        "--meta_observable_mean_latent_dim", type=int, default=2)
+    parser.add_argument(
+        "--meta_observable_mean_training_target",
+        choices=["constraint_mean", "chance_margin"],
+        default="constraint_mean",
+    )
+    parser.add_argument(
+        "--meta_source_observation_mode",
+        choices=["analytic", "nominal", "replicated"],
+        default="analytic",
+        help=(
+            "Source-data contract. 'analytic' reproduces privileged V32; "
+            "'replicated' learns from ordinary simulator calls only."
+        ),
+    )
+    parser.add_argument(
+        "--meta_source_observation_replicates", type=int, default=1)
+    parser.add_argument(
+        "--meta_source_design_mode",
+        choices=["random", "universal_mixture"],
+        default="random",
+    )
+    parser.add_argument(
+        "--meta_source_universal_fraction", type=float, default=0.75)
+    parser.add_argument(
+        "--meta_source_consensus_template_count",
+        type=int,
+        default=0,
+        help=(
+            "Number of shared universal profiles ranked by ordinary source "
+            "chance-margin observations and replayed on the held-out target."
+        ),
+    )
     parser.add_argument(
         "--meta_component_stage",
         choices=["legacy_all", "coordinate", "spectral", "spectral_hvd"],

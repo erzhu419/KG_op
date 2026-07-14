@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "source_screen_run_id": "tcb_calibration_v2_20260712",
+  "stage": "canonical_boundary_residual",
+  "selection_uses_online_sentinel_domains": false,
+  "selection_rule": "The V2 upper posterior removed false-safe errors but certified no safe point in any source LODO fold. Add one source-defined canonical residual coordinate while retaining only three target-learned output parameters. Re-evaluate every shift_scale coordinate/geometry/rank cell plus the fixed frozen baseline because this change can alter target mean rank and RMSE.",
+  "baseline_variant_id": "learned_psi__linear_monotone__frozen__r2",
+  "task_indices": "2,3,8,9,14,15,20,21,24,26,27,32,33,38,39,44,45,50,51,56,57,62,63,68,69,74,75,80,81,86,87,92,93",
+  "count": 33,
+  "target_posterior": {
+    "learned_coefficients": [
+      "intercept",
+      "source_boundary_score_scale",
+      "first_canonical_residual_coefficient"
+    ],
+    "effective_dimension": 3,
+    "effective_dimension_cap": 3.5,
+    "target_residual_rank": 1,
+    "upper_alpha": 0.01,
+    "calibration_prior_df": 1.0,
+    "manual_guard_sweep": false
+  },
+  "promotion_gate_manifest": "tcb_v2_calibration_stage.json"
+}

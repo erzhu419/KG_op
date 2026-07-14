@@ -459,6 +459,266 @@ class CheckpointingTests(unittest.TestCase):
             algorithm._finalist_replication_pool,
         )
 
+    def test_certified_only_finalist_never_uses_uncertified_subset(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        unsafe = (0, 0, 0)
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                finalist_replication_budget=2,
+                finalist_replication_min_replicates=2,
+                finalist_replication_delta=0.5,
+                finalist_replication_variance_prior_df=0.0,
+                finalist_empirical_override="certified_only",
+                seed=219,
+            ),
+        )
+        algorithm._finalist_replication_initialized = True
+        algorithm._finalist_replication_targets = [unsafe]
+        algorithm._finalist_replication_labels = ["minimum_bayes_risk"]
+        algorithm.observations[unsafe] = [
+            np.asarray([0.1, 1.0]),
+            np.asarray([0.1, 1.0]),
+        ]
+        selected, details = (
+            algorithm._replicated_finalist_recommendation_index([unsafe]))
+        self.assertIsNone(selected)
+        self.assertFalse(details["replicated_finalist_used"])
+        self.assertEqual(
+            details["replicated_finalist_reason"],
+            "no_empirically_certified_finalist",
+        )
+        self.assertEqual(
+            details["replicated_finalist_override_policy"],
+            "certified_only",
+        )
+
+    def test_posterior_only_disables_empirical_finalist_override(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(finalist_empirical_override="off", seed=220),
+        )
+        selected, details = (
+            algorithm._replicated_finalist_recommendation_index(
+                [(0, 0, 0)]))
+        self.assertIsNone(selected)
+        self.assertEqual(
+            details["replicated_finalist_reason"],
+            "empirical_override_disabled",
+        )
+
+    def test_commit_before_switch_waits_for_active_arm(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        active = (1, 2, 3)
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=10,
+                n0=4,
+                finalist_replication_budget=3,
+                finalist_replication_min_replicates=2,
+                finalist_replication_adaptive_race=True,
+                finalist_replication_policy="commit_before_switch",
+                seed=221,
+            ),
+        )
+        algorithm._finalist_replication_initialized = True
+        algorithm._finalist_replication_active_target = active
+        algorithm._finalist_replication_active_label = "active"
+        algorithm._finalist_replication_targets = [active]
+        algorithm._finalist_replication_labels = ["active"]
+        algorithm.observations[active] = [np.asarray([0.0, -0.1])]
+        calls = []
+        algorithm._refresh_finalist_replication_targets = (
+            lambda stage, pool: calls.append((stage, pool)) or {
+                "status": "refreshed",
+                "target_oracle_used": False,
+            }
+        )
+        info = algorithm._initialize_finalist_replication_targets(
+            7, [active])
+        self.assertEqual(info["status"], "active_target_commit_incomplete")
+        self.assertEqual(calls, [])
+        algorithm.observations[active].append(np.asarray([0.0, -0.1]))
+        info = algorithm._initialize_finalist_replication_targets(
+            8, [active])
+        self.assertEqual(info["status"], "refreshed")
+        self.assertEqual(len(calls), 1)
+
+    def test_observed_safety_frontier_completes_charged_challenger(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        safe = (1, 2, 3)
+        bayes = (4, 5, 6)
+        other = (7, 8, 9)
+        pool = [safe, bayes, other]
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=10,
+                n0=4,
+                finalist_replication_budget=3,
+                finalist_replication_count=2,
+                finalist_replication_min_replicates=2,
+                finalist_replication_adaptive_race=True,
+                finalist_replication_fixed_universe=True,
+                finalist_replication_policy="commit_before_switch",
+                finalist_frontier_policy="observed_safety_reserved",
+                seed=222,
+            ),
+        )
+        algorithm.observations[safe] = [np.asarray([0.4, -1.0])]
+        algorithm.observations[bayes] = [np.asarray([0.1, 0.2])]
+        algorithm.observations[other] = [np.asarray([0.2, 0.1])]
+        algorithm._terminal_bayes_risk_components = lambda *args, **kwargs: {
+            "risk": np.asarray([2.0, 0.0, 1.0]),
+            "nominal_expected_violation": np.asarray([0.2, 0.1, 0.3]),
+            "expected_violation": np.asarray([0.3, 0.2, 0.4]),
+            "model_disagreement": np.asarray([0.1, 0.2, 0.3]),
+        }
+        algorithm.variance_model.predict_certification_variance = (
+            lambda *args, **kwargs: 1e-4)
+
+        selected, info = algorithm._finalist_replication_candidate(7, pool)
+        self.assertEqual(selected, safe)
+        self.assertEqual(
+            algorithm._finalist_replication_targets, [bayes, safe])
+        self.assertEqual(
+            algorithm._finalist_replication_active_label,
+            "observed_safety_rank_1",
+        )
+        self.assertEqual(info["status"], "forced_adaptive_finalist_replication")
+        algorithm.observations[safe].append(np.asarray([0.4, -1.0]))
+        selected, _ = algorithm._finalist_replication_candidate(8, pool)
+        self.assertEqual(selected, bayes)
+
+        index, details = algorithm._replicated_finalist_recommendation_index(pool)
+        self.assertEqual(index, 0)
+        self.assertTrue(details["replicated_finalist_used"])
+        self.assertFalse(details["replicated_finalist_target_oracle_used"])
+
+    def test_top_two_observed_safety_arms_commit_before_expert_refresh(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        bayes_and_safest = (1, 2, 3)
+        second_safest = (4, 5, 6)
+        other = (7, 8, 9)
+        pool = [bayes_and_safest, second_safest, other]
+        problem.frozen_source_coverage_candidates = lambda n=0: list(pool)
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=10,
+                n0=4,
+                task_posterior_mandatory_universal_count=3,
+                finalist_replication_budget=3,
+                finalist_replication_count=2,
+                finalist_observed_safety_count=2,
+                finalist_replication_min_replicates=2,
+                finalist_replication_adaptive_race=True,
+                finalist_replication_fixed_universe=True,
+                finalist_replication_policy="commit_before_switch",
+                finalist_frontier_policy="observed_safety_reserved",
+                seed=224,
+            ),
+        )
+        algorithm.observations[bayes_and_safest] = [
+            np.asarray([0.2, -1.0])]
+        algorithm.observations[second_safest] = [
+            np.asarray([0.3, -0.5])]
+        algorithm.observations[other] = [np.asarray([0.1, 0.2])]
+        algorithm._terminal_bayes_risk_components = lambda *args, **kwargs: {
+            "risk": np.asarray([0.0, 1.0, 2.0]),
+            "nominal_expected_violation": np.asarray([0.1, 0.2, 0.3]),
+            "expected_violation": np.asarray([0.2, 0.3, 0.4]),
+            "model_disagreement": np.asarray([0.1, 0.2, 0.3]),
+        }
+        refresh_calls = []
+
+        def refresh(stage, candidates):
+            refresh_calls.append((stage, candidates))
+            return {"status": "refreshed", "target_oracle_used": False}
+
+        algorithm._refresh_finalist_replication_targets = refresh
+
+        selected, _ = algorithm._finalist_replication_candidate(7, pool)
+        self.assertEqual(selected, bayes_and_safest)
+        self.assertEqual(
+            algorithm._finalist_replication_labels[0],
+            "minimum_bayes_risk+observed_safety_rank_1",
+        )
+        self.assertEqual(refresh_calls, [])
+        algorithm.observations[bayes_and_safest].append(
+            np.asarray([0.2, -1.0]))
+
+        selected, info = algorithm._finalist_replication_candidate(8, pool)
+        self.assertEqual(selected, second_safest)
+        self.assertEqual(info["status"], "forced_adaptive_finalist_replication")
+        self.assertEqual(info["label"], "observed_safety_rank_2")
+        self.assertEqual(refresh_calls, [])
+        algorithm.observations[second_safest].append(
+            np.asarray([0.3, -0.5]))
+
+        algorithm._finalist_replication_candidate(9, pool)
+        self.assertEqual(len(refresh_calls), 1)
+
+    def test_observed_safety_prefers_frozen_source_coverage_scope(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        protected = (1, 2, 3)
+        noisy_random = (4, 5, 6)
+        problem.frozen_source_coverage_candidates = (
+            lambda n=0: [protected] if n > 0 else [])
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=10,
+                n0=4,
+                task_posterior_mandatory_universal_count=2,
+                seed=223,
+            ),
+        )
+        algorithm.observations[protected] = [np.asarray([0.4, -0.2])]
+        algorithm.observations[noisy_random] = [np.asarray([0.2, -1.0])]
+        challenger = algorithm._observed_safety_challenger()
+        self.assertEqual(challenger["x"], protected)
+        self.assertEqual(
+            challenger["selection_scope"], "frozen_source_coverage")
+        self.assertEqual(challenger["protected_candidate_count"], 1)
+
+    def test_terminal_depth3_policy_uses_remaining_horizon(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        arms = [(1, 2, 3), (4, 5, 6)]
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=10,
+                n0=4,
+                finalist_replication_budget=3,
+                finalist_replication_policy="terminal_kg_depth3",
+                finalist_terminal_max_arms=2,
+                seed=222,
+            ),
+        )
+        algorithm._finalist_replication_initialized = True
+        algorithm._finalist_replication_targets = list(arms)
+        algorithm._finalist_replication_labels = ["a", "b"]
+        calls = []
+
+        def fake_terminal(choices, pool, *, depth, stage):
+            calls.append((list(choices), list(pool), depth, stage))
+            return choices[1], {
+                "terminal_kg_selected_gain": 0.5,
+                "terminal_kg_depth": depth,
+            }
+
+        algorithm._terminal_replication_kg_candidate = fake_terminal
+        selected, info = algorithm._finalist_replication_candidate(7, arms)
+        self.assertEqual(selected, arms[1])
+        self.assertEqual(info["terminal_kg_depth"], 3)
+        selected, info = algorithm._finalist_replication_candidate(9, arms)
+        self.assertEqual(selected, arms[1])
+        self.assertEqual(info["terminal_kg_depth"], 1)
+        self.assertEqual([call[2] for call in calls], [3, 1])
+
     def test_observed_incumbent_uses_shrunk_replicate_variance(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
         algorithm = SingleOLHKGAlgorithm(

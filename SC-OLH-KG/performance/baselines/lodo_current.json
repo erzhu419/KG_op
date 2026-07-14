@@ -1,15 +1,32 @@
 {
-  "schema_version": 1,
-  "created_at": "2026-07-12T05:31:24+08:00",
-  "baseline_policy": "Promote only after the unchanged 7+7 LODO gate passes: FactorShock must be 7/7 truly feasible with zero mean violation; Inventory must be at least 4/7 truly feasible with at most one false certificate; every nested group-ridge selection must be valid.",
+  "schema_version": 2,
+  "created_at": "2026-07-15T06:21:30+08:00",
+  "information_contract": {
+    "source_oracle_aided": false,
+    "uses_source_true_outputs": false,
+    "uses_source_true_sigma": false,
+    "uses_source_problem_hooks": false,
+    "target_oracle_used_for_selection": false,
+    "oracle_free_mainline_eligible": true,
+    "comparison_role": "oracle_free_pretrained_transfer_mainline",
+    "source_observation_mode": "replicated",
+    "source_simulator_calls_per_target_run": 384,
+    "target_simulator_calls_per_run": 20,
+    "notes": "The frozen prior uses two source domains, 64 shared universal profiles per source, and three noisy replications. Source and target calls must be reported separately; from-scratch SOTA comparisons require matched source archives or total-call accounting."
+  },
+  "baseline_policy": "Feasibility-first oracle-free promotion over the unchanged seven seeds in all three domains. Every row must be admissible and free of source/target oracle selection; FactorShock and Inventory require 7/7 true feasibility, Queue requires at least 5/7, false-feasible count must be zero, and all nested group-ridge selections and finalist replication contracts must be valid.",
   "promoted_candidate": {
-    "name": "v32_fixed_universe_adaptive_expert_race",
-    "run_id": "lodo_v32_fixed_universe_n20_gate1_20260712",
+    "name": "oracle_free_source_consensus_top2_committed_lodo",
+    "run_ids": [
+      "lodo_source_rankspan_top2_commit_rep3_smoke_20260715",
+      "lodo_source_rankspan_top2_commit_rep3_holdout4_20260715"
+    ],
     "source_manifest": "SC-OLH-KG/performance/manifests/v18b_exactkg_mcdiag.json",
-    "line": "lodo_teacher",
+    "line": "lodo",
     "heldouts": [
       "FactorShockStatePolicyRZDT1",
-      "InventorySupplyChain"
+      "InventorySupplyChain",
+      "QueueResourceControl"
     ],
     "seeds": [0, 1, 2, 3, 4, 5, 6],
     "config": {
@@ -19,24 +36,42 @@
       "exact_kg_jobs": 32,
       "exact_kg_parallel_backend": "process_fork",
       "exact_kg_sampling_mode": "iid",
+      "exact_kg_terminal_mode": "hard_certified",
+      "exact_kg_clip_negative": true,
       "ordered_cumulative_exposure": true,
       "ordered_max_frequency": 8,
       "ordered_active_dim": 2,
       "ordered_frequency_penalty": 0.1,
       "ordered_basis_mode": "diagonal_quadratic",
       "ordered_adaptive_sparsity": true,
-      "ordered_replace_local_kernel": false,
+      "ordered_replace_local_kernel": true,
+      "ordered_semiparametric_residual": false,
       "ordered_latent_structure_selection": true,
       "ordered_group_shared_shrinkage": false,
       "ordered_group_ridge_learning": true,
       "task_posterior_safe_generalized": true,
+      "task_posterior_mandatory_universal_count": 10,
+      "task_latent_inference_mode": "shadow",
+      "task_latent_calibration_mode": "source_profiles",
+      "observable_mean_coordinate": false,
+      "source_observation_mode": "replicated",
+      "source_observation_replicates": 3,
+      "source_design_mode": "universal_mixture",
+      "source_universal_fraction": 1.0,
+      "source_consensus_template_count": 12,
       "finalist_replication_budget": 3,
-      "finalist_replication_count": 2,
+      "finalist_replication_count": 3,
+      "finalist_observed_safety_count": 2,
       "finalist_replication_min_replicates": 2,
       "finalist_replication_delta": 0.05,
+      "finalist_replication_variance_prior_df": 2.0,
       "finalist_replication_expert_stratified": true,
       "finalist_replication_adaptive_race": true,
-      "finalist_replication_fixed_universe": true
+      "finalist_replication_fixed_universe": true,
+      "finalist_replication_policy": "commit_before_switch",
+      "finalist_frontier_policy": "observed_safety_reserved",
+      "finalist_empirical_override": "legacy",
+      "decision_contract_mode": "legacy"
     },
     "metrics": {
       "FactorShockStatePolicyRZDT1": {
@@ -45,48 +80,57 @@
         "median_feasible_regret": 0.00824999999999998,
         "mean_constraint_violation": 0.0,
         "median_true_chance_margin": -0.033201874624488065,
-        "median_wall_time_sec": 941.9093625545502
+        "median_wall_time_sec": 1097.49281167984
       },
       "InventorySupplyChain": {
-        "true_feasible_count": 5,
+        "true_feasible_count": 7,
         "false_feasible_count": 0,
-        "median_feasible_regret": 0.005687624000000002,
-        "mean_constraint_violation": 0.0015819720316545306,
-        "median_true_chance_margin": -0.02690566743014431,
-        "median_wall_time_sec": 874.2967555522919
+        "median_feasible_regret": 0.011772098911332185,
+        "mean_constraint_violation": 0.0,
+        "median_true_chance_margin": -0.0174774836537653,
+        "median_wall_time_sec": 911.8288767337799
+      },
+      "QueueResourceControl": {
+        "true_feasible_count": 6,
+        "false_feasible_count": 0,
+        "median_feasible_regret": 0.002521117631920422,
+        "mean_constraint_violation": 0.0027185071523914517,
+        "median_true_chance_margin": -0.02587712299019263,
+        "median_wall_time_sec": 857.9780859947205
       }
     }
   },
   "acceptance_gates": {
-    "complete_7_plus_7": true,
+    "complete_7_by_3": true,
+    "all_21_oracle_free": true,
+    "all_21_admissible_mainline": true,
     "factor_true_feasible_7_of_7": true,
-    "factor_zero_mean_violation": true,
-    "inventory_true_feasible_at_least_4_of_7": true,
-    "inventory_false_feasible_at_most_1_of_7": true,
+    "inventory_true_feasible_7_of_7": true,
+    "queue_true_feasible_at_least_5_of_7": true,
+    "all_false_feasible_counts_zero": true,
     "all_group_ridge_selections_valid": true,
+    "all_finalist_min_replication_contracts_valid": true,
     "all_pass": true
   },
   "challenged_baseline": {
-    "name": "v30_frozen_expert_stratified_finalists",
-    "run_id": "lodo_v30_expert_stratified_n20_gate1_20260712",
-    "FactorShockStatePolicyRZDT1": {
-      "true_feasible_count": 7,
-      "median_feasible_regret": 0.00824999999999998,
-      "median_wall_time_sec": 985.7883927822113
+    "name": "v32_fixed_universe_adaptive_expert_race",
+    "run_id": "lodo_v32_fixed_universe_n20_gate1_20260712",
+    "comparison_role": "privileged_source_oracle_upper_bound",
+    "source_oracle_aided": true,
+    "target_oracle_used_for_selection": false,
+    "true_feasible_counts": {
+      "FactorShockStatePolicyRZDT1": 7,
+      "InventorySupplyChain": 5,
+      "QueueResourceControl": 3
     },
-    "InventorySupplyChain": {
-      "true_feasible_count": 3,
-      "false_feasible_count": 0,
-      "median_feasible_regret": 0.005687624000000002,
-      "mean_constraint_violation": 0.05305598089477762,
-      "median_wall_time_sec": 877.2805407047272
-    }
+    "notes": "V32 used analytic source truth, source true sigma, and source problem hooks. The new baseline matches its FactorShock count and improves Inventory by two and Queue by three feasible recommendations without source-oracle aid."
   },
   "verification": {
-    "python": "204 passed, 3 subtests passed",
-    "lean": "lake build completed successfully (8618 jobs)",
+    "python": "290 passed, 19 subtests passed",
+    "lean": "lake build completed successfully (8627 jobs)",
     "lean_placeholders": 0,
-    "target_oracle_used_for_selection": false,
+    "source_oracle_aided_rows": 0,
+    "target_oracle_used_for_selection_rows": 0,
     "runtime_checkpoints_synced_locally": false
   }
 }

@@ -14,6 +14,7 @@ from representation.meta_prior import (  # noqa: E402
     AdmissibleProblemAdapter,
     LearnedMetaPrior,
     MetaPriorProblemAdapter,
+    ObservableConstraintMeanBasis,
     PilotGatedMetaPriorBasis,
 )
 from representation.transferable_spectral import (  # noqa: E402
@@ -22,9 +23,51 @@ from representation.transferable_spectral import (  # noqa: E402
 )
 from performance.benchmark_lodo_meta_prior import meta_source_seed  # noqa: E402
 from variance.orthogonal_hvd import OrthogonalHVD  # noqa: E402
+from core.cumulative_risk import (  # noqa: E402
+    RiskExposure,
+    canonical_risk_descriptor,
+)
 
 
 class MetaPriorTests(unittest.TestCase):
+    def test_canonical_risk_descriptor_is_permutation_invariant(self):
+        first = canonical_risk_descriptor(RiskExposure(
+            [0.2, 0.8, 0.4], [0.1, 0.7]))
+        second = canonical_risk_descriptor(RiskExposure(
+            [0.4, 0.2, 0.8], [0.7, 0.1]))
+        self.assertEqual(first.shape, (42,))
+        np.testing.assert_allclose(first, second, rtol=0.0, atol=1e-12)
+
+    def test_hierarchical_boundary_descriptor_modes_are_auditable(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1")),
+            ("InventorySupplyChain", self._problem("InventorySupplyChain")),
+        ]
+        prior = LearnedMetaPrior(seed=229).fit_from_source_problems(
+            sources,
+            n_records_per_domain=8,
+            rng=np.random.default_rng(229),
+            hierarchical_boundary_config={
+                "descriptor_mode": "provider_risk",
+                "coordinate": "boundary_latent",
+                "geometry": "linear_monotone",
+                "rank": 2,
+            },
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl"), prior)
+        x = target.sample_random(np.random.default_rng(230))
+        descriptor = target.hierarchical_boundary_descriptor(x)
+        self.assertEqual(descriptor.shape, (42,))
+        self.assertEqual(
+            prior.hierarchical_boundary_diagnostics["descriptor_mode"],
+            "provider_risk",
+        )
+        audit = target.admissibility_audit()
+        self.assertTrue(audit["tcb_target_structural_provider_used"])
+        self.assertFalse(audit["admissible_strict_lodo"])
+        self.assertTrue(audit["admissible_structure_aware"])
     def test_source_prior_seed_is_frozen_across_target_seeds(self):
         config = {"meta_source_seed_mode": "frozen"}
         self.assertEqual(meta_source_seed(config, 0), 0)
@@ -57,6 +100,8 @@ class MetaPriorTests(unittest.TestCase):
             shared_dim=2,
             anchor_count=5,
             universal_shape_count=8,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
             seed=7,
         ).fit_from_source_problems(
             sources,
@@ -430,11 +475,151 @@ class MetaPriorTests(unittest.TestCase):
         target_base = self._problem("QueueResourceControl")
         self.assertGreater(len(target_base.recommendation_refinement_candidates()), 0)
         target = MetaPriorProblemAdapter(target_base, prior)
-        self.assertTrue(target.admissibility_audit()["admissible_mainline"])
+        audit = target.admissibility_audit()
+        self.assertFalse(audit["admissible_mainline"])
+        self.assertTrue(audit["source_oracle_aided"])
+        self.assertTrue(audit["uses_source_true_outputs"])
+        self.assertTrue(audit["uses_source_true_sigma"])
         self.assertFalse(hasattr(AdmissibleProblemAdapter(target_base), "risk_exposures"))
         candidates = target.recommendation_refinement_candidates()
         self.assertGreater(len(candidates), 0)
         self.assertLessEqual(len(candidates), target.refinement_count)
+
+    def test_observable_mean_coordinate_is_oracle_free_and_separate_from_hvd(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1")),
+            ("InventorySupplyChain", self._problem("InventorySupplyChain")),
+        ]
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("source oracle was called")
+
+        for _name, problem in sources:
+            problem.true_sigma = forbidden
+            problem.true_outputs = forbidden
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="consensus",
+            source_observation_mode="replicated",
+            source_observation_replicates=3,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=0.75,
+            teacher_records_per_domain=0,
+            seed=517,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=8,
+            rng=np.random.default_rng(517),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl"), prior)
+        audit = target.admissibility_audit()
+        self.assertTrue(audit["admissible_mainline"])
+        self.assertTrue(audit["admissible_oracle_free_transfer"])
+        self.assertFalse(audit["source_oracle_aided"])
+        self.assertFalse(audit["uses_source_true_outputs"])
+        self.assertFalse(audit["uses_source_true_sigma"])
+        self.assertEqual(audit["source_observation_mode"], "replicated")
+        self.assertEqual(audit["source_design_mode"], "universal_mixture")
+        self.assertEqual(audit["source_universal_record_count"], 12)
+        self.assertEqual(audit["source_simulator_calls"], 48)
+        contract = target.mean_risk_coordinate_contract()
+        self.assertEqual(contract["status"], "separated")
+        self.assertFalse(contract["source_oracle_aided"])
+        self.assertEqual(contract["source_design_mode"], "universal_mixture")
+        self.assertEqual(
+            contract["eta_source_training_target"], "constraint_mean")
+        self.assertIn("mu_g(eta)", contract["joined_object"])
+
+        constraint_basis = target.gpr_basis_map(output_index=1)
+        objective_basis = target.gpr_basis_map(output_index=0)
+        expert_basis = target.task_expert_basis_map(
+            "universal_coordinate", output_index=1)
+        self.assertIsInstance(
+            constraint_basis, ObservableConstraintMeanBasis)
+        self.assertIsInstance(expert_basis, ObservableConstraintMeanBasis)
+        self.assertNotIsInstance(
+            objective_basis, ObservableConstraintMeanBasis)
+        x = target.sample_random(np.random.default_rng(518))
+        self.assertTrue(np.all(np.isfinite(constraint_basis.features(x))))
+        self.assertEqual(constraint_basis.feature_dim, 2)
+        exposure = target.task_expert_problem_view(
+            "universal_coordinate").risk_exposures(x)
+        self.assertEqual(exposure.A.shape, (3,))
+        self.assertEqual(exposure.N.shape, (2,))
+
+    def test_source_consensus_templates_are_oracle_free_ranked_and_varied(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+        ]
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("analytic source oracle was called")
+
+        for _name, problem in sources:
+            problem.true_sigma = forbidden
+            problem.true_outputs = forbidden
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="spectral_hvd",
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            source_consensus_template_count=8,
+            teacher_records_per_domain=0,
+            seed=519,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(519),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=12), prior)
+        diagnostics = prior.diagnostics()["source_consensus_templates"]
+        self.assertEqual(diagnostics["status"], "fit")
+        self.assertEqual(diagnostics["n_source_domains"], 2)
+        self.assertGreaterEqual(diagnostics["n_selected_templates"], 2)
+        self.assertFalse(diagnostics["target_data_used"])
+        self.assertFalse(diagnostics["target_oracle_used"])
+        self.assertFalse(target.admissibility_audit()["source_oracle_aided"])
+
+        library = prior.universal_shape_candidates(
+            target, n=10000, rng=np.random.default_rng(1), force=True)
+        initial = target.task_initial_universal_candidates(
+            n=2, rng=np.random.default_rng(2))
+        consensus = prior.source_consensus_template_candidates(target, n=1)
+        self.assertEqual(initial[0], library[1])
+        self.assertEqual(initial[1], consensus[0])
+        frozen = target.frozen_source_consensus_candidates()
+        self.assertEqual(
+            len(frozen), diagnostics["n_selected_templates"])
+        self.assertEqual(frozen[0], consensus[0])
+
+        coverage = target.task_initial_universal_candidates(
+            n=6, rng=np.random.default_rng(3))
+        protected = target.frozen_source_coverage_candidates(n=6)
+        self.assertEqual(coverage, protected)
+        self.assertEqual(coverage[0], library[1])
+        self.assertEqual(coverage[1], frozen[0])
+        self.assertEqual(coverage[-1], frozen[-1])
+        self.assertEqual(len(set(coverage)), len(coverage))
+
+        rng = np.random.default_rng(520)
+        sequential = [
+            target.task_expert_proposal_candidates(
+                "universal_coordinate", n=1, rng=rng)[0]
+            for _ in range(12)
+        ]
+        self.assertGreater(len(set(sequential)), 1)
 
     def test_source_invariant_spectral_basis_is_orthogonal_and_frozen(self):
         batches = []
@@ -566,11 +751,59 @@ class MetaPriorTests(unittest.TestCase):
         self.assertGreaterEqual(
             target.cumulative_hvd_prior_upper_scale(output_index=1), 1.0)
         sensitivity = target.task_sensitivity_prior()
-        self.assertEqual(sensitivity["status"], "fit")
+        self.assertEqual(sensitivity["status"], "fit_functional_bias_scale")
         self.assertAlmostEqual(
             sum(sensitivity["prior_weights"]), 1.0, places=12)
+        self.assertEqual(
+            len(sensitivity["biases"]), len(sensitivity["scales"]))
+        self.assertGreater(len(sensitivity["biases"]), 3)
+        self.assertTrue(sensitivity["functional_bias_profiles"])
+        self.assertEqual(
+            len(sensitivity["bias_coefficients"]),
+            len(sensitivity["scales"]),
+        )
         self.assertFalse(sensitivity["target_data_used"])
         x = target.sample_random(np.random.default_rng(312))
+        bias_features = target.task_bias_features(x)
+        self.assertEqual(
+            len(bias_features),
+            1 + prior.local_dim + max(prior.shared_dim - 1, 0),
+        )
+        self.assertTrue(np.all(np.isfinite(bias_features)))
+        self.assertEqual(
+            sensitivity["bias_profile_diagnostics"]["shared_coordinate"],
+            "helmert_simplex_contrast",
+        )
+        self.assertEqual(
+            sensitivity["bias_profile_diagnostics"]["profile_output_units"],
+            "predictive_standard_deviations",
+        )
+        adaptive = sensitivity["adaptive_bias_prior"]
+        self.assertEqual(
+            adaptive["status"], "fit_boundary_weighted_gaussian")
+        self.assertTrue(adaptive["boundary_weighted"])
+        self.assertFalse(adaptive["target_data_used"])
+        adaptive_mean = np.asarray(adaptive["mean"], dtype=float)
+        adaptive_precision = np.asarray(
+            adaptive["precision"], dtype=float)
+        self.assertEqual(adaptive_mean.shape, bias_features.shape)
+        self.assertEqual(
+            adaptive_precision.shape,
+            (len(bias_features), len(bias_features)),
+        )
+        self.assertTrue(np.all(
+            np.linalg.eigvalsh(adaptive_precision) > 0.0))
+        covariance_eigenvalues = np.linalg.eigvalsh(
+            np.linalg.inv(adaptive_precision))
+        self.assertTrue(np.all(covariance_eigenvalues >= 0.25 - 1e-10))
+        self.assertTrue(np.all(covariance_eigenvalues <= 4.0 + 1e-10))
+        self.assertEqual(
+            len(sensitivity["adaptive_scale_class_names"]), 3)
+        self.assertAlmostEqual(
+            sum(sensitivity["adaptive_scale_prior_weights"]),
+            1.0,
+            places=12,
+        )
         exposure = target.risk_exposures(x)
         self.assertTrue(np.all(exposure.A >= 0.0))
         self.assertTrue(np.all(exposure.N >= 0.0))

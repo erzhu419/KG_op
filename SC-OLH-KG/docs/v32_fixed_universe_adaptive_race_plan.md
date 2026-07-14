@@ -1,5 +1,12 @@
 # V32 Fixed-Universe Adaptive Expert Race
 
+> Retrospective information audit (2026-07-14): V32 used the
+> `lodo_teacher` line.  Its held-out target was never queried through a truth
+> oracle, but source training used analytic `true_sigma`, `true_outputs`, and
+> source-domain structural teacher hooks.  V32 is therefore a privileged
+> source-oracle upper bound, not the oracle-free LODO mainline.  New promotion
+> gates reject such rows even when their target-domain results are strong.
+
 ## Single Change
 
 V32 retains V31's history-measurable score refresh but freezes the finite
@@ -71,3 +78,20 @@ FactorShock quality is unchanged, Inventory improves from `3/7` to `5/7`,
 Inventory mean violation falls from `0.05306` to `0.001582`, and median wall
 time does not regress. V32 is therefore promoted as the new LODO baseline in
 `performance/baselines/lodo_current.json`.
+
+## Frozen Queue Gate 2 Result
+
+V32 was frozen before Queue was opened as a held-out target. The only change in
+run `lodo_v32_queue_n20_gate2_frozen_20260712` was the held-out domain; all
+seven seeds used FactorShock and Inventory as sources and the promoted V32
+settings. Tasks `t29249` through `t29255` ran only on `node001-node006`.
+
+| Held-out domain | Truly feasible | False certificate | Median feasible regret | Mean violation | Median true margin |
+|---|---:|---:|---:|---:|---:|
+| Queue | `3/7` | `0/7` | `0.00455` | `0.05767` | `+0.01829` |
+
+Every terminal pool contained at least one truly feasible action, but no seed
+had a posterior-certified action. The four failures are therefore
+selection/calibration failures rather than missing-candidate failures. This
+rejects a three-domain stability claim for V32. No Queue-specific repair is
+permitted; the result opens only the shadow joint task-latent audit.

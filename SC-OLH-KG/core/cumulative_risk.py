@@ -162,6 +162,103 @@ def cumulative_feature_names(exposure: RiskExposure):
     )
 
 
+def _risk_block_descriptor(values):
+    """Permutation-invariant summaries for one variable-width risk block.
+
+    Domains expose different numbers and names of local/shared coordinates.
+    The boundary posterior therefore cannot concatenate raw coordinates
+    directly.  These summaries preserve signed location, spread, tails,
+    energy, concentration, and effective dimension while remaining fixed
+    dimensional.  No objective, constraint, or variance label is read here.
+    """
+
+    values = np.asarray(values, dtype=float).reshape(-1)
+    values = values[np.isfinite(values)]
+    if len(values) == 0:
+        return np.zeros(17, dtype=float)
+    quantiles = np.quantile(values, [0.10, 0.25, 0.50, 0.75, 0.90])
+    absolute = np.abs(values)
+    total_absolute = max(float(np.sum(absolute)), 1e-12)
+    probability = absolute / total_absolute
+    entropy = -float(np.sum(
+        probability * np.log(np.maximum(probability, 1e-12))))
+    normalized_entropy = entropy / max(float(np.log(max(len(values), 2))), 1e-12)
+    return np.concatenate([
+        np.asarray([
+            float(np.log1p(len(values))),
+            float(np.mean(values)),
+            float(np.std(values)),
+            float(np.min(values)),
+        ]),
+        np.asarray(quantiles, dtype=float),
+        np.asarray([
+            float(np.max(values)),
+            float(np.sqrt(np.mean(values ** 2))),
+            float(np.mean(absolute)),
+            float(np.max(absolute)),
+            float(np.mean(values > 0.0)),
+            float(np.mean(values < 0.0)),
+            float(np.max(absolute) / total_absolute),
+            float(normalized_entropy),
+        ]),
+    ])
+
+
+def canonical_risk_descriptor(exposure: RiskExposure):
+    """Fixed-dimensional descriptor of the shared ``psi=(A,N)`` object.
+
+    The two blocks are summarized separately so local and shared risk retain
+    their mathematical roles.  Cross-block terms encode whether risk energy
+    is predominantly local or shared.  The map is invariant to coordinate
+    names and permutations, making it suitable for LODO boundary transfer.
+    """
+
+    exposure = as_risk_exposure(exposure)
+    if exposure is None:
+        raise ValueError("canonical risk descriptor requires RiskExposure")
+    local = _risk_block_descriptor(exposure.A)
+    shared = _risk_block_descriptor(exposure.N)
+    local_abs = float(np.mean(np.abs(exposure.A))) if len(exposure.A) else 0.0
+    shared_abs = float(np.mean(np.abs(exposure.N))) if len(exposure.N) else 0.0
+    local_energy = float(np.sum(np.asarray(exposure.A, dtype=float) ** 2))
+    shared_energy = float(np.sum(np.asarray(exposure.N, dtype=float) ** 2))
+    total_energy = max(local_energy + shared_energy, 1e-12)
+    cross = np.asarray([
+        local_abs - shared_abs,
+        local_abs / max(shared_abs, 1e-12),
+        np.sqrt(local_energy) - np.sqrt(shared_energy),
+        np.sqrt(local_energy) / max(np.sqrt(shared_energy), 1e-12),
+        local_energy,
+        shared_energy,
+        local_energy / total_energy,
+        shared_energy / total_energy,
+    ], dtype=float)
+    return np.concatenate([local, shared, cross])
+
+
+def canonical_risk_descriptor_names():
+    block = (
+        "log_dimension", "mean", "std", "minimum", "q10", "q25",
+        "median", "q75", "q90", "maximum", "rms", "mean_absolute",
+        "max_absolute", "positive_fraction", "negative_fraction",
+        "concentration", "normalized_entropy",
+    )
+    return tuple(
+        [f"local_{name}" for name in block]
+        + [f"shared_{name}" for name in block]
+        + [
+            "local_minus_shared_absolute_mean",
+            "local_to_shared_absolute_mean_ratio",
+            "local_minus_shared_l2",
+            "local_to_shared_l2_ratio",
+            "local_energy",
+            "shared_energy",
+            "local_energy_share",
+            "shared_energy_share",
+        ]
+    )
+
+
 def cumulative_layout(exposure: RiskExposure):
     exposure = as_risk_exposure(exposure)
     if exposure is None:

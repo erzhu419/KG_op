@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "source_screen_run_id": "tcb_residual_v3_20260712",
+  "stage": "weak_task_intercept_hierarchy",
+  "selection_uses_online_sentinel_domains": false,
+  "selection_rule": "V3 certified no safe row because the shared ridge treated the explicitly task-specific boundary intercept as a tightly transferable coefficient and charged its domain shift to residual noise. Retain the 33-cell V3 matrix and change only intercept prior precision to 0.001 times the scale/shape precision.",
+  "task_indices": "2,3,8,9,14,15,20,21,24,26,27,32,33,38,39,44,45,50,51,56,57,62,63,68,69,74,75,80,81,86,87,92,93",
+  "count": 33,
+  "target_posterior": {
+    "intercept_precision_multiplier": 0.001,
+    "shape_precision_multiplier": 1.0,
+    "target_residual_rank": 1,
+    "effective_dimension": 3,
+    "upper_alpha": 0.01,
+    "calibration_prior_df": 1.0
+  },
+  "promotion_gate_manifest": "tcb_v2_calibration_stage.json"
+}

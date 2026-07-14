@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from representation.task_posterior import (  # noqa: E402
+    FiniteTaskLatentPosterior,
     FiniteTaskModelEnsemble,
     FiniteTaskPosterior,
     FiniteTaskSensitivityPosterior,
@@ -28,6 +29,299 @@ from representation.meta_prior import (  # noqa: E402
 
 
 class FiniteTaskPosteriorTests(unittest.TestCase):
+    def test_joint_task_latent_posterior_learns_structure_sensitivity_coupling(self):
+        structure = FiniteTaskPosterior(
+            ["broad_error", "local_fit"],
+            [0.5, 0.5],
+            temperature=1.0,
+            temperature_decay=0.0,
+            output_score_weights=[0.25, 1.0],
+            safe_generalized=True,
+        )
+        sensitivity = FiniteTaskSensitivityPosterior(
+            class_names=("stable", "sensitive"),
+            scales=(0.5, 2.0),
+            decision_penalties=(2.0, 20.0),
+            empirical_trust=(1.0, 0.0),
+            prior_weights=(0.5, 0.5),
+            temperature=1.0,
+            temperature_decay=0.0,
+        )
+        latent = FiniteTaskLatentPosterior(structure, sensitivity)
+        update = latent.update_from_predictive(
+            [0.0, 2.0],
+            means=np.asarray([
+                [0.0, 0.0],
+                [0.0, 1.9],
+            ]),
+            epistemic_vars=np.asarray([
+                [0.01, 1.0],
+                [0.01, 0.01],
+            ]),
+            aleatoric_vars=np.full((2, 2), 0.01),
+            tau=0.0,
+        )
+        joint = latent.posterior_weights()
+        self.assertAlmostEqual(float(np.sum(joint)), 1.0, places=12)
+        self.assertGreater(latent.mutual_information(), 1e-5)
+        self.assertGreater(joint[0, 1], joint[0, 0])
+        self.assertFalse(update["target_oracle_used"])
+        diagnostics = latent.diagnostics()
+        self.assertFalse(diagnostics["used_for_decision"])
+        self.assertFalse(diagnostics["affects_theory_certificate"])
+
+        clone = latent.clone()
+        clone.update_from_predictive(
+            [0.0, 0.0],
+            means=np.zeros((2, 2)),
+            epistemic_vars=np.full((2, 2), 0.1),
+            aleatoric_vars=np.full((2, 2), 0.1),
+            tau=0.0,
+        )
+        self.assertFalse(np.allclose(
+            clone.posterior_weights(), latent.posterior_weights()))
+
+    def test_expert_ridge_calibration_updates_each_structure_separately(self):
+        structure = FiniteTaskPosterior(
+            ["broad", "local"],
+            [0.5, 0.5],
+            temperature=1.0,
+            temperature_decay=0.0,
+            safe_generalized=True,
+        )
+        sensitivity = FiniteTaskSensitivityPosterior(
+            class_names=("balanced",),
+            scales=(1.0,),
+            decision_penalties=(5.0,),
+            empirical_trust=(0.25,),
+            prior_weights=(1.0,),
+        )
+        latent = FiniteTaskLatentPosterior(
+            structure,
+            sensitivity,
+            calibration_mode="expert_ridge",
+            adaptive_bias_prior={
+                "status": "test_prior",
+                "mean": [0.0, 0.0],
+                "precision": [[1.0, 0.0], [0.0, 1.0]],
+                "feature_names": ["intercept", "risk"],
+            },
+        )
+        features = np.asarray([[1.0, -0.5], [1.0, -0.5]])
+        before_variance = latent.adaptive_bias_variance_many(
+            np.full((2, 1), 0.01),
+            np.full((2, 1), 0.01),
+            features,
+        )
+        update = latent.update_from_predictive(
+            [0.0, 1.0],
+            means=np.asarray([[0.0, 0.0], [0.0, 0.8]]),
+            epistemic_vars=np.full((2, 2), 0.01),
+            aleatoric_vars=np.full((2, 2), 0.01),
+            tau=0.0,
+            bias_features=features,
+        )
+        after_variance = latent.adaptive_bias_variance_many(
+            np.full((2, 1), 0.01),
+            np.full((2, 1), 0.01),
+            features,
+        )
+        self.assertEqual(
+            update["adaptive_bias_update"]["status"], "updated")
+        self.assertTrue(np.all(after_variance < before_variance))
+        self.assertFalse(np.allclose(
+            latent.adaptive_bias_mean[0],
+            latent.adaptive_bias_mean[1],
+        ))
+        self.assertTrue(np.all(latent.adaptive_bias_n_updates == 1))
+        self.assertTrue(np.all(
+            latent.adaptive_bias_kl_by_structure() >= 0.0))
+        self.assertGreater(latent.kl_from_prior(safe=True), 0.0)
+        diagnostics = latent.diagnostics()
+        self.assertEqual(diagnostics["calibration_mode"], "expert_ridge")
+        self.assertTrue(diagnostics[
+            "bias_covariance_affects_theory_certificate"])
+        self.assertFalse(diagnostics[
+            "bias_mean_affects_theory_certificate"])
+
+        clone = latent.clone()
+        clone.update_from_predictive(
+            [0.0, -0.5],
+            means=np.zeros((2, 2)),
+            epistemic_vars=np.full((2, 2), 0.01),
+            aleatoric_vars=np.full((2, 2), 0.01),
+            tau=0.0,
+            bias_features=features,
+        )
+        self.assertFalse(np.allclose(
+            clone.adaptive_bias_mean, latent.adaptive_bias_mean))
+
+    def test_meta_coherence_audit_uses_only_surrogate_views(self):
+        class VectorModel:
+            def __init__(self, means, variances):
+                self.means = np.asarray(means, dtype=float)
+                self.variances = np.asarray(variances, dtype=float)
+
+            def posterior_mean_many(self, X):
+                return self.means[[int(x[0]) for x in X]]
+
+            def posterior_var_many(self, X):
+                return self.variances[[int(x[0]) for x in X]]
+
+        class VectorVariance:
+            def __init__(self, values):
+                self.values = np.asarray(values, dtype=float)
+
+            def predict_variance_many(self, output_index, X, problem):
+                del output_index, problem
+                return self.values[[int(x[0]) for x in X]]
+
+            def predict_certification_variance_many(
+                self, output_index, X, problem,
+            ):
+                return self.predict_variance_many(output_index, X, problem)
+
+            @staticmethod
+            def diagnostics():
+                return {
+                    "cumulative_active": {"1": True},
+                    "cumulative_provider_active": {"1": True},
+                }
+
+        class Provider:
+            @staticmethod
+            def cumulative_risk_provider_status():
+                return {
+                    "status": "available",
+                    "coordinate": "psi=(A,N)",
+                    "source_domains": ["source-a", "source-b"],
+                    "target_data_used": False,
+                }
+
+        posterior = FiniteTaskPosterior(
+            ["risk_aligned_coordinate", "ordered_cumulative"],
+            [0.6, 0.4],
+            safe_generalized=True,
+        )
+        sensitivity = FiniteTaskSensitivityPosterior(
+            class_names=("balanced",),
+            scales=(1.0,),
+            decision_penalties=(5.0,),
+            empirical_trust=(0.25,),
+            prior_weights=(1.0,),
+        )
+        states = [
+            TaskExpertState(
+                "risk_aligned_coordinate",
+                [
+                    VectorModel([0.0, 1.0], [0.01, 0.01]),
+                    VectorModel([-1.0, 1.0], [0.01, 0.01]),
+                ],
+                VectorVariance([0.01, 0.01]),
+                Provider(),
+            ),
+            TaskExpertState(
+                "ordered_cumulative",
+                [
+                    VectorModel([0.2, 0.8], [0.01, 0.01]),
+                    VectorModel([-0.8, 0.8], [0.01, 0.01]),
+                ],
+                VectorVariance([0.01, 0.01]),
+                Provider(),
+            ),
+        ]
+        ensemble = FiniteTaskModelEnsemble(
+            states,
+            posterior,
+            sensitivity_posterior=sensitivity,
+            kl_radius_numerator=0.0,
+            maximum_kl_radius=0.0,
+        )
+        audit = ensemble.meta_coherence_diagnostics(
+            [(0,), (1,)],
+            tau=0.0,
+            alpha=0.05,
+            beta_g=2.0,
+            algorithm_selected_x=(0,),
+        )
+        self.assertEqual(audit["status"], "audited")
+        self.assertEqual(audit["algorithm_selected_index"], 0)
+        self.assertEqual(audit["algorithm_selected_x"], [0])
+        self.assertEqual(
+            len(audit["robust_reference_selected_x"]), 1)
+        self.assertEqual(len(audit["joint_risk_selected_x"]), 1)
+        self.assertAlmostEqual(
+            audit["selected_candidate_expert_support_mass"], 1.0)
+        self.assertAlmostEqual(audit["cumulative_hvd_active_mass"], 1.0)
+        self.assertTrue(audit["source_domain_sets_consistent"])
+        self.assertFalse(audit["used_for_decision"])
+        self.assertFalse(audit["target_oracle_used"])
+
+        del ensemble.task_latent_posterior
+        upgraded = ensemble.diagnostics()["task_latent_posterior"]
+        self.assertEqual(upgraded["status"], "initialized")
+        self.assertFalse(upgraded["used_for_decision"])
+
+    def test_authoritative_joint_latent_controls_loss_without_relaxing_scale(self):
+        class EmptyVariance:
+            @staticmethod
+            def diagnostics():
+                return {"status": "empty"}
+
+        structure = FiniteTaskPosterior(
+            ["broad", "local"],
+            [0.5, 0.5],
+            temperature=1.0,
+            temperature_decay=0.0,
+            safe_generalized=True,
+        )
+        sensitivity = FiniteTaskSensitivityPosterior(
+            class_names=("stable", "sensitive"),
+            scales=(0.5, 2.0),
+            decision_penalties=(2.0, 20.0),
+            empirical_trust=(1.0, 0.0),
+            prior_weights=(0.5, 0.5),
+        )
+        ensemble = FiniteTaskModelEnsemble(
+            [
+                TaskExpertState("broad", [], EmptyVariance(), None),
+                TaskExpertState("local", [], EmptyVariance(), None),
+            ],
+            structure,
+            sensitivity_posterior=sensitivity,
+            task_latent_inference_mode="authoritative",
+        )
+        ensemble._task_latent().update_from_predictive(
+            [0.0, 2.0],
+            means=np.asarray([[0.0, 0.0], [0.0, 1.9]]),
+            epistemic_vars=np.asarray([[0.01, 1.0], [0.01, 0.01]]),
+            aleatoric_vars=np.full((2, 2), 0.01),
+            tau=0.0,
+        )
+        self.assertTrue(ensemble.task_latent_authoritative)
+        self.assertAlmostEqual(
+            float(np.sum(ensemble.structure_weights())), 1.0)
+        self.assertTrue(np.all(
+            ensemble._task_latent()
+            .conditional_epistemic_scale_squared() >= 1.0
+        ))
+        risk = ensemble._task_latent().positive_margin_decision_risk_many(
+            np.asarray([[0.1, -0.2], [0.2, -0.1]]),
+            np.full((2, 2), 0.1),
+            np.full((2, 2), 0.02),
+            tau=0.0,
+            z_alpha=1.64,
+        )
+        self.assertTrue(np.all(
+            risk["posterior_expected_decision_loss"] >= 0.0))
+        diagnostics = ensemble.diagnostics()
+        self.assertTrue(diagnostics["task_latent_authoritative"])
+        self.assertTrue(
+            diagnostics["task_latent_posterior"]["used_for_decision"])
+        clone = ensemble.clone()
+        np.testing.assert_allclose(
+            clone.inference_weights(), ensemble.inference_weights())
+
     def test_sensitivity_class_is_learned_from_prequential_residuals(self):
         stable = FiniteTaskSensitivityPosterior(
             prior_weights=[1.0, 1.0, 1.0],
@@ -65,6 +359,73 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
         self.assertFalse(update["target_oracle_used"])
         self.assertFalse(
             sensitive.diagnostics()["affects_theory_certificate"])
+
+    def test_signed_bias_class_learns_direction_without_relaxing_certificate(self):
+        posterior = FiniteTaskSensitivityPosterior(
+            class_names=("negative_bias", "positive_bias"),
+            scales=(1.0, 1.0),
+            biases=(-1.0, 1.0),
+            decision_penalties=(5.0, 5.0),
+            empirical_trust=(0.25, 0.25),
+            prior_weights=(0.5, 0.5),
+            temperature=1.0,
+            temperature_decay=0.0,
+        )
+        posterior.update_from_predictive(
+            observation=-1.0,
+            mean=0.0,
+            epistemic_var=1.0,
+            aleatoric_var=0.0,
+            tau=0.0,
+        )
+        self.assertGreater(
+            posterior.posterior_weights()[0],
+            posterior.posterior_weights()[1],
+        )
+        risk = posterior.posterior_violation_decision_risk(
+            [0.0], 1.0, [0.0], tau=0.0)
+        self.assertLess(
+            risk["class_violation_probability"][0, 0],
+            risk["class_violation_probability"][0, 1],
+        )
+        self.assertFalse(risk["affects_theory_certificate"])
+
+    def test_functional_bias_profile_uses_risk_features(self):
+        posterior = FiniteTaskSensitivityPosterior(
+            class_names=("decreasing", "increasing"),
+            scales=(1.0, 1.0),
+            biases=(0.0, 0.0),
+            bias_coefficients=((-1.0, 0.5), (1.0, -0.5)),
+            bias_feature_names=("intercept", "risk"),
+            decision_penalties=(5.0, 5.0),
+            empirical_trust=(0.25, 0.25),
+            prior_weights=(0.5, 0.5),
+            temperature=1.0,
+            temperature_decay=0.0,
+        )
+        with self.assertRaises(ValueError):
+            posterior.update_from_predictive(
+                -1.0, 0.0, 1.0, 0.0, tau=0.0)
+        posterior.update_from_predictive(
+            -1.0,
+            0.0,
+            1.0,
+            0.0,
+            tau=0.0,
+            bias_features=(1.0, 0.0),
+        )
+        self.assertGreater(
+            posterior.posterior_weights()[0],
+            posterior.posterior_weights()[1],
+        )
+        self.assertEqual(
+            posterior.diagnostics()["bias_feature_names"],
+            ["intercept", "risk"],
+        )
+        np.testing.assert_allclose(
+            posterior.bias_offsets(2.0, bias_features=(1.0, 0.0)),
+            [-2.0, 2.0],
+        )
 
     def test_latent_sensitivity_defines_posterior_violation_loss(self):
         stable = FiniteTaskSensitivityPosterior(
@@ -344,6 +705,18 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             robust.epistemic_upper[0], nominal.epistemic_upper[0])
         self.assertGreaterEqual(
             robust.aleatoric_upper[0], nominal.aleatoric_upper[0])
+        authoritative_center = np.asarray([0.1, 0.8, 0.1])
+        centered = posterior.robust_mixture_moments(
+            means,
+            epistemic,
+            aleatoric,
+            radius=0.0,
+            weights=authoritative_center,
+        )
+        self.assertAlmostEqual(
+            centered.mean_upper[0],
+            float(authoritative_center @ means[:, 0]),
+        )
 
     def test_batched_entropic_dual_dominates_sampled_kl_ball(self):
         posterior = FiniteTaskPosterior(
@@ -520,7 +893,7 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             task_posterior_mode="finite",
             task_posterior_safe_generalized=True,
             task_posterior_safe_pairwise_max_history=8,
-            task_posterior_sensitivity_mode="finite",
+            task_posterior_sensitivity_mode="fixed",
             task_posterior_local_kernel_expert=True,
             task_posterior_boundary_bracket_fraction=0.5,
             task_posterior_mandatory_universal_count=2,
@@ -563,6 +936,26 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             self.assertEqual(diagnostics["posterior"]["n_updates"], 2)
             self.assertEqual(
                 diagnostics["sensitivity_posterior"]["n_updates"], 2)
+            self.assertEqual(
+                diagnostics["sensitivity_posterior"]["class_names"], ["fixed"])
+            self.assertEqual(
+                len(diagnostics["task_latent_posterior"][
+                    "sensitivity_names"]),
+                9,
+            )
+            self.assertEqual(
+                len(diagnostics["task_latent_posterior"][
+                    "sensitivity_biases"]),
+                9,
+            )
+            self.assertEqual(
+                len(diagnostics["task_latent_posterior"][
+                    "sensitivity_bias_coefficients"]),
+                9,
+            )
+            self.assertIsNone(
+                diagnostics["task_latent_posterior"]
+                ["legacy_sensitivity_total_variation"])
             self.assertEqual(diagnostics["pilot_count"], 3)
             self.assertAlmostEqual(
                 sum(diagnostics["posterior"]["posterior_weights"]),
@@ -591,6 +984,10 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
                 "generated",
             )
             self.assertFalse(diagnostics["target_oracle_used"])
+            self.assertEqual(
+                result["task_meta_coherence"]["status"], "audited")
+            self.assertFalse(
+                result["task_meta_coherence"]["used_for_decision"])
             self.assertTrue(
                 result["recommendation_calibration_features_standardized"])
             self.assertGreater(
@@ -618,6 +1015,15 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             first_safe_weights = np.asarray(
                 diagnostics["posterior"]["safe_posterior_weights"],
                 dtype=float,
+            )
+            checkpoint_state = algorithm._task_ensemble_checkpoint_state()
+            self.assertIn("task_latent_posterior", checkpoint_state)
+            self.assertIn("sensitivity_posterior", checkpoint_state)
+            self.assertEqual(
+                checkpoint_state["task_latent_inference_mode"], "shadow")
+            self.assertEqual(
+                checkpoint_state["task_latent_calibration_mode"],
+                "source_profiles",
             )
 
             resumed_values = dict(config_values)
@@ -652,6 +1058,95 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             )
             self.assertEqual(
                 resumed_result["task_posterior"]["safe_history_count"], 3)
+
+    def test_expert_ridge_calibration_is_cloned_and_updated_by_exact_kg(self):
+        def problem(name):
+            return ScalarizedProblem(make_problem(
+                name, d=5, L=30, sigma=0.04))
+
+        prior = LearnedMetaPrior(
+            local_dim=2,
+            shared_dim=2,
+            component_stage="spectral_hvd",
+            spectral_active_dim=3,
+            spectral_risk_alignment=True,
+            seed=921,
+        ).fit_from_source_problems(
+            [
+                ("InventorySupplyChain", problem("InventorySupplyChain")),
+                ("QueueResourceControl", problem("QueueResourceControl")),
+            ],
+            n_records_per_domain=8,
+            rng=np.random.default_rng(922),
+        )
+        target = MetaPriorProblemAdapter(
+            problem("FactorShockStatePolicyRZDT1"), prior)
+        algorithm = SingleOLHKGAlgorithm(
+            target,
+            SingleOLHKGConfig(
+                N=5,
+                n0=4,
+                K1=1,
+                K2=0,
+                posterior_pool_size=6,
+                posterior_keep=2,
+                axis_candidate_count=0,
+                state_candidate_count=0,
+                eval_pool_size=6,
+                evaluate_interval=0,
+                use_problem_initial_samples=True,
+                use_boundary_initial_samples=False,
+                use_recommendation_refinement=False,
+                recommendation_axis_oracle=False,
+                recommendation_axis_candidate_count=0,
+                recommendation_calibration=False,
+                acquisition_mode="exact_mc",
+                exact_kg_mc_samples=1,
+                exact_kg_jobs=1,
+                task_posterior_mode="finite",
+                task_posterior_safe_generalized=True,
+                task_posterior_sensitivity_mode="fixed",
+                task_latent_inference_mode="authoritative",
+                task_latent_calibration_mode="expert_ridge",
+                seed=923,
+            ),
+        )
+        samples = algorithm._initial_samples()
+        algorithm._fit_initial_belief(samples)
+        ensemble = algorithm.task_ensemble
+        latent = ensemble._task_latent()
+        self.assertTrue(latent.adaptive_bias_enabled)
+        self.assertEqual(len(latent.sensitivity_names), 3)
+        self.assertTrue(np.all(latent.adaptive_bias_n_updates == 1))
+        raw = ensemble.expert_moments_many(
+            1, samples[:2], certification=True)
+        mixture = ensemble.mixture_moments_many(
+            1, samples[:2], certification=True)
+        self.assertTrue(np.all(mixture.epistemic >= 0.0))
+        calibration_variance = latent.adaptive_bias_variance_many(
+            raw[1], raw[2], ensemble.task_bias_features_many(samples[:2]))
+        self.assertTrue(np.all(calibration_variance >= 0.0))
+        self.assertTrue(np.any(calibration_variance > 0.0))
+
+        clone = ensemble.clone(
+            gpr_cloner=algorithm._clone_gpr_for_exact_kg,
+            variance_cloner=algorithm._clone_variance_model_for_exact_kg,
+        )
+        mean_before = clone._task_latent().adaptive_bias_mean.copy()
+        y, _ = ensemble.predictive_sample(samples[0], [0.0, 0.0], 0.5)
+        clone.update(samples[0], y, tau=target.tau)
+        self.assertFalse(np.allclose(
+            clone._task_latent().adaptive_bias_mean, mean_before))
+        self.assertFalse(np.shares_memory(
+            clone._task_latent().adaptive_bias_precision,
+            latent.adaptive_bias_precision,
+        ))
+        scores = algorithm._exact_posterior_update_scores(
+            samples[:1], samples[:2])
+        self.assertEqual(scores.shape, (1,))
+        self.assertTrue(np.all(np.isfinite(scores)))
+        self.assertTrue(np.all(
+            latent.adaptive_bias_n_updates == 1))
 
     def test_ordered_semiparametric_replacement_updates_sparse_fantasy_gpr(self):
         def problem(name):

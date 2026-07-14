@@ -12,8 +12,13 @@ import sys
 import time
 
 
-DEFAULT_SCHEDULER = Path.home() / ".claude/skills/scheduler/scheduler.py"
+DEFAULT_SCHEDULER = (
+    Path.home() / "mine_code/scheduleurm/skill/scheduler.py"
+)
 DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
+DEFAULT_SYNC_SCRIPT = Path(__file__).with_name(
+    "sync_scolhkg_scheduler_deploy.sh"
+)
 DEFAULT_PYTHON = (
     "/home/zhengliang01/scheduleurm_work/conda_envs/"
     "scomp-py310/bin/python"
@@ -50,13 +55,73 @@ def command_for(args, heldout, seed, result_file, checkpoint_dir):
         str(float(args.ordered_frequency_penalty)),
         "--ordered-basis-mode", str(args.ordered_basis_mode),
         "--exact-sampling-mode", str(args.exact_sampling_mode),
+        "--exact-terminal-mode",
+        str(getattr(args, "exact_terminal_mode", "hard_certified")),
         "--exact-mc-samples", str(int(args.exact_mc_samples)),
         "--exact-jobs", str(int(args.exact_jobs)),
         "--parallel-backend", str(args.parallel_backend),
+        "--tcb-v2-mode",
+        str(getattr(args, "tcb_v2_mode", "off")),
+        "--tcb-v2-frontier-count",
+        str(int(getattr(args, "tcb_v2_frontier_count", 1))),
+        "--tcb-v2-descriptor-mode",
+        str(getattr(args, "tcb_v2_descriptor_mode", "learned_risk")),
+        "--tcb-v2-coordinate",
+        str(getattr(args, "tcb_v2_coordinate", "boundary_latent")),
+        "--tcb-v2-geometry",
+        str(getattr(args, "tcb_v2_geometry", "low_rank_psd")),
+        "--tcb-v2-rank",
+        str(int(getattr(args, "tcb_v2_rank", 2))),
+        "--tcb-v2-ridge",
+        str(float(getattr(args, "tcb_v2_ridge", 1e-3))),
+        "--tcb-v2-domain-penalty",
+        str(float(getattr(args, "tcb_v2_domain_penalty", 0.5))),
+        "--tcb-v2-boundary-temperature",
+        str(float(getattr(args, "tcb_v2_boundary_temperature", 1.0))),
+        "--tcb-v2-adaptation-ridge",
+        str(float(getattr(args, "tcb_v2_adaptation_ridge", 5.0))),
+        "--tcb-v2-upper-alpha",
+        str(float(getattr(args, "tcb_v2_upper_alpha", 0.01))),
+        "--tcb-v2-calibration-prior-df",
+        str(float(getattr(args, "tcb_v2_calibration_prior_df", 2.0))),
+        "--tcb-v2-hierarchy-iterations",
+        str(int(getattr(args, "tcb_v2_hierarchy_iterations", 5))),
+        "--tcb-v2-effect-ridge",
+        str(float(getattr(args, "tcb_v2_effect_ridge", 1.0))),
+        "--tcb-v2-rotation-mode",
+        str(getattr(args, "tcb_v2_rotation_mode", "none")),
+        "--tcb-v2-rotation-ridge",
+        str(float(getattr(args, "tcb_v2_rotation_ridge", 5.0))),
+        "--tcb-v2-target-residual-rank",
+        str(int(getattr(args, "tcb_v2_target_residual_rank", 0))),
+        "--tcb-v2-residual-ridge",
+        str(float(getattr(args, "tcb_v2_residual_ridge", 5.0))),
+        "--source-observation-mode",
+        str(getattr(args, "source_observation_mode", "analytic")),
+        "--source-observation-replicates",
+        str(int(getattr(args, "source_observation_replicates", 1))),
+        "--source-design-mode",
+        str(getattr(args, "source_design_mode", "random")),
+        "--source-universal-fraction",
+        str(float(getattr(args, "source_universal_fraction", 0.75))),
+        "--source-consensus-template-count",
+        str(int(getattr(args, "source_consensus_template_count", 0))),
+        "--observable-mean-mode",
+        str(getattr(args, "observable_mean_mode", "latent")),
+        "--observable-mean-latent-dim",
+        str(int(getattr(args, "observable_mean_latent_dim", 2))),
+        "--observable-mean-training-target",
+        str(getattr(
+            args, "observable_mean_training_target", "constraint_mean")),
+        "--finalist-terminal-value-mode",
+        str(getattr(
+            args, "finalist_terminal_value_mode", "model_default")),
         "--finalist-replication-budget",
         str(int(getattr(args, "finalist_replication_budget", 0))),
         "--finalist-replication-count",
         str(int(getattr(args, "finalist_replication_count", 2))),
+        "--finalist-observed-safety-count",
+        str(int(getattr(args, "finalist_observed_safety_count", 1))),
         "--finalist-replication-min-replicates",
         str(int(getattr(args, "finalist_replication_min_replicates", 2))),
         "--finalist-replication-delta",
@@ -64,6 +129,18 @@ def command_for(args, heldout, seed, result_file, checkpoint_dir):
         "--finalist-replication-variance-prior-df",
         str(float(getattr(
             args, "finalist_replication_variance_prior_df", 2.0))),
+        "--finalist-replication-policy",
+        str(getattr(args, "finalist_replication_policy", "legacy")),
+        "--finalist-empirical-override",
+        str(getattr(args, "finalist_empirical_override", "legacy")),
+        "--finalist-frontier-policy",
+        str(getattr(args, "finalist_frontier_policy", "legacy")),
+        "--finalist-terminal-max-arms",
+        str(int(getattr(args, "finalist_terminal_max_arms", 4))),
+        "--finalist-terminal-mc-samples",
+        str(int(getattr(args, "finalist_terminal_mc_samples", 2))),
+        "--decision-contract-mode",
+        str(getattr(args, "decision_contract_mode", "legacy")),
         "--task-posterior-safe-boundary-weight",
         str(float(getattr(
             args, "task_posterior_safe_boundary_weight", 1.0))),
@@ -76,6 +153,11 @@ def command_for(args, heldout, seed, result_file, checkpoint_dir):
         "--task-posterior-safe-pairwise-floor",
         str(float(getattr(
             args, "task_posterior_safe_pairwise_floor", 1e-6))),
+        "--task-latent-inference-mode",
+        str(getattr(args, "task_latent_inference_mode", "shadow")),
+        "--task-latent-calibration-mode",
+        str(getattr(
+            args, "task_latent_calibration_mode", "source_profiles")),
     ]
     command.append(
         "--finalist-replication-expert-stratified"
@@ -111,7 +193,19 @@ def command_for(args, heldout, seed, result_file, checkpoint_dir):
         if getattr(args, "task_posterior_safe_generalized", False)
         else "--no-task-posterior-safe-generalized"
     )
-    return shlex.join(command)
+    command.append(
+        "--observable-mean-coordinate"
+        if getattr(args, "observable_mean_coordinate", False)
+        else "--no-observable-mean-coordinate"
+    )
+    mandatory_universal = getattr(
+        args, "task_posterior_mandatory_universal_count", None)
+    if mandatory_universal is not None:
+        command.extend([
+            "--task-posterior-mandatory-universal-count",
+            str(int(mandatory_universal)),
+        ])
+    return f"{shlex.join(command)} && echo DONE"
 
 
 def build_specs(args):
@@ -250,12 +344,55 @@ def main():
         "--task-posterior-safe-pairwise-history", type=int, default=16)
     parser.add_argument(
         "--task-posterior-safe-pairwise-floor", type=float, default=1e-6)
+    parser.add_argument(
+        "--task-posterior-mandatory-universal-count", type=int, default=None)
+    parser.add_argument(
+        "--task-latent-inference-mode",
+        choices=("shadow", "authoritative"),
+        default="shadow",
+    )
+    parser.add_argument(
+        "--task-latent-calibration-mode",
+        choices=("source_profiles", "expert_ridge"),
+        default="source_profiles",
+    )
     parser.add_argument("--exact-sampling-mode", default="iid")
     parser.add_argument("--exact-mc-samples", type=int, default=2)
     parser.add_argument("--exact-jobs", type=int, default=32)
     parser.add_argument("--parallel-backend", default="process_fork")
+    parser.add_argument(
+        "--observable-mean-coordinate",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--source-observation-mode",
+        choices=("analytic", "nominal", "replicated"),
+        default="analytic",
+    )
+    parser.add_argument("--source-observation-replicates", type=int, default=1)
+    parser.add_argument(
+        "--source-design-mode",
+        choices=("random", "universal_mixture"),
+        default="random",
+    )
+    parser.add_argument("--source-universal-fraction", type=float, default=0.75)
+    parser.add_argument("--source-consensus-template-count", type=int, default=0)
+    parser.add_argument(
+        "--observable-mean-mode",
+        choices=("atoms", "aggregate", "latent", "consensus"),
+        default="latent",
+    )
+    parser.add_argument("--observable-mean-latent-dim", type=int, default=2)
+    parser.add_argument(
+        "--observable-mean-training-target",
+        choices=("constraint_mean", "chance_margin"),
+        default="constraint_mean",
+    )
     parser.add_argument("--finalist-replication-budget", type=int, default=0)
     parser.add_argument("--finalist-replication-count", type=int, default=2)
+    parser.add_argument(
+        "--finalist-observed-safety-count", type=int, default=1)
     parser.add_argument(
         "--finalist-replication-min-replicates", type=int, default=2)
     parser.add_argument(
@@ -277,10 +414,41 @@ def main():
         action=argparse.BooleanOptionalAction,
         default=False,
     )
+    parser.add_argument(
+        "--finalist-replication-policy",
+        choices=(
+            "legacy",
+            "commit_before_switch",
+            "terminal_kg_1step",
+            "terminal_kg_depth3",
+        ),
+        default="legacy",
+    )
+    parser.add_argument(
+        "--finalist-frontier-policy",
+        choices=("legacy", "coverage_reserved", "observed_safety_reserved"),
+        default="legacy",
+    )
+    parser.add_argument(
+        "--finalist-empirical-override",
+        choices=("legacy", "certified_only", "off"),
+        default="legacy",
+    )
+    parser.add_argument("--finalist-terminal-max-arms", type=int, default=4)
+    parser.add_argument("--finalist-terminal-mc-samples", type=int, default=2)
     parser.add_argument("--allow-duplicate", action="store_true")
+    parser.add_argument(
+        "--sync-remote",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Synchronize SC-OLH-KG to the scheduler deploy before submission.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--dispatch", action="store_true")
     args = parser.parse_args()
+
+    if args.sync_remote and not args.dry_run:
+        subprocess.check_call([str(DEFAULT_SYNC_SCRIPT)])
 
     specs = build_specs(args)
     if args.dry_run:

@@ -2,6 +2,17 @@
 
 ## Implementation status (2026-07-11)
 
+- On 2026-07-12, V32 passed the frozen FactorShock/Inventory Gate 1 and became
+  the tracked LODO baseline.  Its untouched Queue Gate 2 is running as
+  `lodo_v32_queue_n20_gate2_frozen_20260712`; Queue-specific tuning is
+  prohibited for this gate.
+- A shadow `FiniteTaskLatentPosterior` now maintains the joint generalized-Bayes
+  posterior `Q(structural_expert, sensitivity_class)`.  Structural identity
+  bundles alignment/basis, GPR, and cumulative HVD.  It reports joint mutual
+  information and terminal meta-coherence without changing V32 decisions or
+  the theory certificate.  The authoritative joint-decision stage remains
+  blocked on three-domain evidence; see `unified_task_latent_meta_plan.md`.
+
 - Stage A implemented behind `task_posterior_mode="finite"`: frozen
   source-only experts, tempered proper-score updates, null expert, clone and
   checkpoint support.
@@ -302,3 +313,21 @@ r_N^{\mathrm{safe}}
 - [Information-Theoretic Safe Exploration](https://arxiv.org/abs/2212.04914)：直接学习 safe set 的信息价值。
 
 论文的区别和主贡献应固定为：task posterior 不是独立 meta-learning 插件，而是 state-coupled cumulative HVD、robust certification 和 exact KG 的共同概率坐标。
+
+## 9. 统一任务潜变量实现状态
+
+`FiniteTaskLatentPosterior` 已把有限结构 expert 与 source-trained
+sensitivity class 组成联合状态 `Q_t(xi,c)`。V32 三域 shadow replay 的 21
+个推荐点与原基线完全一致；互信息在 FactorShock/Inventory/Queue 上呈现
+从近零到中等再到明显的梯度，说明 sensitivity 并非每个任务都需要，
+而是在跨域结构失配时与 `xi` 发生依赖。
+
+`task_latent_inference_mode=authoritative` 现已把该联合状态接入 proposal、
+GPR/HVD mixture、chance certification、exact posterior-update KG、terminal
+Bayes loss 与 checkpoint。证书中的 sensitivity scale 使用
+`max(1,c_scale)^2`，因此学习到 stable class 只能改善 Bayes ranking，不能
+降低理论安全 margin。Authoritative V1、signed-bias V2、functional-profile
+V3 和 expert-conditional ridge V4 均已通过实现与 leakage 检查，但均未通过
+预注册经验门控；V4 尤其同时降低 Queue seed 0 的可行候选覆盖并错误排序
+Inventory/Queue 的终局真可行点。因此没有进行 21-seed 扩展，V32 仍是正式
+baseline，所有 task-latent 版本只保留为可复现实验消融。

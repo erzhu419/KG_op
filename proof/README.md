@@ -50,6 +50,10 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/CertificationImplementation.lean`: code-level bridge proving
   the implemented `mu + sqrt(beta)s + z sqrt(v_C^+) <= tau` margin is the
   Lean certification predicate and is more conservative than legacy mode.
+- `SCOLHKG/Real/MeanRiskCoordinateSeparation.lean`: formal separation of the
+  source-learned constraint-mean coordinate `eta` from cumulative-risk
+  `psi=(A,N)`, plus joint-margin invariance and inherited certificate
+  soundness.
 - `SCOLHKG/Real/HVD.lean`: real-valued residual-square concentration event to
   HVD oracle-inequality implication.
 - `SCOLHKG/Real/HVDImplementation.lean`: code-level HVD bridges for residual
@@ -148,6 +152,16 @@ mathlib and its cache; later builds should be fast.
   Bernoulli/pairwise log-loss radius, bounded composite-loss propagation,
   PAC-Bayes specialization centred on the safe posterior, and the dual-weight
   joint-state exact-KG implementation bridge.
+- `SCOLHKG/Real/JointTaskLatentPosterior.lean`: joint finite posterior over
+  structural experts and sensitivity classes, including product-prior
+  normalization, positive generalized-Bayes support, normalized nonnegative
+  marginals, signed scalar or source-frozen functional
+  decision-bias/certificate separation, the shadow
+  sensitivity-independence bridge, and the authoritative scale-floor theorem
+  proving sensitivity cannot relax the theory margin. It also proves that an
+  expert-conditional conjugate precision update gains information and that
+  adaptive calibration covariance can only enlarge the theory margin while
+  its posterior mean remains decision-only.
 - `SCOLHKG/Real/StratifiedExpertKG.lean`: exact finite-expert posterior
   summation and a weighted error theorem showing that categorical expert
   sampling error is zero; only within-expert Gaussian approximation error
@@ -166,6 +180,32 @@ mathlib and its cache; later builds should be fast.
   fixed-universe subset/cardinality invariants, completed-candidate filtering,
   finite bad-event union bounds,
   replicate-deficit decrease, and reserved suffix budget accounting.
+- `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean`: TCB-V2 positive
+  location/log-scale adaptation, planar-rotation norm preservation,
+  nonnegative Cholesky/rotation/orthogonal-residual predictive variance,
+  covariance non-relaxation, coverage-reserved frontier order, one shared
+  frontier/terminal/final certificate, and lexicographic terminal dominance
+  that prevents objective value from overriding certification status or
+  positive upper margin.
+- `SCOLHKG/Real/BoundaryFamilyMixtureCertificate.lean`: TCB-V3 finite
+  source-frozen family posterior, credible-family mass and envelope,
+  nonnegative family guard, target-name noninterference, and the combined
+  family-containment plus within-family coverage failure bound.
+- `SCOLHKG/Real/BoundaryFamilySynthesisCertificate.lean`: TCB-V4
+  source-frozen signed-distance dictionary, monotonicity under nonnegative
+  synthesis coefficients, nonnegative coefficient/residual predictive
+  variance, safe recommendation under upper coverage, and target-name
+  noninterference.
+- `SCOLHKG/Real/BoundaryFamilySemiparametricCertificate.lean`: TCB-V5 direct
+  sum of nonnegative family synthesis and a frozen nullspace-projected local
+  kernel residual, nonnegative covariance/noise radius, and recommendation
+  safety under upper coverage.
+- `SCOLHKG/Real/OracleCertifiability.lean`: optimistic direct-replication
+  oracle radius, monotone contraction with replication count, squared-budget
+  sufficiency, and persistence of a certificate at larger budgets.
+- `SCOLHKG/Real/SourceConsensusCommit.lean`: source-frozen rank consensus,
+  target-name noninterference, rank-spanning coverage, bounded-error two-arm
+  ordering, and committed completion of a protected finalist shortlist.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
   manuscript-level theory.
 - `code_map.md`: mapping from mathematical objects to the current
@@ -362,6 +402,56 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 94. On a uniform finite-model risk-deviation event, the nested-refit group
     penalty minimizer has true risk at most the best finite penalty model plus
     `2 epsilon`.
+95. Exponentiating the held-out target log-scale gives a strictly positive
+    boundary scale for every finite source prior and target update.
+96. Cholesky parameter uncertainty plus squared residual scale is nonnegative,
+    so the TCB-V2 posterior covariance cannot reduce its upper margin.
+97. Reusing one upper-margin function for frontier nomination, terminal value,
+    and final recommendation makes the three decision layers extensionally
+    equal; upper-margin coverage then implies final recommendation safety.
+98. A certified terminal tuple lexicographically dominates every uncertified
+    tuple regardless of objective value.
+99. Among uncertified terminal tuples, positive upper margin is minimized
+    before objective; objective breaks ties only after both certificate
+    components agree.
+100. A planar target/source coordinate rotation preserves squared
+     risk-coordinate norm exactly.
+101. Rotation and orthogonal-residual posterior covariance can only increase,
+     never relax, the TCB-V2 upper chance margin.
+102. The coverage-reserved finalist list places Bayes risk, authoritative
+     certificate margin, robust violation, and nominal violation before every
+     expert nomination.
+103. A credible-family envelope controls the true margin whenever the true
+     family remains in the posterior credible set and that family's own upper
+     bound covers the truth.
+104. A nonnegative between-family guard cannot relax this envelope; an action
+     certified by the guarded envelope is therefore safe on the same event.
+105. If family-containment failure has probability at most `delta_family` and
+     within-family coverage failure has probability at most `alpha`, the
+     TCB-V3 certificate failure probability is at most their sum.
+106. A nonnegative synthesis of source boundary atoms is monotone in every
+     atom; coefficient-posterior and residual uncertainty enter its upper
+     margin through a nonnegative radius.
+107. Any TCB-V4 recommendation whose synthesis upper margin is nonpositive is
+     safe on the synthesis coverage event, and changing an unused target name
+     cannot change its source-frozen coefficient update.
+108. A source-frozen kernel coefficient vector in the family-design cross
+     nullspace produces a local residual orthogonal to every family feature on
+     the frozen design.
+109. Synthesis covariance, local-residual covariance, and remaining noise
+     scale form a nonnegative TCB-V5 predictive variance.
+110. A TCB-V5 recommendation with nonpositive semiparametric upper margin is
+     safe on the corresponding upper-coverage event.
+111. The known-variance oracle mean radius is nonnegative and nonincreasing in
+     the number of direct replications.
+112. If `(q sigma)^2 <= (-m)^2 R` for a strictly feasible margin `m`, then the
+     optimistic replicated oracle upper margin is nonpositive.
+113. Once an oracle certificate holds, increasing the replication budget
+     cannot revoke it.
+114. Source-consensus rank order is invariant under positive affine source
+     scaling, and a source-frozen proposal is target-name noninterfering.
+115. Commit-before-switch completes an observed finalist exactly when the
+     reserved suffix contains its remaining replication deficit.
 
 Remaining work is empirical/binding and assumption validation:
 
@@ -370,12 +460,24 @@ Remaining work is empirical/binding and assumption validation:
    constants are empirical/model assumptions, not free theorems.
 2. Generate and archive the real fresh-seed trajectory CSV logs with the SUMO
    logger now implemented in `sumo_sim.py`.
-3. Repair the Inventory cross-domain failure before opening Queue. V19 shows a
-   mixed exact-KG-estimator and representation error, V20 removes finite-expert
-   identity sampling error, and V21a shows that a high-capacity 17-feature
-   ordered coordinate is not identifiable at `N=20`. V22 therefore tests an
-   11-feature diagonal coordinate with total effective dimension at most
-   `0.35 N`, replacing rather than stacking the local-kernel expert.
+3. The multi-family source-only TCB-V2 gate completed and failed: nested outer
+   Spearman was `0.3458`, but the predicted safe set was empty. The online
+   V33/TCB joint sentinel remains blocked. Broad TCB-V3 was also vacuous.
+   Atomic TCB-V3.1 improved nested Spearman to `0.7103` and concentrated the
+   family posterior, but its conservative certificate stayed empty and every
+   prediction released by narrower variants was false-safe. TCB-V3.2
+   orthogonal residuals produced 32 false-safe points among 33 certificates.
+   TCB-V4 continuous nonnegative family synthesis is the current source-only
+   challenger; its initial and `n0=20/40` scaling gates remained vacuous.
+   TCB-V5 added a source-frozen orthogonal local residual and passed every
+   implementation audit, but its complete gate obtained coverage `0.9486`,
+   Spearman `0.7010`, zero false-safe predictions, and nonvacuity `0.0333`.
+   It was not promoted, and online KG remains blocked.
+   The follow-up certifiability/coordinate audit completed as 50 independent
+   domain/seed tasks. Its target-oracle rows are diagnostic upper bounds and
+   mechanically ineligible for promotion. It motivated a separate observable
+   mean coordinate `eta`; oracle-free sequential KG promotion remains an
+   empirical gate, not a theorem-level claim.
 4. Decide empirically whether `exact_mc`, `blend`, or additive-with-`2 eta`
    should be the main runner after the large benchmark matrix finishes.
 5. If the final manuscript chooses a less conservative traffic feature map
@@ -397,7 +499,17 @@ simplex-expert, nested-LOO noninterference, and strong-heredity bridges.  The
 representation implementation remains conditional on empirical gates. The
 finite task-posterior layer closes the algebraic, PAC-Bayes, deterministic,
 and stratified finite-expert implementation bridges and has passed FactorShock
-Gate 1. The next closure work is the failed Inventory side of cross-domain
-Gate 2, ordered cumulative-risk identification, the trajectory logger table,
-the exact/additive large-budget decision, and synchronization of the numeric
-feature cap with the final code path.
+Gate 1. The TCB-V2 three-layer certificate and lexicographic terminal contract
+are now also closed at the finite implementation layer, but their focused
+source-only empirical gate failed because every predicted safe set was empty.
+The coherent V33 frontier repair likewise failed its Inventory/Queue gate even
+though all implementation audits passed. This distinguishes formal
+correctness from empirical validity. TCB-V3 supplies a formally safe
+finite-family envelope but failed its nonvacuity gate; TCB-V4 supplies the
+separate nonnegative continuous-synthesis contract, while TCB-V5 closes the
+finite orthogonal-residual implementation bridge. All three failed their
+empirical promotion gates. The remaining
+uncertainty concerns transferable boundary validation, ordered cumulative-risk
+identification, the trajectory logger table, the exact/additive large-budget
+decision, and synchronization of the numeric feature cap with the final code
+path.

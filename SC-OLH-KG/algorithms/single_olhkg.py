@@ -54,6 +54,8 @@ from variance.orthogonal_hvd import OrthogonalHVD
 
 
 _FORK_EXACT_KG_CONTEXT = None
+_FORK_TERMINAL_ROLLOUT_CONTEXT = None
+_FORK_TERMINAL_DEPTH3_CONTEXT = None
 
 
 def _fork_exact_kg_candidate(x):
@@ -76,6 +78,62 @@ def _fork_exact_kg_candidate(x):
         expert_uniform,
         sample_weights,
         return_diagnostics=True,
+    )
+
+
+def _fork_terminal_rollout_action(action_index):
+    """Evaluate one root Bellman action from a fork-inherited state."""
+    if _FORK_TERMINAL_ROLLOUT_CONTEXT is None:
+        raise RuntimeError("fork terminal-rollout worker has no inherited context")
+    (
+        algorithm,
+        state,
+        arms,
+        terminal_pool,
+        depth,
+        node_code,
+        common_z,
+        common_uniform,
+        sample_weights,
+    ) = _FORK_TERMINAL_ROLLOUT_CONTEXT
+    return algorithm._terminal_rollout_expected_value_for_action(
+        state,
+        arms[int(action_index)],
+        arms,
+        terminal_pool,
+        depth,
+        node_code,
+        int(action_index),
+        common_z,
+        common_uniform,
+        sample_weights,
+    )
+
+
+def _fork_terminal_depth3_prefix(payload):
+    """Evaluate one depth-three (root sample, second action) prefix."""
+    if _FORK_TERMINAL_DEPTH3_CONTEXT is None:
+        raise RuntimeError("fork depth-three rollout has no inherited context")
+    (
+        algorithm,
+        state,
+        arms,
+        terminal_pool,
+        node_code,
+        common_z,
+        common_uniform,
+    ) = _FORK_TERMINAL_DEPTH3_CONTEXT
+    root_action_index, root_sample_index, second_action_index = payload
+    return algorithm._terminal_rollout_depth3_prefix_value(
+        state,
+        arms,
+        terminal_pool,
+        node_code,
+        common_z,
+        common_uniform,
+        int(root_action_index),
+        int(root_sample_index),
+        int(second_action_index),
     )
 
 
@@ -163,8 +221,12 @@ class SingleOLHKGConfig:
     exact_kg_use_score: bool = False
     exact_kg_blend: float = 0.0
     exact_kg_terminal_mode: str = "hard_certified"
+    decision_contract_mode: str = "legacy"
     terminal_bayes_violation_penalty: float = 5.0
     terminal_frontier_candidate_count: int = 0
+    tcb_v2_mode: str = "off"
+    tcb_v2_frontier_count: int = 1
+    finalist_terminal_value_mode: str = "model_default"
     task_posterior_mode: str = "off"
     task_posterior_initial_design: bool = True
     task_posterior_boundary_bracket_fraction: float = 0.0
@@ -192,6 +254,8 @@ class SingleOLHKGConfig:
     task_posterior_proposal_exploration: float = 0.10
     task_posterior_proposal_min_per_expert: int = 2
     task_posterior_sensitivity_mode: str = "off"
+    task_latent_inference_mode: str = "shadow"
+    task_latent_calibration_mode: str = "source_profiles"
     constraint_uncertain_candidate_count: int = 0
     constraint_uncertain_pool_size: int = 300
     constraint_uncertain_state_pool_fraction: float = 0.25
@@ -206,12 +270,18 @@ class SingleOLHKGConfig:
     certification_recheck_variance_prior_df: float = 2.0
     finalist_replication_budget: int = 0
     finalist_replication_count: int = 2
+    finalist_observed_safety_count: int = 1
     finalist_replication_min_replicates: int = 2
     finalist_replication_delta: float = 0.05
     finalist_replication_variance_prior_df: float = 2.0
     finalist_replication_expert_stratified: bool = False
     finalist_replication_adaptive_race: bool = False
     finalist_replication_fixed_universe: bool = False
+    finalist_replication_policy: str = "legacy"
+    finalist_empirical_override: str = "legacy"
+    finalist_frontier_policy: str = "legacy"
+    finalist_terminal_max_arms: int = 4
+    finalist_terminal_mc_samples: int = 2
     observed_incumbent_use_replicate_variance: bool = False
     safe_interior_candidate_count: int = 0
     safe_interior_pool_size: int = 300
@@ -577,9 +647,17 @@ class SingleOLHKGAlgorithm:
             mandatory_requested > 0
             and "universal_coordinate" in prior.expert_names
         ):
+            initial_universal = getattr(
+                self.problem,
+                "task_initial_universal_candidates",
+                None,
+            )
+            if initial_universal is None:
+                initial_universal = lambda **kwargs: (
+                    self.problem.task_expert_proposal_candidates(
+                        "universal_coordinate", **kwargs))
             mandatory_rows = unique_candidates(
-                self.problem.task_expert_proposal_candidates(
-                    "universal_coordinate",
+                initial_universal(
                     n=mandatory_requested,
                     rng=self.rng,
                     pool_size=max(
@@ -904,6 +982,9 @@ class SingleOLHKGAlgorithm:
             prior = ({
                 "class_names": ("fixed",),
                 "scales": (1.0,),
+                "biases": (0.0,),
+                "bias_coefficients": None,
+                "bias_feature_names": None,
                 "decision_penalties": (5.0,),
                 "empirical_trust": (0.25,),
                 "prior_weights": (1.0,),
@@ -916,6 +997,9 @@ class SingleOLHKGAlgorithm:
                 class_names=prior.get(
                     "class_names", ("stable", "balanced", "sensitive")),
                 scales=prior.get("scales", (0.5, 1.0, 2.0)),
+                biases=prior.get("biases"),
+                bias_coefficients=prior.get("bias_coefficients"),
+                bias_feature_names=prior.get("bias_feature_names"),
                 decision_penalties=prior.get(
                     "decision_penalties", (2.0, 5.0, 20.0)),
                 empirical_trust=prior.get(
@@ -948,6 +1032,10 @@ class SingleOLHKGAlgorithm:
                 self.config.task_posterior_safe_pairwise_max_history),
             safe_pairwise_probability_floor=(
                 self.config.task_posterior_safe_pairwise_probability_floor),
+            task_latent_inference_mode=(
+                self.config.task_latent_inference_mode),
+            task_latent_calibration_mode=(
+                self.config.task_latent_calibration_mode),
         )
         # Score the remaining initial observations prequentially: each label
         # updates Q before it is inserted into any expert GPR/HVD.
@@ -1120,6 +1208,14 @@ class SingleOLHKGAlgorithm:
             return None
         return {
             "posterior": copy.deepcopy(self.task_ensemble.posterior),
+            "sensitivity_posterior": copy.deepcopy(
+                self.task_ensemble.sensitivity_posterior),
+            "task_latent_posterior": copy.deepcopy(
+                self.task_ensemble._task_latent()),
+            "task_latent_inference_mode": str(
+                self.task_ensemble.task_latent_inference_mode),
+            "task_latent_calibration_mode": str(
+                self.task_ensemble.task_latent_calibration_mode),
             "last_update": copy.deepcopy(self.task_ensemble.last_update),
             "pilot_count": int(self.task_ensemble.pilot_count),
             "safe_history": copy.deepcopy(
@@ -1163,6 +1259,20 @@ class SingleOLHKGAlgorithm:
                 saved["variance_model"]))
             expert.variance_model._last_problem = expert.problem
         self.task_ensemble.posterior = copy.deepcopy(state["posterior"])
+        if "sensitivity_posterior" in state:
+            self.task_ensemble.sensitivity_posterior = copy.deepcopy(
+                state["sensitivity_posterior"])
+        if "task_latent_posterior" in state:
+            self.task_ensemble.task_latent_posterior = copy.deepcopy(
+                state["task_latent_posterior"])
+        self.task_ensemble.task_latent_inference_mode = str(state.get(
+            "task_latent_inference_mode",
+            self.task_ensemble.task_latent_inference_mode,
+        ))
+        self.task_ensemble.task_latent_calibration_mode = str(state.get(
+            "task_latent_calibration_mode",
+            self.task_ensemble.task_latent_calibration_mode,
+        ))
         self.task_ensemble.pilot_count = int(state.get(
             "pilot_count", self.task_ensemble.pilot_count))
         self.task_ensemble.safe_history = copy.deepcopy(state.get(
@@ -1445,6 +1555,11 @@ class SingleOLHKGAlgorithm:
                 if hasattr(self.problem, "meta_basis_diagnostics")
                 else None
             ),
+            "mean_risk_coordinate_contract": (
+                self.problem.mean_risk_coordinate_contract()
+                if hasattr(self.problem, "mean_risk_coordinate_contract")
+                else None
+            ),
             "task_posterior": (
                 None
                 if self.task_ensemble is None
@@ -1637,6 +1752,105 @@ class SingleOLHKGAlgorithm:
             beta_g=self.config.beta_g,
             mode=self.config.certification_mode,
         )
+
+    def _tcb_v2_mode(self):
+        mode = str(self.config.tcb_v2_mode or "off").lower()
+        aliases = {
+            "disabled": "off",
+            "none": "off",
+            "nomination": "frontier",
+            "terminal": "frontier",
+            "main": "certified",
+            "authoritative": "certified",
+        }
+        mode = aliases.get(mode, mode)
+        if mode not in {"off", "shadow", "frontier", "certified"}:
+            raise ValueError(f"unknown TCB-V2 mode {mode!r}")
+        return mode
+
+    def _tcb_v2_source_model(self):
+        if self._tcb_v2_mode() == "off":
+            return None
+        if not hasattr(self.problem, "hierarchical_boundary_model"):
+            return None
+        model = self.problem.hierarchical_boundary_model()
+        if model is None or getattr(model, "fit_status", "unfit") != "fit":
+            return None
+        return model
+
+    def _tcb_v2_margin_many(
+        self,
+        candidates,
+        *,
+        task_ensemble=None,
+        observations=None,
+    ):
+        """Fit the two-dimensional target effect and return mean/upper margin."""
+        model = self._tcb_v2_source_model()
+        candidates = [tuple(int(v) for v in x) for x in candidates]
+        if model is None or not candidates:
+            return None
+        task_ensemble = (
+            self.task_ensemble if task_ensemble is None else task_ensemble)
+        observations = self.observations if observations is None else observations
+        if task_ensemble is None:
+            return None
+        pilot_points = []
+        pilot_margin = []
+        pilot_variance = []
+        pilot_replicates = []
+        for key, values in observations.items():
+            point = tuple(int(v) for v in key)
+            values = np.asarray(values, dtype=float)
+            if values.ndim != 2 or len(values) == 0 or values.shape[1] < 2:
+                continue
+            robust = task_ensemble.robust_moments_many(
+                1, [point], certification=True)
+            aleatoric = max(float(robust.aleatoric_upper[0]), 1e-12)
+            pilot_points.append(point)
+            pilot_margin.append(
+                float(np.mean(values[:, 1]))
+                + float(norm.ppf(1.0 - self.problem.alpha))
+                * np.sqrt(aleatoric)
+                - float(self.problem.tau)
+            )
+            pilot_variance.append(aleatoric)
+            pilot_replicates.append(int(len(values)))
+        descriptors = np.vstack([
+            np.asarray(
+                self.problem.hierarchical_boundary_descriptor(x),
+                dtype=float,
+            )
+            for x in candidates
+        ])
+        if pilot_points:
+            pilot_descriptors = np.vstack([
+                np.asarray(
+                    self.problem.hierarchical_boundary_descriptor(x),
+                    dtype=float,
+                )
+                for x in pilot_points
+            ])
+            adapter = model.fit_target_adapter(
+                pilot_descriptors,
+                np.asarray(pilot_margin, dtype=float),
+                pilot_variance=np.asarray(pilot_variance, dtype=float),
+                replicate_count=np.asarray(pilot_replicates, dtype=float),
+            )
+        else:
+            adapter = model.prior_adapter()
+        mean = np.asarray(
+            model.predict(descriptors, adapter=adapter), dtype=float)
+        upper = np.asarray(
+            model.predict_upper(descriptors, adapter=adapter), dtype=float)
+        return {
+            "mean": mean,
+            "upper": upper,
+            "adapter": adapter,
+            "adapter_diagnostics": copy.deepcopy(adapter.diagnostics),
+            "pilot_points": int(len(pilot_points)),
+            "target_oracle_used": False,
+        }
 
     def _axis_candidate_count(self):
         n_axis = int(self.config.axis_candidate_count)
@@ -1925,13 +2139,12 @@ class SingleOLHKGAlgorithm:
                     "requested": int(n),
                 }
             return []
-        posterior = self.task_ensemble.posterior
         exploration = float(np.clip(
             self.config.task_posterior_proposal_exploration,
             0.0,
             1.0,
         ))
-        allocation = posterior.proposal_allocation(
+        allocation = self.task_ensemble.structure_proposal_allocation(
             n,
             exploration=exploration,
             minimum_per_expert=(
@@ -1939,7 +2152,7 @@ class SingleOLHKGAlgorithm:
         )
         batches = []
         generated = {}
-        for name in posterior.expert_names:
+        for name in self.task_ensemble.posterior.expert_names:
             count = int(allocation.get(name, 0))
             if count <= 0:
                 generated[name] = 0
@@ -1958,8 +2171,9 @@ class SingleOLHKGAlgorithm:
             if rows:
                 batches.append((name, rows))
         if record:
-            proposal_weights = posterior.proposal_weights(
-                exploration=exploration)
+            proposal_weights = (
+                self.task_ensemble.structure_proposal_weights(
+                    exploration=exploration))
             self._last_task_proposal_info = {
                 "status": "generated",
                 "requested": int(n),
@@ -1967,7 +2181,7 @@ class SingleOLHKGAlgorithm:
                 "proposal_weights": {
                     name: float(weight)
                     for name, weight in zip(
-                        posterior.expert_names,
+                        self.task_ensemble.posterior.expert_names,
                         proposal_weights,
                     )
                 },
@@ -2017,6 +2231,11 @@ class SingleOLHKGAlgorithm:
             record=True,
         ):
             add(rows, f"task_expert:{expert_name}")
+        if hasattr(self.problem, "frozen_source_consensus_candidates"):
+            add(
+                self.problem.frozen_source_consensus_candidates(),
+                "source_consensus_frozen",
+            )
         add(self._constraint_uncertain_candidates(), "constraint_uncertain")
         add(self._replication_candidates(), "replication")
         add(self._safe_interior_candidates(), "safe_interior")
@@ -2099,6 +2318,9 @@ class SingleOLHKGAlgorithm:
         ):
             for x in rows:
                 pool.add(tuple(x))
+        if hasattr(self.problem, "frozen_source_consensus_candidates"):
+            for x in self.problem.frozen_source_consensus_candidates():
+                pool.add(tuple(x))
         for x in self._observed_neighbor_candidates(
             n=max(0, int(self.config.observed_neighbor_candidate_count)),
             rng=self.rec_rng,
@@ -2159,6 +2381,97 @@ class SingleOLHKGAlgorithm:
             "empirical_sigma_source": str(sigma_source),
             "replicate_count": int(replicate_count),
         }
+
+    def _observed_safety_challengers(self, limit=None):
+        """Rank charged candidates by their empirical chance margin."""
+
+        z_alpha = float(norm.ppf(1.0 - self.problem.alpha))
+        sigma_floor = max(
+            float(getattr(self.problem, "sigma_level", 0.0)), 1e-8)
+        protected = set()
+        if hasattr(self.problem, "frozen_source_coverage_candidates"):
+            requested = max(
+                0,
+                int(self.config.task_posterior_mandatory_universal_count),
+            )
+            protected = {
+                tuple(int(v) for v in x)
+                for x in self.problem.frozen_source_coverage_candidates(
+                    n=requested)
+            }
+        protected_observed = protected.intersection(self.observations)
+        eligible = protected_observed if protected_observed else None
+        rows = []
+        for x, ys in self.observations.items():
+            x = tuple(int(v) for v in x)
+            if eligible is not None and x not in eligible:
+                continue
+            values = np.asarray(ys, dtype=float)
+            if values.ndim != 2 or len(values) == 0 or values.shape[1] < 2:
+                continue
+            mean = np.mean(values, axis=0)
+            sigma = sigma_floor
+            sigma_source = "global_floor"
+            if (
+                self.config.observed_incumbent_use_replicate_variance
+                and len(values) >= 2
+            ):
+                sample_variance = float(np.var(values[:, 1], ddof=1))
+                prior_df = max(float(
+                    self.config.certification_recheck_variance_prior_df), 0.0)
+                sigma = float(np.sqrt(max(
+                    (
+                        (len(values) - 1) * max(sample_variance, 0.0)
+                        + prior_df * sigma_floor ** 2
+                    ) / max(len(values) - 1 + prior_df, 1.0),
+                    1e-12,
+                )))
+                sigma_source = "replicate_shrinkage"
+            margin = float(
+                mean[1] + z_alpha * sigma - float(self.problem.tau))
+            rows.append((
+                margin,
+                float(mean[0]),
+                x,
+                float(sigma),
+                str(sigma_source),
+                int(len(values)),
+            ))
+        rows.sort()
+        if limit is not None:
+            rows = rows[:max(0, int(limit))]
+        selection_scope = (
+            "frozen_source_coverage"
+            if eligible is not None else "all_charged_observations"
+        )
+        return [
+            {
+                "x": x,
+                "empirical_objective": float(objective),
+                "empirical_chance_margin": float(margin),
+                "empirical_sigma": float(sigma),
+                "empirical_sigma_source": str(sigma_source),
+                "replicate_count": int(replicate_count),
+                "selection_rank": int(rank),
+                "selection_scope": selection_scope,
+                "protected_candidate_count": int(len(protected_observed)),
+                "target_oracle_used": False,
+            }
+            for rank, (
+                margin,
+                objective,
+                x,
+                sigma,
+                sigma_source,
+                replicate_count,
+            ) in enumerate(rows, start=1)
+        ]
+
+    def _observed_safety_challenger(self):
+        """Return the first ranked charged safety challenger, if present."""
+
+        challengers = self._observed_safety_challengers(limit=1)
+        return challengers[0] if challengers else None
 
     def _initialize_certification_recheck_targets(self, samples):
         top_k = max(0, int(self.config.certification_recheck_top_k))
@@ -2246,6 +2559,90 @@ class SingleOLHKGAlgorithm:
         budget = max(0, int(self.config.finalist_replication_budget))
         return max(int(self.config.n0), int(self.config.N) - budget)
 
+    def _finalist_replication_policy(self):
+        policy = str(
+            self.config.finalist_replication_policy or "legacy"
+        ).strip().lower()
+        aliases = {
+            "v32": "legacy",
+            "commit": "commit_before_switch",
+            "terminal_kg": "terminal_kg_1step",
+            "terminal-kg-1step": "terminal_kg_1step",
+            "terminal-kg-depth3": "terminal_kg_depth3",
+        }
+        policy = aliases.get(policy, policy)
+        valid = {
+            "legacy",
+            "commit_before_switch",
+            "terminal_kg_1step",
+            "terminal_kg_depth3",
+        }
+        if policy not in valid:
+            raise ValueError(
+                f"unknown finalist replication policy {policy!r}")
+        return policy
+
+    def _decision_contract_mode(self):
+        mode = str(
+            self.config.decision_contract_mode or "legacy"
+        ).strip().lower()
+        aliases = {
+            "off": "legacy",
+            "default": "legacy",
+            "coherent": "certified_lexicographic",
+            "three_layer": "certified_lexicographic",
+            "three-layer": "certified_lexicographic",
+            "lexicographic": "certified_lexicographic",
+        }
+        mode = aliases.get(mode, mode)
+        if mode not in {"legacy", "certified_lexicographic"}:
+            raise ValueError(f"unknown decision contract mode {mode!r}")
+        return mode
+
+    def _coherent_certificate_contract(self):
+        return self._decision_contract_mode() == "certified_lexicographic"
+
+    def _finalist_frontier_policy(self):
+        policy = str(
+            self.config.finalist_frontier_policy or "legacy"
+        ).strip().lower()
+        aliases = {
+            "default": "legacy",
+            "coverage": "coverage_reserved",
+            "reserved": "coverage_reserved",
+            "coverage-reserved": "coverage_reserved",
+            "observed-safety": "observed_safety_reserved",
+            "observed_safety": "observed_safety_reserved",
+        }
+        policy = aliases.get(policy, policy)
+        if policy not in {
+            "legacy", "coverage_reserved", "observed_safety_reserved"
+        }:
+            raise ValueError(f"unknown finalist frontier policy {policy!r}")
+        return policy
+
+    def _finalist_empirical_override_policy(self):
+        policy = str(
+            self.config.finalist_empirical_override or "legacy"
+        ).strip().lower()
+        aliases = {
+            "none": "off",
+            "disabled": "off",
+            "certificate": "certified_only",
+            "certified": "certified_only",
+        }
+        policy = aliases.get(policy, policy)
+        if policy not in {"legacy", "certified_only", "off"}:
+            raise ValueError(
+                f"unknown finalist empirical override policy {policy!r}")
+        return policy
+
+    def _terminal_replication_policy_active(self):
+        return self._finalist_replication_policy() in {
+            "terminal_kg_1step",
+            "terminal_kg_depth3",
+        }
+
     def _finalist_replication_active(self, stage):
         return bool(
             int(self.config.finalist_replication_budget) > 0
@@ -2256,10 +2653,27 @@ class SingleOLHKGAlgorithm:
         candidates = [tuple(int(v) for v in x) for x in candidates]
         if self.task_ensemble is None or not candidates:
             return []
-        con_mu, con_epistemic, con_aleatoric = (
-            self.task_ensemble.expert_moments_many(
-                1, candidates, certification=True)
+        latent = (
+            self.task_ensemble._task_latent()
+            if hasattr(self.task_ensemble, "_task_latent")
+            else None
         )
+        if (
+            bool(getattr(latent, "adaptive_bias_enabled", False))
+            and hasattr(
+                self.task_ensemble,
+                "expert_calibrated_constraint_moments_many",
+            )
+        ):
+            con_mu, con_epistemic, con_aleatoric = (
+                self.task_ensemble.expert_calibrated_constraint_moments_many(
+                    candidates, certification=True)
+            )
+        else:
+            con_mu, con_epistemic, con_aleatoric = (
+                self.task_ensemble.expert_moments_many(
+                    1, candidates, certification=True)
+            )
         z_alpha = float(norm.ppf(1.0 - self.problem.alpha))
         expert_margin = (
             np.asarray(con_mu, dtype=float)
@@ -2353,11 +2767,84 @@ class SingleOLHKGAlgorithm:
         }
 
     def _initialize_finalist_replication_targets(self, stage, pool):
+        policy = self._finalist_replication_policy()
+        frontier_policy = self._finalist_frontier_policy()
         if self._finalist_replication_initialized:
             if (
                 bool(self.config.finalist_replication_adaptive_race)
                 and self._finalist_replication_active(stage)
+                and policy not in {
+                    "terminal_kg_1step",
+                    "terminal_kg_depth3",
+                }
             ):
+                if (
+                    policy == "commit_before_switch"
+                    and self._finalist_replication_active_target is not None
+                ):
+                    active = tuple(self._finalist_replication_active_target)
+                    replicate_count = int(len(
+                        self.observations.get(active, [])))
+                    minimum = max(1, int(
+                        self.config.finalist_replication_min_replicates))
+                    if replicate_count < minimum:
+                        return {
+                            "status": "active_target_commit_incomplete",
+                            "frozen_stage": (
+                                self._finalist_replication_frozen_stage),
+                            "active_target": list(map(int, active)),
+                            "active_label": (
+                                self._finalist_replication_active_label),
+                            "replicate_count_before": replicate_count,
+                            "minimum_replicates": minimum,
+                            "target_oracle_used": False,
+                        }
+                if (
+                    policy == "commit_before_switch"
+                    and frontier_policy == "observed_safety_reserved"
+                ):
+                    minimum = max(1, int(
+                        self.config.finalist_replication_min_replicates))
+                    for label, target in zip(
+                        self._finalist_replication_labels,
+                        self._finalist_replication_targets,
+                    ):
+                        if "observed_safety_rank_" not in str(label):
+                            continue
+                        target = tuple(target)
+                        replicate_count = int(len(
+                            self.observations.get(target, [])))
+                        if replicate_count >= minimum:
+                            continue
+                        changed = (
+                            target != self._finalist_replication_active_target
+                            or str(label)
+                            != self._finalist_replication_active_label
+                        )
+                        self._finalist_replication_active_target = target
+                        self._finalist_replication_active_label = str(label)
+                        if changed:
+                            self._finalist_replication_refresh_history.append({
+                                "stage": int(stage),
+                                "history_size_before_observation": int(
+                                    len(self.history)),
+                                "label": str(label),
+                                "target": list(map(int, target)),
+                                "new_archive_target": False,
+                                "replicate_count_before": replicate_count,
+                                "reserved_safety_handoff": True,
+                                "target_oracle_used": False,
+                            })
+                        return {
+                            "status": "reserved_safety_commit_pending",
+                            "frozen_stage": (
+                                self._finalist_replication_frozen_stage),
+                            "active_target": list(map(int, target)),
+                            "active_label": str(label),
+                            "replicate_count_before": replicate_count,
+                            "minimum_replicates": minimum,
+                            "target_oracle_used": False,
+                        }
                 return self._refresh_finalist_replication_targets(
                     stage, pool)
             return {
@@ -2368,6 +2855,7 @@ class SingleOLHKGAlgorithm:
                     for x in self._finalist_replication_targets
                 ],
                 "labels": list(self._finalist_replication_labels),
+                "frontier_policy": frontier_policy,
                 "target_oracle_used": False,
             }
         if not self._finalist_replication_active(stage):
@@ -2375,10 +2863,26 @@ class SingleOLHKGAlgorithm:
         self._finalist_replication_initialized = True
         self._finalist_replication_frozen_stage = int(stage)
         count = max(0, int(self.config.finalist_replication_count))
+        safety_count = max(
+            0, int(self.config.finalist_observed_safety_count))
+        if (
+            count > 0
+            and frontier_policy == "observed_safety_reserved"
+            and safety_count > 0
+        ):
+            count = max(count, 1 + safety_count)
+        if policy in {"terminal_kg_1step", "terminal_kg_depth3"}:
+            count = max(
+                count,
+                max(1, int(self.config.finalist_terminal_max_arms)),
+            )
         candidates = [tuple(int(v) for v in x) for x in pool]
         if (
-            bool(self.config.finalist_replication_adaptive_race)
-            and bool(self.config.finalist_replication_fixed_universe)
+            bool(self.config.finalist_replication_fixed_universe)
+            and (
+                bool(self.config.finalist_replication_adaptive_race)
+                or policy in {"terminal_kg_1step", "terminal_kg_depth3"}
+            )
         ):
             self._finalist_replication_pool = list(candidates)
         if count <= 0 or not candidates:
@@ -2393,9 +2897,19 @@ class SingleOLHKGAlgorithm:
             candidates,
             task_ensemble=self.task_ensemble,
         )
+        certificate = None
+        if frontier_policy == "coverage_reserved":
+            certificate = self._terminal_certificate_components(
+                self.gpr,
+                self.variance_model,
+                candidates,
+                task_ensemble=self.task_ensemble,
+                observations=self.observations,
+            )
         targets = []
         labels = []
         frozen_metrics = []
+        skipped_duplicate_criteria = []
 
         def add_target(label, index, value, source):
             target = candidates[int(index)]
@@ -2413,8 +2927,92 @@ class SingleOLHKGAlgorithm:
             })
             return True
 
+        def add_target_or_alias(label, index, value, source):
+            target = candidates[int(index)]
+            if target not in targets:
+                return add_target(label, index, value, source)
+            target_index = targets.index(target)
+            existing_labels = str(labels[target_index]).split("+")
+            if str(label) not in existing_labels:
+                labels[target_index] = f"{labels[target_index]}+{label}"
+            frozen_metrics.append({
+                "label": str(label),
+                "index": int(index),
+                "value": float(value),
+                "source": str(source),
+                "alias_of_target_index": int(target_index),
+                "replicate_count_at_freeze": int(len(
+                    self.observations.get(target, []))),
+            })
+            return True
+
+        def add_ordered_target(label, values, source):
+            values = np.asarray(values, dtype=float)
+            if (
+                values.shape != (len(candidates),)
+                or not np.any(np.isfinite(values))
+            ):
+                return False
+            for index in np.argsort(
+                np.where(np.isfinite(values), values, np.inf),
+                kind="stable",
+            ):
+                if add_target(label, index, values[index], source):
+                    return True
+                skipped_duplicate_criteria.append({
+                    "label": str(label),
+                    "index": int(index),
+                    "reason": "duplicate_or_frontier_full",
+                })
+                if len(targets) >= count:
+                    break
+            return False
+
         risk = np.asarray(components["risk"], dtype=float)
-        if np.any(np.isfinite(risk)):
+        if frontier_policy == "coverage_reserved":
+            reserved = [
+                ("minimum_bayes_risk", risk, "mixture_reserved"),
+                (
+                    "minimum_certificate_margin",
+                    certificate["margin"],
+                    f"{certificate['source']}_reserved",
+                ),
+                (
+                    "minimum_robust_expected_violation",
+                    components["expected_violation"],
+                    "mixture_reserved",
+                ),
+                (
+                    "minimum_nominal_expected_violation",
+                    components["nominal_expected_violation"],
+                    "mixture_reserved",
+                ),
+            ]
+            for label, values, source in reserved:
+                if len(targets) >= count:
+                    break
+                add_ordered_target(label, values, source)
+        elif frontier_policy == "observed_safety_reserved":
+            if np.any(np.isfinite(risk)):
+                add_ordered_target(
+                    "minimum_bayes_risk", risk, "mixture_reserved")
+            challengers = self._observed_safety_challengers(
+                limit=safety_count)
+            for rank, challenger in enumerate(challengers, start=1):
+                challenger_x = tuple(challenger["x"])
+                if challenger_x in candidates:
+                    add_target_or_alias(
+                        f"observed_safety_rank_{rank}",
+                        candidates.index(challenger_x),
+                        challenger["empirical_chance_margin"],
+                        (
+                            "charged_source_coverage_observation_reserved"
+                            if challenger.get("selection_scope")
+                            == "frozen_source_coverage"
+                            else "charged_observation_reserved"
+                        ),
+                    )
+        elif np.any(np.isfinite(risk)):
             index = int(np.nanargmin(risk))
             add_target(
                 "minimum_bayes_risk", index, risk[index], "mixture")
@@ -2436,30 +3034,96 @@ class SingleOLHKGAlgorithm:
                 if len(targets) >= count:
                     break
 
-        criteria = [
-            (
-                "minimum_nominal_expected_violation",
-                components["nominal_expected_violation"],
-            ),
-            ("minimum_robust_expected_violation",
-             components["expected_violation"]),
-            ("maximum_model_disagreement",
-             -np.asarray(components["model_disagreement"], dtype=float)),
-        ]
+        criteria = []
+        if frontier_policy == "legacy":
+            criteria.extend([
+                (
+                    "minimum_nominal_expected_violation",
+                    components["nominal_expected_violation"],
+                ),
+                (
+                    "minimum_robust_expected_violation",
+                    components["expected_violation"],
+                ),
+            ])
+        criteria.append((
+            "maximum_model_disagreement",
+            -np.asarray(components["model_disagreement"], dtype=float),
+        ))
         for label, values in criteria:
             if len(targets) >= count:
                 break
-            values = np.asarray(values, dtype=float)
-            if len(values) != len(candidates) or not np.any(np.isfinite(values)):
-                continue
-            index = int(np.nanargmin(values))
-            add_target(label, index, values[index], "mixture_fallback")
+            add_ordered_target(label, values, "mixture_fallback")
+
+        if frontier_policy == "coverage_reserved" and len(targets) < count:
+            signature = np.column_stack([
+                np.asarray(components["objective"], dtype=float),
+                risk,
+                np.asarray(certificate["margin"], dtype=float),
+                np.asarray(components["expected_violation"], dtype=float),
+                np.asarray(
+                    components["nominal_expected_violation"], dtype=float),
+                np.asarray(components["model_disagreement"], dtype=float),
+            ])
+            finite = np.all(np.isfinite(signature), axis=1)
+            if np.any(finite):
+                center = np.nanmedian(signature[finite], axis=0)
+                scale = np.nanquantile(
+                    signature[finite], 0.75, axis=0
+                ) - np.nanquantile(signature[finite], 0.25, axis=0)
+                scale = np.where(scale > 1e-12, scale, 1.0)
+                normalized = (signature - center) / scale
+                selected_indices = [
+                    index
+                    for index in (
+                        candidates.index(target) for target in targets
+                    )
+                    if finite[index]
+                ]
+                while len(targets) < count:
+                    available = finite.copy()
+                    if selected_indices:
+                        available[selected_indices] = False
+                    if not np.any(available):
+                        break
+                    if selected_indices:
+                        distances = np.min(
+                            np.linalg.norm(
+                                normalized[:, None, :]
+                                - normalized[selected_indices][None, :, :],
+                                axis=2,
+                            ),
+                            axis=1,
+                        )
+                    else:
+                        distances = np.linalg.norm(normalized, axis=1)
+                    index = int(np.argmax(np.where(
+                        available, distances, -np.inf)))
+                    if not add_target(
+                        "posterior_signature_diversity",
+                        index,
+                        -float(distances[index]),
+                        "coverage_diversity",
+                    ):
+                        break
+                    selected_indices.append(index)
+
+        if len(targets) < count:
+            while len(targets) < count and add_ordered_target(
+                "bayes_risk_frontier_fill", risk, "mixture_fill"
+            ):
+                pass
         self._finalist_replication_targets = targets
         self._finalist_replication_labels = labels
         active_index = next((
             index for index, label in enumerate(labels)
-            if str(label).startswith("expert_safety_nomination:")
+            if "observed_safety_rank_" in str(label)
         ), None)
+        if active_index is None:
+            active_index = next((
+                index for index, label in enumerate(labels)
+                if str(label).startswith("expert_safety_nomination:")
+            ), None)
         if active_index is None and targets:
             active_index = len(targets) - 1
         if active_index is not None:
@@ -2482,6 +3146,23 @@ class SingleOLHKGAlgorithm:
             "status": "frozen" if targets else "no_finite_target",
             "frozen_stage": int(stage),
             "selection_data": "charged_posterior_before_new_label",
+            "frontier_policy": frontier_policy,
+            "decision_contract_mode": self._decision_contract_mode(),
+            "certificate_source": (
+                None if certificate is None else certificate["source"]),
+            "reserved_coverage_labels": [
+                label for label in labels
+                if (
+                    label in {
+                        "minimum_bayes_risk",
+                        "minimum_certificate_margin",
+                        "minimum_robust_expected_violation",
+                        "minimum_nominal_expected_violation",
+                    }
+                    or "observed_safety_rank_" in str(label)
+                )
+            ],
+            "skipped_duplicate_criteria": skipped_duplicate_criteria,
             "expert_stratified": bool(
                 self.config.finalist_replication_expert_stratified),
             "adaptive_race": bool(
@@ -2508,6 +3189,32 @@ class SingleOLHKGAlgorithm:
             stage, pool)
         if not self._finalist_replication_active(stage):
             return None, initialization
+        policy = self._finalist_replication_policy()
+        if policy in {"terminal_kg_1step", "terminal_kg_depth3"}:
+            max_arms = max(1, int(self.config.finalist_terminal_max_arms))
+            arms = list(self._finalist_replication_targets[:max_arms])
+            if not arms:
+                return None, {
+                    **initialization,
+                    "status": "terminal_kg_no_arms",
+                    "policy": policy,
+                    "target_oracle_used": False,
+                }
+            remaining = max(1, int(self.config.N) - int(stage))
+            depth = 1 if policy == "terminal_kg_1step" else min(3, remaining)
+            selected, terminal_info = self._terminal_replication_kg_candidate(
+                arms,
+                pool,
+                depth=depth,
+                stage=stage,
+            )
+            return selected, {
+                **initialization,
+                **terminal_info,
+                "status": "forced_terminal_replication_kg",
+                "policy": policy,
+                "target_oracle_used": False,
+            }
         minimum = max(
             1, int(self.config.finalist_replication_min_replicates))
         if (
@@ -2603,11 +3310,19 @@ class SingleOLHKGAlgorithm:
             self.config.finalist_replication_delta, 1e-12, 0.5))
         familywise_multiplicity = 1
         if bool(self.config.finalist_replication_adaptive_race):
-            familywise_multiplicity = max(
-                1,
+            configured = (
                 int(self.config.finalist_replication_count)
-                + int(self.config.finalist_replication_budget),
+                + int(self.config.finalist_replication_budget)
             )
+            if self._finalist_replication_policy() == "legacy":
+                familywise_multiplicity = max(1, configured)
+            else:
+                familywise_multiplicity = max(
+                    1,
+                    configured,
+                    len(self._finalist_replication_targets)
+                    + int(self.config.finalist_replication_budget),
+                )
         delta = float(np.clip(
             nominal_delta / familywise_multiplicity, 1e-12, 0.5))
         z_delta = float(norm.ppf(1.0 - delta))
@@ -2639,11 +3354,21 @@ class SingleOLHKGAlgorithm:
         }
 
     def _replicated_finalist_recommendation_index(self, pool):
+        override_policy = self._finalist_empirical_override_policy()
+        if override_policy == "off":
+            return None, {
+                "replicated_finalist_used": False,
+                "replicated_finalist_reason": "empirical_override_disabled",
+                "replicated_finalist_override_policy": override_policy,
+            }
         if (
             not self._finalist_replication_initialized
             or not self._finalist_replication_targets
         ):
-            return None, {"replicated_finalist_used": False}
+            return None, {
+                "replicated_finalist_used": False,
+                "replicated_finalist_override_policy": override_policy,
+            }
         minimum = max(
             1, int(self.config.finalist_replication_min_replicates))
         rows = []
@@ -2680,6 +3405,20 @@ class SingleOLHKGAlgorithm:
                 row[0],
             ))
             reason = "replicated_upper_bound_feasible"
+        elif override_policy == "certified_only":
+            return None, {
+                "replicated_finalist_used": False,
+                "replicated_finalist_reason": (
+                    "no_empirically_certified_finalist"),
+                "replicated_finalist_override_policy": override_policy,
+                "replicated_finalist_rows": [
+                    copy.deepcopy(row[2]) for row in rows
+                ],
+                "replicated_finalist_incomplete_rows": incomplete,
+                "replicated_finalist_adaptive_race": bool(
+                    self.config.finalist_replication_adaptive_race),
+                "replicated_finalist_target_oracle_used": False,
+            }
         else:
             chosen = min(rows, key=lambda row: (
                 row[2]["upper_chance_margin"],
@@ -2707,6 +3446,7 @@ class SingleOLHKGAlgorithm:
             "replicated_finalist_incomplete_rows": incomplete,
             "replicated_finalist_adaptive_race": bool(
                 self.config.finalist_replication_adaptive_race),
+            "replicated_finalist_override_policy": override_policy,
             "replicated_finalist_target_oracle_used": False,
         }
 
@@ -3769,6 +4509,7 @@ class SingleOLHKGAlgorithm:
             if pool is None
             else [tuple(int(v) for v in x) for x in pool]
         )
+        coherent_contract = self._coherent_certificate_contract()
         mu_obj = self._objective_posterior_mean_many(pool)
         empirical_aleatoric = None
         if self.task_ensemble is None:
@@ -3811,9 +4552,30 @@ class SingleOLHKGAlgorithm:
         effective_epistemic = np.asarray(cert.epistemic_var, dtype=float)
         effective_aleatoric = np.asarray(cert.aleatoric_var, dtype=float)
         certification_sources = np.full(len(pool), "theory", dtype=object)
+        tcb_v2 = self._tcb_v2_margin_many(pool)
+        tcb_v2_mode = self._tcb_v2_mode()
+        if tcb_v2_mode == "certified" and tcb_v2 is None:
+            raise RuntimeError(
+                "TCB-V2 certified recommendation requires a fitted "
+                "hierarchical boundary provider")
+        tcb_v2_authoritative = bool(
+            tcb_v2_mode == "certified" and tcb_v2 is not None)
+        if tcb_v2_authoritative:
+            # TCB-V2 predicts the signed chance margin directly.  Its upper
+            # posterior bound is therefore the complete certificate; mixing
+            # it with a second calibration or empirical override would create
+            # a different decision rule at recommendation time.
+            theory_margins = np.asarray(tcb_v2["upper"], dtype=float)
+            robust_margins = theory_margins + recommendation_slack
+            certification_sources = np.full(
+                len(pool), "tcb_v2_hierarchical", dtype=object)
         calibrated_cert = (
             None
-            if self.task_ensemble is not None
+            if (
+                coherent_contract
+                or self.task_ensemble is not None
+                or tcb_v2_authoritative
+            )
             else self._calibrated_certification_result(pool, v_con)
         )
         calibration_policy = str(
@@ -3895,7 +4657,12 @@ class SingleOLHKGAlgorithm:
         )
         recommendation_calibration_fit = (
             self._recommendation_calibration_fit()
-            if self.task_ensemble is None or task_adaptive_empirical
+            if (
+                not coherent_contract
+                and
+                not tcb_v2_authoritative
+                and (self.task_ensemble is None or task_adaptive_empirical)
+            )
             else None
         )
         recommendation_calibration_phi_pool = (
@@ -3933,7 +4700,13 @@ class SingleOLHKGAlgorithm:
             "posterior_bayes_kl_radius": None,
         }
         bayes_components = None
-        if np.any(feasible):
+        if (coherent_contract or tcb_v2_authoritative) and np.any(feasible):
+            local = int(np.argmin(np.where(feasible, mu_obj, np.inf)))
+        elif coherent_contract or tcb_v2_authoritative:
+            min_margin = float(np.min(robust_margins))
+            near_min_margin = robust_margins <= min_margin + 1e-12
+            local = int(np.argmin(np.where(near_min_margin, mu_obj, np.inf)))
+        elif np.any(feasible):
             local = int(np.argmin(np.where(feasible, mu_obj, np.inf)))
         elif infeasible_strategy in (
             "bayes_risk",
@@ -3982,7 +4755,11 @@ class SingleOLHKGAlgorithm:
         observed_incumbent_rejected = False
         observed_incumbent_reason = None
         observed_idx = None
-        observed_incumbent = self._observed_nominal_incumbent()
+        observed_incumbent = (
+            None
+            if coherent_contract or tcb_v2_authoritative
+            else self._observed_nominal_incumbent()
+        )
         if observed_incumbent is not None:
             try:
                 observed_idx = pool.index(observed_incumbent["x"])
@@ -3997,6 +4774,7 @@ class SingleOLHKGAlgorithm:
                 elif (
                     self.config.recommendation_observed_fallback
                     and not np.any(feasible)
+                    and not tcb_v2_authoritative
                 ):
                     local = observed_idx
                     used_observed_incumbent = True
@@ -4019,6 +4797,8 @@ class SingleOLHKGAlgorithm:
             "source_mean_prior_guard_n_feasible": None,
         }
         if (
+            not coherent_contract
+            and
             self.task_ensemble is None
             and
             self.config.source_mean_prior_fallback
@@ -4051,7 +4831,13 @@ class SingleOLHKGAlgorithm:
                 source_margins = None
         calibrated_recommendation_used = False
         calibrated_details = {}
-        if self.task_ensemble is None:
+        if coherent_contract:
+            calibrated_idx = None
+            calibrated_details = {
+                "calibrated_recommendation_reason": (
+                    "disabled_by_coherent_certificate_contract")
+            }
+        elif self.task_ensemble is None:
             calibrated_idx, calibrated_details = (
                 self._calibrated_recommendation_index(
                     pool,
@@ -4119,9 +4905,12 @@ class SingleOLHKGAlgorithm:
                                 source_margins[local]),
                         })
         if (
+            not coherent_contract
+            and
             self.task_ensemble is None
             and
             self.config.source_mean_prior_fallback
+            and not tcb_v2_authoritative
             and not np.any(feasible)
             and not calibrated_recommendation_used
             and not used_observed_incumbent
@@ -4147,7 +4936,11 @@ class SingleOLHKGAlgorithm:
         replicated_finalist_details = {
             "replicated_finalist_used": False,
         }
-        if not np.any(feasible):
+        if (
+            not coherent_contract
+            and not np.any(feasible)
+            and not tcb_v2_authoritative
+        ):
             replicated_idx, replicated_finalist_details = (
                 self._replicated_finalist_recommendation_index(pool)
             )
@@ -4165,12 +4958,29 @@ class SingleOLHKGAlgorithm:
                         "posterior_bayes_expected_violation": float(
                             bayes_components["expected_violation"][local]),
                     })
+        frontier_budget = int(terminal_frontier_count)
+        if tcb_v2 is not None and tcb_v2_mode in ("frontier", "certified"):
+            frontier_budget = max(
+                frontier_budget,
+                1 + max(int(self.config.tcb_v2_frontier_count), 0),
+            )
         frontier_indices, frontier_labels = self._terminal_frontier_indices(
             mu_obj,
             robust_margins,
             local,
-            terminal_frontier_count,
+            frontier_budget,
             bayes_components=bayes_components,
+            tcb_upper=(
+                None if tcb_v2 is None else tcb_v2["upper"]),
+            tcb_count=(
+                0
+                if tcb_v2_mode not in ("frontier", "certified")
+                else self.config.tcb_v2_frontier_count
+            ),
+            chosen_label=(
+                "tcb_certified_action"
+                if tcb_v2_authoritative else "bayes_action"
+            ),
         )
         frontier_candidates = [
             tuple(int(v) for v in pool[index])
@@ -4264,10 +5074,34 @@ class SingleOLHKGAlgorithm:
             "posterior_hvd_variance_con": float(cert.aleatoric_var[local]),
             "posterior_beta_g": float(cert.beta_g),
             "certification_mode": cert.mode,
+            "decision_contract_mode": self._decision_contract_mode(),
+            "decision_contract_coherent": bool(coherent_contract),
             "posterior_chance_margin": float(robust_margins[local]),
             "posterior_theory_chance_margin": float(theory_margins[local]),
             "posterior_robust_chance_margin": float(robust_margins[local]),
             "posterior_certification_source": str(certification_sources[local]),
+            "tcb_v2_mode": tcb_v2_mode,
+            "tcb_v2_available": bool(tcb_v2 is not None),
+            "tcb_v2_authoritative": bool(tcb_v2_authoritative),
+            "tcb_v2_target_oracle_used": (
+                None if tcb_v2 is None
+                else bool(tcb_v2["target_oracle_used"])
+            ),
+            "tcb_v2_pilot_points": (
+                None if tcb_v2 is None else int(tcb_v2["pilot_points"])
+            ),
+            "tcb_v2_margin_mean": (
+                None if tcb_v2 is None
+                else float(tcb_v2["mean"][local])
+            ),
+            "tcb_v2_margin_upper": (
+                None if tcb_v2 is None
+                else float(tcb_v2["upper"][local])
+            ),
+            "tcb_v2_adapter_diagnostics": (
+                None if tcb_v2 is None
+                else copy.deepcopy(tcb_v2["adapter_diagnostics"])
+            ),
             "recommendation_safety_z": float(self.config.recommendation_safety_z),
             "recommendation_noise_floor_scale": float(
                 self.config.recommendation_noise_floor_scale),
@@ -4343,7 +5177,7 @@ class SingleOLHKGAlgorithm:
             "terminal_frontier_labels": list(frontier_labels),
             **(
                 {"_terminal_frontier_candidates": frontier_candidates}
-                if int(terminal_frontier_count) > 0
+                if int(frontier_budget) > 0
                 else {}
             ),
             **self._truth_pool_diagnostics(
@@ -4419,6 +5253,16 @@ class SingleOLHKGAlgorithm:
                 "model_disagreement": empty,
                 "kl_radius": 0.0,
             }
+        if (
+            task_ensemble is not None
+            and bool(getattr(
+                task_ensemble, "task_latent_authoritative", False))
+        ):
+            return task_ensemble.joint_terminal_risk_many(
+                pool,
+                tau=self.problem.tau,
+                alpha=self.problem.alpha,
+            )
         z_alpha = float(norm.ppf(1 - self.problem.alpha))
         if task_ensemble is None:
             objective = np.asarray(
@@ -4507,6 +5351,9 @@ class SingleOLHKGAlgorithm:
         chosen,
         count,
         bayes_components=None,
+        tcb_upper=None,
+        tcb_count=0,
+        chosen_label="bayes_action",
     ):
         """Select posterior-only terminal actions worth discriminating.
 
@@ -4529,7 +5376,33 @@ class SingleOLHKGAlgorithm:
                 indices.append(index)
                 labels.append(str(label))
 
-        add(chosen, "bayes_action")
+        add(chosen, chosen_label)
+        if tcb_upper is not None:
+            tcb_upper = np.asarray(tcb_upper, dtype=float)
+            if tcb_upper.shape != (n,):
+                raise ValueError("TCB upper margins must match terminal pool")
+            tcb_count = max(0, int(tcb_count))
+            tcb_order = []
+            if tcb_count > 0:
+                tcb_order.append((int(np.argmin(tcb_upper)), "minimum_tcb_upper"))
+            if tcb_count > 1:
+                for index in np.argsort(np.abs(tcb_upper), kind="stable"):
+                    tcb_order.append((
+                        int(index),
+                        "closest_tcb_boundary",
+                    ))
+            if tcb_count > 2:
+                for index in np.argsort(tcb_upper, kind="stable"):
+                    tcb_order.append((int(index), "tcb_frontier_fill"))
+            added = 0
+            for index, label in tcb_order:
+                before = len(indices)
+                if len(indices) < count:
+                    add(index, label)
+                if len(indices) > before:
+                    added += 1
+                if added >= tcb_count or len(indices) >= count:
+                    break
         if len(indices) < count:
             add(np.argmin(robust_margins), "minimum_theory_margin")
         if bayes_components is not None and len(indices) < count:
@@ -4561,12 +5434,129 @@ class SingleOLHKGAlgorithm:
             add(index, "risk_frontier_fill")
         return indices[:count], labels[:count]
 
+    def _terminal_certificate_components(
+        self,
+        gpr_models,
+        variance_model,
+        pool,
+        *,
+        task_ensemble=None,
+        observations=None,
+    ):
+        """Canonical certificate used by all coherent decision layers.
+
+        TCB-V2 is authoritative only in ``certified`` mode.  Shadow/frontier
+        modes may nominate candidates, but they cannot silently change the
+        terminal value while the final recommendation still uses the theory
+        HVD certificate.
+        """
+        pool = [tuple(int(v) for v in x) for x in pool]
+        if not pool:
+            empty = np.asarray([], dtype=float)
+            return {
+                "objective": empty,
+                "margin": empty,
+                "source": "empty",
+                "tcb_v2": None,
+            }
+        if task_ensemble is None:
+            objective = np.asarray(
+                gpr_models[0].posterior_mean_many(pool), dtype=float)
+        else:
+            objective = np.asarray(
+                task_ensemble.mixture_moments_many(
+                    0, pool, certification=False).mean,
+                dtype=float,
+            )
+
+        tcb_v2 = None
+        if self._tcb_v2_mode() == "certified":
+            tcb_v2 = self._tcb_v2_margin_many(
+                pool,
+                task_ensemble=task_ensemble,
+                observations=(
+                    self.observations
+                    if observations is None else observations
+                ),
+            )
+            if tcb_v2 is None:
+                raise RuntimeError(
+                    "TCB-V2 certified decision contract requires a fitted "
+                    "hierarchical boundary provider")
+            margin = (
+                np.asarray(tcb_v2["upper"], dtype=float)
+                + self._recommendation_slack()
+            )
+            return {
+                "objective": objective,
+                "margin": margin,
+                "source": "tcb_v2_hierarchical",
+                "tcb_v2": tcb_v2,
+            }
+
+        if task_ensemble is None:
+            mu_con = np.asarray(
+                gpr_models[1].posterior_mean_many(pool), dtype=float)
+            epistemic = np.asarray(
+                gpr_models[1].posterior_var_many(pool), dtype=float)
+            aleatoric = np.asarray(
+                variance_model.predict_certification_variance_many(
+                    1, pool, self.problem),
+                dtype=float,
+            )
+            guard = self._pilot_constraint_guard()
+        else:
+            robust = task_ensemble.robust_moments_many(
+                1, pool, certification=True)
+            mu_con = np.asarray(robust.mean_upper, dtype=float)
+            epistemic = np.asarray(robust.epistemic_upper, dtype=float)
+            aleatoric = np.asarray(robust.aleatoric_upper, dtype=float)
+            guard = 0.0
+        cert = conservative_chance_margin(
+            mu_con + guard,
+            epistemic,
+            aleatoric,
+            tau=self.problem.tau,
+            alpha=self.problem.alpha,
+            beta_g=self.config.beta_g,
+            mode=self.config.certification_mode,
+        )
+        margin = np.asarray(cert.margin, dtype=float)
+        if cert.mode != "theory":
+            sigma = np.sqrt(np.maximum(cert.aleatoric_var, 1e-12))
+            nominal_floor = (
+                self.config.recommendation_noise_floor_scale
+                * float(getattr(self.problem, "sigma_level", 0.0))
+            )
+            margin = margin + np.maximum(
+                self.config.recommendation_safety_z * sigma,
+                nominal_floor,
+            )
+        margin = margin + self._recommendation_slack()
+        return {
+            "objective": objective,
+            "margin": np.asarray(margin, dtype=float),
+            "source": "theory_hvd",
+            "tcb_v2": None,
+            "mu_con": mu_con,
+            "epistemic": np.asarray(cert.epistemic_var, dtype=float),
+            "aleatoric": np.asarray(cert.aleatoric_var, dtype=float),
+        }
+
+    def _effective_exact_terminal_mode(self):
+        if self._coherent_certificate_contract():
+            return "tcb_certified_lexicographic"
+        return str(
+            self.config.exact_kg_terminal_mode or "hard_certified"
+        ).lower()
+
     def _terminal_value_from_models(
         self,
         gpr_models,
         variance_model,
         pool,
         task_ensemble=None,
+        observations=None,
     ):
         """Terminal certified value used by the optional exact-update KG.
 
@@ -4576,9 +5566,21 @@ class SingleOLHKGAlgorithm:
         """
         if len(pool) == 0:
             return 0.0
-        terminal_mode = str(
-            self.config.exact_kg_terminal_mode or "hard_certified"
-        ).lower()
+        terminal_mode = self._effective_exact_terminal_mode()
+        if terminal_mode in (
+            "tcb_certified_lexicographic",
+            "tcb-certified-lexicographic",
+            "certified_lexicographic",
+        ):
+            return self._terminal_certified_lexicographic_value(
+                gpr_models,
+                variance_model,
+                pool,
+                task_ensemble=task_ensemble,
+                observations=(
+                    self.observations if observations is None else observations
+                ),
+            )
         if terminal_mode in (
             "bayes_risk",
             "bayes-risk",
@@ -4599,45 +5601,15 @@ class SingleOLHKGAlgorithm:
         ):
             raise ValueError(
                 f"unknown exact KG terminal mode {terminal_mode!r}")
-        if task_ensemble is None:
-            mu_obj = gpr_models[0].posterior_mean_many(pool)
-            mu_con = gpr_models[1].posterior_mean_many(pool)
-            v_con = variance_model.predict_certification_variance_many(
-                1, pool, self.problem)
-            epistemic = gpr_models[1].posterior_var_many(pool)
-            guard = self._pilot_constraint_guard()
-        else:
-            mu_obj = task_ensemble.mixture_moments_many(
-                0, pool, certification=False).mean
-            robust = task_ensemble.robust_moments_many(
-                1, pool, certification=True)
-            mu_con = robust.mean_upper
-            v_con = robust.aleatoric_upper
-            epistemic = robust.epistemic_upper
-            guard = 0.0
-        cert = conservative_chance_margin(
-            np.asarray(mu_con, dtype=float) + guard,
-            epistemic,
-            v_con,
-            tau=self.problem.tau,
-            alpha=self.problem.alpha,
-            beta_g=self.config.beta_g,
-            mode=self.config.certification_mode,
+        certificate = self._terminal_certificate_components(
+            gpr_models,
+            variance_model,
+            pool,
+            task_ensemble=task_ensemble,
+            observations=observations,
         )
-        margins = cert.margin
-        sig_con = np.sqrt(np.maximum(cert.aleatoric_var, 1e-12))
-        if cert.mode == "theory":
-            safety_buffer = np.zeros_like(margins)
-        else:
-            nominal_floor = (
-                self.config.recommendation_noise_floor_scale
-                * float(getattr(self.problem, "sigma_level", 0.0))
-            )
-            safety_buffer = np.maximum(
-                self.config.recommendation_safety_z * sig_con,
-                nominal_floor,
-            )
-        robust_margins = margins + safety_buffer + self._recommendation_slack()
+        mu_obj = certificate["objective"]
+        robust_margins = certificate["margin"]
         feasible = robust_margins <= 0.0
         if np.any(feasible):
             return float(np.min(np.where(feasible, mu_obj, np.inf)))
@@ -4671,6 +5643,97 @@ class SingleOLHKGAlgorithm:
         )
         return float(np.min(penalized))
 
+    def _finalist_terminal_value_mode(self):
+        if self._coherent_certificate_contract():
+            return "certified_lexicographic"
+        mode = str(
+            self.config.finalist_terminal_value_mode or "model_default"
+        ).lower()
+        aliases = {
+            "default": "model_default",
+            "legacy": "model_default",
+            "lexicographic": "certified_lexicographic",
+            "tcb_v2": "certified_lexicographic",
+            "tcb_v2_lexicographic": "certified_lexicographic",
+        }
+        mode = aliases.get(mode, mode)
+        if mode not in {"model_default", "certified_lexicographic"}:
+            raise ValueError(
+                f"unknown finalist terminal value mode {mode!r}")
+        return mode
+
+    def _terminal_certified_lexicographic_value(
+        self,
+        gpr_models,
+        variance_model,
+        pool,
+        *,
+        task_ensemble=None,
+        observations=None,
+    ):
+        """Return `(uncertified, positive margin, objective)`.
+
+        The tuple is deliberately not scalarized.  Bellman comparisons first
+        minimize the posterior probability of ending without a certificate,
+        then the expected positive certificate distance, and only then the
+        objective.  This is the exact terminal decision contract used by the
+        TCB-V2 finalist policy.
+        """
+        if len(pool) == 0:
+            return np.asarray([1.0, np.inf, np.inf], dtype=float)
+        certificate = self._terminal_certificate_components(
+            gpr_models,
+            variance_model,
+            pool,
+            task_ensemble=task_ensemble,
+            observations=observations,
+        )
+        mu_obj = np.asarray(certificate["objective"], dtype=float)
+        robust_margins = np.asarray(certificate["margin"], dtype=float)
+        feasible = robust_margins <= 0.0
+        if np.any(feasible):
+            objective = float(np.min(np.where(feasible, mu_obj, np.inf)))
+            return np.asarray([0.0, 0.0, objective], dtype=float)
+        min_margin = float(np.min(robust_margins))
+        near_min = robust_margins <= min_margin + 1e-12
+        objective = float(np.min(np.where(near_min, mu_obj, np.inf)))
+        return np.asarray(
+            [1.0, max(min_margin, 0.0), objective], dtype=float)
+
+    @staticmethod
+    def _terminal_value_index(values):
+        """Index of the minimum scalar or lexicographic terminal value."""
+        values = np.asarray(values, dtype=float)
+        if values.ndim == 1:
+            return int(np.argmin(values))
+        if values.ndim != 2 or values.shape[1] == 0:
+            raise ValueError("terminal action values must be 1D or 2D")
+        keys = tuple(
+            values[:, index]
+            for index in reversed(range(values.shape[1]))
+        )
+        return int(np.lexsort(keys)[0])
+
+    @classmethod
+    def _terminal_best_value(cls, values):
+        values = np.asarray(values, dtype=float)
+        selected = cls._terminal_value_index(values)
+        if values.ndim == 1:
+            return float(values[selected])
+        return np.asarray(values[selected], dtype=float)
+
+    @staticmethod
+    def _terminal_diagnostic_gain(current, future):
+        """First decisive component gain, for legacy scalar diagnostics only."""
+        delta = np.asarray(current, dtype=float) - np.asarray(
+            future, dtype=float)
+        if delta.ndim == 0:
+            return float(delta)
+        for value in delta.reshape(-1):
+            if abs(float(value)) > 1e-12:
+                return float(value)
+        return 0.0
+
     def _effective_exact_kg_mc_samples(self):
         mode = str(self.config.acquisition_mode or "additive").lower()
         if (
@@ -4682,6 +5745,565 @@ class SingleOLHKGAlgorithm:
         if mode in ("exact_mc", "blend") and int(self.config.exact_kg_mc_samples) <= 0:
             return 8
         return int(self.config.exact_kg_mc_samples)
+
+    def _terminal_rollout_root_state(self):
+        observations = {
+            tuple(int(v) for v in key): [
+                np.asarray(value, dtype=float).copy() for value in values
+            ]
+            for key, values in self.observations.items()
+        }
+        if self.task_ensemble is not None:
+            return {
+                "task_ensemble": self.task_ensemble,
+                "gpr_models": None,
+                "variance_model": None,
+                "observations": observations,
+            }
+        return {
+            "task_ensemble": None,
+            "gpr_models": self.gpr,
+            "variance_model": self.variance_model,
+            "observations": observations,
+        }
+
+    def _terminal_rollout_value(self, state, terminal_pool):
+        ensemble = state["task_ensemble"]
+        if self._finalist_terminal_value_mode() == "certified_lexicographic":
+            return self._terminal_certified_lexicographic_value(
+                state["gpr_models"],
+                state["variance_model"],
+                terminal_pool,
+                task_ensemble=ensemble,
+                observations=state["observations"],
+            )
+        if ensemble is not None:
+            return self._terminal_value_from_models(
+                None,
+                None,
+                terminal_pool,
+                task_ensemble=ensemble,
+            )
+        return self._terminal_value_from_models(
+            state["gpr_models"],
+            state["variance_model"],
+            terminal_pool,
+        )
+
+    def _terminal_rollout_samples(self, depth, node_code):
+        mc = int(self.config.finalist_terminal_mc_samples)
+        if mc <= 0:
+            mc = max(1, self._effective_exact_kg_mc_samples())
+        seed_sequence = np.random.SeedSequence([
+            int(self.config.seed) & 0xFFFFFFFF,
+            int(len(self.history)) & 0xFFFFFFFF,
+            int(depth) & 0xFFFFFFFF,
+            int(node_code) & 0xFFFFFFFF,
+        ])
+        rng = np.random.default_rng(seed_sequence)
+        mode = str(self.config.exact_kg_sampling_mode or "iid").lower()
+        if mode in ("antithetic", "paired", "antithetic_pairs"):
+            pairs = mc // 2
+            base = rng.standard_normal((pairs, 2))
+            rows = []
+            uniforms = []
+            for z_vec, expert_uniform in zip(base, rng.random(pairs)):
+                rows.extend([z_vec, -z_vec])
+                uniforms.extend([expert_uniform, 1.0 - expert_uniform])
+            if mc % 2:
+                rows.append(np.zeros(2, dtype=float))
+                uniforms.append(0.5)
+            z_rows = np.asarray(rows, dtype=float).reshape(mc, 2)
+            expert_uniforms = np.asarray(uniforms, dtype=float)
+        else:
+            # A uniform expert selector remains exact for finite mixtures.
+            # Stratification is deliberately not reused recursively because
+            # posterior expert weights change after every fantasy update.
+            z_rows = rng.standard_normal((mc, 2))
+            expert_uniforms = rng.random(mc)
+        weights = np.full(mc, 1.0 / float(mc), dtype=float)
+        return z_rows, expert_uniforms, weights
+
+    def _terminal_rollout_update_state(
+        self,
+        state,
+        x,
+        z_vec,
+        expert_uniform,
+    ):
+        key = tuple(int(v) for v in np.asarray(x, dtype=int))
+        existing = list(state["observations"].get(key, []))
+        ensemble = state["task_ensemble"]
+        if ensemble is not None:
+            y, _ = ensemble.predictive_sample(
+                np.asarray(key, dtype=int), z_vec, expert_uniform)
+            ensemble_clone = ensemble.clone(
+                gpr_cloner=self._clone_gpr_for_exact_kg,
+                variance_cloner=lambda model: (
+                    self._clone_variance_model_for_exact_kg(model)
+                ),
+            )
+            ensemble_clone.update(
+                np.asarray(key, dtype=int),
+                y,
+                existing_observations=existing,
+                tau=self.problem.tau,
+            )
+            next_observations = dict(state["observations"])
+            next_observations[key] = existing + [
+                np.asarray(y, dtype=float).copy()]
+            return {
+                "task_ensemble": ensemble_clone,
+                "gpr_models": None,
+                "variance_model": None,
+                "observations": next_observations,
+            }
+
+        gpr_models = state["gpr_models"]
+        variance_model = state["variance_model"]
+        mu_before = [
+            float(gpr_models[i].posterior_mean(key)) for i in range(2)
+        ]
+        sigma2_before = [
+            float(variance_model.predict_variance(i, key, self.problem))
+            for i in range(2)
+        ]
+        y = np.asarray([
+            mu_before[i] + np.sqrt(max(
+                sigma2_before[i] + gpr_models[i].posterior_var(key),
+                1e-12,
+            )) * float(z_vec[i])
+            for i in range(2)
+        ], dtype=float)
+        gpr_clone = [
+            self._clone_gpr_for_exact_kg(model) for model in gpr_models
+        ]
+        variance_clone = self._clone_variance_model_for_exact_kg(
+            variance_model)
+        for output_index in range(2):
+            gpr_clone[output_index].update(
+                key, y[output_index], sigma2_before[output_index])
+        for output_index in range(2):
+            replicate_values = [
+                float(np.asarray(value, dtype=float)[output_index])
+                for value in existing
+            ] + [float(y[output_index])]
+            replicate_variance = (
+                float(np.var(replicate_values, ddof=1))
+                if len(replicate_values) >= 2
+                else None
+            )
+            variance_clone.update(
+                output_index,
+                key,
+                float(y[output_index]),
+                mu_before[output_index],
+                gpr_clone[output_index],
+                self.problem,
+                replicate_variance=replicate_variance,
+            )
+        next_observations = dict(state["observations"])
+        next_observations[key] = existing + [y.copy()]
+        return {
+            "task_ensemble": None,
+            "gpr_models": gpr_clone,
+            "variance_model": variance_clone,
+            "observations": next_observations,
+        }
+
+    @staticmethod
+    def _terminal_rollout_child_code(
+        node_code,
+        action_index,
+        sample_index,
+        depth,
+    ):
+        return (
+            int(node_code) * 1009
+            + (int(action_index) + 1) * 97
+            + (int(sample_index) + 1) * 17
+            + int(depth) * 31
+        ) & 0xFFFFFFFF
+
+    def _terminal_rollout_expected_value_for_action(
+        self,
+        state,
+        action,
+        arms,
+        terminal_pool,
+        depth,
+        node_code,
+        action_index,
+        common_z,
+        common_uniform,
+        sample_weights,
+    ):
+        branch_values = []
+        for sample_index, (z_vec, expert_uniform) in enumerate(zip(
+            common_z, common_uniform
+        )):
+            next_state = self._terminal_rollout_update_state(
+                state, action, z_vec, expert_uniform)
+            if int(depth) <= 1:
+                value = self._terminal_rollout_value(
+                    next_state, terminal_pool)
+            else:
+                child_code = self._terminal_rollout_child_code(
+                    node_code,
+                    action_index,
+                    sample_index,
+                    depth,
+                )
+                child_values = self._terminal_rollout_action_values(
+                    next_state,
+                    arms,
+                    terminal_pool,
+                    depth=int(depth) - 1,
+                    node_code=child_code,
+                )
+                value = self._terminal_best_value(child_values)
+            branch_values.append(value)
+        expected = np.tensordot(
+            np.asarray(sample_weights, dtype=float),
+            np.asarray(branch_values, dtype=float),
+            axes=(0, 0),
+        )
+        if np.asarray(expected).ndim == 0:
+            return float(expected)
+        return np.asarray(expected, dtype=float)
+
+    def _terminal_rollout_action_values(
+        self,
+        state,
+        arms,
+        terminal_pool,
+        *,
+        depth,
+        node_code,
+    ):
+        common_z, common_uniform, sample_weights = (
+            self._terminal_rollout_samples(depth, node_code))
+        return np.asarray([
+            self._terminal_rollout_expected_value_for_action(
+                state,
+                action,
+                arms,
+                terminal_pool,
+                depth,
+                node_code,
+                action_index,
+                common_z,
+                common_uniform,
+                sample_weights,
+            )
+            for action_index, action in enumerate(arms)
+        ], dtype=float)
+
+    def _terminal_rollout_depth3_prefix_value(
+        self,
+        state,
+        arms,
+        terminal_pool,
+        node_code,
+        common_z,
+        common_uniform,
+        root_action_index,
+        root_sample_index,
+        second_action_index,
+    ):
+        """Return one second-stage action value in the depth-three tree."""
+        state_after_root = self._terminal_rollout_update_state(
+            state,
+            arms[int(root_action_index)],
+            common_z[int(root_sample_index)],
+            common_uniform[int(root_sample_index)],
+        )
+        second_node_code = self._terminal_rollout_child_code(
+            node_code,
+            root_action_index,
+            root_sample_index,
+            3,
+        )
+        second_z, second_uniform, second_weights = (
+            self._terminal_rollout_samples(2, second_node_code))
+        branch_values = []
+        for second_sample_index, (
+            z_vec,
+            expert_uniform,
+        ) in enumerate(zip(second_z, second_uniform)):
+            state_after_second = self._terminal_rollout_update_state(
+                state_after_root,
+                arms[int(second_action_index)],
+                z_vec,
+                expert_uniform,
+            )
+            third_node_code = self._terminal_rollout_child_code(
+                second_node_code,
+                second_action_index,
+                second_sample_index,
+                2,
+            )
+            third_values = self._terminal_rollout_action_values(
+                state_after_second,
+                arms,
+                terminal_pool,
+                depth=1,
+                node_code=third_node_code,
+            )
+            branch_values.append(self._terminal_best_value(third_values))
+        expected = np.tensordot(
+            np.asarray(second_weights, dtype=float),
+            np.asarray(branch_values, dtype=float),
+            axes=(0, 0),
+        )
+        if np.asarray(expected).ndim == 0:
+            return float(expected)
+        return np.asarray(expected, dtype=float)
+
+    def _terminal_rollout_depth3_parallel_values(
+        self,
+        state,
+        arms,
+        terminal_pool,
+        node_code,
+        common_z,
+        common_uniform,
+        sample_weights,
+        jobs,
+        backend,
+    ):
+        """Flatten depth-three prefixes so all requested cores do real work."""
+        payloads = [
+            (root_action_index, root_sample_index, second_action_index)
+            for root_action_index in range(len(arms))
+            for root_sample_index in range(len(common_z))
+            for second_action_index in range(len(arms))
+        ]
+        jobs = min(max(1, int(jobs)), len(payloads))
+        vector_value = (
+            self._finalist_terminal_value_mode()
+            == "certified_lexicographic"
+        )
+        second_shape = (len(arms), len(common_z), len(arms))
+        if vector_value:
+            second_shape = second_shape + (3,)
+        second_values = np.empty(second_shape, dtype=float)
+
+        def evaluate(payload):
+            return self._terminal_rollout_depth3_prefix_value(
+                state,
+                arms,
+                terminal_pool,
+                node_code,
+                common_z,
+                common_uniform,
+                *payload,
+            )
+
+        global _FORK_TERMINAL_DEPTH3_CONTEXT
+        if backend in ("process_fork", "fork", "process"):
+            if "fork" not in multiprocessing.get_all_start_methods():
+                raise RuntimeError(
+                    "terminal rollout process backend requires Linux fork")
+            _FORK_TERMINAL_DEPTH3_CONTEXT = (
+                self,
+                state,
+                arms,
+                terminal_pool,
+                node_code,
+                common_z,
+                common_uniform,
+            )
+            executor = ProcessPoolExecutor(
+                max_workers=jobs,
+                mp_context=multiprocessing.get_context("fork"),
+            )
+            submit = lambda pool, payload: pool.submit(
+                _fork_terminal_depth3_prefix, payload)
+        elif backend in ("thread", "threads"):
+            executor = ThreadPoolExecutor(max_workers=jobs)
+            submit = lambda pool, payload: pool.submit(evaluate, payload)
+        else:
+            raise ValueError(
+                f"unknown terminal rollout backend {backend!r}")
+        try:
+            with executor as pool:
+                futures = {
+                    submit(pool, payload): payload for payload in payloads
+                }
+                for future in as_completed(futures):
+                    payload = futures[future]
+                    second_values[payload] = future.result()
+        finally:
+            if backend in ("process_fork", "fork", "process"):
+                _FORK_TERMINAL_DEPTH3_CONTEXT = None
+
+        if vector_value:
+            root_branch_values = np.empty(
+                (len(arms), len(common_z), 3), dtype=float)
+            for root_index in range(len(arms)):
+                for sample_index in range(len(common_z)):
+                    root_branch_values[root_index, sample_index] = (
+                        self._terminal_best_value(
+                            second_values[root_index, sample_index])
+                    )
+            expected = np.tensordot(
+                root_branch_values,
+                np.asarray(sample_weights, dtype=float),
+                axes=(1, 0),
+            )
+        else:
+            root_branch_values = np.min(second_values, axis=2)
+            expected = root_branch_values @ np.asarray(
+                sample_weights, dtype=float)
+        return np.asarray(expected, dtype=float), int(jobs)
+
+    def _terminal_replication_kg_candidate(
+        self,
+        arms,
+        terminal_pool,
+        *,
+        depth,
+        stage,
+    ):
+        """Solve the finite suffix Bellman problem on a frozen arm set."""
+        arms = [tuple(int(v) for v in x) for x in arms]
+        terminal_pool = [tuple(int(v) for v in x) for x in terminal_pool]
+        state = self._terminal_rollout_root_state()
+        current_value = self._terminal_rollout_value(state, terminal_pool)
+        depth = max(1, int(depth))
+        node_code = (int(stage) + 1) * 104729
+        common_z, common_uniform, sample_weights = (
+            self._terminal_rollout_samples(depth, node_code))
+        vector_value = np.asarray(current_value).ndim > 0
+        expected = np.empty(
+            (len(arms), 3) if vector_value else len(arms),
+            dtype=float,
+        )
+        requested_jobs = max(1, int(self.config.exact_kg_jobs))
+        jobs = min(
+            requested_jobs,
+            max(1, len(arms)),
+        )
+        backend = str(
+            self.config.exact_kg_parallel_backend or "thread").lower()
+        started = time.perf_counter()
+
+        def evaluate(index):
+            return self._terminal_rollout_expected_value_for_action(
+                state,
+                arms[index],
+                arms,
+                terminal_pool,
+                depth,
+                node_code,
+                index,
+                common_z,
+                common_uniform,
+                sample_weights,
+            )
+
+        if int(depth) == 3 and requested_jobs > len(arms):
+            expected, jobs = self._terminal_rollout_depth3_parallel_values(
+                state,
+                arms,
+                terminal_pool,
+                node_code,
+                common_z,
+                common_uniform,
+                sample_weights,
+                requested_jobs,
+                backend,
+            )
+        elif jobs <= 1:
+            for index in range(len(arms)):
+                expected[index] = evaluate(index)
+        else:
+            global _FORK_TERMINAL_ROLLOUT_CONTEXT
+            if backend in ("process_fork", "fork", "process"):
+                if "fork" not in multiprocessing.get_all_start_methods():
+                    raise RuntimeError(
+                        "terminal rollout process backend requires Linux fork")
+                _FORK_TERMINAL_ROLLOUT_CONTEXT = (
+                    self,
+                    state,
+                    arms,
+                    terminal_pool,
+                    depth,
+                    node_code,
+                    common_z,
+                    common_uniform,
+                    sample_weights,
+                )
+                executor = ProcessPoolExecutor(
+                    max_workers=jobs,
+                    mp_context=multiprocessing.get_context("fork"),
+                )
+                submit = lambda pool, index: pool.submit(
+                    _fork_terminal_rollout_action, index)
+            elif backend in ("thread", "threads"):
+                executor = ThreadPoolExecutor(max_workers=jobs)
+                submit = lambda pool, index: pool.submit(evaluate, index)
+            else:
+                raise ValueError(
+                    f"unknown terminal rollout backend {backend!r}")
+            try:
+                with executor as pool:
+                    futures = {
+                        submit(pool, index): index
+                        for index in range(len(arms))
+                    }
+                    for future in as_completed(futures):
+                        expected[futures[future]] = future.result()
+            finally:
+                if backend in ("process_fork", "fork", "process"):
+                    _FORK_TERMINAL_ROLLOUT_CONTEXT = None
+
+        selected_index = self._terminal_value_index(expected)
+        if vector_value:
+            component_gain = (
+                np.asarray(current_value, dtype=float)[None, :] - expected)
+            raw_gain = np.asarray([
+                self._terminal_diagnostic_gain(current_value, future)
+                for future in expected
+            ], dtype=float)
+        else:
+            component_gain = None
+            raw_gain = float(current_value) - expected
+        clipped_gain = np.maximum(raw_gain, 0.0)
+        serialized_current = (
+            np.asarray(current_value, dtype=float).tolist()
+            if vector_value else float(current_value)
+        )
+        return arms[selected_index], {
+            "terminal_kg_depth": int(depth),
+            "terminal_kg_mc_samples": int(len(common_z)),
+            "terminal_kg_jobs": int(jobs),
+            "terminal_kg_backend": (
+                backend if jobs > 1 else "serial"),
+            "terminal_kg_current_value": serialized_current,
+            "terminal_kg_expected_values": expected.tolist(),
+            "terminal_kg_raw_gains": raw_gain.tolist(),
+            "terminal_kg_clipped_gains": clipped_gain.tolist(),
+            "terminal_kg_selected_index": selected_index,
+            "terminal_kg_selected_gain": float(raw_gain[selected_index]),
+            "terminal_kg_arm_count": int(len(arms)),
+            "terminal_kg_arms": [list(map(int, x)) for x in arms],
+            "terminal_kg_elapsed_sec": float(
+                time.perf_counter() - started),
+            "terminal_kg_frozen_universe": bool(
+                self.config.finalist_replication_fixed_universe),
+            "terminal_kg_target_oracle_used": False,
+            "terminal_kg_value_mode": self._finalist_terminal_value_mode(),
+            "terminal_kg_component_names": (
+                ["uncertified_probability", "positive_upper_margin", "objective"]
+                if vector_value else None
+            ),
+            "terminal_kg_component_gains": (
+                None if component_gain is None else component_gain.tolist()
+            ),
+            "terminal_kg_tcb_v2_mode": self._tcb_v2_mode(),
+        }
 
     def _exact_posterior_update_score_one(
         self,
@@ -4718,7 +6340,7 @@ class SingleOLHKGAlgorithm:
                 if common_expert_uniform is not None
                 else np.full(len(common_z), 0.5, dtype=float)
             )
-            gains = []
+            future_values = []
             entropy_gains = []
             weight_movements = []
             timing = {
@@ -4727,9 +6349,8 @@ class SingleOLHKGAlgorithm:
                 "joint_update": 0.0,
                 "robust_terminal": 0.0,
             }
-            entropy_before = self.task_ensemble.posterior.entropy()
-            weights_before = (
-                self.task_ensemble.posterior.decision_posterior_weights())
+            entropy_before = self.task_ensemble.inference_entropy()
+            weights_before = self.task_ensemble.inference_weights()
             for z_vec, expert_uniform in zip(common_z, uniforms):
                 started = time.perf_counter()
                 ensemble_clone = self.task_ensemble.clone(
@@ -4750,6 +6371,16 @@ class SingleOLHKGAlgorithm:
                     existing_observations=existing_observations,
                     tau=self.problem.tau,
                 )
+                future_observations = {
+                    tuple(int(v) for v in key): [
+                        np.asarray(value, dtype=float).copy()
+                        for value in values
+                    ]
+                    for key, values in self.observations.items()
+                }
+                future_observations.setdefault(
+                    tuple(int(v) for v in x_arr), []).append(
+                        np.asarray(y, dtype=float))
                 timing["joint_update"] += time.perf_counter() - started
                 started = time.perf_counter()
                 future_value = self._terminal_value_from_models(
@@ -4757,16 +6388,27 @@ class SingleOLHKGAlgorithm:
                     None,
                     terminal_pool,
                     task_ensemble=ensemble_clone,
+                    observations=future_observations,
                 )
                 timing["robust_terminal"] += time.perf_counter() - started
-                gains.append(current_value - future_value)
+                future_values.append(future_value)
                 entropy_gains.append(
-                    entropy_before - ensemble_clone.posterior.entropy())
+                    entropy_before - ensemble_clone.inference_entropy())
                 weight_movements.append(float(np.sum(np.abs(
-                    ensemble_clone.posterior.decision_posterior_weights()
+                    ensemble_clone.inference_weights()
                     - weights_before
                 ))))
-            raw_score = float(np.dot(sample_weights, gains))
+            expected_value = np.tensordot(
+                sample_weights,
+                np.asarray(future_values, dtype=float),
+                axes=(0, 0),
+            )
+            component_gain = (
+                np.asarray(current_value, dtype=float)
+                - np.asarray(expected_value, dtype=float)
+            )
+            raw_score = self._terminal_diagnostic_gain(
+                current_value, expected_value)
             result = {
                 "score": (
                     max(raw_score, 0.0)
@@ -4774,6 +6416,16 @@ class SingleOLHKGAlgorithm:
                     else raw_score
                 ),
                 "raw_score": raw_score,
+                "expected_terminal_value": (
+                    np.asarray(expected_value, dtype=float).tolist()
+                    if np.asarray(expected_value).ndim > 0
+                    else float(expected_value)
+                ),
+                "component_gain": (
+                    np.asarray(component_gain, dtype=float).tolist()
+                    if np.asarray(component_gain).ndim > 0
+                    else float(component_gain)
+                ),
                 "task_entropy_gain": float(np.dot(
                     sample_weights, entropy_gains)),
                 "task_weight_movement": float(np.dot(
@@ -4797,7 +6449,7 @@ class SingleOLHKGAlgorithm:
             ))
             for i in range(2)
         ]
-        gains = []
+        future_values = []
         for z_vec in common_z:
             gpr_clone = [
                 self._clone_gpr_for_exact_kg(model)
@@ -4830,9 +6482,39 @@ class SingleOLHKGAlgorithm:
                     replicate_variance=replicate_variance,
                 )
             future_value = self._terminal_value_from_models(
-                gpr_clone, var_clone, terminal_pool)
-            gains.append(current_value - future_value)
-        raw_score = float(np.dot(sample_weights, gains))
+                gpr_clone,
+                var_clone,
+                terminal_pool,
+                observations={
+                    **{
+                        tuple(int(v) for v in key): [
+                            np.asarray(value, dtype=float).copy()
+                            for value in values
+                        ]
+                        for key, values in self.observations.items()
+                    },
+                    tuple(int(v) for v in x_arr): (
+                        [
+                            np.asarray(value, dtype=float).copy()
+                            for value in self.observations.get(
+                                tuple(int(v) for v in x_arr), [])
+                        ]
+                        + [np.asarray(y, dtype=float)]
+                    ),
+                },
+            )
+            future_values.append(future_value)
+        expected_value = np.tensordot(
+            sample_weights,
+            np.asarray(future_values, dtype=float),
+            axes=(0, 0),
+        )
+        component_gain = (
+            np.asarray(current_value, dtype=float)
+            - np.asarray(expected_value, dtype=float)
+        )
+        raw_score = self._terminal_diagnostic_gain(
+            current_value, expected_value)
         result = {
             "score": (
                 max(raw_score, 0.0)
@@ -4840,6 +6522,16 @@ class SingleOLHKGAlgorithm:
                 else raw_score
             ),
             "raw_score": raw_score,
+            "expected_terminal_value": (
+                np.asarray(expected_value, dtype=float).tolist()
+                if np.asarray(expected_value).ndim > 0
+                else float(expected_value)
+            ),
+            "component_gain": (
+                np.asarray(component_gain, dtype=float).tolist()
+                if np.asarray(component_gain).ndim > 0
+                else float(component_gain)
+            ),
             "task_entropy_gain": 0.0,
             "task_weight_movement": 0.0,
             "time_clone": 0.0,
@@ -4917,8 +6609,20 @@ class SingleOLHKGAlgorithm:
             gaussian_rows.append(np.zeros(2, dtype=float))
         gaussian_rows = np.asarray(gaussian_rows, dtype=float).reshape(mc, 2)
 
-        expert_weights = np.asarray(
-            self.task_ensemble.posterior.decision_weights(), dtype=float)
+        if bool(getattr(
+            self.task_ensemble, "task_latent_authoritative", False
+        )):
+            selector_weights = (
+                self.task_ensemble._task_latent().posterior_weights(
+                    safe=True).reshape(-1)
+            )
+        elif hasattr(self.task_ensemble, "structure_weights"):
+            selector_weights = self.task_ensemble.structure_weights(
+                objective=False)
+        else:
+            selector_weights = (
+                self.task_ensemble.posterior.decision_weights())
+        expert_weights = np.asarray(selector_weights, dtype=float)
         expert_weights = np.clip(expert_weights, 0.0, np.inf)
         expert_weights /= max(float(np.sum(expert_weights)), 1e-15)
         edges = np.concatenate([[0.0], np.cumsum(expert_weights)])
@@ -4960,8 +6664,13 @@ class SingleOLHKGAlgorithm:
             self.variance_model,
             terminal_pool,
             task_ensemble=self.task_ensemble,
+            observations=self.observations,
         )
-        self._last_exact_kg_current_value = float(current_value)
+        self._last_exact_kg_current_value = (
+            np.asarray(current_value, dtype=float).tolist()
+            if np.asarray(current_value).ndim > 0
+            else float(current_value)
+        )
         (
             common_z,
             common_expert_uniform,
@@ -4969,6 +6678,13 @@ class SingleOLHKGAlgorithm:
         ) = self._exact_kg_sample_plan(mc)
         out = np.zeros(len(candidates), dtype=float)
         raw_out = np.zeros(len(candidates), dtype=float)
+        vector_value = np.asarray(current_value).ndim > 0
+        expected_values = np.empty(
+            (len(candidates), len(np.asarray(current_value).reshape(-1)))
+            if vector_value else len(candidates),
+            dtype=float,
+        )
+        component_gains = np.empty_like(expected_values)
         entropy_gain = np.zeros(len(candidates), dtype=float)
         weight_movement = np.zeros(len(candidates), dtype=float)
         task_timing = {
@@ -4984,6 +6700,10 @@ class SingleOLHKGAlgorithm:
         def record_result(index, result):
             out[index] = result["score"]
             raw_out[index] = result["raw_score"]
+            expected_values[index] = np.asarray(
+                result["expected_terminal_value"], dtype=float)
+            component_gains[index] = np.asarray(
+                result["component_gain"], dtype=float)
             entropy_gain[index] = result["task_entropy_gain"]
             weight_movement[index] = result["task_weight_movement"]
             for name, values in task_timing.items():
@@ -5033,6 +6753,16 @@ class SingleOLHKGAlgorithm:
                         run_started_at=run_started_at,
                         extra=f"candidates_done={done}/{len(candidates)}",
                     )
+            if vector_value:
+                order = np.lexsort(tuple(
+                    expected_values[:, index]
+                    for index in reversed(range(expected_values.shape[1]))
+                ))
+                out[:] = 0.0
+                out[order] = np.arange(
+                    len(candidates), 0, -1, dtype=float)
+            self._last_exact_kg_expected_values = expected_values.copy()
+            self._last_exact_kg_component_gains = component_gains.copy()
             self._last_exact_kg_task_entropy_gain = entropy_gain
             self._last_exact_kg_task_weight_movement = weight_movement
             self._last_exact_kg_task_timing = task_timing
@@ -5098,6 +6828,15 @@ class SingleOLHKGAlgorithm:
         self._last_exact_kg_task_entropy_gain = entropy_gain
         self._last_exact_kg_task_weight_movement = weight_movement
         self._last_exact_kg_task_timing = task_timing
+        if vector_value:
+            order = np.lexsort(tuple(
+                expected_values[:, index]
+                for index in reversed(range(expected_values.shape[1]))
+            ))
+            out[:] = 0.0
+            out[order] = np.arange(len(candidates), 0, -1, dtype=float)
+        self._last_exact_kg_expected_values = expected_values.copy()
+        self._last_exact_kg_component_gains = component_gains.copy()
         self._last_exact_kg_raw_scores = raw_out
         return out
 
@@ -5604,8 +7343,10 @@ class SingleOLHKGAlgorithm:
                         if x in self.observations
                         else "terminal_frontier"
                     )
+            finalist_started = time.perf_counter()
             finalist_x, finalist_info = self._finalist_replication_candidate(
                 n, terminal_pool)
+            finalist_policy_time = time.perf_counter() - finalist_started
             for target in self._finalist_replication_targets:
                 target = tuple(int(v) for v in target)
                 if target not in terminal_pool:
@@ -5615,7 +7356,12 @@ class SingleOLHKGAlgorithm:
                 finalist_x = tuple(int(v) for v in finalist_x)
                 if finalist_x not in candidates:
                     candidates.append(finalist_x)
-                candidate_sources[finalist_x] = "finalist_replication"
+                candidate_sources[finalist_x] = (
+                    "terminal_replication_kg"
+                    if finalist_info.get("status")
+                    == "forced_terminal_replication_kg"
+                    else "finalist_replication"
+                )
             row["t_candidate_gen"] = float(base_candidate_time)
             row["n_candidates"] = len(candidates)
             row["terminal_pool_shared"] = True
@@ -5627,6 +7373,8 @@ class SingleOLHKGAlgorithm:
             ))
             row["certification_recheck"] = copy.deepcopy(recheck_info)
             row["finalist_replication"] = copy.deepcopy(finalist_info)
+            row["t_finalist_replication_policy"] = float(
+                finalist_policy_time)
             row["llm_prior"] = dict(self._last_llm_prior_info)
             row["task_expert_proposals"] = copy.deepcopy(
                 self._last_task_proposal_info)
@@ -5662,6 +7410,10 @@ class SingleOLHKGAlgorithm:
                     self.config.exact_kg_clip_negative)
                 row["exact_kg_terminal_mode"] = str(
                     self.config.exact_kg_terminal_mode)
+                row["exact_kg_terminal_mode_effective"] = str(
+                    self._effective_exact_terminal_mode())
+                row["decision_contract_mode"] = str(
+                    self._decision_contract_mode())
                 raw_exact_kg = np.asarray(getattr(
                     self,
                     "_last_exact_kg_raw_scores",
@@ -5673,11 +7425,22 @@ class SingleOLHKGAlgorithm:
                     raw_exact_kg < 0.0))
                 row["exact_kg_zero_fraction"] = float(np.mean(
                     np.asarray(exact_kg, dtype=float) == 0.0))
-                row["certified_terminal_value_before"] = float(getattr(
-                    self,
-                    "_last_exact_kg_current_value",
-                    np.nan,
-                ))
+                row["certified_terminal_value_before"] = copy.deepcopy(
+                    getattr(
+                        self,
+                        "_last_exact_kg_current_value",
+                        np.nan,
+                    ))
+                if hasattr(self, "_last_exact_kg_expected_values"):
+                    row["exact_kg_expected_terminal_values"] = np.asarray(
+                        self._last_exact_kg_expected_values,
+                        dtype=float,
+                    ).tolist()
+                if hasattr(self, "_last_exact_kg_component_gains"):
+                    row["exact_kg_component_gains"] = np.asarray(
+                        self._last_exact_kg_component_gains,
+                        dtype=float,
+                    ).tolist()
                 blend = 0.0
                 if acquisition_mode == "exact_mc" or self.config.exact_kg_use_score:
                     score["total"] = exact_kg
@@ -5696,7 +7459,12 @@ class SingleOLHKGAlgorithm:
                 row["exact_kg_skipped_reason"] = (
                     "forced_certification_recheck"
                     if recheck_x is not None
-                    else "forced_finalist_replication"
+                    else (
+                        "terminal_replication_kg_already_computed"
+                        if finalist_info.get("status")
+                        == "forced_terminal_replication_kg"
+                        else "forced_finalist_replication"
+                    )
                 )
             if recheck_x is None:
                 if finalist_x is None:
@@ -5704,12 +7472,18 @@ class SingleOLHKGAlgorithm:
                     row["selection_policy"] = "acquisition"
                 else:
                     selected_idx = candidates.index(finalist_x)
-                    row["selection_policy"] = "finalist_replication"
+                    row["selection_policy"] = (
+                        "terminal_replication_kg"
+                        if finalist_info.get("status")
+                        == "forced_terminal_replication_kg"
+                        else "finalist_replication"
+                    )
             else:
                 selected_idx = candidates.index(recheck_x)
                 row["selection_policy"] = "certification_recheck"
             x_selected = candidates[selected_idx]
-            row["t_kg_compute"] = time.time() - t0
+            row["t_kg_compute"] = (
+                time.time() - t0 + float(finalist_policy_time))
             row["x_selected"] = list(map(int, x_selected))
             row["candidate_source_selected"] = candidate_sources.get(
                 tuple(x_selected), "unknown")
@@ -5718,6 +7492,9 @@ class SingleOLHKGAlgorithm:
             row["terminal_frontier_selected_label"] = terminal_frontier.get(
                 tuple(x_selected))
             row["score_selected"] = float(score["total"][selected_idx])
+            if finalist_info.get("terminal_kg_selected_gain") is not None:
+                row["terminal_kg_selected_gain"] = float(
+                    finalist_info["terminal_kg_selected_gain"])
             if "exact_kg" in score:
                 raw_exact_kg = np.asarray(
                     self._last_exact_kg_raw_scores, dtype=float)
@@ -5958,6 +7735,19 @@ class SingleOLHKGAlgorithm:
         }
         finalist_replication_summary = {
             "enabled": bool(self.config.finalist_replication_budget > 0),
+            "policy": self._finalist_replication_policy(),
+            "frontier_policy": self._finalist_frontier_policy(),
+            "decision_contract_mode": self._decision_contract_mode(),
+            "coherent_three_layer_contract": bool(
+                self._coherent_certificate_contract()),
+            "effective_exact_terminal_mode": (
+                self._effective_exact_terminal_mode()),
+            "effective_finalist_terminal_value_mode": (
+                self._finalist_terminal_value_mode()),
+            "terminal_max_arms": int(max(
+                1, self.config.finalist_terminal_max_arms)),
+            "empirical_override_policy": (
+                self._finalist_empirical_override_policy()),
             "reserved_budget": int(max(
                 0, self.config.finalist_replication_budget)),
             "initialized": bool(self._finalist_replication_initialized),
@@ -5998,9 +7788,21 @@ class SingleOLHKGAlgorithm:
                 for x in self._finalist_replication_targets
             ],
             "forced_evaluations": int(sum(
-                row.get("selection_policy") == "finalist_replication"
+                row.get("selection_policy") in {
+                    "finalist_replication",
+                    "terminal_replication_kg",
+                }
                 for row in self.iteration_log
             )),
+            "terminal_kg_evaluations": int(sum(
+                row.get("selection_policy") == "terminal_replication_kg"
+                for row in self.iteration_log
+            )),
+            "terminal_kg_rows": [
+                copy.deepcopy(row.get("finalist_replication"))
+                for row in self.iteration_log
+                if row.get("selection_policy") == "terminal_replication_kg"
+            ],
             "target_oracle_used": False,
         }
 
@@ -6011,6 +7813,17 @@ class SingleOLHKGAlgorithm:
         )
         final_x, final_post = self._solve_posterior_recommendation(
             pool=final_pool)
+        task_meta_coherence = (
+            None
+            if self.task_ensemble is None
+            else self.task_ensemble.meta_coherence_diagnostics(
+                final_pool,
+                tau=self.problem.tau,
+                alpha=self.problem.alpha,
+                beta_g=self.config.beta_g,
+                algorithm_selected_x=final_x,
+            )
+        )
         final_post["terminal_pool_shared"] = bool(
             self._last_terminal_pool)
         final_post["terminal_pool_size"] = int(len(final_pool))
@@ -6040,11 +7853,17 @@ class SingleOLHKGAlgorithm:
                 if hasattr(self.problem, "meta_basis_diagnostics")
                 else None
             ),
+            "mean_risk_coordinate_contract": (
+                self.problem.mean_risk_coordinate_contract()
+                if hasattr(self.problem, "mean_risk_coordinate_contract")
+                else None
+            ),
             "task_posterior": (
                 None
                 if self.task_ensemble is None
                 else self.task_ensemble.diagnostics()
             ),
+            "task_meta_coherence": task_meta_coherence,
             "cumulative_risk_provider": (
                 self.problem.cumulative_risk_provider_status()
                 if hasattr(self.problem, "cumulative_risk_provider_status")

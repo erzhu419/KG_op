@@ -27,8 +27,10 @@ from core.admissibility import (
 from core.candidates import unique_candidates
 from core.cumulative_risk import (
     RiskExposure,
+    canonical_risk_descriptor,
     cumulative_feature_names,
     cumulative_feature_vector,
+    get_risk_exposure,
 )
 from representation.transferable_spectral import (
     SourceDomainBatch,
@@ -42,6 +44,12 @@ from representation.risk_aligned_subspace import (
 )
 from representation.source_boundary_episodes import (
     SourceBoundaryEpisodePrior,
+)
+from representation.observable_coordinate import (
+    SourceLearnedObservableCoordinate,
+)
+from representation.transferable_boundary import (
+    HierarchicalSignedDistancePosterior,
 )
 
 
@@ -125,8 +133,11 @@ class SourceRecord:
     alpha: float
     sigma_level: float
     constraint_sigma: float | None = None
+    provider_risk_descriptor: np.ndarray | None = None
+    provider_risk_coordinate: np.ndarray | None = None
     origin: str = "random"
     sample_weight: float = 1.0
+    replicate_count: int = 1
 
 
 class LearnedMetaPrior:
@@ -137,6 +148,17 @@ class LearnedMetaPrior:
         "coordinate",
         "spectral",
         "spectral_hvd",
+    }
+    VALID_BOUNDARY_DESCRIPTOR_MODES = {
+        "raw",
+        "learned_coordinate",
+        "raw+learned_coordinate",
+        "learned_risk",
+        "raw+learned_risk",
+        "provider_coordinate",
+        "raw+provider_coordinate",
+        "provider_risk",
+        "raw+provider_risk",
     }
 
     def __init__(
@@ -230,6 +252,16 @@ class LearnedMetaPrior:
         ordered_exposure_group_ridge_learning=False,
         coordinate_mode="pca",
         coordinate_relevance_floor=0.05,
+        observable_mean_coordinate=False,
+        observable_mean_ridges=(0.01, 0.1, 1.0, 10.0, 100.0),
+        observable_mean_mode="latent",
+        observable_mean_latent_dim=2,
+        observable_mean_training_target="constraint_mean",
+        source_observation_mode="analytic",
+        source_observation_replicates=1,
+        source_design_mode="random",
+        source_universal_fraction=0.75,
+        source_consensus_template_count=0,
         seed=123,
     ):
         self.local_dim = int(local_dim)
@@ -450,6 +482,55 @@ class LearnedMetaPrior:
         if self.coordinate_mode not in {"pca", "stable_supervised"}:
             raise ValueError("coordinate_mode must be 'pca' or 'stable_supervised'")
         self.coordinate_relevance_floor = float(coordinate_relevance_floor)
+        self.observable_mean_coordinate = bool(observable_mean_coordinate)
+        self.observable_mean_ridges = self._positive_grid(
+            observable_mean_ridges, float, 1.0)
+        self.observable_mean_mode = str(
+            observable_mean_mode).strip().lower()
+        if self.observable_mean_mode not in {
+            "atoms", "aggregate", "latent", "consensus"
+        }:
+            raise ValueError(
+                "observable_mean_mode must be atoms, aggregate, latent, or "
+                "consensus"
+            )
+        self.observable_mean_latent_dim = max(
+            int(observable_mean_latent_dim), 0)
+        self.observable_mean_training_target = str(
+            observable_mean_training_target).strip().lower()
+        if self.observable_mean_training_target not in {
+            "constraint_mean", "chance_margin"
+        }:
+            raise ValueError(
+                "observable_mean_training_target must be constraint_mean "
+                "or chance_margin"
+            )
+        self.source_observation_mode = str(
+            source_observation_mode).strip().lower()
+        if self.source_observation_mode not in {
+            "analytic", "nominal", "replicated"
+        }:
+            raise ValueError(
+                "source_observation_mode must be analytic, nominal, or replicated"
+            )
+        self.source_observation_replicates = max(
+            1, int(source_observation_replicates))
+        self.source_design_mode = str(source_design_mode).strip().lower()
+        if self.source_design_mode not in {"random", "universal_mixture"}:
+            raise ValueError(
+                "source_design_mode must be random or universal_mixture"
+            )
+        self.source_universal_fraction = float(np.clip(
+            source_universal_fraction, 0.0, 1.0))
+        self.source_consensus_template_count = max(
+            0, int(source_consensus_template_count))
+        if (
+            self.teacher_records_per_domain > 0
+            and self.source_observation_mode != "analytic"
+        ):
+            raise ValueError(
+                "analytic teacher records cannot enter an oracle-free source path"
+            )
         self.seed = int(seed)
         self.feature_mean = None
         self.feature_scale = None
@@ -459,6 +540,8 @@ class LearnedMetaPrior:
         self.anchor_scores = np.empty(0, dtype=float)
         self.anchor_meta = []
         self.profile_templates = []
+        self.source_consensus_templates = []
+        self.source_consensus_diagnostics = {"status": "not_requested"}
         self.beta_prior = {}
         self.beta_prior_precision = {}
         self.beta_prior_reference_mean = {}
@@ -471,10 +554,26 @@ class LearnedMetaPrior:
             "status": "unfit",
             "class_names": ["stable", "balanced", "sensitive"],
             "scales": [0.5, 1.0, 2.0],
+            "biases": [0.0, 0.0, 0.0],
             "decision_penalties": [2.0, 5.0, 20.0],
             "empirical_trust": [1.0, 0.25, 0.0],
             "prior_weights": [1.0 / 3.0] * 3,
             "target_data_used": False,
+        }
+        bias_feature_dim = 1 + self.local_dim + max(
+            self.shared_dim - 1, 0)
+        self.task_bias_profiles_ = np.zeros(
+            (1, bias_feature_dim), dtype=float)
+        self.task_bias_profile_names_ = ["null_bias_profile"]
+        self.task_bias_profile_prior_ = np.ones(1, dtype=float)
+        self.task_bias_profile_diagnostics_ = {"status": "unfit"}
+        self.task_adaptive_bias_prior_ = {
+            "status": "unfit",
+            "mean": np.zeros(bias_feature_dim, dtype=float),
+            "precision": np.eye(bias_feature_dim, dtype=float),
+            "feature_names": self.task_bias_feature_names(),
+            "target_data_used": False,
+            "target_oracle_used": False,
         }
         self.mean_prior = {}
         self.mean_prior_sigma = {}
@@ -501,6 +600,12 @@ class LearnedMetaPrior:
         self.ordered_exposure_scale = np.ones(2, dtype=float)
         self.ordered_exposure_diagnostics = {"status": "not_requested"}
         self.ordered_coefficient_prior = {}
+        self.hierarchical_boundary_posterior = None
+        self.hierarchical_boundary_descriptor_mode = "raw"
+        self.hierarchical_boundary_diagnostics = {
+            "status": "not_requested",
+        }
+        self.observable_mean_model = None
         self.source_domains = []
         self.n_records = 0
         self.fit_status = "unfit"
@@ -567,6 +672,91 @@ class LearnedMetaPrior:
             hist,
         ])
         return np.asarray(out, dtype=float)
+
+    @classmethod
+    def provider_risk_descriptor(cls, problem, x):
+        """Describe a declared structural provider without reading outcomes."""
+
+        exposure = get_risk_exposure(problem, x, output_index=1)
+        if exposure is None:
+            return None
+        return canonical_risk_descriptor(exposure)
+
+    @classmethod
+    def provider_risk_coordinate(cls, problem, x):
+        """Return the declared provider's exact ``[A,N]`` coordinate."""
+
+        exposure = get_risk_exposure(problem, x, output_index=1)
+        if exposure is None:
+            return None
+        return np.concatenate([exposure.A, exposure.N]).astype(float)
+
+    def boundary_descriptor_from_raw(
+        self,
+        raw_descriptor,
+        *,
+        mode=None,
+        provider_risk_descriptor=None,
+        provider_risk_coordinate=None,
+        domain=None,
+    ):
+        """Build the exact descriptor consumed by the hierarchical boundary.
+
+        ``learned_risk`` is source-frozen and target-agnostic.  ``provider_risk``
+        is a separately audited structure-aware input and is never silently
+        substituted when a provider is absent.
+        """
+
+        mode = str(
+            self.hierarchical_boundary_descriptor_mode if mode is None else mode
+        ).lower()
+        if mode not in self.VALID_BOUNDARY_DESCRIPTOR_MODES:
+            raise ValueError(f"unknown hierarchical boundary descriptor mode {mode!r}")
+        raw = np.asarray(raw_descriptor, dtype=float).reshape(-1)
+        if "learned_" in mode:
+            exposure = self.cumulative_risk_exposure_from_descriptor(
+                raw, domain=domain)
+            risk = (
+                np.concatenate([exposure.A, exposure.N]).astype(float)
+                if "learned_coordinate" in mode
+                else canonical_risk_descriptor(exposure)
+            )
+        elif "provider_" in mode:
+            provider = (
+                provider_risk_coordinate
+                if "provider_coordinate" in mode
+                else provider_risk_descriptor
+            )
+            if provider is None:
+                raise ValueError(
+                    "provider boundary coordinate requested for a problem without "
+                    "CumulativeRiskFeatureProvider")
+            risk = np.asarray(provider, dtype=float).reshape(-1)
+        else:
+            risk = None
+        if mode == "raw":
+            return raw
+        if not mode.startswith("raw+"):
+            return risk
+        return np.concatenate([raw, risk])
+
+    def boundary_descriptor(self, problem, x, *, mode=None):
+        mode = str(
+            self.hierarchical_boundary_descriptor_mode if mode is None else mode
+        ).lower()
+        raw = self.descriptor(problem, x)
+        provider = None
+        provider_coordinate = None
+        if "provider_" in mode:
+            provider = self.provider_risk_descriptor(problem, x)
+            provider_coordinate = self.provider_risk_coordinate(problem, x)
+        return self.boundary_descriptor_from_raw(
+            raw,
+            mode=mode,
+            provider_risk_descriptor=provider,
+            provider_risk_coordinate=provider_coordinate,
+            domain=None,
+        )
 
     def _scaled_descriptor(self, descriptor):
         desc = np.asarray(descriptor, dtype=float)
@@ -1239,17 +1429,315 @@ class LearnedMetaPrior:
         # for simple statelessness.
         return int(np.argmax(self.risk_exposure(problem, x).N))
 
+    def _source_observation(self, problem, x, rng):
+        mode = self.source_observation_mode
+        replicates = (
+            self.source_observation_replicates
+            if mode == "replicated" else 1
+        )
+        observations = np.vstack([
+            np.asarray(problem.simulate(x, rng), dtype=float)
+            for _ in range(replicates)
+        ])
+        mean = np.mean(observations, axis=0)
+        nominal = max(float(getattr(problem, "sigma_level", 0.04)), 1e-8)
+        if mode == "analytic":
+            sigma = (
+                float(problem.true_sigma(x)[1])
+                if hasattr(problem, "true_sigma") else nominal
+            )
+        elif mode == "replicated" and replicates > 1:
+            centered = observations[:, 1] - float(mean[1])
+            prior_df = 2.0
+            variance = (
+                float(centered @ centered) + prior_df * nominal ** 2
+            ) / (float(replicates - 1) + prior_df)
+            sigma = float(np.sqrt(max(variance, 1e-12)))
+        else:
+            sigma = nominal
+        return mean, sigma, int(replicates)
+
+    def _source_universal_design(self, problem, n, rng):
+        """Select formula-free low-frequency profiles by geometric coverage."""
+
+        n = max(0, int(n))
+        if n == 0:
+            return []
+        library = self.universal_shape_candidates(
+            problem,
+            n=10000,
+            rng=rng,
+            force=True,
+        )
+        if len(library) <= n:
+            return list(library)
+        profiles = np.vstack([
+            np.asarray(problem.normalize(x), dtype=float).reshape(-1)
+            for x in library
+        ])
+        constant = [
+            int(index) for index in np.flatnonzero(
+                np.std(profiles, axis=1) <= 1e-10)
+        ]
+        head_tail = []
+        ramps = []
+        piecewise = []
+        for index, profile in enumerate(profiles):
+            if index in constant:
+                continue
+            if len(profile) > 1 and float(np.std(profile[1:])) <= 1e-10:
+                head_tail.append(index)
+            elif len(np.unique(np.round(profile, 10))) > 3:
+                ramps.append(index)
+            else:
+                piecewise.append(index)
+
+        def maximin(group, count):
+            group = [int(index) for index in group]
+            count = min(max(0, int(count)), len(group))
+            if count == 0:
+                return []
+            chosen = [group[0]]
+            distance = np.mean(
+                (profiles[group] - profiles[chosen[0]][None, :]) ** 2,
+                axis=1,
+            )
+            while len(chosen) < count:
+                local = int(np.argmax(distance))
+                chosen.append(group[local])
+                distance = np.minimum(distance, np.mean(
+                    (profiles[group] - profiles[group[local]][None, :]) ** 2,
+                    axis=1,
+                ))
+                distance[[group.index(index) for index in chosen]] = -np.inf
+            return chosen
+
+        # Cover each generic low-frequency family before filling globally.
+        selected = maximin(constant, min(len(constant), n))
+        remaining = max(0, n - len(selected))
+        ramp_count = min(len(ramps), max(1, int(round(0.15 * remaining))))
+        selected.extend(maximin(ramps, ramp_count))
+        remaining = max(0, n - len(selected))
+        head_count = min(
+            len(head_tail), max(1, int(round(0.45 * remaining))))
+        selected.extend(maximin(head_tail, head_count))
+        remaining = max(0, n - len(selected))
+        selected.extend(maximin(piecewise, remaining))
+
+        selected = list(dict.fromkeys(selected))
+        minimum_distance = np.full(len(library), np.inf, dtype=float)
+        for index in selected:
+            minimum_distance = np.minimum(minimum_distance, np.mean(
+                (profiles - profiles[index][None, :]) ** 2,
+                axis=1,
+            ))
+        minimum_distance[selected] = -np.inf
+        while len(selected) < n:
+            index = int(np.argmax(minimum_distance))
+            if not np.isfinite(minimum_distance[index]):
+                break
+            selected.append(index)
+            minimum_distance = np.minimum(minimum_distance, np.mean(
+                (profiles - profiles[index][None, :]) ** 2,
+                axis=1,
+            ))
+            minimum_distance[selected] = -np.inf
+        return [library[index] for index in selected[:n]]
+
+    def _source_design_candidates(self, problem, n, rng):
+        n = max(1, int(n))
+        if self.source_design_mode == "random":
+            # Keep sampling lazy so source-x draws and simulator-noise draws
+            # retain the historical RNG interleaving exactly.
+            return (
+                (_as_tuple(problem.sample_random(rng)), "random")
+                for _ in range(n)
+            )
+        n_universal = min(
+            n,
+            max(1, int(round(n * self.source_universal_fraction))),
+        )
+        rows = [
+            (_as_tuple(x), "universal_low_frequency")
+            for x in self._source_universal_design(
+                problem, n_universal, rng)
+        ]
+        seen = {x for x, _ in rows}
+        while len(rows) < n:
+            x = _as_tuple(problem.sample_random(rng))
+            if x in seen:
+                continue
+            seen.add(x)
+            rows.append((x, "random"))
+        return rows[:n]
+
+    @staticmethod
+    def _canonical_profile(profile, size=64):
+        """Map dimension-varying normalized policies to a common source grid."""
+
+        profile = np.clip(
+            np.asarray(profile, dtype=float).reshape(-1), 0.0, 1.0)
+        size = max(2, int(size))
+        if len(profile) == 0:
+            return np.zeros(size, dtype=float)
+        if len(profile) == size:
+            return profile.copy()
+        if len(profile) == 1:
+            return np.full(size, float(profile[0]), dtype=float)
+        return np.interp(
+            np.linspace(0.0, 1.0, size),
+            np.linspace(0.0, 1.0, len(profile)),
+            profile,
+        )
+
+    @staticmethod
+    def _percentile_ranks(values):
+        """Return stable lower-is-better empirical percentile ranks."""
+
+        values = np.asarray(values, dtype=float).reshape(-1)
+        if len(values) <= 1:
+            return np.zeros(len(values), dtype=float)
+        order = np.argsort(values, kind="stable")
+        ranks = np.empty(len(values), dtype=float)
+        ranks[order] = np.arange(len(values), dtype=float) / float(len(values) - 1)
+        return ranks
+
+    def _fit_source_consensus_templates(self, records):
+        """Rank shared universal profiles using source observations only.
+
+        Chance margins are first converted to within-domain percentile ranks,
+        so a domain's arbitrary constraint scale cannot dominate another.  A
+        profile is retained only when it was evaluated in every source domain.
+        No held-out target values, target hooks, or analytic source truth enter
+        this fit.
+        """
+
+        self.source_consensus_templates = []
+        requested = int(self.source_consensus_template_count)
+        if requested <= 0:
+            self.source_consensus_diagnostics = {
+                "status": "not_requested",
+                "requested": requested,
+                "target_data_used": False,
+                "target_oracle_used": False,
+            }
+            return
+        usable = [
+            rec for rec in records
+            if rec.origin == "universal_low_frequency" and rec.profile is not None
+        ]
+        domains = sorted({str(rec.domain) for rec in usable})
+        if len(domains) < 2:
+            self.source_consensus_diagnostics = {
+                "status": "insufficient_source_domains",
+                "requested": requested,
+                "n_source_domains": int(len(domains)),
+                "target_data_used": False,
+                "target_oracle_used": False,
+            }
+            return
+
+        rank_by_record = {}
+        for domain in domains:
+            indices = [
+                index for index, rec in enumerate(usable)
+                if str(rec.domain) == domain
+            ]
+            ranks = self._percentile_ranks([
+                self._source_margin(usable[index]) for index in indices
+            ])
+            for index, rank in zip(indices, ranks):
+                rank_by_record[index] = float(rank)
+
+        grouped = {}
+        for index, rec in enumerate(usable):
+            canonical = self._canonical_profile(rec.profile)
+            key = tuple(np.round(canonical, 6))
+            grouped.setdefault(key, []).append((index, rec, canonical))
+
+        rows = []
+        for entries in grouped.values():
+            by_domain = {}
+            for index, rec, canonical in entries:
+                domain = str(rec.domain)
+                candidate = (
+                    float(rank_by_record[index]),
+                    abs(float(self._source_margin(rec))),
+                    index,
+                    rec,
+                    canonical,
+                )
+                if domain not in by_domain or candidate[:3] < by_domain[domain][:3]:
+                    by_domain[domain] = candidate
+            if any(domain not in by_domain for domain in domains):
+                continue
+            ranks = np.asarray([
+                by_domain[domain][0] for domain in domains
+            ], dtype=float)
+            margins = np.asarray([
+                self._source_margin(by_domain[domain][3]) for domain in domains
+            ], dtype=float)
+            mean_rank = float(np.mean(ranks))
+            worst_rank = float(np.max(ranks))
+            disagreement = float(np.std(ranks))
+            # Mean rank carries consensus; the remaining terms reject a
+            # template that is excellent in only one source domain.
+            score = mean_rank + 0.25 * worst_rank + 0.25 * disagreement
+            rows.append({
+                "profile": by_domain[domains[0]][4],
+                "score": float(score),
+                "mean_margin_rank": mean_rank,
+                "worst_margin_rank": worst_rank,
+                "rank_disagreement": disagreement,
+                "feasible_source_count": int(np.sum(margins <= 0.0)),
+                "source_domain_count": int(len(domains)),
+                "domain_margin_ranks": {
+                    domain: float(by_domain[domain][0]) for domain in domains
+                },
+                "source_only": True,
+                "target_data_used": False,
+                "target_oracle_used": False,
+            })
+        rows.sort(key=lambda row: (
+            float(row["score"]),
+            float(row["mean_margin_rank"]),
+            float(row["worst_margin_rank"]),
+            tuple(np.round(row["profile"], 6)),
+        ))
+        self.source_consensus_templates = rows[:requested]
+        self.source_consensus_diagnostics = {
+            "status": "fit" if self.source_consensus_templates else "no_shared_profiles",
+            "requested": requested,
+            "n_source_domains": int(len(domains)),
+            "source_domains": domains,
+            "n_universal_records": int(len(usable)),
+            "n_shared_profiles": int(len(rows)),
+            "n_selected_templates": int(len(self.source_consensus_templates)),
+            "ranking_target": "observed_source_chance_margin_percentile",
+            "selected": [
+                {
+                    "score": float(row["score"]),
+                    "mean_margin_rank": float(row["mean_margin_rank"]),
+                    "worst_margin_rank": float(row["worst_margin_rank"]),
+                    "rank_disagreement": float(row["rank_disagreement"]),
+                    "feasible_source_count": int(row["feasible_source_count"]),
+                    "profile": np.round(row["profile"], 6).tolist(),
+                }
+                for row in self.source_consensus_templates
+            ],
+            "source_observation_mode": self.source_observation_mode,
+            "source_only": True,
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+
     def _record_source_data(self, source_problems, n_records_per_domain, rng):
         records = []
         for domain_name, problem in source_problems:
-            for _ in range(max(1, int(n_records_per_domain))):
-                x = _as_tuple(problem.sample_random(rng))
-                y = np.asarray(problem.simulate(x, rng), dtype=float)
-                sigma = (
-                    float(problem.true_sigma(x)[1])
-                    if hasattr(problem, "true_sigma")
-                    else float(getattr(problem, "sigma_level", 0.04))
-                )
+            for x, origin in self._source_design_candidates(
+                problem, n_records_per_domain, rng):
+                y, sigma, replicate_count = self._source_observation(
+                    problem, x, rng)
                 records.append(SourceRecord(
                     domain=str(domain_name),
                     x=x,
@@ -1260,8 +1748,13 @@ class LearnedMetaPrior:
                     alpha=float(getattr(problem, "alpha", 0.05)),
                     sigma_level=float(getattr(problem, "sigma_level", 0.04)),
                     constraint_sigma=sigma,
-                    origin="random",
+                    provider_risk_descriptor=self.provider_risk_descriptor(
+                        problem, x),
+                    provider_risk_coordinate=self.provider_risk_coordinate(
+                        problem, x),
+                    origin=origin,
                     sample_weight=1.0,
+                    replicate_count=replicate_count,
                 ))
             records.extend(self._record_teacher_source_data(
                 str(domain_name),
@@ -1406,8 +1899,13 @@ class LearnedMetaPrior:
                 alpha=float(getattr(problem, "alpha", 0.05)),
                 sigma_level=float(getattr(problem, "sigma_level", 0.04)),
                 constraint_sigma=float(row["sigma_con"]),
+                provider_risk_descriptor=self.provider_risk_descriptor(
+                    problem, row["x"]),
+                provider_risk_coordinate=self.provider_risk_coordinate(
+                    problem, row["x"]),
                 origin="source_domain_tuned_teacher",
                 sample_weight=max(float(self.teacher_weight), 1e-8),
+                replicate_count=1,
             ))
         return records
 
@@ -1480,9 +1978,32 @@ class LearnedMetaPrior:
                 origin: int(sum(1 for rec in records if rec.origin == origin))
                 for origin in sorted({rec.origin for rec in records})
             },
+            "source_observation_mode": self.source_observation_mode,
+            "source_observation_replicates": int(
+                self.source_observation_replicates),
+            "source_design_mode": self.source_design_mode,
+            "source_universal_fraction": float(
+                self.source_universal_fraction),
+            "source_universal_record_count": int(sum(
+                rec.origin == "universal_low_frequency" for rec in records
+            )),
+            "source_analytic_sigma_used": bool(
+                self.source_observation_mode == "analytic"),
+            "source_analytic_teacher_used": bool(
+                self.teacher_records_per_domain > 0),
+            "source_simulator_calls": int(sum(
+                max(1, int(rec.replicate_count)) for rec in records
+                if rec.origin in {"random", "universal_low_frequency"}
+            )),
         }
 
-    def fit_from_source_problems(self, source_problems, n_records_per_domain=128, rng=None):
+    def fit_from_source_problems(
+        self,
+        source_problems,
+        n_records_per_domain=128,
+        rng=None,
+        hierarchical_boundary_config=None,
+    ):
         rng = rng or np.random.default_rng(self.seed)
         source_problems = list(source_problems)
         if not source_problems:
@@ -1498,6 +2019,42 @@ class LearnedMetaPrior:
         self.fit_status = "fitting"
         weights = [self._boundary_sample_weight(rec) for rec in records]
         self._record_training_diagnostics(records, weights)
+        self._fit_source_consensus_templates(records)
+        self.training_diagnostics["source_consensus_templates"] = copy.deepcopy(
+            self.source_consensus_diagnostics)
+        if self.observable_mean_coordinate:
+            usable = [rec for rec in records if rec.profile is not None]
+            self.observable_mean_model = SourceLearnedObservableCoordinate(
+                ridge_grid=self.observable_mean_ridges,
+                output_mode=self.observable_mean_mode,
+                latent_dim=self.observable_mean_latent_dim,
+            ).fit(
+                [rec.profile for rec in usable],
+                [
+                    (
+                        (float(rec.y[1]) - float(rec.tau))
+                        if self.observable_mean_training_target
+                        == "constraint_mean"
+                        else self._source_margin(rec)
+                    ) / self._source_margin_scale(rec)
+                    for rec in usable
+                ],
+                [rec.domain for rec in usable],
+                sample_weight=[
+                    self._boundary_sample_weight(rec) for rec in usable
+                ],
+            )
+            self.training_diagnostics["observable_mean_coordinate"] = (
+                self.observable_mean_model.diagnostics())
+            self.training_diagnostics["observable_mean_coordinate"].update({
+                "training_target": self.observable_mean_training_target,
+                "chance_boundary_weighted": True,
+            })
+        if hierarchical_boundary_config is not None:
+            self._fit_hierarchical_boundary(
+                records,
+                dict(hierarchical_boundary_config),
+            )
         self._fit_ordered_exposure(records)
         if self.component_enabled("spectral"):
             self._fit_spectral_basis(records)
@@ -1518,6 +2075,86 @@ class LearnedMetaPrior:
         ]
         self.fit_status = "fit"
         return self
+
+    def _fit_hierarchical_boundary(self, records, config):
+        descriptor_mode = str(config.get(
+            "descriptor_mode", "learned_risk")).lower()
+        if descriptor_mode not in self.VALID_BOUNDARY_DESCRIPTOR_MODES:
+            raise ValueError(
+                f"unknown hierarchical boundary descriptor mode {descriptor_mode!r}")
+        model = HierarchicalSignedDistancePosterior(
+            coordinate=str(config.get(
+                "coordinate", "boundary_latent")),
+            geometry=str(config.get("geometry", "low_rank_psd")),
+            rank=int(config.get("rank", 2)),
+            ridge=float(config.get("ridge", max(self.ridge, 1e-3))),
+            domain_penalty=float(config.get("domain_penalty", 0.5)),
+            boundary_temperature=float(config.get(
+                "boundary_temperature", self.boundary_temperature)),
+            adaptation_ridge=float(config.get("adaptation_ridge", 5.0)),
+            upper_alpha=float(config.get("upper_alpha", 0.01)),
+            calibration_prior_df=float(config.get(
+                "calibration_prior_df", 2.0)),
+            hierarchy_iterations=int(config.get(
+                "hierarchy_iterations", 5)),
+            effect_ridge=float(config.get("effect_ridge", 1.0)),
+            rotation_mode=str(config.get("rotation_mode", "none")),
+            rotation_ridge=float(config.get("rotation_ridge", 5.0)),
+            target_residual_rank=int(config.get("target_residual_rank", 0)),
+            residual_ridge=float(config.get("residual_ridge", 5.0)),
+        )
+        descriptors = np.vstack([
+            self.boundary_descriptor_from_raw(
+                rec.descriptor,
+                mode=descriptor_mode,
+                provider_risk_descriptor=rec.provider_risk_descriptor,
+                provider_risk_coordinate=rec.provider_risk_coordinate,
+                domain=rec.domain,
+            )
+            for rec in records
+        ])
+        margins = np.asarray([
+            self._source_margin(rec) for rec in records
+        ], dtype=float)
+        domains = np.asarray([
+            str(rec.domain) for rec in records
+        ], dtype=object)
+        sample_weight = np.asarray([
+            self._boundary_sample_weight(rec) for rec in records
+        ], dtype=float)
+        margin_variance = np.asarray([
+            max(float(
+                rec.constraint_sigma
+                if rec.constraint_sigma is not None
+                else rec.sigma_level
+            ) ** 2, 1e-10)
+            for rec in records
+        ], dtype=float)
+        replicate_count = np.asarray([
+            max(int(rec.replicate_count), 1) for rec in records
+        ], dtype=float)
+        model.fit(
+            descriptors,
+            margins,
+            domains,
+            sample_weight=sample_weight,
+            margin_variance=margin_variance,
+            replicate_count=replicate_count,
+        )
+        self.hierarchical_boundary_posterior = model
+        self.hierarchical_boundary_descriptor_mode = descriptor_mode
+        self.hierarchical_boundary_diagnostics = model.diagnostics()
+        self.hierarchical_boundary_diagnostics.update({
+            "descriptor_mode": descriptor_mode,
+            "descriptor_dimension": int(descriptors.shape[1]),
+            "provider_structural_input": bool(
+                "provider_" in descriptor_mode),
+            "source_provider_coverage": float(np.mean([
+                rec.provider_risk_descriptor is not None for rec in records
+            ])),
+        })
+        self.training_diagnostics["hierarchical_boundary"] = copy.deepcopy(
+            self.hierarchical_boundary_diagnostics)
 
     def _fit_spectral_basis(self, records):
         by_domain = {}
@@ -2846,6 +3483,301 @@ class LearnedMetaPrior:
         cumulative = cumulative_feature_vector(exposure)
         return np.concatenate([desc, psi, psi ** 2, cumulative[1:]])
 
+    def task_bias_features_from_descriptor(self, descriptor, *, domain=None):
+        """Low-rank signed-calibration features in canonical ``psi=(A,N)``.
+
+        Shared exposures live on a simplex, so an intercept plus every entry
+        of ``N`` is rank deficient.  Helmert contrasts retain all simplex
+        information while giving the source-only calibration fit a stable,
+        orthogonal coordinate system.
+        """
+        exposure = self.cumulative_risk_exposure_from_descriptor(
+            descriptor, domain=domain)
+        shared = np.asarray(exposure.N, dtype=float).reshape(-1)
+        if len(shared) <= 1:
+            shared_contrasts = np.empty(0, dtype=float)
+        else:
+            contrast = np.zeros((len(shared), len(shared) - 1), dtype=float)
+            for index in range(len(shared) - 1):
+                scale = np.sqrt((index + 1) * (index + 2))
+                contrast[:index + 1, index] = 1.0 / scale
+                contrast[index + 1, index] = -(index + 1) / scale
+            shared_contrasts = shared @ contrast
+        return np.concatenate([
+            np.ones(1, dtype=float),
+            np.asarray(exposure.A, dtype=float),
+            shared_contrasts,
+        ])
+
+    def task_bias_features(self, problem, x):
+        return self.task_bias_features_from_descriptor(
+            self.descriptor(problem, x), domain=None)
+
+    def task_bias_feature_names(self):
+        return (
+            ["bias_intercept"]
+            + [f"bias_A{index}" for index in range(self.local_dim)]
+            + [
+                f"bias_N_contrast{index}"
+                for index in range(max(self.shared_dim - 1, 0))
+            ]
+        )
+
+    def _fit_task_bias_profiles(
+        self,
+        mean_rows,
+        domains,
+        mean_design_by_domain,
+        mean_targets_by_domain,
+        bias_features_by_domain,
+        bias_weights_by_domain=None,
+    ):
+        """Fit source-LODO signed residual functions on canonical risk features."""
+        if not mean_rows or not domains:
+            self.task_bias_profile_diagnostics_ = {
+                "status": "fallback_null",
+                "target_data_used": False,
+            }
+            self.task_adaptive_bias_prior_["status"] = "fallback_null"
+            return
+        stack = np.vstack(mean_rows)
+        residual_by_domain = {}
+        residual_scale_by_domain = {}
+        standardized_residual_by_domain = {}
+        fitted_profiles = []
+        fitted_names = []
+        fitted_domains = []
+        all_features = np.vstack([
+            np.asarray(bias_features_by_domain[str(domain)], dtype=float)
+            for domain in domains
+        ])
+        feature_scale = np.sqrt(np.mean(all_features ** 2, axis=0))
+        feature_scale = np.maximum(feature_scale, 1e-3)
+        for heldout_index, heldout_domain in enumerate(domains):
+            lodo_mean = (
+                np.mean(stack, axis=0)
+                if len(stack) <= 1
+                else np.mean(np.delete(
+                    stack, heldout_index, axis=0), axis=0)
+            )
+            residual = (
+                mean_targets_by_domain[heldout_domain]
+                - mean_design_by_domain[heldout_domain] @ lodo_mean
+            )
+            Phi = np.asarray(
+                bias_features_by_domain[heldout_domain], dtype=float)
+            residual_scale = max(
+                float(np.sqrt(np.mean(residual ** 2))), 1e-8)
+            standardized_residual = residual / residual_scale
+            scaled_phi = Phi / feature_scale[None, :]
+            penalty = (
+                max(float(self.ridge), 1e-2)
+                * max(len(Phi), 1)
+                * np.eye(Phi.shape[1], dtype=float)
+            )
+            try:
+                scaled_beta = np.linalg.solve(
+                    scaled_phi.T @ scaled_phi + penalty,
+                    scaled_phi.T @ standardized_residual,
+                )
+            except np.linalg.LinAlgError:
+                scaled_beta = np.linalg.lstsq(
+                    scaled_phi.T @ scaled_phi + penalty,
+                    scaled_phi.T @ standardized_residual,
+                    rcond=None,
+                )[0]
+            beta = scaled_beta / feature_scale
+            residual_by_domain[str(heldout_domain)] = np.asarray(
+                residual, dtype=float)
+            residual_scale_by_domain[str(heldout_domain)] = float(
+                residual_scale)
+            standardized_residual_by_domain[str(heldout_domain)] = np.asarray(
+                standardized_residual, dtype=float)
+            fitted_profiles.append(np.asarray(beta, dtype=float))
+            fitted_names.append(f"source_bias:{heldout_domain}")
+            fitted_domains.append(str(heldout_domain))
+
+        feature_dim = len(fitted_profiles[0])
+        profiles = np.vstack([
+            np.zeros(feature_dim, dtype=float),
+            np.vstack(fitted_profiles),
+        ])
+        names = ["null_bias_profile"] + fitted_names
+        profile_domains = [None] + fitted_domains
+        scores = []
+        for beta, source_domain in zip(profiles, profile_domains):
+            fold_scores = []
+            for domain in domains:
+                if source_domain is not None and str(domain) == source_domain:
+                    continue
+                residual = standardized_residual_by_domain[str(domain)]
+                prediction = (
+                    bias_features_by_domain[str(domain)] @ beta)
+                fold_scores.append(float(np.mean(
+                    -0.5 * (residual - prediction) ** 2
+                )))
+            scores.append(float(np.mean(fold_scores)) if fold_scores else 0.0)
+        log_score = np.asarray(scores, dtype=float)
+        log_score -= float(np.max(log_score))
+        likelihood = np.exp(np.clip(log_score, -50.0, 0.0))
+        likelihood /= max(float(np.sum(likelihood)), 1e-12)
+        prior = 0.9 * likelihood + 0.1 / len(likelihood)
+        prior /= float(np.sum(prior))
+        self.task_bias_profiles_ = profiles
+        self.task_bias_profile_names_ = names
+        self.task_bias_profile_prior_ = prior
+        self.task_bias_profile_diagnostics_ = {
+            "status": "fit_source_lodo_profiles",
+            "profile_names": list(names),
+            "feature_names": self.task_bias_feature_names(),
+            "profile_prior_weights": prior.tolist(),
+            "profile_log_score": log_score.tolist(),
+            "residual_scale_by_domain": copy.deepcopy(
+                residual_scale_by_domain),
+            "feature_scale": feature_scale.tolist(),
+            "profile_output_units": "predictive_standard_deviations",
+            "shared_coordinate": "helmert_simplex_contrast",
+            "n_source_domains": int(len(domains)),
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+        self._fit_adaptive_task_bias_prior(
+            residual_by_domain,
+            bias_features_by_domain,
+            bias_weights_by_domain or {},
+            feature_scale,
+        )
+
+    def _fit_adaptive_task_bias_prior(
+        self,
+        residual_by_domain,
+        bias_features_by_domain,
+        bias_weights_by_domain,
+        feature_scale,
+    ):
+        """Fit a source-only Gaussian prior for target adaptive calibration.
+
+        The fitted coefficients predict standardized source LODO residuals.
+        Boundary weights affect only this V4 prior; the V3 discrete profile
+        dictionary remains unchanged for a reproducible ablation.
+        """
+        domains = sorted(residual_by_domain)
+        if not domains:
+            self.task_adaptive_bias_prior_["status"] = "fallback_null"
+            return
+        feature_scale = np.maximum(
+            np.asarray(feature_scale, dtype=float), 1e-3)
+        scaled_profiles = []
+        residual_scales = {}
+        standardized_by_domain = {}
+        normalized_weights_by_domain = {}
+        for domain in domains:
+            residual = np.asarray(
+                residual_by_domain[domain], dtype=float).reshape(-1)
+            Phi = np.asarray(
+                bias_features_by_domain[domain], dtype=float)
+            weights = np.asarray(
+                bias_weights_by_domain.get(
+                    domain, np.ones(len(residual), dtype=float)),
+                dtype=float,
+            ).reshape(-1)
+            if len(weights) != len(residual):
+                raise ValueError(
+                    "adaptive bias weights must match source residuals")
+            weights = np.clip(weights, 1e-8, 1e8)
+            weights /= max(float(np.mean(weights)), 1e-12)
+            scale = max(float(np.sqrt(
+                np.sum(weights * residual ** 2)
+                / max(float(np.sum(weights)), 1e-12)
+            )), 1e-8)
+            target = residual / scale
+            scaled_phi = Phi / feature_scale[None, :]
+            sqrt_weight = np.sqrt(weights)
+            design = scaled_phi * sqrt_weight[:, None]
+            response = target * sqrt_weight
+            ridge = (
+                max(float(self.ridge), 0.05)
+                * max(float(np.sum(weights)), 1.0)
+            )
+            system = design.T @ design + ridge * np.eye(
+                design.shape[1], dtype=float)
+            try:
+                scaled_beta = np.linalg.solve(
+                    system, design.T @ response)
+            except np.linalg.LinAlgError:
+                scaled_beta = np.linalg.lstsq(
+                    system, design.T @ response, rcond=None)[0]
+            scaled_profiles.append(np.asarray(scaled_beta, dtype=float))
+            residual_scales[domain] = float(scale)
+            standardized_by_domain[domain] = target
+            normalized_weights_by_domain[domain] = weights
+
+        scaled_profiles = np.vstack(scaled_profiles)
+        candidates = np.vstack([
+            np.zeros(scaled_profiles.shape[1], dtype=float),
+            scaled_profiles,
+        ])
+        candidate_names = ["null_bias_profile"] + [
+            f"source_bias:{domain}" for domain in domains
+        ]
+        candidate_domains = [None] + domains
+        scores = []
+        for beta, source_domain in zip(candidates, candidate_domains):
+            fold_scores = []
+            for domain in domains:
+                if source_domain is not None and domain == source_domain:
+                    continue
+                Phi = np.asarray(
+                    bias_features_by_domain[domain], dtype=float)
+                prediction = (Phi / feature_scale[None, :]) @ beta
+                target = standardized_by_domain[domain]
+                weights = normalized_weights_by_domain[domain]
+                fold_scores.append(float(
+                    -0.5 * np.sum(weights * (target - prediction) ** 2)
+                    / max(float(np.sum(weights)), 1e-12)
+                ))
+            scores.append(float(np.mean(fold_scores)) if fold_scores else 0.0)
+        log_score = np.asarray(scores, dtype=float)
+        log_score -= float(np.max(log_score))
+        likelihood = np.exp(np.clip(log_score, -50.0, 0.0))
+        likelihood /= max(float(np.sum(likelihood)), 1e-12)
+        mixture = 0.9 * likelihood + 0.1 / len(likelihood)
+        mixture /= float(np.sum(mixture))
+
+        raw_candidates = candidates / feature_scale[None, :]
+        mean = mixture @ raw_candidates
+        centered = raw_candidates - mean[None, :]
+        covariance = 0.25 * np.eye(len(mean), dtype=float)
+        covariance += np.einsum(
+            "i,ij,ik->jk", mixture, centered, centered)
+        eigenvalues, eigenvectors = np.linalg.eigh(
+            0.5 * (covariance + covariance.T))
+        eigenvalues = np.clip(eigenvalues, 0.25, 4.0)
+        covariance = (eigenvectors * eigenvalues) @ eigenvectors.T
+        try:
+            precision = np.linalg.inv(covariance)
+        except np.linalg.LinAlgError:
+            precision = np.linalg.pinv(covariance)
+        precision = 0.5 * (precision + precision.T)
+        self.task_adaptive_bias_prior_ = {
+            "status": "fit_boundary_weighted_gaussian",
+            "mean": np.asarray(mean, dtype=float),
+            "precision": np.asarray(precision, dtype=float),
+            "feature_names": self.task_bias_feature_names(),
+            "source_profile_names": candidate_names,
+            "source_profile_weights": mixture.tolist(),
+            "source_profile_log_score": log_score.tolist(),
+            "source_profile_coefficients_scaled": candidates.tolist(),
+            "feature_scale": feature_scale.tolist(),
+            "residual_scale_by_domain": residual_scales,
+            "prior_covariance_eigenvalue_floor": 0.25,
+            "prior_covariance_eigenvalue_cap": 4.0,
+            "boundary_weighted": True,
+            "n_source_domains": int(len(domains)),
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+
     def _fit_hvd_beta_priors(self, records):
         by_domain = {}
         for rec in records:
@@ -2854,6 +3786,11 @@ class LearnedMetaPrior:
         beta_domains_by_output = {0: [], 1: []}
         variance_targets_by_output_domain = {0: {}, 1: {}}
         mean_by_output = {0: [], 1: []}
+        mean_domains_by_output = {0: [], 1: []}
+        mean_design_by_domain = {}
+        mean_targets_by_output_domain = {0: {}, 1: {}}
+        bias_features_by_domain = {}
+        bias_weights_by_domain = {}
         sigma_by_output = {0: [], 1: []}
         cumulative_features_by_domain = {}
         for domain, domain_records in by_domain.items():
@@ -2866,6 +3803,12 @@ class LearnedMetaPrior:
                     1.0],
                     self._mean_prior_features_from_descriptor(rec.descriptor),
                 ])
+                for rec in domain_records
+            ])
+            mean_design_by_domain[str(domain)] = X_meta
+            bias_features_by_domain[str(domain)] = np.vstack([
+                self.task_bias_features_from_descriptor(
+                    rec.descriptor, domain=rec.domain)
                 for rec in domain_records
             ])
             F = np.vstack([
@@ -2882,6 +3825,7 @@ class LearnedMetaPrior:
                 self._boundary_sample_weight(rec) for rec in domain_records
             ], dtype=float)
             weights = np.clip(weights, 1e-4, 1e4)
+            bias_weights_by_domain[str(domain)] = weights.copy()
             sqrt_w = np.sqrt(weights)
             reg_mean = self.ridge * np.eye(X_desc.shape[1], dtype=float)
             reg_mean[0, 0] = 0.0
@@ -2916,6 +3860,8 @@ class LearnedMetaPrior:
                     )[0]
                 resid_meta = y - X_meta @ beta_meta
                 mean_by_output[out_idx].append(beta_meta)
+                mean_domains_by_output[out_idx].append(str(domain))
+                mean_targets_by_output_domain[out_idx][str(domain)] = y
                 sigma_by_output[out_idx].append(float(
                     np.sqrt(np.mean(resid_meta ** 2)) if len(resid_meta) else 0.0
                 ))
@@ -2976,6 +3922,14 @@ class LearnedMetaPrior:
                         if source_variance_labels is not None
                         else "source_residual_square_fallback"
                     )
+        self._fit_task_bias_profiles(
+            mean_by_output.get(1, []),
+            mean_domains_by_output.get(1, []),
+            mean_design_by_domain,
+            mean_targets_by_output_domain.get(1, {}),
+            bias_features_by_domain,
+            bias_weights_by_domain,
+        )
         for out_idx, rows in beta_by_output.items():
             if rows:
                 stack = np.vstack(rows)
@@ -3053,6 +4007,9 @@ class LearnedMetaPrior:
             by_domain.setdefault(str(rec.domain), []).append(rec)
         beta_rows = {0: [], 1: []}
         beta_domains = {0: [], 1: []}
+        mean_rows = {0: [], 1: []}
+        mean_features_by_domain = {}
+        mean_targets_by_output_domain = {0: {}, 1: {}}
         feature_by_domain = {}
         target_by_output_domain = {0: {}, 1: {}}
         for domain, domain_records in by_domain.items():
@@ -3060,6 +4017,7 @@ class LearnedMetaPrior:
                 np.concatenate([[1.0], self._scaled_descriptor(rec.descriptor)])
                 for rec in domain_records
             ])
+            mean_features_by_domain[domain] = descriptors
             features = np.vstack([
                 cumulative_feature_vector(
                     self.risk_exposure_from_descriptor(rec.descriptor)
@@ -3090,6 +4048,8 @@ class LearnedMetaPrior:
                         weighted_x.T @ weighted_y,
                         rcond=None,
                     )[0]
+                mean_rows[output_index].append(mean_beta)
+                mean_targets_by_output_domain[output_index][domain] = target
                 variance_labels = None
                 if output_index == 1 and all(
                     rec.constraint_sigma is not None for rec in domain_records
@@ -3146,6 +4106,7 @@ class LearnedMetaPrior:
                 beta_domains[output_index].append(domain)
 
         sensitivity_ratios = []
+        sensitivity_signed_residuals = []
         for output_index, rows in beta_rows.items():
             if not rows:
                 continue
@@ -3184,6 +4145,26 @@ class LearnedMetaPrior:
                 lodo_ratios.extend(
                     float(value) for value in ratios if np.isfinite(value)
                 )
+                if output_index == 1 and mean_rows[output_index]:
+                    mean_stack = np.vstack(mean_rows[output_index])
+                    lodo_mean_beta = (
+                        np.mean(mean_stack, axis=0)
+                        if len(mean_stack) <= 1
+                        else np.mean(np.delete(
+                            mean_stack, heldout_index, axis=0), axis=0)
+                    )
+                    heldout_target = mean_targets_by_output_domain[
+                        output_index][heldout_domain]
+                    heldout_mean = (
+                        mean_features_by_domain[heldout_domain]
+                        @ lodo_mean_beta
+                    )
+                    signed_residual = heldout_target - heldout_mean
+                    sensitivity_signed_residuals.extend(
+                        float(value)
+                        for value in signed_residual
+                        if np.isfinite(value)
+                    )
             if lodo_ratios:
                 ordered = np.sort(np.asarray(lodo_ratios, dtype=float))
                 conformal_index = min(
@@ -3194,41 +4175,161 @@ class LearnedMetaPrior:
                     1.0, ordered[conformal_index]))
                 if output_index == 1:
                     sensitivity_ratios.extend(lodo_ratios)
-        self._fit_task_sensitivity_prior(sensitivity_ratios)
+        self._fit_task_sensitivity_prior(
+            sensitivity_ratios,
+            sensitivity_signed_residuals,
+        )
 
-    def _fit_task_sensitivity_prior(self, squared_standardized_residuals):
+    def _fit_task_sensitivity_prior(
+        self,
+        squared_standardized_residuals,
+        signed_standardized_residuals=None,
+    ):
         ratios = np.asarray(squared_standardized_residuals, dtype=float)
         ratios = ratios[np.isfinite(ratios) & (ratios >= 0.0)]
-        names = ("stable", "balanced", "sensitive")
-        scales = np.asarray([0.5, 1.0, 2.0], dtype=float)
-        penalties = np.asarray([2.0, 5.0, 20.0], dtype=float)
+        signed_raw = np.asarray(
+            [] if signed_standardized_residuals is None
+            else signed_standardized_residuals,
+            dtype=float,
+        )
+        signed_raw = signed_raw[np.isfinite(signed_raw)]
+        bias_scale = (
+            max(float(np.sqrt(np.mean(signed_raw ** 2))), 1e-8)
+            if len(signed_raw)
+            else 1.0
+        )
+        signed = np.clip(signed_raw / bias_scale, -6.0, 6.0)
+        scale_names = ("stable", "balanced", "sensitive")
+        scale_grid = np.asarray([0.5, 1.0, 2.0], dtype=float)
+        penalty_grid = np.asarray([2.0, 5.0, 20.0], dtype=float)
+        trust_grid = np.asarray([1.0, 0.25, 0.0], dtype=float)
         if len(ratios):
             clipped = np.clip(ratios, 0.0, 100.0)
+            scale_log_score = np.asarray([
+                float(np.mean(
+                    -np.log(scale) - 0.5 * clipped / scale ** 2
+                ))
+                for scale in scale_grid
+            ], dtype=float)
+            scale_log_score -= float(np.max(scale_log_score))
+            scale_likelihood = np.exp(np.clip(
+                scale_log_score, -50.0, 0.0))
+            scale_likelihood /= max(float(np.sum(scale_likelihood)), 1e-12)
+            scale_prior = 0.9 * scale_likelihood + 0.1 / len(scale_grid)
+            scale_prior /= float(np.sum(scale_prior))
+        else:
+            scale_log_score = np.zeros(len(scale_grid), dtype=float)
+            scale_prior = np.ones(len(scale_grid), dtype=float) / len(scale_grid)
+
+        functional_profiles = bool(
+            self.task_bias_profile_diagnostics_.get("status")
+            == "fit_source_lodo_profiles"
+            and len(self.task_bias_profiles_) > 1
+        )
+        if functional_profiles:
+            profile_names = list(self.task_bias_profile_names_)
+            profile_prior = np.asarray(
+                self.task_bias_profile_prior_, dtype=float)
+            profile_prior /= max(float(np.sum(profile_prior)), 1e-12)
+            bias_centers = np.asarray([0.0], dtype=float)
+        else:
+            bias_centers = (
+                np.clip(np.quantile(signed, [0.2, 0.5, 0.8]), -3.0, 3.0)
+                if len(signed)
+                else np.asarray([0.0], dtype=float)
+            )
+            profile_names = [f"bias{index}" for index in range(
+                len(bias_centers))]
+            profile_prior = np.ones(
+                len(profile_names), dtype=float) / len(profile_names)
+
+        names = []
+        scales = []
+        biases = []
+        bias_coefficients = []
+        penalties = []
+        empirical_trust = []
+        for scale_index, scale_name in enumerate(scale_names):
+            for profile_index, profile_name in enumerate(profile_names):
+                names.append(f"{scale_name}:{profile_name}")
+                scales.append(float(scale_grid[scale_index]))
+                biases.append(
+                    0.0
+                    if functional_profiles
+                    else float(bias_centers[profile_index])
+                )
+                if functional_profiles:
+                    bias_coefficients.append(
+                        self.task_bias_profiles_[profile_index].tolist())
+                penalties.append(float(penalty_grid[scale_index]))
+                empirical_trust.append(float(trust_grid[scale_index]))
+        scales = np.asarray(scales, dtype=float)
+        biases = np.asarray(biases, dtype=float)
+        penalties = np.asarray(penalties, dtype=float)
+        if functional_profiles:
+            weights = np.outer(scale_prior, profile_prior).reshape(-1)
+            weights /= float(np.sum(weights))
+            log_score = np.log(np.maximum(weights, 1e-300))
+            log_score -= float(np.max(log_score))
+            status = "fit_functional_bias_scale"
+        elif len(signed):
             log_score = np.asarray([
-                float(np.mean(-np.log(scale) - 0.5 * clipped / scale ** 2))
-                for scale in scales
+                float(np.mean(
+                    -np.log(scale)
+                    - 0.5 * ((signed - bias) / scale) ** 2
+                ))
+                for scale, bias in zip(scales, biases)
             ], dtype=float)
             log_score -= float(np.max(log_score))
             likelihood = np.exp(np.clip(log_score, -50.0, 0.0))
             likelihood /= max(float(np.sum(likelihood)), 1e-12)
-            # Preserve support for every class before seeing the held-out task.
             weights = 0.9 * likelihood + 0.1 / len(scales)
             weights /= float(np.sum(weights))
-            status = "fit"
+            status = "fit_signed_bias_scale"
         else:
             log_score = np.zeros(len(scales), dtype=float)
-            weights = np.ones(len(scales), dtype=float) / len(scales)
+            weights = np.outer(scale_prior, profile_prior).reshape(-1)
+            weights /= float(np.sum(weights))
             status = "fallback_uniform"
         self.task_sensitivity_prior_ = {
             "status": status,
-            "method": "source_lodo_prequential_residual_scale_classes",
+            "method": (
+                "source_lodo_functional_bias_scale_classes"
+                if functional_profiles
+                else "source_lodo_signed_bias_scale_classes"
+            ),
             "class_names": list(names),
             "scales": scales.tolist(),
+            "biases": biases.tolist(),
+            "bias_coefficients": (
+                bias_coefficients if functional_profiles else None),
+            "bias_feature_names": (
+                self.task_bias_feature_names()
+                if functional_profiles else None),
             "decision_penalties": penalties.tolist(),
-            "empirical_trust": [1.0, 0.25, 0.0],
+            "empirical_trust": empirical_trust,
             "prior_weights": weights.tolist(),
             "source_log_score": log_score.tolist(),
-            "n_source_residuals": int(len(ratios)),
+            "source_bias_centers": bias_centers.tolist(),
+            "source_bias_standardization_scale": float(bias_scale),
+            "functional_bias_profiles": bool(functional_profiles),
+            "bias_profile_diagnostics": copy.deepcopy(
+                self.task_bias_profile_diagnostics_),
+            "adaptive_scale_class_names": list(scale_names),
+            "adaptive_scale_scales": scale_grid.tolist(),
+            "adaptive_scale_decision_penalties": penalty_grid.tolist(),
+            "adaptive_scale_empirical_trust": trust_grid.tolist(),
+            "adaptive_scale_prior_weights": scale_prior.tolist(),
+            "adaptive_bias_prior": {
+                key: (
+                    value.tolist()
+                    if isinstance(value, np.ndarray)
+                    else copy.deepcopy(value)
+                )
+                for key, value in self.task_adaptive_bias_prior_.items()
+            },
+            "n_source_residuals": int(len(signed)),
+            "n_source_variance_ratios": int(len(ratios)),
             "target_data_used": False,
             "target_oracle_used": False,
         }
@@ -3545,6 +4646,154 @@ class LearnedMetaPrior:
             head.extend(tail[int(i)] for i in order)
         return unique_candidates(head)[:n_take]
 
+    def _profile_to_target_candidate(self, problem, profile):
+        profile = np.asarray(profile, dtype=float).reshape(-1)
+        d = max(1, int(getattr(problem, "d", 1)))
+        if len(profile) == 0:
+            return None
+        if len(profile) == d:
+            z = profile.copy()
+        elif len(profile) == 1:
+            z = np.full(d, float(profile[0]), dtype=float)
+        else:
+            z = np.interp(
+                np.linspace(0.0, 1.0, d),
+                np.linspace(0.0, 1.0, len(profile)),
+                profile,
+            )
+        return self._continuous_to_tuple(problem, np.clip(z, 0.0, 1.0))
+
+    def source_consensus_template_candidates(
+        self,
+        problem,
+        n=0,
+        rng=None,
+        randomized=False,
+    ):
+        """Replay source-ranked shared profiles without target labels."""
+
+        n_take = max(0, int(n))
+        if n_take <= 0 or not self.source_consensus_templates:
+            return []
+        count = min(n_take, len(self.source_consensus_templates))
+        if randomized and count < len(self.source_consensus_templates):
+            rng = rng or np.random.default_rng(self.seed)
+            scores = np.asarray([
+                float(row["score"]) for row in self.source_consensus_templates
+            ], dtype=float)
+            scale = max(float(np.std(scores)), 0.05)
+            logits = -(scores - float(np.min(scores))) / scale
+            logits -= float(np.max(logits))
+            probabilities = np.exp(logits)
+            probabilities /= max(float(np.sum(probabilities)), 1e-12)
+            order = rng.choice(
+                len(self.source_consensus_templates),
+                size=count,
+                replace=False,
+                p=probabilities,
+            ).tolist()
+        else:
+            order = list(range(count))
+        rows = []
+        for index in order:
+            candidate = self._profile_to_target_candidate(
+                problem,
+                self.source_consensus_templates[int(index)]["profile"],
+            )
+            if candidate is not None:
+                rows.append(candidate)
+        return unique_candidates(rows)[:n_take]
+
+    def initial_universal_candidates(self, problem, n=0, rng=None):
+        """Protect a sentinel and a rank-spanning source archive design.
+
+        The source consensus is an ordering, not a guarantee that its first
+        member transfers to every held-out task.  When the target initial
+        budget admits more than one consensus member, sample the complete
+        frozen shortlist at approximately equal rank quantiles.  This is a
+        source-only space-filling design over transfer uncertainty: it does
+        not inspect target labels, but it avoids spending every protected
+        target call on nearly identical top-ranked source policies.
+        """
+
+        n_take = max(0, int(n))
+        if n_take <= 0 or not self.source_consensus_templates:
+            return self.universal_shape_candidates(
+                problem, n=n_take, rng=rng, force=True)
+        library = self.universal_shape_candidates(
+            problem, n=10000, rng=rng, force=True)
+        rows = []
+        # The first head/tail low-frequency shape is formula-free and protects
+        # domains whose safe direction disagrees with source consensus.
+        if len(library) > 1:
+            rows.append(library[1])
+        remaining = max(0, n_take - len(rows))
+        if remaining > 0:
+            template_count = len(self.source_consensus_templates)
+            if remaining >= template_count:
+                template_indices = list(range(template_count))
+            elif remaining == 1:
+                template_indices = [0]
+            else:
+                template_indices = []
+                for value in np.linspace(
+                    0.0, float(template_count - 1), remaining
+                ):
+                    index = int(np.clip(
+                        np.round(value), 0, template_count - 1))
+                    if index not in template_indices:
+                        template_indices.append(index)
+                template_indices[0] = 0
+                template_indices[-1] = template_count - 1
+                # Integer rounding can collide for very short shortlists.
+                for index in range(template_count):
+                    if len(template_indices) >= remaining:
+                        break
+                    if index not in template_indices:
+                        template_indices.append(index)
+            for index in template_indices[:remaining]:
+                candidate = self._profile_to_target_candidate(
+                    problem,
+                    self.source_consensus_templates[int(index)]["profile"],
+                )
+                if candidate is not None:
+                    rows.append(candidate)
+        rows.extend(library)
+        return unique_candidates(rows)[:n_take]
+
+    def source_coverage_candidates(self, problem, n=0):
+        """Return the deterministic source-only design protected at target time."""
+
+        if not self.source_consensus_templates:
+            return []
+        return self.initial_universal_candidates(
+            problem,
+            n=max(0, int(n)),
+            rng=np.random.default_rng(self.seed + 32452843),
+        )
+
+    def universal_expert_candidates(self, problem, n=0, rng=None):
+        """Draw varied frozen templates for sequential universal proposals."""
+
+        n_take = max(0, int(n))
+        if n_take <= 0 or not self.source_consensus_templates:
+            return self.universal_shape_candidates(
+                problem, n=n_take, rng=rng, force=True)
+        rng = rng or np.random.default_rng(self.seed)
+        rows = self.source_consensus_template_candidates(
+            problem,
+            n=min(n_take, len(self.source_consensus_templates)),
+            rng=rng,
+            randomized=True,
+        )
+        if len(rows) < n_take:
+            library = self.universal_shape_candidates(
+                problem, n=10000, rng=rng, force=True)
+            if library:
+                order = rng.permutation(len(library))
+                rows.extend(library[int(index)] for index in order)
+        return unique_candidates(rows)[:n_take]
+
     def profile_template_candidates(self, problem, n=0, rng=None):
         """Replay source-learned normalized policy profiles on a held-out target.
 
@@ -3765,6 +5014,13 @@ class LearnedMetaPrior:
             0.0,
         ))
 
+    def observable_mean_features(self, problem, x):
+        """Return the frozen source-learned constraint-mean coordinate eta."""
+
+        if self.observable_mean_model is None:
+            raise RuntimeError("observable mean coordinate is unavailable")
+        return self.observable_mean_model.features(problem, x)
+
     def diagnostics(self):
         return {
             "status": self.fit_status,
@@ -3781,6 +5037,10 @@ class LearnedMetaPrior:
             "shared_dim": int(self.shared_dim),
             "n_anchors": int(len(self.anchor_psi)),
             "n_profile_templates": int(len(self.profile_templates)),
+            "n_source_consensus_templates": int(
+                len(self.source_consensus_templates)),
+            "source_consensus_templates": copy.deepcopy(
+                self.source_consensus_diagnostics),
             "n_alignment_profile_templates": int(
                 len(self.alignment_profile_templates)),
             "universal_shape_count": int(self.universal_shape_count),
@@ -3822,6 +5082,15 @@ class LearnedMetaPrior:
                 str(key): value is not None
                 for key, value in self.mean_prior.items()
             },
+            "observable_mean_coordinate": (
+                None
+                if self.observable_mean_model is None
+                else {
+                    **self.observable_mean_model.diagnostics(),
+                    "training_target": self.observable_mean_training_target,
+                    "chance_boundary_weighted": True,
+                }
+            ),
             "spectral_basis": (
                 None
                 if self.spectral_basis is None
@@ -3895,6 +5164,8 @@ class LearnedMetaPrior:
                 self.spectral_adaptive_calibration),
             "ordered_cumulative_exposure": dict(
                 self.ordered_exposure_diagnostics),
+            "hierarchical_boundary": copy.deepcopy(
+                self.hierarchical_boundary_diagnostics),
             "ordered_coefficient_prior": {
                 str(output_index): {
                     key: (
@@ -3953,6 +5224,48 @@ class MetaPriorSurrogateBasis:
         if len(X) == 0:
             return np.empty((0, self.feature_dim), dtype=float)
         return np.vstack([self.features(x) for x in X])
+
+
+class ObservableConstraintMeanBasis:
+    """Frozen source boundary coordinate for the target constraint mean.
+
+    This basis is deliberately independent of ``psi=(A,N)``.  Target
+    observations learn only its regression coefficients; cumulative HVD and
+    certification continue to use the expert-specific risk coordinate.
+    """
+
+    constraint_mean_coordinate = True
+
+    def __init__(self, meta_prior: LearnedMetaPrior, problem):
+        if meta_prior.observable_mean_model is None:
+            raise ValueError("observable mean coordinate is unavailable")
+        self.meta_prior = meta_prior
+        self.problem = problem
+        self.feature_dim = int(meta_prior.observable_mean_model.feature_dim)
+
+    def features(self, x):
+        values = np.asarray(
+            self.meta_prior.observable_mean_features(self.problem, x),
+            dtype=float,
+        ).reshape(-1)
+        if len(values) != self.feature_dim:
+            raise RuntimeError("observable mean coordinate changed dimension")
+        return values
+
+    def features_many(self, X):
+        if len(X) == 0:
+            return np.empty((0, self.feature_dim), dtype=float)
+        return self.meta_prior.observable_mean_model.features_many(
+            self.problem, X)
+
+    def diagnostics(self):
+        return {
+            **self.meta_prior.observable_mean_model.diagnostics(),
+            "selected_basis": "source_observable_constraint_mean_eta",
+            "mean_coordinate": "eta",
+            "variance_coordinate": "expert_specific_psi=(A,N)",
+            "target_labels_used_to_define_coordinate": False,
+        }
 
 
 class PilotGatedMetaPriorBasis:
@@ -6276,6 +7589,32 @@ class TaskExpertProblemView:
             "target_data_used": False,
         }
 
+    def mean_risk_coordinate_contract(self):
+        separated = self.meta_prior.observable_mean_model is not None
+        return {
+            "status": "separated" if separated else "legacy_shared_coordinate",
+            "constraint_mean_coordinate": (
+                "eta=source_observable_constraint_mean_scores"
+                if separated else "psi/source_spectral"
+            ),
+            "cumulative_variance_coordinate": "psi=(A,N)",
+            "joined_object": (
+                "mu_g(eta)+sqrt(beta_g)s_g(eta)"
+                "+z_alpha*sqrt(v_C_plus(psi))-tau"
+            ),
+            "coordinate_definition_uses_target_labels": False,
+            "source_observation_mode": self.meta_prior.source_observation_mode,
+            "source_design_mode": self.meta_prior.source_design_mode,
+            "eta_source_training_target": (
+                self.meta_prior.observable_mean_training_target),
+            "source_oracle_aided": bool(
+                self.meta_prior.training_diagnostics.get(
+                    "source_analytic_sigma_used", False)
+                or self.meta_prior.training_diagnostics.get(
+                    "source_analytic_teacher_used", False)
+            ),
+        }
+
     def risk_class(self, x):
         exposure = self.risk_exposures(x)
         return int(np.argmax(exposure.N)) if len(exposure.N) else 0
@@ -6386,15 +7725,69 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         self.problem_name = f"{base_problem.problem_name}_lodo_meta"
         self.proposal_pool_size = int(proposal_pool_size)
         self.refinement_count = int(refinement_count)
-        self.prefer_direct_gpr_basis = self.meta_prior.component_stage in {
-            "coordinate", "spectral", "spectral_hvd"
-        }
+        self.prefer_direct_gpr_basis = bool(
+            self.meta_prior.observable_mean_model is not None
+            or self.meta_prior.component_stage in {
+                "coordinate", "spectral", "spectral_hvd"
+            }
+        )
         self._gpr_basis_maps = {}
         self._hvd_shape_reference_mean = {}
         self._hvd_shape_reference_pool_size = 256
 
     def admissibility_audit(self):
-        out = lodo_meta_prior_audit().to_dict()
+        training = self.meta_prior.training_diagnostics
+        source_true_outputs = bool(
+            training.get("source_analytic_teacher_used", False))
+        source_true_sigma = bool(
+            training.get("source_analytic_sigma_used", False))
+        source_problem_hooks = bool(
+            training.get("teacher_record_count", 0))
+        out = lodo_meta_prior_audit(
+            uses_source_true_outputs=source_true_outputs,
+            uses_source_true_sigma=source_true_sigma,
+            uses_source_problem_hooks=source_problem_hooks,
+            source_observation_mode=training.get(
+                "source_observation_mode", "unspecified"),
+            source_simulator_calls=training.get(
+                "source_simulator_calls", 0),
+        ).to_dict()
+        provider_boundary = bool(
+            "provider_"
+            in self.meta_prior.hierarchical_boundary_descriptor_mode)
+        source_oracle_aided = bool(
+            source_true_outputs
+            or source_true_sigma
+            or source_problem_hooks)
+        out.update({
+            "source_design_mode": training.get(
+                "source_design_mode", "random"),
+            "source_universal_record_count": int(training.get(
+                "source_universal_record_count", 0)),
+            "tcb_boundary_descriptor_mode": (
+                self.meta_prior.hierarchical_boundary_descriptor_mode),
+            "tcb_target_structural_provider_used": provider_boundary,
+            "source_oracle_aided": source_oracle_aided,
+            "admissible_strict_lodo": bool(
+                not provider_boundary and not source_oracle_aided),
+            "admissible_oracle_free_transfer": bool(
+                not provider_boundary and not source_oracle_aided),
+            "admissible_structure_aware": True,
+        })
+        if provider_boundary or source_oracle_aided:
+            if provider_boundary:
+                out["uses_problem_specific_formula"] = True
+            out["admissible_mainline"] = False
+            reasons = []
+            if provider_boundary:
+                reasons.append("target CumulativeRiskFeatureProvider")
+            if source_oracle_aided:
+                reasons.append("analytic source oracle/teacher data")
+            out["notes"] = (
+                "Privileged transfer track using "
+                + " and ".join(reasons)
+                + "; report as an upper bound, not oracle-free LODO."
+            )
         out["meta_prior"] = self.meta_prior.diagnostics()
         return out
 
@@ -6412,6 +7805,32 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             "target_data_used": False,
             "unlabeled_target_shape_reference_pool_size": (
                 self._hvd_shape_reference_pool_size if aligned else 0
+            ),
+        }
+
+    def mean_risk_coordinate_contract(self):
+        separated = self.meta_prior.observable_mean_model is not None
+        return {
+            "status": "separated" if separated else "legacy_shared_coordinate",
+            "constraint_mean_coordinate": (
+                "eta=source_observable_constraint_mean_scores"
+                if separated else "psi/source_spectral"
+            ),
+            "cumulative_variance_coordinate": "psi=(A,N)",
+            "joined_object": (
+                "mu_g(eta)+sqrt(beta_g)s_g(eta)"
+                "+z_alpha*sqrt(v_C_plus(psi))-tau"
+            ),
+            "coordinate_definition_uses_target_labels": False,
+            "source_observation_mode": self.meta_prior.source_observation_mode,
+            "source_design_mode": self.meta_prior.source_design_mode,
+            "eta_source_training_target": (
+                self.meta_prior.observable_mean_training_target),
+            "source_oracle_aided": bool(
+                self.meta_prior.training_diagnostics.get(
+                    "source_analytic_sigma_used", False)
+                or self.meta_prior.training_diagnostics.get(
+                    "source_analytic_teacher_used", False)
             ),
         }
 
@@ -6479,6 +7898,20 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
     def task_sensitivity_prior(self):
         return self.meta_prior.task_sensitivity_prior()
 
+    def task_bias_features(self, x):
+        return self.meta_prior.task_bias_features(self, x)
+
+    def task_bias_feature_names(self):
+        return self.meta_prior.task_bias_feature_names()
+
+    def hierarchical_boundary_model(self):
+        return self.meta_prior.hierarchical_boundary_posterior
+
+    def hierarchical_boundary_descriptor(self, x):
+        mode = self.meta_prior.hierarchical_boundary_descriptor_mode
+        problem = self.base if "provider_" in mode else self
+        return self.meta_prior.boundary_descriptor(problem, x, mode=mode)
+
     def task_boundary_bracket_candidates(
         self, n=5, rng=None, pool_size=None,
     ):
@@ -6510,6 +7943,8 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         constraint_basis = self._gpr_basis_maps.get(1)
         if constraint_basis is not None:
             return constraint_basis
+        if self.meta_prior.observable_mean_model is not None:
+            return ObservableConstraintMeanBasis(self.meta_prior, self)
         return MetaPriorSurrogateBasis(self.meta_prior, self)
 
     def gpr_basis_map(self, output_index=0):
@@ -6517,7 +7952,13 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         if not self.prefer_direct_gpr_basis:
             return None
         if output_index not in self._gpr_basis_maps:
-            if self.meta_prior.component_enabled("spectral"):
+            if (
+                output_index == 1
+                and self.meta_prior.observable_mean_model is not None
+            ):
+                basis = ObservableConstraintMeanBasis(
+                    self.meta_prior, self)
+            elif self.meta_prior.component_enabled("spectral"):
                 basis = PilotGatedMetaPriorBasis(
                     self.meta_prior,
                     self,
@@ -6636,6 +8077,11 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             raise KeyError(f"unknown task expert {expert_name!r}")
         if spec["basis"] is None:
             return None
+        if (
+            int(output_index) == 1
+            and self.meta_prior.observable_mean_model is not None
+        ):
+            return ObservableConstraintMeanBasis(self.meta_prior, self)
         return FixedTaskExpertBasis(
             self.meta_prior,
             self,
@@ -6667,11 +8113,10 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         rng = rng or np.random.default_rng(self.meta_prior.seed)
         rows = []
         if name == "universal_coordinate":
-            rows.extend(self.meta_prior.universal_shape_candidates(
+            rows.extend(self.meta_prior.universal_expert_candidates(
                 self,
                 n=n,
                 rng=rng,
-                force=True,
             ))
         elif name == "null_universal":
             rows.extend(self.sample_random(rng) for _ in range(n))
@@ -6726,6 +8171,28 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             rows = unique_candidates(rows)
             attempts += 1
         return rows[:n]
+
+    def task_initial_universal_candidates(self, n=1, rng=None, pool_size=1024):
+        del pool_size
+        return self.meta_prior.initial_universal_candidates(
+            self,
+            n=n,
+            rng=rng,
+        )
+
+    def frozen_source_consensus_candidates(self):
+        """Expose the complete frozen shortlist to every KG/recommendation pool."""
+
+        return self.meta_prior.source_consensus_template_candidates(
+            self,
+            n=len(self.meta_prior.source_consensus_templates),
+            randomized=False,
+        )
+
+    def frozen_source_coverage_candidates(self, n=0):
+        """Expose the pre-registered target design, without target labels."""
+
+        return self.meta_prior.source_coverage_candidates(self, n=n)
 
     def pilot_constraint_guard(self):
         basis = self._gpr_basis_maps.get(1)

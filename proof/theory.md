@@ -59,15 +59,80 @@ cumulative risk coordinate is
 psi(x) = (A(x), N(x)).
 ```
 
-The same `psi` is used for HVD features, SC candidate anchors, GPR state basis,
-certification diagnostics, and exact KG terminal values.  Its occupancy summary
-`s(x)` determines expected exposures
+The same `psi` is used for HVD features, SC candidate anchors, certification
+variance, and exact-KG variance updates. It is **not** assumed sufficient for
+the constraint mean. A separate observable coordinate
+
+```text
+eta(x) = frozen source-learned multiscale policy/exposure scores
+```
+
+parameterizes the GPR constraint mean and epistemic variance. The coordinates
+meet only in the single certified chance margin
+
+```text
+rho(x) = m_g(eta(x)) + sqrt(beta_g) s_g(eta(x))
+         + z_alpha sqrt(v_C^+(psi(x))) - tau.
+```
+
+This separation corrects the empirically false assumption that one coordinate
+must simultaneously explain conditional mean and cumulative heteroscedastic
+risk. Both maps are frozen from source observations before the held-out run;
+only their posterior coefficients are updated by charged target evaluations.
+The source regression target for `eta` is the replicated constraint mean, not
+the source chance margin. Chance-margin proximity enters only as a nonnegative
+training weight. Thus aleatoric scale cannot be silently absorbed into the
+mean coordinate; it enters the deployed certificate exclusively through
+`v_C^+(psi)`.
+The occupancy summary `s(x)` determines expected exposures
 
 ```text
 A(x) = E[A(T) | x],     N(x) = E[N(T) | x],
 ```
 
 up to approximation error `delta_occ(x)`.
+
+### Assumption A2B: Source Boundary Excitation
+
+Let `S_source` be the frozen source policy design and `rho_d(x)` the signed
+chance margin in source domain `d`. Learning a signed transferable coordinate
+requires strict two-sided support,
+
+```text
+exists x_minus in S_source: rho_d(x_minus) < 0,
+exists x_plus  in S_source: rho_d(x_plus)  > 0,
+```
+
+for enough source domains to identify the selected finite feature family. A
+uniformly random design is not assumed to provide this support when feasibility
+is rare. The implementation therefore compares random source sampling with a
+single formula-free low-frequency source design, charges every replicate, and
+freezes that design before the held-out target run.
+
+Two-sided support is necessary here, not by itself sufficient. If two possible
+margin functions agree on all of `S_source` but differ by `Delta` at an unseen
+policy, every deterministic source-only estimator makes error at least
+`|Delta|/2` on one of the two functions. This finite identifiability lower bound
+and the failure of one-sided designs are proved in
+`SCOLHKG/Real/BoundaryExcitation.lean`.
+
+### Assumption A2C: Source-Consensus Proposal and Committed Suffix
+
+Every source domain evaluates the same frozen universal profile library. Its
+observed replicated chance margins are converted to within-domain percentile
+ranks before aggregation. Positive affine rescaling of a source constraint
+therefore leaves its profile order unchanged. The source-consensus shortlist is
+frozen before the held-out target is named; a target-name change cannot alter
+the shortlist.
+
+The terminal replication suffix pre-registers the lowest `k` empirical chance
+margins among already charged members of the frozen source design. It preserves
+the safety role when a challenger is also the minimum-Bayes-risk arm and
+commits every reserved challenger to `m` observations before posterior-only
+experts can consume the suffix. If two true margins are separated by more than
+twice their simultaneous estimation error, their empirical order is preserved.
+The ordering and finite-budget contracts are proved in
+`SCOLHKG/Real/SourceConsensusCommit.lean`.
 
 ## Theorem 2: Random-Policy Occupancy-Risk Decomposition
 
@@ -237,6 +302,48 @@ closed into the experiment set before KG maximization.  The shared-pool gain
 identity, one-step maximizer statement, and both finite-set inclusion claims
 are Lean-proved in `SCOLHKG/Measure/SharedTerminalPoolKG.lean`.
 
+## Theorem 7A: Hierarchical Boundary Certificate And Lexicographic Terminal Value
+
+TCB-V2 writes the held-out domain chance margin as
+
+```text
+rho_d(x) = a_d + exp(s_d) h_theta(Q_d z_d(x))
+           + c_d^T r_perp(z_d(x)).
+```
+
+The source domains identify the shared shape `h_theta`, a source distribution
+over planar rotations `Q_d`, an orthogonal low-rank residual map `r_perp`, and
+a prior on the task effects. The held-out target updates only location,
+positive scale, optional planar angle, and the selected low-rank residual
+coefficients from paid replicates. If `L_d` is a Cholesky factor of their
+posterior covariance and `r_d^2` is residual variance, then
+
+```text
+U_d(x) = rho_d(x)
+       + q * sqrt(||L_d^T ell_d(x)||^2 + r_d^2)
+```
+
+is never smaller than `rho_d(x)` for `q >= 0`. Posterior covariance therefore
+cannot relax the certificate. The same `U_d` is used for frontier nomination,
+fantasy terminal evaluation, and final recommendation.
+
+On a frozen terminal set the V33 repair uses
+
+```text
+min_lex,x (1{U_d(x)>0}, max(U_d(x),0), m_f(x)).
+```
+
+Consequently, a certified action dominates every uncertified action regardless
+of objective; among uncertified actions, reduction of positive upper margin
+dominates objective improvement. Every fantasy observation refits the same
+low-dimensional target posterior before evaluating this tuple. The finalist
+frontier reserves Bayes-risk, certificate-margin, robust-violation, and
+nominal-violation directions before expert nominations. Positive scale,
+planar-rotation norm preservation, nonnegative uncertainty, upper-margin
+non-relaxation, reserved-frontier order, three-layer certificate coherence,
+and all three lexicographic dominance cases are Lean-proved in
+`SCOLHKG/Real/HierarchicalBoundaryCertificate.lean`.
+
 ## Theorem 8: Finite-Budget Safe Simple-Regret Bound
 
 Let `x_N` be the final certified recommendation and `x_*` the best feasible
@@ -297,6 +404,46 @@ small target sample cannot irreversibly remove a transferable proposal family;
 the task posterior controls exploitation while the frozen source prior retains
 identification support. Both claims are Lean-proved in
 `SCOLHKG/Real/TaskPosterior.lean`.
+
+### Proposition 9b: Joint Structure-Sensitivity Task State
+
+The finite implementation refines `xi` to the joint state
+
+```text
+z = (xi, c),  xi = (R, S, theta_v),
+```
+
+where `c=(b,s,ell)` is a task-level signed mean-bias, predictive-error scale,
+and decision-loss class. A normalized
+positive product source prior followed by a joint generalized-Bayes score
+produces a normalized positive posterior on `(xi,c)`, and both finite
+marginals remain normalized and nonnegative. The likelihood may therefore
+learn dependence between structural support and error sensitivity instead of
+combining two independently selected gates. Sensitivity enters posterior Bayes
+decision loss. In authoritative inference it may also conservatively inflate
+constraint epistemic variance, so the implemented theory margin is
+
+```text
+mu_g + sqrt(beta_g) sqrt(s_g^2 max(1,c_scale)^2)
+  + z_alpha sqrt(v_C_plus) - tau.
+```
+
+The signed bias `b(psi)` (including a source-frozen low-rank functional bias)
+is used by posterior Bayes ranking but is absent from this
+certificate. This margin is never smaller than the sensitivity-free theory margin. Product-
+prior normalization, positive posterior support, marginal normalization and
+nonnegativity, signed-bias separation, shadow-mode sensitivity independence,
+and authoritative non-relaxation are Lean-proved in
+`SCOLHKG/Real/JointTaskLatentPosterior.lean`.
+
+V4 refines the signed-bias coordinate to a Gaussian coefficient posterior for
+each structural expert. A charged standardized residual performs a conjugate
+precision update `P <- P + w phi phi^T`. Its posterior mean is still absent
+from the theory margin. Its coefficient covariance contributes only the
+nonnegative epistemic term `predictive_sd^2 phi^T P^{-1} phi`; therefore the
+adaptive margin dominates the scale-only authoritative margin. Precision
+growth, mean/certificate separation, and covariance non-relaxation are
+Lean-proved in the same file.
 
 ## Theorem 10: Ambiguity-Robust Task Certification
 
@@ -416,6 +563,41 @@ use the existing `2 eta` and concentration bridges.
    sub-exponential, or Gaussian-derived residual-square tails.
 5. The full recursive `compute_h` sorted-stack fold/output theorem is now
    Lean-proved for the sorted/collapsed active-line loop.
+6. The focused TCB-V2 source gate and coherent V33 frontier gate both failed
+   empirically despite passing their implementation audits. TCB-V2 produced
+   no safe certificate; coherent V33 obtained `7/7`, `1/7`, and `4/7` true
+   feasibility on FactorShock, Inventory, and Queue versus V32's `7/7`, `5/7`,
+   and `3/7`. These failures block promotion and show that the proved
+   conditional safety theorems do not establish nonvacuity or cross-domain
+   boundary identifiability.
+7. TCB-V3 replaces the rejected one-shape assumption by a finite source-frozen
+   boundary-family library. Target pilots update only generalized-Bayes family
+   mass; certification takes a credible-family envelope rather than a mixture
+   average. Broad and atomic gates did not produce a valid nonvacuous
+   certificate, so it is not used online.
+8. TCB-V4 replaces discrete family selection by a nonnegative continuous
+   synthesis of source-frozen canonical signed-distance atoms. Source domains
+   define the coefficient prior; target pilots update only the intercept and
+   atom coefficients. Coefficient covariance and residual uncertainty can
+   only increase the upper margin. Its source-only nested LODO gate must pass
+   before online KG use.
+9. TCB-V5 augments V4 by a bounded local kernel residual in the nullspace of
+   the source-family design cross matrix. This gives a finite-design direct
+   sum: transferable family coefficients and target-local curvature cannot
+   explain the same source-design direction. The residual dictionary is
+   source-frozen; target pilots update only its low-dimensional coefficients.
+   Its strict nested gate passed all implementation audits but failed coverage
+   and nonvacuity, so this theorem remains a conditional implementation result
+   rather than an empirical main-method claim.
+10. The oracle-certifiability audit treats the true chance margin `m`, true
+    constraint scale `sigma`, and one-sided confidence quantile `q` as known.
+    Its direct-replication upper margin is `m + q sigma / sqrt(R)`. This is an
+    optimistic lower bound on implementable uncertainty. The Lean bridge proves
+    the radius decreases with `R`, the squared budget condition
+    `(q sigma)^2 <= (-m)^2 R` suffices for certification when `m < 0`, and a
+    certificate persists at every larger replication budget. Target-oracle
+    coordinate regressors are empirical identifiability diagnostics, not
+    estimators covered by the main-method safety claim.
 
 ## Lean4 Status
 
@@ -434,6 +616,13 @@ versions needed by the manuscript:
 | GPR rank-one update / KG slope / replication VOI | `SCOLHKG/Real/GPRUpdate.lean` | Lean-proved; matches `ParametricGPR.update`, `compute_kg_vectorized`, and proves the observed-point variance reduction `q^2/(q+r)` is in `[0,q]` |
 | Chance certification | `SCOLHKG/Real/Certification.lean` | Lean-proved from GP-confidence and variance-upper events |
 | Theory certification implementation | `SCOLHKG/Real/CertificationImplementation.lean` | Lean-proved for `mu + sqrt(beta)s + z sqrt(v_C^+) <= tau`, with legacy mode dominated by theory mode |
+| Separated mean/risk coordinate bridge | `SCOLHKG/Real/MeanRiskCoordinateSeparation.lean` | Lean-proved that `eta` alone determines constraint mean/epistemic variance, `psi` alone determines certification variance, joint coordinate equivalence preserves the chance margin, and the separated implementation inherits certificate soundness |
+| TCB-V2 hierarchical three-layer certificate | `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean` | Lean-proved positive target scale, planar-rotation norm preservation, nonnegative Cholesky/rotation/orthogonal-residual uncertainty, upper-margin non-relaxation, coverage-reserved frontier order, one shared frontier/terminal/recommendation upper margin, recommendation safety under coverage, and lexicographic terminal dominance |
+| TCB-V3 finite boundary-family certificate | `SCOLHKG/Real/BoundaryFamilyMixtureCertificate.lean` | Lean-proved posterior credible-mass contract, pointwise family-envelope coverage, nonnegative family-guard monotonicity, safe recommendation, target-name noninterference, and the combined `delta_family + alpha` failure bound |
+| TCB-V4 continuous boundary-family synthesis | `SCOLHKG/Real/BoundaryFamilySynthesisCertificate.lean` | Lean-proved monotonicity of nonnegative source-atom synthesis, nonnegative coefficient/residual predictive variance, upper-margin non-relaxation, recommendation safety on the coverage event, and target-name noninterference |
+| TCB-V5 orthogonal semiparametric boundary | `SCOLHKG/Real/BoundaryFamilySemiparametricCertificate.lean`, `SCOLHKG/Real/OrthogonalSemiparametric.lean` | Lean-proved source-design nullspace orthogonality, direct-sum predictive mean bookkeeping, nonnegative synthesis/residual/noise variance, upper-margin non-relaxation, and recommendation safety on the coverage event |
+| Noise-limited oracle certifiability | `SCOLHKG/Real/OracleCertifiability.lean` | Lean-proved nonnegative and replication-monotone oracle radius, squared-budget sufficiency, and certificate persistence under added replications |
+| Source-consensus proposal and suffix commitment | `SCOLHKG/Real/SourceConsensusCommit.lean` | Lean-proved positive-affine source-rank invariance, target-name noninterference of a source-frozen selector, bounded-error preservation of two-arm order, and exact shortlist completion within a sufficient reserved replication budget |
 | HVD oracle inequality | `SCOLHKG/Real/HVD.lean` | Lean-proved from residual-square concentration event |
 | HVD implementation guards | `SCOLHKG/Real/HVDImplementation.lean` | Lean-proved for residual squares, nonnegative linear variance, clipping, and certification variance |
 | Factor cumulative block implementation | `SCOLHKG/Real/CumulativeRiskImplementation.lean` | Lean-proved for `floor/independent/shared/linear/total` aggregation and shared-shock omission underestimation |

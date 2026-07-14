@@ -1354,3 +1354,167 @@ fixed-universe adaptive race therefore passes the predeclared promotion rule
 and becomes the tracked LODO baseline. Inventory seeds 2 and 5 remain
 uncertified infeasible outcomes and are retained explicitly for the next
 failure analysis; the promotion does not claim universal convergence.
+
+## V32 Queue Gate-2 Rejection: Target Adaptation Is Not Yet Meta-Generalization
+
+The frozen Queue held-out run changes no V32 option and uses only FactorShock
+and Inventory as source domains. It returns `3/7` truly feasible
+recommendations, zero false certificates, median feasible regret `0.00455`,
+mean violation `0.05767`, and median true chance margin `+0.01829`.
+
+This failure is not proposal support. Every one of the seven terminal pools
+contains a truly feasible action, yet no run produces a posterior-certified
+action. Seeds 0, 1, 3, and 5 select infeasible actions with margins `+0.03834`,
+`+0.04047`, `+0.01829`, and `+0.30658`. The dominant safe-posterior expert also
+changes across failures (`local_risk_kernel` in seed 0 and
+`universal_coordinate` in the others), so one expert-specific correction is
+not supported.
+
+The Gate-2 result separates the current claims:
+
+1. V32 is an effective target-adaptive finite expert race on FactorShock and
+   much of Inventory;
+2. it does not yet establish a domain-general source prior;
+3. adding a Queue-specific anchor, gate, or score would recreate the
+   engineering-stacking failure;
+4. the next admissible change is a shadow joint posterior over structural
+   expert and source-trained sensitivity class, followed by a three-domain
+   coherence audit before any decision rule changes.
+
+## Joint Shadow Audit: The Missing Layer Is Task Coherence
+
+Run `lodo_joint_shadow_v1_n20_3domain_20260712` reproduces all 21 frozen V32
+recommendations and truth metrics exactly, so the added posterior has no
+behavioral side effect. Its median structure-sensitivity mutual information is
+near zero on FactorShock (`0.00003`), moderate on Inventory (`0.0786`), and
+largest on Queue (`0.1473`). Joint and legacy robust reference actions agree
+on `6/7`, `3/7`, and `0/7` seeds respectively.
+
+This pattern supports a task-level coherence failure rather than a universal
+need for more model capacity: FactorShock already identifies one coherent
+structure, whereas Queue observations couple structural validity and error
+sensitivity. At the same time, median expert-feasible mass at the chosen point
+is zero in every domain. The joint posterior therefore cannot be promoted by
+merely replacing expert weights. It must define the no-certificate Bayes loss
+used by recommendation and exact KG while retaining a non-relaxing theory
+certificate.
+
+The isolated authoritative challenger implements exactly that change behind
+`task_latent_inference_mode=authoritative`. Its first paired run is
+`lodo_joint_authoritative_v1_n20_3domain_20260712` (`t29282..t29302`). It is
+not a promoted baseline until FactorShock, Inventory, and Queue jointly pass.
+
+## Authoritative V1 Rejection: Scale Is Not Signed Calibration
+
+The predeclared paired gate rejects authoritative V1. FactorShock is unchanged
+at `7/7`; Inventory drops from `5/7` to `3/7`; Queue drops from `3/7` to `2/7`.
+Queue mean violation improves from `0.05767` to `0.03604`, but its feasible
+regret worsens. No false certificate is introduced because theory
+certification remains conservative.
+
+Truth-only post-run audit shows that Queue's joint action is often much safer
+than the legacy robust action and is truly feasible in seed 0, but the
+replicated finalist can still replace it. Inventory and Queue also lose some
+safe V32 actions after joint proposal/predictive sampling changes the search
+trajectory. Most importantly, the latent class can only scale epistemic error;
+it cannot distinguish a systematically conservative constraint mean from an
+optimistic one. Increasing or tuning the class penalty cannot repair that
+identifiability defect.
+
+V2 therefore extends the same latent class with a signed standardized bias.
+Its centers and prior weights are learned from source-domain LODO mean
+residuals. The signed correction enters posterior likelihood and Bayes
+decision loss only; the theory certificate ignores it and still floors
+epistemic scaling at one. No domain-specific rule or held-out oracle enters
+the extension.
+
+## Authoritative V2 Rejection: Signed Error Is State Dependent
+
+The four-case causal smoke preserves FactorShock seed 0 and repairs Inventory
+seed 4, but fails the two Queue controls. Queue seed 0 remains infeasible at
+margin `+0.01665`, and seed 6 changes from V32's feasible `-0.00860` to
+`+0.03275`. Post-run calibration audit ranks the truly feasible terminal-pool
+action safer than the selected action after state-dependent calibration. The
+missing variable is therefore not another task-wide sensitivity constant: it
+is the location of transferred error in the cumulative-risk state.
+
+V3 represents that location by source-frozen profiles
+`b_j(psi)=theta_j^T[1,A,Helmert(N)]`. Source LODO residuals are normalized by
+domain RMSE, and the profile is applied in target predictive-standard-
+deviation units. Helmert coordinates remove the exact intercept/simplex
+collinearity that made an initial raw `[1,A,N]` implementation numerically
+unstable. This is still one joint task latent, not a domain classifier or a
+Queue-specific gate. Its predeclared four-seed smoke must pass before any full
+matrix is run.
+
+## Authoritative V3 Rejection: Calibration Must Be Expert Conditional
+
+V3 passes all leakage, bounded-amplitude, Python, and Lean checks but fails the
+four-case causal gate. It preserves FactorShock seed 0, loses Inventory seed
+4, barely improves Queue seed 0 relative to V32, and fails to preserve Queue
+seed 6. It is therefore not expanded or promoted.
+
+This is not a candidate-support failure: every failed terminal pool contains a
+true-feasible point. Nor is it a missing function-capacity failure: the
+non-null profiles span positive and negative corrections of roughly one
+predictive standard deviation. The defect is that one profile dictionary was
+fit to a common source mean and then reused by six structurally different
+GPR/HVD experts. Final target evidence mostly selects the null profile, while
+the true-feasible pool action remains ranked more dangerous than the selected
+action.
+
+The next theoretical object is a hierarchical linear calibration posterior
+per expert, with a common source-learned prior and target updates from charged
+prequential residuals. This makes structural validity and calibration
+function genuinely conditional on one another. A coefficient mean may change
+Bayes ranking; its posterior covariance may only enlarge epistemic
+certification uncertainty. The object must be cloned and updated inside exact
+KG. Tuning V3's profile prior, temperature, or finalist score is explicitly
+disallowed because it does not repair this hierarchy error.
+
+## V4 Implementation Contract
+
+V4 implements that object as `expert_ridge`, while retaining V3 as the
+`source_profiles` ablation. One boundary-weighted source Gaussian prior is
+copied into every structural expert. Paid target residuals update separate
+precision/information pairs for each expert after the current prequential
+score is recorded. The resulting means can differ because the expert GPR
+means differ, even though all experts share the same source prior and risk
+features.
+
+The continuous posterior is not a hidden certificate relaxation. Its mean is
+absent from the theory margin; its covariance contributes the nonnegative
+term `predictive_sd^2 phi^T P^{-1} phi`. Gaussian KL is included in the task
+ambiguity radius, and exact-KG fantasies clone/update `P`, `h`, GPR, and HVD
+together. Fixed-universe expert nominations also use the same calibrated
+decision moments. The next experiment is restricted to the same four causal
+seeds used to reject V3.
+
+## Authoritative V4 Rejection: Conditional Calibration Is Not Yet Transfer
+
+The four-case causal smoke completes without runtime failures, false
+certificates, or target leakage, but rejects V4 before the 21-seed matrix.
+FactorShock seed 0 is unchanged and feasible at margin `-0.03320`. Inventory
+seed 4 returns the V1/V3 infeasible action at `+0.01313`. Queue seed 0 worsens
+from V32's `+0.03834` to `+0.06498`, and Queue seed 6 loses V32's feasible
+action, moving from `-0.00860` to `+0.03275`.
+
+This run separates search and recommendation failures. Queue seed 0's
+sequential pool true-feasible coverage falls from `0.9` under V32 to `0.4`
+under V4, despite a terminal true-feasible candidate. The expert-conditional
+posterior therefore changes exact-KG fantasies enough to reduce useful search
+coverage. Inventory seed 4 and Queue seed 6 retain true-feasible candidates in
+every terminal recommendation pool, but the positive-margin Bayes loss ranks
+them behind unsafe actions. Calibration thus also fails at terminal ranking.
+
+The nonrelaxing certificate contract remains intact: coefficient means never
+enter the theory margin, coefficient covariance is nonnegative, and all four
+selected points are posterior-infeasible rather than falsely certified. The
+failure is consequently not repaired by weakening the covariance guard. It is
+evidence that six target-conditioned residual regressions with one shared
+source Gaussian prior do not by themselves identify a transferable chance-
+boundary coordinate from sixteen adaptive observations. Post-hoc tuning of
+ridge strength, boundary weights, or expert penalties is prohibited. V4 stays
+available as `task_latent_calibration_mode=expert_ridge` for ablation and
+mechanism tests; `source_profiles` remains the default and V32 remains the
+promoted performance baseline.

@@ -87,6 +87,46 @@ class ExactKGTests(unittest.TestCase):
             [objective, constraint], FakeVariance(), expanded_pool)
         self.assertAlmostEqual(base, expanded, places=12)
 
+    def test_authoritative_task_latent_defines_terminal_bayes_risk(self):
+        class AuthoritativeEnsemble:
+            task_latent_authoritative = True
+
+            @staticmethod
+            def joint_terminal_risk_many(X, *, tau, alpha):
+                self.assertEqual(X, [(0, 0, 0), (1, 0, 0)])
+                self.assertTrue(np.isfinite(tau))
+                self.assertGreater(alpha, 0.0)
+                return {
+                    "objective": np.asarray([0.2, 0.1]),
+                    "expected_violation": np.asarray([0.01, 0.2]),
+                    "nominal_expected_violation": np.asarray([0.01, 0.2]),
+                    "risk": np.asarray([0.3, 2.1]),
+                    "model_disagreement": np.asarray([0.0, 0.1]),
+                    "kl_radius": 0.0,
+                    "task_latent_authoritative": True,
+                }
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(exact_kg_terminal_mode="bayes_risk"),
+        )
+        pool = [(0, 0, 0), (1, 0, 0)]
+        components = algorithm._terminal_bayes_risk_components(
+            None,
+            None,
+            pool,
+            task_ensemble=AuthoritativeEnsemble(),
+        )
+        np.testing.assert_allclose(components["risk"], [0.3, 2.1])
+        value = algorithm._terminal_value_from_models(
+            None,
+            None,
+            pool,
+            task_ensemble=AuthoritativeEnsemble(),
+        )
+        self.assertAlmostEqual(value, 0.3)
+
     def test_bayes_risk_exact_runner_and_recommendation_share_terminal(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
         config = SingleOLHKGConfig(
@@ -142,6 +182,74 @@ class ExactKGTests(unittest.TestCase):
             "minimum_expected_violation",
             "risk_frontier_fill",
         ])
+
+    def test_terminal_frontier_reserves_tcb_boundary_actions(self):
+        indices, labels = SingleOLHKGAlgorithm._terminal_frontier_indices(
+            np.asarray([0.0, 0.1, 0.2, 0.3]),
+            np.asarray([0.4, 0.3, 0.2, 0.1]),
+            chosen=0,
+            count=3,
+            tcb_upper=np.asarray([0.8, 0.4, -0.1, 0.2]),
+            tcb_count=2,
+        )
+        self.assertEqual(indices, [0, 2, 3])
+        self.assertEqual(labels, [
+            "bayes_action",
+            "minimum_tcb_upper",
+            "closest_tcb_boundary",
+        ])
+
+    def test_tcb_v2_certificate_is_authoritative_at_recommendation(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        config = SingleOLHKGConfig(
+            N=5,
+            n0=4,
+            K1=2,
+            K2=0,
+            tcb_v2_mode="certified",
+            recommendation_observed_fallback=False,
+            recommendation_calibration=False,
+            certification_calibration=False,
+            seed=226,
+        )
+        algorithm = SingleOLHKGAlgorithm(problem, config)
+        algorithm._fit_initial_belief(algorithm._initial_samples())
+        pool = [(0, 0, 0), (20, 20, 20)]
+        algorithm._objective_posterior_mean_many = lambda candidates: (
+            np.asarray([0.0, 1.0], dtype=float)
+        )
+        algorithm._observed_nominal_incumbent = lambda: None
+
+        def fake_tcb(candidates, **kwargs):
+            del candidates, kwargs
+            return {
+                "mean": np.asarray([0.3, -0.3]),
+                "upper": np.asarray([0.4, -0.2]),
+                "adapter_diagnostics": {"effective_dimension": 2},
+                "pilot_points": 4,
+                "target_oracle_used": False,
+            }
+
+        algorithm._tcb_v2_margin_many = fake_tcb
+        selected, diagnostics = algorithm._solve_posterior_recommendation(
+            pool=pool)
+        self.assertEqual(selected, pool[1])
+        self.assertTrue(diagnostics["tcb_v2_authoritative"])
+        self.assertEqual(
+            diagnostics["posterior_certification_source"],
+            "tcb_v2_hierarchical",
+        )
+        self.assertLess(diagnostics["posterior_chance_margin"], 0.0)
+
+    def test_lexicographic_terminal_index_does_not_scalarize(self):
+        values = np.asarray([
+            [0.2, 0.0, -1000.0],
+            [0.1, 100.0, 1000.0],
+            [0.1, 2.0, 10.0],
+            [0.1, 2.0, 5.0],
+        ])
+        self.assertEqual(
+            SingleOLHKGAlgorithm._terminal_value_index(values), 3)
 
     def test_terminal_frontier_candidates_join_experiment_actions(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
@@ -393,6 +501,467 @@ class ExactKGTests(unittest.TestCase):
         )
         alg = SingleOLHKGAlgorithm(problem, config)
         self.assertEqual(alg._effective_exact_kg_mc_samples(), 8)
+
+    def test_terminal_replication_kg_is_reproducible_and_side_effect_free(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        config = SingleOLHKGConfig(
+            N=7,
+            n0=4,
+            K1=4,
+            K2=0,
+            exact_kg_terminal_mode="bayes_risk",
+            exact_kg_jobs=1,
+            finalist_terminal_mc_samples=2,
+            finalist_replication_policy="terminal_kg_1step",
+            seed=223,
+        )
+        algorithm = SingleOLHKGAlgorithm(problem, config)
+        algorithm._fit_initial_belief(algorithm._initial_samples())
+        arms = [(0, 0, 0), (20, 20, 20)]
+        terminal_pool = arms + [(10, 10, 10)]
+        history_before = copy.deepcopy(algorithm.history)
+        observations_before = copy.deepcopy(algorithm.observations)
+        first, first_info = algorithm._terminal_replication_kg_candidate(
+            arms, terminal_pool, depth=1, stage=4)
+        second, second_info = algorithm._terminal_replication_kg_candidate(
+            arms, terminal_pool, depth=1, stage=4)
+        self.assertEqual(first, second)
+        np.testing.assert_allclose(
+            first_info["terminal_kg_expected_values"],
+            second_info["terminal_kg_expected_values"],
+            rtol=0.0,
+            atol=1e-12,
+        )
+        self.assertEqual(len(algorithm.history), len(history_before))
+        for (x_after, y_after), (x_before, y_before) in zip(
+            algorithm.history, history_before
+        ):
+            self.assertEqual(x_after, x_before)
+            np.testing.assert_allclose(y_after, y_before)
+        self.assertEqual(set(algorithm.observations), set(observations_before))
+        for key in observations_before:
+            np.testing.assert_allclose(
+                algorithm.observations[key], observations_before[key])
+        self.assertFalse(first_info["terminal_kg_target_oracle_used"])
+
+    def test_tcb_v2_terminal_kg_updates_same_lexicographic_certificate(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        config = SingleOLHKGConfig(
+            N=7,
+            n0=4,
+            K1=4,
+            K2=0,
+            tcb_v2_mode="certified",
+            finalist_terminal_value_mode="certified_lexicographic",
+            exact_kg_jobs=1,
+            finalist_terminal_mc_samples=2,
+            finalist_replication_policy="terminal_kg_1step",
+            seed=227,
+        )
+        algorithm = SingleOLHKGAlgorithm(problem, config)
+        algorithm._fit_initial_belief(algorithm._initial_samples())
+        arms = [(7, 7, 7), (13, 13, 13)]
+        initial_counts = {
+            point: len(algorithm.observations.get(point, []))
+            for point in arms
+        }
+
+        def fake_tcb(candidates, *, observations=None, **kwargs):
+            del kwargs
+            observations = algorithm.observations if observations is None else observations
+            upper = []
+            for candidate in candidates:
+                point = tuple(int(v) for v in candidate)
+                base = 1.0 if point == arms[0] else 0.1
+                added = len(observations.get(point, [])) - initial_counts.get(point, 0)
+                upper.append(base - 0.2 * added)
+            upper = np.asarray(upper, dtype=float)
+            return {
+                "mean": upper - 0.05,
+                "upper": upper,
+                "adapter_diagnostics": {"effective_dimension": 2},
+                "pilot_points": len(observations),
+                "target_oracle_used": False,
+            }
+
+        algorithm._tcb_v2_margin_many = fake_tcb
+        selected, diagnostics = algorithm._terminal_replication_kg_candidate(
+            arms,
+            arms,
+            depth=1,
+            stage=4,
+        )
+        self.assertEqual(selected, arms[1])
+        self.assertEqual(
+            diagnostics["terminal_kg_value_mode"],
+            "certified_lexicographic",
+        )
+        self.assertEqual(
+            np.asarray(diagnostics["terminal_kg_expected_values"]).shape,
+            (2, 3),
+        )
+        self.assertEqual(diagnostics["terminal_kg_selected_index"], 1)
+        self.assertFalse(diagnostics["terminal_kg_target_oracle_used"])
+
+    def test_tcb_v2_main_exact_kg_uses_same_fantasy_updated_lexicographic_value(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        config = SingleOLHKGConfig(
+            N=6,
+            n0=4,
+            K1=2,
+            K2=0,
+            acquisition_mode="exact_mc",
+            exact_kg_mc_samples=2,
+            exact_kg_jobs=1,
+            exact_kg_sampling_mode="antithetic",
+            exact_kg_terminal_mode="tcb_certified_lexicographic",
+            tcb_v2_mode="certified",
+            seed=229,
+        )
+        algorithm = SingleOLHKGAlgorithm(problem, config)
+        algorithm._fit_initial_belief(algorithm._initial_samples())
+        arms = [(7, 7, 7), (13, 13, 13)]
+        initial_counts = {
+            point: len(algorithm.observations.get(point, []))
+            for point in arms
+        }
+
+        def fake_tcb(candidates, *, observations=None, **kwargs):
+            del kwargs
+            observations = algorithm.observations if observations is None else observations
+            upper = []
+            for candidate in candidates:
+                point = tuple(int(v) for v in candidate)
+                base = 0.8 if point == arms[0] else 0.1
+                added = len(observations.get(point, [])) - initial_counts.get(point, 0)
+                upper.append(base - 0.2 * added)
+            upper = np.asarray(upper, dtype=float)
+            return {
+                "mean": upper - 0.05,
+                "upper": upper,
+                "adapter_diagnostics": {"effective_dimension": 2},
+                "pilot_points": len(observations),
+                "target_oracle_used": False,
+            }
+
+        algorithm._tcb_v2_margin_many = fake_tcb
+        scores = algorithm._exact_posterior_update_scores(arms, arms)
+        self.assertGreater(scores[1], scores[0])
+        self.assertEqual(
+            np.asarray(algorithm._last_exact_kg_current_value).shape, (3,))
+        self.assertEqual(
+            np.asarray(algorithm._last_exact_kg_expected_values).shape, (2, 3))
+        self.assertLess(
+            algorithm._last_exact_kg_expected_values[1, 0],
+            algorithm._last_exact_kg_expected_values[0, 0],
+        )
+
+    def test_coverage_reserved_frontier_cannot_be_crowded_by_experts(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=8,
+                n0=4,
+                finalist_replication_budget=4,
+                finalist_replication_count=2,
+                finalist_replication_policy="terminal_kg_1step",
+                finalist_replication_expert_stratified=True,
+                finalist_frontier_policy="coverage_reserved",
+                finalist_terminal_max_arms=4,
+                decision_contract_mode="certified_lexicographic",
+                seed=233,
+            ),
+        )
+        pool = [
+            (index, index, index) for index in range(6)
+        ]
+        algorithm.task_ensemble = object()
+        algorithm._terminal_bayes_risk_components = lambda *args, **kwargs: {
+            "objective": np.asarray([0.0, 1.0, 2.0, 3.0, 4.0, 5.0]),
+            "risk": np.asarray([0.0, 4.0, 3.0, 2.0, 5.0, 6.0]),
+            "expected_violation": np.asarray([4.0, 3.0, 0.0, 2.0, 5.0, 6.0]),
+            "nominal_expected_violation": np.asarray(
+                [4.0, 3.0, 2.0, 0.0, 5.0, 6.0]),
+            "model_disagreement": np.asarray(
+                [0.1, 0.2, 0.3, 0.4, 1.0, 0.9]),
+            "kl_radius": 0.0,
+        }
+        algorithm._terminal_certificate_components = lambda *args, **kwargs: {
+            "objective": np.arange(6, dtype=float),
+            "margin": np.asarray([3.0, -1.0, 2.0, 1.0, 4.0, 5.0]),
+            "source": "theory_hvd",
+            "tcb_v2": None,
+        }
+        algorithm._finalist_expert_safety_nominations = lambda candidates: [
+            (0.0, 0, "expert_a", 4),
+            (0.1, 1, "expert_b", 5),
+        ]
+        initialization = algorithm._initialize_finalist_replication_targets(
+            stage=4, pool=pool)
+        self.assertEqual(
+            initialization["labels"],
+            [
+                "minimum_bayes_risk",
+                "minimum_certificate_margin",
+                "minimum_robust_expected_violation",
+                "minimum_nominal_expected_violation",
+            ],
+        )
+        self.assertEqual(initialization["targets"], [
+            list(pool[index]) for index in range(4)
+        ])
+        self.assertEqual(
+            initialization["frontier_policy"], "coverage_reserved")
+        self.assertEqual(
+            initialization["certificate_source"], "theory_hvd")
+
+    def test_shadow_tcb_cannot_change_coherent_terminal_certificate(self):
+        class FakeGPR:
+            def __init__(self, mean, variance):
+                self.mean = float(mean)
+                self.variance = float(variance)
+
+            def posterior_mean_many(self, pool):
+                return np.full(len(pool), self.mean, dtype=float)
+
+            def posterior_var_many(self, pool):
+                return np.full(len(pool), self.variance, dtype=float)
+
+        class FakeVariance:
+            @staticmethod
+            def predict_certification_variance_many(output_index, pool, problem):
+                del output_index, problem
+                return np.full(len(pool), 0.01, dtype=float)
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                tcb_v2_mode="shadow",
+                decision_contract_mode="certified_lexicographic",
+                seed=234,
+            ),
+        )
+        calls = []
+
+        def fake_tcb(*args, **kwargs):
+            calls.append((args, kwargs))
+            return {
+                "mean": np.asarray([-10.0]),
+                "upper": np.asarray([-9.0]),
+                "target_oracle_used": False,
+            }
+
+        algorithm._tcb_v2_margin_many = fake_tcb
+        certificate = algorithm._terminal_certificate_components(
+            [FakeGPR(0.2, 0.01), FakeGPR(0.0, 0.01)],
+            FakeVariance(),
+            [(4, 4, 4)],
+        )
+        self.assertEqual(certificate["source"], "theory_hvd")
+        self.assertEqual(calls, [])
+        self.assertEqual(
+            algorithm._effective_exact_terminal_mode(),
+            "tcb_certified_lexicographic",
+        )
+        self.assertEqual(
+            algorithm._finalist_terminal_value_mode(),
+            "certified_lexicographic",
+        )
+
+    def test_coherent_recommendation_disables_empirical_reranking(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=5,
+                n0=4,
+                K1=4,
+                K2=0,
+                decision_contract_mode="certified_lexicographic",
+                recommendation_calibration=True,
+                recommendation_infeasible_strategy="bayes_risk",
+                seed=235,
+            ),
+        )
+        algorithm._fit_initial_belief(algorithm._initial_samples())
+
+        def fail_if_called(*args, **kwargs):
+            raise AssertionError("empirical reranker escaped coherent contract")
+
+        algorithm._calibrated_recommendation_index = fail_if_called
+        _, diagnostics = algorithm._solve_posterior_recommendation(
+            pool=[(0, 0, 0), (10, 10, 10), (20, 20, 20)])
+        self.assertTrue(diagnostics["decision_contract_coherent"])
+        self.assertFalse(diagnostics["calibrated_recommendation_used"])
+        self.assertEqual(
+            diagnostics["calibrated_recommendation_reason"],
+            "disabled_by_coherent_certificate_contract",
+        )
+
+    @unittest.skipUnless(
+        "fork" in multiprocessing.get_all_start_methods(),
+        "terminal rollout process backend requires fork",
+    )
+    def test_tcb_v2_depth3_flattened_fork_matches_serial(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        base = SingleOLHKGConfig(
+            N=7,
+            n0=4,
+            K1=4,
+            K2=0,
+            tcb_v2_mode="certified",
+            finalist_terminal_value_mode="certified_lexicographic",
+            finalist_terminal_mc_samples=2,
+            finalist_replication_policy="terminal_kg_depth3",
+            seed=228,
+        )
+        serial_config = copy.deepcopy(base)
+        serial_config.exact_kg_jobs = 1
+        fork_config = copy.deepcopy(base)
+        fork_config.exact_kg_jobs = 8
+        fork_config.exact_kg_parallel_backend = "process_fork"
+        serial = SingleOLHKGAlgorithm(problem, serial_config)
+        forked = SingleOLHKGAlgorithm(problem, fork_config)
+        samples = serial._initial_samples()
+        serial._fit_initial_belief(samples)
+        forked._fit_initial_belief(samples)
+        arms = [(7, 7, 7), (13, 13, 13)]
+
+        def attach_tcb(algorithm):
+            initial_counts = {
+                point: len(algorithm.observations.get(point, []))
+                for point in arms
+            }
+
+            def fake_tcb(candidates, *, observations=None, **kwargs):
+                del kwargs
+                observations = (
+                    algorithm.observations
+                    if observations is None else observations
+                )
+                upper = []
+                for candidate in candidates:
+                    point = tuple(int(v) for v in candidate)
+                    base_margin = 1.0 if point == arms[0] else 0.1
+                    added = (
+                        len(observations.get(point, []))
+                        - initial_counts.get(point, 0)
+                    )
+                    upper.append(base_margin - 0.2 * added)
+                upper = np.asarray(upper, dtype=float)
+                return {
+                    "mean": upper - 0.05,
+                    "upper": upper,
+                    "adapter_diagnostics": {"effective_dimension": 2},
+                    "pilot_points": len(observations),
+                    "target_oracle_used": False,
+                }
+
+            algorithm._tcb_v2_margin_many = fake_tcb
+
+        attach_tcb(serial)
+        attach_tcb(forked)
+        serial_selected, serial_info = (
+            serial._terminal_replication_kg_candidate(
+                arms, arms, depth=3, stage=4))
+        fork_selected, fork_info = (
+            forked._terminal_replication_kg_candidate(
+                arms, arms, depth=3, stage=4))
+        self.assertEqual(serial_selected, fork_selected)
+        np.testing.assert_allclose(
+            serial_info["terminal_kg_expected_values"],
+            fork_info["terminal_kg_expected_values"],
+            rtol=0.0,
+            atol=1e-12,
+        )
+        self.assertEqual(fork_info["terminal_kg_jobs"], 8)
+
+    @unittest.skipUnless(
+        "fork" in multiprocessing.get_all_start_methods(),
+        "terminal rollout process backend requires fork",
+    )
+    def test_terminal_replication_fork_matches_serial(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        base = SingleOLHKGConfig(
+            N=7,
+            n0=4,
+            K1=4,
+            K2=0,
+            exact_kg_terminal_mode="bayes_risk",
+            finalist_terminal_mc_samples=2,
+            finalist_replication_policy="terminal_kg_1step",
+            seed=224,
+        )
+        serial_config = copy.deepcopy(base)
+        serial_config.exact_kg_jobs = 1
+        fork_config = copy.deepcopy(base)
+        fork_config.exact_kg_jobs = 2
+        fork_config.exact_kg_parallel_backend = "process_fork"
+        serial = SingleOLHKGAlgorithm(problem, serial_config)
+        forked = SingleOLHKGAlgorithm(problem, fork_config)
+        samples = serial._initial_samples()
+        serial._fit_initial_belief(samples)
+        forked._fit_initial_belief(samples)
+        arms = [(0, 0, 0), (20, 20, 20)]
+        terminal_pool = arms + [(10, 10, 10)]
+        serial_selected, serial_info = (
+            serial._terminal_replication_kg_candidate(
+                arms, terminal_pool, depth=1, stage=4))
+        fork_selected, fork_info = (
+            forked._terminal_replication_kg_candidate(
+                arms, terminal_pool, depth=1, stage=4))
+        self.assertEqual(serial_selected, fork_selected)
+        np.testing.assert_allclose(
+            serial_info["terminal_kg_expected_values"],
+            fork_info["terminal_kg_expected_values"],
+            rtol=0.0,
+            atol=1e-12,
+        )
+
+    @unittest.skipUnless(
+        "fork" in multiprocessing.get_all_start_methods(),
+        "terminal rollout process backend requires fork",
+    )
+    def test_terminal_depth3_flattened_fork_matches_serial(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        base = SingleOLHKGConfig(
+            N=7,
+            n0=4,
+            K1=4,
+            K2=0,
+            exact_kg_terminal_mode="bayes_risk",
+            finalist_terminal_mc_samples=2,
+            finalist_replication_policy="terminal_kg_depth3",
+            seed=225,
+        )
+        serial_config = copy.deepcopy(base)
+        serial_config.exact_kg_jobs = 1
+        fork_config = copy.deepcopy(base)
+        fork_config.exact_kg_jobs = 8
+        fork_config.exact_kg_parallel_backend = "process_fork"
+        serial = SingleOLHKGAlgorithm(problem, serial_config)
+        forked = SingleOLHKGAlgorithm(problem, fork_config)
+        samples = serial._initial_samples()
+        serial._fit_initial_belief(samples)
+        forked._fit_initial_belief(samples)
+        arms = [(0, 0, 0), (20, 20, 20)]
+        terminal_pool = arms + [(10, 10, 10)]
+        serial_selected, serial_info = (
+            serial._terminal_replication_kg_candidate(
+                arms, terminal_pool, depth=3, stage=4))
+        fork_selected, fork_info = (
+            forked._terminal_replication_kg_candidate(
+                arms, terminal_pool, depth=3, stage=4))
+        self.assertEqual(serial_selected, fork_selected)
+        self.assertEqual(fork_info["terminal_kg_jobs"], 8)
+        np.testing.assert_allclose(
+            serial_info["terminal_kg_expected_values"],
+            fork_info["terminal_kg_expected_values"],
+            rtol=0.0,
+            atol=1e-12,
+        )
 
     def test_additive_mode_ignores_exact_samples_unless_requested(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
