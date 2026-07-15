@@ -1,5 +1,10 @@
 # SC-OLH-KG V5-V24 Failure Analysis
 
+> Retrospective status (2026-07-15): this is a chronological mechanism log.
+> Statements that V32 was the promoted baseline are true only at their recorded
+> experiment date. The information audit later reclassified V32 as a privileged
+> upper bound and promoted the oracle-free source-consensus successor.
+
 ## Scope
 
 This note records the failed and partially successful challengers that followed

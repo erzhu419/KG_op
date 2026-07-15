@@ -3450,6 +3450,113 @@ class SingleOLHKGAlgorithm:
             "replicated_finalist_target_oracle_used": False,
         }
 
+    def _two_stage_decision_contract_summary(
+            self, recommendation, finalist_summary):
+        """Audit the two-stage theory contract without changing decisions."""
+        total_budget = max(0, int(self.config.N))
+        verification_budget = min(
+            total_budget,
+            max(0, int(self.config.finalist_replication_budget)),
+        )
+        search_budget = total_budget - verification_budget
+        initial_design_budget = min(
+            search_budget, max(0, int(self.config.n0)))
+        adaptive_search_budget = search_budget - initial_design_budget
+        posterior_certified = bool(
+            recommendation.get("posterior_feasible", False))
+        replicated_used = bool(
+            recommendation.get("replicated_finalist_used", False))
+        replicated_certified = bool(
+            recommendation.get(
+                "replicated_finalist_empirical_certificate", False))
+        replicated_reason = str(
+            recommendation.get("replicated_finalist_reason", ""))
+
+        if posterior_certified:
+            terminal_status = "posterior_certified"
+            certificate_scope = "gp_hvd_simultaneous_coverage_event"
+        elif replicated_used and replicated_certified:
+            terminal_status = "replicated_event_certified"
+            certificate_scope = "replicated_mean_and_variance_joint_event"
+        elif replicated_used and replicated_reason == (
+                "minimum_replicated_upper_margin"):
+            terminal_status = "uncertified_least_risk_fallback"
+            certificate_scope = "none"
+        else:
+            terminal_status = "unaccounted_legacy_fallback"
+            certificate_scope = "none"
+
+        frozen_stage = finalist_summary.get("frozen_stage")
+        freeze_precedes_labels = bool(
+            finalist_summary.get("initialized", False)
+            and frozen_stage is not None
+            and int(frozen_stage) == search_budget)
+        frozen_pool = {
+            tuple(int(v) for v in x)
+            for x in self._finalist_replication_pool
+        }
+        verification_targets = {
+            tuple(int(v) for v in x)
+            for x in self._finalist_replication_targets
+        }
+        targets_in_frozen_universe = bool(
+            verification_targets.issubset(frozen_pool))
+        forced_evaluations = int(
+            finalist_summary.get("forced_evaluations", 0))
+        charged_inside_budget = bool(
+            forced_evaluations <= verification_budget)
+        verification_budget_fully_charged = bool(
+            forced_evaluations == verification_budget)
+        terminal_rule_accounted = bool(
+            posterior_certified or replicated_used)
+        implementation_contract_closed = bool(
+            verification_budget > 0
+            and search_budget + verification_budget == total_budget
+            and finalist_summary.get("fixed_universe", False)
+            and freeze_precedes_labels
+            and bool(verification_targets)
+            and targets_in_frozen_universe
+            and charged_inside_budget
+            and verification_budget_fully_charged
+            and terminal_rule_accounted
+            and not finalist_summary.get("target_oracle_used", False)
+        )
+        return {
+            "architecture": "two_stage_search_then_verification",
+            "search_policy": (
+                "source_informed_initial_design_then_state_coupled_exact_kg"),
+            "verification_policy": (
+                "heteroscedastic_fixed_universe_ranking_and_selection"),
+            "total_budget": total_budget,
+            "search_budget": search_budget,
+            "initial_design_budget": initial_design_budget,
+            "adaptive_search_budget": adaptive_search_budget,
+            "verification_budget": verification_budget,
+            "budget_partition_valid": bool(
+                search_budget + verification_budget == total_budget),
+            "freeze_precedes_verification_labels": freeze_precedes_labels,
+            "verification_targets_in_frozen_universe": (
+                targets_in_frozen_universe),
+            "verification_calls_inside_total_budget": charged_inside_budget,
+            "verification_budget_fully_charged": (
+                verification_budget_fully_charged),
+            "terminal_status": terminal_status,
+            "certificate_scope": certificate_scope,
+            "fallback_claims_certification": False,
+            "terminal_rule_accounted": terminal_rule_accounted,
+            "implementation_contract_closed": implementation_contract_closed,
+            "global_exact_kg_claim": False,
+            "adaptive_search_acquisition_configured_as_exact_kg": bool(
+                str(self.config.acquisition_mode).lower() == "exact_mc"),
+            "legacy_single_value_contract_closed": bool(
+                finalist_summary.get("mathematically_closed", False)),
+            "regret_terms": [
+                "search_error",
+                "proposal_coverage_error",
+                "verification_error",
+            ],
+        }
+
     def _surrogate_feature_matrix(
         self,
         basis,
@@ -7854,6 +7961,8 @@ class SingleOLHKGAlgorithm:
         final_post["terminal_pool_shared"] = bool(
             self._last_terminal_pool)
         final_post["terminal_pool_size"] = int(len(final_pool))
+        two_stage_decision = self._two_stage_decision_contract_summary(
+            final_post, finalist_replication_summary)
         final_eval = self._evaluate_recommendation(final_x)
         self.final_log = {
             **final_post,
@@ -7865,6 +7974,7 @@ class SingleOLHKGAlgorithm:
             "candidate_source_counts": candidate_source_counts,
             "exact_kg_diagnostics": exact_kg_summary,
             "finalist_replication": finalist_replication_summary,
+            "two_stage_decision": two_stage_decision,
             "task_initial_design": copy.deepcopy(
                 self._task_initial_design_info),
             "llm_prior": llm_prior_summary,

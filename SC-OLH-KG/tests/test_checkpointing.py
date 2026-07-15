@@ -266,6 +266,53 @@ class CheckpointingTests(unittest.TestCase):
             0.0,
         )
 
+    def test_two_stage_contract_keeps_fallback_uncertified(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=20,
+                n0=4,
+                acquisition_mode="exact_mc",
+                finalist_replication_budget=3,
+                finalist_replication_fixed_universe=True,
+                seed=219,
+            ),
+        )
+        frozen = [(0, 0, 0), (1, 1, 1)]
+        algorithm._finalist_replication_pool = list(frozen)
+        algorithm._finalist_replication_targets = list(frozen)
+        summary = {
+            "initialized": True,
+            "frozen_stage": 17,
+            "fixed_universe": True,
+            "forced_evaluations": 3,
+            "target_oracle_used": False,
+            "mathematically_closed": False,
+        }
+        recommendation = {
+            "posterior_feasible": False,
+            "replicated_finalist_used": True,
+            "replicated_finalist_empirical_certificate": False,
+            "replicated_finalist_reason": "minimum_replicated_upper_margin",
+        }
+
+        contract = algorithm._two_stage_decision_contract_summary(
+            recommendation, summary)
+
+        self.assertEqual(
+            contract["terminal_status"],
+            "uncertified_least_risk_fallback",
+        )
+        self.assertFalse(contract["fallback_claims_certification"])
+        self.assertTrue(contract["implementation_contract_closed"])
+        self.assertFalse(contract["global_exact_kg_claim"])
+        self.assertEqual(contract["initial_design_budget"], 4)
+        self.assertEqual(contract["adaptive_search_budget"], 13)
+        self.assertTrue(contract["verification_budget_fully_charged"])
+        self.assertTrue(
+            contract["adaptive_search_acquisition_configured_as_exact_kg"])
+
     def test_expert_stratified_nomination_survives_mixture_mass_collapse(self):
         class FakePosterior:
             expert_names = ("dominant", "deleted_but_safe")

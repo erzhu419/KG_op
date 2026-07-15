@@ -393,3 +393,21 @@ versus privileged V32's `7/7`, `5/7`, and `3/7`. All 21 successor rows are
 source-oracle free and target-oracle free for selection. This successor is the
 new pretrained-transfer baseline; V32 remains only a labelled privileged upper
 bound.
+
+## 13. Retrospective two-stage theory classification
+
+The oracle-free successor is not renamed V32 and is not claimed to optimize one
+exact-KG terminal value for all 20 calls. Its decision architecture is now
+stated as `10` source-consensus initial-design calls, `7` adaptive search slots
+configured for state-coupled exact KG, and `3` charged fixed-universe
+heteroscedastic ranking-and-selection calls. A nonpositive
+posterior or replication upper margin is certified only on its declared joint
+coverage event. If neither certificate is available, minimum replicated upper
+margin is an explicitly uncertified least-risk fallback.
+
+The deterministic budget/status/regret layer is formalized in
+`SCOLHKG.Real.TwoStageDecision`; finite-universe concentration and the
+search/proposal/verification high-probability union are formalized in
+`SCOLHKG.Measure.TwoStageDecision`. This reclassification preserves the
+successor's observations and recommendations while removing the false claim
+that its verification suffix is exact KG.

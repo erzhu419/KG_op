@@ -1,5 +1,10 @@
 # Unified Task-Latent Meta Model
 
+> Retrospective status (2026-07-15): references below to the "promoted V32"
+> describe the historical 2026-07-12 checkpoint. V32 was later classified as a
+> privileged source-oracle upper bound. The current promoted policy is the
+> oracle-free source-consensus successor recorded in `lodo_current.json`.
+
 ## Purpose
 
 The current system transfers useful structures, but alignment, basis support,
@@ -35,10 +40,11 @@ held-out observations may update `Q_t(z)`.
 
 ## Stage 0: Frozen Queue Gate 2
 
-The promoted V32 configuration is frozen from
-`performance/baselines/lodo_current.json`.  The only experimental change is
-`heldout=QueueResourceControl`, which leaves FactorShock and Inventory as the
-source domains.
+The then-promoted V32 configuration was frozen in the historical run snapshot
+below. It must not be reconstructed from the later `lodo_current.json`, which
+now records the oracle-free successor. The only experimental change in the
+historical test was `heldout=QueueResourceControl`, leaving FactorShock and
+Inventory as source domains.
 
 Run ID:
 

@@ -12,6 +12,7 @@ import SCOLHKG.Measure.ResidualSquareConcentration
 import SCOLHKG.Measure.ResidualSquareTail
 import SCOLHKG.Measure.SubGaussianConfidence
 import SCOLHKG.Measure.TaskPACBayes
+import SCOLHKG.Measure.TwoStageDecision
 import SCOLHKG.Measure.PosteriorKG
 import SCOLHKG.Measure.ProbabilityEvents
 import SCOLHKG.Measure.SafeRegretEvent
@@ -62,6 +63,7 @@ import SCOLHKG.Real.SafeGeneralizedTaskPosterior
 import SCOLHKG.Real.JointTaskLatentPosterior
 import SCOLHKG.Real.SafeRegret
 import SCOLHKG.Real.TrafficTrajectoryModel
+import SCOLHKG.Real.TwoStageDecision
 import SCOLHKG.Real.TaskPosterior
 import SCOLHKG.Real.StratifiedExpertKG
 import SCOLHKG.Scalarization

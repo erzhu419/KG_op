@@ -1,5 +1,9 @@
 # Transferable Chance-Boundary Coordinate: V4 Analysis and Experiment Plan
 
+> Retrospective status (2026-07-15): baseline labels in this historical branch
+> predate the source-information audit. V32 is now a privileged upper bound;
+> the oracle-free source-consensus successor is the promoted baseline.
+
 Status: system analysis complete; no scheduler jobs submitted.
 
 Date: 2026-07-12

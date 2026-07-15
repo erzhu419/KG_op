@@ -265,7 +265,7 @@ is truly chance feasible.
 Proof sketch: upper-bound the true mean using the confidence event, upper-bound
 the standard deviation using `v_C^+`, then apply the Gaussian quantile bound.
 
-## Theorem 7: One-Step SC-OLH-KG Value Characterization
+## Theorem 7: Stage-I One-Step SC-OLH-KG Value Characterization
 
 Define the terminal certified value after one additional simulation at `x` as
 
@@ -301,6 +301,11 @@ next history may construct `C_{t+1}`.  Posterior risk-frontier actions are
 closed into the experiment set before KG maximization.  The shared-pool gain
 identity, one-step maximizer statement, and both finite-set inclusion claims
 are Lean-proved in `SCOLHKG/Measure/SharedTerminalPoolKG.lean`.
+
+This theorem applies to adaptive acquisition decisions after the `n0` initial
+design and before the `R`-call verification suffix. It characterizes neither
+the initial design nor the suffix as exact KG. The complete algorithm is
+governed by the two-stage theorem below.
 
 ## Theorem 7A: Hierarchical Boundary Certificate And Lexicographic Terminal Value
 
@@ -344,23 +349,37 @@ non-relaxation, reserved-frontier order, three-layer certificate coherence,
 and all three lexicographic dominance cases are Lean-proved in
 `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean`.
 
-## Theorem 8: Finite-Budget Safe Simple-Regret Bound
+## Theorem 8: Two-Stage Finite-Budget Safe Simple-Regret Bound
 
-Let `x_N` be the final certified recommendation and `x_*` the best feasible
-design.  On the joint event of mean confidence, variance over-certification,
-and sufficient state-space coverage,
+Split the charged target budget into `N-R` state-coupled KG search calls and
+`R` confirmatory ranking-and-selection calls. Let `x_S` be a search-quality
+comparator in the frozen universe, `x_F` the best retained strictly safe
+finalist, `x_N` the terminal certified recommendation, and `x_*` the best
+feasible design. If
 
 ```text
-f(x_N) - f(x_*) <= optimization_error_N + certification_slack_N.
+f(x_S) - f(x_*) <= epsilon_search,
+f(x_F) - f(x_S) <= epsilon_proposal,
+f(x_N) - f(x_F) <= epsilon_verify,
 ```
 
-The optimization term is controlled by the cumulative information gain over
-the state/meta feature space; the certification term is controlled by the HVD
-estimation error and chance-bound slack.
+then, on the simultaneous terminal upper-coverage event,
 
-Proof sketch: decompose regret into posterior mean error, acquisition/search
-error, and feasibility certification error.  Use information-gain bounds for
-the surrogate and Theorem 5-6 for variance/certification.
+```text
+true_margin(x_N) <= 0,
+f(x_N) - f(x_*)
+  <= epsilon_search + epsilon_proposal + epsilon_verify.
+```
+
+Search error is controlled by the Stage-I information-gain and exact-MC
+results. Proposal error isolates source-prior/candidate-coverage mismatch.
+Verification error is at most twice the uniform finalist objective error when
+a comparator has a safety buffer larger than the uniform margin error. The
+deterministic decomposition and terminal status semantics are Lean-proved in
+`SCOLHKG/Real/TwoStageDecision.lean`; the finite-universe concentration and
+three-event probability union are proved in
+`SCOLHKG/Measure/TwoStageDecision.lean`. A complete derivation is in
+`proof/two_stage_theory.md`.
 
 ## Assumption A3: Transferable Task-Structure Family
 
@@ -533,7 +552,29 @@ certificate. It proves the adaptive finite-selection contract under the stated
 per-candidate confidence events; the main GP/HVD theory certificate retains
 precedence in the implementation.
 
-## Theorem 11: Joint Task-Posterior Exact KG
+### Theorem 10e: Two-Stage Search-and-Verification Guarantee
+
+The propositions above are the Stage-II implementation lemmas. Combined with
+the Stage-I search theorem, they yield the main deployed guarantee. Let the
+search, proposal-retention, and verification errors be
+`epsilon_S`, `epsilon_P`, and `epsilon_V`. On their joint good event, a
+certified terminal report is truly chance feasible and
+
+```text
+f(x_N) - f(x_star) <= epsilon_S + epsilon_P + epsilon_V.
+```
+
+If no candidate is certified, the algorithm emits an explicitly uncertified
+least-upper-risk fallback. Under uniform margin error `epsilon_g`, its true
+margin is at most the true margin of any completed finalist plus
+`2 epsilon_g`; it does not inherit the safety conclusion above. If search,
+proposal, and verification bad-event probabilities are bounded by
+`delta_S`, `delta_P`, and `delta_V`, the certified safe-regret failure
+probability is at most their sum, without an independence assumption. These
+claims are Lean-proved in `SCOLHKG/Real/TwoStageDecision.lean` and
+`SCOLHKG/Measure/TwoStageDecision.lean`.
+
+## Theorem 11: Stage-I Joint Task-Posterior Exact KG
 
 The exact hypothetical update state contains `Q_t`, every expert objective and
 constraint GPR, and every expert cumulative HVD. Each predictive draw samples
@@ -541,6 +582,9 @@ one shared expert identity, updates the whole joint state, and recomputes the
 robust terminal certified value. A zero-error MC maximizer is therefore a
 one-step maximizer for this joint terminal gain; finite-MC error continues to
 use the existing `2 eta` and concentration bridges.
+
+This theorem characterizes the search acquisition only. It is not used to
+rename committed terminal verification as exact KG.
 
 ## Current Empirical Closure Items
 

@@ -19,7 +19,8 @@
 | Self-supervised trajectory representation | `SelfSupervisedTrajectoryEncoder`, `TransformerTrajectoryEncoder` | Implemented for masked, contrastive, and attention-style pooling ablations |
 | Boundary-aligned LODO representation | `BoundaryAlignedRiskSubspaces`, compact source-expert mixture, frozen source-boundary episode admission, target nested-LOO diagnostics | Implemented; paired N=40 KG promotion matrix is running |
 | Traffic occupancy encoder | `TrafficTrajectoryEncoder` plus `sumo_sim.py` trajectory logger | Implemented for fresh-seed CSV schema; large trajectory table requires server-generated logs |
-| Exact terminal KG | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | Main default via `acquisition_mode=exact_mc`; additive is an ablation/proxy |
+| Adaptive Stage-I exact KG | `SingleOLHKGAlgorithm._exact_posterior_update_scores` | Adaptive search acquisition after `n0` via `acquisition_mode=exact_mc`; it is not a claim about the initial design or reserved verification suffix |
+| Two-stage terminal decision | `finalist_replication_budget`, fixed finalist universe, `_replicated_finalist_recommendation_index`, `two_stage_decision` diagnostics | Main deployed decision architecture; certified and uncertified outputs have distinct theorem claims |
 | Finite task-structure posterior `Q_t(xi)` | `representation.task_posterior.FiniteTaskPosterior` | Implemented behind `task_posterior_mode=finite`; FactorShock N=20 Gate 1 promoted on 2026-07-11, cross-domain Gate 2 pending |
 | Expert-specific surrogate state | `FiniteTaskModelEnsemble` / `TaskExpertState` | Frozen source expert basis plus independent GPR/HVD per expert |
 | Task-robust cumulative certificate | `FiniteTaskModelEnsemble.robust_moments_many` | Within/between variance plus forward-KL robust upper moments |
@@ -119,6 +120,7 @@ an ablation.
 | V30 expert-stratified safety nomination | every finite structural expert nominates its own minimum predicted-violation action before posterior-mass-free finalist ranking | `SCOLHKG.Real.FinalistReplication.every_finite_expert_nomination_is_supported` and `nomination_support_does_not_depend_on_posterior_mass` |
 | V31 history-measurable adaptive finalist race | refresh the expert challenger before each paid suffix observation, archive every tested action, and compare only candidates that meet the replication contract | `SCOLHKG.Real.FinalistReplication.adaptive_archive_contains_every_nomination`, `adaptive_archive_card_le_initial_add_refreshes`, `incomplete_finalist_cannot_enter_completed_race`, `completed_adaptive_finalist_sound_on_joint_event`, and `adaptive_finalist_bad_event_le_sum` |
 | V32 fixed-universe adaptive race | freeze the finite terminal action universe before suffix labels and rerank only that universe after each paid update | `SCOLHKG.Real.FinalistReplication.adaptive_archive_subset_fixed_universe` and `adaptive_archive_card_le_fixed_universe` |
+| Oracle-free two-stage source-consensus baseline | use `n0` source-informed initial-design calls and `N-R-n0` adaptive state-coupled exact-KG calls, freeze the terminal universe, spend `R` charged calls on heteroscedastic ranking-and-selection, and report posterior/replication certification separately from least-risk fallback | `SCOLHKG.Real.TwoStageDecision` proves the budget partition, terminal semantics, certified safety, fallback relative-risk bound, and deterministic regret decomposition; `SCOLHKG.Measure.TwoStageDecision` proves finite verification concentration and high-probability event transfer |
 | TCB-V2 hierarchical boundary plus V33 three-layer repair | `HierarchicalSignedDistancePosterior` learns one source boundary shape with target location, positive scale, optional planar rotation, and orthogonal low-rank residual; `decision_contract_mode=certified_lexicographic` makes main exact KG, coverage-reserved finalist nomination, suffix KG, and final recommendation consume the same authoritative upper margin, while every fantasy refits the same adapter | `SCOLHKG.Real.HierarchicalBoundaryCertificate` proves positive scale, planar-rotation norm preservation, nonnegative predictive covariance, upper-margin monotonicity under rotation/residual uncertainty, reserved-frontier order, frontier/terminal/recommendation coherence, recommendation safety under upper coverage, and lexicographic certified-action dominance |
 | TCB-V3 finite boundary-family posterior | `BoundaryFamilyMixturePosterior` supports broad and atomic source-frozen libraries, updates only family mass from leave-one-pilot-out target evidence, ranks by posterior mean, and certifies with a `1-delta_family` credible-family upper envelope plus nonnegative guard | `SCOLHKG.Real.BoundaryFamilyMixtureCertificate` proves credible-mass accounting, envelope coverage when the true family remains credible, guard monotonicity, safe recommendation, target-name noninterference, and failure probability at most `delta_family + alpha` |
 | TCB-V4 continuous boundary-family synthesis | `BoundaryFamilySynthesisPosterior` freezes one canonical signed-distance atom per source domain, learns a source coefficient prior, updates a held-out intercept and nonnegative atom coefficients from ordinary pilots, and adds coefficient covariance plus residual uncertainty to its Student-t upper margin | `SCOLHKG.Real.BoundaryFamilySynthesisCertificate` proves nonnegative-synthesis monotonicity, nonnegative predictive variance, upper-margin non-relaxation, recommendation safety under coverage, and target-name noninterference |
@@ -151,11 +153,11 @@ instead of presenting additive as the main mathematical object.
 3. Bounded and generic sub-exponential residual-square interfaces are
    available, and the default radius is exposed in code/proof with a
    closed-form inversion theorem.
-4. The exact KG estimator is benchmark-wired as `exact_mc`/`blend` and now has
-   both a finite-pool concentration theorem and an MC-schedule variance theorem.
-   It is not yet empirically promoted over the additive default because current
-   probes show a large wall-time multiplier; the large benchmark matrix will
-   decide whether main text uses `exact_mc`, `blend`, or additive plus `2 eta`.
+4. The exact KG estimator is the Stage-I search acquisition and has both a
+   finite-pool concentration theorem and an MC-schedule variance theorem. The
+   reserved suffix is separately modeled as finite heteroscedastic
+   ranking-and-selection; the new `two_stage_decision` result block audits this
+   implementation contract without pretending the full run is exact KG.
 5. The traffic encoder/log parser, SUMO trajectory logger, schema-row
    contract, and finite traffic-risk Lean model are implemented.  The remaining
    work is to generate the server-side fresh-seed CSV artifact and include its

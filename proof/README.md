@@ -180,6 +180,14 @@ mathlib and its cache; later builds should be fast.
   fixed-universe subset/cardinality invariants, completed-candidate filtering,
   finite bad-event union bounds,
   replicate-deficit decrease, and reserved suffix budget accounting.
+- `SCOLHKG/Real/TwoStageDecision.lean`: the deployed two-stage budget split,
+  disjoint search/verification stages, certified versus fallback terminal
+  reports, strict-margin and objective uniform-error lemmas, fallback
+  relative-risk control, and the deterministic three-term regret theorem.
+- `SCOLHKG/Measure/TwoStageDecision.lean`: simultaneous finite-finalist margin
+  and objective concentration, uniform-error extraction, search/proposal/
+  verification bad-event composition, and high-probability safe-regret
+  transfer without an independence assumption.
 - `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean`: TCB-V2 positive
   location/log-scale adaptation, planar-rotation norm preservation,
   nonnegative Cholesky/rotation/orthogonal-residual predictive variance,
@@ -452,6 +460,21 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
      scaling, and a source-frozen proposal is target-name noninterfering.
 115. Commit-before-switch completes an observed finalist exactly when the
      reserved suffix contains its remaining replication deficit.
+116. Initial design, adaptive search, and verification partition the charged
+     target budget as `min(n0,N-R) + (N-R-min(n0,N-R)) + R = N`, and all three
+     stage sets are disjoint.
+117. A certified terminal report is safe on its upper-coverage event, whereas
+     a fallback report provably does not claim certification.
+118. Uniform finalist objective error gives a `2 epsilon` selection bound; a
+     strictly safe comparator remains empirically certified when its safety
+     buffer exceeds the margin error.
+119. A least-upper-risk fallback has true margin at most any completed
+     comparator's true margin plus twice the uniform margin error.
+120. Two-stage safe regret decomposes exactly into search, proposal-retention,
+     and verification terms.
+121. Finite-finalist sub-Gaussian margin/objective failures and the three
+     stage-level bad events are controlled by finite union bounds without
+     assuming independence.
 
 Remaining work is empirical/binding and assumption validation:
 
@@ -478,8 +501,9 @@ Remaining work is empirical/binding and assumption validation:
    mechanically ineligible for promotion. It motivated a separate observable
    mean coordinate `eta`; oracle-free sequential KG promotion remains an
    empirical gate, not a theorem-level claim.
-4. Decide empirically whether `exact_mc`, `blend`, or additive-with-`2 eta`
-   should be the main runner after the large benchmark matrix finishes.
+4. Validate the Stage-I exact-MC schedule and the three two-stage error terms
+   separately; do not use a Stage-I acquisition theorem as a claim about the
+   committed verification suffix.
 5. If the final manuscript chooses a less conservative traffic feature map
    than the current ingolstadt21 cap, add that sharper numeric cap.
 
@@ -493,7 +517,10 @@ posterior candidate envelopes, mathlib multivariate-Gaussian coefficient
 sampling, residual-square tails, line-envelope KG correctness,
 feature/kernel information-gain caps, traffic occupancy-risk decomposition,
 fresh-log schema semantics, exact-MC concentration, and safe-regret accounting
-all build in Lean without `sorry`.  The boundary-aligned representation layer
+all build in Lean without `sorry`. The two-stage budget, certified/fallback
+semantics, finite verification concentration, and search/proposal/verification
+safe-regret decomposition now also build as the main decision layer. The
+boundary-aligned representation layer
 now also has rotation-invariant projector, identifiable-rank whitening,
 simplex-expert, nested-LOO noninterference, and strong-heredity bridges.  The
 representation implementation remains conditional on empirical gates. The

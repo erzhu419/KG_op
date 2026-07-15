@@ -14,6 +14,24 @@
     "target_simulator_calls_per_run": 20,
     "notes": "The frozen prior uses two source domains, 64 shared universal profiles per source, and three noisy replications. Source and target calls must be reported separately; from-scratch SOTA comparisons require matched source archives or total-call accounting."
   },
+  "decision_theory": {
+    "architecture": "two_stage_search_then_verification",
+    "stage_1": "source_informed_initial_design_then_state_coupled_exact_kg_search",
+    "stage_2": "fixed_universe_heteroscedastic_ranking_and_selection",
+    "exact_kg_scope": "adaptive_search_calls_inside_stage_1_only",
+    "certified_output_claim": "safe_on_simultaneous_upper_coverage_event",
+    "fallback_output_claim": "uncertified_least_upper_risk_only",
+    "regret_decomposition": [
+      "search_error",
+      "proposal_coverage_error",
+      "verification_error"
+    ],
+    "formalization": [
+      "SCOLHKG.Real.TwoStageDecision",
+      "SCOLHKG.Measure.TwoStageDecision"
+    ],
+    "notes": "The historical rows predate the runtime two_stage_decision diagnostic. The promoted policy is not claimed to be exact KG during its reserved three-call verification suffix."
+  },
   "baseline_policy": "Feasibility-first oracle-free promotion over the unchanged seven seeds in all three domains. Every row must be admissible and free of source/target oracle selection; FactorShock and Inventory require 7/7 true feasibility, Queue requires at least 5/7, false-feasible count must be zero, and all nested group-ridge selections and finalist replication contracts must be valid.",
   "promoted_candidate": {
     "name": "oracle_free_source_consensus_top2_committed_lodo",
