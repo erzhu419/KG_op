@@ -228,6 +228,49 @@ class MetaPriorTests(unittest.TestCase):
         self.assertEqual(ordered_diag["basis_mode"], "diagonal_quadratic")
         self.assertTrue(ordered_diag["adaptive_sparsity"])
 
+    def test_ordered_orthogonality_ablation_preserves_the_function_span(self):
+        source_names = (
+            "FactorShockStatePolicyRZDT1",
+            "QueueResourceControl",
+        )
+
+        def fit(orthogonal):
+            sources = [
+                (name, self._problem(name, d=12)) for name in source_names
+            ]
+            return LearnedMetaPrior(
+                local_dim=3,
+                shared_dim=2,
+                ordered_cumulative_exposure=True,
+                ordered_exposure_max_frequency=6,
+                ordered_exposure_active_dim=2,
+                ordered_exposure_orthogonal_coordinates=orthogonal,
+                seed=37,
+            ).fit_from_source_problems(
+                sources,
+                n_records_per_domain=10,
+                rng=np.random.default_rng(37),
+            )
+
+        orthogonal = fit(True)
+        correlated = fit(False)
+        np.testing.assert_array_equal(
+            orthogonal.ordered_exposure_selected_frequencies,
+            correlated.ordered_exposure_selected_frequencies,
+        )
+        problem = self._problem("InventorySupplyChain", d=12)
+        x = problem.sample_random(np.random.default_rng(38))
+        orthogonal_values = orthogonal.ordered_local_exposure(problem, x)
+        correlated_values = correlated.ordered_local_exposure(problem, x)
+        indices = np.arange(len(orthogonal_values))
+        distance = indices[:, None] - indices[None, :]
+        mixing = np.where(distance >= 0, 0.75 ** distance, 0.0)
+        self.assertEqual(np.linalg.matrix_rank(mixing), len(orthogonal_values))
+        np.testing.assert_allclose(
+            correlated_values, mixing @ orthogonal_values, atol=1e-12)
+        self.assertFalse(correlated.diagnostics()[
+            "ordered_cumulative_exposure"]["orthogonal_coordinates"])
+
     def test_ordered_semiparametric_residual_is_orthogonal_single_expert(self):
         sources = [
             ("FactorShockStatePolicyRZDT1", self._problem(
@@ -666,6 +709,20 @@ class MetaPriorTests(unittest.TestCase):
         self.assertLess(ordered_diag["max_diag_error"], 1e-5)
         np.testing.assert_allclose(
             np.tril(ordered.whitening_, k=-1), 0.0, atol=1e-12)
+
+        nonorthogonal = TransferableSpectralBasis(
+            active_dim=4,
+            low_frequency_components=10,
+            n_neighbors=12,
+            orthogonalization="none",
+        ).fit(batches)
+        nonorthogonal_diag = nonorthogonal.diagnostics()
+        self.assertEqual(nonorthogonal_diag["orthogonalization"], "none")
+        self.assertEqual(
+            nonorthogonal_diag["selected_names"], diag["selected_names"])
+        np.testing.assert_allclose(
+            nonorthogonal.whitening_, np.eye(4), atol=1e-12)
+        self.assertGreater(nonorthogonal_diag["max_offdiag_gram"], 1e-8)
 
     def test_spectral_stage_does_not_enable_later_meta_components(self):
         rng = np.random.default_rng(31)

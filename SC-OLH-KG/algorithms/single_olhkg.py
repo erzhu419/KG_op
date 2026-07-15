@@ -7805,6 +7805,33 @@ class SingleOLHKGAlgorithm:
             ],
             "target_oracle_used": False,
         }
+        no_forced_terminal_stage = int(
+            self.config.finalist_replication_budget) <= 0
+        terminal_stage_uses_same_value = bool(
+            no_forced_terminal_stage
+            or self._terminal_replication_policy_active())
+        empirical_override_disabled = bool(
+            self._finalist_empirical_override_policy() == "off")
+        finalist_replication_summary.update({
+            "sampling_terminal_contract_closed": bool(
+                terminal_stage_uses_same_value),
+            "recommendation_override_closed": bool(
+                empirical_override_disabled),
+            "mathematically_closed": bool(
+                self._coherent_certificate_contract()
+                and terminal_stage_uses_same_value
+                and empirical_override_disabled
+                and self._effective_exact_terminal_mode()
+                == "tcb_certified_lexicographic"
+                and self._finalist_terminal_value_mode()
+                == "certified_lexicographic"
+            ),
+            "closure_definition": (
+                "exact acquisition, optional terminal replication, and final "
+                "recommendation share the certified lexicographic value; no "
+                "empirical recommendation override"
+            ),
+        })
 
         final_pool = (
             list(self._last_terminal_pool)

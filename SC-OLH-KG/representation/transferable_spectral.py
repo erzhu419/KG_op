@@ -55,9 +55,11 @@ class TransferableSpectralBasis:
         self.pilot_cv_repeats = int(pilot_cv_repeats)
         self.pilot_cv_weight = float(pilot_cv_weight)
         self.orthogonalization = str(orthogonalization)
-        if self.orthogonalization not in {"symmetric", "ordered_cholesky"}:
+        if self.orthogonalization not in {
+            "symmetric", "ordered_cholesky", "none"
+        }:
             raise ValueError(
-                "orthogonalization must be 'symmetric' or 'ordered_cholesky'"
+                "orthogonalization must be symmetric, ordered_cholesky, or none"
             )
 
         self.psi_mean_: np.ndarray | None = None
@@ -200,7 +202,10 @@ class TransferableSpectralBasis:
             retained[int(np.argmax(eigenvalues))] = True
         retained_eigenvalues = eigenvalues[retained]
         retained_eigenvectors = eigenvectors[:, retained]
-        if self.orthogonalization == "ordered_cholesky" and np.all(retained):
+        if self.orthogonalization == "none":
+            self.whitening_ = np.eye(
+                len(self.selected_idx_), dtype=float)
+        elif self.orthogonalization == "ordered_cholesky" and np.all(retained):
             try:
                 lower = np.linalg.cholesky(covariance)
                 self.whitening_ = np.linalg.solve(

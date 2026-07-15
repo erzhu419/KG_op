@@ -84,6 +84,8 @@ def _run_baseline(args, method, seed, problem):
             num_restarts=args.botorch_num_restarts,
             maxiter=args.botorch_maxiter,
             timeout_sec=args.botorch_timeout_sec,
+            certification_beta=args.botorch_certification_beta,
+            ts_candidates=args.botorch_ts_candidates,
             saas_warmup_steps=args.saas_warmup_steps,
             saas_num_samples=args.saas_num_samples,
             saas_thinning=args.saas_thinning,
@@ -92,6 +94,7 @@ def _run_baseline(args, method, seed, problem):
             saas_constrained=not args.saas_unconstrained,
             max_candidate_failures=args.botorch_max_candidate_failures,
             saas_fallback_after_failures=not args.disable_saas_failure_fallback,
+            strict_failures=not args.allow_botorch_candidate_fallback,
         )
         return BoTorchBaseline(problem, config).run()
     config = BaselineConfig(
@@ -204,24 +207,31 @@ def main():
     parser.add_argument("--N", type=int, default=12)
     parser.add_argument("--n0", type=int, default=5)
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
-    parser.add_argument("--tr_radius_init", type=float, default=0.35)
-    parser.add_argument("--tr_radius_min", type=float, default=0.04)
-    parser.add_argument("--tr_radius_max", type=float, default=0.8)
-    parser.add_argument("--tr_success_tolerance", type=int, default=3)
-    parser.add_argument("--tr_failure_tolerance", type=int, default=5)
+    parser.add_argument("--tr_radius_init", type=float, default=0.8)
+    parser.add_argument("--tr_radius_min", type=float, default=0.5 ** 7)
+    parser.add_argument("--tr_radius_max", type=float, default=1.6)
+    parser.add_argument("--tr_success_tolerance", type=int, default=10)
+    parser.add_argument("--tr_failure_tolerance", type=int, default=0)
     parser.add_argument("--botorch_fallback", choices=("lite", "error"), default="error")
-    parser.add_argument("--botorch_raw_samples", type=int, default=32)
-    parser.add_argument("--botorch_num_restarts", type=int, default=3)
-    parser.add_argument("--botorch_maxiter", type=int, default=25)
-    parser.add_argument("--botorch_timeout_sec", type=float, default=60.0)
-    parser.add_argument("--botorch_max_candidate_failures", type=int, default=4)
-    parser.add_argument("--saas_warmup_steps", type=int, default=8)
-    parser.add_argument("--saas_num_samples", type=int, default=8)
-    parser.add_argument("--saas_thinning", type=int, default=1)
-    parser.add_argument("--saas_max_tree_depth", type=int, default=3)
-    parser.add_argument("--saas_mc_samples", type=int, default=32)
+    parser.add_argument("--botorch_raw_samples", type=int, default=1024)
+    parser.add_argument("--botorch_num_restarts", type=int, default=10)
+    parser.add_argument("--botorch_maxiter", type=int, default=100)
+    parser.add_argument("--botorch_timeout_sec", type=float, default=3600.0)
+    parser.add_argument("--botorch_max_candidate_failures", type=int, default=1)
+    parser.add_argument("--botorch_ts_candidates", type=int, default=0)
+    parser.add_argument("--botorch_certification_beta", type=float, default=2.0)
+    parser.add_argument("--saas_warmup_steps", type=int, default=256)
+    parser.add_argument("--saas_num_samples", type=int, default=128)
+    parser.add_argument("--saas_thinning", type=int, default=16)
+    parser.add_argument("--saas_max_tree_depth", type=int, default=6)
+    parser.add_argument("--saas_mc_samples", type=int, default=256)
     parser.add_argument("--saas_unconstrained", action="store_true")
-    parser.add_argument("--disable_saas_failure_fallback", action="store_true")
+    parser.add_argument(
+        "--disable_saas_failure_fallback", action="store_true", default=True)
+    parser.add_argument(
+        "--enable_saas_failure_fallback",
+        dest="disable_saas_failure_fallback", action="store_false")
+    parser.add_argument("--allow_botorch_candidate_fallback", action="store_true")
     parser.add_argument("--true_replications", type=int, default=2)
     parser.add_argument("--sigma_replications", type=int, default=3)
     parser.add_argument(

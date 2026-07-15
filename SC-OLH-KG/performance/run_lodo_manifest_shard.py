@@ -98,6 +98,7 @@ def main():
     parser.add_argument("--heldout", required=True)
     parser.add_argument("--line", default="lodo_teacher")
     parser.add_argument("--seed", type=int, required=True)
+    parser.add_argument("--experiment-variant", default="")
     parser.add_argument("--out", required=True)
     parser.add_argument("--runtime-checkpoint-dir", required=True)
     parser.add_argument(
@@ -109,9 +110,19 @@ def main():
     parser.add_argument("--ordered-active-dim", type=int, default=2)
     parser.add_argument("--ordered-frequency-penalty", type=float, default=0.10)
     parser.add_argument(
+        "--spectral-orthogonalization",
+        choices=("symmetric", "ordered_cholesky", "none"),
+        default="symmetric",
+    )
+    parser.add_argument(
         "--ordered-basis-mode",
         choices=["full_quadratic", "diagonal_quadratic"],
         default="full_quadratic",
+    )
+    parser.add_argument(
+        "--ordered-orthogonal-coordinates",
+        action=argparse.BooleanOptionalAction,
+        default=True,
     )
     parser.add_argument(
         "--ordered-adaptive-sparsity",
@@ -307,14 +318,19 @@ def main():
 
     config = load_config(args.manifest)
     config.update({
+        "experiment_variant": str(args.experiment_variant),
         "meta_ordered_cumulative_exposure": bool(
             args.ordered_cumulative_exposure),
+        "meta_spectral_orthogonalization": str(
+            args.spectral_orthogonalization),
         "meta_ordered_exposure_max_frequency": int(
             args.ordered_max_frequency),
         "meta_ordered_exposure_active_dim": int(args.ordered_active_dim),
         "meta_ordered_exposure_frequency_penalty": float(
             args.ordered_frequency_penalty),
         "meta_ordered_exposure_basis_mode": str(args.ordered_basis_mode),
+        "meta_ordered_exposure_orthogonal_coordinates": bool(
+            args.ordered_orthogonal_coordinates),
         "meta_ordered_exposure_adaptive_sparsity": bool(
             args.ordered_adaptive_sparsity),
         "meta_ordered_exposure_replace_local_kernel": bool(
@@ -435,18 +451,24 @@ def main():
         "seed": int(args.seed),
     }
     row = run_one(task)
+    row["experiment_variant"] = str(args.experiment_variant)
     payload = {
         "schema_version": 1,
         "source_manifest": str(args.manifest),
+        "experiment_variant": str(args.experiment_variant),
         "causal_overrides": {
             "meta_ordered_cumulative_exposure": bool(
                 args.ordered_cumulative_exposure),
+            "meta_spectral_orthogonalization": str(
+                args.spectral_orthogonalization),
             "meta_ordered_exposure_max_frequency": int(
                 args.ordered_max_frequency),
             "meta_ordered_exposure_active_dim": int(args.ordered_active_dim),
             "meta_ordered_exposure_frequency_penalty": float(
                 args.ordered_frequency_penalty),
             "meta_ordered_exposure_basis_mode": str(args.ordered_basis_mode),
+            "meta_ordered_exposure_orthogonal_coordinates": bool(
+                args.ordered_orthogonal_coordinates),
             "meta_ordered_exposure_adaptive_sparsity": bool(
                 args.ordered_adaptive_sparsity),
             "meta_ordered_exposure_replace_local_kernel": bool(

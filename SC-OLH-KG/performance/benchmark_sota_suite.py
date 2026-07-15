@@ -108,6 +108,12 @@ def _problem_args(args, problem):
         "botorch_maxiter": args.botorch_maxiter,
         "botorch_timeout_sec": args.botorch_timeout_sec,
         "botorch_max_candidate_failures": args.botorch_max_candidate_failures,
+        "botorch_ts_candidates": args.botorch_ts_candidates,
+        "botorch_certification_beta": args.botorch_certification_beta,
+        "allow_botorch_candidate_fallback": args.allow_botorch_candidate_fallback,
+        "botorch_checkpoint_dir": args.botorch_checkpoint_dir,
+        "botorch_checkpoint_resume": args.botorch_checkpoint_resume,
+        "botorch_checkpoint_interval": args.botorch_checkpoint_interval,
         "saas_warmup_steps": args.saas_warmup_steps,
         "saas_num_samples": args.saas_num_samples,
         "saas_thinning": args.saas_thinning,
@@ -294,8 +300,16 @@ def main():
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
-    parser.add_argument("--disable_problem_initial_samples", action="store_true")
-    parser.add_argument("--disable_boundary_initial_samples", action="store_true")
+    parser.add_argument(
+        "--disable_problem_initial_samples", action="store_true", default=True)
+    parser.add_argument(
+        "--enable_problem_initial_samples",
+        dest="disable_problem_initial_samples", action="store_false")
+    parser.add_argument(
+        "--disable_boundary_initial_samples", action="store_true", default=True)
+    parser.add_argument(
+        "--enable_boundary_initial_samples",
+        dest="disable_boundary_initial_samples", action="store_false")
     parser.add_argument("--disable_recommendation_refinement", action="store_true")
     parser.add_argument("--acquisition_mode", default="exact_mc",
                         choices=["additive", "exact_mc", "blend"])
@@ -321,26 +335,36 @@ def main():
         ),
     )
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
-    parser.add_argument("--tr_radius_init", type=float, default=0.35)
-    parser.add_argument("--tr_radius_min", type=float, default=0.04)
-    parser.add_argument("--tr_radius_max", type=float, default=0.8)
-    parser.add_argument("--tr_success_tolerance", type=int, default=3)
-    parser.add_argument("--tr_failure_tolerance", type=int, default=5)
+    parser.add_argument("--tr_radius_init", type=float, default=0.8)
+    parser.add_argument("--tr_radius_min", type=float, default=0.5 ** 7)
+    parser.add_argument("--tr_radius_max", type=float, default=1.6)
+    parser.add_argument("--tr_success_tolerance", type=int, default=10)
+    parser.add_argument("--tr_failure_tolerance", type=int, default=0)
     parser.add_argument("--embedding_dim", type=int, default=8)
     parser.add_argument("--embedding_dim_max", type=int, default=32)
     parser.add_argument("--botorch_fallback", choices=("lite", "error"), default="error")
-    parser.add_argument("--botorch_raw_samples", type=int, default=64)
-    parser.add_argument("--botorch_num_restarts", type=int, default=5)
-    parser.add_argument("--botorch_maxiter", type=int, default=50)
-    parser.add_argument("--botorch_timeout_sec", type=float, default=30.0)
-    parser.add_argument("--botorch_max_candidate_failures", type=int, default=8)
-    parser.add_argument("--saas_warmup_steps", type=int, default=16)
-    parser.add_argument("--saas_num_samples", type=int, default=16)
-    parser.add_argument("--saas_thinning", type=int, default=1)
-    parser.add_argument("--saas_max_tree_depth", type=int, default=4)
-    parser.add_argument("--saas_mc_samples", type=int, default=64)
+    parser.add_argument("--botorch_raw_samples", type=int, default=1024)
+    parser.add_argument("--botorch_num_restarts", type=int, default=10)
+    parser.add_argument("--botorch_maxiter", type=int, default=100)
+    parser.add_argument("--botorch_timeout_sec", type=float, default=3600.0)
+    parser.add_argument("--botorch_max_candidate_failures", type=int, default=1)
+    parser.add_argument("--botorch_ts_candidates", type=int, default=0)
+    parser.add_argument("--botorch_certification_beta", type=float, default=2.0)
+    parser.add_argument("--saas_warmup_steps", type=int, default=256)
+    parser.add_argument("--saas_num_samples", type=int, default=128)
+    parser.add_argument("--saas_thinning", type=int, default=16)
+    parser.add_argument("--saas_max_tree_depth", type=int, default=6)
+    parser.add_argument("--saas_mc_samples", type=int, default=256)
     parser.add_argument("--saas_unconstrained", action="store_true")
-    parser.add_argument("--disable_saas_failure_fallback", action="store_true")
+    parser.add_argument(
+        "--disable_saas_failure_fallback", action="store_true", default=True)
+    parser.add_argument(
+        "--enable_saas_failure_fallback",
+        dest="disable_saas_failure_fallback", action="store_false")
+    parser.add_argument("--allow_botorch_candidate_fallback", action="store_true")
+    parser.add_argument("--botorch_checkpoint_dir", default="")
+    parser.add_argument("--botorch_checkpoint_resume", action="store_true")
+    parser.add_argument("--botorch_checkpoint_interval", type=int, default=1)
     parser.add_argument("--include_olhkg", action="store_true", default=True)
     parser.add_argument("--include_sc", action="store_true", default=True)
     parser.add_argument("--exclude_olhkg", dest="include_olhkg", action="store_false")

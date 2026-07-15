@@ -47,13 +47,21 @@ def command_for(args, heldout, seed, result_file, checkpoint_dir):
         "--heldout", str(heldout),
         "--line", str(args.line),
         "--seed", str(int(seed)),
+        "--experiment-variant", str(getattr(args, "experiment_variant", "")),
         "--out", str(result_file),
         "--runtime-checkpoint-dir", str(checkpoint_dir),
         "--ordered-max-frequency", str(int(args.ordered_max_frequency)),
+        "--spectral-orthogonalization",
+        str(getattr(args, "spectral_orthogonalization", "symmetric")),
         "--ordered-active-dim", str(int(args.ordered_active_dim)),
         "--ordered-frequency-penalty",
         str(float(args.ordered_frequency_penalty)),
         "--ordered-basis-mode", str(args.ordered_basis_mode),
+        (
+            "--ordered-orthogonal-coordinates"
+            if getattr(args, "ordered_orthogonal_coordinates", True)
+            else "--no-ordered-orthogonal-coordinates"
+        ),
         "--exact-sampling-mode", str(args.exact_sampling_mode),
         "--exact-terminal-mode",
         str(getattr(args, "exact_terminal_mode", "hard_certified")),
@@ -283,6 +291,7 @@ def main():
         default="FactorShockStatePolicyRZDT1,InventorySupplyChain",
     )
     parser.add_argument("--line", default="lodo_teacher")
+    parser.add_argument("--experiment-variant", default="")
     parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=7)
     parser.add_argument("--nodes", default=",".join(CPU_NODES))
@@ -294,12 +303,22 @@ def main():
         default=True,
     )
     parser.add_argument("--ordered-max-frequency", type=int, default=8)
+    parser.add_argument(
+        "--spectral-orthogonalization",
+        choices=("symmetric", "ordered_cholesky", "none"),
+        default="symmetric",
+    )
     parser.add_argument("--ordered-active-dim", type=int, default=2)
     parser.add_argument("--ordered-frequency-penalty", type=float, default=0.10)
     parser.add_argument(
         "--ordered-basis-mode",
         choices=["full_quadratic", "diagonal_quadratic"],
         default="diagonal_quadratic",
+    )
+    parser.add_argument(
+        "--ordered-orthogonal-coordinates",
+        action=argparse.BooleanOptionalAction,
+        default=True,
     )
     parser.add_argument(
         "--ordered-adaptive-sparsity",
@@ -357,6 +376,19 @@ def main():
         default="source_profiles",
     )
     parser.add_argument("--exact-sampling-mode", default="iid")
+    parser.add_argument(
+        "--exact-terminal-mode",
+        choices=(
+            "hard_certified", "bayes_risk",
+            "tcb_certified_lexicographic",
+        ),
+        default="hard_certified",
+    )
+    parser.add_argument(
+        "--decision-contract-mode",
+        choices=("legacy", "certified_lexicographic"),
+        default="legacy",
+    )
     parser.add_argument("--exact-mc-samples", type=int, default=2)
     parser.add_argument("--exact-jobs", type=int, default=32)
     parser.add_argument("--parallel-backend", default="process_fork")
@@ -390,6 +422,11 @@ def main():
         default="constraint_mean",
     )
     parser.add_argument("--finalist-replication-budget", type=int, default=0)
+    parser.add_argument(
+        "--finalist-terminal-value-mode",
+        choices=("model_default", "certified_lexicographic"),
+        default="model_default",
+    )
     parser.add_argument("--finalist-replication-count", type=int, default=2)
     parser.add_argument(
         "--finalist-observed-safety-count", type=int, default=1)

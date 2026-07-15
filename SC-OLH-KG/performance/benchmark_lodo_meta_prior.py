@@ -170,6 +170,8 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
         spectral_low_frequency_components=args_dict[
             "meta_spectral_low_frequency_components"],
         spectral_graph_neighbors=args_dict["meta_spectral_graph_neighbors"],
+        spectral_orthogonalization=str(args_dict.get(
+            "meta_spectral_orthogonalization", "symmetric")),
         spectral_relevance_floor=args_dict["meta_spectral_relevance_floor"],
         spectral_gate_boundary_weight=args_dict[
             "meta_spectral_gate_boundary_weight"],
@@ -279,6 +281,8 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
             "meta_ordered_exposure_frequency_penalty", 0.10)),
         ordered_exposure_basis_mode=str(args_dict.get(
             "meta_ordered_exposure_basis_mode", "full_quadratic")),
+        ordered_exposure_orthogonal_coordinates=bool(args_dict.get(
+            "meta_ordered_exposure_orthogonal_coordinates", True)),
         ordered_exposure_adaptive_sparsity=bool(args_dict.get(
             "meta_ordered_exposure_adaptive_sparsity", False)),
         ordered_exposure_replace_local_kernel=bool(args_dict.get(
@@ -707,6 +711,8 @@ def run_one(task):
         "state_basis_mode": args_dict["state_basis_mode"],
         "constraint_state_basis_mode": args_dict["constraint_state_basis_mode"],
         "meta_component_stage": args_dict["meta_component_stage"],
+        "meta_spectral_orthogonalization": str(args_dict.get(
+            "meta_spectral_orthogonalization", "symmetric")),
         "meta_observable_mean_coordinate": bool(args_dict.get(
             "meta_observable_mean_coordinate", False)),
         "meta_observable_mean_mode": str(args_dict.get(
@@ -725,6 +731,18 @@ def run_one(task):
             "meta_source_universal_fraction", 0.75)),
         "meta_source_consensus_template_count": int(args_dict.get(
             "meta_source_consensus_template_count", 0)),
+        "meta_ordered_cumulative_exposure": bool(args_dict.get(
+            "meta_ordered_cumulative_exposure", False)),
+        "meta_ordered_exposure_max_frequency": int(args_dict.get(
+            "meta_ordered_exposure_max_frequency", 8)),
+        "meta_ordered_exposure_frequency_penalty": float(args_dict.get(
+            "meta_ordered_exposure_frequency_penalty", 0.10)),
+        "meta_ordered_exposure_basis_mode": str(args_dict.get(
+            "meta_ordered_exposure_basis_mode", "full_quadratic")),
+        "meta_ordered_exposure_orthogonal_coordinates": bool(args_dict.get(
+            "meta_ordered_exposure_orthogonal_coordinates", True)),
+        "meta_ordered_exposure_adaptive_sparsity": bool(args_dict.get(
+            "meta_ordered_exposure_adaptive_sparsity", False)),
         "task_posterior_sensitivity_mode": args_dict[
             "task_posterior_sensitivity_mode"],
         "task_latent_inference_mode": args_dict.get(
@@ -1953,6 +1971,11 @@ def main():
     parser.add_argument("--meta_local_dim", type=int, default=3)
     parser.add_argument("--meta_shared_dim", type=int, default=3)
     parser.add_argument(
+        "--meta_spectral_orthogonalization",
+        choices=("symmetric", "ordered_cholesky", "none"),
+        default="symmetric",
+    )
+    parser.add_argument(
         "--meta_ordered_cumulative_exposure",
         action=argparse.BooleanOptionalAction,
         default=False,
@@ -1967,6 +1990,11 @@ def main():
         "--meta_ordered_exposure_basis_mode",
         choices=["full_quadratic", "diagonal_quadratic"],
         default="full_quadratic",
+    )
+    parser.add_argument(
+        "--meta_ordered_exposure_orthogonal_coordinates",
+        action=argparse.BooleanOptionalAction,
+        default=True,
     )
     parser.add_argument(
         "--meta_ordered_exposure_adaptive_sparsity",

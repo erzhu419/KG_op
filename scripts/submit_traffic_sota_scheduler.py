@@ -16,6 +16,7 @@ DEFAULT_SCHEDULER = Path.home() / ".claude/skills/scheduler/scheduler.py"
 DEFAULT_DEPLOY = Path("/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
 SUMO_PKG = "/home/zhengliang01/scheduleurm_work/python_pkgs/eclipse_sumo_1_25"
 PYTHON = "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python"
+BOTORCH_OVERLAY = "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310"
 
 
 def parse_csv(text):
@@ -35,6 +36,7 @@ def sumo_env_prefix():
         f"export SUMO_PKG={SUMO_PKG}",
         "export SUMO_HOME=$SUMO_PKG/sumo",
         "export PYTHONPATH=$SUMO_PKG:$SUMO_PKG/sumo/tools:$PYTHONPATH",
+        f"export PYTHONPATH={BOTORCH_OVERLAY}:$PYTHONPATH",
         "export PATH=$SUMO_HOME/bin:$PATH",
         "export LD_LIBRARY_PATH=$SUMO_PKG/libsumo.libs:$SUMO_PKG/eclipse_sumo.libs:$LD_LIBRARY_PATH",
     ])
@@ -53,7 +55,7 @@ def main():
     parser.add_argument("--n-seeds", type=int, default=20)
     parser.add_argument("--traffic-anchor-policy", default="strict_none")
     parser.add_argument("--botorch-fallback", choices=("lite", "error"), default="error")
-    parser.add_argument("--botorch-timeout-sec", type=float, default=60.0)
+    parser.add_argument("--botorch-timeout-sec", type=float, default=3600.0)
     parser.add_argument("--ram-mb", type=int, default=8192)
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")

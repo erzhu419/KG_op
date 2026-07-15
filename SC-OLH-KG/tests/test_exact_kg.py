@@ -800,6 +800,47 @@ class ExactKGTests(unittest.TestCase):
             "disabled_by_coherent_certificate_contract",
         )
 
+    def test_decision_contract_audit_distinguishes_closed_from_legacy(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        closed = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=5,
+                n0=4,
+                K1=4,
+                K2=0,
+                acquisition_mode="exact_mc",
+                exact_kg_mc_samples=2,
+                decision_contract_mode="certified_lexicographic",
+                finalist_replication_budget=0,
+                finalist_empirical_override="off",
+                seed=236,
+            ),
+        ).run()["finalist_replication"]
+        self.assertTrue(closed["sampling_terminal_contract_closed"])
+        self.assertTrue(closed["recommendation_override_closed"])
+        self.assertTrue(closed["mathematically_closed"])
+
+        legacy = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=5,
+                n0=4,
+                K1=4,
+                K2=0,
+                acquisition_mode="exact_mc",
+                exact_kg_mc_samples=2,
+                finalist_replication_budget=1,
+                finalist_replication_policy="commit_before_switch",
+                finalist_empirical_override="legacy",
+                decision_contract_mode="legacy",
+                seed=237,
+            ),
+        ).run()["finalist_replication"]
+        self.assertFalse(legacy["sampling_terminal_contract_closed"])
+        self.assertFalse(legacy["recommendation_override_closed"])
+        self.assertFalse(legacy["mathematically_closed"])
+
     @unittest.skipUnless(
         "fork" in multiprocessing.get_all_start_methods(),
         "terminal rollout process backend requires fork",

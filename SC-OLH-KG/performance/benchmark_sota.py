@@ -98,6 +98,7 @@ def row_from_result(variant, seed, args, result):
     posterior_feasible = bool(result.get("posterior_feasible", False))
     feasible_regret = float(result["simple_regret"]) if true_feasible else None
     return {
+        "run_status": "ok",
         "variant": variant,
         "seed": int(seed),
         "problem": args.problem,
@@ -118,6 +119,14 @@ def row_from_result(variant, seed, args, result):
         "true_chance_margin": float(result["true_chance_margin"]),
         "constraint_violation": max(float(result["true_chance_margin"]), 0.0),
         "posterior_chance_margin": float(result.get("posterior_chance_margin", 0.0)),
+        "posterior_chance_margin_mean": optional_float(
+            result.get("posterior_chance_margin_mean")),
+        "posterior_chance_margin_std": optional_float(
+            result.get("posterior_chance_margin_std")),
+        "posterior_beta_g": optional_float(result.get("posterior_beta_g")),
+        "n_posterior_feasible": int(result.get("n_posterior_feasible", 0)),
+        "posterior_certificate_kind": result.get("posterior_certificate_kind", ""),
+        "recommendation_rule": result.get("recommendation_rule", ""),
         "wall_time_sec": float(result["total_time_sec"]),
         "n_simulations": int(result["n_simulations"]),
         "n_distinct_solutions": int(result["n_distinct_solutions"]),
@@ -134,9 +143,24 @@ def row_from_result(variant, seed, args, result):
             getattr(args, "disable_recommendation_refinement", False)),
         "certification_mode": getattr(args, "certification_mode", ""),
         "backend": result.get("backend", "lite"),
+        "algorithm_fidelity": result.get("algorithm_fidelity", ""),
+        "runtime_fingerprint": result.get("runtime_fingerprint"),
+        "initial_design": result.get("initial_design", ""),
+        "botorch_strict_failures": bool(
+            result.get("botorch_strict_failures", False)),
         "botorch_fit_failures": int(result.get("botorch_fit_failures", 0)),
         "botorch_candidate_failures": int(result.get("botorch_candidate_failures", 0)),
         "botorch_timeout_fallback": bool(result.get("botorch_timeout_fallback", False)),
+        "ts_candidates": int(result.get("ts_candidates", 0)),
+        "tr_failure_tolerance": int(result.get("tr_failure_tolerance", 0)),
+        "tr_success_tolerance": int(result.get("tr_success_tolerance", 0)),
+        "tr_restart_count": int(result.get("tr_restart_count", 0)),
+        "tr_restart_design_sizes": result.get("tr_restart_design_sizes", []),
+        "saas_nuts_schedule": result.get("saas_nuts_schedule"),
+        "botorch_checkpoint_path": result.get("checkpoint_path"),
+        "botorch_checkpoint_resumed": bool(
+            result.get("checkpoint_resumed", False)),
+        "history": result.get("history"),
         "embedding_dim": optional_float(getattr(args, "embedding_dim", None)),
         "embedding_dim_max": optional_float(getattr(args, "embedding_dim_max", None)),
         "embedding_dim_final": optional_float(result.get("embedding_dim_final")),
@@ -260,6 +284,17 @@ def run_baseline(args, seed, method):
             result["method"] = method
             result["backend"] = f"fallback:{lite_method}"
             return row_from_result(method, seed, args, result)
+        botorch_checkpoint_dir = str(getattr(
+            args, "botorch_checkpoint_dir", "") or "").strip()
+        botorch_checkpoint_path = ""
+        if botorch_checkpoint_dir:
+            safe_problem = _safe_name(args.problem)
+            botorch_checkpoint_path = str(
+                Path(botorch_checkpoint_dir)
+                / safe_problem
+                / method
+                / f"seed{int(seed):04d}.pkl"
+            )
         config = BoTorchBaselineConfig(
             N=args.N,
             n0=args.n0,
@@ -275,6 +310,9 @@ def run_baseline(args, seed, method):
             num_restarts=args.botorch_num_restarts,
             maxiter=args.botorch_maxiter,
             timeout_sec=args.botorch_timeout_sec,
+            certification_beta=float(getattr(
+                args, "botorch_certification_beta", args.beta_g)),
+            ts_candidates=int(getattr(args, "botorch_ts_candidates", 0)),
             saas_warmup_steps=args.saas_warmup_steps,
             saas_num_samples=args.saas_num_samples,
             saas_thinning=args.saas_thinning,
@@ -283,10 +321,17 @@ def run_baseline(args, seed, method):
             saas_constrained=not args.saas_unconstrained,
             max_candidate_failures=args.botorch_max_candidate_failures,
             saas_fallback_after_failures=not args.disable_saas_failure_fallback,
+            strict_failures=not bool(getattr(
+                args, "allow_botorch_candidate_fallback", False)),
             use_problem_initial_samples=not args.disable_problem_initial_samples,
             use_boundary_initial_samples=not args.disable_boundary_initial_samples,
             progress_logging=bool(getattr(args, "progress_logging", False)),
             progress_label=f"{method}:seed={int(seed)}",
+            checkpoint_path=botorch_checkpoint_path,
+            checkpoint_resume=bool(getattr(
+                args, "botorch_checkpoint_resume", False)),
+            checkpoint_interval=int(getattr(
+                args, "botorch_checkpoint_interval", 1)),
         )
         result = BoTorchBaseline(problem, config).run()
         return row_from_result(method, seed, args, result)
@@ -328,11 +373,31 @@ def _worker_init(torch_threads):
 
 def _run_variant_task(args_dict, name, method, seed):
     args = argparse.Namespace(**args_dict)
-    if name == "olhkg":
-        return run_olhkg(args, seed, use_sc=False)
-    if name == "olhkg_sc":
-        return run_olhkg(args, seed, use_sc=True)
-    return run_baseline(args, seed, method)
+    try:
+        if name == "olhkg":
+            return run_olhkg(args, seed, use_sc=False)
+        if name == "olhkg_sc":
+            return run_olhkg(args, seed, use_sc=True)
+        return run_baseline(args, seed, method)
+    except Exception as exc:
+        return {
+            "run_status": "failed",
+            "variant": name,
+            "seed": int(seed),
+            "problem": args.problem,
+            "N": int(args.N),
+            "n0": int(args.n0),
+            "true_feasible": False,
+            "posterior_feasible": False,
+            "false_feasible": False,
+            "feasible_simple_regret": None,
+            "constraint_violation": None,
+            "wall_time_sec": None,
+            "failure_type": type(exc).__name__,
+            "failure_message": str(exc),
+            "backend": "botorch_failed" if str(name).startswith(
+                "botorch_") else "failed",
+        }
 
 
 def summarize(rows):
@@ -344,6 +409,13 @@ def summarize(rows):
         summaries[variant] = {
             "variant": variant,
             "n_runs": len(items),
+            "n_success": int(sum(
+                row.get("run_status", "ok") == "ok" for row in items)),
+            "n_failures": int(sum(
+                row.get("run_status", "ok") != "ok" for row in items)),
+            "failure_rate": float(sum(
+                row.get("run_status", "ok") != "ok" for row in items)
+                / len(items)),
             "true_feasible_rate": sum(bool(r["true_feasible"]) for r in items) / len(items),
             "false_feasible_rate": sum(bool(r["false_feasible"]) for r in items) / len(items),
             "feasible_simple_regret": stats(r["feasible_simple_regret"] for r in items),
@@ -378,6 +450,9 @@ def flatten_summary(summary):
     row = {
         "variant": summary["variant"],
         "n_runs": summary["n_runs"],
+        "n_success": summary["n_success"],
+        "n_failures": summary["n_failures"],
+        "failure_rate": summary["failure_rate"],
         "true_feasible_rate": summary["true_feasible_rate"],
         "false_feasible_rate": summary["false_feasible_rate"],
     }
@@ -476,6 +551,7 @@ def printable_summary(result):
     for variant, summary in result["summary"].items():
         rows.append({
             "variant": variant,
+            "failure_rate": summary["failure_rate"],
             "true_feasible_rate": summary["true_feasible_rate"],
             "false_feasible_rate": summary["false_feasible_rate"],
             "feasible_regret_median": nested_get(
@@ -576,8 +652,16 @@ def main():
     parser.add_argument("--disable_recommendation_calibration", action="store_true")
     parser.add_argument("--recommendation_calibration_ridge", type=float, default=1e-6)
     parser.add_argument("--disable_recommendation_axis_oracle", action="store_true")
-    parser.add_argument("--disable_problem_initial_samples", action="store_true")
-    parser.add_argument("--disable_boundary_initial_samples", action="store_true")
+    parser.add_argument(
+        "--disable_problem_initial_samples", action="store_true", default=True)
+    parser.add_argument(
+        "--enable_problem_initial_samples",
+        dest="disable_problem_initial_samples", action="store_false")
+    parser.add_argument(
+        "--disable_boundary_initial_samples", action="store_true", default=True)
+    parser.add_argument(
+        "--enable_boundary_initial_samples",
+        dest="disable_boundary_initial_samples", action="store_false")
     parser.add_argument("--disable_recommendation_refinement", action="store_true")
     parser.add_argument("--acquisition_mode", default="exact_mc",
                         choices=["additive", "exact_mc", "blend"])
@@ -602,26 +686,36 @@ def main():
         ),
     )
     parser.add_argument("--baseline_batch_candidates", type=int, default=64)
-    parser.add_argument("--tr_radius_init", type=float, default=0.35)
-    parser.add_argument("--tr_radius_min", type=float, default=0.04)
-    parser.add_argument("--tr_radius_max", type=float, default=0.8)
+    parser.add_argument("--tr_radius_init", type=float, default=0.8)
+    parser.add_argument("--tr_radius_min", type=float, default=0.5 ** 7)
+    parser.add_argument("--tr_radius_max", type=float, default=1.6)
     parser.add_argument("--embedding_dim", type=int, default=8)
     parser.add_argument("--embedding_dim_max", type=int, default=32)
-    parser.add_argument("--tr_success_tolerance", type=int, default=3)
-    parser.add_argument("--tr_failure_tolerance", type=int, default=5)
-    parser.add_argument("--botorch_fallback", choices=("lite", "error"), default="lite")
-    parser.add_argument("--botorch_raw_samples", type=int, default=64)
-    parser.add_argument("--botorch_num_restarts", type=int, default=5)
-    parser.add_argument("--botorch_maxiter", type=int, default=50)
-    parser.add_argument("--botorch_timeout_sec", type=float, default=30.0)
-    parser.add_argument("--botorch_max_candidate_failures", type=int, default=8)
-    parser.add_argument("--saas_warmup_steps", type=int, default=16)
-    parser.add_argument("--saas_num_samples", type=int, default=16)
-    parser.add_argument("--saas_thinning", type=int, default=1)
-    parser.add_argument("--saas_max_tree_depth", type=int, default=4)
-    parser.add_argument("--saas_mc_samples", type=int, default=64)
+    parser.add_argument("--tr_success_tolerance", type=int, default=10)
+    parser.add_argument("--tr_failure_tolerance", type=int, default=0)
+    parser.add_argument("--botorch_fallback", choices=("lite", "error"), default="error")
+    parser.add_argument("--botorch_raw_samples", type=int, default=1024)
+    parser.add_argument("--botorch_num_restarts", type=int, default=10)
+    parser.add_argument("--botorch_maxiter", type=int, default=100)
+    parser.add_argument("--botorch_timeout_sec", type=float, default=3600.0)
+    parser.add_argument("--botorch_max_candidate_failures", type=int, default=1)
+    parser.add_argument("--botorch_ts_candidates", type=int, default=0)
+    parser.add_argument("--botorch_certification_beta", type=float, default=2.0)
+    parser.add_argument("--saas_warmup_steps", type=int, default=256)
+    parser.add_argument("--saas_num_samples", type=int, default=128)
+    parser.add_argument("--saas_thinning", type=int, default=16)
+    parser.add_argument("--saas_max_tree_depth", type=int, default=6)
+    parser.add_argument("--saas_mc_samples", type=int, default=256)
     parser.add_argument("--saas_unconstrained", action="store_true")
-    parser.add_argument("--disable_saas_failure_fallback", action="store_true")
+    parser.add_argument(
+        "--disable_saas_failure_fallback", action="store_true", default=True)
+    parser.add_argument(
+        "--enable_saas_failure_fallback",
+        dest="disable_saas_failure_fallback", action="store_false")
+    parser.add_argument("--allow_botorch_candidate_fallback", action="store_true")
+    parser.add_argument("--botorch_checkpoint_dir", default="")
+    parser.add_argument("--botorch_checkpoint_resume", action="store_true")
+    parser.add_argument("--botorch_checkpoint_interval", type=int, default=1)
     parser.add_argument("--include_olhkg", action="store_true", default=True)
     parser.add_argument("--include_sc", action="store_true", default=True)
     parser.add_argument("--exclude_olhkg", dest="include_olhkg", action="store_false")

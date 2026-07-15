@@ -63,28 +63,31 @@ def main():
     )
     parser.add_argument("--n0", type=int, default=8)
     parser.add_argument("--seed-start", type=int, default=0)
-    parser.add_argument("--n-seeds", type=int, default=5)
+    parser.add_argument("--n-seeds", type=int, default=20)
     parser.add_argument("--jobs", type=int, default=1)
     parser.add_argument("--baseline-batch-candidates", type=int, default=96)
     parser.add_argument("--embedding-dim", type=int, default=8)
     parser.add_argument("--embedding-dim-max", type=int, default=32)
     parser.add_argument("--botorch-fallback", choices=("lite", "error"), default="error")
-    parser.add_argument("--botorch-raw-samples", type=int, default=64)
-    parser.add_argument("--botorch-num-restarts", type=int, default=4)
-    parser.add_argument("--botorch-maxiter", type=int, default=40)
-    parser.add_argument("--botorch-timeout-sec", type=float, default=25.0)
-    parser.add_argument("--botorch-max-candidate-failures", type=int, default=4)
-    parser.add_argument("--saas-warmup-steps", type=int, default=8)
-    parser.add_argument("--saas-num-samples", type=int, default=8)
-    parser.add_argument("--saas-max-tree-depth", type=int, default=3)
+    parser.add_argument("--botorch-raw-samples", type=int, default=1024)
+    parser.add_argument("--botorch-num-restarts", type=int, default=10)
+    parser.add_argument("--botorch-maxiter", type=int, default=100)
+    parser.add_argument("--botorch-timeout-sec", type=float, default=3600.0)
+    parser.add_argument("--botorch-max-candidate-failures", type=int, default=1)
+    parser.add_argument("--botorch-ts-candidates", type=int, default=0)
+    parser.add_argument("--saas-warmup-steps", type=int, default=256)
+    parser.add_argument("--saas-num-samples", type=int, default=128)
+    parser.add_argument("--saas-thinning", type=int, default=16)
+    parser.add_argument("--saas-max-tree-depth", type=int, default=6)
+    parser.add_argument("--saas-mc-samples", type=int, default=256)
     parser.add_argument("--disable-recommendation-calibration", action="store_true")
     parser.add_argument("--disable-recommendation-axis-oracle", action="store_true")
     parser.add_argument("--disable-problem-initial-samples", action="store_true")
     parser.add_argument("--disable-boundary-initial-samples", action="store_true")
     parser.add_argument("--disable-recommendation-refinement", action="store_true")
     parser.add_argument("--out-dir", default="results/sota_ratio")
-    parser.add_argument("--cpu", type=int, default=2)
-    parser.add_argument("--ram-mb", type=int, default=8192)
+    parser.add_argument("--cpu", type=int, default=12)
+    parser.add_argument("--ram-mb", type=int, default=32768)
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
@@ -105,6 +108,12 @@ def main():
                             f"{run_id}_{problem.lower()}_d{dim}_n{budget}_"
                             f"{baseline}_seed{seed:03d}"
                         )
+                        checkpoint_root = cwd / "checkpoints" / run_id
+                        checkpoint_dir = (
+                            cwd / "checkpoints" / run_id / problem
+                            / f"d{dim}" / f"N{budget}" / baseline
+                            / f"seed{seed:03d}"
+                        )
                         command = (
                             f"{PYTHON} performance/benchmark_sota.py "
                             f"--problem {problem} --d {dim} --N {budget} --n0 {args.n0} "
@@ -119,9 +128,14 @@ def main():
                             f"--botorch_maxiter {args.botorch_maxiter} "
                             f"--botorch_timeout_sec {args.botorch_timeout_sec} "
                             f"--botorch_max_candidate_failures {args.botorch_max_candidate_failures} "
+                            f"--botorch_ts_candidates {args.botorch_ts_candidates} "
                             f"--saas_warmup_steps {args.saas_warmup_steps} "
                             f"--saas_num_samples {args.saas_num_samples} "
+                            f"--saas_thinning {args.saas_thinning} "
                             f"--saas_max_tree_depth {args.saas_max_tree_depth} "
+                            f"--saas_mc_samples {args.saas_mc_samples} "
+                            f"--botorch_checkpoint_dir {checkpoint_root} "
+                            f"--botorch_checkpoint_resume "
                             f"{'--disable_recommendation_calibration ' if args.disable_recommendation_calibration else ''}"
                             f"{'--disable_recommendation_axis_oracle ' if args.disable_recommendation_axis_oracle else ''}"
                             f"{'--disable_problem_initial_samples ' if args.disable_problem_initial_samples else ''}"
@@ -132,7 +146,7 @@ def main():
                         )
                         cmd = "; ".join([
                             "export LC_ALL=C LANG=C",
-                            "export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1",
+                            f"export OMP_NUM_THREADS={int(args.cpu)} MKL_NUM_THREADS={int(args.cpu)} OPENBLAS_NUM_THREADS={int(args.cpu)}",
                             f"export PYTHONPATH={BOTORCH_OVERLAY}:$PYTHONPATH",
                             f"{command} && echo DONE",
                         ])
@@ -153,7 +167,9 @@ def main():
                             "ram_mb": int(args.ram_mb),
                             "require_node": node,
                             "allowed_nodes": list(nodes),
-                            "allow_no_ckpt": True,
+                            "ckpt_dir": str(checkpoint_dir),
+                            "ckpt_glob": "**/*.pkl",
+                            "allow_initial_resume_scan_error": True,
                             "allow_no_resume": True,
                             "allow_duplicate": True,
                         })

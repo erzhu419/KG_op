@@ -189,6 +189,7 @@ class LearnedMetaPrior:
         spectral_max_library_size=64,
         spectral_low_frequency_components=8,
         spectral_graph_neighbors=10,
+        spectral_orthogonalization="symmetric",
         spectral_relevance_floor=0.05,
         spectral_gate_boundary_weight=2.0,
         spectral_gate_dangerous_weight=3.0,
@@ -244,6 +245,7 @@ class LearnedMetaPrior:
         ordered_exposure_active_dim=2,
         ordered_exposure_frequency_penalty=0.10,
         ordered_exposure_basis_mode="full_quadratic",
+        ordered_exposure_orthogonal_coordinates=True,
         ordered_exposure_adaptive_sparsity=False,
         ordered_exposure_replace_local_kernel=False,
         ordered_exposure_semiparametric_residual=False,
@@ -295,6 +297,13 @@ class LearnedMetaPrior:
         self.spectral_low_frequency_components = int(
             spectral_low_frequency_components)
         self.spectral_graph_neighbors = int(spectral_graph_neighbors)
+        self.spectral_orthogonalization = str(spectral_orthogonalization)
+        if self.spectral_orthogonalization not in {
+            "symmetric", "ordered_cholesky", "none"
+        }:
+            raise ValueError(
+                "spectral orthogonalization must be symmetric, "
+                "ordered_cholesky, or none")
         self.spectral_relevance_floor = float(spectral_relevance_floor)
         self.spectral_gate_boundary_weight = float(spectral_gate_boundary_weight)
         self.spectral_gate_dangerous_weight = float(spectral_gate_dangerous_weight)
@@ -426,6 +435,8 @@ class LearnedMetaPrior:
             raise ValueError(
                 "ordered exposure basis mode must be full_quadratic or "
                 "diagonal_quadratic")
+        self.ordered_exposure_orthogonal_coordinates = bool(
+            ordered_exposure_orthogonal_coordinates)
         self.ordered_exposure_adaptive_sparsity = bool(
             ordered_exposure_adaptive_sparsity)
         self.ordered_exposure_replace_local_kernel = bool(
@@ -933,6 +944,8 @@ class LearnedMetaPrior:
                 self.ordered_exposure_group_shared_shrinkage),
             "group_ridge_learning": bool(
                 self.ordered_exposure_group_ridge_learning),
+            "orthogonal_coordinates": bool(
+                self.ordered_exposure_orthogonal_coordinates),
             "max_frequency": int(self.ordered_exposure_max_frequency),
             "active_dim": int(len(selected)),
             "selected_frequencies": selected.tolist(),
@@ -957,8 +970,8 @@ class LearnedMetaPrior:
             int(frequency) + 1
             for frequency in self.ordered_exposure_selected_frequencies
         ]
-        A = np.asarray(
-            library[columns] / self.ordered_exposure_scale, dtype=float)
+        A = self._ordered_coordinate_transform(np.asarray(
+            library[columns] / self.ordered_exposure_scale, dtype=float))
         if (
             self.component_stage == "spectral_hvd"
             and self.risk_subspace_alignment is not None
@@ -1315,8 +1328,25 @@ class LearnedMetaPrior:
             int(frequency) + 1
             for frequency in self.ordered_exposure_selected_frequencies
         ]
-        return np.asarray(
-            library[columns] / self.ordered_exposure_scale, dtype=float)
+        return self._ordered_coordinate_transform(np.asarray(
+            library[columns] / self.ordered_exposure_scale, dtype=float))
+
+    def _ordered_coordinate_transform(self, values):
+        """Return the declared ordered coordinate system.
+
+        The control uses a fixed invertible triangular mixing of the same DCT
+        span.  It removes coordinate orthogonality without changing which
+        source-learned functions are available, making the ablation narrower
+        than replacing the representation family.
+        """
+
+        values = np.asarray(values, dtype=float).reshape(-1)
+        if self.ordered_exposure_orthogonal_coordinates or len(values) <= 1:
+            return values
+        indices = np.arange(len(values))
+        distance = indices[:, None] - indices[None, :]
+        mixing = np.where(distance >= 0, 0.75 ** distance, 0.0)
+        return np.asarray(mixing @ values, dtype=float)
 
     def ordered_cumulative_risk_exposure(self, problem, x, output_index=1):
         del output_index
@@ -1344,6 +1374,8 @@ class LearnedMetaPrior:
                 **dict(base.meta),
                 "provider": "LearnedMetaPriorOrderedCumulative",
                 "selected_frequencies": frequencies,
+                "orthogonal_coordinates": bool(
+                    self.ordered_exposure_orthogonal_coordinates),
                 "source_only": True,
                 "target_data_used": False,
             },
@@ -2276,6 +2308,7 @@ class LearnedMetaPrior:
                 n_neighbors=self.spectral_graph_neighbors,
                 relevance_floor=self.spectral_relevance_floor,
                 ridge=self.ridge,
+                orthogonalization=self.spectral_orthogonalization,
             ).fit(batches)
             self.stage1_spectral_basis = self.spectral_basis
             self.spectral_feature_dim = int(self.spectral_basis.feature_dim)
@@ -2288,6 +2321,7 @@ class LearnedMetaPrior:
                 n_neighbors=self.spectral_graph_neighbors,
                 relevance_floor=self.spectral_relevance_floor,
                 ridge=self.ridge,
+                orthogonalization=self.spectral_orthogonalization,
             ).fit(batches)
             residual_dim = max(
                 self.spectral_active_dim
@@ -2302,7 +2336,11 @@ class LearnedMetaPrior:
                     n_neighbors=self.spectral_graph_neighbors,
                     relevance_floor=self.spectral_relevance_floor,
                     ridge=self.ridge,
-                    orthogonalization="ordered_cholesky",
+                    orthogonalization=(
+                        "none"
+                        if self.spectral_orthogonalization == "none"
+                        else "ordered_cholesky"
+                    ),
                 ).fit(batches)
             else:
                 self.spectral_basis = self.stage1_spectral_basis
@@ -2323,6 +2361,7 @@ class LearnedMetaPrior:
                 n_neighbors=self.spectral_graph_neighbors,
                 relevance_floor=self.spectral_relevance_floor,
                 ridge=self.ridge,
+                orthogonalization=self.spectral_orthogonalization,
             ).fit(batches)
             self.stage1_spectral_basis = self.spectral_basis
             self.spectral_feature_dim = int(self.spectral_basis.feature_dim)
@@ -2365,6 +2404,7 @@ class LearnedMetaPrior:
             n_neighbors=self.spectral_graph_neighbors,
             relevance_floor=self.spectral_relevance_floor,
             ridge=self.ridge,
+            orthogonalization=self.spectral_orthogonalization,
         ).fit(aligned_batches)
         if self.spectral_frequency_adaptation:
             self._fit_risk_aligned_frequency_bank(aligned_batches)
@@ -2969,6 +3009,7 @@ class LearnedMetaPrior:
                     n_neighbors=self.spectral_graph_neighbors,
                     relevance_floor=self.spectral_relevance_floor,
                     ridge=self.ridge,
+                    orthogonalization=self.spectral_orthogonalization,
                 ).fit(aligned_batches)
             basis_by_cutoff[int(cutoff)] = basis
             diag = basis.diagnostics()
@@ -3094,6 +3135,7 @@ class LearnedMetaPrior:
                     n_neighbors=self.spectral_graph_neighbors,
                     relevance_floor=self.spectral_relevance_floor,
                     ridge=self.ridge,
+                    orthogonalization=self.spectral_orthogonalization,
                 ).fit(batches)
             for ridge in self.spectral_frequency_ridges:
                 is_baseline = bool(
