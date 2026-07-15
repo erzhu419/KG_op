@@ -139,7 +139,7 @@ def main():
     parser.add_argument("--n-seeds", type=int, default=20)
     parser.add_argument("--nodes", default=",".join(CPU_NODES))
     parser.add_argument("--cpu", type=int, default=12)
-    parser.add_argument("--ram-mb", type=int, default=32768)
+    parser.add_argument("--ram-mb", type=int, default=8192)
     parser.add_argument("--candidate-timeout-sec", type=float, default=3600.0)
     parser.add_argument("--sync-remote", action=argparse.BooleanOptionalAction,
                         default=True)

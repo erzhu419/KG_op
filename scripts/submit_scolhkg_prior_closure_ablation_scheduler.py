@@ -185,7 +185,7 @@ def main():
     parser.add_argument(
         "--nodes", default=",".join(f"node{i:03d}" for i in range(1, 7)))
     parser.add_argument("--cpu", type=int, default=12)
-    parser.add_argument("--ram-mb", type=int, default=32768)
+    parser.add_argument("--ram-mb", type=int, default=8192)
     parser.add_argument("--exact-jobs", type=int, default=12)
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
