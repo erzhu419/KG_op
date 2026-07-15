@@ -244,6 +244,15 @@ def suite_command(args, run_id, N, preset, shard_index=0, num_shards=1):
         f"--truth_pool_max_candidates {args.truth_pool_max_candidates} "
         f"{'--offline_only' if args.offline_only else '--no-offline_only'} "
         f"--source_records_per_domain {args.source_records_per_domain} "
+        f"--meta_source_observation_mode "
+        f"{args.meta_source_observation_mode} "
+        f"--meta_source_observation_replicates "
+        f"{args.meta_source_observation_replicates} "
+        f"--meta_source_design_mode {args.meta_source_design_mode} "
+        f"--meta_source_universal_fraction "
+        f"{args.meta_source_universal_fraction} "
+        f"--meta_source_consensus_template_count "
+        f"{args.meta_source_consensus_template_count} "
         f"--meta_local_dim {args.meta_local_dim} "
         f"--meta_shared_dim {args.meta_shared_dim} "
         f"{'--meta_ordered_cumulative_exposure ' if args.meta_ordered_cumulative_exposure else '--no-meta_ordered_cumulative_exposure '}"
@@ -720,6 +729,22 @@ def main():
         help="Forbid external API/network-assisted priors in every submitted run.",
     )
     parser.add_argument("--source-records-per-domain", type=int, default=256)
+    parser.add_argument(
+        "--meta-source-observation-mode",
+        choices=["analytic", "replicated"],
+        default="analytic",
+    )
+    parser.add_argument(
+        "--meta-source-observation-replicates", type=int, default=1)
+    parser.add_argument(
+        "--meta-source-design-mode",
+        choices=["random", "universal_mixture"],
+        default="random",
+    )
+    parser.add_argument(
+        "--meta-source-universal-fraction", type=float, default=0.75)
+    parser.add_argument(
+        "--meta-source-consensus-template-count", type=int, default=0)
     parser.add_argument("--meta-local-dim", type=int, default=3)
     parser.add_argument("--meta-shared-dim", type=int, default=3)
     parser.add_argument(

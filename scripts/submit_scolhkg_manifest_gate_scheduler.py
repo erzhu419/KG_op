@@ -114,6 +114,8 @@ def command_for(args, heldout, seed, result_file, checkpoint_dir):
         str(float(getattr(args, "source_universal_fraction", 0.75))),
         "--source-consensus-template-count",
         str(int(getattr(args, "source_consensus_template_count", 0))),
+        "--initial-design",
+        str(getattr(args, "initial_design", "auto")),
         "--observable-mean-mode",
         str(getattr(args, "observable_mean_mode", "latent")),
         "--observable-mean-latent-dim",
@@ -410,6 +412,11 @@ def main():
     )
     parser.add_argument("--source-universal-fraction", type=float, default=0.75)
     parser.add_argument("--source-consensus-template-count", type=int, default=0)
+    parser.add_argument(
+        "--initial-design",
+        choices=("auto", "common_sobol"),
+        default="auto",
+    )
     parser.add_argument(
         "--observable-mean-mode",
         choices=("atoms", "aggregate", "latent", "consensus"),

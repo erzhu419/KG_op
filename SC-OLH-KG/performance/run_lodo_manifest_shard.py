@@ -80,6 +80,7 @@ def load_config(path):
     config.setdefault("meta_source_observation_replicates", 1)
     config.setdefault("meta_source_design_mode", "random")
     config.setdefault("meta_source_universal_fraction", 0.75)
+    config.setdefault("initial_design", "auto")
     return config
 
 
@@ -252,6 +253,11 @@ def main():
     parser.add_argument(
         "--source-consensus-template-count", type=int, default=0)
     parser.add_argument(
+        "--initial-design",
+        choices=("auto", "common_sobol"),
+        default="auto",
+    )
+    parser.add_argument(
         "--observable-mean-mode",
         choices=("atoms", "aggregate", "latent", "consensus"),
         default="latent",
@@ -402,6 +408,7 @@ def main():
             args.source_universal_fraction),
         "meta_source_consensus_template_count": int(
             args.source_consensus_template_count),
+        "initial_design": str(args.initial_design),
         "finalist_terminal_value_mode": str(
             args.finalist_terminal_value_mode),
         "finalist_replication_budget": int(
@@ -539,6 +546,7 @@ def main():
             "meta_source_design_mode": str(args.source_design_mode),
             "meta_source_universal_fraction": float(
                 args.source_universal_fraction),
+            "initial_design": str(args.initial_design),
             "finalist_terminal_value_mode": str(
                 args.finalist_terminal_value_mode),
             "finalist_replication_budget": int(

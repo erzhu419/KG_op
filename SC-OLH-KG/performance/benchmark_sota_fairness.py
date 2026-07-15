@@ -26,9 +26,23 @@ from performance.run_lodo_manifest_shard import load_config  # noqa: E402
 
 
 PROTOCOLS = {
-    "target_n20": {"uses_archive": False, "target_budget": 20},
-    "shared_archive_n20": {"uses_archive": True, "target_budget": 20},
-    "target_n404": {"uses_archive": False, "target_budget": 404},
+    "target_n20": {
+        "uses_archive": False,
+        "target_budget": 20,
+        "archive_access": "none",
+    },
+    # Historical name retained for reproducibility.  The BoTorch model sees
+    # only n0 selected warm-start points, not all source observations.
+    "shared_archive_n20": {
+        "uses_archive": True,
+        "target_budget": 20,
+        "archive_access": "warm_start_only",
+    },
+    "target_n404": {
+        "uses_archive": False,
+        "target_budget": 404,
+        "archive_access": "none",
+    },
 }
 
 
@@ -174,6 +188,10 @@ def run_one(args):
         "seed": int(args.seed),
         "information_contract": {
             "uses_source_archive": bool(protocol["uses_archive"]),
+            "source_archive_access": str(protocol["archive_access"]),
+            "full_source_observations_consumed_by_model": False,
+            "warm_start_only_ablation": bool(
+                protocol["archive_access"] == "warm_start_only"),
             "source_archive_shared_across_target_seeds": True,
             "source_oracle_aided": False,
             "source_true_outputs_used": False,

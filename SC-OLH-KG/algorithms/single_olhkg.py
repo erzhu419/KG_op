@@ -26,6 +26,11 @@ from core.candidates import (
     structured_candidates,
     unique_candidates,
 )
+from core.designs import (
+    COMMON_SOBOL_SEED_OFFSET,
+    common_sobol_integer_design,
+    integer_design_fingerprint,
+)
 from core.gpr import ParametricGPR
 from core.metrics import summarize_stage_times
 from encoders.policy_state_encoder import (
@@ -141,6 +146,7 @@ def _fork_terminal_depth3_prefix(payload):
 class SingleOLHKGConfig:
     N: int = 30
     n0: int = 8
+    initial_design: str = "auto"
     K1: int = 25
     K2: int = 0
     posterior_pool_size: int = 300
@@ -761,6 +767,30 @@ class SingleOLHKGAlgorithm:
         return rows[:n]
 
     def _initial_samples(self):
+        initial_design = str(self.config.initial_design or "auto").lower()
+        if initial_design == "common_sobol":
+            samples = common_sobol_integer_design(
+                self.problem,
+                self.config.n0,
+                self.config.seed,
+            )
+            self._task_initial_design_info = {
+                "status": "generated",
+                "design_kind": "common_sobol",
+                "requested": int(self.config.n0),
+                "n_unique": int(len(samples)),
+                "seed": int(self.config.seed),
+                "seed_offset": int(COMMON_SOBOL_SEED_OFFSET),
+                "fingerprint": integer_design_fingerprint(samples),
+                "source_prior_used": False,
+                "problem_specific_hook_used": False,
+                "target_oracle_used": False,
+            }
+            return samples
+        if initial_design != "auto":
+            raise ValueError(
+                "initial_design must be 'auto' or 'common_sobol'"
+            )
         samples = []
         if self.config.use_problem_initial_samples and hasattr(
             self.problem, "initial_samples"

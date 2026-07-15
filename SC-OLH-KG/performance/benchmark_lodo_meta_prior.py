@@ -360,6 +360,20 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
             str(args_dict.get(
                 "meta_source_seed_mode", "frozen")).lower() == "per_target"),
     })
+    if str(args_dict.get(
+        "meta_source_observation_mode", "analytic"
+    )).lower() == "replicated":
+        from baselines.transfer_archive import frozen_archive_from_meta_prior
+        archive = frozen_archive_from_meta_prior(
+            prior, source_seed=source_seed)
+        prior.training_diagnostics.update({
+            "source_archive_fingerprint": archive.fingerprint,
+            "source_archive_domains": list(archive.source_domains),
+            "source_archive_profiles_per_domain": (
+                archive.profiles_per_domain),
+            "source_archive_simulator_calls": int(archive.simulator_calls),
+            "source_archive_oracle_aided": False,
+        })
     return prior
 
 
@@ -435,6 +449,7 @@ def run_one(task):
     config = SingleOLHKGConfig(
         N=args_dict["N"],
         n0=args_dict["n0"],
+        initial_design=str(args_dict.get("initial_design", "auto")),
         K1=args_dict["K1"],
         K2=args_dict["K2"],
         posterior_pool_size=args_dict["posterior_pool_size"],
@@ -698,10 +713,54 @@ def run_one(task):
         if hasattr(problem, "admissibility_audit")
         else domain_tuned_audit().to_dict()
     )
+    source_training = (
+        (meta_diag or {}).get("training", {})
+        if line in ("lodo", "lodo_teacher") else {}
+    )
     return {
         "line": line,
         "heldout": heldout,
         "seed": seed,
+        "source_target_adaptation_contract": {
+            "source_prior_frozen_online": True,
+            "gradient_finetuning": False,
+            "adaptation_kind": (
+                "posterior_conditioning_expert_reweighting_and_"
+                "target_representation_refit"
+                if line in ("lodo", "lodo_teacher")
+                else "target_posterior_conditioning"
+            ),
+            "online_parameters_changed": [
+                "target_objective_gpr_posterior",
+                "target_constraint_gpr_posterior",
+                "target_cumulative_hvd_posterior",
+                *(
+                    [
+                        "finite_source_expert_weights",
+                        "each_expert_target_gpr_posterior",
+                        "each_expert_target_hvd_posterior",
+                        "budgeted_target_basis_and_risk_alignment_gate",
+                    ]
+                    if line in ("lodo", "lodo_teacher") else []
+                ),
+            ],
+            "target_calls_used_for_adaptation": int(args_dict["N"]),
+            "target_initial_design": str(args_dict.get(
+                "initial_design", "auto")),
+            "target_initial_design_fingerprint": initial_design.get(
+                "fingerprint"),
+            "target_oracle_used_for_adaptation": False,
+            "source_domains": source_training.get(
+                "source_archive_domains", []),
+            "source_profiles_per_domain": source_training.get(
+                "source_archive_profiles_per_domain", {}),
+            "source_simulator_calls": int(source_training.get(
+                "source_archive_simulator_calls", 0)),
+            "source_archive_fingerprint": source_training.get(
+                "source_archive_fingerprint"),
+            "source_oracle_aided": bool(source_training.get(
+                "source_archive_oracle_aided", False)),
+        },
         "N": int(args_dict["N"]),
         "n0": int(args_dict["n0"]),
         "K1": int(args_dict["K1"]),
@@ -1622,6 +1681,11 @@ def main():
     parser.add_argument("--weights", default="0.5,0.5")
     parser.add_argument("--N", type=int, default=30)
     parser.add_argument("--n0", type=int, default=8)
+    parser.add_argument(
+        "--initial_design",
+        choices=("auto", "common_sobol"),
+        default="auto",
+    )
     parser.add_argument("--K1", type=int, default=25)
     parser.add_argument("--K2", type=int, default=0)
     parser.add_argument("--posterior_pool_size", type=int, default=300)

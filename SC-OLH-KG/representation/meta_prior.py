@@ -138,6 +138,7 @@ class SourceRecord:
     origin: str = "random"
     sample_weight: float = 1.0
     replicate_count: int = 1
+    replicates: np.ndarray | None = None
 
 
 class LearnedMetaPrior:
@@ -619,6 +620,7 @@ class LearnedMetaPrior:
         self.observable_mean_model = None
         self.source_domains = []
         self.n_records = 0
+        self.source_records_ = []
         self.fit_status = "unfit"
         self.training_diagnostics = {}
         self.coordinate_diagnostics = {"mode": self.coordinate_mode}
@@ -1487,7 +1489,7 @@ class LearnedMetaPrior:
             sigma = float(np.sqrt(max(variance, 1e-12)))
         else:
             sigma = nominal
-        return mean, sigma, int(replicates)
+        return mean, sigma, int(replicates), observations.copy()
 
     def _source_universal_design(self, problem, n, rng):
         """Select formula-free low-frequency profiles by geometric coverage."""
@@ -1768,7 +1770,7 @@ class LearnedMetaPrior:
         for domain_name, problem in source_problems:
             for x, origin in self._source_design_candidates(
                 problem, n_records_per_domain, rng):
-                y, sigma, replicate_count = self._source_observation(
+                y, sigma, replicate_count, replicate_values = self._source_observation(
                     problem, x, rng)
                 records.append(SourceRecord(
                     domain=str(domain_name),
@@ -1787,6 +1789,7 @@ class LearnedMetaPrior:
                     origin=origin,
                     sample_weight=1.0,
                     replicate_count=replicate_count,
+                    replicates=replicate_values,
                 ))
             records.extend(self._record_teacher_source_data(
                 str(domain_name),
@@ -2043,6 +2046,10 @@ class LearnedMetaPrior:
         records = self._record_source_data(source_problems, n_records_per_domain, rng)
         if not records:
             raise ValueError("source training produced no records")
+        # Preserve the exact ordinary observations consumed by source training.
+        # Transfer baselines use this frozen archive rather than regenerating a
+        # statistically similar but non-identical source dataset.
+        self.source_records_ = copy.deepcopy(records)
         self.source_domains = sorted({rec.domain for rec in records})
         self.n_records = int(len(records))
         descriptors = [rec.descriptor for rec in records]

@@ -70,6 +70,7 @@ class ManifestGateSubmitTests(unittest.TestCase):
             finalist_replication_adaptive_race=True,
             finalist_replication_fixed_universe=True,
             source_consensus_template_count=12,
+            initial_design="common_sobol",
             allow_duplicate=False,
         )
         specs = MODULE.build_specs(args)
@@ -101,6 +102,7 @@ class ManifestGateSubmitTests(unittest.TestCase):
             and "--task-posterior-safe-pairwise-history 16" in item["cmd"]
             and "--task-posterior-mandatory-universal-count 8" in item["cmd"]
             and "--source-consensus-template-count 12" in item["cmd"]
+            and "--initial-design common_sobol" in item["cmd"]
             and "--task-latent-inference-mode authoritative" in item["cmd"]
             and "--task-latent-calibration-mode expert_ridge" in item["cmd"]
             and "--exact-sampling-mode iid" in item["cmd"]
