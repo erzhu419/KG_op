@@ -229,6 +229,35 @@ four priors cause the proposal advantage is rejected. The source
 safety-objective ranker may remain as a separate learned-transfer mechanism,
 but it cannot be attributed to the four switches.
 
+### Strict d=50 outcome and support-prior audit
+
+Run `scolh_causal_strict_shareduniform_d50_s5_20260716` completed all 450
+optimization cells with zero failures or parse errors. No profile passed the
+pre-registered safety floor:
+
+- joint strict `none` reached `6/15` feasibility;
+- the best single profiles, additivity and orthogonality, reached only `7/15`;
+- full reached `2/15`;
+- every source-informed profile had `0/5` initial and final feasibility on
+  Inventory;
+- no joint profile improved its initial best feasible regret, and all profiles
+  lost initially feasible Queue recommendations.
+
+Low-frequency-only proposal selection improved Queue feasibility by two paired
+seeds relative to strict `none`, but did not create Inventory support and
+remained below the global safety floor. Thus a low-frequency representation
+cannot recover policies absent from the source design.
+
+The next audit isolates the policy-support assumption itself. It compares
+`shared_uniform` against `universal_mixture` with the same `384` ordinary
+source simulator calls, held-out domains, target seeds, `d=50`, `N=20`,
+`n0=10`, risk-objective ranker, and Sobol backend. Only the source policy
+support changes. The primary contrast is `none` versus `none`; a secondary
+low-frequency-only row measures interaction with low-frequency coordinates.
+The universal support prior is supported only if its paired feasibility net is
+positive without a negative domain net; conditional regret is consulted only
+when feasibility ties.
+
 Scheduler entrypoints:
 
 - `scripts/submit_scolhkg_causal_prior_matrix_scheduler.py`
