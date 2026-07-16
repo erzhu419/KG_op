@@ -36,6 +36,9 @@ class HVDConfig:
     certification_kappa: float = 1.0
     residual_tail_delta: float = 0.05
     use_cumulative_provider: bool = True
+    cumulative_irls_steps: int = 4
+    cumulative_projected_steps: int = 256
+    cumulative_weight_clip: float = 20.0
 
 
 def gaussian_square_subexp_params(sigma2):
@@ -128,6 +131,14 @@ class OrthogonalHVD:
             for i in range(self.n_outputs)
         }
         self.replicated_keys = {i: set() for i in range(self.n_outputs)}
+        self.replication_dof = {i: {} for i in range(self.n_outputs)}
+        self.cumulative_fit_method = {i: "inactive" for i in range(self.n_outputs)}
+        self.cumulative_fit_effective_dof = {
+            i: 0.0 for i in range(self.n_outputs)
+        }
+        self.cumulative_fit_weight_range = {
+            i: None for i in range(self.n_outputs)
+        }
         self.cumulative_prior_replication_only = {
             i: False for i in range(self.n_outputs)
         }
@@ -148,6 +159,23 @@ class OrthogonalHVD:
         self.__dict__.update(state)
         if "_last_problem" not in self.__dict__:
             self._last_problem = None
+        if "replication_dof" not in self.__dict__:
+            self.replication_dof = {
+                i: {} for i in range(self.n_outputs)
+            }
+        if "cumulative_fit_method" not in self.__dict__:
+            self.cumulative_fit_method = {
+                i: "legacy_projection" for i in range(self.n_outputs)
+            }
+        if "cumulative_fit_effective_dof" not in self.__dict__:
+            self.cumulative_fit_effective_dof = {
+                i: float(len(self.records.get(i, [])))
+                for i in range(self.n_outputs)
+            }
+        if "cumulative_fit_weight_range" not in self.__dict__:
+            self.cumulative_fit_weight_range = {
+                i: None for i in range(self.n_outputs)
+            }
 
     @property
     def floor(self):
@@ -372,19 +400,42 @@ class OrthogonalHVD:
             resid2 = cap if cap is not None else max(self.global_var.get(i, 0.01), self.floor)
         return float(max(resid2, self.floor))
 
+    def _record_replication_dof(self, i, x):
+        """Degrees of freedom behind one stored variance observation."""
+
+        return float(max(
+            self.replication_dof.get(int(i), {}).get(tuple(x), 1.0),
+            1.0,
+        ))
+
+    def _effective_variance_dof(self, i):
+        """Independent chi-square degrees of freedom used by the tail guard.
+
+        A raw squared innovation contributes one degree of freedom.  A sample
+        variance from ``r`` independent simulator replications contributes
+        ``r - 1``.  The old implementation counted both as one observation,
+        so additional replications reduced the fitted noise but not its
+        certification uncertainty.
+        """
+
+        return float(sum(
+            self._record_replication_dof(i, x)
+            for x, _ in self.records.get(int(i), [])
+        ))
+
     def _residual_square_tail_radius(self, i):
         tail_delta = float(self.config.residual_tail_delta)
         nu, b = gaussian_square_subexp_params(self.global_var.get(int(i), 0.01))
         return float(sub_exponential_residual_square_radius(nu, b, tail_delta))
 
     def _residual_tail_uncertainty(self, i):
-        n = max(int(len(self.records.get(int(i), []))), 0)
+        effective_dof = max(self._effective_variance_dof(i), 0.0)
         nu, b = gaussian_square_subexp_params(self.global_var.get(int(i), 0.01))
         return float(sub_exponential_sample_mean_radius(
             nu,
             b,
             self.config.residual_tail_delta,
-            n + 1,
+            max(int(np.floor(effective_dof)) + 1, 1),
         ))
 
     def _high_frequency_residual_floor(self, i, x, problem=None):
@@ -441,10 +492,12 @@ class OrthogonalHVD:
         self._last_problem = problem or self._last_problem
         i = int(output_index)
         for x, r in zip(X, residuals):
+            x_tuple = tuple(int(v) for v in x)
             self.records[i].append((
-                tuple(int(v) for v in x),
+                x_tuple,
                 self._safe_residual_square(r, i, problem),
             ))
+            self.replication_dof[i][x_tuple] = 1.0
         self._fit_output(i, problem)
 
     def initialize(self, samples, observations, gpr_models, problem=None):
@@ -465,6 +518,7 @@ class OrthogonalHVD:
                     resid2 = self._safe_residual_square(
                         float(y_vec[i]) - mu, i, problem)
                     self.records[i].append((tuple(x_tuple), resid2))
+                    self.replication_dof[i][tuple(x_tuple)] = 1.0
         for i in range(self.n_outputs):
             self._fit_output(i, problem)
 
@@ -478,6 +532,7 @@ class OrthogonalHVD:
         problem=None,
         epistemic_var=None,
         replicate_variance=None,
+        replicate_count=None,
     ):
         """Add one residual and refit lightweight summaries."""
         del gpr_model
@@ -490,6 +545,7 @@ class OrthogonalHVD:
             resid2 = max(raw_resid2 - epistemic_correction, self.floor)
             variance_source = "innovation_minus_epistemic"
             self.records[i].append((x_tuple, resid2))
+            self.replication_dof[i][x_tuple] = 1.0
         else:
             resid2 = max(float(replicate_variance), self.floor)
             variance_source = "within_solution_replication"
@@ -499,6 +555,9 @@ class OrthogonalHVD:
             ]
             self.records[i].append((x_tuple, resid2))
             self.replicated_keys[i].add(x_tuple)
+            count = 2 if replicate_count is None else max(
+                int(replicate_count), 2)
+            self.replication_dof[i][x_tuple] = float(count - 1)
         old = self.predict_variance(i, x_tuple, problem)
         self._fit_output(i, problem)
         new = self.predict_variance(i, x_tuple, problem)
@@ -510,9 +569,107 @@ class OrthogonalHVD:
             "epistemic_correction": float(epistemic_correction),
             "resid2": float(resid2),
             "variance_source": variance_source,
+            "replicate_count": (
+                None if replicate_variance is None
+                else int(2 if replicate_count is None else max(
+                    int(replicate_count), 2))
+            ),
+            "replication_dof": float(
+                self._record_replication_dof(i, x_tuple)),
             "old_variance": float(old),
             "new_variance": float(new),
             "risk_class": int(self.risk_class(x_tuple, problem)),
+        }
+
+    def _fit_constrained_cumulative_ridge(
+        self,
+        X,
+        y,
+        dof,
+        exposure,
+        reg,
+        prior_center,
+        initial_beta,
+    ):
+        """Replication-aware IRLS on the cumulative-risk parameter cone.
+
+        Sample variances have variance proportional to ``v(x)^2 / dof``.
+        IRLS therefore weights each row by ``dof / v(x)^2``.  Every gradient
+        step is projected back to nonnegative local/linear components and a
+        PSD shared-shock matrix, instead of projecting an unconstrained ridge
+        solution only once.
+        """
+
+        X = np.asarray(X, dtype=float)
+        y = np.asarray(y, dtype=float).reshape(-1)
+        dof = np.maximum(np.asarray(dof, dtype=float).reshape(-1), 1.0)
+        reg = np.asarray(reg, dtype=float)
+        prior_center = np.asarray(prior_center, dtype=float).reshape(-1)
+        beta, params = project_cumulative_beta(initial_beta, exposure)
+        beta = np.asarray(beta, dtype=float)
+        weight_range = (1.0, 1.0)
+        n_outer = max(int(self.config.cumulative_irls_steps), 1)
+        n_steps = max(int(self.config.cumulative_projected_steps), 1)
+        weight_clip = max(float(self.config.cumulative_weight_clip), 1.0)
+
+        for _ in range(n_outer):
+            predicted = np.maximum(X @ beta, self.floor)
+            weights = dof / np.maximum(predicted ** 2, self.floor ** 2)
+            finite = weights[np.isfinite(weights) & (weights > 0.0)]
+            scale = float(np.median(finite)) if len(finite) else 1.0
+            weights = np.where(np.isfinite(weights), weights / max(scale, 1e-12), 1.0)
+            weights = np.clip(weights, 1.0 / weight_clip, weight_clip)
+            weight_range = (float(np.min(weights)), float(np.max(weights)))
+            weighted_X = np.sqrt(weights)[:, None] * X
+            lipschitz = float(np.linalg.norm(weighted_X, ord=2) ** 2)
+            try:
+                lipschitz += float(np.linalg.norm(reg, ord=2))
+            except np.linalg.LinAlgError:
+                lipschitz += float(np.max(np.abs(reg)))
+            step = 1.0 / max(lipschitz, 1e-12)
+
+            def objective(value):
+                residual = X @ value - y
+                centered = value - prior_center
+                return float(
+                    0.5 * np.sum(weights * residual ** 2)
+                    + 0.5 * centered @ reg @ centered
+                )
+
+            current = objective(beta)
+            for _ in range(n_steps):
+                gradient = (
+                    X.T @ (weights * (X @ beta - y))
+                    + reg @ (beta - prior_center)
+                )
+                trial_step = step
+                accepted = False
+                candidate = beta
+                candidate_params = params
+                for _ in range(12):
+                    candidate, candidate_params = project_cumulative_beta(
+                        beta - trial_step * gradient,
+                        exposure,
+                    )
+                    candidate = np.asarray(candidate, dtype=float)
+                    candidate_value = objective(candidate)
+                    if candidate_value <= current + 1e-18:
+                        accepted = True
+                        break
+                    trial_step *= 0.5
+                if not accepted:
+                    break
+                change = float(np.linalg.norm(candidate - beta))
+                beta = candidate
+                params = candidate_params
+                current = candidate_value
+                if change <= 1e-10 * (1.0 + float(np.linalg.norm(beta))):
+                    break
+
+        return beta, params, {
+            "method": "replication_aware_projected_irls",
+            "effective_dof": float(np.sum(dof)),
+            "weight_range": weight_range,
         }
 
     def _fit_output(self, i, problem=None):
@@ -550,6 +707,9 @@ class OrthogonalHVD:
         self.cumulative_prior_target_weight[i] = 0
         self.cumulative_prior_scale_source[i] = "none"
         self.cumulative_prior_upper_scale[i] = 1.0
+        self.cumulative_fit_method[i] = "inactive"
+        self.cumulative_fit_effective_dof[i] = 0.0
+        self.cumulative_fit_weight_range[i] = None
         activation_records = int(self.config.activation_min_records)
         prior_replication_only = False
         problem_ref = problem or self._last_problem
@@ -589,6 +749,7 @@ class OrthogonalHVD:
         if self.mode == "factor" and len(recs) >= activation_records:
             X_c = []
             y_c = []
+            dof_c = []
             exposure_layout_ref = None
             for (x, _), v in zip(recs, vals):
                 feat = self._cumulative_features(x, problem, output_index=i)
@@ -603,15 +764,19 @@ class OrthogonalHVD:
                     )
                 X_c.append(feat)
                 y_c.append(max(float(v), self.floor))
+                dof_c.append(self._record_replication_dof(i, x))
             if X_c:
                 X_c = np.vstack(X_c)
                 y_c = np.asarray(y_c, dtype=float)
+                dof_c = np.asarray(dof_c, dtype=float)
                 ridge_alpha = float(self.config.ridge_alpha)
                 reg = ridge_alpha * np.eye(X_c.shape[1])
                 prior_beta = prior_beta_probe
+                prior_center = np.zeros(X_c.shape[1], dtype=float)
                 if prior_beta is None:
                     X_fit = X_c
                     y_fit = y_c
+                    dof_fit = dof_c
                     reg[0, 0] = 0.0
                     rhs = X_fit.T @ y_fit
                     solve_gram = X_fit.T @ X_fit + reg
@@ -640,9 +805,11 @@ class OrthogonalHVD:
                         ], dtype=bool)
                         X_fit = X_c[replicate_mask]
                         y_fit = y_c[replicate_mask]
+                        dof_fit = dof_c[replicate_mask]
                     else:
                         X_fit = X_c
                         y_fit = y_c
+                        dof_fit = dof_c
                     source_prediction = np.maximum(
                         X_c @ prior_beta,
                         self.floor,
@@ -730,6 +897,7 @@ class OrthogonalHVD:
                         prior_scale = scale_prior_mean
                         prior_scale_se = 0.0
                     centered_prior = prior_scale * prior_beta
+                    prior_center = centered_prior
                     reg = prior_precision * np.eye(X_c.shape[1])
                     rhs = X_fit.T @ y_fit + reg @ centered_prior
                     solve_gram = X_fit.T @ X_fit + reg
@@ -760,10 +928,32 @@ class OrthogonalHVD:
                     ))
                 ):
                     try:
-                        projected, params = project_cumulative_beta(
-                            beta_c,
-                            exposure_layout_ref,
-                        )
+                        if len(X_fit):
+                            projected, params, fit_diagnostics = (
+                                self._fit_constrained_cumulative_ridge(
+                                    X_fit,
+                                    y_fit,
+                                    dof_fit,
+                                    exposure_layout_ref,
+                                    reg,
+                                    prior_center,
+                                    beta_c,
+                                )
+                            )
+                            self.cumulative_fit_method[i] = str(
+                                fit_diagnostics["method"])
+                            self.cumulative_fit_effective_dof[i] = float(
+                                fit_diagnostics["effective_dof"])
+                            self.cumulative_fit_weight_range[i] = tuple(
+                                float(value)
+                                for value in fit_diagnostics["weight_range"]
+                            )
+                        else:
+                            projected, params = project_cumulative_beta(
+                                beta_c,
+                                exposure_layout_ref,
+                            )
+                            self.cumulative_fit_method[i] = "prior_projection"
                         if len(projected) == len(beta_c):
                             beta_c = projected
                             provider_active = True
@@ -776,6 +966,9 @@ class OrthogonalHVD:
                     params = None
                     beta_c = np.maximum(beta_c, 0.0)
                     beta_c[0] = max(float(beta_c[0]), 0.1 * self.floor)
+                    self.cumulative_fit_method[i] = "nonnegative_projection"
+                    self.cumulative_fit_effective_dof[i] = float(
+                        np.sum(dof_fit))
                 self.cumulative_beta[i] = beta_c
                 self.cumulative_params[i] = params
                 self.cumulative_provider_active[i] = bool(provider_active)
@@ -1172,6 +1365,7 @@ class OrthogonalHVD:
                 "delta": tail_delta,
                 "nu": float(nu),
                 "b": float(b),
+                "effective_dof": float(self._effective_variance_dof(i)),
                 "radius": float(sub_exponential_residual_square_radius(
                     nu, b, tail_delta)),
                 "uncertainty": float(self._residual_tail_uncertainty(i)),
@@ -1208,6 +1402,25 @@ class OrthogonalHVD:
                 str(i): (
                     None if self.cumulative_fit_rmse.get(i) is None
                     else float(self.cumulative_fit_rmse[i])
+                )
+                for i in range(self.n_outputs)
+            },
+            "cumulative_fit_method": {
+                str(i): str(self.cumulative_fit_method.get(i, "inactive"))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_fit_effective_dof": {
+                str(i): float(self.cumulative_fit_effective_dof.get(i, 0.0))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_fit_weight_range": {
+                str(i): (
+                    None
+                    if self.cumulative_fit_weight_range.get(i) is None
+                    else [
+                        float(value)
+                        for value in self.cumulative_fit_weight_range[i]
+                    ]
                 )
                 for i in range(self.n_outputs)
             },

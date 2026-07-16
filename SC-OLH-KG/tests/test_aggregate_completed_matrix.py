@@ -94,13 +94,22 @@ def test_aggregates_hvd_identifiability_metrics(tmp_path):
         "replicates_per_policy": 4,
         "simulator_calls": 128,
         "shared_shock_scale": 2.0,
+        "certification_tau": 0.25,
         "log_variance_rmse": 0.3,
         "variance_spearman": 0.8,
         "shared_risk_spearman": 0.7,
         "variance_upper_coverage": 0.95,
+        "true_feasible_rate": 0.4,
+        "posterior_feasible_rate": 0.3,
         "false_feasible_count": 1,
         "false_feasible_rate": 0.01,
+        "false_feasible_fraction_of_certified": 0.1,
         "missed_feasible_rate": 0.2,
+        "missed_feasible_fraction_of_true": 0.5,
+        "certificate_precision": 0.9,
+        "certificate_recall": 0.5,
+        "median_predicted_true_ratio": 1.1,
+        "median_certified_true_ratio": 1.3,
         "posterior_feasible_count": 4,
         "certificate_nonvacuous": True,
     })
@@ -112,6 +121,9 @@ def test_aggregates_hvd_identifiability_metrics(tmp_path):
     assert len(rows) == 1
     assert rows[0]["track"] == "hvd_identifiability"
     assert rows[0]["shared_shock_scale"] == 2.0
+    assert rows[0]["certification_tau"] == 0.25
     assert rows[0]["replicates_per_policy"] == 4
     assert summary[0]["median_log_variance_rmse"] == 0.3
     assert summary[0]["median_variance_upper_coverage"] == 0.95
+    assert summary[0]["median_certificate_recall"] == 0.5
+    assert summary[0]["median_missed_feasible_fraction_of_true"] == 0.5

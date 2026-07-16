@@ -70,13 +70,20 @@ ROW_FIELDS = (
     "posterior_dominance_switch_count",
     "wall_time_sec",
     "shared_shock_scale",
+    "certification_tau",
     "replicates_per_policy",
     "log_variance_rmse",
     "variance_spearman",
     "shared_risk_spearman",
     "variance_upper_coverage",
+    "true_feasible_rate",
+    "posterior_feasible_rate_grid",
     "false_feasible_rate",
+    "false_feasible_fraction_of_certified",
     "missed_feasible_rate",
+    "missed_feasible_fraction_of_true",
+    "median_predicted_true_ratio",
+    "median_certified_true_ratio",
     "result_path",
 )
 
@@ -440,8 +447,9 @@ def _normalize_hvd_identifiability(payload: dict, path: Path, root: Path) -> dic
             "posterior_feasible_count")),
         "false_certificate_count": _integer(payload.get(
             "false_feasible_count")),
-        "certificate_precision": None,
-        "certificate_recall": None,
+        "certificate_precision": _finite(payload.get(
+            "certificate_precision")),
+        "certificate_recall": _finite(payload.get("certificate_recall")),
         "decision_backend": None,
         "structural_prior_profile": None,
         "hvd_profile": payload.get("mode"),
@@ -456,6 +464,7 @@ def _normalize_hvd_identifiability(payload: dict, path: Path, root: Path) -> dic
         "posterior_dominance_switch_count": None,
         "wall_time_sec": _finite(payload.get("wall_time_sec")),
         "shared_shock_scale": _finite(payload.get("shared_shock_scale")),
+        "certification_tau": _finite(payload.get("certification_tau")),
         "replicates_per_policy": _integer(payload.get(
             "replicates_per_policy")),
         "log_variance_rmse": _finite(payload.get("log_variance_rmse")),
@@ -463,8 +472,19 @@ def _normalize_hvd_identifiability(payload: dict, path: Path, root: Path) -> dic
         "shared_risk_spearman": _finite(payload.get("shared_risk_spearman")),
         "variance_upper_coverage": _finite(payload.get(
             "variance_upper_coverage")),
+        "true_feasible_rate": _finite(payload.get("true_feasible_rate")),
+        "posterior_feasible_rate_grid": _finite(payload.get(
+            "posterior_feasible_rate")),
         "false_feasible_rate": _finite(payload.get("false_feasible_rate")),
+        "false_feasible_fraction_of_certified": _finite(payload.get(
+            "false_feasible_fraction_of_certified")),
         "missed_feasible_rate": _finite(payload.get("missed_feasible_rate")),
+        "missed_feasible_fraction_of_true": _finite(payload.get(
+            "missed_feasible_fraction_of_true")),
+        "median_predicted_true_ratio": _finite(payload.get(
+            "median_predicted_true_ratio")),
+        "median_certified_true_ratio": _finite(payload.get(
+            "median_certified_true_ratio")),
         "result_path": str(path),
     }
 
@@ -532,7 +552,7 @@ def summarize_rows(rows: list[dict]) -> list[dict]:
         "initial_design", "proposal_mode", "proposal_structural_prior_profile",
         "proposal_source_dimension", "proposal_target_dimension", "domain",
         "d", "N", "n0", "source_calls", "shared_shock_scale",
-        "replicates_per_policy",
+        "certification_tau", "replicates_per_policy",
     )
     for row in rows:
         groups[tuple(row.get(field) for field in group_fields)].append(row)
@@ -623,10 +643,24 @@ def summarize_rows(rows: list[dict]) -> list[dict]:
                 row.get("shared_risk_spearman") for row in items),
             "median_variance_upper_coverage": _median(
                 row.get("variance_upper_coverage") for row in items),
+            "median_true_feasible_rate": _median(
+                row.get("true_feasible_rate") for row in items),
+            "median_posterior_feasible_rate_grid": _median(
+                row.get("posterior_feasible_rate_grid") for row in items),
             "median_false_feasible_rate": _median(
                 row.get("false_feasible_rate") for row in items),
+            "median_false_feasible_fraction_of_certified": _median(
+                row.get("false_feasible_fraction_of_certified")
+                for row in items),
             "median_missed_feasible_rate": _median(
                 row.get("missed_feasible_rate") for row in items),
+            "median_missed_feasible_fraction_of_true": _median(
+                row.get("missed_feasible_fraction_of_true")
+                for row in items),
+            "median_predicted_true_ratio": _median(
+                row.get("median_predicted_true_ratio") for row in items),
+            "median_certified_true_ratio": _median(
+                row.get("median_certified_true_ratio") for row in items),
         })
     return sorted(
         summaries,

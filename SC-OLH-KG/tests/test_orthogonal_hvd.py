@@ -79,11 +79,34 @@ class OrthogonalHVDTests(unittest.TestCase):
             0.8,
             problem=self.problem,
             replicate_variance=0.005,
+            replicate_count=8,
         )
         self.assertEqual(detail["variance_source"], "within_solution_replication")
         self.assertEqual(len(model.records[0]), 1)
         self.assertAlmostEqual(model.records[0][0][1], 0.005)
         self.assertEqual(model.diagnostics()["replicated_solution_count"]["0"], 1)
+        self.assertEqual(detail["replication_dof"], 7.0)
+
+    def test_replication_degrees_of_freedom_contract_tail_guard(self):
+        low_dof = OrthogonalHVD(mode="factor", n_outputs=1)
+        high_dof = OrthogonalHVD(mode="factor", n_outputs=1)
+        for index in range(12):
+            x = np.asarray([index + 1, 0, 0])
+            for model, count in ((low_dof, 2), (high_dof, 16)):
+                model.update(
+                    0,
+                    x,
+                    0.0,
+                    0.0,
+                    problem=self.problem,
+                    replicate_variance=0.04,
+                    replicate_count=count,
+                )
+        low_diag = low_dof.diagnostics()["residual_square_tail"]["0"]
+        high_diag = high_dof.diagnostics()["residual_square_tail"]["0"]
+        self.assertEqual(low_diag["effective_dof"], 12.0)
+        self.assertEqual(high_diag["effective_dof"], 180.0)
+        self.assertLess(high_diag["uncertainty"], low_diag["uncertainty"])
 
     def test_residual_square_tail_radius_is_exposed(self):
         nu, b = gaussian_square_subexp_params(0.04)
@@ -206,6 +229,15 @@ class OrthogonalHVDTests(unittest.TestCase):
         self.assertAlmostEqual(
             blocks["total"],
             blocks["floor"] + blocks["independent"] + blocks["shared"] + blocks["linear"],
+        )
+        diagnostics = model.diagnostics()
+        self.assertEqual(
+            diagnostics["cumulative_fit_method"]["1"],
+            "replication_aware_projected_irls",
+        )
+        self.assertGreaterEqual(
+            diagnostics["cumulative_fit_effective_dof"]["1"],
+            float(len(X)),
         )
 
     def test_factor_certification_includes_residual_tail_guard(self):

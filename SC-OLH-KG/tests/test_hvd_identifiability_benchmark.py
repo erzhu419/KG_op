@@ -22,6 +22,7 @@ def _args(**overrides):
         "L": 100,
         "sigma": 0.04,
         "alpha": 0.05,
+        "tau": 0.25,
         "n_train": 18,
         "activation_min_records": 8,
         "delta": 0.05,
@@ -54,6 +55,10 @@ def test_identifiability_cell_uses_only_replicated_fit_observations():
     assert result["evaluation_count"] > 100
     assert np.isfinite(result["log_variance_rmse"])
     assert 0.0 <= result["variance_upper_coverage"] <= 1.0
+    assert 0.0 < result["true_feasible_rate"] < 1.0
+    assert result["certification_tau"] == 0.25
+    assert result["hvd_diagnostics"]["residual_square_tail"]["1"][
+        "effective_dof"] == 18 * (3 - 1)
     assert result["information_contract"]["oracle_used_for_fit"] is False
     assert result["information_contract"]["oracle_used_for_post_run_audit"] is True
     assert result["hvd_diagnostics"]["cumulative_active"]["1"] is True

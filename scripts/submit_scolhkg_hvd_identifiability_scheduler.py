@@ -79,6 +79,7 @@ def build_specs(args):
                         "--seed", str(seed),
                         "--d", str(args.d),
                         "--n-train", str(args.n_train),
+                        "--tau", str(args.tau),
                         "--activation-min-records", str(args.activation_min_records),
                         "--out", str(remote_result_dir / "result.json"),
                     ]
@@ -113,6 +114,7 @@ def main():
     parser.add_argument("--n-seeds", type=int, default=5)
     parser.add_argument("--d", type=int, default=50)
     parser.add_argument("--n-train", type=int, default=32)
+    parser.add_argument("--tau", type=float, default=0.25)
     parser.add_argument("--activation-min-records", type=int, default=16)
     parser.add_argument("--cpu", type=int, default=1)
     parser.add_argument("--ram-mb", type=int, default=2048)

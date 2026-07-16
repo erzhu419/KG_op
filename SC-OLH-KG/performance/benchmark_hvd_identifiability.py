@@ -90,6 +90,7 @@ def run_cell(args):
         shared_shock_scale=args.shock_scale,
     )
     problem = ScalarizedProblem(base, weights=(0.5, 0.5))
+    problem.tau = float(args.tau)
     rng = np.random.default_rng(args.seed)
     train = training_policies(problem, args.n_train, rng)
     hvd = OrthogonalHVD(
@@ -114,6 +115,7 @@ def run_cell(args):
             problem.true_constraint_mean(x),
             problem=problem,
             replicate_variance=replicate_variance,
+            replicate_count=args.replicates,
         )
 
     test = evaluation_policies(problem)
@@ -147,6 +149,9 @@ def run_cell(args):
     posterior_feasible = certified_margin <= 0.0
     false_feasible = posterior_feasible & ~true_feasible
     missed_feasible = ~posterior_feasible & true_feasible
+    correctly_certified = posterior_feasible & true_feasible
+    certified_count = int(np.sum(posterior_feasible))
+    true_feasible_count = int(np.sum(true_feasible))
     log_error = np.log(np.maximum(predicted, 1e-12)) - np.log(
         np.maximum(true_variance, 1e-12))
     valid_shared = np.isfinite(fitted_shared_array)
@@ -162,6 +167,7 @@ def run_cell(args):
         "replicates_per_policy": int(args.replicates),
         "simulator_calls": int(args.n_train * args.replicates),
         "shared_shock_scale": float(args.shock_scale),
+        "certification_tau": float(problem.tau),
         "evaluation_count": int(len(test)),
         "log_variance_rmse": float(np.sqrt(np.mean(log_error ** 2))),
         "variance_spearman": _safe_spearman(true_variance, predicted),
@@ -174,12 +180,34 @@ def run_cell(args):
         "median_certified_true_ratio": float(np.median(
             certified / np.maximum(true_variance, 1e-12))),
         "variance_upper_coverage": float(np.mean(certified >= true_variance)),
-        "posterior_feasible_count": int(np.sum(posterior_feasible)),
-        "true_feasible_count": int(np.sum(true_feasible)),
+        "posterior_feasible_count": certified_count,
+        "posterior_feasible_rate": float(np.mean(posterior_feasible)),
+        "true_feasible_count": true_feasible_count,
+        "true_feasible_rate": float(np.mean(true_feasible)),
         "false_feasible_count": int(np.sum(false_feasible)),
         "false_feasible_rate": float(np.mean(false_feasible)),
+        "false_feasible_fraction_of_certified": (
+            None
+            if certified_count == 0
+            else float(np.sum(false_feasible) / certified_count)
+        ),
         "missed_feasible_count": int(np.sum(missed_feasible)),
         "missed_feasible_rate": float(np.mean(missed_feasible)),
+        "missed_feasible_fraction_of_true": (
+            None
+            if true_feasible_count == 0
+            else float(np.sum(missed_feasible) / true_feasible_count)
+        ),
+        "certificate_precision": (
+            None
+            if certified_count == 0
+            else float(np.sum(correctly_certified) / certified_count)
+        ),
+        "certificate_recall": (
+            None
+            if true_feasible_count == 0
+            else float(np.sum(correctly_certified) / true_feasible_count)
+        ),
         "certificate_nonvacuous": bool(np.any(posterior_feasible)),
         "hvd_diagnostics": hvd.diagnostics(),
         "information_contract": {
@@ -201,6 +229,7 @@ def main():
     parser.add_argument("--L", type=int, default=100)
     parser.add_argument("--sigma", type=float, default=0.04)
     parser.add_argument("--alpha", type=float, default=0.05)
+    parser.add_argument("--tau", type=float, default=0.25)
     parser.add_argument("--n-train", type=int, default=32)
     parser.add_argument("--activation-min-records", type=int, default=16)
     parser.add_argument("--delta", type=float, default=0.05)

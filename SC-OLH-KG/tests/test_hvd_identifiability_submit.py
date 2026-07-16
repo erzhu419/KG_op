@@ -19,6 +19,7 @@ def test_hvd_gate_is_one_cell_per_task_and_has_no_checkpoint_sync(tmp_path):
         "n_seeds": 5,
         "d": 50,
         "n_train": 32,
+        "tau": 0.25,
         "activation_min_records": 16,
         "cpu": 1,
         "ram_mb": 2048,
@@ -32,5 +33,6 @@ def test_hvd_gate_is_one_cell_per_task_and_has_no_checkpoint_sync(tmp_path):
     assert len({spec["signature"] for spec in specs}) == len(specs)
     assert all(spec["cpu"] == 1 for spec in specs)
     assert all("benchmark_hvd_identifiability.py" in spec["cmd"] for spec in specs)
+    assert all("--tau 0.25" in spec["cmd"] for spec in specs)
     assert all("ckpt_dir" not in spec for spec in specs)
     assert all("checkpoints" in spec["stage_excludes"] for spec in specs)

@@ -2547,6 +2547,7 @@ class FiniteTaskModelEnsemble:
                     state.problem,
                     epistemic_var=float(state_epi[output_index]),
                     replicate_variance=replicate_variance,
+                    replicate_count=len(replicate_values),
                 ))
             expert_updates.append({
                 "expert": state.name,

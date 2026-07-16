@@ -6470,6 +6470,7 @@ class SingleOLHKGAlgorithm:
                 gpr_clone[output_index],
                 self.problem,
                 replicate_variance=replicate_variance,
+                replicate_count=len(replicate_values),
             )
         next_observations = dict(state["observations"])
         next_observations[key] = existing + [y.copy()]
@@ -7049,6 +7050,7 @@ class SingleOLHKGAlgorithm:
                     gpr_clone[i],
                     self.problem,
                     replicate_variance=replicate_variance,
+                    replicate_count=len(replicate_values),
                 )
             future_value = self._terminal_value_from_models(
                 gpr_clone,
@@ -8470,6 +8472,7 @@ class SingleOLHKGAlgorithm:
                     self.problem,
                     epistemic_var=epistemic_before[i],
                     replicate_variance=replicate_variance,
+                    replicate_count=len(replicate_values),
                 ))
             task_update = None
             if self.task_ensemble is not None:
