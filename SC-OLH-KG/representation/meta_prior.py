@@ -530,9 +530,14 @@ class LearnedMetaPrior:
         self.source_observation_replicates = max(
             1, int(source_observation_replicates))
         self.source_design_mode = str(source_design_mode).strip().lower()
-        if self.source_design_mode not in {"random", "universal_mixture"}:
+        if self.source_design_mode not in {
+            "random",
+            "universal_mixture",
+            "shared_uniform",
+        }:
             raise ValueError(
-                "source_design_mode must be random or universal_mixture"
+                "source_design_mode must be random, universal_mixture, or "
+                "shared_uniform"
             )
         self.source_universal_fraction = float(np.clip(
             source_universal_fraction, 0.0, 1.0))
@@ -1601,6 +1606,22 @@ class LearnedMetaPrior:
                 (_as_tuple(problem.sample_random(rng)), "random")
                 for _ in range(n)
             )
+        if self.source_design_mode == "shared_uniform":
+            # The same unrestricted normalized profiles are evaluated in
+            # every source domain. This provides cross-domain paired ranks
+            # without baking a low-frequency policy family into the archive.
+            shared_rng = np.random.default_rng(self.seed + 104729)
+            rows = []
+            seen = set()
+            while len(rows) < n:
+                profile = shared_rng.uniform(
+                    0.0, 1.0, size=int(getattr(problem, "d", 1)))
+                x = _as_tuple(problem.continuous_to_int(profile))
+                if x in seen:
+                    continue
+                seen.add(x)
+                rows.append((x, "universal_shared_uniform"))
+            return rows
         n_universal = min(
             n,
             max(1, int(round(n * self.source_universal_fraction))),
@@ -1670,9 +1691,14 @@ class LearnedMetaPrior:
                 "target_oracle_used": False,
             }
             return
+        consensus_origin = (
+            "universal_shared_uniform"
+            if self.source_design_mode == "shared_uniform"
+            else "universal_low_frequency"
+        )
         usable = [
             rec for rec in records
-            if rec.origin == "universal_low_frequency" and rec.profile is not None
+            if rec.origin == consensus_origin and rec.profile is not None
         ]
         domains = sorted({str(rec.domain) for rec in usable})
         if len(domains) < 2:
@@ -1786,6 +1812,7 @@ class LearnedMetaPrior:
             "n_source_domains": int(len(domains)),
             "source_domains": domains,
             "n_universal_records": int(len(usable)),
+            "consensus_origin": consensus_origin,
             "n_shared_profiles": int(len(rows)),
             "n_selected_templates": int(len(self.source_consensus_templates)),
             "ranking_target": "observed_source_chance_margin_percentile",
@@ -4873,30 +4900,35 @@ class LearnedMetaPrior:
         also control this proposal coordinate, so proposal ablations no longer
         share a hidden full-prior representation.
         """
-        library = self._ordered_profile_library(profile)
-        frequency_count = self.ordered_exposure_max_frequency
-        if (
-            self.ordered_exposure_adaptive_sparsity
-            and len(self.ordered_exposure_selected_frequencies) > 0
-        ):
-            frequencies = np.asarray(
-                self.ordered_exposure_selected_frequencies, dtype=int)
+        if not self.spectral_low_frequency_prior:
+            # A true no-low-frequency control keeps the complete canonical
+            # profile instead of silently retaining a truncated cosine basis.
+            values = self._canonical_profile(profile)
         else:
-            frequencies = np.arange(1, frequency_count + 1, dtype=int)
-        values = np.concatenate([
-            library[:2],
-            library[1 + frequencies],
-        ])
-        if self.ordered_exposure_frequency_penalty > 0.0:
-            weights = np.concatenate([
-                np.ones(2, dtype=float),
-                1.0 / (
-                    1.0
-                    + self.ordered_exposure_frequency_penalty
-                    * (frequencies.astype(float) - 1.0)
-                ),
+            library = self._ordered_profile_library(profile)
+            frequency_count = self.ordered_exposure_max_frequency
+            if (
+                self.ordered_exposure_adaptive_sparsity
+                and len(self.ordered_exposure_selected_frequencies) > 0
+            ):
+                frequencies = np.asarray(
+                    self.ordered_exposure_selected_frequencies, dtype=int)
+            else:
+                frequencies = np.arange(1, frequency_count + 1, dtype=int)
+            values = np.concatenate([
+                library[:2],
+                library[1 + frequencies],
             ])
-            values = values * weights
+            if self.ordered_exposure_frequency_penalty > 0.0:
+                weights = np.concatenate([
+                    np.ones(2, dtype=float),
+                    1.0 / (
+                        1.0
+                        + self.ordered_exposure_frequency_penalty
+                        * (frequencies.astype(float) - 1.0)
+                    ),
+                ])
+                values = values * weights
         values = self._ordered_coordinate_transform(values)
         if self.ordered_exposure_basis_mode == "diagonal_quadratic":
             interactions = values ** 2
@@ -4912,6 +4944,8 @@ class LearnedMetaPrior:
 
     def _dimension_equivariant_profile_candidate(self, problem, profile):
         """Synthesize one target policy from dimensionless cosine moments."""
+        if self.source_design_mode == "shared_uniform":
+            return self._profile_to_target_candidate(problem, profile)
         library = self._ordered_profile_library(profile)
         d = max(1, int(getattr(problem, "d", 1)))
         positions = (np.arange(d, dtype=float) + 0.5) / float(d)
@@ -4936,7 +4970,11 @@ class LearnedMetaPrior:
         rng = rng or np.random.default_rng(self.seed)
         library = self.universal_shape_candidates(
             problem, n=10000, rng=rng, force=True)
-        rows = [library[1]] if len(library) > 1 else list(library[:1])
+        rows = (
+            []
+            if self.source_design_mode == "shared_uniform"
+            else ([library[1]] if len(library) > 1 else list(library[:1]))
+        )
 
         templates = []
         for rank, item in enumerate(self.source_consensus_templates):
@@ -5173,6 +5211,11 @@ class LearnedMetaPrior:
                 "safety_ranking_target": (
                     "source_chance_margin_percentile"),
                 "objective_ranking_target": "source_objective_percentile",
+                "source_design_mode": self.source_design_mode,
+                "low_frequency_coordinate": bool(
+                    self.spectral_low_frequency_prior),
+                "generic_library_fallback_count": int(max(
+                    0, n_take - len(unique_candidates(rows)))),
             }
         else:
             self.risk_objective_proposal_diagnostics = {

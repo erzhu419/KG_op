@@ -26,6 +26,7 @@ def _args(tmp_path, **overrides):
         "n0": 10,
         "seed_start": 0,
         "n_seeds": 5,
+        "source_design_mode": "universal_mixture",
         "python": submit.REMOTE_PYTHON,
         "cpu": 12,
         "run_cpu": 1,
@@ -84,3 +85,21 @@ def test_dimension_holdout_trains_source_and_target_at_declared_dimensions(tmp_p
     assert any(
         "--proposal-mode risk_objective_atlas" in s["cmd"]
         for s in designs)
+
+
+def test_shared_uniform_control_reaches_archive_design_and_online_fit(tmp_path):
+    specs = submit.build_specs(_args(
+        tmp_path,
+        profiles="none,additivity_only",
+        causal_modes="proposal_only,joint",
+        proposal_modes="risk_objective_atlas",
+        source_design_mode="shared_uniform",
+        n_seeds=2,
+    ))
+    archives = [s for s in specs if "/causal_prior_archive/" in s["signature"]]
+    designs = [s for s in specs if "/causal_prior_design/" in s["signature"]]
+    runs = [s for s in specs if "/causal_prior_v2/" in s["signature"]]
+
+    assert all("--source-design-mode shared_uniform" in s["cmd"] for s in archives)
+    assert all("--source-design-mode shared_uniform" in s["cmd"] for s in designs)
+    assert all("--source-design-mode shared_uniform" in s["cmd"] for s in runs)

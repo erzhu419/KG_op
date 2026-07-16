@@ -57,6 +57,7 @@ def materialize_source_designs(
     n_seeds=20,
     structural_prior_profile="inherit",
     proposal_mode="rank_spanning",
+    source_design_mode=None,
 ):
     """Build designs from the same frozen, oracle-free source observations.
 
@@ -77,6 +78,8 @@ def materialize_source_designs(
     source_config = dict(target_config)
     source_config["d"] = int(source_dimension)
     source_config["meta_source_dimension"] = int(source_dimension)
+    if source_design_mode is not None:
+        source_config["meta_source_design_mode"] = str(source_design_mode)
     apply_structural_prior_profile(source_config, structural_prior_profile)
     prior = train_meta_prior(source_config, heldout, 0, teacher=False)
     reconstructed = frozen_archive_from_meta_prior(
@@ -139,6 +142,8 @@ def materialize_source_designs(
         "heldout_target_domain": str(heldout),
         "dimension": int(problem.d),
         "source_dimension": int(source_dimension),
+        "source_design_mode": str(source_config.get(
+            "meta_source_design_mode", "random")),
         "dimension_holdout": bool(int(source_dimension) != int(problem.d)),
         "n0": int(n0),
         "seed_start": int(seed_start),
@@ -187,6 +192,11 @@ def main():
         ),
         default="rank_spanning",
     )
+    parser.add_argument(
+        "--source-design-mode",
+        choices=("random", "universal_mixture", "shared_uniform"),
+        default=None,
+    )
     args = parser.parse_args()
     payload = materialize_source_designs(
         args.manifest,
@@ -200,6 +210,7 @@ def main():
         n_seeds=args.n_seeds,
         structural_prior_profile=args.structural_prior_profile,
         proposal_mode=args.proposal_mode,
+        source_design_mode=args.source_design_mode,
     )
     print(json.dumps({
         "status": "ok",

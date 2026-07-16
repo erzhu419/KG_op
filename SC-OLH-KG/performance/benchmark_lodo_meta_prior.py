@@ -2373,7 +2373,7 @@ def main():
         "--meta_source_observation_replicates", type=int, default=1)
     parser.add_argument(
         "--meta_source_design_mode",
-        choices=["random", "universal_mixture"],
+        choices=["random", "universal_mixture", "shared_uniform"],
         default="random",
     )
     parser.add_argument(

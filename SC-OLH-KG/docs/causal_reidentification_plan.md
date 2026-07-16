@@ -180,6 +180,33 @@ Only profiles satisfying all five conditions can proceed to `d=1000`. The
 repair is not allowed to pass merely because its source objective rank is
 available in diagnostics.
 
+### Strict archive-level control
+
+The repair gate exposed a deeper control issue. The nominal `none` profile
+closed spectral and ordered posterior switches, but all source observations
+still came from `universal_low_frequency` policies and the target atlas still
+used truncated cosine reconstruction. This is not target leakage, but it means
+the row was not a true no-low-frequency control.
+
+The strict control therefore changes the common source archive itself:
+
+- `shared_uniform` freezes one unrestricted normalized random policy library
+  and evaluates byte-identical policies in every source domain;
+- within-domain chance-margin and objective percentiles are computed on those
+  paired policies, preserving the scale-invariant LODO comparison;
+- when low frequency is disabled, proposal distance uses the complete
+  64-point canonical policy and target synthesis uses direct interpolation;
+- cosine truncation is available only to profiles that explicitly enable the
+  low-frequency assumption;
+- the generic low-frequency sentinel is removed from the strict proposal. It
+  is used only as a recorded fallback when fewer than `n0` source templates
+  survive deduplication.
+
+This strict archive is a new experiment and is never merged with the legacy
+universal-shape archive. It first repeats the full `d=50,N=20,n0=10`, five-seed
+causal matrix. A profile must beat strict `none` before any dimension holdout
+is repeated.
+
 Scheduler entrypoints:
 
 - `scripts/submit_scolhkg_causal_prior_matrix_scheduler.py`

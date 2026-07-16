@@ -45,7 +45,7 @@ def _parse_csv(value):
     return tuple(item.strip() for item in str(value).split(",") if item.strip())
 
 
-def _base_flags():
+def _base_flags(source_design_mode="universal_mixture"):
     return [
         "--ordered-max-frequency", "8",
         "--ordered-active-dim", "2",
@@ -59,7 +59,7 @@ def _base_flags():
         "--ordered-group-ridge-learning",
         "--source-observation-mode", "replicated",
         "--source-observation-replicates", "3",
-        "--source-design-mode", "universal_mixture",
+        "--source-design-mode", str(source_design_mode),
         "--source-universal-fraction", "1.0",
         "--source-consensus-template-count", "12",
         "--observable-mean-mode", "latent",
@@ -151,6 +151,7 @@ def build_specs(args):
             "--heldouts", heldout,
             "--out-dir", str(remote_archive.parent),
             "--d", str(args.source_d),
+            "--source-design-mode", str(args.source_design_mode),
         ]
         specs.append({
             "description": f"causal-prior source archive {heldout}",
@@ -196,6 +197,7 @@ def build_specs(args):
                     "--n-seeds", str(args.n_seeds),
                     "--structural-prior-profile", profile,
                     "--proposal-mode", proposal_mode,
+                    "--source-design-mode", str(args.source_design_mode),
                 ]
                 specs.append({
                     "description": (
@@ -272,7 +274,7 @@ def build_specs(args):
                             "--structural-prior-profile", posterior_profile,
                             "--hvd-profile", "pooled",
                             "--decision-backend", "sobol",
-                            *_base_flags(),
+                            *_base_flags(args.source_design_mode),
                         ]
                         wait_for_files = []
                         if initial_design == "source_informed":
@@ -334,6 +336,11 @@ def main():
     parser.add_argument("--n0", type=int, default=10)
     parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=5)
+    parser.add_argument(
+        "--source-design-mode",
+        choices=("universal_mixture", "shared_uniform"),
+        default="universal_mixture",
+    )
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--run-cpu", type=int, default=1)
     parser.add_argument("--ram-mb", type=int, default=8192)

@@ -316,7 +316,7 @@ def main():
     parser.add_argument("--source-observation-replicates", type=int, default=1)
     parser.add_argument(
         "--source-design-mode",
-        choices=("random", "universal_mixture"),
+        choices=("random", "universal_mixture", "shared_uniform"),
         default="random",
     )
     parser.add_argument("--source-universal-fraction", type=float, default=0.75)

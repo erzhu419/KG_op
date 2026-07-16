@@ -709,6 +709,52 @@ class MetaPriorTests(unittest.TestCase):
         ]
         self.assertGreater(len(set(sequential)), 1)
 
+    def test_shared_uniform_source_control_is_paired_and_not_low_frequency(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            spectral_low_frequency_prior=False,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="shared_uniform",
+            source_consensus_template_count=6,
+            teacher_records_per_domain=0,
+            seed=522,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=12,
+            rng=np.random.default_rng(522),
+        )
+        records = prior.source_records_
+        first = [rec for rec in records if rec.domain == sources[0][0]]
+        second = [rec for rec in records if rec.domain == sources[1][0]]
+        self.assertEqual(len(first), 12)
+        self.assertTrue(all(
+            rec.origin == "universal_shared_uniform" for rec in records))
+        np.testing.assert_allclose(
+            np.vstack([rec.profile for rec in first]),
+            np.vstack([rec.profile for rec in second]),
+        )
+        consensus = prior.diagnostics()["source_consensus_templates"]
+        self.assertEqual(consensus["status"], "fit")
+        self.assertEqual(consensus["consensus_origin"], "universal_shared_uniform")
+
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=50), prior)
+        points = prior.risk_objective_initial_candidates(
+            target, n=5, rng=np.random.default_rng(523))
+        proposal = prior.diagnostics()["risk_objective_proposal"]
+        self.assertEqual(len(points), 5)
+        self.assertFalse(proposal["low_frequency_coordinate"])
+        self.assertEqual(proposal["source_design_mode"], "shared_uniform")
+        self.assertEqual(proposal["generic_library_fallback_count"], 0)
+
     def test_source_invariant_spectral_basis_is_orthogonal_and_frozen(self):
         batches = []
         for domain_idx in range(3):
