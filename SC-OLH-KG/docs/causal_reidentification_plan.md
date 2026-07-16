@@ -76,6 +76,30 @@ are reported separately rather than collapsed into population error rates.
 6. Increase seeds only after a positive paired effect; do not use `d=10000`
    to obscure a failed `d=1000` gate.
 
+## Completed gate evidence
+
+The corrected `d=50,N=20,n0=10` matrix
+`scolh_causal_prior_v2_gate_s5_20260716` completed all 450 optimization cells
+with no parse failures. Every comparison retrained its source proposal and used
+the same frozen source archive and paired target seeds.
+
+- `full` is rejected as the promoted profile: joint feasibility was `11/15`.
+- `additivity_only` and `orthogonality_only` each achieved `15/15` joint
+  feasibility across FactorShock, Inventory, and Queue.
+- `leave_out_sparsity` also achieved `15/15`, while the no-four-prior control
+  achieved `13/15`.
+- On Queue, the full and sparsity-only proposals had `0/5` initially feasible
+  runs, versus `5/5` for the no-four-prior, additivity-only, and
+  orthogonality-only proposals. Thus the failure is already present in the
+  frozen proposal and cannot be attributed to the online backend.
+- With common Sobol initialization, every FactorShock posterior profile was
+  `0/5`; the transferable proposal is necessary in that domain.
+
+The next registered gate holds source dimension at 50 and target dimension at
+200, comparing rank-spanning interpolation against the dimension-equivariant
+risk-coordinate atlas for `none`, rejected `full`, `additivity_only`, and
+`orthogonality_only`.
+
 Scheduler entrypoints:
 
 - `scripts/submit_scolhkg_causal_prior_matrix_scheduler.py`
