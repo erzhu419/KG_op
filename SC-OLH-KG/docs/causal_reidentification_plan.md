@@ -159,6 +159,27 @@ within-domain percentile ranks, retains their Pareto elites, and uses maximin
 risk-coordinate filling only for the remaining slots. The old atlas remains
 an explicit ablation.
 
+The `risk_objective_atlas` repair is evaluated on the same source archive,
+domains, target seeds, `d=200`, `N=20`, and `n0=10`. Its promotion rule was
+fixed before any repair run completed:
+
+1. all 90 repair cells must complete without parse failures;
+2. each profile must satisfy the original safety floor (`12/15` overall,
+   `3/5` per domain, and at most one adaptive loss);
+3. against the old risk-coordinate atlas, feasibility is compared
+   lexicographically before regret: the repair may not lose feasibility in any
+   domain; when feasibility ties, paired conditional-regret wins must be at
+   least losses;
+4. the same lexicographic comparison is repeated against rank-spanning, so the
+   repair must retain the atlas safety gain without giving back its objective
+   correction;
+5. a structural profile must still beat the repaired `none` proposal by
+   paired feasibility, or by paired regret when feasibility ties.
+
+Only profiles satisfying all five conditions can proceed to `d=1000`. The
+repair is not allowed to pass merely because its source objective rank is
+available in diagnostics.
+
 Scheduler entrypoints:
 
 - `scripts/submit_scolhkg_causal_prior_matrix_scheduler.py`
