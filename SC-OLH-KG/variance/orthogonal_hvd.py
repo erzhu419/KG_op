@@ -35,6 +35,7 @@ class HVDConfig:
     activation_min_records: int = 20
     certification_kappa: float = 1.0
     residual_tail_delta: float = 0.05
+    use_cumulative_provider: bool = True
 
 
 def gaussian_square_subexp_params(sigma2):
@@ -215,6 +216,8 @@ class OrthogonalHVD:
 
     def _cumulative_features(self, x, problem=None, output_index=0):
         """Linear variance features for trajectory/meta cumulative risk."""
+        if not bool(self.config.use_cumulative_provider):
+            return None
         problem = problem or self._last_problem
         feat = None
         if problem is not None and hasattr(problem, "cumulative_risk_features"):
@@ -1266,6 +1269,8 @@ class OrthogonalHVD:
                 for i in range(self.n_outputs)
             },
             "activation_min_records": int(self.config.activation_min_records),
+            "use_cumulative_provider": bool(
+                self.config.use_cumulative_provider),
             "certification_kappa": float(self.config.certification_kappa),
             "certification_uses_class_floor": bool(self.mode in ("orthogonal", "factor")),
             "uses_manifold_hvd_features": bool(getattr(

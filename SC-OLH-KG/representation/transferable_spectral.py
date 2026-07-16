@@ -44,6 +44,7 @@ class TransferableSpectralBasis:
         pilot_cv_repeats=3,
         pilot_cv_weight=1.0,
         orthogonalization="symmetric",
+        use_low_frequency_score=True,
     ):
         self.active_dim = int(active_dim)
         self.max_library_size = int(max_library_size)
@@ -55,6 +56,7 @@ class TransferableSpectralBasis:
         self.pilot_cv_repeats = int(pilot_cv_repeats)
         self.pilot_cv_weight = float(pilot_cv_weight)
         self.orthogonalization = str(orthogonalization)
+        self.use_low_frequency_score = bool(use_low_frequency_score)
         if self.orthogonalization not in {
             "symmetric", "ordered_cholesky", "none"
         }:
@@ -121,8 +123,13 @@ class TransferableSpectralBasis:
         relevance_stability = relevance_mean / (relevance_mean + relevance_std + 1e-12)
         prevalence = np.mean(relevance >= self.relevance_floor, axis=0)
         sign_consistency = self._sign_consistency(signs, relevance)
-        score = (
+        frequency_factor = (
             low_stable
+            if self.use_low_frequency_score
+            else np.ones_like(low_stable)
+        )
+        score = (
+            frequency_factor
             * relevance_mean
             * (0.5 + 0.5 * relevance_stability)
             * (0.5 + 0.5 * prevalence)
@@ -253,6 +260,7 @@ class TransferableSpectralBasis:
             "pilot_cv_repeats": int(self.pilot_cv_repeats),
             "pilot_cv_weight": float(self.pilot_cv_weight),
             "orthogonalization": self.orthogonalization,
+            "low_frequency_prior": bool(self.use_low_frequency_score),
             "max_offdiag_gram": float(np.max(np.abs(offdiag))) if offdiag.size else 0.0,
             "max_diag_error": float(np.max(np.abs(np.diag(gram) - 1.0))),
             "fingerprint": self.fingerprint(),
@@ -276,6 +284,7 @@ class TransferableSpectralBasis:
     def fingerprint(self):
         digest = hashlib.sha256()
         digest.update(self.orthogonalization.encode("ascii"))
+        digest.update(str(int(self.use_low_frequency_score)).encode("ascii"))
         for value in (
             self.psi_mean_,
             self.psi_scale_,

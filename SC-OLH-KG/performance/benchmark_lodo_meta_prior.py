@@ -169,6 +169,8 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
         spectral_max_library_size=args_dict["meta_spectral_max_library_size"],
         spectral_low_frequency_components=args_dict[
             "meta_spectral_low_frequency_components"],
+        spectral_low_frequency_prior=bool(args_dict.get(
+            "meta_spectral_low_frequency_prior", True)),
         spectral_graph_neighbors=args_dict["meta_spectral_graph_neighbors"],
         spectral_orthogonalization=str(args_dict.get(
             "meta_spectral_orthogonalization", "symmetric")),
@@ -485,6 +487,8 @@ def run_one(task):
         state_inverse_neighbors=args_dict["state_inverse_neighbors"],
         n_thr=args_dict["n_thr"],
         variance_mode=args_dict["variance_mode"],
+        hvd_use_cumulative_provider=bool(args_dict.get(
+            "hvd_use_cumulative_provider", True)),
         lambda_feas=args_dict["lambda_feas"],
         lambda_var=args_dict["lambda_var"],
         lambda_mean=args_dict["lambda_mean"],
@@ -517,6 +521,14 @@ def run_one(task):
         lf_os_graph_neighbors=args_dict["lf_os_graph_neighbors"],
         lf_os_residual_floor_scale=args_dict["lf_os_residual_floor_scale"],
         acquisition_mode=args_dict["acquisition_mode"],
+        decision_backend=args_dict.get("decision_backend", "legacy"),
+        decision_risk_penalty=args_dict.get("decision_risk_penalty", 5.0),
+        decision_source_utility_weight=args_dict.get(
+            "decision_source_utility_weight", 1.0),
+        decision_backend_seed_offset=args_dict.get(
+            "decision_backend_seed_offset", 470003),
+        decision_recommend_observed_only=bool(args_dict.get(
+            "decision_recommend_observed_only", True)),
         exact_kg_mc_samples=args_dict["exact_kg_mc_samples"],
         exact_kg_jobs=args_dict["exact_kg_jobs"],
         exact_kg_parallel_backend=args_dict["exact_kg_parallel_backend"],
@@ -548,6 +560,8 @@ def run_one(task):
             if line in ("lodo", "lodo_teacher")
             else "off"
         ),
+        source_discrepancy_update=bool(args_dict.get(
+            "source_discrepancy_update", True)),
         task_posterior_initial_design=args_dict[
             "task_posterior_initial_design"],
         task_posterior_boundary_bracket_fraction=args_dict[
@@ -819,6 +833,12 @@ def run_one(task):
             "meta_source_consensus_template_count", 0)),
         "meta_ordered_cumulative_exposure": bool(args_dict.get(
             "meta_ordered_cumulative_exposure", False)),
+        "meta_spectral_low_frequency_prior": bool(args_dict.get(
+            "meta_spectral_low_frequency_prior", True)),
+        "structural_prior_profile": str(args_dict.get(
+            "structural_prior_profile", "inherit")),
+        "hvd_ablation_profile": str(args_dict.get(
+            "hvd_ablation_profile", "inherit")),
         "meta_ordered_exposure_max_frequency": int(args_dict.get(
             "meta_ordered_exposure_max_frequency", 8)),
         "meta_ordered_exposure_frequency_penalty": float(args_dict.get(
@@ -855,6 +875,20 @@ def run_one(task):
             "exact_kg_sampling_mode"]),
         "exact_kg_clip_negative": bool(args_dict[
             "exact_kg_clip_negative"]),
+        "decision_backend": str(args_dict.get(
+            "decision_backend", "legacy")),
+        "decision_risk_penalty": float(args_dict.get(
+            "decision_risk_penalty", 5.0)),
+        "decision_source_utility_weight": float(args_dict.get(
+            "decision_source_utility_weight", 1.0)),
+        "decision_backend_diagnostics": result.get(
+            "decision_backend_diagnostics"),
+        "decision_backend_contract": result.get(
+            "decision_backend_contract"),
+        "adaptive_outcome_audit": result.get(
+            "adaptive_outcome_audit"),
+        "certificate_outcome_audit": result.get(
+            "certificate_outcome_audit"),
         "exact_kg_diagnostics": result.get("exact_kg_diagnostics"),
         "terminal_bayes_violation_penalty": float(args_dict[
             "terminal_bayes_violation_penalty"]),
@@ -929,6 +963,8 @@ def run_one(task):
         "mean_risk_coordinate_contract": result.get(
             "mean_risk_coordinate_contract"),
         "task_posterior": result.get("task_posterior"),
+        "source_discrepancy_update": bool(args_dict.get(
+            "source_discrepancy_update", True)),
         "task_meta_coherence": result.get("task_meta_coherence"),
         "task_initial_design": initial_design,
         "initial_boundary_bracket_generated": initial_design.get(
@@ -945,7 +981,42 @@ def run_one(task):
             "initial_design_true_min_margin"),
         "initial_true_median_margin": initial_truth.get(
             "initial_design_true_median_margin"),
+        "initial_best_feasible_regret": (
+            result.get("adaptive_outcome_audit") or {}
+        ).get("initial_best_feasible_regret"),
+        "adaptive_rescue": bool((
+            result.get("adaptive_outcome_audit") or {}
+        ).get("adaptive_rescue", False)),
+        "adaptive_loss": bool((
+            result.get("adaptive_outcome_audit") or {}
+        ).get("adaptive_loss", False)),
+        "adaptive_preservation": bool((
+            result.get("adaptive_outcome_audit") or {}
+        ).get("adaptive_preservation", False)),
+        "adaptive_improves_initial_best": bool((
+            result.get("adaptive_outcome_audit") or {}
+        ).get("adaptive_improves_initial_best", False)),
+        "adaptive_regret_change": (
+            result.get("adaptive_outcome_audit") or {}
+        ).get("adaptive_regret_change"),
+        "posterior_certificate_vacuous": bool((
+            result.get("certificate_outcome_audit") or {}
+        ).get("posterior_certificate_vacuous", False)),
+        "posterior_certified_evaluated_count": (
+            result.get("certificate_outcome_audit") or {}
+        ).get("posterior_certified_count"),
+        "certificate_precision": (
+            result.get("certificate_outcome_audit") or {}
+        ).get("certificate_precision"),
+        "certificate_recall_on_evaluated_feasible": (
+            result.get("certificate_outcome_audit") or {}
+        ).get("certificate_recall_on_evaluated_feasible"),
+        "false_certificate_count": (
+            result.get("certificate_outcome_audit") or {}
+        ).get("false_certificate_count"),
         "adaptive_sparsity": result.get("adaptive_sparsity"),
+        "hvd_use_cumulative_provider": bool(args_dict.get(
+            "hvd_use_cumulative_provider", True)),
         "gpr_numerics": result.get("gpr_numerics"),
         "true_feasible": true_feasible,
         "posterior_feasible": posterior_feasible,
@@ -1213,6 +1284,32 @@ def summarize(rows):
                 row.get("initial_true_feasible_count", None) for row in items),
             "initial_true_feasible_rate": finite_stats(
                 row.get("initial_true_feasible_rate", None) for row in items),
+            "initial_best_feasible_regret": finite_stats(
+                row.get("initial_best_feasible_regret", None) for row in items),
+            "adaptive_rescue_rate": finite_stats(
+                row.get("adaptive_rescue", None) for row in items),
+            "adaptive_loss_rate": finite_stats(
+                row.get("adaptive_loss", None) for row in items),
+            "adaptive_preservation_rate": finite_stats(
+                row.get("adaptive_preservation", None) for row in items),
+            "adaptive_improves_initial_best_rate": finite_stats(
+                row.get("adaptive_improves_initial_best", None)
+                for row in items),
+            "adaptive_regret_change": finite_stats(
+                row.get("adaptive_regret_change", None) for row in items),
+            "posterior_certificate_vacuous_rate": finite_stats(
+                row.get("posterior_certificate_vacuous", None)
+                for row in items),
+            "posterior_certified_evaluated_count": finite_stats(
+                row.get("posterior_certified_evaluated_count", None)
+                for row in items),
+            "certificate_precision": finite_stats(
+                row.get("certificate_precision", None) for row in items),
+            "certificate_recall_on_evaluated_feasible": finite_stats(
+                row.get("certificate_recall_on_evaluated_feasible", None)
+                for row in items),
+            "false_certificate_count": finite_stats(
+                row.get("false_certificate_count", None) for row in items),
             "initial_boundary_bracket_generated": finite_stats(
                 row.get("initial_boundary_bracket_generated", None)
                 for row in items),
@@ -1725,6 +1822,11 @@ def main():
     parser.add_argument("--n_thr", type=int, default=5)
     parser.add_argument("--eval_pool_size", type=int, default=300)
     parser.add_argument("--variance_mode", default="factor")
+    parser.add_argument(
+        "--hvd_use_cumulative_provider",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     parser.add_argument("--lambda_feas", type=float, default=0.25)
     parser.add_argument("--lambda_var", type=float, default=0.25)
     parser.add_argument("--lambda_mean", type=float, default=0.10)
@@ -1764,6 +1866,32 @@ def main():
     parser.add_argument("--lf_os_graph_neighbors", type=int, default=12)
     parser.add_argument("--lf_os_residual_floor_scale", type=float, default=0.05)
     parser.add_argument("--acquisition_mode", default="exact_mc")
+    parser.add_argument(
+        "--decision_backend",
+        default="legacy",
+        choices=(
+            "legacy",
+            "additive",
+            "exact_kg",
+            "n0_best",
+            "random",
+            "sobol",
+            "risk_ts",
+            "bayes_risk_ei",
+            "constrained_ei",
+            "transfer_utility",
+        ),
+    )
+    parser.add_argument("--decision_risk_penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--decision_source_utility_weight", type=float, default=1.0)
+    parser.add_argument(
+        "--decision_backend_seed_offset", type=int, default=470003)
+    parser.add_argument(
+        "--decision_recommend_observed_only",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     parser.add_argument("--exact_kg_mc_samples", type=int, default=2)
     parser.add_argument("--exact_kg_jobs", type=int, default=1)
     parser.add_argument("--exact_kg_parallel_backend", default="thread")
@@ -1808,6 +1936,11 @@ def main():
         default="model_default",
     )
     parser.add_argument("--task_posterior_mode", default="off")
+    parser.add_argument(
+        "--source_discrepancy_update",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     parser.add_argument(
         "--task_posterior_initial_design",
         action=argparse.BooleanOptionalAction,
@@ -2208,6 +2341,11 @@ def main():
     parser.add_argument("--meta_spectral_max_library_size", type=int, default=64)
     parser.add_argument(
         "--meta_spectral_low_frequency_components", type=int, default=8)
+    parser.add_argument(
+        "--meta_spectral_low_frequency_prior",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     parser.add_argument("--meta_spectral_graph_neighbors", type=int, default=10)
     parser.add_argument("--meta_spectral_relevance_floor", type=float, default=0.05)
     parser.add_argument("--meta_spectral_gate_boundary_weight", type=float, default=2.0)

@@ -189,6 +189,7 @@ class LearnedMetaPrior:
         spectral_active_dim=6,
         spectral_max_library_size=64,
         spectral_low_frequency_components=8,
+        spectral_low_frequency_prior=True,
         spectral_graph_neighbors=10,
         spectral_orthogonalization="symmetric",
         spectral_relevance_floor=0.05,
@@ -297,6 +298,8 @@ class LearnedMetaPrior:
         self.spectral_max_library_size = int(spectral_max_library_size)
         self.spectral_low_frequency_components = int(
             spectral_low_frequency_components)
+        self.spectral_low_frequency_prior = bool(
+            spectral_low_frequency_prior)
         self.spectral_graph_neighbors = int(spectral_graph_neighbors)
         self.spectral_orthogonalization = str(spectral_orthogonalization)
         if self.spectral_orthogonalization not in {
@@ -384,14 +387,13 @@ class LearnedMetaPrior:
         self.spectral_shrinkage_floor = float(np.clip(
             spectral_shrinkage_floor, 1e-6, 1.0))
         self.spectral_adaptive_sparsity = bool(spectral_adaptive_sparsity)
-        active_adaptations = sum((
-            self.spectral_frequency_adaptation,
-            self.spectral_additive_adaptation,
-            self.spectral_adaptive_sparsity,
-        ))
-        if active_adaptations > 1:
+        if self.spectral_adaptive_sparsity and (
+            self.spectral_frequency_adaptation
+            or self.spectral_additive_adaptation
+        ):
             raise ValueError(
-                "frequency, additive, and coefficient adaptation are separate stages"
+                "adaptive spike-and-slab is a challenger to the composed "
+                "frequency/additive hierarchy"
             )
         self.spectral_adaptive_min_pip = float(spectral_adaptive_min_pip)
         self.spectral_adaptive_max_pip = float(spectral_adaptive_max_pip)
@@ -2316,6 +2318,7 @@ class LearnedMetaPrior:
                 relevance_floor=self.spectral_relevance_floor,
                 ridge=self.ridge,
                 orthogonalization=self.spectral_orthogonalization,
+                use_low_frequency_score=self.spectral_low_frequency_prior,
             ).fit(batches)
             self.stage1_spectral_basis = self.spectral_basis
             self.spectral_feature_dim = int(self.spectral_basis.feature_dim)
@@ -2329,6 +2332,7 @@ class LearnedMetaPrior:
                 relevance_floor=self.spectral_relevance_floor,
                 ridge=self.ridge,
                 orthogonalization=self.spectral_orthogonalization,
+                use_low_frequency_score=self.spectral_low_frequency_prior,
             ).fit(batches)
             residual_dim = max(
                 self.spectral_active_dim
@@ -2348,6 +2352,7 @@ class LearnedMetaPrior:
                         if self.spectral_orthogonalization == "none"
                         else "ordered_cholesky"
                     ),
+                    use_low_frequency_score=self.spectral_low_frequency_prior,
                 ).fit(batches)
             else:
                 self.spectral_basis = self.stage1_spectral_basis
@@ -2369,6 +2374,7 @@ class LearnedMetaPrior:
                 relevance_floor=self.spectral_relevance_floor,
                 ridge=self.ridge,
                 orthogonalization=self.spectral_orthogonalization,
+                use_low_frequency_score=self.spectral_low_frequency_prior,
             ).fit(batches)
             self.stage1_spectral_basis = self.spectral_basis
             self.spectral_feature_dim = int(self.spectral_basis.feature_dim)
@@ -2412,6 +2418,7 @@ class LearnedMetaPrior:
             relevance_floor=self.spectral_relevance_floor,
             ridge=self.ridge,
             orthogonalization=self.spectral_orthogonalization,
+            use_low_frequency_score=self.spectral_low_frequency_prior,
         ).fit(aligned_batches)
         if self.spectral_frequency_adaptation:
             self._fit_risk_aligned_frequency_bank(aligned_batches)
@@ -3017,6 +3024,7 @@ class LearnedMetaPrior:
                     relevance_floor=self.spectral_relevance_floor,
                     ridge=self.ridge,
                     orthogonalization=self.spectral_orthogonalization,
+                    use_low_frequency_score=self.spectral_low_frequency_prior,
                 ).fit(aligned_batches)
             basis_by_cutoff[int(cutoff)] = basis
             diag = basis.diagnostics()
@@ -3143,6 +3151,7 @@ class LearnedMetaPrior:
                     relevance_floor=self.spectral_relevance_floor,
                     ridge=self.ridge,
                     orthogonalization=self.spectral_orthogonalization,
+                    use_low_frequency_score=self.spectral_low_frequency_prior,
                 ).fit(batches)
             for ridge in self.spectral_frequency_ridges:
                 is_baseline = bool(
@@ -5154,6 +5163,8 @@ class LearnedMetaPrior:
                 self.spectral_coefficient_shrinkage),
             "spectral_adaptive_sparsity": bool(
                 self.spectral_adaptive_sparsity),
+            "spectral_low_frequency_prior": bool(
+                self.spectral_low_frequency_prior),
             "spectral_frequency_adaptation": bool(
                 self.spectral_frequency_adaptation),
             "spectral_frequency": dict(
@@ -5886,7 +5897,11 @@ class PilotGatedMetaPriorBasis:
                 "target_data_used": True,
                 "target_oracle_used": False,
             }
-        if output_index == 1 and self.meta_prior.spectral_additive_adaptation:
+        if (
+            output_index == 1
+            and self.meta_prior.spectral_additive_adaptation
+            and not self.meta_prior.spectral_frequency_adaptation
+        ):
             if self._locked_additive_base_basis is None:
                 self._locked_additive_base_basis = selected
             selected = self._locked_additive_base_basis
@@ -6088,7 +6103,9 @@ class PilotGatedMetaPriorBasis:
             }
         if output_index == 1 and self.meta_prior.spectral_additive_adaptation:
             self._additive_refit_count += 1
-            additive_baseline = selected
+            if self._locked_additive_base_basis is None:
+                self._locked_additive_base_basis = selected
+            additive_baseline = self._locked_additive_base_basis
             self._additive_bank_kind = (
                 "aligned"
                 if additive_baseline == "risk_aligned_spectral"
@@ -6901,7 +6918,17 @@ class PilotGatedMetaPriorBasis:
 
         beta = np.asarray(beta_mean, dtype=float).copy()
         base_var = max(float(prior_var), 1e-12)
-        if self.output_index != 1 or self.selected_basis != "source_spectral":
+        spectral_family = bool(
+            self.selected_basis in {
+                "source_spectral",
+                "source_additive",
+                "risk_aligned_spectral",
+            }
+            or str(self.selected_basis).startswith("frequency_band_")
+            or str(self.selected_basis).startswith(
+                "aligned_frequency_band_")
+        )
+        if self.output_index != 1 or not spectral_family:
             self.gate_diagnostics["coefficient_prior_applied"] = False
             return beta, base_var
         weights = self.meta_prior.spectral_shrinkage_weights(self.output_index)
@@ -6921,6 +6948,7 @@ class PilotGatedMetaPriorBasis:
         self.gate_diagnostics.update({
             "coefficient_prior_applied": True,
             "coefficient_prior_mode": "variance_only",
+            "coefficient_prior_selected_basis": str(self.selected_basis),
             "coefficient_prior_mean_shrunk": False,
             "coefficient_prior_active_dim": int(n_active),
             "coefficient_prior_weights": weights.tolist(),

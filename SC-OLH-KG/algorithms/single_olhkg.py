@@ -14,6 +14,7 @@ import time
 import numpy as np
 from scipy.stats import norm
 
+from acquisition.decision_backends import score_decision_backend
 from acquisition.olhkg import OLHKGAcquisition
 from core.certification import conservative_chance_margin
 from core.candidates import (
@@ -163,6 +164,7 @@ class SingleOLHKGConfig:
     lambda_i: float = 0.1
     prior_var: float = 10.0
     variance_mode: str = "factor"
+    hvd_use_cumulative_provider: bool = True
     lambda_feas: float = 0.25
     lambda_var: float = 0.25
     lambda_mean: float = 0.10
@@ -222,6 +224,11 @@ class SingleOLHKGConfig:
     lf_os_residual_floor_scale: float = 0.05
     lf_os_use_problem_state_anchor: bool = True
     acquisition_mode: str = "exact_mc"
+    decision_backend: str = "legacy"
+    decision_risk_penalty: float = 5.0
+    decision_source_utility_weight: float = 1.0
+    decision_backend_seed_offset: int = 470_003
+    decision_recommend_observed_only: bool = True
     exact_kg_mc_samples: int = 8
     exact_kg_jobs: int = 1
     exact_kg_parallel_backend: str = "thread"
@@ -237,6 +244,7 @@ class SingleOLHKGConfig:
     tcb_v2_frontier_count: int = 1
     finalist_terminal_value_mode: str = "model_default"
     task_posterior_mode: str = "off"
+    source_discrepancy_update: bool = True
     task_posterior_initial_design: bool = True
     task_posterior_boundary_bracket_fraction: float = 0.0
     task_posterior_mandatory_universal_count: int = 0
@@ -417,6 +425,7 @@ class SingleOLHKGAlgorithm:
             mode=self.config.variance_mode,
             n_outputs=2,
             floor=1e-8,
+            use_cumulative_provider=self.config.hvd_use_cumulative_provider,
         )
         self.acquisition = OLHKGAcquisition(
             lambda_feas=self.config.lambda_feas,
@@ -1014,6 +1023,8 @@ class SingleOLHKGAlgorithm:
                 mode=str(spec.get("variance_mode", "factor")),
                 n_outputs=2,
                 floor=1e-8,
+                use_cumulative_provider=(
+                    self.config.hvd_use_cumulative_provider),
             )
             variance_model.initialize(
                 pilot_samples,
@@ -1125,6 +1136,8 @@ class SingleOLHKGAlgorithm:
                 self.config.task_latent_inference_mode),
             task_latent_calibration_mode=(
                 self.config.task_latent_calibration_mode),
+            source_discrepancy_update=(
+                self.config.source_discrepancy_update),
         )
         # Score the remaining initial observations prequentially: each label
         # updates Q before it is inserted into any expert GPR/HVD.
@@ -5431,6 +5444,7 @@ class SingleOLHKGAlgorithm:
         variance_model,
         pool,
         task_ensemble=None,
+        risk_penalty=None,
     ):
         """Fixed posterior Bayes risk used by smooth constrained KG.
 
@@ -5525,8 +5539,11 @@ class SingleOLHKGAlgorithm:
                 ) ** 2,
                 0.0,
             ))
-        penalty = max(
-            float(self.config.terminal_bayes_violation_penalty), 0.0)
+        penalty = max(float(
+            self.config.terminal_bayes_violation_penalty
+            if risk_penalty is None
+            else risk_penalty
+        ), 0.0)
         risk = objective + penalty * expected_violation
         return {
             "objective": np.asarray(objective, dtype=float),
@@ -7036,6 +7053,65 @@ class SingleOLHKGAlgorithm:
         self._last_exact_kg_raw_scores = raw_out
         return out
 
+    def _decision_backend_terminal_recommendation(self, pool):
+        """Return the Bayes action paired with a non-legacy online backend.
+
+        Random, Sobol and Thompson rules randomize data collection, not the
+        final Bayesian decision.  Their recommendation therefore minimizes
+        the same posterior risk used by the risk-aware backends.  Restricting
+        this action to evaluated points provides incumbent retention without
+        consulting target truth or adding an empirical fallback.
+        """
+
+        backend = str(
+            self.config.decision_backend or "legacy"
+        ).strip().lower().replace("-", "_")
+        if backend in {"legacy", "legacy_kg", "exact_kg", "additive"}:
+            return None
+        evaluated = unique_candidates([x for x, _ in self.history])
+        if backend in {"n0_best", "frozen_incumbent"}:
+            action_pool = evaluated[: int(self.config.n0)]
+            pool_source = "initial_design_only"
+        elif self.config.decision_recommend_observed_only:
+            action_pool = evaluated
+            pool_source = "all_budgeted_target_evaluations"
+        else:
+            action_pool = unique_candidates(list(pool) + evaluated)
+            pool_source = "terminal_pool_plus_evaluations"
+        if not action_pool:
+            return None
+        components = self._terminal_bayes_risk_components(
+            self.gpr,
+            self.variance_model,
+            action_pool,
+            task_ensemble=self.task_ensemble,
+            risk_penalty=self.config.decision_risk_penalty,
+        )
+        local = int(np.argmin(components["risk"]))
+        selected = tuple(int(v) for v in action_pool[local])
+        _, details = self._solve_posterior_recommendation(pool=[selected])
+        details.update({
+            "decision_backend_terminal_used": True,
+            "decision_backend_terminal_rule": "posterior_bayes_risk",
+            "decision_backend_terminal_name": backend,
+            "decision_backend_terminal_pool_source": pool_source,
+            "decision_backend_terminal_pool_size": int(len(action_pool)),
+            "decision_backend_terminal_observed_only": bool(
+                self.config.decision_recommend_observed_only),
+            "decision_backend_terminal_risk": float(
+                components["risk"][local]),
+            "decision_backend_terminal_objective": float(
+                components["objective"][local]),
+            "decision_backend_terminal_expected_violation": float(
+                components["expected_violation"][local]),
+            "decision_backend_terminal_model_disagreement": float(
+                components["model_disagreement"][local]),
+            "decision_backend_terminal_kl_radius": float(
+                components["kl_radius"]),
+            "decision_backend_terminal_target_oracle_used": False,
+        })
+        return selected, details
+
     def _evaluate_recommendation(self, x_best):
         true_obj = self.problem.true_objective(x_best)
         true_con = self.problem.true_constraint_mean(x_best)
@@ -7081,6 +7157,119 @@ class SingleOLHKGAlgorithm:
                 out["true_best_f1"] = float(true_best_vector[0])
                 out["true_best_f2"] = float(true_best_vector[1])
         return out
+
+    def _adaptive_outcome_audit(self, final_evaluation):
+        """Post-run n0-to-final truth audit that never affects decisions."""
+
+        initial_points = unique_candidates([
+            x for x, _ in self.history[: int(self.config.n0)]
+        ])
+        try:
+            _, true_best_objective = self._true_best_feasible_cached()
+        except Exception:
+            true_best_objective = np.inf
+        feasible_regrets = []
+        margins = []
+        for x in initial_points:
+            try:
+                margin = self._true_chance_margin(x)
+                objective = float(self.problem.true_objective(x))
+            except Exception:
+                continue
+            margins.append(float(margin))
+            if margin <= 0.0 and np.isfinite(true_best_objective):
+                feasible_regrets.append(objective - true_best_objective)
+        initial_has_feasible = bool(feasible_regrets)
+        final_feasible = bool(final_evaluation.get("true_feasible", False))
+        final_regret = (
+            float(final_evaluation["simple_regret"])
+            if final_feasible
+            and np.isfinite(float(final_evaluation.get("simple_regret", np.nan)))
+            else None
+        )
+        initial_best = (
+            float(min(feasible_regrets)) if feasible_regrets else None)
+        return {
+            "initial_design_size": int(len(initial_points)),
+            "initial_true_feasible_count": int(len(feasible_regrets)),
+            "initial_has_true_feasible": initial_has_feasible,
+            "initial_best_feasible_regret": initial_best,
+            "initial_true_min_margin": (
+                float(min(margins)) if margins else None),
+            "final_true_feasible": final_feasible,
+            "final_feasible_regret": final_regret,
+            "adaptive_rescue": bool(
+                not initial_has_feasible and final_feasible),
+            "adaptive_loss": bool(
+                initial_has_feasible and not final_feasible),
+            "adaptive_preservation": bool(
+                initial_has_feasible and final_feasible),
+            "adaptive_improves_initial_best": bool(
+                initial_best is not None
+                and final_regret is not None
+                and final_regret < initial_best - 1e-12),
+            "adaptive_regret_change": (
+                None
+                if initial_best is None or final_regret is None
+                else float(final_regret - initial_best)
+            ),
+            "audit_timing": "post_run_only",
+            "target_oracle_used_for_decision": False,
+        }
+
+    def _certificate_outcome_audit(self):
+        """Post-run certificate coverage and false-certificate audit."""
+
+        points = unique_candidates([x for x, _ in self.history])
+        if not points:
+            return {
+                "status": "empty",
+                "target_oracle_used_for_decision": False,
+            }
+        if self.task_ensemble is None:
+            mu_con = self.gpr[1].posterior_mean_many(points)
+            aleatoric = self.variance_model.predict_certification_variance_many(
+                1, points, self.problem)
+            cert = self._certification_result(mu_con, points, aleatoric)
+        else:
+            robust = self.task_ensemble.robust_moments_many(
+                1, points, certification=True)
+            cert = self._certification_result(
+                robust.mean_upper,
+                points,
+                robust.aleatoric_upper,
+                epistemic=robust.epistemic_upper,
+            )
+        posterior_feasible = np.asarray(cert.margin, dtype=float) <= 0.0
+        true_margins = np.asarray([
+            self._true_chance_margin(x) for x in points
+        ], dtype=float)
+        true_feasible = true_margins <= 0.0
+        true_positive = posterior_feasible & true_feasible
+        false_positive = posterior_feasible & ~true_feasible
+        return {
+            "status": "audited",
+            "evaluated_point_count": int(len(points)),
+            "posterior_certified_count": int(np.sum(posterior_feasible)),
+            "posterior_certificate_vacuous": bool(
+                not np.any(posterior_feasible)),
+            "true_feasible_count": int(np.sum(true_feasible)),
+            "certified_true_feasible_count": int(np.sum(true_positive)),
+            "false_certificate_count": int(np.sum(false_positive)),
+            "certificate_precision": (
+                float(np.mean(true_feasible[posterior_feasible]))
+                if np.any(posterior_feasible) else None
+            ),
+            "certificate_recall_on_evaluated_feasible": (
+                float(np.mean(posterior_feasible[true_feasible]))
+                if np.any(true_feasible) else None
+            ),
+            "minimum_posterior_margin": float(np.min(cert.margin)),
+            "minimum_true_margin": float(np.min(true_margins)),
+            "certification_mode": str(cert.mode),
+            "audit_timing": "post_run_only",
+            "target_oracle_used_for_decision": False,
+        }
 
     def _true_chance_margin(self, x):
         sig = self.problem.true_sigma(x)
@@ -7584,7 +7773,42 @@ class SingleOLHKGAlgorithm:
                 self.problem,
                 observed=self.history,
             )
-            exact_mc_samples = self._effective_exact_kg_mc_samples()
+            decision_backend = str(
+                self.config.decision_backend or "legacy"
+            ).strip().lower().replace("-", "_")
+            legacy_backends = {
+                "legacy", "legacy_kg", "exact_kg", "additive",
+            }
+            backend_score = None
+            if decision_backend not in legacy_backends:
+                backend_score = score_decision_backend(
+                    decision_backend,
+                    candidates,
+                    self.gpr[0],
+                    self.gpr[1],
+                    self.variance_model,
+                    self.problem,
+                    observed=self.history,
+                    task_ensemble=self.task_ensemble,
+                    rng=self.rng,
+                    iteration=iteration,
+                    seed=(
+                        int(self.config.seed)
+                        + int(self.config.decision_backend_seed_offset)
+                    ),
+                    risk_penalty=self.config.decision_risk_penalty,
+                    source_utility_weight=(
+                        self.config.decision_source_utility_weight),
+                )
+                score["total"] = backend_score["total"]
+            row["decision_backend"] = decision_backend
+            row["decision_backend_forced_override"] = bool(
+                recheck_x is not None or finalist_x is not None)
+            exact_mc_samples = (
+                self._effective_exact_kg_mc_samples()
+                if decision_backend in {"legacy", "legacy_kg", "exact_kg"}
+                else 0
+            )
             acquisition_mode = str(self.config.acquisition_mode or "additive").lower()
             forced_selection = (
                 recheck_x if recheck_x is not None else finalist_x)
@@ -7688,6 +7912,35 @@ class SingleOLHKGAlgorithm:
             row["terminal_frontier_selected_label"] = terminal_frontier.get(
                 tuple(x_selected))
             row["score_selected"] = float(score["total"][selected_idx])
+            if backend_score is not None:
+                backend_fields = (
+                    "objective_mean",
+                    "objective_epistemic",
+                    "constraint_mean",
+                    "constraint_epistemic",
+                    "constraint_aleatoric",
+                    "constraint_between_expert",
+                    "stochastic_margin_mean",
+                    "expected_violation",
+                    "probability_feasible",
+                    "bayes_risk",
+                    "bayes_risk_ei",
+                    "constrained_ei",
+                    "transfer_utility",
+                )
+                for field in backend_fields:
+                    values = backend_score.get(field)
+                    if values is not None:
+                        row[f"decision_{field}_selected"] = float(
+                            np.asarray(values, dtype=float)[selected_idx])
+                row["decision_posterior_source"] = backend_score.get(
+                    "posterior_source")
+                row["decision_incumbent_bayes_risk"] = float(
+                    backend_score["incumbent_bayes_risk"])
+                row["decision_sampled_expert"] = backend_score.get(
+                    "sampled_expert")
+                row["decision_transfer_utility_status"] = backend_score.get(
+                    "transfer_utility_status")
             if finalist_info.get("terminal_kg_selected_gain") is not None:
                 row["terminal_kg_selected_gain"] = float(
                     finalist_info["terminal_kg_selected_gain"])
@@ -7929,6 +8182,40 @@ class SingleOLHKGAlgorithm:
                 else None
             ),
         }
+        decision_backend_rows = [
+            row for row in self.iteration_log
+            if row.get("decision_backend") is not None
+        ]
+        decision_backend_summary = {
+            "configured": str(self.config.decision_backend),
+            "effective_counts": {
+                name: int(sum(
+                    row.get("decision_backend") == name
+                    for row in decision_backend_rows
+                ))
+                for name in sorted({
+                    str(row.get("decision_backend"))
+                    for row in decision_backend_rows
+                })
+            },
+            "forced_override_count": int(sum(
+                bool(row.get("decision_backend_forced_override", False))
+                for row in decision_backend_rows
+            )),
+            "mean_selected_expected_violation": (
+                float(np.mean([
+                    row["decision_expected_violation_selected"]
+                    for row in decision_backend_rows
+                    if row.get("decision_expected_violation_selected") is not None
+                ]))
+                if any(
+                    row.get("decision_expected_violation_selected") is not None
+                    for row in decision_backend_rows
+                )
+                else None
+            ),
+            "target_oracle_used": False,
+        }
         finalist_replication_summary = {
             "enabled": bool(self.config.finalist_replication_budget > 0),
             "policy": self._finalist_replication_policy(),
@@ -8036,6 +8323,10 @@ class SingleOLHKGAlgorithm:
         )
         final_x, final_post = self._solve_posterior_recommendation(
             pool=final_pool)
+        backend_terminal = self._decision_backend_terminal_recommendation(
+            final_pool)
+        if backend_terminal is not None:
+            final_x, final_post = backend_terminal
         task_meta_coherence = (
             None
             if self.task_ensemble is None
@@ -8053,6 +8344,37 @@ class SingleOLHKGAlgorithm:
         two_stage_decision = self._two_stage_decision_contract_summary(
             final_post, finalist_replication_summary)
         final_eval = self._evaluate_recommendation(final_x)
+        adaptive_outcome = self._adaptive_outcome_audit(final_eval)
+        certificate_outcome = self._certificate_outcome_audit()
+        backend_name = str(
+            self.config.decision_backend or "legacy"
+        ).strip().lower().replace("-", "_")
+        backend_forced_overrides = int(
+            decision_backend_summary["forced_override_count"])
+        decision_backend_contract = {
+            "backend": backend_name,
+            "source_proposal_frozen_before_target": bool(
+                self.config.initial_design == "source_informed"),
+            "online_updates_use_budgeted_target_observations_only": True,
+            "source_discrepancy_update": bool(
+                self.config.source_discrepancy_update),
+            "terminal_rule": (
+                "posterior_bayes_risk"
+                if final_post.get("decision_backend_terminal_used", False)
+                else str(self.config.exact_kg_terminal_mode)
+            ),
+            "terminal_recommendation_observed_only": bool(
+                self.config.decision_recommend_observed_only),
+            "forced_sampling_override_count": backend_forced_overrides,
+            "coherent": bool(
+                final_post.get("decision_backend_terminal_used", False)
+                and backend_forced_overrides == 0
+            ) if backend_name not in {
+                "legacy", "legacy_kg", "exact_kg", "additive"
+            } else bool(finalist_replication_summary.get(
+                "mathematically_closed", False)),
+            "target_oracle_used": False,
+        }
         self.final_log = {
             **final_post,
             **final_eval,
@@ -8061,6 +8383,10 @@ class SingleOLHKGAlgorithm:
             "n_distinct_solutions": int(len(self.gpr[0].sampled_set)),
             "stage_times": summarize_stage_times(self.iteration_log),
             "candidate_source_counts": candidate_source_counts,
+            "decision_backend_diagnostics": decision_backend_summary,
+            "decision_backend_contract": decision_backend_contract,
+            "adaptive_outcome_audit": adaptive_outcome,
+            "certificate_outcome_audit": certificate_outcome,
             "exact_kg_diagnostics": exact_kg_summary,
             "finalist_replication": finalist_replication_summary,
             "two_stage_decision": two_stage_decision,
@@ -8101,6 +8427,16 @@ class SingleOLHKGAlgorithm:
                 and self.config.use_state_coupling
                 and self.config.use_state_basis
                 and str(self.config.acquisition_mode).lower() == "exact_mc"
+                and (
+                    not self._task_posterior_requested()
+                    or self.task_ensemble is not None
+                )
+            ),
+            "structural_mainline_acquisition_agnostic": bool(
+                self.config.variance_mode == "factor"
+                and self.config.certification_mode == "theory"
+                and self.config.use_state_coupling
+                and self.config.use_state_basis
                 and (
                     not self._task_posterior_requested()
                     or self.task_ensemble is not None

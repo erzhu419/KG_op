@@ -1607,11 +1607,17 @@ class MetaPriorTests(unittest.TestCase):
             guarded_diag["selection_trace"][0]["rejection_reasons"],
         )
 
-    def test_adaptation_stages_are_mutually_exclusive(self):
-        with self.assertRaisesRegex(ValueError, "separate stages"):
+    def test_frequency_then_additive_composes_but_adaptive_sparsity_is_separate(self):
+        prior = LearnedMetaPrior(
+            spectral_frequency_adaptation=True,
+            spectral_additive_adaptation=True,
+        )
+        self.assertTrue(prior.spectral_frequency_adaptation)
+        self.assertTrue(prior.spectral_additive_adaptation)
+        with self.assertRaisesRegex(ValueError, "spike-and-slab"):
             LearnedMetaPrior(
                 spectral_frequency_adaptation=True,
-                spectral_additive_adaptation=True,
+                spectral_adaptive_sparsity=True,
             )
 
     def test_frequency_and_additive_flags_preserve_stage1_fallback(self):

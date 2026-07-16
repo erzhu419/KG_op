@@ -17,6 +17,12 @@ sys.path.insert(0, str(ROOT))
 
 from performance.benchmark_lodo_meta_prior import run_one  # noqa: E402
 from performance.benchmark_quality import json_safe  # noqa: E402
+from performance.structural_ablation import (  # noqa: E402
+    HVD_PROFILES,
+    STRUCTURAL_PRIOR_PROFILES,
+    apply_hvd_profile,
+    apply_structural_prior_profile,
+)
 from core.designs import load_frozen_source_informed_design  # noqa: E402
 
 
@@ -28,6 +34,7 @@ def load_config(path):
     config.setdefault("exact_kg_clip_negative", True)
     config.setdefault("exact_kg_sampling_mode", "iid")
     config.setdefault("task_posterior_safe_generalized", False)
+    config.setdefault("source_discrepancy_update", True)
     config.setdefault("task_posterior_safe_boundary_score_weight", 1.0)
     config.setdefault("task_posterior_safe_pairwise_score_weight", 1.0)
     config.setdefault("task_posterior_safe_pairwise_max_history", 16)
@@ -82,6 +89,11 @@ def load_config(path):
     config.setdefault("meta_source_design_mode", "random")
     config.setdefault("meta_source_universal_fraction", 0.75)
     config.setdefault("initial_design", "auto")
+    config.setdefault("decision_backend", "legacy")
+    config.setdefault("decision_risk_penalty", 5.0)
+    config.setdefault("decision_source_utility_weight", 1.0)
+    config.setdefault("decision_backend_seed_offset", 470003)
+    config.setdefault("decision_recommend_observed_only", True)
     return config
 
 
@@ -106,6 +118,16 @@ def main():
     parser.add_argument("--d", type=int, default=None)
     parser.add_argument("--N", type=int, default=None)
     parser.add_argument("--n0", type=int, default=None)
+    parser.add_argument(
+        "--structural-prior-profile",
+        choices=("inherit", *STRUCTURAL_PRIOR_PROFILES),
+        default="inherit",
+    )
+    parser.add_argument(
+        "--hvd-profile",
+        choices=("inherit", *HVD_PROFILES),
+        default="inherit",
+    )
     parser.add_argument(
         "--ordered-cumulative-exposure",
         action=argparse.BooleanOptionalAction,
@@ -165,6 +187,11 @@ def main():
         default=False,
     )
     parser.add_argument(
+        "--source-discrepancy-update",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument(
         "--task-posterior-safe-boundary-weight", type=float, default=1.0)
     parser.add_argument(
         "--task-posterior-safe-pairwise-weight", type=float, default=1.0)
@@ -185,6 +212,23 @@ def main():
         default="source_profiles",
     )
     parser.add_argument("--exact-sampling-mode", default="iid")
+    parser.add_argument(
+        "--decision-backend",
+        choices=(
+            "legacy", "additive", "exact_kg", "n0_best", "random",
+            "sobol", "risk_ts", "bayes_risk_ei", "constrained_ei",
+            "transfer_utility",
+        ),
+        default="legacy",
+    )
+    parser.add_argument("--decision-risk-penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--decision-source-utility-weight", type=float, default=1.0)
+    parser.add_argument(
+        "--decision-recommend-observed-only",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     parser.add_argument(
         "--exact-terminal-mode",
         choices=(
@@ -325,6 +369,11 @@ def main():
     )
     parser.add_argument("--finalist-terminal-max-arms", type=int, default=4)
     parser.add_argument("--finalist-terminal-mc-samples", type=int, default=2)
+    parser.add_argument("--certification-recheck-top-k", type=int, default=0)
+    parser.add_argument(
+        "--certification-recheck-min-replicates", type=int, default=3)
+    parser.add_argument(
+        "--certification-recheck-soft-margin-scale", type=float, default=2.0)
     args = parser.parse_args()
 
     config = load_config(args.manifest)
@@ -361,6 +410,8 @@ def main():
             args.ordered_group_ridge_learning),
         "task_posterior_safe_generalized": bool(
             args.task_posterior_safe_generalized),
+        "source_discrepancy_update": bool(
+            args.source_discrepancy_update),
         "task_posterior_safe_boundary_score_weight": float(
             args.task_posterior_safe_boundary_weight),
         "task_posterior_safe_pairwise_score_weight": float(
@@ -374,6 +425,12 @@ def main():
         "task_latent_calibration_mode": str(
             args.task_latent_calibration_mode),
         "exact_kg_sampling_mode": str(args.exact_sampling_mode),
+        "decision_backend": str(args.decision_backend),
+        "decision_risk_penalty": float(args.decision_risk_penalty),
+        "decision_source_utility_weight": float(
+            args.decision_source_utility_weight),
+        "decision_recommend_observed_only": bool(
+            args.decision_recommend_observed_only),
         "exact_kg_terminal_mode": str(args.exact_terminal_mode),
         "decision_contract_mode": str(args.decision_contract_mode),
         "exact_kg_mc_samples": int(args.exact_mc_samples),
@@ -449,6 +506,12 @@ def main():
             args.finalist_terminal_max_arms),
         "finalist_terminal_mc_samples": int(
             args.finalist_terminal_mc_samples),
+        "certification_recheck_top_k": int(
+            args.certification_recheck_top_k),
+        "certification_recheck_min_replicates": int(
+            args.certification_recheck_min_replicates),
+        "certification_recheck_soft_margin_scale": float(
+            args.certification_recheck_soft_margin_scale),
         "runtime_checkpoint_dir": str(args.runtime_checkpoint_dir),
         "runtime_checkpoint_resume": True,
         "runtime_checkpoint_interval": 1,
@@ -458,6 +521,8 @@ def main():
         "progress_exact_updates": 10,
         "offline_only": True,
     })
+    apply_structural_prior_profile(config, args.structural_prior_profile)
+    apply_hvd_profile(config, args.hvd_profile)
     if args.task_posterior_mandatory_universal_count is not None:
         config["task_posterior_mandatory_universal_count"] = int(
             args.task_posterior_mandatory_universal_count)
@@ -493,6 +558,9 @@ def main():
         "causal_overrides": {
             "meta_ordered_cumulative_exposure": bool(
                 args.ordered_cumulative_exposure),
+            "structural_prior_profile": str(
+                args.structural_prior_profile),
+            "hvd_ablation_profile": str(args.hvd_profile),
             "meta_spectral_orthogonalization": str(
                 args.spectral_orthogonalization),
             "meta_ordered_exposure_max_frequency": int(
@@ -517,6 +585,8 @@ def main():
                 args.ordered_group_ridge_learning),
             "task_posterior_safe_generalized": bool(
                 args.task_posterior_safe_generalized),
+            "source_discrepancy_update": bool(
+                args.source_discrepancy_update),
             "task_posterior_safe_boundary_score_weight": float(
                 args.task_posterior_safe_boundary_weight),
             "task_posterior_safe_pairwise_score_weight": float(
@@ -530,6 +600,12 @@ def main():
             "task_latent_calibration_mode": str(
                 args.task_latent_calibration_mode),
             "exact_kg_sampling_mode": str(args.exact_sampling_mode),
+            "decision_backend": str(args.decision_backend),
+            "decision_risk_penalty": float(args.decision_risk_penalty),
+            "decision_source_utility_weight": float(
+                args.decision_source_utility_weight),
+            "decision_recommend_observed_only": bool(
+                args.decision_recommend_observed_only),
             "exact_kg_terminal_mode": str(args.exact_terminal_mode),
             "decision_contract_mode": str(args.decision_contract_mode),
             "exact_kg_mc_samples": int(args.exact_mc_samples),
@@ -613,6 +689,12 @@ def main():
                 args.finalist_terminal_max_arms),
             "finalist_terminal_mc_samples": int(
                 args.finalist_terminal_mc_samples),
+            "certification_recheck_top_k": int(
+                args.certification_recheck_top_k),
+            "certification_recheck_min_replicates": int(
+                args.certification_recheck_min_replicates),
+            "certification_recheck_soft_margin_scale": float(
+                args.certification_recheck_soft_margin_scale),
         },
         "config": config,
         "rows": [row],

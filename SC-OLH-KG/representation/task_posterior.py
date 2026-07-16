@@ -1868,6 +1868,7 @@ class FiniteTaskModelEnsemble:
         task_latent_posterior=None,
         task_latent_inference_mode="shadow",
         task_latent_calibration_mode="source_profiles",
+        source_discrepancy_update=True,
     ):
         self.states = list(states)
         self.posterior = posterior
@@ -1896,6 +1897,7 @@ class FiniteTaskModelEnsemble:
                 "task latent calibration mode must be source_profiles or "
                 "expert_ridge")
         self.task_latent_calibration_mode = calibration_mode
+        self.source_discrepancy_update = bool(source_discrepancy_update)
         self.task_latent_posterior = (
             FiniteTaskLatentPosterior(
                 posterior,
@@ -2010,6 +2012,7 @@ class FiniteTaskModelEnsemble:
             task_latent_posterior=self._task_latent().clone(),
             task_latent_inference_mode=self.task_latent_inference_mode,
             task_latent_calibration_mode=self.task_latent_calibration_mode,
+            source_discrepancy_update=self.source_discrepancy_update,
         )
         clone.last_update = copy.deepcopy(self.last_update)
         return clone
@@ -2434,55 +2437,67 @@ class FiniteTaskModelEnsemble:
                 constraint_index=constraint_index,
             )
         )
-        posterior_update = self.posterior.update_from_predictive(
-            y,
-            np.asarray(means, dtype=float),
-            np.asarray(epistemic, dtype=float),
-            np.asarray(aleatoric, dtype=float),
-            tau=tau,
-            constraint_index=constraint_index,
-            safe_pairwise_log_score=pairwise_score,
-            safe_pairwise_pairs=pairwise_diagnostics["pair_count"],
-            safe_pairwise_effective_weight=(
-                pairwise_diagnostics["effective_weight"]),
-        )
-        sensitivity_update = {"status": "disabled"}
-        if self.sensitivity_posterior is not None:
-            sensitivity_update = (
-                self.sensitivity_posterior.update_from_predictive(
-                    y[constraint_index],
-                    nominal_before.mean[constraint_index],
-                    nominal_before.epistemic[constraint_index],
-                    nominal_before.aleatoric[constraint_index],
-                    tau=tau,
-                    bias_features=(
-                        None
-                        if task_bias_features is None
-                        else task_bias_features[0, 0]
-                    ),
-                )
+        if self.source_discrepancy_update:
+            posterior_update = self.posterior.update_from_predictive(
+                y,
+                np.asarray(means, dtype=float),
+                np.asarray(epistemic, dtype=float),
+                np.asarray(aleatoric, dtype=float),
+                tau=tau,
+                constraint_index=constraint_index,
+                safe_pairwise_log_score=pairwise_score,
+                safe_pairwise_pairs=pairwise_diagnostics["pair_count"],
+                safe_pairwise_effective_weight=(
+                    pairwise_diagnostics["effective_weight"]),
             )
-        task_latent_update = self._task_latent().update_from_predictive(
-            y,
-            np.asarray(means, dtype=float),
-            np.asarray(epistemic, dtype=float),
-            np.asarray(aleatoric, dtype=float),
-            tau=tau,
-            constraint_index=constraint_index,
-            safe_pairwise_log_score=pairwise_score,
-            safe_pairwise_pairs=pairwise_diagnostics["pair_count"],
-            safe_pairwise_effective_weight=(
-                pairwise_diagnostics["effective_weight"]),
-            bias_features=(
-                None
-                if task_bias_features is None
-                else task_bias_features[:, 0, :]
-            ),
-            chance_z=float(norm.ppf(1.0 - float(getattr(
-                self.states[0].problem, "alpha", 0.05
-            )))),
-        )
-        if self.posterior.safe_generalized:
+            sensitivity_update = {"status": "disabled"}
+            if self.sensitivity_posterior is not None:
+                sensitivity_update = (
+                    self.sensitivity_posterior.update_from_predictive(
+                        y[constraint_index],
+                        nominal_before.mean[constraint_index],
+                        nominal_before.epistemic[constraint_index],
+                        nominal_before.aleatoric[constraint_index],
+                        tau=tau,
+                        bias_features=(
+                            None
+                            if task_bias_features is None
+                            else task_bias_features[0, 0]
+                        ),
+                    )
+                )
+            task_latent_update = self._task_latent().update_from_predictive(
+                y,
+                np.asarray(means, dtype=float),
+                np.asarray(epistemic, dtype=float),
+                np.asarray(aleatoric, dtype=float),
+                tau=tau,
+                constraint_index=constraint_index,
+                safe_pairwise_log_score=pairwise_score,
+                safe_pairwise_pairs=pairwise_diagnostics["pair_count"],
+                safe_pairwise_effective_weight=(
+                    pairwise_diagnostics["effective_weight"]),
+                bias_features=(
+                    None
+                    if task_bias_features is None
+                    else task_bias_features[:, 0, :]
+                ),
+                chance_z=float(norm.ppf(1.0 - float(getattr(
+                    self.states[0].problem, "alpha", 0.05
+                )))),
+            )
+        else:
+            frozen_weights = self.posterior.decision_weights().tolist()
+            posterior_update = {
+                "status": "frozen_source_discrepancy",
+                "weights_before": frozen_weights,
+                "weights_after": frozen_weights,
+                "observation_source": "budgeted_target_evaluation",
+                "target_oracle_used": False,
+            }
+            sensitivity_update = {"status": "frozen_source_discrepancy"}
+            task_latent_update = {"status": "frozen_source_discrepancy"}
+        if self.source_discrepancy_update and self.posterior.safe_generalized:
             predictive_variance = np.maximum(
                 np.asarray(epistemic, dtype=float)[:, constraint_index]
                 + np.asarray(aleatoric, dtype=float)[:, constraint_index],
@@ -2539,6 +2554,8 @@ class FiniteTaskModelEnsemble:
             })
         self.last_update = {
             "status": "updated",
+            "source_discrepancy_update": bool(
+                self.source_discrepancy_update),
             "posterior": posterior_update,
             "safe_pairwise": pairwise_diagnostics,
             "sensitivity_posterior": sensitivity_update,
@@ -2829,6 +2846,8 @@ class FiniteTaskModelEnsemble:
                 self.task_latent_calibration_mode),
             "task_latent_authoritative": bool(
                 self.task_latent_authoritative),
+            "source_discrepancy_update": bool(
+                self.source_discrepancy_update),
             "posterior": self.posterior.diagnostics(),
             "sensitivity_posterior": (
                 {"status": "disabled"}
