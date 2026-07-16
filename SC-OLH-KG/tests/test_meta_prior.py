@@ -141,6 +141,29 @@ class MetaPriorTests(unittest.TestCase):
         self.assertGreater(len(profiles), 0)
         self.assertTrue(all(len(x) == target.d for x in profiles))
 
+        high_dim_target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=1000), prior)
+        atlas_small = prior.dimension_equivariant_initial_candidates(
+            target,
+            n=6,
+            rng=np.random.default_rng(41),
+        )
+        atlas_large = prior.dimension_equivariant_initial_candidates(
+            high_dim_target,
+            n=6,
+            rng=np.random.default_rng(41),
+        )
+        self.assertEqual(len(atlas_small), 6)
+        self.assertEqual(len(atlas_large), 6)
+        self.assertTrue(all(len(x) == target.d for x in atlas_small))
+        self.assertTrue(all(len(x) == 1000 for x in atlas_large))
+        self.assertEqual(len(set(atlas_large)), 6)
+        self.assertEqual(
+            prior.dimension_equivariant_proposal_diagnostics[
+                "target_policy_dimension"],
+            1000,
+        )
+
     def test_ordered_cumulative_expert_uses_source_learned_low_rank_coordinate(self):
         sources = [
             ("FactorShockStatePolicyRZDT1", self._problem(

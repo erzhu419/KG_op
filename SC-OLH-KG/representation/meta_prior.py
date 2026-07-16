@@ -555,6 +555,12 @@ class LearnedMetaPrior:
         self.anchor_meta = []
         self.profile_templates = []
         self.source_consensus_templates = []
+        self.dimension_equivariant_proposal_diagnostics = {
+            "status": "not_materialized",
+            "source_only": True,
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
         self.source_consensus_diagnostics = {"status": "not_requested"}
         self.beta_prior = {}
         self.beta_prior_precision = {}
@@ -4819,6 +4825,155 @@ class LearnedMetaPrior:
         rows.extend(library)
         return unique_candidates(rows)[:n_take]
 
+    def _dimension_equivariant_profile_coordinate(self, profile):
+        """Represent a policy curve without retaining its raw dimension.
+
+        The coordinate contains normalized ordered moments and source-learned
+        cosine modes.  The same four structural switches used by the posterior
+        also control this proposal coordinate, so proposal ablations no longer
+        share a hidden full-prior representation.
+        """
+        library = self._ordered_profile_library(profile)
+        frequency_count = self.ordered_exposure_max_frequency
+        if (
+            self.ordered_exposure_adaptive_sparsity
+            and len(self.ordered_exposure_selected_frequencies) > 0
+        ):
+            frequencies = np.asarray(
+                self.ordered_exposure_selected_frequencies, dtype=int)
+        else:
+            frequencies = np.arange(1, frequency_count + 1, dtype=int)
+        values = np.concatenate([
+            library[:2],
+            library[1 + frequencies],
+        ])
+        if self.ordered_exposure_frequency_penalty > 0.0:
+            weights = np.concatenate([
+                np.ones(2, dtype=float),
+                1.0 / (
+                    1.0
+                    + self.ordered_exposure_frequency_penalty
+                    * (frequencies.astype(float) - 1.0)
+                ),
+            ])
+            values = values * weights
+        values = self._ordered_coordinate_transform(values)
+        if self.ordered_exposure_basis_mode == "diagonal_quadratic":
+            interactions = values ** 2
+        else:
+            interactions = np.asarray([
+                values[i] * values[j]
+                for i in range(len(values))
+                for j in range(i, len(values))
+            ], dtype=float)
+        coordinate = np.concatenate([values, interactions])
+        scale = max(float(np.linalg.norm(coordinate)), 1.0)
+        return coordinate / scale
+
+    def _dimension_equivariant_profile_candidate(self, problem, profile):
+        """Synthesize one target policy from dimensionless cosine moments."""
+        library = self._ordered_profile_library(profile)
+        d = max(1, int(getattr(problem, "d", 1)))
+        positions = (np.arange(d, dtype=float) + 0.5) / float(d)
+        z = np.full(d, float(library[0]), dtype=float)
+        for frequency in range(1, self.ordered_exposure_max_frequency + 1):
+            z += float(library[1 + frequency]) * np.cos(
+                np.pi * frequency * positions)
+        return self._continuous_to_tuple(problem, np.clip(z, 0.0, 1.0))
+
+    def dimension_equivariant_initial_candidates(self, problem, n=0, rng=None):
+        """Build a source-only maximin atlas in normalized risk coordinates.
+
+        Unlike raw profile interpolation, selection occurs in a coordinate
+        whose size is independent of the source and target policy dimensions.
+        A source-ranked seed is followed by maximin coverage, preventing all
+        target calls from collapsing onto one apparently safe source shape.
+        Target objective, constraint, and oracle labels are never queried.
+        """
+        n_take = max(0, int(n))
+        if n_take <= 0:
+            return []
+        rng = rng or np.random.default_rng(self.seed)
+        library = self.universal_shape_candidates(
+            problem, n=10000, rng=rng, force=True)
+        rows = [library[1]] if len(library) > 1 else list(library[:1])
+
+        templates = []
+        for rank, item in enumerate(self.source_consensus_templates):
+            templates.append({
+                "profile": np.asarray(item["profile"], dtype=float),
+                "score": float(item.get("score", rank)),
+                "origin": "source_consensus",
+            })
+        for rank, item in enumerate(self.profile_templates):
+            templates.append({
+                "profile": self._canonical_profile(item["profile"]),
+                "score": float(item.get("score", rank + 1.0)),
+                "origin": "source_anchor",
+            })
+
+        unique = {}
+        for item in templates:
+            key = tuple(np.round(self._canonical_profile(item["profile"]), 6))
+            if key not in unique or item["score"] < unique[key]["score"]:
+                unique[key] = item
+        templates = list(unique.values())
+        if templates and len(rows) < n_take:
+            coordinates = np.vstack([
+                self._dimension_equivariant_profile_coordinate(item["profile"])
+                for item in templates
+            ])
+            scores = np.asarray([item["score"] for item in templates], dtype=float)
+            score_scale = max(float(np.std(scores)), 1e-8)
+            selected = [int(np.argmin(scores))]
+            while len(selected) < min(n_take - len(rows), len(templates)):
+                remaining = [
+                    index for index in range(len(templates))
+                    if index not in selected
+                ]
+                chosen = coordinates[np.asarray(selected, dtype=int)]
+                distance = np.asarray([
+                    float(np.min(np.linalg.norm(
+                        chosen - coordinates[index][None, :], axis=1)))
+                    for index in remaining
+                ])
+                rank_penalty = np.asarray([
+                    (scores[index] - float(np.min(scores))) / score_scale
+                    for index in remaining
+                ])
+                utility = distance / (1.0 + 0.20 * np.maximum(rank_penalty, 0.0))
+                selected.append(remaining[int(np.argmax(utility))])
+            for index in selected:
+                rows.append(self._dimension_equivariant_profile_candidate(
+                    problem, templates[index]["profile"]))
+            self.dimension_equivariant_proposal_diagnostics = {
+                "status": "fit",
+                "source_only": True,
+                "target_data_used": False,
+                "target_oracle_used": False,
+                "source_template_count": int(len(templates)),
+                "selected_template_count": int(len(selected)),
+                "coordinate_dimensions": sorted({
+                    int(len(coordinate)) for coordinate in coordinates
+                }),
+                "source_policy_dimensions": sorted({
+                    int(len(np.asarray(item["profile"]).reshape(-1)))
+                    for item in templates
+                }),
+                "target_policy_dimension": int(getattr(problem, "d", 1)),
+                "selected_origins": [templates[index]["origin"] for index in selected],
+            }
+        else:
+            self.dimension_equivariant_proposal_diagnostics = {
+                "status": "no_source_templates",
+                "source_only": True,
+                "target_data_used": False,
+                "target_oracle_used": False,
+                "target_policy_dimension": int(getattr(problem, "d", 1)),
+            }
+        rows.extend(library)
+        return unique_candidates(rows)[:n_take]
+
     def source_coverage_candidates(self, problem, n=0):
         """Return the deterministic source-only design protected at target time."""
 
@@ -5099,6 +5254,8 @@ class LearnedMetaPrior:
                 len(self.source_consensus_templates)),
             "source_consensus_templates": copy.deepcopy(
                 self.source_consensus_diagnostics),
+            "dimension_equivariant_proposal": copy.deepcopy(
+                self.dimension_equivariant_proposal_diagnostics),
             "n_alignment_profile_templates": int(
                 len(self.alignment_profile_templates)),
             "universal_shape_count": int(self.universal_shape_count),

@@ -92,6 +92,32 @@ def test_source_informed_contract_rejects_tampering(tmp_path):
         )
 
 
+def test_source_informed_contract_accepts_dimension_equivariant_atlas(tmp_path):
+    points = ((5, 10, 15, 20), (25, 30, 35, 40), (45, 50, 55, 60))
+    payload = _payload(points, integer_design_fingerprint(points))
+    payload.update({
+        "design_kind": "frozen_source_informed_risk_coordinate_atlas",
+        "proposal_mode": "risk_coordinate_atlas",
+        "structural_prior_profile": "full",
+        "source_dimension": 12,
+    })
+    path = tmp_path / "atlas.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    loaded, contract = load_frozen_source_informed_design(
+        path,
+        heldout="FactorShockStatePolicyRZDT1",
+        seed=7,
+        n0=3,
+        dimension=4,
+    )
+
+    assert loaded == points
+    assert contract["proposal_mode"] == "risk_coordinate_atlas"
+    assert contract["structural_prior_profile"] == "full"
+    assert contract["source_dimension"] == 12
+
+
 def test_lodo_rejects_source_archive_mismatch_before_target_calls(monkeypatch):
     monkeypatch.setattr(
         lodo,

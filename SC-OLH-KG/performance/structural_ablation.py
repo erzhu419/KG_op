@@ -11,11 +11,21 @@ PRIOR_COMPONENTS = (
 )
 
 
+ORDERED_DEFAULTS = {
+    "frequency_penalty": 0.10,
+    "basis_mode": "diagonal_quadratic",
+}
+
+
 def _profile(*enabled):
     active = set(enabled)
     unknown = active.difference(PRIOR_COMPONENTS)
     if unknown:
         raise ValueError(f"unknown structural-prior components: {sorted(unknown)}")
+    low_frequency = "low_frequency" in active
+    orthogonality = "orthogonality" in active
+    sparsity = "sparsity" in active
+    additivity = "additivity" in active
     return {
         "meta_spectral_low_frequency_prior": "low_frequency" in active,
         "meta_spectral_frequency_adaptation": "low_frequency" in active,
@@ -26,6 +36,25 @@ def _profile(*enabled):
         # definition of the source-learned sparse coefficient prior.
         "meta_spectral_adaptive_sparsity": False,
         "meta_spectral_additive_adaptation": "additivity" in active,
+        # The ordered cumulative-risk implementation realizes the same four
+        # assumptions through a different basis.  These switches must move
+        # with their spectral counterparts or a nominal ``none`` row still
+        # contains the assumptions being ablated.
+        "meta_ordered_exposure_frequency_penalty": (
+            ORDERED_DEFAULTS["frequency_penalty"] if low_frequency else 0.0
+        ),
+        "meta_ordered_exposure_orthogonal_coordinates": orthogonality,
+        "meta_ordered_exposure_adaptive_sparsity": sparsity,
+        "meta_ordered_exposure_latent_structure_selection": sparsity,
+        "meta_ordered_exposure_group_shared_shrinkage": False,
+        "meta_ordered_exposure_group_ridge_learning": sparsity,
+        # Diagonal quadratic blocks are the ordered additive model.  The
+        # control keeps the same A,N coordinate but restores all pairwise
+        # interactions instead of silently retaining additivity.
+        "meta_ordered_exposure_basis_mode": (
+            ORDERED_DEFAULTS["basis_mode"] if additivity else "full_quadratic"
+        ),
+        "structural_prior_active_components": sorted(active),
     }
 
 

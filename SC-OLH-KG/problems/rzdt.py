@@ -714,6 +714,24 @@ class FactorShockStatePolicyRZDT1(CumulativeRiskFeatureProvider, HighDimStatePol
     variance_features = (0, 1, 2)
     recommended_partition_features = (0, 1, 2)
 
+    def __init__(
+        self,
+        d=1000,
+        L=100,
+        sigma=0.04,
+        heteroscedastic=True,
+        alpha=0.05,
+        shared_shock_scale=1.0,
+    ):
+        super().__init__(
+            d=d,
+            L=L,
+            sigma=sigma,
+            heteroscedastic=heteroscedastic,
+            alpha=alpha,
+        )
+        self.shared_shock_scale = max(float(shared_shock_scale), 0.0)
+
     def _risk_exposures_from_state(self, u, q, spread):
         q_gap = abs(q - self.q_star)
         u_gap = abs(u - self.u_star)
@@ -745,7 +763,10 @@ class FactorShockStatePolicyRZDT1(CumulativeRiskFeatureProvider, HighDimStatePol
             n,
             local_names=("u_gap", "q_gap", "spread"),
             shared_names=("oscillation", "tail_shock"),
-            meta={"provider": "FactorShockStatePolicyRZDT1"},
+            meta={
+                "provider": "FactorShockStatePolicyRZDT1",
+                "shared_shock_scale": float(self.shared_shock_scale),
+            },
         )
 
     def state_anchor_points(self, n=10, rng=None):
@@ -770,7 +791,7 @@ class FactorShockStatePolicyRZDT1(CumulativeRiskFeatureProvider, HighDimStatePol
             return None
         return CumulativeRiskParameters(
             Lambda=scale * np.array([0.10, 0.25, 0.70], dtype=float),
-            B=scale * np.array([
+            B=scale * self.shared_shock_scale * np.array([
                 [0.85, 0.42],
                 [0.42, 0.60],
             ], dtype=float),
@@ -823,7 +844,7 @@ class FactorShockStatePolicyRZDT1(CumulativeRiskFeatureProvider, HighDimStatePol
     def hvd_residual_variance_cap(self, output_index=0):
         if int(output_index) in (1, 2):
             scale = float(self.sigma_level) ** 2
-            return float(8.0 * scale)
+            return float(8.0 * max(1.0, self.shared_shock_scale) * scale)
         return float((2.0 * self.sigma_level) ** 2)
 
 

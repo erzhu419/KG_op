@@ -114,12 +114,14 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
     if not source_names:
         raise ValueError(f"heldout={heldout} leaves no source domains")
     source_seed = meta_source_seed(args_dict, seed)
+    source_dimension = int(args_dict.get(
+        "meta_source_dimension", args_dict["d"]))
     source_problems = [
         (
             label,
             build_scalarized_problem(
                 name,
-                args_dict["d"],
+                source_dimension,
                 args_dict["L"],
                 sigma,
                 alpha,
@@ -361,6 +363,9 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
         "target_seed_used_for_source_training": bool(
             str(args_dict.get(
                 "meta_source_seed_mode", "frozen")).lower() == "per_target"),
+        "source_policy_dimension": int(source_dimension),
+        "target_policy_dimension": int(args_dict["d"]),
+        "dimension_holdout": bool(source_dimension != int(args_dict["d"])),
     })
     if str(args_dict.get(
         "meta_source_observation_mode", "analytic"

@@ -34,9 +34,11 @@ def load_frozen_source_informed_design(
     """Load one source-only warm start under the frozen LODO contract."""
 
     payload = json.loads(Path(path).read_text(encoding="utf-8"))
-    if payload.get("design_kind") != (
-        "frozen_source_informed_rank_spanning"
-    ):
+    supported_kinds = {
+        "frozen_source_informed_rank_spanning",
+        "frozen_source_informed_risk_coordinate_atlas",
+    }
+    if payload.get("design_kind") not in supported_kinds:
         raise ValueError("unexpected source-informed design contract")
     if payload.get("heldout_target_domain") != str(heldout):
         raise ValueError("source-informed design heldout domain mismatch")
@@ -67,6 +69,11 @@ def load_frozen_source_informed_design(
         raise ValueError("source-informed design fingerprint mismatch")
     return points, {
         "design_kind": str(payload["design_kind"]),
+        "proposal_mode": str(payload.get("proposal_mode", "rank_spanning")),
+        "structural_prior_profile": str(
+            payload.get("structural_prior_profile", "inherit")),
+        "source_dimension": int(payload.get("source_dimension", dimension)),
+        "target_dimension": int(payload.get("dimension", dimension)),
         "fingerprint": fingerprint,
         "source_archive_fingerprint": source_fingerprint,
         "source_archive_oracle_aided": False,

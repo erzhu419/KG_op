@@ -323,6 +323,12 @@ def main():
     parser.add_argument(
         "--source-consensus-template-count", type=int, default=0)
     parser.add_argument(
+        "--meta-source-d",
+        type=int,
+        default=None,
+        help="Train the frozen source prior at this policy dimension.",
+    )
+    parser.add_argument(
         "--initial-design",
         choices=("auto", "common_sobol", "source_informed"),
         default="auto",
@@ -516,6 +522,8 @@ def main():
             args.source_universal_fraction),
         "meta_source_consensus_template_count": int(
             args.source_consensus_template_count),
+        "meta_source_dimension": int(
+            config["d"] if args.meta_source_d is None else args.meta_source_d),
         "initial_design": str(args.initial_design),
         "finalist_terminal_value_mode": str(
             args.finalist_terminal_value_mode),
@@ -583,6 +591,15 @@ def main():
             "initial_design_source_archive_fingerprint": (
                 source_design_contract["source_archive_fingerprint"]
             ),
+            "initial_design_proposal_mode": source_design_contract[
+                "proposal_mode"],
+            "initial_design_structural_prior_profile": (
+                source_design_contract["structural_prior_profile"]
+            ),
+            "initial_design_source_dimension": source_design_contract[
+                "source_dimension"],
+            "initial_design_target_dimension": source_design_contract[
+                "target_dimension"],
         })
     task = {
         "args": config,
@@ -592,6 +609,16 @@ def main():
     }
     row = run_one(task)
     row["experiment_variant"] = str(args.experiment_variant)
+    row["proposal_mode"] = str(config.get(
+        "initial_design_proposal_mode",
+        "common_sobol" if args.initial_design == "common_sobol" else "auto",
+    ))
+    row["proposal_structural_prior_profile"] = str(config.get(
+        "initial_design_structural_prior_profile", "none"))
+    row["proposal_source_dimension"] = int(config.get(
+        "initial_design_source_dimension", config["d"]))
+    row["proposal_target_dimension"] = int(config.get(
+        "initial_design_target_dimension", config["d"]))
     payload = {
         "schema_version": 1,
         "source_manifest": str(args.manifest),

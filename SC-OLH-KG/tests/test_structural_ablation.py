@@ -29,6 +29,22 @@ def _enabled_components(profile):
     }
 
 
+def _ordered_components(profile):
+    return {
+        "low_frequency": (
+            profile["meta_ordered_exposure_frequency_penalty"] > 0.0),
+        "orthogonality": bool(
+            profile["meta_ordered_exposure_orthogonal_coordinates"]),
+        "sparsity": bool(
+            profile["meta_ordered_exposure_adaptive_sparsity"]
+            and profile["meta_ordered_exposure_latent_structure_selection"]
+            and profile["meta_ordered_exposure_group_ridge_learning"]),
+        "additivity": (
+            profile["meta_ordered_exposure_basis_mode"]
+            == "diagonal_quadratic"),
+    }
+
+
 def test_only_and_leave_one_out_profiles_change_exactly_declared_priors():
     for component in PRIOR_COMPONENTS:
         only = _enabled_components(
@@ -38,6 +54,22 @@ def test_only_and_leave_one_out_profiles_change_exactly_declared_priors():
             STRUCTURAL_PRIOR_PROFILES[f"leave_out_{component}"])
         assert {name for name, enabled in leave_out.items() if enabled} == (
             set(PRIOR_COMPONENTS) - {component})
+        ordered_only = _ordered_components(
+            STRUCTURAL_PRIOR_PROFILES[f"{component}_only"])
+        assert {name for name, enabled in ordered_only.items() if enabled} == {
+            component}
+        ordered_leave_out = _ordered_components(
+            STRUCTURAL_PRIOR_PROFILES[f"leave_out_{component}"])
+        assert {
+            name for name, enabled in ordered_leave_out.items() if enabled
+        } == (set(PRIOR_COMPONENTS) - {component})
+
+
+def test_none_profile_removes_both_spectral_and_ordered_assumptions():
+    profile = STRUCTURAL_PRIOR_PROFILES["none"]
+    assert not any(_enabled_components(profile).values())
+    assert not any(_ordered_components(profile).values())
+    assert profile["structural_prior_active_components"] == []
 
 
 def test_profiles_are_applied_without_mutating_unrelated_budget_fields():
