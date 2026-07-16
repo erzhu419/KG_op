@@ -154,7 +154,8 @@ def _normalize_sc_result(
     config = _dict(payload.get("config"))
     audit = _dict(row.get("audit"))
     adaptation = _dict(row.get("source_target_adaptation_contract"))
-    meta_training = _dict(_dict(row.get("meta_prior")).get("training"))
+    meta_prior = _dict(row.get("meta_prior"))
+    meta_training = _dict(meta_prior.get("training"))
     certificate = _dict(row.get("certificate_outcome_audit"))
     adaptive = _dict(row.get("adaptive_outcome_audit"))
     dominance = _dict(row.get("posterior_dominance"))
@@ -171,15 +172,21 @@ def _normalize_sc_result(
         row.get("N"),
         config.get("N"),
     ))
-    source_calls = _integer(_first(
-        audit.get("source_simulator_calls"),
-        adaptation.get("source_simulator_calls"),
-    ))
+    source_call_candidates = [
+        _integer(audit.get("source_simulator_calls")),
+        _integer(adaptation.get("source_simulator_calls")),
+    ]
+    source_calls = next(
+        (value for value in source_call_candidates
+         if value is not None and value > 0),
+        next((value for value in source_call_candidates if value is not None), None),
+    )
     if (
         (source_calls is None or source_calls <= 0)
         and meta_training.get("source_observation_mode") == "replicated"
     ):
-        source_records = _integer(meta_training.get("n_records"))
+        source_records = _integer(_first(
+            meta_training.get("n_records"), meta_prior.get("n_records")))
         source_replicates = _integer(
             meta_training.get("source_observation_replicates"))
         if (

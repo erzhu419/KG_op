@@ -99,8 +99,12 @@ def test_recovers_replicated_source_calls_for_new_archive_origin(tmp_path):
             "true_feasible": True,
             "feasible_simple_regret": 0.1,
             "audit": {"source_simulator_calls": 0},
-            "meta_prior": {"training": {
+            "source_target_adaptation_contract": {
+                "source_simulator_calls": 384,
+            },
+            "meta_prior": {
                 "n_records": 128,
+                "training": {
                 "source_observation_mode": "replicated",
                 "source_observation_replicates": 3,
                 "record_origins": {"universal_shared_uniform": 128},
