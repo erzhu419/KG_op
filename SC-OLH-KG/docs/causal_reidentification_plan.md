@@ -207,6 +207,28 @@ universal-shape archive. It first repeats the full `d=50,N=20,n0=10`, five-seed
 causal matrix. A profile must beat strict `none` before any dimension holdout
 is repeated.
 
+The strict `d=50` decision rule was fixed before inspecting its optimization
+results:
+
+1. all 450 optimization cells must complete and parse;
+2. a promotable joint profile must be feasible in at least `12/15` runs, at
+   least `3/5` in each domain, and lose at most one initially feasible run;
+3. effects are lexicographic: a profile must have nonnegative paired
+   feasibility net in every domain and positive net overall; when overall
+   feasibility ties, conditional-regret wins must exceed losses;
+4. standalone evidence is `component_only` versus strict `none`, reported
+   separately for proposal-only, posterior-only, and joint paths;
+5. necessity evidence is `full` versus `leave_out_component`; it is not
+   substituted for standalone evidence and may reveal interactions;
+6. proposal fingerprints and overlap are reported. Identical proposals are a
+   valid zero effect, not grounds to relabel posterior evidence as proposal
+   evidence.
+
+If strict `none` is noninferior to every structural profile, the claim that the
+four priors cause the proposal advantage is rejected. The source
+safety-objective ranker may remain as a separate learned-transfer mechanism,
+but it cannot be attributed to the four switches.
+
 Scheduler entrypoints:
 
 - `scripts/submit_scolhkg_causal_prior_matrix_scheduler.py`
