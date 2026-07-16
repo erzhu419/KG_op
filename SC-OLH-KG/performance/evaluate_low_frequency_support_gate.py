@@ -31,10 +31,12 @@ def _csv(value):
 
 def _counts(items, key):
     values = [item.get(key) for item in items if item.get(key) is not None]
+    wins = sum(value > 0 for value in values)
+    losses = sum(value < 0 for value in values)
     return {
-        "wins": sum(value > 0 for value in values),
-        "losses": sum(value < 0 for value in values),
-        "net": int(sum(values)),
+        "wins": wins,
+        "losses": losses,
+        "net": wins - losses,
         "denominator": len(values),
     }
 
@@ -45,6 +47,7 @@ def evaluate_gate(
         proposal_mode="risk_objective_atlas",
         challenger_profile="low_frequency_only",
         reference_profile="none",
+        expected_source_calls=384,
         causal_modes=DEFAULT_CAUSAL_MODES,
         domains=DEFAULT_DOMAINS,
         seeds=range(5)):
@@ -77,6 +80,25 @@ def evaluate_gate(
         for seed in seeds
     }
     missing = sorted(expected.difference(index))
+    archive_fingerprints = {
+        domain: sorted({
+            str(index[key].get("source_archive_fingerprint"))
+            for key in expected
+            if key in index
+            and key[3] == domain
+            and index[key].get("source_archive_fingerprint")
+        })
+        for domain in domains
+    }
+    source_call_values = sorted({
+        int(index[key]["source_calls"])
+        for key in expected
+        if key in index and index[key].get("source_calls") is not None
+    })
+    archive_contract_pass = bool(
+        all(len(values) == 1 for values in archive_fingerprints.values())
+        and source_call_values == [int(expected_source_calls)]
+    )
 
     component = challenger_profile.removesuffix("_only")
     all_pairs = [
@@ -168,7 +190,12 @@ def evaluate_gate(
             "complete": complete,
             "safety": safety,
             "paired_effect_vs_none": paired_effect,
-            "promote": bool(complete and safety["pass"] and paired_effect["pass"]),
+            "promote": bool(
+                complete
+                and archive_contract_pass
+                and safety["pass"]
+                and paired_effect["pass"]
+            ),
         }
 
     promoted_modes = [
@@ -185,6 +212,10 @@ def evaluate_gate(
         "expected_cell_count": len(expected),
         "missing_cell_count": len(missing),
         "missing_cells": [list(item) for item in missing],
+        "source_archive_fingerprints": archive_fingerprints,
+        "expected_source_calls": int(expected_source_calls),
+        "source_call_values": source_call_values,
+        "archive_contract_pass": archive_contract_pass,
         "mode_results": mode_results,
         "promoted_modes": promoted_modes,
     }
@@ -197,6 +228,7 @@ def main():
     parser.add_argument("--proposal-mode", default="risk_objective_atlas")
     parser.add_argument("--challenger-profile", default="low_frequency_only")
     parser.add_argument("--reference-profile", default="none")
+    parser.add_argument("--expected-source-calls", type=int, default=384)
     parser.add_argument("--causal-modes", default=",".join(DEFAULT_CAUSAL_MODES))
     parser.add_argument("--domains", default=",".join(DEFAULT_DOMAINS))
     parser.add_argument("--seed-start", type=int, default=0)
@@ -209,6 +241,7 @@ def main():
         proposal_mode=args.proposal_mode,
         challenger_profile=args.challenger_profile,
         reference_profile=args.reference_profile,
+        expected_source_calls=args.expected_source_calls,
         causal_modes=_csv(args.causal_modes),
         domains=_csv(args.domains),
         seeds=range(args.seed_start, args.seed_start + args.n_seeds),

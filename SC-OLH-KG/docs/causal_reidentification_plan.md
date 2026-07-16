@@ -287,10 +287,59 @@ joint paths remain separate. Low-frequency-only proceeds to `d=1000` only if
 it retains the original safety floor and has a positive paired effect over the
 new full-profile `none` control at `d=200`.
 
+### Low-frequency dimension-holdout outcome
+
+Run `scolh_lowfreq_support_dimholdout_d200_s5_20260716` completed all 60
+optimization cells with zero failures or parse errors. The machine-executable
+gate separately promoted both causal paths:
+
+- `proposal_only/low_frequency_only` was feasible in `15/15` runs with zero
+  adaptive losses. Relative to `proposal_only/none`, it gained one feasible
+  Queue run and lost none; among jointly feasible pairs, regret favored the
+  low-frequency proposal `4/0`, entirely through Inventory.
+- `joint/low_frequency_only` was feasible in `14/15` runs, including at least
+  `4/5` in every domain, with one adaptive loss. Feasibility was tied against
+  joint `none` (`+1/-1`), while conditional regret favored low frequency
+  `3/0`.
+
+Both paths therefore advanced to the registered `d=1000,N=20` gate. Run
+`scolh_lowfreq_support_dimholdout_d1000_s5_20260716` also completed all 60
+cells without failure. The source-archive fingerprints matched exactly between
+`d=200` and `d=1000` for every held-out domain, and both used 384 ordinary
+source simulator calls. Thus the dimension comparison does not change or
+enlarge the offline information; the separately materialized archives are
+equivalent.
+
+At `d=1000`, both low-frequency paths were feasible in `15/15` runs, with
+`5/5` in every domain and zero adaptive losses. The `none` controls were also
+feasible in `15/15`, so the paired feasibility contrast tied. Conditional
+regret favored low frequency `4/1` for both proposal-only and joint paths; the
+effect was concentrated in Inventory, where median final regret was `0.01156`
+instead of `0.03052` and the median paired delta was `-0.01896`. FactorShock
+and Queue tied. This passes the registered lexicographic gate at target-only
+`D/N=50`; including the frozen source archive gives `D/(384+20)=2.475`.
+
+The attribution is narrower than an end-to-end optimizer claim. Every
+low-frequency `d=1000` run already had a feasible recommendation after the
+source-informed `n0=10`, and none improved its initial best feasible regret
+during the remaining ten Sobol evaluations. Proposal-only and joint results
+were identical. This is positive evidence for the dimension-equivariant
+low-frequency support and source-ranked proposal, but no evidence that the
+structural target posterior adds value. The gate deliberately used pooled HVD
+and a Sobol continuation, so it also does not measure cumulative-HVD or KG
+effects. Those claims remain isolated in their own registered experiments.
+
+No `d=10000` run is launched from this matrix. Increasing nominal dimension
+again without an online gain would only repeat the already-supported proposal
+invariance. The next causal step is to preserve this frozen proposal as the
+front end and test cumulative HVD and source-discrepancy adaptation separately
+under repeated-evaluation, shared-shock, and posterior-calibration outcomes.
+
 Scheduler entrypoints:
 
 - `scripts/submit_scolhkg_causal_prior_matrix_scheduler.py`
 - `scripts/submit_scolhkg_hvd_identifiability_scheduler.py`
+- `SC-OLH-KG/performance/evaluate_low_frequency_support_gate.py`
 
 Runtime checkpoints stay in remote checkpoint directories. Result collection
 accepts only `result.json`; pickle files, model weights, NumPy arrays, and

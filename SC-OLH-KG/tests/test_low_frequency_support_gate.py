@@ -54,11 +54,19 @@ def test_low_frequency_gate_promotes_modes_separately():
     report = evaluate_gate(_rows(), domains=DOMAINS, seeds=range(5))
 
     assert report["missing_cell_count"] == 0
+    assert report["archive_contract_pass"] is True
+    assert report["expected_source_calls"] == 384
+    assert report["source_call_values"] == [384]
+    assert all(
+        values == ["same-archive"]
+        for values in report["source_archive_fingerprints"].values()
+    )
     assert report["promoted_modes"] == ["proposal_only", "joint"]
     for mode in report["promoted_modes"]:
         result = report["mode_results"][mode]
         assert result["safety"]["overall_feasible"] == 15
         assert result["paired_effect_vs_none"]["feasibility"]["net"] == 15
+        assert result["paired_effect_vs_none"]["conditional_regret"]["net"] == 0
 
 
 def test_low_frequency_gate_does_not_hide_joint_failure():
@@ -89,3 +97,12 @@ def test_low_frequency_gate_reports_missing_matched_cell():
 
     assert report["missing_cell_count"] == 1
     assert report["mode_results"]["proposal_only"]["promote"] is False
+
+
+def test_low_frequency_gate_rejects_mixed_source_archives():
+    rows = _rows()
+    rows[0]["source_archive_fingerprint"] = "different-archive"
+    report = evaluate_gate(rows, domains=DOMAINS, seeds=range(5))
+
+    assert report["archive_contract_pass"] is False
+    assert report["promoted_modes"] == []
