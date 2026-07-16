@@ -56,13 +56,14 @@ HVD_PROFILES = (
     "factor_cumulative",
 )
 TRACKS = ("backends", "priors", "hvd", "discrepancy", "recheck", "penalty")
+SUPPLEMENTAL_TRACKS = ("replication_dominance",)
 
 
 def _parse_csv(value):
     return tuple(item.strip() for item in str(value).split(",") if item.strip())
 
 
-def _base_flags(exact_jobs):
+def _base_flags(exact_jobs, exact_terminal_mode="bayes_risk"):
     return [
         "--ordered-max-frequency", "8",
         "--ordered-active-dim", "2",
@@ -75,7 +76,7 @@ def _base_flags(exact_jobs):
         "--ordered-latent-structure-selection",
         "--ordered-group-ridge-learning",
         "--exact-sampling-mode", "iid",
-        "--exact-terminal-mode", "bayes_risk",
+        "--exact-terminal-mode", str(exact_terminal_mode),
         "--exact-mc-samples", "2",
         "--exact-jobs", str(int(exact_jobs)),
         "--parallel-backend", "process_fork",
@@ -205,6 +206,25 @@ def experiment_variants(tracks):
                 "risk_penalty": 5.0,
                 "utility_weight": weight,
             })
+    if "replication_dominance" in tracks:
+        for initial_design in ("common_sobol", "source_informed"):
+            rows.append({
+                "track": "replication_dominance",
+                "name": f"{initial_design}_posterior_dominance",
+                "initial_design": initial_design,
+                "backend": "exact_kg",
+                "prior": "full",
+                "hvd": "factor_cumulative",
+                "discrepancy": True,
+                "recheck_top_k": 0,
+                "risk_penalty": 5.0,
+                "utility_weight": 1.0,
+                "adaptive_replication_voi": True,
+                "replication_candidate_count": 10,
+                "posterior_dominance": True,
+                "posterior_dominance_delta": 0.05,
+                "exact_terminal_mode": "bayes_risk_dominance",
+            })
 
     unique = []
     fingerprints = set()
@@ -228,8 +248,9 @@ def build_specs(args):
     if not heldouts or any(heldout not in HELDOUTS for heldout in heldouts):
         raise ValueError("heldouts must use the registered three-domain matrix")
     tracks = _parse_csv(args.tracks)
-    if not tracks or any(track not in TRACKS for track in tracks):
-        raise ValueError(f"tracks must be selected from {TRACKS}")
+    allowed_tracks = (*TRACKS, *SUPPLEMENTAL_TRACKS)
+    if not tracks or any(track not in allowed_tracks for track in tracks):
+        raise ValueError(f"tracks must be selected from {allowed_tracks}")
 
     local_project = Path(args.deploy) / "SC-OLH-KG"
     remote_project = REMOTE_ROOT / "SC-OLH-KG"
@@ -294,8 +315,29 @@ def build_specs(args):
                     "--certification-recheck-top-k",
                     str(variant["recheck_top_k"]),
                     "--certification-recheck-min-replicates", "3",
-                    *_base_flags(args.exact_jobs),
+                    *_base_flags(
+                        args.exact_jobs,
+                        variant.get("exact_terminal_mode", "bayes_risk"),
+                    ),
                 ]
+                if variant["track"] == "replication_dominance":
+                    command.extend([
+                        "--replication-candidate-count",
+                        str(variant["replication_candidate_count"]),
+                        "--replication-max-per-solution", "5",
+                        "--posterior-dominance-delta",
+                        str(variant["posterior_dominance_delta"]),
+                    ])
+                    command.append(
+                        "--adaptive-replication-voi"
+                        if variant["adaptive_replication_voi"]
+                        else "--no-adaptive-replication-voi"
+                    )
+                    command.append(
+                        "--posterior-dominance-enabled"
+                        if variant["posterior_dominance"]
+                        else "--no-posterior-dominance-enabled"
+                    )
                 command.append(
                     "--source-discrepancy-update"
                     if variant["discrepancy"]

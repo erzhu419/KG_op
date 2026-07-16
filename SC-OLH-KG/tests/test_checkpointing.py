@@ -104,6 +104,55 @@ class CheckpointingTests(unittest.TestCase):
             algorithm.observations[blocked][0].copy())
         self.assertNotIn(blocked, algorithm._replication_candidates())
 
+    def test_adaptive_replication_and_dominance_checkpoint_resume(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            checkpoint_dir = Path(tmp) / "dominance_ckpt"
+            base = dict(
+                n0=4,
+                K1=3,
+                K2=0,
+                decision_backend="exact_kg",
+                acquisition_mode="exact_mc",
+                exact_kg_mc_samples=1,
+                exact_kg_terminal_mode="bayes_risk_dominance",
+                adaptive_replication_voi=True,
+                replication_candidate_count=2,
+                posterior_dominance_enabled=True,
+                posterior_dominance_delta=0.10,
+                finalist_replication_budget=0,
+                certification_recheck_top_k=0,
+                eval_pool_size=8,
+                evaluate_interval=0,
+                checkpoint_dir=str(checkpoint_dir),
+                checkpoint_resume=True,
+                checkpoint_interval=1,
+                seed=228,
+            )
+            first = SingleOLHKGAlgorithm(
+                ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03)),
+                SingleOLHKGConfig(N=5, **base),
+            )
+            first_result = first.run()
+            first_history = first_result["posterior_dominance"]["history"]
+            self.assertEqual(len(first_history), 2)
+            self.assertIsNotNone(
+                first_result["posterior_dominance"]["incumbent"])
+
+            resumed = SingleOLHKGAlgorithm(
+                ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03)),
+                SingleOLHKGConfig(N=6, **base),
+            )
+            resumed_result = resumed.run()
+            resumed_history = resumed_result[
+                "posterior_dominance"]["history"]
+            self.assertEqual(resumed_result["n_simulations"], 6)
+            self.assertEqual(len(resumed_history), 3)
+            self.assertEqual(resumed_history[:2], first_history)
+            self.assertTrue(
+                resumed_result["adaptive_replication_voi"]["unified_exact_voi"])
+            self.assertFalse(
+                resumed_result["posterior_dominance"]["target_oracle_used"])
+
     def test_certification_recheck_consumes_budget_and_resumes_once_complete(self):
         with tempfile.TemporaryDirectory() as tmp:
             checkpoint_dir = Path(tmp) / "recheck_ckpt"

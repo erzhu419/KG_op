@@ -92,3 +92,39 @@ def test_matrix_contains_all_prior_hvd_discrepancy_and_recheck_controls(tmp_path
             f"--certification-recheck-top-k {top_k}" in command
             for command in commands
         )
+
+
+def test_posterior_dominance_supplement_pairs_both_exact_kg_baselines(tmp_path):
+    specs = submit.build_specs(_args(
+        tmp_path,
+        tracks=("replication_dominance",),
+        n_seeds=10,
+    ))
+    assert len(specs) == 2 * 3 * 10
+    commands = [spec["cmd"] for spec in specs]
+    common_sobol = [
+        command for command in commands
+        if "replication_dominance/common_sobol_posterior_dominance"
+        in command
+    ]
+    source_informed = [
+        command for command in commands
+        if "replication_dominance/source_informed_posterior_dominance"
+        in command
+    ]
+    assert len(common_sobol) == len(source_informed) == 30
+    assert all("--adaptive-replication-voi" in command
+               and "--posterior-dominance-enabled" in command
+               and "--exact-terminal-mode bayes_risk_dominance" in command
+               and "--replication-candidate-count 10" in command
+               for command in commands)
+    assert all("--initial-design common_sobol" in command
+               and "--initial-design-file" not in command
+               for command in common_sobol)
+    assert all("--initial-design source_informed" in command
+               and "--initial-design-file" in command
+               for command in source_informed)
+    assert all("--certification-recheck-top-k 0" in command
+               and "--finalist-replication-budget 0" in command
+               and "--decision-backend exact_kg" in command
+               for command in commands)

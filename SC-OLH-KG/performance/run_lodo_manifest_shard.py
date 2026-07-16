@@ -42,6 +42,10 @@ def load_config(path):
     config.setdefault("task_latent_inference_mode", "shadow")
     config.setdefault(
         "task_latent_calibration_mode", "source_profiles")
+    config.setdefault("adaptive_replication_voi", False)
+    config.setdefault("posterior_dominance_enabled", False)
+    config.setdefault("posterior_dominance_delta", 0.05)
+    config.setdefault("posterior_dominance_min_mean_gain", 0.0)
     config.setdefault("finalist_replication_budget", 0)
     config.setdefault("finalist_replication_count", 2)
     config.setdefault("finalist_observed_safety_count", 1)
@@ -233,10 +237,28 @@ def main():
         "--exact-terminal-mode",
         choices=(
             "hard_certified", "bayes_risk",
+            "bayes_risk_dominance",
             "tcb_certified_lexicographic",
         ),
         default="hard_certified",
     )
+    parser.add_argument(
+        "--adaptive-replication-voi",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--replication-candidate-count", type=int, default=None)
+    parser.add_argument(
+        "--replication-max-per-solution", type=int, default=None)
+    parser.add_argument(
+        "--posterior-dominance-enabled",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument("--posterior-dominance-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--posterior-dominance-min-mean-gain", type=float, default=0.0)
     parser.add_argument(
         "--decision-contract-mode",
         choices=("legacy", "certified_lexicographic"),
@@ -382,6 +404,16 @@ def main():
             config[key] = int(value)
     if int(config["n0"]) > int(config["N"]):
         raise ValueError("LODO shard requires n0 <= N")
+    replication_candidate_count = int(
+        config.get("replication_candidate_count", 0)
+        if args.replication_candidate_count is None
+        else args.replication_candidate_count
+    )
+    replication_max_per_solution = int(
+        config.get("replication_max_per_solution", 5)
+        if args.replication_max_per_solution is None
+        else args.replication_max_per_solution
+    )
     config.update({
         "experiment_variant": str(args.experiment_variant),
         "meta_ordered_cumulative_exposure": bool(
@@ -432,6 +464,15 @@ def main():
         "decision_recommend_observed_only": bool(
             args.decision_recommend_observed_only),
         "exact_kg_terminal_mode": str(args.exact_terminal_mode),
+        "adaptive_replication_voi": bool(args.adaptive_replication_voi),
+        "replication_candidate_count": replication_candidate_count,
+        "replication_max_per_solution": replication_max_per_solution,
+        "posterior_dominance_enabled": bool(
+            args.posterior_dominance_enabled),
+        "posterior_dominance_delta": float(
+            args.posterior_dominance_delta),
+        "posterior_dominance_min_mean_gain": float(
+            args.posterior_dominance_min_mean_gain),
         "decision_contract_mode": str(args.decision_contract_mode),
         "exact_kg_mc_samples": int(args.exact_mc_samples),
         "exact_kg_jobs": int(args.exact_jobs),
@@ -607,6 +648,16 @@ def main():
             "decision_recommend_observed_only": bool(
                 args.decision_recommend_observed_only),
             "exact_kg_terminal_mode": str(args.exact_terminal_mode),
+            "adaptive_replication_voi": bool(
+                args.adaptive_replication_voi),
+            "replication_candidate_count": replication_candidate_count,
+            "replication_max_per_solution": replication_max_per_solution,
+            "posterior_dominance_enabled": bool(
+                args.posterior_dominance_enabled),
+            "posterior_dominance_delta": float(
+                args.posterior_dominance_delta),
+            "posterior_dominance_min_mean_gain": float(
+                args.posterior_dominance_min_mean_gain),
             "decision_contract_mode": str(args.decision_contract_mode),
             "exact_kg_mc_samples": int(args.exact_mc_samples),
             "exact_kg_jobs": int(args.exact_jobs),

@@ -86,6 +86,25 @@ best posterior incumbent without an empirical or oracle fallback. Exact KG is
 audited separately because its terminal value must match its posterior-update
 value theorem.
 
+Adaptive replication belongs to the same decision problem, rather than to a
+forced recheck rule. At each charged target call, observed and unobserved
+policies share one action set and exact KG compares
+
+`[R_t^* - E(R_{t+1}^* | D_t, evaluate(x))] / cost(x)`.
+
+An observed `x` is a replicate and updates both the target GPR posterior and
+the cumulative HVD posterior; an unobserved `x` explores a new policy. Both
+have unit simulator cost in the current experiments. Fixed top-k recheck and
+finalist replication remain legacy ablations only.
+
+The terminal action may additionally maintain a posterior-dominant incumbent.
+A challenger replaces it only when a covariance-free Cantelli lower bound on
+`P(L(challenger) < L(incumbent) | D_t)` is at least
+`1 - delta_switch`, where `L=f+rho(G)_+`. Hence an accepted switch has posterior
+error probability at most `delta_switch`, conditional on calibrated posterior
+loss moments. This is a posterior guarantee, not a target-truth guarantee, and
+the implementation never reads target oracle labels.
+
 Initial safety replication remains an explicit ablation. It selects recheck
 targets from charged n0 observations and nominal uncertainty, charges every
 replicate to N, and never consumes target truth. Post-run certificate audit
@@ -153,6 +172,17 @@ The first causal gate is materialized by
 and risk-penalty tracks. At 3 domains, 10 seeds and one seed per shard this is
 1,290 independent scheduler tasks. The backend track alone repeats every
 backend with common-Sobol and frozen source-informed n0 designs.
+
+The original 1,290-task gate already inherited 10 observed-point replication
+candidates inside each exact-KG cell. Those points and new points use the same
+posterior-update score, so adaptive replication is functionally present and is
+not rerun as a nominally new method. The code now exposes explicit action and
+HVD-update diagnostics for that mechanism. Posterior-dominant terminal
+switching was absent. The `replication_dominance` supplemental track therefore
+adds one paired challenger to each common-Sobol and source-informed exact-KG
+baseline. With 3 domains and 10 seeds this is 60 additional tasks; the original
+matrix is not rerun. Both challengers retain the same 10 replication candidates
+and disable forced recheck and finalist overrides.
 
 All scheduler experiments run on `node001-node006`, use one seed per task, and
 declare 12 CPU cores. Source archives and initial proposals are immutable and

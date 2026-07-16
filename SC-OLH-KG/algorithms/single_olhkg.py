@@ -281,6 +281,10 @@ class SingleOLHKGConfig:
     replication_candidate_count: int = 0
     replication_max_per_solution: int = 5
     replication_margin_softening: float = 3.0
+    adaptive_replication_voi: bool = False
+    posterior_dominance_enabled: bool = False
+    posterior_dominance_delta: float = 0.05
+    posterior_dominance_min_mean_gain: float = 0.0
     certification_recheck_top_k: int = 0
     certification_recheck_min_replicates: int = 3
     certification_recheck_soft_margin_scale: float = 2.0
@@ -475,6 +479,8 @@ class SingleOLHKGAlgorithm:
         self._finalist_replication_refresh_history: list[dict] = []
         self._finalist_replication_pool: list[tuple[int, ...]] = []
         self._last_terminal_pool: list[tuple[int, ...]] = []
+        self._posterior_dominance_incumbent: tuple[int, ...] | None = None
+        self._posterior_dominance_history: list[dict] = []
 
         self.observations: dict[tuple[int, ...], list[np.ndarray]] = {}
         self.history: list[tuple[tuple[int, ...], np.ndarray]] = []
@@ -1465,6 +1471,16 @@ class SingleOLHKGAlgorithm:
             "last_terminal_pool": [
                 list(map(int, x)) for x in self._last_terminal_pool
             ],
+            "posterior_dominance": {
+                "incumbent": (
+                    None
+                    if self._posterior_dominance_incumbent is None
+                    else list(map(
+                        int, self._posterior_dominance_incumbent))
+                ),
+                "history": copy.deepcopy(
+                    self._posterior_dominance_history),
+            },
             "gpr": [self._gpr_checkpoint_state(model) for model in self.gpr],
             "variance_model": copy.deepcopy(self.variance_model.__getstate__()),
             "task_ensemble": self._task_ensemble_checkpoint_state(),
@@ -1587,6 +1603,15 @@ class SingleOLHKGAlgorithm:
             tuple(int(v) for v in x)
             for x in payload.get("last_terminal_pool", [])
         ]
+        dominance_state = payload.get("posterior_dominance") or {}
+        dominance_incumbent = dominance_state.get("incumbent")
+        self._posterior_dominance_incumbent = (
+            None
+            if dominance_incumbent is None
+            else tuple(int(v) for v in dominance_incumbent)
+        )
+        self._posterior_dominance_history = copy.deepcopy(
+            dominance_state.get("history", []))
         for output_index, (model, state) in enumerate(
             zip(self.gpr, payload.get("gpr", []))
         ):
@@ -1613,6 +1638,15 @@ class SingleOLHKGAlgorithm:
             ]
             self._initialize_task_ensemble(samples)
         self._reattach_runtime_handles_after_checkpoint()
+        if (
+            self._posterior_dominance_active()
+            and self._posterior_dominance_incumbent is None
+        ):
+            samples = [
+                tuple(int(v) for v in x)
+                for x, _ in self.history[: int(self.config.n0)]
+            ]
+            self._initialize_posterior_dominance_incumbent(samples)
         return int(payload.get("next_stage_n", self.config.n0))
 
     def _try_resume_from_checkpoint(self, verbose=False):
@@ -1640,6 +1674,8 @@ class SingleOLHKGAlgorithm:
         samples = self._initial_samples()
         t0 = time.time()
         self._fit_initial_belief(samples)
+        dominance_initial = self._initialize_posterior_dominance_incumbent(
+            samples)
         initial_truth_audit = self._truth_pool_diagnostics(
             samples,
             prefix="initial_design",
@@ -1668,6 +1704,7 @@ class SingleOLHKGAlgorithm:
                 else self.task_ensemble.diagnostics()
             ),
             "initial_design_truth_audit": initial_truth_audit,
+            "posterior_dominance": dominance_initial,
         }
         self._save_checkpoint(self.config.n0, reason="initial", force=True)
         return int(self.config.n0)
@@ -2185,8 +2222,14 @@ class SingleOLHKGAlgorithm:
         order = np.argsort(-np.nan_to_num(score, nan=-np.inf))
         return [pool[int(i)] for i in order[:n_uncertain]]
 
+    def _replication_candidate_budget(self):
+        configured = max(0, int(self.config.replication_candidate_count))
+        if self.config.adaptive_replication_voi and configured == 0:
+            return max(1, min(4, int(self.config.n0)))
+        return configured
+
     def _replication_candidates(self):
-        n_replicate = max(0, int(self.config.replication_candidate_count))
+        n_replicate = self._replication_candidate_budget()
         if n_replicate == 0 or not self.observations:
             return []
         max_per_solution = max(
@@ -5438,6 +5481,26 @@ class SingleOLHKGAlgorithm:
         )
         return np.where(sd > 1e-12, value, np.maximum(mean, 0.0))
 
+    @staticmethod
+    def _normal_positive_part_variance(mean, variance):
+        """Variance of the positive part of a Gaussian random variable."""
+        mean = np.asarray(mean, dtype=float)
+        variance = np.maximum(np.asarray(variance, dtype=float), 0.0)
+        sd = np.sqrt(variance)
+        safe_sd = np.maximum(sd, 1e-12)
+        standardized = mean / safe_sd
+        first = SingleOLHKGAlgorithm._normal_positive_part(mean, variance)
+        second = (
+            (variance + mean ** 2) * norm.cdf(standardized)
+            + mean * safe_sd * norm.pdf(standardized)
+        )
+        second = np.where(
+            sd > 1e-12,
+            second,
+            np.maximum(mean, 0.0) ** 2,
+        )
+        return np.maximum(second - first ** 2, 0.0)
+
     def _terminal_bayes_risk_components(
         self,
         gpr_models,
@@ -5457,26 +5520,45 @@ class SingleOLHKGAlgorithm:
             empty = np.asarray([], dtype=float)
             return {
                 "objective": empty,
+                "objective_variance": empty,
                 "expected_violation": empty,
                 "nominal_expected_violation": empty,
+                "violation_variance": empty,
                 "risk": empty,
+                "risk_variance": empty,
                 "model_disagreement": empty,
                 "kl_radius": 0.0,
             }
+        penalty = max(float(
+            self.config.terminal_bayes_violation_penalty
+            if risk_penalty is None
+            else risk_penalty
+        ), 0.0)
         if (
             task_ensemble is not None
             and bool(getattr(
                 task_ensemble, "task_latent_authoritative", False))
         ):
-            return task_ensemble.joint_terminal_risk_many(
+            authoritative = task_ensemble.joint_terminal_risk_many(
                 pool,
                 tau=self.problem.tau,
                 alpha=self.problem.alpha,
             )
+            disagreement = np.asarray(
+                authoritative.get("model_disagreement", 0.0), dtype=float)
+            authoritative.setdefault(
+                "objective_variance", np.zeros(len(pool), dtype=float))
+            authoritative.setdefault(
+                "violation_variance", disagreement ** 2)
+            authoritative.setdefault(
+                "risk_variance", np.maximum(disagreement ** 2, 1e-12))
+            return authoritative
         z_alpha = float(norm.ppf(1 - self.problem.alpha))
         if task_ensemble is None:
             objective = np.asarray(
                 gpr_models[0].posterior_mean_many(pool), dtype=float)
+            objective_variance = np.maximum(np.asarray(
+                gpr_models[0].posterior_var_many(pool), dtype=float), 0.0)
             mu_con = np.asarray(
                 gpr_models[1].posterior_mean_many(pool), dtype=float)
             if hasattr(self.problem, "pilot_constraint_guard"):
@@ -5493,12 +5575,14 @@ class SingleOLHKGAlgorithm:
                 mu_con + z_alpha * np.sqrt(aleatoric) - self.problem.tau)
             expected_violation = self._normal_positive_part(
                 margin_mean, epistemic)
+            violation_variance = self._normal_positive_part_variance(
+                margin_mean, epistemic)
             nominal_violation = np.asarray(
                 expected_violation, dtype=float)
             model_disagreement = np.sqrt(epistemic)
             kl_radius = 0.0
         else:
-            obj_mu, _, _ = task_ensemble.expert_moments_many(
+            obj_mu, obj_epistemic, _ = task_ensemble.expert_moments_many(
                 0, pool, certification=False)
             con_mu, con_epistemic, con_aleatoric = (
                 task_ensemble.expert_moments_many(
@@ -5520,6 +5604,12 @@ class SingleOLHKGAlgorithm:
                 expert_margin_mean,
                 np.maximum(con_epistemic, 0.0),
             )
+            expert_violation_variance = (
+                self._normal_positive_part_variance(
+                    expert_margin_mean,
+                    np.maximum(con_epistemic, 0.0),
+                )
+            )
             kl_radius = float(task_ensemble.effective_kl_radius())
             expected_violation = np.asarray(
                 task_ensemble.posterior.kl_robust_expectation(
@@ -5539,23 +5629,251 @@ class SingleOLHKGAlgorithm:
                 ) ** 2,
                 0.0,
             ))
-        penalty = max(float(
-            self.config.terminal_bayes_violation_penalty
-            if risk_penalty is None
-            else risk_penalty
-        ), 0.0)
+            objective_variance = np.maximum(
+                objective_weights @ np.maximum(obj_epistemic, 0.0)
+                + objective_weights @ (
+                    obj_mu - objective[None, :]
+                ) ** 2,
+                0.0,
+            )
+            violation_variance = np.maximum(
+                decision_weights @ expert_violation_variance
+                + decision_weights @ (
+                    expert_violation - nominal_violation[None, :]
+                ) ** 2,
+                0.0,
+            )
         risk = objective + penalty * expected_violation
+        # Cauchy-Schwarz gives a covariance-free upper bound for the loss
+        # variance. This is intentionally conservative because it feeds the
+        # one-sided Cantelli switching certificate below.
+        risk_variance = (
+            np.sqrt(np.maximum(objective_variance, 0.0))
+            + penalty * np.sqrt(np.maximum(violation_variance, 0.0))
+        ) ** 2
+        if task_ensemble is not None:
+            nominal_risk = objective + penalty * nominal_violation
+            risk_variance = (
+                np.sqrt(np.maximum(risk_variance, 0.0))
+                + np.abs(risk - nominal_risk)
+            ) ** 2
         return {
             "objective": np.asarray(objective, dtype=float),
+            "objective_variance": np.asarray(
+                objective_variance, dtype=float),
             "expected_violation": np.asarray(
                 expected_violation, dtype=float),
             "nominal_expected_violation": np.asarray(
                 nominal_violation, dtype=float),
+            "violation_variance": np.asarray(
+                violation_variance, dtype=float),
             "risk": np.asarray(risk, dtype=float),
+            "risk_variance": np.asarray(risk_variance, dtype=float),
             "model_disagreement": np.asarray(
                 model_disagreement, dtype=float),
             "kl_radius": float(kl_radius),
         }
+
+    def _posterior_dominance_active(self):
+        mode = str(
+            self.config.exact_kg_terminal_mode or ""
+        ).lower().replace("-", "_")
+        return bool(
+            self.config.posterior_dominance_enabled
+            or mode in {
+                "bayes_risk_dominance",
+                "posterior_bayes_risk_dominance",
+            }
+        )
+
+    @staticmethod
+    def _cantelli_dominance_lower_bound(
+        incumbent_mean,
+        challenger_mean,
+        incumbent_variance,
+        challenger_variance,
+        min_mean_gain=0.0,
+    ):
+        """Lower-bound posterior improvement probability via Cantelli.
+
+        The variance of a difference is bounded without a covariance
+        assumption by ``(sqrt(v_inc) + sqrt(v_chal))^2``.  Cantelli's
+        one-sided inequality then gives a distribution-free posterior lower
+        bound for ``P(L_challenger < L_incumbent)``.
+        """
+        mean_gain = float(incumbent_mean) - float(challenger_mean)
+        variance_upper = (
+            np.sqrt(max(float(incumbent_variance), 0.0))
+            + np.sqrt(max(float(challenger_variance), 0.0))
+        ) ** 2
+        if mean_gain <= max(float(min_mean_gain), 0.0):
+            lower_bound = 0.0
+        elif variance_upper <= 1e-18:
+            lower_bound = 1.0
+        else:
+            lower_bound = mean_gain ** 2 / (
+                mean_gain ** 2 + variance_upper)
+        return {
+            "posterior_mean_gain": float(mean_gain),
+            "posterior_difference_variance_upper": float(variance_upper),
+            "posterior_dominance_lower_bound": float(np.clip(
+                lower_bound, 0.0, 1.0)),
+        }
+
+    def _posterior_dominance_decision_from_models(
+        self,
+        gpr_models,
+        variance_model,
+        pool,
+        incumbent,
+        *,
+        task_ensemble=None,
+        return_diagnostics=False,
+    ):
+        candidates = unique_candidates(pool)
+        if incumbent is not None:
+            incumbent = tuple(int(v) for v in incumbent)
+            if incumbent not in candidates:
+                candidates.append(incumbent)
+        if not candidates:
+            return None, np.inf, {
+                "status": "empty_pool",
+                "posterior_dominance_used": True,
+            }
+        components = self._terminal_bayes_risk_components(
+            gpr_models,
+            variance_model,
+            candidates,
+            task_ensemble=task_ensemble,
+        )
+        risks = np.asarray(components["risk"], dtype=float)
+        risk_variance = np.maximum(np.asarray(
+            components.get("risk_variance", np.zeros(len(candidates))),
+            dtype=float,
+        ), 0.0)
+        if incumbent is None:
+            chosen_index = int(np.argmin(risks))
+            selected = tuple(int(v) for v in candidates[chosen_index])
+            details = {
+                "status": "initialized",
+                "posterior_dominance_used": True,
+                "incumbent_before": None,
+                "incumbent_after": list(selected),
+                "selected_risk": float(risks[chosen_index]),
+                "selected_risk_variance": float(
+                    risk_variance[chosen_index]),
+                "switch_accepted": True,
+                "target_oracle_used": False,
+            }
+            return selected, float(risks[chosen_index]), details
+
+        incumbent_index = candidates.index(incumbent)
+        delta = float(np.clip(
+            self.config.posterior_dominance_delta, 1e-12, 1.0 - 1e-12))
+        threshold = 1.0 - delta
+        comparisons = []
+        accepted = []
+        for index, candidate in enumerate(candidates):
+            if index == incumbent_index:
+                continue
+            comparison = self._cantelli_dominance_lower_bound(
+                risks[incumbent_index],
+                risks[index],
+                risk_variance[incumbent_index],
+                risk_variance[index],
+                min_mean_gain=(
+                    self.config.posterior_dominance_min_mean_gain),
+            )
+            comparison.update({
+                "candidate": list(map(int, candidate)),
+                "candidate_risk": float(risks[index]),
+                "candidate_risk_variance": float(risk_variance[index]),
+                "accepted": bool(
+                    comparison["posterior_dominance_lower_bound"]
+                    >= threshold
+                ),
+            })
+            comparisons.append(comparison)
+            if comparison["accepted"]:
+                accepted.append(index)
+        chosen_index = (
+            min(accepted, key=lambda index: (risks[index], index))
+            if accepted else incumbent_index
+        )
+        selected = tuple(int(v) for v in candidates[chosen_index])
+        selected_comparison = next((
+            row for row in comparisons
+            if tuple(row["candidate"]) == selected
+        ), None)
+        details = {
+            "status": (
+                "switched" if chosen_index != incumbent_index else "retained"
+            ),
+            "posterior_dominance_used": True,
+            "method": "cantelli_covariance_free",
+            "delta_switch": float(delta),
+            "required_lower_bound": float(threshold),
+            "incumbent_before": list(map(int, incumbent)),
+            "incumbent_after": list(map(int, selected)),
+            "incumbent_risk": float(risks[incumbent_index]),
+            "incumbent_risk_variance": float(
+                risk_variance[incumbent_index]),
+            "selected_risk": float(risks[chosen_index]),
+            "selected_risk_variance": float(risk_variance[chosen_index]),
+            "switch_accepted": bool(chosen_index != incumbent_index),
+            "accepted_challenger_count": int(len(accepted)),
+            "selected_comparison": selected_comparison,
+            "false_switch_posterior_bound": (
+                float(delta) if chosen_index != incumbent_index else 0.0
+            ),
+            "target_oracle_used": False,
+        }
+        if return_diagnostics:
+            details["comparisons"] = comparisons
+        return selected, float(risks[chosen_index]), details
+
+    def _initialize_posterior_dominance_incumbent(self, samples):
+        if not self._posterior_dominance_active():
+            return {"status": "disabled"}
+        selected, _, details = self._posterior_dominance_decision_from_models(
+            self.gpr,
+            self.variance_model,
+            samples,
+            None,
+            task_ensemble=self.task_ensemble,
+            return_diagnostics=True,
+        )
+        self._posterior_dominance_incumbent = selected
+        record = {
+            **details,
+            "stage": int(self.config.n0),
+            "reason": "initial_design",
+        }
+        self._posterior_dominance_history = [record]
+        return copy.deepcopy(record)
+
+    def _update_posterior_dominance_incumbent(self, *, stage, reason):
+        if not self._posterior_dominance_active():
+            return {"status": "disabled"}
+        evaluated = unique_candidates([x for x, _ in self.history])
+        if self._posterior_dominance_incumbent is None:
+            return self._initialize_posterior_dominance_incumbent(evaluated)
+        selected, _, details = self._posterior_dominance_decision_from_models(
+            self.gpr,
+            self.variance_model,
+            evaluated,
+            self._posterior_dominance_incumbent,
+            task_ensemble=self.task_ensemble,
+            return_diagnostics=True,
+        )
+        self._posterior_dominance_incumbent = selected
+        record = {
+            **details,
+            "stage": int(stage),
+            "reason": str(reason),
+        }
+        self._posterior_dominance_history.append(record)
+        return copy.deepcopy(record)
 
     @staticmethod
     def _terminal_frontier_indices(
@@ -5759,6 +6077,8 @@ class SingleOLHKGAlgorithm:
     def _effective_exact_terminal_mode(self):
         if self._coherent_certificate_contract():
             return "tcb_certified_lexicographic"
+        if self._posterior_dominance_active():
+            return "bayes_risk_dominance"
         return str(
             self.config.exact_kg_terminal_mode or "hard_certified"
         ).lower()
@@ -5794,6 +6114,40 @@ class SingleOLHKGAlgorithm:
                     self.observations if observations is None else observations
                 ),
             )
+        if terminal_mode in (
+            "bayes_risk_dominance",
+            "bayes-risk-dominance",
+            "posterior_bayes_risk_dominance",
+        ):
+            effective_observations = (
+                self.observations if observations is None else observations
+            )
+            dominance_pool = pool
+            if (
+                self.config.decision_recommend_observed_only
+                and effective_observations
+            ):
+                dominance_pool = unique_candidates(
+                    effective_observations.keys())
+            incumbent = self._posterior_dominance_incumbent
+            if incumbent is None:
+                components = self._terminal_bayes_risk_components(
+                    gpr_models,
+                    variance_model,
+                    dominance_pool,
+                    task_ensemble=task_ensemble,
+                )
+                return float(np.min(components["risk"]))
+            _, selected_value, _ = (
+                self._posterior_dominance_decision_from_models(
+                    gpr_models,
+                    variance_model,
+                    dominance_pool,
+                    incumbent,
+                    task_ensemble=task_ensemble,
+                )
+            )
+            return float(selected_value)
         if terminal_mode in (
             "bayes_risk",
             "bayes-risk",
@@ -5996,11 +6350,13 @@ class SingleOLHKGAlgorithm:
                 None,
                 terminal_pool,
                 task_ensemble=ensemble,
+                observations=state["observations"],
             )
         return self._terminal_value_from_models(
             state["gpr_models"],
             state["variance_model"],
             terminal_pool,
+            observations=state["observations"],
         )
 
     def _terminal_rollout_samples(self, depth, node_code):
@@ -7112,6 +7468,42 @@ class SingleOLHKGAlgorithm:
         })
         return selected, details
 
+    def _posterior_dominance_terminal_recommendation(self):
+        """Return the sequentially maintained posterior-safe incumbent."""
+        if (
+            not self._posterior_dominance_active()
+            or self._posterior_dominance_incumbent is None
+        ):
+            return None
+        selected = tuple(int(v) for v in self._posterior_dominance_incumbent)
+        components = self._terminal_bayes_risk_components(
+            self.gpr,
+            self.variance_model,
+            [selected],
+            task_ensemble=self.task_ensemble,
+        )
+        _, details = self._solve_posterior_recommendation(pool=[selected])
+        last_update = (
+            copy.deepcopy(self._posterior_dominance_history[-1])
+            if self._posterior_dominance_history else None
+        )
+        details.update({
+            "posterior_dominance_terminal_used": True,
+            "posterior_dominance_terminal_rule": (
+                "sequential_cantelli_safe_incumbent"
+            ),
+            "posterior_dominance_incumbent": list(map(int, selected)),
+            "posterior_dominance_terminal_risk": float(
+                components["risk"][0]),
+            "posterior_dominance_terminal_risk_variance": float(
+                components["risk_variance"][0]),
+            "posterior_dominance_delta": float(
+                self.config.posterior_dominance_delta),
+            "posterior_dominance_last_update": last_update,
+            "posterior_dominance_target_oracle_used": False,
+        })
+        return selected, details
+
     def _evaluate_recommendation(self, x_best):
         true_obj = self.problem.true_objective(x_best)
         true_con = self.problem.true_constraint_mean(x_best)
@@ -8024,6 +8416,15 @@ class SingleOLHKGAlgorithm:
                             np.mean(values))
 
             x_arr = np.asarray(x_selected, dtype=int)
+            replicate_count_before = int(len(self.observations.get(
+                tuple(int(v) for v in x_selected), [])))
+            row["action_kind"] = (
+                "replicate" if replicate_count_before > 0 else "new"
+            )
+            row["replicate_count_before"] = replicate_count_before
+            row["adaptive_replication_voi_enabled"] = bool(
+                self.config.adaptive_replication_voi)
+            row["evaluation_cost"] = 1.0
             mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]
             epistemic_before = [
                 self.gpr[i].posterior_var(x_arr) for i in range(2)
@@ -8087,6 +8488,12 @@ class SingleOLHKGAlgorithm:
                 None
                 if self.task_ensemble is None
                 else self.task_ensemble.posterior.diagnostics()
+            )
+            row["posterior_dominance_update"] = (
+                self._update_posterior_dominance_incumbent(
+                    stage=n + 1,
+                    reason="budgeted_target_observation",
+                )
             )
             row["n_visited"] = len(self.gpr[0].sampled_set)
 
@@ -8216,6 +8623,34 @@ class SingleOLHKGAlgorithm:
             ),
             "target_oracle_used": False,
         }
+        adaptive_replication_summary = {
+            "enabled": bool(self.config.adaptive_replication_voi),
+            "candidate_budget": int(self._replication_candidate_budget()),
+            "maximum_replicates_per_solution": int(max(
+                1, self.config.replication_max_per_solution)),
+            "action_space": "new_and_observed_points",
+            "value": "exact_posterior_bayes_risk_reduction_per_unit_cost",
+            "unit_evaluation_cost": 1.0,
+            "selected_replication_count": int(sum(
+                row.get("action_kind") == "replicate"
+                for row in self.iteration_log
+            )),
+            "selected_new_point_count": int(sum(
+                row.get("action_kind") == "new"
+                for row in self.iteration_log
+            )),
+            "forced_recheck_count": int(sum(
+                row.get("selection_policy") == "certification_recheck"
+                for row in self.iteration_log
+            )),
+            "unified_exact_voi": bool(
+                self.config.adaptive_replication_voi
+                and str(self.config.decision_backend).lower()
+                in {"legacy", "legacy_kg", "exact_kg"}
+                and str(self.config.acquisition_mode).lower() == "exact_mc"
+            ),
+            "target_oracle_used": False,
+        }
         finalist_replication_summary = {
             "enabled": bool(self.config.finalist_replication_budget > 0),
             "policy": self._finalist_replication_policy(),
@@ -8327,6 +8762,10 @@ class SingleOLHKGAlgorithm:
             final_pool)
         if backend_terminal is not None:
             final_x, final_post = backend_terminal
+        dominance_terminal = (
+            self._posterior_dominance_terminal_recommendation())
+        if dominance_terminal is not None:
+            final_x, final_post = dominance_terminal
         task_meta_coherence = (
             None
             if self.task_ensemble is None
@@ -8359,19 +8798,33 @@ class SingleOLHKGAlgorithm:
             "source_discrepancy_update": bool(
                 self.config.source_discrepancy_update),
             "terminal_rule": (
-                "posterior_bayes_risk"
-                if final_post.get("decision_backend_terminal_used", False)
-                else str(self.config.exact_kg_terminal_mode)
+                "posterior_dominance"
+                if final_post.get(
+                    "posterior_dominance_terminal_used", False)
+                else (
+                    "posterior_bayes_risk"
+                    if final_post.get(
+                        "decision_backend_terminal_used", False)
+                    else str(self.config.exact_kg_terminal_mode)
+                )
             ),
             "terminal_recommendation_observed_only": bool(
                 self.config.decision_recommend_observed_only),
             "forced_sampling_override_count": backend_forced_overrides,
             "coherent": bool(
-                final_post.get("decision_backend_terminal_used", False)
+                (
+                    final_post.get(
+                        "posterior_dominance_terminal_used", False)
+                    or final_post.get(
+                        "decision_backend_terminal_used", False)
+                )
                 and backend_forced_overrides == 0
-            ) if backend_name not in {
-                "legacy", "legacy_kg", "exact_kg", "additive"
-            } else bool(finalist_replication_summary.get(
+            ) if (
+                self._posterior_dominance_active()
+                or backend_name not in {
+                    "legacy", "legacy_kg", "exact_kg", "additive"
+                }
+            ) else bool(finalist_replication_summary.get(
                 "mathematically_closed", False)),
             "target_oracle_used": False,
         }
@@ -8385,6 +8838,27 @@ class SingleOLHKGAlgorithm:
             "candidate_source_counts": candidate_source_counts,
             "decision_backend_diagnostics": decision_backend_summary,
             "decision_backend_contract": decision_backend_contract,
+            "adaptive_replication_voi": adaptive_replication_summary,
+            "posterior_dominance": {
+                "enabled": bool(self._posterior_dominance_active()),
+                "method": "cantelli_covariance_free",
+                "delta_switch": float(
+                    self.config.posterior_dominance_delta),
+                "incumbent": (
+                    None
+                    if self._posterior_dominance_incumbent is None
+                    else list(map(
+                        int, self._posterior_dominance_incumbent))
+                ),
+                "switch_count": int(sum(
+                    bool(row.get("switch_accepted", False))
+                    for row in self._posterior_dominance_history
+                    if row.get("reason") != "initial_design"
+                )),
+                "history": copy.deepcopy(
+                    self._posterior_dominance_history),
+                "target_oracle_used": False,
+            },
             "adaptive_outcome_audit": adaptive_outcome,
             "certificate_outcome_audit": certificate_outcome,
             "exact_kg_diagnostics": exact_kg_summary,

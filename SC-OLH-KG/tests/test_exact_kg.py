@@ -42,6 +42,114 @@ class ExactKGTests(unittest.TestCase):
         self.assertAlmostEqual(
             values[3], 2.0 / np.sqrt(2.0 * np.pi), places=12)
 
+    def test_gaussian_positive_part_variance_closed_form(self):
+        values = SingleOLHKGAlgorithm._normal_positive_part_variance(
+            np.asarray([-1.0, 0.0, 1.0, 0.0]),
+            np.asarray([0.0, 0.0, 0.0, 4.0]),
+        )
+        np.testing.assert_allclose(values[:3], [0.0, 0.0, 0.0])
+        self.assertAlmostEqual(values[3], 2.0 - 2.0 / np.pi, places=12)
+
+    def test_cantelli_dominance_requires_mean_gain_and_low_uncertainty(self):
+        certain = SingleOLHKGAlgorithm._cantelli_dominance_lower_bound(
+            1.0, 0.0, 1e-4, 1e-4)
+        uncertain = SingleOLHKGAlgorithm._cantelli_dominance_lower_bound(
+            1.0, 0.0, 1.0, 1.0)
+        no_gain = SingleOLHKGAlgorithm._cantelli_dominance_lower_bound(
+            0.0, 1.0, 0.0, 0.0)
+        self.assertGreater(
+            certain["posterior_dominance_lower_bound"], 0.95)
+        self.assertLess(
+            uncertain["posterior_dominance_lower_bound"], 0.95)
+        self.assertEqual(no_gain["posterior_dominance_lower_bound"], 0.0)
+
+    def test_posterior_dominance_retains_uncertain_and_accepts_certain(self):
+        class FakeGPR:
+            def __init__(self, means, variances):
+                self.means = means
+                self.variances = variances
+
+            def posterior_mean_many(self, pool):
+                return np.asarray([
+                    self.means[int(np.asarray(x)[0])] for x in pool
+                ], dtype=float)
+
+            def posterior_var_many(self, pool):
+                return np.asarray([
+                    self.variances[int(np.asarray(x)[0])] for x in pool
+                ], dtype=float)
+
+        class FakeVariance:
+            @staticmethod
+            def predict_certification_variance_many(output_index, pool, problem):
+                del output_index, problem
+                return np.zeros(len(pool), dtype=float)
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                posterior_dominance_enabled=True,
+                posterior_dominance_delta=0.05,
+                terminal_bayes_violation_penalty=5.0,
+            ),
+        )
+        constraint = FakeGPR(
+            {0: -100.0, 1: -100.0},
+            {0: 0.0, 1: 0.0},
+        )
+        incumbent = (0, 0, 0)
+        challenger = (1, 0, 0)
+        uncertain_objective = FakeGPR(
+            {0: 1.0, 1: 0.0}, {0: 1.0, 1: 1.0})
+        retained, _, retained_info = (
+            algorithm._posterior_dominance_decision_from_models(
+                [uncertain_objective, constraint],
+                FakeVariance(),
+                [incumbent, challenger],
+                incumbent,
+            )
+        )
+        self.assertEqual(retained, incumbent)
+        self.assertFalse(retained_info["switch_accepted"])
+
+        certain_objective = FakeGPR(
+            {0: 1.0, 1: 0.0}, {0: 1e-4, 1: 1e-4})
+        switched, _, switched_info = (
+            algorithm._posterior_dominance_decision_from_models(
+                [certain_objective, constraint],
+                FakeVariance(),
+                [incumbent, challenger],
+                incumbent,
+            )
+        )
+        self.assertEqual(switched, challenger)
+        self.assertTrue(switched_info["switch_accepted"])
+        self.assertLessEqual(
+            switched_info["false_switch_posterior_bound"], 0.05)
+        self.assertFalse(switched_info["target_oracle_used"])
+
+        unobserved = (2, 0, 0)
+        objective_with_unobserved = FakeGPR(
+            {0: 1.0, 1: 0.0, 2: -100.0},
+            {0: 1e-4, 1: 1e-4, 2: 1e-4},
+        )
+        constraint_with_unobserved = FakeGPR(
+            {0: -100.0, 1: -100.0, 2: -100.0},
+            {0: 0.0, 1: 0.0, 2: 0.0},
+        )
+        algorithm._posterior_dominance_incumbent = incumbent
+        algorithm.observations = {
+            incumbent: [np.asarray([1.0, -100.0])],
+        }
+        observed_value = algorithm._terminal_value_from_models(
+            [objective_with_unobserved, constraint_with_unobserved],
+            FakeVariance(),
+            [incumbent, unobserved],
+            observations=algorithm.observations,
+        )
+        self.assertAlmostEqual(observed_value, 1.0, places=10)
+
     def test_bayes_terminal_uses_fixed_unscaled_risk(self):
         class FakeGPR:
             def __init__(self, means, variances):
@@ -159,6 +267,56 @@ class ExactKGTests(unittest.TestCase):
         self.assertEqual(row["rec_n_pool"], row["terminal_pool_size"])
         self.assertTrue(result["terminal_pool_shared"])
         self.assertEqual(result["n_pool"], result["terminal_pool_size"])
+
+    def test_adaptive_replication_and_dominance_share_exact_terminal(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        config = SingleOLHKGConfig(
+            N=5,
+            n0=4,
+            K1=4,
+            K2=0,
+            decision_backend="exact_kg",
+            acquisition_mode="exact_mc",
+            exact_kg_mc_samples=1,
+            exact_kg_terminal_mode="bayes_risk_dominance",
+            adaptive_replication_voi=True,
+            replication_candidate_count=2,
+            replication_max_per_solution=5,
+            posterior_dominance_enabled=True,
+            posterior_dominance_delta=0.10,
+            finalist_replication_budget=0,
+            certification_recheck_top_k=0,
+            eval_pool_size=10,
+            seed=227,
+        )
+        algorithm = SingleOLHKGAlgorithm(problem, config)
+        samples = algorithm._initial_samples()
+        algorithm._fit_initial_belief(samples)
+        candidates, sources = algorithm._generate_candidates(config.n0)
+        replication_points = algorithm._replication_candidates()
+        self.assertTrue(replication_points)
+        self.assertTrue(all(point in candidates for point in replication_points))
+        self.assertIn("replication", set(sources.values()))
+
+        algorithm = SingleOLHKGAlgorithm(
+            ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03)), config)
+        result = algorithm.run()
+        replication = result["adaptive_replication_voi"]
+        self.assertTrue(replication["enabled"])
+        self.assertTrue(replication["unified_exact_voi"])
+        self.assertEqual(
+            replication["selected_replication_count"]
+            + replication["selected_new_point_count"],
+            config.N - config.n0,
+        )
+        self.assertEqual(replication["forced_recheck_count"], 0)
+        self.assertTrue(result["posterior_dominance"]["enabled"])
+        self.assertTrue(result["posterior_dominance_terminal_used"])
+        self.assertEqual(
+            result["decision_backend_contract"]["terminal_rule"],
+            "posterior_dominance",
+        )
+        self.assertTrue(result["decision_backend_contract"]["coherent"])
 
     def test_terminal_frontier_covers_risk_and_disagreement_axes(self):
         mu_obj = np.asarray([0.0, 0.1, 0.2, 0.3, 0.4])

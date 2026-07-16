@@ -632,6 +632,14 @@ def run_one(task):
             "replication_max_per_solution"],
         replication_margin_softening=args_dict[
             "replication_margin_softening"],
+        adaptive_replication_voi=bool(args_dict.get(
+            "adaptive_replication_voi", False)),
+        posterior_dominance_enabled=bool(args_dict.get(
+            "posterior_dominance_enabled", False)),
+        posterior_dominance_delta=float(args_dict.get(
+            "posterior_dominance_delta", 0.05)),
+        posterior_dominance_min_mean_gain=float(args_dict.get(
+            "posterior_dominance_min_mean_gain", 0.0)),
         certification_recheck_top_k=args_dict[
             "certification_recheck_top_k"],
         certification_recheck_min_replicates=args_dict[
@@ -885,6 +893,24 @@ def run_one(task):
             "decision_backend_diagnostics"),
         "decision_backend_contract": result.get(
             "decision_backend_contract"),
+        "adaptive_replication_voi_enabled": bool(args_dict.get(
+            "adaptive_replication_voi", False)),
+        "adaptive_replication_voi": result.get(
+            "adaptive_replication_voi"),
+        "adaptive_replication_selected_count": int((
+            result.get("adaptive_replication_voi") or {}
+        ).get("selected_replication_count", 0)),
+        "adaptive_new_point_selected_count": int((
+            result.get("adaptive_replication_voi") or {}
+        ).get("selected_new_point_count", 0)),
+        "posterior_dominance_enabled": bool(args_dict.get(
+            "posterior_dominance_enabled", False)),
+        "posterior_dominance": result.get("posterior_dominance"),
+        "posterior_dominance_switch_count": int((
+            result.get("posterior_dominance") or {}
+        ).get("switch_count", 0)),
+        "posterior_dominance_terminal_used": bool(
+            result.get("posterior_dominance_terminal_used", False)),
         "adaptive_outcome_audit": result.get(
             "adaptive_outcome_audit"),
         "certificate_outcome_audit": result.get(
@@ -1297,6 +1323,18 @@ def summarize(rows):
                 for row in items),
             "adaptive_regret_change": finite_stats(
                 row.get("adaptive_regret_change", None) for row in items),
+            "adaptive_replication_selected_count": finite_stats(
+                row.get("adaptive_replication_selected_count", None)
+                for row in items),
+            "adaptive_new_point_selected_count": finite_stats(
+                row.get("adaptive_new_point_selected_count", None)
+                for row in items),
+            "posterior_dominance_switch_count": finite_stats(
+                row.get("posterior_dominance_switch_count", None)
+                for row in items),
+            "posterior_dominance_terminal_used_rate": finite_stats(
+                row.get("posterior_dominance_terminal_used", None)
+                for row in items),
             "posterior_certificate_vacuous_rate": finite_stats(
                 row.get("posterior_certificate_vacuous", None)
                 for row in items),
@@ -1530,6 +1568,10 @@ def flatten_summary(summary):
         "initial_true_feasible_rate",
         "initial_boundary_bracket_generated",
         "initial_mandatory_universal_generated",
+        "adaptive_replication_selected_count",
+        "adaptive_new_point_selected_count",
+        "posterior_dominance_switch_count",
+        "posterior_dominance_terminal_used_rate",
         "llm_prior_ok_count",
         "llm_prior_selected_count",
         "llm_prior_gate_mean",
@@ -2067,6 +2109,20 @@ def main():
     parser.add_argument("--replication_candidate_count", type=int, default=3)
     parser.add_argument("--replication_max_per_solution", type=int, default=5)
     parser.add_argument("--replication_margin_softening", type=float, default=3.0)
+    parser.add_argument(
+        "--adaptive_replication_voi",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--posterior_dominance_enabled",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--posterior_dominance_delta", type=float, default=0.05)
+    parser.add_argument(
+        "--posterior_dominance_min_mean_gain", type=float, default=0.0)
     parser.add_argument("--certification_recheck_top_k", type=int, default=0)
     parser.add_argument(
         "--certification_recheck_min_replicates", type=int, default=3)
