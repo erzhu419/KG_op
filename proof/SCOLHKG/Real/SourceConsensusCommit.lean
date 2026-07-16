@@ -96,6 +96,24 @@ theorem source_frozen_proposal_target_noninterference
       sourceFrozenProposal select source secondTarget := by
   rfl
 
+def sharedSourceDesign {Policy SourceDomain : Type*}
+    (policies : List Policy) (_domain : SourceDomain) : List Policy :=
+  policies
+
+theorem shared_source_design_domain_noninterference
+    {Policy SourceDomain : Type*}
+    (policies : List Policy) (firstDomain secondDomain : SourceDomain) :
+    sharedSourceDesign policies firstDomain =
+      sharedSourceDesign policies secondDomain := by
+  rfl
+
+theorem shared_source_design_preserves_membership
+    {Policy SourceDomain : Type*}
+    {policy : Policy} {policies : List Policy} (domain : SourceDomain)
+    (hMember : policy ∈ policies) :
+    policy ∈ sharedSourceDesign policies domain := by
+  exact hMember
+
 def rankSpanningDesign {Template : Type*}
     (first : Template) (interior : List Template) (last : Template) :
     List Template :=
