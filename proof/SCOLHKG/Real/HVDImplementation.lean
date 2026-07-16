@@ -48,6 +48,34 @@ theorem replicateSampleVariance_nonnegative
     (replicateSampleVarianceNumerator_nonnegative values mean)
     (Nat.cast_nonneg values.length)
 
+def replicateVarianceDof (replicateCount : ℕ) : ℕ :=
+  replicateCount - 1
+
+theorem replicateVarianceDof_mono
+    {first second : ℕ}
+    (hCount : first ≤ second) :
+    replicateVarianceDof first ≤ replicateVarianceDof second := by
+  unfold replicateVarianceDof
+  exact Nat.sub_le_sub_right hCount 1
+
+def effectiveVarianceDof (replicateCounts : List ℕ) : ℕ :=
+  (replicateCounts.map replicateVarianceDof).sum
+
+theorem effectiveVarianceDof_append
+    (replicateCounts : List ℕ)
+    (replicateCount : ℕ) :
+    effectiveVarianceDof (replicateCounts ++ [replicateCount]) =
+      effectiveVarianceDof replicateCounts + replicateVarianceDof replicateCount := by
+  simp [effectiveVarianceDof]
+
+theorem effectiveVarianceDof_append_ge
+    (replicateCounts : List ℕ)
+    (replicateCount : ℕ) :
+    effectiveVarianceDof replicateCounts ≤
+      effectiveVarianceDof (replicateCounts ++ [replicateCount]) := by
+  rw [effectiveVarianceDof_append]
+  exact Nat.le_add_right _ _
+
 def clippedVariance (floor pred : ℝ) : ℝ :=
   max pred floor
 
@@ -122,5 +150,107 @@ theorem cumulative_linear_prediction_nonnegative
     (hBeta : ∀ b ∈ beta, 0 ≤ b) :
     0 ≤ dot features beta := by
   exact dot_nonnegative_of_entries_nonnegative hFeatures hBeta
+
+def weightedSquaredResidualRisk
+    (weights residuals : List ℝ) : ℝ :=
+  dot weights (residuals.map fun residual => residual ^ 2)
+
+theorem weightedSquaredResidualRisk_nonnegative
+    {weights residuals : List ℝ}
+    (hWeights : ∀ weight ∈ weights, 0 ≤ weight) :
+    0 ≤ weightedSquaredResidualRisk weights residuals := by
+  unfold weightedSquaredResidualRisk
+  apply dot_nonnegative_of_entries_nonnegative hWeights
+  intro value hvalue
+  simp only [List.mem_map] at hvalue
+  obtain ⟨residual, _, rfl⟩ := hvalue
+  exact sq_nonneg residual
+
+noncomputable def acceptedProjectedStep
+    {Param : Type*}
+    (objective : Param → ℝ)
+    (project : Param → Param)
+    (candidate current : Param) : Param :=
+  if objective (project candidate) ≤ objective current then
+    project candidate
+  else
+    current
+
+theorem acceptedProjectedStep_objective_le
+    {Param : Type*}
+    (objective : Param → ℝ)
+    (project : Param → Param)
+    (candidate current : Param) :
+    objective (acceptedProjectedStep objective project candidate current) ≤
+      objective current := by
+  unfold acceptedProjectedStep
+  split_ifs with hAccept
+  · exact hAccept
+  · exact le_rfl
+
+theorem acceptedProjectedStep_feasible
+    {Param : Type*}
+    (objective : Param → ℝ)
+    (project : Param → Param)
+    (Feasible : Param → Prop)
+    (hProject : ∀ candidate, Feasible (project candidate))
+    {candidate current : Param}
+    (hCurrent : Feasible current) :
+    Feasible (acceptedProjectedStep objective project candidate current) := by
+  unfold acceptedProjectedStep
+  split_ifs
+  · exact hProject candidate
+  · exact hCurrent
+
+noncomputable def acceptedProjectedIterations
+    {Param : Type*}
+    (objective : Param → ℝ)
+    (project : Param → Param)
+    (candidate : ℕ → Param → Param) :
+    ℕ → Param → Param
+  | 0, current => current
+  | steps + 1, current =>
+      acceptedProjectedIterations objective project candidate steps
+        (acceptedProjectedStep objective project (candidate steps current) current)
+
+theorem acceptedProjectedIterations_objective_le
+    {Param : Type*}
+    (objective : Param → ℝ)
+    (project : Param → Param)
+    (candidate : ℕ → Param → Param)
+    (steps : ℕ)
+    (initial : Param) :
+    objective
+        (acceptedProjectedIterations objective project candidate steps initial) ≤
+      objective initial := by
+  induction steps generalizing initial with
+  | zero =>
+      simp [acceptedProjectedIterations]
+  | succ steps ih =>
+      simp only [acceptedProjectedIterations]
+      exact (ih _).trans
+        (acceptedProjectedStep_objective_le
+          objective project (candidate steps initial) initial)
+
+theorem acceptedProjectedIterations_feasible
+    {Param : Type*}
+    (objective : Param → ℝ)
+    (project : Param → Param)
+    (candidate : ℕ → Param → Param)
+    (Feasible : Param → Prop)
+    (hProject : ∀ value, Feasible (project value))
+    (steps : ℕ)
+    {initial : Param}
+    (hInitial : Feasible initial) :
+    Feasible
+      (acceptedProjectedIterations objective project candidate steps initial) := by
+  induction steps generalizing initial with
+  | zero =>
+      simpa [acceptedProjectedIterations] using hInitial
+  | succ steps ih =>
+      simp only [acceptedProjectedIterations]
+      apply ih
+      exact acceptedProjectedStep_feasible
+        objective project Feasible hProject hInitial
 
 end SCOLHKG.Real

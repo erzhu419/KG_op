@@ -227,23 +227,30 @@ or spectral tail.
 Let `phi(x)` be the cumulative-risk feature vector and suppose
 
 ```text
-v_C(x) = phi(x)^T theta_* + e(x),     theta_* >= 0.
+v_C(x) = phi(x)^T theta_* + e(x),     theta_* in K_C,
 ```
 
-For ridge estimator `hat theta` fitted to residual-square observations with
-bounded noise, with probability at least `1-delta`,
+where `K_C` is the product cone with nonnegative `floor/Lambda/omega` and a
+PSD shared-shock matrix `B`. A sample variance based on `r_i` simulator
+replications contributes `r_i-1` chi-square degrees of freedom. For the final
+replication-weighted ridge objective, if the projected IRLS iterate is an
+`epsilon_opt` approximate minimizer, then with probability at least
+`1-delta`,
 
 ```text
 E_n[(phi^T hat theta - v_C)^2]
   <= c1 inf_theta E_n[(phi^T theta - v_C)^2]
      + c2 ridge ||theta_*||_2^2
-     + c3 complexity(phi,delta)/n.
+     + c3 complexity(phi,delta)/sum_i(r_i-1)
+     + epsilon_opt.
 ```
 
-Proof sketch: standard ridge basic inequality plus concentration for
-sub-exponential residual-square errors.  The nonnegative projection can only
-reduce squared error against a nonnegative feasible comparator in the projected
-cone.
+Proof sketch: condition on each history-measurable IRLS weight matrix, apply
+the approximate ridge basic inequality and sub-exponential residual-square
+concentration, then add the optimization slack. Every accepted backtracking
+step weakly decreases its fixed weighted objective, while projection preserves
+membership in `K_C`. No claim is made that a one-shot coefficient projection
+must improve prediction error.
 
 ## Theorem 6: Conservative Chance Certification
 

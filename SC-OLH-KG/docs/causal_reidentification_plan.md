@@ -56,6 +56,16 @@ used only after fitting to report log-variance RMSE, risk ordering,
 upper-variance coverage, false feasibility, missed feasibility, and whether
 the certificate is non-vacuous.
 
+The first 400-cell gate identified two implementation defects rather than a
+failed risk coordinate: sample-variance replication degrees of freedom were
+discarded by the tail guard, and a one-shot PSD/nonnegative projection inflated
+the unconstrained ridge scale. The promoted estimator uses replication-aware
+projected IRLS. In the corrected five-seed gate, cumulative factor-HVD ranks
+variance best in all 16 shock/replication cells and has the lowest log-variance
+RMSE in 14, with zero false-certified fraction. Certification remains
+deliberately conservative at the highest shock levels, so recall and precision
+are reported separately rather than collapsed into population error rates.
+
 ## Gates
 
 1. Unit tests and local tiny smoke.

@@ -30,6 +30,15 @@ def RidgeMinimizer
     RidgeObjective empiricalRisk penalty lambda thetaHat
       ≤ RidgeObjective empiricalRisk penalty lambda theta
 
+def ApproximateRidgeMinimizer
+    {Param : Type u}
+    (empiricalRisk penalty : Param → ℝ)
+    (lambda optimizationSlack : ℝ)
+    (thetaHat : Param) : Prop :=
+  ∀ theta,
+    RidgeObjective empiricalRisk penalty lambda thetaHat
+      ≤ RidgeObjective empiricalRisk penalty lambda theta + optimizationSlack
+
 def UniformResidualSquareConcentration
     {Param : Type u}
     (trueRisk empiricalRisk : Param → ℝ)
@@ -109,6 +118,56 @@ theorem ridge_hvd_residual_square_oracle
       (thetaHat := thetaHat)
       (thetaStar := thetaStar)
       hMin hlambda hPenaltyHat
+  linarith
+
+theorem ridge_basic_inequality_approximate
+    {Param : Type u}
+    {empiricalRisk penalty : Param → ℝ}
+    {lambda optimizationSlack : ℝ}
+    {thetaHat thetaStar : Param}
+    (hMin : ApproximateRidgeMinimizer
+      empiricalRisk penalty lambda optimizationSlack thetaHat)
+    (hlambda : 0 ≤ lambda)
+    (hPenaltyHat : 0 ≤ penalty thetaHat) :
+    empiricalRisk thetaHat ≤
+      empiricalRisk thetaStar
+        + lambda * penalty thetaStar
+        + optimizationSlack := by
+  unfold ApproximateRidgeMinimizer RidgeObjective at hMin
+  have hObj := hMin thetaStar
+  have hNonneg : 0 ≤ lambda * penalty thetaHat := by
+    exact mul_nonneg hlambda hPenaltyHat
+  linarith
+
+theorem ridge_hvd_residual_square_oracle_approximate
+    {Param : Type u}
+    {trueRisk empiricalRisk penalty : Param → ℝ}
+    {lambda radius optimizationSlack : ℝ}
+    {thetaHat thetaStar : Param}
+    (hMin : ApproximateRidgeMinimizer
+      empiricalRisk penalty lambda optimizationSlack thetaHat)
+    (hConc : UniformResidualSquareConcentration trueRisk empiricalRisk radius)
+    (hlambda : 0 ≤ lambda)
+    (hPenaltyHat : 0 ≤ penalty thetaHat) :
+    trueRisk thetaHat ≤
+      trueRisk thetaStar
+        + 2 * radius
+        + lambda * penalty thetaStar
+        + optimizationSlack := by
+  have hHatAbs := abs_le.mp (hConc thetaHat)
+  have hStarAbs := abs_le.mp (hConc thetaStar)
+  have hHat : trueRisk thetaHat ≤ empiricalRisk thetaHat + radius := by
+    linarith [hHatAbs.2]
+  have hStar : empiricalRisk thetaStar ≤ trueRisk thetaStar + radius := by
+    linarith [hStarAbs.1]
+  have hEmp := ridge_basic_inequality_approximate
+    (empiricalRisk := empiricalRisk)
+    (penalty := penalty)
+    (lambda := lambda)
+    (optimizationSlack := optimizationSlack)
+    (thetaHat := thetaHat)
+    (thetaStar := thetaStar)
+    hMin hlambda hPenaltyHat
   linarith
 
 structure RidgeHVDOracleTerms where

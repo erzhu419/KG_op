@@ -58,7 +58,9 @@ mathlib and its cache; later builds should be fast.
   HVD oracle-inequality implication.
 - `SCOLHKG/Real/HVDImplementation.lean`: code-level HVD bridges for residual
   square records, nonnegative within-policy sample variance, nonnegative
-  cumulative beta predictions, clipping, and certification variance.
+  cumulative beta predictions, clipping, and certification variance. It also
+  proves replication-degree monotonicity and feasibility/objective descent for
+  every accepted projected-IRLS iteration.
 - `SCOLHKG/Real/CumulativeRiskImplementation.lean`: factor-HVD feature-block
   bridge for `floor/independent/shared/linear/total`, the provider-based
   `psi=(A,N)` bridge, `v_C^+ = total + tail_guard`, and the shared-shock
@@ -67,7 +69,8 @@ mathlib and its cache; later builds should be fast.
   logic used in `SingleOLHKGAlgorithm._solve_posterior_recommendation`.
 - `SCOLHKG/Real/RidgeHVD.lean`: concrete ridge empirical minimizer plus
   residual-square uniform concentration to HVD oracle inequality, including
-  nonnegative prior-centered penalties and hierarchical source/target scale.
+  nonnegative prior-centered penalties, hierarchical source/target scale, and
+  the optimization-slack oracle inequality used by a finite projected solver.
 - `SCOLHKG/Real/KG.lean`: real-valued exact KG and additive-proxy relation.
 - `SCOLHKG/Real/LineEnvelopeKG.lean`: certificate-level line-envelope KG
   theorem for the `compute_h` calculation once active hull intervals are
@@ -262,8 +265,9 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 31. Exact posterior-update SC-OLH-KG expected value theorem and maximizer
     optimality.
 32. Code-level rank-one GPR update/KG-slope identity.
-33. Code-level HVD residual-square, nonnegative beta, clipping, and
-    certification-variance guards.
+33. Code-level HVD residual-square, replication degrees of freedom,
+    nonnegative/PSD projected-iteration feasibility, weighted-objective
+    descent, clipping, and certification-variance guards.
 34. Robust posterior recommendation implication.
 35. Finite-kernel scalar information-gain accumulation and cap bound.
 36. Certificate-level line-envelope KG exactness for `compute_h`.
