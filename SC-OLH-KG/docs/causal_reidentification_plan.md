@@ -131,6 +131,34 @@ hold:
 If no profile passes, `d=1000` is not launched. A failed gate triggers a model
 diagnosis at `d=200`, not a larger-dimensional search for a favorable result.
 
+### d=200 gate outcome
+
+Run `scolh_causal_dimholdout_d200_s5_20260716` completed all 240 optimization
+cells with zero failed or unparsable results. Every proposal-mode pair matched
+the frozen archive fingerprint, and all paired design fingerprints were
+separately recorded.
+
+- The risk-coordinate atlas gave `additivity_only` and
+  `orthogonality_only` `15/15` final feasibility with zero adaptive losses.
+  The rejected full profile reached only `11/15` because its Queue proposal
+  remained poorly transferable.
+- Relative to rank-spanning interpolation, atlas feasibility net was `+2` for
+  additivity and `+1` for orthogonality. It nevertheless lost the conditional
+  regret comparison (`2/6` wins/losses for additivity and `1/8` for
+  orthogonality), so neither profile passes the pre-registered promotion rule.
+- Against the no-four-prior atlas, orthogonality tied feasibility and won
+  conditional regret `3/0`; additivity won `3/2`. These effects already appear
+  in `proposal_only`. The joint posterior produced almost no additional gain.
+
+No `d=1000` task is launched from this gate. The diagnosed defect is specific:
+the original atlas ranks source templates only by chance margin and then
+maximizes coordinate coverage, so safety improves while source objective
+quality is incidental. The registered challenger is a source-only
+`risk_objective_atlas`: it converts chance margins and objectives to separate
+within-domain percentile ranks, retains their Pareto elites, and uses maximin
+risk-coordinate filling only for the remaining slots. The old atlas remains
+an explicit ablation.
+
 Scheduler entrypoints:
 
 - `scripts/submit_scolhkg_causal_prior_matrix_scheduler.py`

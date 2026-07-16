@@ -654,6 +654,12 @@ class MetaPriorTests(unittest.TestCase):
         self.assertEqual(diagnostics["status"], "fit")
         self.assertEqual(diagnostics["n_source_domains"], 2)
         self.assertGreaterEqual(diagnostics["n_selected_templates"], 2)
+        self.assertEqual(
+            diagnostics["objective_ranking_target"],
+            "observed_source_objective_percentile",
+        )
+        self.assertTrue(all(
+            "objective_score" in item for item in diagnostics["selected"]))
         self.assertFalse(diagnostics["target_data_used"])
         self.assertFalse(diagnostics["target_oracle_used"])
         self.assertFalse(target.admissibility_audit()["source_oracle_aided"])
@@ -678,6 +684,22 @@ class MetaPriorTests(unittest.TestCase):
         self.assertEqual(coverage[1], frozen[0])
         self.assertEqual(coverage[-1], frozen[-1])
         self.assertEqual(len(set(coverage)), len(coverage))
+
+        high_dim_target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=200), prior)
+        risk_objective = prior.risk_objective_initial_candidates(
+            high_dim_target, n=6, rng=np.random.default_rng(521))
+        proposal_diag = prior.diagnostics()["risk_objective_proposal"]
+        self.assertEqual(len(risk_objective), 6)
+        self.assertEqual(len(set(risk_objective)), 6)
+        self.assertTrue(all(len(point) == 200 for point in risk_objective))
+        self.assertEqual(proposal_diag["status"], "fit")
+        self.assertEqual(proposal_diag["target_policy_dimension"], 200)
+        self.assertGreater(proposal_diag["selected_template_count"], 0)
+        self.assertGreaterEqual(
+            proposal_diag["robust_source_feasible_template_count"], 0)
+        self.assertFalse(proposal_diag["target_data_used"])
+        self.assertFalse(proposal_diag["target_oracle_used"])
 
         rng = np.random.default_rng(520)
         sequential = [

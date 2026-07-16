@@ -37,6 +37,7 @@ def load_frozen_source_informed_design(
     supported_kinds = {
         "frozen_source_informed_rank_spanning",
         "frozen_source_informed_risk_coordinate_atlas",
+        "frozen_source_informed_risk_objective_atlas",
     }
     if payload.get("design_kind") not in supported_kinds:
         raise ValueError("unexpected source-informed design contract")

@@ -68,7 +68,8 @@ def test_dimension_holdout_trains_source_and_target_at_declared_dimensions(tmp_p
         tmp_path,
         profiles="none,full",
         causal_modes="proposal_only,joint",
-        proposal_modes="rank_spanning,risk_coordinate_atlas",
+        proposal_modes=(
+            "rank_spanning,risk_coordinate_atlas,risk_objective_atlas"),
         source_d=50,
         d=1000,
         n_seeds=2,
@@ -76,7 +77,10 @@ def test_dimension_holdout_trains_source_and_target_at_declared_dimensions(tmp_p
     designs = [s for s in specs if "/causal_prior_design/" in s["signature"]]
     runs = [s for s in specs if "/causal_prior_v2/" in s["signature"]]
 
-    assert len(designs) == 3 * 2 * 2
-    assert len(runs) == 2 * 2 * 2 * 3 * 2
+    assert len(designs) == 3 * 3 * 2
+    assert len(runs) == 2 * 3 * 2 * 3 * 2
     assert all("--source-d 50 --d 1000" in s["cmd"] for s in designs)
     assert all("--d 1000 --meta-source-d 50" in s["cmd"] for s in runs)
+    assert any(
+        "--proposal-mode risk_objective_atlas" in s["cmd"]
+        for s in designs)

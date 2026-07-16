@@ -96,16 +96,21 @@ def materialize_source_designs(
         parse_weights(target_config["weights"]),
     )
     proposal_mode = str(proposal_mode)
-    if proposal_mode not in {"rank_spanning", "risk_coordinate_atlas"}:
+    if proposal_mode not in {
+        "rank_spanning",
+        "risk_coordinate_atlas",
+        "risk_objective_atlas",
+    }:
         raise ValueError(f"unknown source proposal mode {proposal_mode!r}")
     designs = {}
     for offset in range(int(n_seeds)):
         seed = int(seed_start) + offset
-        generator = (
-            prior.dimension_equivariant_initial_candidates
-            if proposal_mode == "risk_coordinate_atlas"
-            else prior.initial_universal_candidates
-        )
+        if proposal_mode == "risk_objective_atlas":
+            generator = prior.risk_objective_initial_candidates
+        elif proposal_mode == "risk_coordinate_atlas":
+            generator = prior.dimension_equivariant_initial_candidates
+        else:
+            generator = prior.initial_universal_candidates
         points = generator(problem, n=int(n0), rng=np.random.default_rng(seed))
         points = [tuple(map(int, point)) for point in points]
         if len(points) != int(n0) or len(set(points)) != int(n0):
@@ -119,9 +124,13 @@ def materialize_source_designs(
     payload = {
         "schema_version": 1,
         "design_kind": (
-            "frozen_source_informed_risk_coordinate_atlas"
-            if proposal_mode == "risk_coordinate_atlas"
-            else "frozen_source_informed_rank_spanning"
+            "frozen_source_informed_risk_objective_atlas"
+            if proposal_mode == "risk_objective_atlas"
+            else (
+                "frozen_source_informed_risk_coordinate_atlas"
+                if proposal_mode == "risk_coordinate_atlas"
+                else "frozen_source_informed_rank_spanning"
+            )
         ),
         "proposal_mode": proposal_mode,
         "structural_prior_profile": str(structural_prior_profile),
@@ -139,7 +148,14 @@ def materialize_source_designs(
         "target_labels_used": False,
         "target_oracle_used": False,
         "proposal_diagnostics": dict(getattr(
-            prior, "dimension_equivariant_proposal_diagnostics", {})),
+            prior,
+            (
+                "risk_objective_proposal_diagnostics"
+                if proposal_mode == "risk_objective_atlas"
+                else "dimension_equivariant_proposal_diagnostics"
+            ),
+            {},
+        )),
         "designs": designs,
     }
     _atomic_json(output, payload)
@@ -164,7 +180,11 @@ def main():
     )
     parser.add_argument(
         "--proposal-mode",
-        choices=("rank_spanning", "risk_coordinate_atlas"),
+        choices=(
+            "rank_spanning",
+            "risk_coordinate_atlas",
+            "risk_objective_atlas",
+        ),
         default="rank_spanning",
     )
     args = parser.parse_args()

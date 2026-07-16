@@ -561,6 +561,12 @@ class LearnedMetaPrior:
             "target_data_used": False,
             "target_oracle_used": False,
         }
+        self.risk_objective_proposal_diagnostics = {
+            "status": "not_materialized",
+            "source_only": True,
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
         self.source_consensus_diagnostics = {"status": "not_requested"}
         self.beta_prior = {}
         self.beta_prior_precision = {}
@@ -1680,6 +1686,7 @@ class LearnedMetaPrior:
             return
 
         rank_by_record = {}
+        objective_rank_by_record = {}
         for domain in domains:
             indices = [
                 index for index, rec in enumerate(usable)
@@ -1690,6 +1697,11 @@ class LearnedMetaPrior:
             ])
             for index, rank in zip(indices, ranks):
                 rank_by_record[index] = float(rank)
+            objective_ranks = self._percentile_ranks([
+                float(usable[index].y[0]) for index in indices
+            ])
+            for index, rank in zip(indices, objective_ranks):
+                objective_rank_by_record[index] = float(rank)
 
         grouped = {}
         for index, rec in enumerate(usable):
@@ -1716,12 +1728,24 @@ class LearnedMetaPrior:
             ranks = np.asarray([
                 by_domain[domain][0] for domain in domains
             ], dtype=float)
+            objective_ranks = np.asarray([
+                objective_rank_by_record[by_domain[domain][2]]
+                for domain in domains
+            ], dtype=float)
             margins = np.asarray([
                 self._source_margin(by_domain[domain][3]) for domain in domains
             ], dtype=float)
             mean_rank = float(np.mean(ranks))
             worst_rank = float(np.max(ranks))
             disagreement = float(np.std(ranks))
+            objective_mean_rank = float(np.mean(objective_ranks))
+            objective_worst_rank = float(np.max(objective_ranks))
+            objective_disagreement = float(np.std(objective_ranks))
+            objective_score = (
+                objective_mean_rank
+                + 0.25 * objective_worst_rank
+                + 0.25 * objective_disagreement
+            )
             # Mean rank carries consensus; the remaining terms reject a
             # template that is excellent in only one source domain.
             score = mean_rank + 0.25 * worst_rank + 0.25 * disagreement
@@ -1731,10 +1755,19 @@ class LearnedMetaPrior:
                 "mean_margin_rank": mean_rank,
                 "worst_margin_rank": worst_rank,
                 "rank_disagreement": disagreement,
+                "objective_score": float(objective_score),
+                "mean_objective_rank": objective_mean_rank,
+                "worst_objective_rank": objective_worst_rank,
+                "objective_rank_disagreement": objective_disagreement,
                 "feasible_source_count": int(np.sum(margins <= 0.0)),
                 "source_domain_count": int(len(domains)),
                 "domain_margin_ranks": {
                     domain: float(by_domain[domain][0]) for domain in domains
+                },
+                "domain_objective_ranks": {
+                    domain: float(objective_rank_by_record[
+                        by_domain[domain][2]])
+                    for domain in domains
                 },
                 "source_only": True,
                 "target_data_used": False,
@@ -1756,12 +1789,19 @@ class LearnedMetaPrior:
             "n_shared_profiles": int(len(rows)),
             "n_selected_templates": int(len(self.source_consensus_templates)),
             "ranking_target": "observed_source_chance_margin_percentile",
+            "objective_ranking_target": (
+                "observed_source_objective_percentile"),
             "selected": [
                 {
                     "score": float(row["score"]),
                     "mean_margin_rank": float(row["mean_margin_rank"]),
                     "worst_margin_rank": float(row["worst_margin_rank"]),
                     "rank_disagreement": float(row["rank_disagreement"]),
+                    "objective_score": float(row["objective_score"]),
+                    "mean_objective_rank": float(row["mean_objective_rank"]),
+                    "worst_objective_rank": float(row["worst_objective_rank"]),
+                    "objective_rank_disagreement": float(
+                        row["objective_rank_disagreement"]),
                     "feasible_source_count": int(row["feasible_source_count"]),
                     "profile": np.round(row["profile"], 6).tolist(),
                 }
@@ -4974,6 +5014,177 @@ class LearnedMetaPrior:
         rows.extend(library)
         return unique_candidates(rows)[:n_take]
 
+    def risk_objective_initial_candidates(self, problem, n=0, rng=None):
+        """Build a source-only safety-objective Pareto proposal atlas.
+
+        Chance margins and objectives are ranked separately within every
+        source domain before aggregation.  The proposal therefore transfers
+        order information without comparing domain-specific physical scales.
+        Target values are never queried.  Pareto elites preserve source-safe
+        objective quality, while maximin filling retains risk-coordinate
+        coverage for held-out dimensions.
+        """
+        n_take = max(0, int(n))
+        if n_take <= 0:
+            return []
+        rng = rng or np.random.default_rng(self.seed)
+        library = self.universal_shape_candidates(
+            problem, n=10000, rng=rng, force=True)
+        rows = [library[1]] if len(library) > 1 else list(library[:1])
+
+        unique = {}
+        for item in self.source_consensus_templates:
+            profile = self._canonical_profile(item["profile"])
+            key = tuple(np.round(profile, 6))
+            candidate = {
+                "profile": profile,
+                "safety_score": float(item.get("score", 0.0)),
+                "objective_score": float(item.get(
+                    "objective_score", item.get("score", 0.0))),
+                "feasible_source_count": int(item.get(
+                    "feasible_source_count", 0)),
+                "source_domain_count": int(item.get(
+                    "source_domain_count", 0)),
+            }
+            old = unique.get(key)
+            if old is None or (
+                candidate["safety_score"], candidate["objective_score"]
+            ) < (old["safety_score"], old["objective_score"]):
+                unique[key] = candidate
+        templates = list(unique.values())
+
+        selected = []
+        selected_roles = []
+        if templates and len(rows) < n_take:
+            coordinates = np.vstack([
+                self._dimension_equivariant_profile_coordinate(item["profile"])
+                for item in templates
+            ])
+            safety = np.asarray([
+                item["safety_score"] for item in templates
+            ], dtype=float)
+            objective = np.asarray([
+                item["objective_score"] for item in templates
+            ], dtype=float)
+            safety_rank = self._percentile_ranks(safety)
+            objective_rank = self._percentile_ranks(objective)
+            robust = np.asarray([
+                item["source_domain_count"] > 0
+                and item["feasible_source_count"] == item["source_domain_count"]
+                for item in templates
+            ], dtype=bool)
+            eligible = np.flatnonzero(robust)
+            if len(eligible) == 0:
+                eligible = np.arange(len(templates), dtype=int)
+
+            pareto = []
+            for index in eligible:
+                dominated = any(
+                    other != index
+                    and safety_rank[other] <= safety_rank[index]
+                    and objective_rank[other] <= objective_rank[index]
+                    and (
+                        safety_rank[other] < safety_rank[index]
+                        or objective_rank[other] < objective_rank[index]
+                    )
+                    for other in eligible
+                )
+                if not dominated:
+                    pareto.append(int(index))
+            if not pareto:
+                pareto = [int(index) for index in eligible]
+
+            limit = min(n_take - len(rows), len(templates))
+
+            def add(index, role):
+                index = int(index)
+                if index in selected or len(selected) >= limit:
+                    return
+                selected.append(index)
+                selected_roles.append(str(role))
+
+            for weight in (1.0, 0.0, 0.5, 0.25, 0.75):
+                if len(selected) >= limit:
+                    break
+                index = min(
+                    pareto,
+                    key=lambda item: (
+                        weight * safety_rank[item]
+                        + (1.0 - weight) * objective_rank[item],
+                        safety_rank[item],
+                        objective_rank[item],
+                        item,
+                    ),
+                )
+                add(index, f"pareto_weight_{weight:.2f}")
+
+            while len(selected) < limit:
+                remaining = [
+                    index for index in range(len(templates))
+                    if index not in selected
+                ]
+                if not remaining:
+                    break
+                if selected:
+                    chosen = coordinates[np.asarray(selected, dtype=int)]
+                    distance = np.asarray([
+                        float(np.min(np.linalg.norm(
+                            chosen - coordinates[index][None, :], axis=1)))
+                        for index in remaining
+                    ])
+                else:
+                    distance = np.ones(len(remaining), dtype=float)
+                penalty = np.asarray([
+                    0.20 * safety_rank[index]
+                    + 0.20 * objective_rank[index]
+                    + (0.75 if not robust[index] else 0.0)
+                    for index in remaining
+                ])
+                utility = distance / (1.0 + penalty)
+                chosen_index = remaining[int(np.argmax(utility))]
+                add(chosen_index, "risk_coordinate_maximin")
+
+            for index in selected:
+                rows.append(self._dimension_equivariant_profile_candidate(
+                    problem, templates[index]["profile"]))
+            self.risk_objective_proposal_diagnostics = {
+                "status": "fit",
+                "source_only": True,
+                "target_data_used": False,
+                "target_oracle_used": False,
+                "source_template_count": int(len(templates)),
+                "robust_source_feasible_template_count": int(np.sum(robust)),
+                "pareto_template_count": int(len(pareto)),
+                "selected_template_count": int(len(selected)),
+                "selected_roles": list(selected_roles),
+                "selected_safety_scores": [
+                    float(safety[index]) for index in selected
+                ],
+                "selected_objective_scores": [
+                    float(objective[index]) for index in selected
+                ],
+                "coordinate_dimensions": sorted({
+                    int(len(coordinate)) for coordinate in coordinates
+                }),
+                "source_policy_dimensions": sorted({
+                    int(len(item["profile"])) for item in templates
+                }),
+                "target_policy_dimension": int(getattr(problem, "d", 1)),
+                "safety_ranking_target": (
+                    "source_chance_margin_percentile"),
+                "objective_ranking_target": "source_objective_percentile",
+            }
+        else:
+            self.risk_objective_proposal_diagnostics = {
+                "status": "no_source_templates",
+                "source_only": True,
+                "target_data_used": False,
+                "target_oracle_used": False,
+                "target_policy_dimension": int(getattr(problem, "d", 1)),
+            }
+        rows.extend(library)
+        return unique_candidates(rows)[:n_take]
+
     def source_coverage_candidates(self, problem, n=0):
         """Return the deterministic source-only design protected at target time."""
 
@@ -5256,6 +5467,8 @@ class LearnedMetaPrior:
                 self.source_consensus_diagnostics),
             "dimension_equivariant_proposal": copy.deepcopy(
                 self.dimension_equivariant_proposal_diagnostics),
+            "risk_objective_proposal": copy.deepcopy(
+                self.risk_objective_proposal_diagnostics),
             "n_alignment_profile_templates": int(
                 len(self.alignment_profile_templates)),
             "universal_shape_count": int(self.universal_shape_count),

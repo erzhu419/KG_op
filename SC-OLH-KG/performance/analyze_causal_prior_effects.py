@@ -403,11 +403,19 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("roots", nargs="+", type=Path)
     parser.add_argument("--out-dir", required=True, type=Path)
+    parser.add_argument(
+        "--proposal-challenger", default="risk_coordinate_atlas")
+    parser.add_argument(
+        "--proposal-reference", default="rank_spanning")
     args = parser.parse_args()
     rows, errors = load_rows(args.roots)
     pairs = build_paired_effects(rows)
     summaries = summarize_pairs(pairs)
-    proposal_pairs = build_proposal_mode_effects(rows)
+    proposal_pairs = build_proposal_mode_effects(
+        rows,
+        challenger_mode=args.proposal_challenger,
+        reference_mode=args.proposal_reference,
+    )
     proposal_summaries = summarize_proposal_mode_pairs(proposal_pairs)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     _write_csv(args.out_dir / "paired_rows.csv", pairs)

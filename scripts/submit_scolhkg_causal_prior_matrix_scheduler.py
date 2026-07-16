@@ -118,7 +118,11 @@ def build_specs(args):
     if not modes or any(item not in CAUSAL_MODES for item in modes):
         raise ValueError("unknown causal mode")
     if not proposal_modes or any(
-        item not in {"rank_spanning", "risk_coordinate_atlas"}
+        item not in {
+            "rank_spanning",
+            "risk_coordinate_atlas",
+            "risk_objective_atlas",
+        }
         for item in proposal_modes
     ):
         raise ValueError("unknown proposal mode")
