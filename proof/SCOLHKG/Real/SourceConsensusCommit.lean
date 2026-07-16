@@ -31,6 +31,55 @@ theorem positiveAffine_order_invariant
   · nlinarith
   · nlinarith
 
+theorem strictlyMonotone_order_invariant
+    {f : ℝ → ℝ} (hMono : StrictMono f) {first second : ℝ} :
+    f first ≤ f second ↔ first ≤ second := by
+  constructor
+  · intro h
+    by_contra hNot
+    have hReverse : second < first := lt_of_not_ge hNot
+    exact (not_lt_of_ge h) (hMono hReverse)
+  · intro h
+    exact hMono.monotone h
+
+noncomputable def sourceSafetyObjectiveScore
+    (weight safetyRank objectiveRank : ℝ) : ℝ :=
+  weight * safetyRank + (1 - weight) * objectiveRank
+
+theorem sourceSafetyObjectiveScore_nonnegative
+    {weight safetyRank objectiveRank : ℝ}
+    (hWeightLower : 0 ≤ weight)
+    (hWeightUpper : weight ≤ 1)
+    (hSafety : 0 ≤ safetyRank)
+    (hObjective : 0 ≤ objectiveRank) :
+    0 ≤ sourceSafetyObjectiveScore weight safetyRank objectiveRank := by
+  unfold sourceSafetyObjectiveScore
+  nlinarith
+
+theorem sourceSafetyObjectiveScore_pareto_monotone
+    {weight safetyFirst safetySecond objectiveFirst objectiveSecond : ℝ}
+    (hWeightLower : 0 ≤ weight)
+    (hWeightUpper : weight ≤ 1)
+    (hSafety : safetyFirst ≤ safetySecond)
+    (hObjective : objectiveFirst ≤ objectiveSecond) :
+    sourceSafetyObjectiveScore weight safetyFirst objectiveFirst ≤
+      sourceSafetyObjectiveScore weight safetySecond objectiveSecond := by
+  unfold sourceSafetyObjectiveScore
+  nlinarith
+
+theorem sourceSafetyObjectiveScore_strict_pareto_monotone
+    {weight safetyFirst safetySecond objectiveFirst objectiveSecond : ℝ}
+    (hWeightLower : 0 < weight)
+    (hWeightUpper : weight < 1)
+    (hSafety : safetyFirst ≤ safetySecond)
+    (hObjective : objectiveFirst ≤ objectiveSecond)
+    (hStrict :
+      safetyFirst < safetySecond ∨ objectiveFirst < objectiveSecond) :
+    sourceSafetyObjectiveScore weight safetyFirst objectiveFirst <
+      sourceSafetyObjectiveScore weight safetySecond objectiveSecond := by
+  unfold sourceSafetyObjectiveScore
+  rcases hStrict with hStrict | hStrict <;> nlinarith
+
 def sourceFrozenProposal
     {SourceArchive TargetName Proposal : Type*}
     (select : SourceArchive → Proposal)

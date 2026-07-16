@@ -215,6 +215,7 @@ mathlib and its cache; later builds should be fast.
   oracle radius, monotone contraction with replication count, squared-budget
   sufficiency, and persistence of a certificate at larger budgets.
 - `SCOLHKG/Real/SourceConsensusCommit.lean`: source-frozen rank consensus,
+  strictly monotone scale invariance, safety-objective Pareto monotonicity,
   target-name noninterference, rank-spanning coverage, bounded-error two-arm
   ordering, and committed completion of a protected finalist shortlist.
 - `theory.md`: theorem statements, assumptions, and proof sketches for the
