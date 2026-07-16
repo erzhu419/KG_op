@@ -9,15 +9,25 @@ sys.path.insert(0, str(ROOT / "performance"))
 
 from analyze_causal_prior_effects import (  # noqa: E402
     build_paired_effects,
+    build_proposal_mode_effects,
     parse_causal_variant,
     summarize_pairs,
+    summarize_proposal_mode_pairs,
 )
 
 
-def _row(seed, profile, feasible, regret, initial, initial_regret):
+def _row(
+        seed,
+        profile,
+        feasible,
+        regret,
+        initial,
+        initial_regret,
+        proposal_mode="atlas"):
     return {
         "run_id": "causal",
-        "variant": f"causal_prior_v2/proposal_only/atlas/{profile}",
+        "variant": (
+            f"causal_prior_v2/proposal_only/{proposal_mode}/{profile}"),
         "status": "ok",
         "domain": "Domain",
         "seed": seed,
@@ -26,7 +36,7 @@ def _row(seed, profile, feasible, regret, initial, initial_regret):
         "n0": 10,
         "source_calls": 384,
         "source_archive_fingerprint": "same-archive",
-        "initial_design_fingerprint": f"{profile}-{seed}",
+        "initial_design_fingerprint": f"{proposal_mode}-{profile}-{seed}",
         "initial_has_true_feasible": initial,
         "initial_best_feasible_regret": initial_regret,
         "true_feasible": feasible,
@@ -88,3 +98,32 @@ def test_duplicate_causal_cell_is_rejected():
     row = _row(0, "none", True, 0.1, True, 0.1)
     with pytest.raises(ValueError, match="duplicate causal cell"):
         build_paired_effects([row, dict(row)])
+
+
+def test_proposal_mode_effects_pair_same_profile_and_seed():
+    rows = []
+    for seed in (0, 1):
+        rows.extend([
+            _row(
+                seed, "additivity_only", True, 0.10 + 0.01 * seed,
+                True, 0.15 + 0.01 * seed,
+                proposal_mode="risk_coordinate_atlas"),
+            _row(
+                seed, "additivity_only", seed == 1,
+                0.20 if seed == 1 else None,
+                seed == 1, 0.25 if seed == 1 else None,
+                proposal_mode="rank_spanning"),
+        ])
+
+    pairs = build_proposal_mode_effects(rows)
+    summaries = summarize_proposal_mode_pairs(pairs)
+
+    assert len(pairs) == 2
+    assert len(summaries) == 1
+    effect = summaries[0]
+    assert effect["profile"] == "additivity_only"
+    assert effect["final_feasible_win_count"] == 1
+    assert effect["final_feasible_loss_count"] == 0
+    assert effect["median_final_regret_delta"] < 0.0
+    assert effect["archive_match_count"] == 2
+    assert effect["initial_fingerprint_match_count"] == 0
