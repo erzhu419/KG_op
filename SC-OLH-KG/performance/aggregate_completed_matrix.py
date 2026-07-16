@@ -25,6 +25,8 @@ ROW_FIELDS = (
     "method",
     "implementation",
     "initial_design",
+    "initial_design_fingerprint",
+    "source_archive_fingerprint",
     "proposal_mode",
     "proposal_structural_prior_profile",
     "proposal_source_dimension",
@@ -207,6 +209,15 @@ def _normalize_sc_result(
         "method": method,
         "implementation": "sc_olh",
         "initial_design": _first(config.get("initial_design"), row.get("task_initial_design")),
+        "initial_design_fingerprint": _first(
+            adaptation.get("target_initial_design_fingerprint"),
+            config.get("initial_design_fingerprint"),
+        ),
+        "source_archive_fingerprint": _first(
+            adaptation.get("source_archive_fingerprint"),
+            adaptation.get("target_initial_design_source_archive_fingerprint"),
+            config.get("initial_design_source_archive_fingerprint"),
+        ),
         "proposal_mode": row.get("proposal_mode"),
         "proposal_structural_prior_profile": row.get(
             "proposal_structural_prior_profile"),

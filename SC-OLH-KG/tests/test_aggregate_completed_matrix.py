@@ -38,6 +38,10 @@ def test_aggregates_sc_result_and_excludes_checkpoint_tree(tmp_path):
                 "posterior_certificate_vacuous": False,
                 "false_certificate_count": 0,
                 "audit": {"source_simulator_calls": 384},
+                "source_target_adaptation_contract": {
+                    "target_initial_design_fingerprint": "design-0",
+                    "source_archive_fingerprint": "archive-0",
+                },
             }],
         },
     )
@@ -51,6 +55,8 @@ def test_aggregates_sc_result_and_excludes_checkpoint_tree(tmp_path):
     assert rows[0]["method"] == "full"
     assert rows[0]["adaptive_rescue"] is True
     assert rows[0]["total_calls"] == 404
+    assert rows[0]["initial_design_fingerprint"] == "design-0"
+    assert rows[0]["source_archive_fingerprint"] == "archive-0"
 
 
 def test_records_official_runtime_failure_as_a_result_row(tmp_path):
