@@ -100,6 +100,37 @@ The next registered gate holds source dimension at 50 and target dimension at
 risk-coordinate atlas for `none`, rejected `full`, `additivity_only`, and
 `orthogonality_only`.
 
+### Pre-registered d=200 promotion rule
+
+This rule was fixed before inspecting any `d=200` optimization result. A
+structural profile can proceed to `d=1000,N=20` only when all of the following
+hold:
+
+1. all 60 cells for that profile are present (`2` causal modes, `2` proposal
+   modes, `3` held-out domains, and `5` seeds), with no failed or unparsable
+   result;
+2. all paired proposal comparisons use the same frozen source-archive
+   fingerprint, while the two proposal modes retain separately recorded design
+   fingerprints and use no target labels or target oracle during fitting;
+3. `joint/risk_coordinate_atlas` is truly feasible in at least `12/15` runs
+   and at least `3/5` runs in every held-out domain;
+4. among initially truly feasible atlas runs, at most one becomes infeasible
+   after online continuation;
+5. relative to `rank_spanning` on identical domain/seed/profile cells, atlas
+   has nonnegative overall paired final-feasibility net and loses at most one
+   feasibility pair in any domain;
+6. conditional on both recommendations being feasible, atlas has at least as
+   many regret wins as losses overall. Feasibility takes precedence over this
+   conditional-regret criterion;
+7. relative to the `none` profile under the atlas, the structural profile has
+   a positive paired effect: either positive final-feasibility net, or tied
+   feasibility with more regret wins than losses. Proposal-only and joint
+   effects are reported separately so an offline proposal effect is not
+   attributed to the posterior.
+
+If no profile passes, `d=1000` is not launched. A failed gate triggers a model
+diagnosis at `d=200`, not a larger-dimensional search for a favorable result.
+
 Scheduler entrypoints:
 
 - `scripts/submit_scolhkg_causal_prior_matrix_scheduler.py`
