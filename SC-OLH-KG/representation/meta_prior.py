@@ -2095,7 +2095,11 @@ class LearnedMetaPrior:
             "source_universal_fraction": float(
                 self.source_universal_fraction),
             "source_universal_record_count": int(sum(
-                rec.origin == "universal_low_frequency" for rec in records
+                rec.origin in {
+                    "universal_low_frequency",
+                    "universal_shared_uniform",
+                }
+                for rec in records
             )),
             "source_analytic_sigma_used": bool(
                 self.source_observation_mode == "analytic"),
@@ -2103,7 +2107,11 @@ class LearnedMetaPrior:
                 self.teacher_records_per_domain > 0),
             "source_simulator_calls": int(sum(
                 max(1, int(rec.replicate_count)) for rec in records
-                if rec.origin in {"random", "universal_low_frequency"}
+                if rec.origin in {
+                    "random",
+                    "universal_low_frequency",
+                    "universal_shared_uniform",
+                }
             )),
         }
 

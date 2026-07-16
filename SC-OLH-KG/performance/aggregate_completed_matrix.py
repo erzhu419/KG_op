@@ -154,6 +154,7 @@ def _normalize_sc_result(
     config = _dict(payload.get("config"))
     audit = _dict(row.get("audit"))
     adaptation = _dict(row.get("source_target_adaptation_contract"))
+    meta_training = _dict(_dict(row.get("meta_prior")).get("training"))
     certificate = _dict(row.get("certificate_outcome_audit"))
     adaptive = _dict(row.get("adaptive_outcome_audit"))
     dominance = _dict(row.get("posterior_dominance"))
@@ -174,6 +175,20 @@ def _normalize_sc_result(
         audit.get("source_simulator_calls"),
         adaptation.get("source_simulator_calls"),
     ))
+    if (
+        (source_calls is None or source_calls <= 0)
+        and meta_training.get("source_observation_mode") == "replicated"
+    ):
+        source_records = _integer(meta_training.get("n_records"))
+        source_replicates = _integer(
+            meta_training.get("source_observation_replicates"))
+        if (
+            source_records is not None
+            and source_records > 0
+            and source_replicates is not None
+            and source_replicates > 0
+        ):
+            source_calls = source_records * source_replicates
     dimension = _integer(_first(config.get("d"), row.get("d")))
     initial_count = _integer(_first(
         row.get("initial_true_feasible_count"),

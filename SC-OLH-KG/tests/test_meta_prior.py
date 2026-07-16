@@ -744,6 +744,9 @@ class MetaPriorTests(unittest.TestCase):
         consensus = prior.diagnostics()["source_consensus_templates"]
         self.assertEqual(consensus["status"], "fit")
         self.assertEqual(consensus["consensus_origin"], "universal_shared_uniform")
+        training = prior.diagnostics()["training"]
+        self.assertEqual(training["source_universal_record_count"], 24)
+        self.assertEqual(training["source_simulator_calls"], 48)
 
         target = MetaPriorProblemAdapter(
             self._problem("QueueResourceControl", d=50), prior)

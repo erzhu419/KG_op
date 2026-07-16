@@ -88,6 +88,34 @@ def test_records_official_runtime_failure_as_a_result_row(tmp_path):
     assert rows[0]["d_over_target_calls"] == 50.0
 
 
+def test_recovers_replicated_source_calls_for_new_archive_origin(tmp_path):
+    root = tmp_path / "shared_uniform_run"
+    _write(root / "joint" / "Domain" / "seed0" / "result.json", {
+        "config": {"d": 50, "N": 20, "n0": 10},
+        "experiment_variant": "causal_prior_v2/joint/atlas/none",
+        "rows": [{
+            "heldout": "Domain",
+            "seed": 0,
+            "true_feasible": True,
+            "feasible_simple_regret": 0.1,
+            "audit": {"source_simulator_calls": 0},
+            "meta_prior": {"training": {
+                "n_records": 128,
+                "source_observation_mode": "replicated",
+                "source_observation_replicates": 3,
+                "record_origins": {"universal_shared_uniform": 128},
+            }},
+        }],
+    })
+
+    rows, errors = MODULE.load_rows([root])
+
+    assert errors == []
+    assert len(rows) == 1
+    assert rows[0]["source_calls"] == 384
+    assert rows[0]["total_calls"] == 404
+
+
 def test_aggregates_hvd_identifiability_metrics(tmp_path):
     root = tmp_path / "hvd_run"
     _write(root / "factor" / "result.json", {
