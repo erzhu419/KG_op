@@ -37,3 +37,10 @@ def test_fairness_scheduler_builds_three_contracts_by_twenty_seeds():
     assert all("botorch_saasbo" not in spec["description"] or
                "--candidate-timeout-sec 3600.0" in spec["cmd"]
                for spec in specs)
+
+
+def test_fairness_scheduler_dispatches_only_newly_submitted_tasks():
+    command = submit.build_dispatch_command(
+        Path("/scheduler.py"), ["t100", "t101"])
+
+    assert command[-4:] == ["--task-id", "t100", "--task-id", "t101"]

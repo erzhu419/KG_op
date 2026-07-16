@@ -12,10 +12,14 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import dataclass
+import hashlib
 from importlib import metadata
 import math
+import multiprocessing as mp
+import os
 from pathlib import Path
 import pickle
+import random
 import signal
 import time
 import warnings
@@ -80,13 +84,53 @@ except Exception as exc:  # pragma: no cover - depends on optional dependency.
 CANONICAL_IMPLEMENTATION_ID = "botorch-tutorial-canonical-v1"
 
 
+def _fit_saas_cpu_worker(payload):
+    """Fit one independent SAAS output in an isolated CPU process."""
+
+    threads = max(1, int(payload["threads"]))
+    torch.set_num_threads(threads)
+    try:
+        torch.set_num_interop_threads(1)
+    except RuntimeError:
+        pass
+    seed = int(payload["seed"])
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    try:
+        import pyro
+
+        pyro.set_rng_seed(seed)
+    except ImportError:
+        pass
+    train_X = torch.as_tensor(payload["train_X"], dtype=torch.double)
+    train_Y = torch.as_tensor(payload["train_Y"], dtype=torch.double)
+    model = SaasFullyBayesianSingleTaskGP(
+        train_X,
+        train_Y,
+        outcome_transform=Standardize(m=1),
+    )
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", BotorchWarning)
+        fit_fully_bayesian_model_nuts(
+            model,
+            warmup_steps=int(payload["warmup_steps"]),
+            num_samples=int(payload["num_samples"]),
+            thinning=int(payload["thinning"]),
+            max_tree_depth=int(payload["max_tree_depth"]),
+            disable_progbar=True,
+        )
+    model.eval()
+    return pickle.dumps(model, protocol=pickle.HIGHEST_PROTOCOL)
+
+
 def is_botorch_available():
     """Return whether the real BoTorch/GPyTorch stack is importable."""
 
     return BOTORCH_IMPORT_ERROR is None
 
 
-def botorch_runtime_fingerprint():
+def botorch_runtime_fingerprint(torch_device="cpu"):
     """Return package versions required to reproduce a baseline row."""
 
     versions = {}
@@ -98,7 +142,7 @@ def botorch_runtime_fingerprint():
     return {
         "implementation_id": CANONICAL_IMPLEMENTATION_ID,
         "versions": versions,
-        "torch_device": "cpu",
+        "torch_device": str(torch_device),
     }
 
 
@@ -213,6 +257,12 @@ class BoTorchBaselineConfig:
     checkpoint_interval: int = 1
     progress_logging: bool = False
     progress_label: str = ""
+    torch_device: str = "cpu"
+    saas_parallel_models: bool = True
+    saas_parallel_min_total_steps: int = 64
+    saas_parallel_threads_per_model: int = 0
+    saas_parallel_start_method: str = "spawn"
+    saas_parallel_fallback: bool = True
 
 
 @dataclass
@@ -288,11 +338,22 @@ class BoTorchBaseline:
         self.problem = problem
         self.config = config
         self.config.method = method
+        requested_device = str(config.torch_device or "cpu").strip().lower()
+        if requested_device == "auto":
+            requested_device = "cuda" if torch.cuda.is_available() else "cpu"
+        if requested_device.startswith("cuda") and not torch.cuda.is_available():
+            raise RuntimeError(
+                f"torch_device={requested_device!r} requested but CUDA is unavailable"
+            )
+        self._torch_device = torch.device(requested_device)
         self.rng = np.random.default_rng(config.seed)
         self.history: list[tuple[tuple[int, ...], np.ndarray]] = []
         self._model_start_index = 0
         self._fit_failures = 0
         self._candidate_failures = 0
+        self._saas_parallel_fit_count = 0
+        self._saas_parallel_failures = 0
+        self._saas_parallel_last_error = ""
         self._timeout_fallback_active = False
         self._restart_count = 0
         self._restart_design_sizes: list[int] = []
@@ -303,6 +364,49 @@ class BoTorchBaseline:
         self._resumed_from_checkpoint = False
         if self.config.checkpoint_resume and self._checkpoint_path() is not None:
             self._load_checkpoint()
+
+    def _stage_seed(self, stage, *, history_size=None):
+        """Stable per-iteration seed, independent of process restart timing."""
+
+        completed = len(self.history) if history_size is None else int(history_size)
+        material = (
+            f"scolhkg-botorch-v1|{int(self.config.seed)}|{completed}|"
+            f"{int(self._model_start_index)}|{stage}"
+        ).encode("utf-8")
+        digest = hashlib.blake2b(material, digest_size=8).digest()
+        return 1 + int.from_bytes(digest, "big") % (2**31 - 2)
+
+    @contextmanager
+    def _deterministic_torch_stage(self, stage):
+        """Isolate Torch/Pyro/Python RNGs for restart-stable model stages."""
+
+        seed = self._stage_seed(stage)
+        python_state = random.getstate()
+        numpy_state = np.random.get_state()
+        cuda_devices = []
+        if self._torch_device.type == "cuda":
+            cuda_devices = [
+                self._torch_device.index
+                if self._torch_device.index is not None
+                else torch.cuda.current_device()
+            ]
+        try:
+            with torch.random.fork_rng(devices=cuda_devices):
+                random.seed(seed)
+                np.random.seed(seed)
+                torch.manual_seed(seed)
+                if cuda_devices:
+                    torch.cuda.manual_seed_all(seed)
+                try:
+                    import pyro
+
+                    pyro.set_rng_seed(seed)
+                except ImportError:
+                    pass
+                yield seed
+        finally:
+            random.setstate(python_state)
+            np.random.set_state(numpy_state)
 
     def _checkpoint_path(self):
         value = str(self.config.checkpoint_path or "").strip()
@@ -325,7 +429,7 @@ class BoTorchBaseline:
             return
         path.parent.mkdir(parents=True, exist_ok=True)
         payload = {
-            "schema_version": 1,
+            "schema_version": 2,
             "signature": self._checkpoint_signature(),
             "history": [
                 (tuple(map(int, x)), np.asarray(y, dtype=float))
@@ -341,6 +445,11 @@ class BoTorchBaseline:
             "restart_count": int(self._restart_count),
             "restart_design_sizes": list(self._restart_design_sizes),
             "initial_design_source": str(self._initial_design_source),
+            "stochastic_schedule": {
+                "kind": "per_iteration_stage_seed_v1",
+                "base_seed": int(self.config.seed),
+                "completed_evaluations": int(len(self.history)),
+            },
         }
         temporary = path.with_suffix(path.suffix + ".tmp")
         with temporary.open("wb") as handle:
@@ -353,7 +462,7 @@ class BoTorchBaseline:
             return
         with path.open("rb") as handle:
             payload = pickle.load(handle)
-        if int(payload.get("schema_version", 0)) != 1:
+        if int(payload.get("schema_version", 0)) not in (1, 2):
             raise ValueError("unsupported BoTorch checkpoint schema")
         if payload.get("signature") != self._checkpoint_signature():
             raise ValueError("BoTorch checkpoint signature does not match run")
@@ -422,7 +531,8 @@ class BoTorchBaseline:
         rows = []
         draw_count = max(n, 8)
         while len(rows) < n:
-            points = engine.draw(draw_count).to(dtype=torch.double)
+            points = engine.draw(draw_count).to(
+                dtype=torch.double, device=self._torch_device)
             for point in points:
                 x = tuple(self.problem.continuous_to_int(
                     point.detach().cpu().numpy()))
@@ -486,43 +596,46 @@ class BoTorchBaseline:
             [self._observed_chance_margin(y)] for y in Y
         ], dtype=float)
         return (
-            torch.as_tensor(X, dtype=torch.double),
-            torch.as_tensor(obj, dtype=torch.double),
-            torch.as_tensor(con, dtype=torch.double),
+            torch.as_tensor(X, dtype=torch.double, device=self._torch_device),
+            torch.as_tensor(obj, dtype=torch.double, device=self._torch_device),
+            torch.as_tensor(con, dtype=torch.double, device=self._torch_device),
         )
 
-    def _single_task_model(self, train_X, train_Y):
-        dim = int(train_X.shape[-1])
-        likelihood = GaussianLikelihood(noise_constraint=Interval(
-            float(self.config.gp_noise_lower),
-            float(self.config.gp_noise_upper),
-        ))
-        covar_module = ScaleKernel(MaternKernel(
-            nu=2.5,
-            ard_num_dims=dim,
-            lengthscale_constraint=Interval(0.005, 4.0),
-        ))
-        model = SingleTaskGP(
-            train_X,
-            train_Y,
-            likelihood=likelihood,
-            covar_module=covar_module,
-            outcome_transform=Standardize(m=1),
-        )
-        mll = ExactMarginalLogLikelihood(model.likelihood, model)
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", BotorchWarning)
-            fit_gpytorch_mll(
-                mll,
-                optimizer_kwargs={"options": {"maxiter": int(self.config.maxiter)}},
+    def _single_task_model(self, train_X, train_Y, *, role):
+        with self._deterministic_torch_stage(f"standard_fit:{role}"):
+            dim = int(train_X.shape[-1])
+            likelihood = GaussianLikelihood(noise_constraint=Interval(
+                float(self.config.gp_noise_lower),
+                float(self.config.gp_noise_upper),
+            ))
+            covar_module = ScaleKernel(MaternKernel(
+                nu=2.5,
+                ard_num_dims=dim,
+                lengthscale_constraint=Interval(0.005, 4.0),
+            ))
+            model = SingleTaskGP(
+                train_X,
+                train_Y,
+                likelihood=likelihood,
+                covar_module=covar_module,
+                outcome_transform=Standardize(m=1),
             )
+            mll = ExactMarginalLogLikelihood(model.likelihood, model)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", BotorchWarning)
+                fit_gpytorch_mll(
+                    mll,
+                    optimizer_kwargs={"options": {"maxiter": int(self.config.maxiter)}},
+                )
         model.eval()
         return model
 
     def _fit_standard_models(self, train_X, train_obj, train_con):
         try:
-            obj_model = self._single_task_model(train_X, train_obj)
-            con_model = self._single_task_model(train_X, train_con)
+            obj_model = self._single_task_model(
+                train_X, train_obj, role="objective")
+            con_model = self._single_task_model(
+                train_X, train_con, role="constraint")
         except Exception:
             self._fit_failures += 1
             raise
@@ -531,36 +644,111 @@ class BoTorchBaseline:
 
     def _fit_objective_model(self, train_X, train_obj):
         try:
-            obj_model = self._single_task_model(train_X, train_obj)
+            obj_model = self._single_task_model(
+                train_X, train_obj, role="objective")
         except Exception:
             self._fit_failures += 1
             raise
         self._last_models = (obj_model, self._last_models[1])
         return obj_model
 
-    def _fit_saas_single(self, train_X, train_Y):
-        model = SaasFullyBayesianSingleTaskGP(
-            train_X,
-            train_Y,
-            outcome_transform=Standardize(m=1),
-        )
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", BotorchWarning)
-            fit_fully_bayesian_model_nuts(
-                model,
-                warmup_steps=int(self.config.saas_warmup_steps),
-                num_samples=int(self.config.saas_num_samples),
-                thinning=int(self.config.saas_thinning),
-                max_tree_depth=int(self.config.saas_max_tree_depth),
-                disable_progbar=True,
+    def _fit_saas_single(self, train_X, train_Y, *, role):
+        with self._deterministic_torch_stage(f"saas_nuts:{role}"):
+            model = SaasFullyBayesianSingleTaskGP(
+                train_X,
+                train_Y,
+                outcome_transform=Standardize(m=1),
             )
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", BotorchWarning)
+                fit_fully_bayesian_model_nuts(
+                    model,
+                    warmup_steps=int(self.config.saas_warmup_steps),
+                    num_samples=int(self.config.saas_num_samples),
+                    thinning=int(self.config.saas_thinning),
+                    max_tree_depth=int(self.config.saas_max_tree_depth),
+                    disable_progbar=True,
+                )
         model.eval()
         return model
 
+    def _use_parallel_saas_models(self):
+        total_steps = (
+            int(self.config.saas_warmup_steps)
+            + int(self.config.saas_num_samples)
+        )
+        return bool(
+            self.config.saas_parallel_models
+            and self._torch_device.type == "cpu"
+            and total_steps >= int(self.config.saas_parallel_min_total_steps)
+        )
+
+    def _saas_parallel_threads(self):
+        configured = int(self.config.saas_parallel_threads_per_model)
+        if configured > 0:
+            return configured
+        try:
+            total_threads = int(os.environ.get("OMP_NUM_THREADS", "2"))
+        except ValueError:
+            total_threads = 2
+        return max(1, total_threads // 2)
+
+    def _fit_saas_models_parallel(self, train_X, train_obj, train_con):
+        common = {
+            "train_X": train_X.detach().cpu().numpy(),
+            "warmup_steps": int(self.config.saas_warmup_steps),
+            "num_samples": int(self.config.saas_num_samples),
+            "thinning": int(self.config.saas_thinning),
+            "max_tree_depth": int(self.config.saas_max_tree_depth),
+            "threads": int(self._saas_parallel_threads()),
+        }
+        payloads = [
+            {
+                **common,
+                "train_Y": train_obj.detach().cpu().numpy(),
+                "seed": self._stage_seed("saas_nuts:objective"),
+            },
+            {
+                **common,
+                "train_Y": train_con.detach().cpu().numpy(),
+                "seed": self._stage_seed("saas_nuts:constraint"),
+            },
+        ]
+        context = mp.get_context(str(self.config.saas_parallel_start_method))
+        pool = context.Pool(processes=2, maxtasksperchild=1)
+        try:
+            serialized_models = pool.map(_fit_saas_cpu_worker, payloads)
+        except BaseException:
+            pool.terminate()
+            pool.join()
+            raise
+        else:
+            pool.close()
+            pool.join()
+        self._saas_parallel_fit_count += 1
+        return tuple(pickle.loads(payload) for payload in serialized_models)
+
     def _fit_saas_models(self, train_X, train_obj, train_con):
         try:
-            obj_model = self._fit_saas_single(train_X, train_obj)
-            con_model = self._fit_saas_single(train_X, train_con)
+            if self._use_parallel_saas_models():
+                try:
+                    obj_model, con_model = self._fit_saas_models_parallel(
+                        train_X, train_obj, train_con)
+                except Exception as exc:
+                    self._saas_parallel_failures += 1
+                    self._saas_parallel_last_error = (
+                        f"{type(exc).__name__}: {exc}")[:300]
+                    if not self.config.saas_parallel_fallback:
+                        raise
+                    obj_model = self._fit_saas_single(
+                        train_X, train_obj, role="objective")
+                    con_model = self._fit_saas_single(
+                        train_X, train_con, role="constraint")
+            else:
+                obj_model = self._fit_saas_single(
+                    train_X, train_obj, role="objective")
+                con_model = self._fit_saas_single(
+                    train_X, train_con, role="constraint")
         except Exception:
             self._fit_failures += 1
             raise
@@ -601,19 +789,21 @@ class BoTorchBaseline:
     def _ts_candidate_pool(self, center, lower, upper, n_candidates, seed):
         engine = SobolEngine(
             dimension=int(self.problem.d), scramble=True, seed=int(seed))
-        pert = engine.draw(int(n_candidates)).to(dtype=torch.double)
+        pert = engine.draw(int(n_candidates)).to(
+            dtype=torch.double, device=center.device)
         pert = lower + (upper - lower) * pert
-        generator = torch.Generator(device="cpu")
+        generator = torch.Generator(device=center.device)
         generator.manual_seed(int(seed) + 104729)
         probability = min(20.0 / float(self.problem.d), 1.0)
         mask = torch.rand(
             int(n_candidates), int(self.problem.d),
-            dtype=torch.double, generator=generator,
+            dtype=torch.double, device=center.device, generator=generator,
         ) <= probability
         empty = torch.where(mask.sum(dim=1) == 0)[0]
         if len(empty):
             columns = torch.randint(
-                0, int(self.problem.d), (len(empty),), generator=generator)
+                0, int(self.problem.d), (len(empty),),
+                device=center.device, generator=generator)
             mask[empty, columns] = True
         candidates = center.expand(int(n_candidates), int(self.problem.d)).clone()
         candidates[mask] = pert[mask]
@@ -655,7 +845,14 @@ class BoTorchBaseline:
                     constraint_model=con_model,
                     replacement=False,
                 )
-            with torch.random.fork_rng(devices=[]), torch.no_grad():
+            fork_devices = []
+            if self._torch_device.type == "cuda":
+                fork_devices = [
+                    self._torch_device.index
+                    if self._torch_device.index is not None
+                    else torch.cuda.current_device()
+                ]
+            with torch.random.fork_rng(devices=fork_devices), torch.no_grad():
                 torch.manual_seed(seed + 2097593)
                 candidate = sampler(X_cand, num_samples=1)
             x = self._unseen_integer_candidate(candidate)
@@ -677,25 +874,30 @@ class BoTorchBaseline:
 
     def _global_bounds(self):
         return torch.stack([
-            torch.zeros(int(self.problem.d), dtype=torch.double),
-            torch.ones(int(self.problem.d), dtype=torch.double),
+            torch.zeros(
+                int(self.problem.d), dtype=torch.double,
+                device=self._torch_device),
+            torch.ones(
+                int(self.problem.d), dtype=torch.double,
+                device=self._torch_device),
         ])
 
     def _optimize_saas_acquisition(self, acqf):
         try:
-            candidate, _ = optimize_acqf(
-                acq_function=acqf,
-                bounds=self._global_bounds(),
-                q=1,
-                num_restarts=int(self.config.num_restarts),
-                raw_samples=int(self.config.raw_samples),
-                options={
-                    "maxiter": int(self.config.maxiter),
-                    "batch_limit": 5,
-                    "init_batch_limit": 64,
-                },
-                timeout_sec=self.config.timeout_sec,
-            )
+            with self._deterministic_torch_stage("saas_acquisition_optimize"):
+                candidate, _ = optimize_acqf(
+                    acq_function=acqf,
+                    bounds=self._global_bounds(),
+                    q=1,
+                    num_restarts=int(self.config.num_restarts),
+                    raw_samples=int(self.config.raw_samples),
+                    options={
+                        "maxiter": int(self.config.maxiter),
+                        "batch_limit": 5,
+                        "init_batch_limit": 64,
+                    },
+                    timeout_sec=self.config.timeout_sec,
+                )
         except Exception:
             self._candidate_failures += 1
             raise
@@ -807,7 +1009,7 @@ class BoTorchBaseline:
                 unique.append(x)
         X = torch.as_tensor(np.asarray([
             self.problem.normalize(x) for x in unique
-        ], dtype=float), dtype=torch.double)
+        ], dtype=float), dtype=torch.double, device=self._torch_device)
         with torch.no_grad():
             obj_posterior = obj_model.posterior(X)
             con_posterior = con_model.posterior(X)
@@ -900,16 +1102,64 @@ class BoTorchBaseline:
         total = max(1, int(self.config.N))
         current = max(0, min(total, len(self.history)))
         elapsed = max(0.0, time.time() - float(started_at))
-        done = max(1, current)
-        eta_sec = (elapsed / float(done)) * float(max(0, total - current))
+        self._progress_timing.append((current, elapsed))
+        completed_here = max(1, current - int(self._progress_start_unit))
+        eta_sec = (elapsed / float(completed_here)) * float(
+            max(0, total - current))
+        eta_model = "current_run_average"
+        if self.config.method == "botorch_saasbo" and len(self._progress_timing) >= 12:
+            points = [
+                point for point in self._progress_timing
+                if point[0] >= 0.25 * current
+            ]
+            if len(points) < 12:
+                points = self._progress_timing
+            stride = max(2, len(points) // 24)
+            rates = []
+            for start in range(0, len(points) - stride, stride):
+                left = points[start]
+                right = points[min(len(points) - 1, start + stride)]
+                delta_units = right[0] - left[0]
+                delta_sec = right[1] - left[1]
+                if delta_units > 0 and delta_sec > 0:
+                    rates.append((
+                        (left[0] + right[0]) / 2.0,
+                        delta_sec / float(delta_units),
+                    ))
+            if len(rates) >= 4:
+                mean_x = sum(x for x, _ in rates) / len(rates)
+                mean_y = sum(y for _, y in rates) / len(rates)
+                variance_x = sum((x - mean_x) ** 2 for x, _ in rates)
+                if variance_x > 0:
+                    slope = max(0.0, sum(
+                        (x - mean_x) * (y - mean_y) for x, y in rates
+                    ) / variance_x)
+                    intercept = mean_y - slope * mean_x
+                    recent = sorted(y for _, y in rates[-min(5, len(rates)):])
+                    recent_rate = recent[len(recent) // 2]
+                    current_rate = max(
+                        1e-9, recent_rate, intercept + slope * current)
+                    slope = min(
+                        slope,
+                        2.0 * current_rate / max(1.0, float(current)),
+                    )
+                    remaining = float(max(0, total - current))
+                    eta_sec = (
+                        current_rate * remaining
+                        + 0.5 * slope * remaining * remaining
+                    )
+                    eta_model = "growing_iter_cost"
         print(
             f"Iter {current}/{total} [botorch-canonical] "
-            f"label={self._progress_label()} Time: {elapsed:.1f}s ETA {eta_sec:.1f}s",
+            f"label={self._progress_label()} Time: {elapsed:.1f}s "
+            f"ETA {eta_sec:.1f}s eta_model={eta_model}",
             flush=True,
         )
 
     def run(self):
         t_start = time.time()
+        self._progress_start_unit = len(self.history)
+        self._progress_timing = []
         if len(self.history) < int(self.config.n0):
             for x in self._initial_samples():
                 if len(self.history) >= int(self.config.n0):
@@ -943,7 +1193,7 @@ class BoTorchBaseline:
             self._emit_progress(t_start)
         x_best, posterior = self._posterior_recommendation()
         result = self._evaluate_recommendation(x_best)
-        runtime = botorch_runtime_fingerprint()
+        runtime = botorch_runtime_fingerprint(self._torch_device)
         runtime["torch_device"] = str(
             self._last_models[0].train_inputs[0].device
             if self._last_models[0] is not None else "cpu")
@@ -967,7 +1217,18 @@ class BoTorchBaseline:
                 None if self._checkpoint_path() is None
                 else str(self._checkpoint_path())),
             "checkpoint_resumed": bool(self._resumed_from_checkpoint),
+            "stochastic_schedule": {
+                "kind": "per_iteration_stage_seed_v1",
+                "base_seed": int(self.config.seed),
+                "resume_replays_inflight_stage": True,
+            },
             "saas_constrained": bool(self.config.saas_constrained),
+            "saas_parallel_models": bool(self._use_parallel_saas_models()),
+            "saas_parallel_fit_count": int(self._saas_parallel_fit_count),
+            "saas_parallel_failures": int(self._saas_parallel_failures),
+            "saas_parallel_last_error": str(self._saas_parallel_last_error),
+            "saas_parallel_threads_per_model": int(
+                self._saas_parallel_threads()),
             "initial_design": str(self._initial_design_source),
             "ts_candidates": int(
                 self.config.ts_candidates

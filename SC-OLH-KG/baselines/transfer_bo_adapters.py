@@ -90,6 +90,7 @@ class TransferBOConfig:
     beta_g: float = 2.0
     beta_risk: float = 2.0
     initial_design: str = "common_sobol"
+    initial_points: tuple[tuple[int, ...], ...] | None = None
     implementation: str = "paper_core"
     source_train_steps: int = 200
     target_finetune_steps: int = 40
@@ -106,8 +107,23 @@ class TransferBOConfig:
             raise ValueError("implementation must be paper_core or official")
         if self.N < 1 or self.n0 < 1 or self.n0 > self.N:
             raise ValueError("transfer BO requires 1 <= n0 <= N")
-        if self.initial_design != "common_sobol":
-            raise ValueError("paper comparison requires common_sobol initial design")
+        if self.initial_design not in {"common_sobol", "source_informed"}:
+            raise ValueError(
+                "initial_design must be common_sobol or source_informed")
+        if self.initial_points is not None:
+            self.initial_points = tuple(
+                tuple(map(int, point)) for point in self.initial_points)
+        if self.initial_design == "common_sobol":
+            if self.initial_points is not None:
+                raise ValueError(
+                    "common_sobol must not receive optimizer-specific points")
+        elif self.initial_points is None:
+            raise ValueError(
+                "source_informed requires an explicit frozen initial design")
+        elif len(self.initial_points) != self.n0:
+            raise ValueError("source_informed design must contain exactly n0 points")
+        elif len(set(self.initial_points)) != self.n0:
+            raise ValueError("source_informed design points must be unique")
 
 
 def scalar_tasks_from_archive(archive, output):
@@ -207,6 +223,9 @@ class TransferConstrainedBO:
     """One-call-at-a-time transfer CBO with a shared heteroscedastic bound."""
 
     def __init__(self, problem, archive: FrozenTransferArchive, config):
+        self._progress_started_at = time.time()
+        self._progress_phase_started_at = self._progress_started_at
+        self._progress_phase_start_done = 0
         self.problem = problem
         self.archive = archive.validate(expected_dimension=problem.d)
         self.config = config
@@ -226,16 +245,52 @@ class TransferConstrainedBO:
             seed=config.seed + 2017,
         )
         self.history = []
+        self._validate_initial_points()
         self._fit_source_archive()
         self.candidate_points, self.candidate_origins = self._candidate_pool()
 
+    def _validate_initial_points(self):
+        points = self.config.initial_points
+        if points is None:
+            return
+        for point in points:
+            if len(point) != int(self.problem.d):
+                raise ValueError(
+                    "source_informed point dimension does not match target")
+            normalized = np.asarray(
+                self.problem.normalize(point), dtype=float)
+            if normalized.shape != (int(self.problem.d),):
+                raise ValueError("target returned an invalid normalized point")
+            if not np.all(np.isfinite(normalized)):
+                raise ValueError("source_informed point contains nonfinite values")
+            roundtrip = tuple(map(
+                int, self.problem.continuous_to_int(normalized)))
+            if roundtrip != tuple(point):
+                raise ValueError("source_informed point is outside target bounds")
+
     def _fit_source_archive(self):
-        self.objective_model.meta_fit(scalar_tasks_from_archive(
-            self.archive, "objective"))
-        self.constraint_model.meta_fit(scalar_tasks_from_archive(
-            self.archive, "constraint_mean"))
-        self.risk_model.meta_fit(scalar_tasks_from_archive(
-            self.archive, "log_variance"))
+        self._progress_phase_started_at = time.time()
+        roles = (
+            ("objective", self.objective_model),
+            ("constraint_mean", self.constraint_model),
+            ("log_variance", self.risk_model),
+        )
+        for index, (role, model) in enumerate(roles):
+            self._emit_progress(
+                "source_model_start",
+                phase="source_training",
+                done=index,
+                total=len(roles),
+                role=role,
+            )
+            model.meta_fit(scalar_tasks_from_archive(self.archive, role))
+            self._emit_progress(
+                "source_model_done",
+                phase="source_training",
+                done=index + 1,
+                total=len(roles),
+                role=role,
+            )
 
     def _candidate_pool(self):
         requested = max(int(self.config.candidate_pool_size), self.config.N)
@@ -257,12 +312,13 @@ class TransferConstrainedBO:
             points.append(point)
             point_origins.append(origin)
 
-        initial = common_sobol_integer_design(
-            self.problem,
-            self.config.n0,
-            self.config.seed,
-        )
-        for point in initial:
+        if self.config.initial_points is not None:
+            for point in self.config.initial_points:
+                append_point(point, "source_informed_pool")
+
+        sobol_initial = common_sobol_integer_design(
+            self.problem, self.config.n0, self.config.seed)
+        for point in sobol_initial:
             append_point(point, "common_sobol_pool")
 
         source = np.vstack([task.X for task in self.archive.tasks])
@@ -281,12 +337,13 @@ class TransferConstrainedBO:
         return points, point_origins
 
     def _common_initial_design(self):
-        return [
-            point for point, origin in zip(
-                self.candidate_points, self.candidate_origins
-            )
-            if origin == "common_sobol_pool"
-        ][:self.config.n0]
+        return common_sobol_integer_design(
+            self.problem, self.config.n0, self.config.seed)
+
+    def _initial_design(self):
+        if self.config.initial_design == "source_informed":
+            return list(self.config.initial_points)
+        return self._common_initial_design()
 
     def _arrays(self):
         if not self.history:
@@ -463,16 +520,35 @@ class TransferConstrainedBO:
         self.rng.bit_generator.state = state["rng_state"]
         self._adapt_models()
 
-    def _emit_progress(self, event):
+    def _emit_progress(self, event, *, phase="target_online", done=None,
+                       total=None, role=None):
         if not self.config.progress_logging:
             return
+        now = time.time()
+        done = int(len(self.history) if done is None else done)
+        total = int(self.config.N if total is None else total)
+        phase_elapsed = max(0.0, now - self._progress_phase_started_at)
+        phase_done = max(0, done - int(self._progress_phase_start_done))
+        eta_seconds = None
+        if phase_done > 0 and total > done:
+            eta_seconds = (
+                phase_elapsed / float(phase_done) * float(total - done))
+        elif done >= total:
+            eta_seconds = 0.0
         payload = {
             "kind": event,
             "label": self.config.progress_label,
-            "done": int(len(self.history)),
-            "total": int(self.config.N),
+            "done": done,
+            "total": total,
             "method": self.config.method,
+            "phase": phase,
+            "elapsed_s": max(0.0, now - self._progress_started_at),
+            "phase_elapsed_s": phase_elapsed,
         }
+        if eta_seconds is not None:
+            payload["eta_seconds"] = float(eta_seconds)
+        if role is not None:
+            payload["role"] = str(role)
         print("SCOLHKG_PROGRESS " + json.dumps(payload), flush=True)
 
     def _recommend(self):
@@ -499,13 +575,25 @@ class TransferConstrainedBO:
     def run(self):
         started = time.time()
         self._resume()
-        initial = self._common_initial_design()
+        self._progress_phase_started_at = time.time()
+        self._progress_phase_start_done = len(self.history)
+        initial = self._initial_design()
+        initial_origin = (
+            "source_informed_pool"
+            if self.config.initial_design == "source_informed"
+            else "common_sobol_pool"
+        )
+        initial_reason = (
+            "frozen_source_informed_initial_design"
+            if self.config.initial_design == "source_informed"
+            else "common_sobol_initial_design"
+        )
         while len(self.history) < self.config.N:
             if len(self.history) < self.config.n0:
                 point = initial[len(self.history)]
                 selection = {
-                    "selection_reason": "common_sobol_initial_design",
-                    "candidate_origin": "common_sobol_pool",
+                    "selection_reason": initial_reason,
+                    "candidate_origin": initial_origin,
                     "certified_pool_count": None,
                     "candidate_pool_count": len(self.candidate_points),
                 }
@@ -525,6 +613,55 @@ class TransferConstrainedBO:
             - float(self.problem.tau)
         )
         _, optimum = self.problem.true_best_feasible()
+        z_alpha = float(norm.ppf(1.0 - float(self.problem.alpha)))
+        initial_truth_rows = []
+        for point in initial:
+            initial_objective = float(self.problem.true_objective(point))
+            initial_mean = float(self.problem.true_constraint_mean(point))
+            initial_sigma = float(self.problem.true_sigma(point)[1])
+            initial_margin = (
+                initial_mean + z_alpha * initial_sigma
+                - float(self.problem.tau)
+            )
+            initial_truth_rows.append({
+                "objective": initial_objective,
+                "chance_margin": float(initial_margin),
+                "true_feasible": bool(initial_margin <= 0.0),
+                "feasible_regret": (
+                    max(0.0, initial_objective - float(optimum))
+                    if initial_margin <= 0.0 else None
+                ),
+            })
+        initial_feasible_regrets = [
+            float(row["feasible_regret"])
+            for row in initial_truth_rows
+            if row["feasible_regret"] is not None
+        ]
+        initial_truth_audit = {
+            "computed_after_recommendation": True,
+            "used_for_selection": False,
+            "n": int(len(initial_truth_rows)),
+            "true_feasible_count": int(sum(
+                row["true_feasible"] for row in initial_truth_rows)),
+            "true_feasible_rate": float(np.mean([
+                row["true_feasible"] for row in initial_truth_rows
+            ])),
+            "true_min_chance_margin": float(min(
+                row["chance_margin"] for row in initial_truth_rows)),
+            "best_true_feasible_regret": (
+                float(min(initial_feasible_regrets))
+                if initial_feasible_regrets else None
+            ),
+        }
+        final_feasible_regret = (
+            max(0.0, true_objective - float(optimum))
+            if true_margin <= 0.0 else None
+        )
+        initial_truth_audit["final_improves_initial_best"] = bool(
+            final_feasible_regret is not None
+            and initial_feasible_regrets
+            and final_feasible_regret < min(initial_feasible_regrets) - 1e-12
+        )
         diagnostics = {
             "objective": self.objective_model.diagnostics(),
             "constraint_mean": self.constraint_model.diagnostics(),
@@ -545,10 +682,14 @@ class TransferConstrainedBO:
                 "initial_design": self.config.initial_design,
                 "initial_design_fingerprint": integer_design_fingerprint(
                     initial),
+                "initial_points": [list(map(int, point)) for point in initial],
+                "source_informed_initial_design": bool(
+                    self.config.initial_design == "source_informed"),
                 "target_oracle_used_for_selection": False,
                 "target_true_sigma_used_for_selection": False,
                 "post_run_truth_used_for_metrics_only": True,
             },
+            "initial_truth_audit": initial_truth_audit,
             "adaptation_contract": METHOD_CONTRACTS[self.config.method],
             "model_diagnostics": diagnostics,
             "x_recommended": list(map(int, recommended)),
@@ -559,8 +700,7 @@ class TransferConstrainedBO:
             "true_chance_margin": float(true_margin),
             "true_feasible": bool(true_margin <= 0.0),
             "feasible_regret": (
-                max(0.0, true_objective - float(optimum))
-                if true_margin <= 0.0 else None
+                final_feasible_regret
             ),
             "constraint_violation": max(0.0, float(true_margin)),
             "n_simulations": int(len(self.history)),

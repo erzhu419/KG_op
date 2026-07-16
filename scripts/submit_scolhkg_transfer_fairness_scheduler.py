@@ -23,6 +23,12 @@ DEFAULT_PYTHON = (
 REMOTE_ROOT = Path(
     "/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
 EXTERNAL_REPOS = REMOTE_ROOT / "external_repos"
+TRANSFER_TORCH_OVERLAY = Path(
+    "/home/zhengliang01/scheduleurm_work/python_pkgs/transfer_torch_py310"
+)
+TRANSFERGPBO_OVERLAY = Path(
+    "/home/zhengliang01/scheduleurm_work/python_pkgs/transfergpbo_py310"
+)
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
 ALL_METHODS = (
     "safe_fpacoh_cbo",
@@ -52,6 +58,10 @@ def parse_csv(value):
 
 def archive_relative_path(run_id, heldout):
     return Path("archives") / run_id / heldout / f"heldout_{heldout}.json"
+
+
+def design_relative_path(run_id, heldout):
+    return Path("archives") / run_id / heldout / "source_initial_designs.json"
 
 
 def build_specs(args):
@@ -96,17 +106,19 @@ def build_specs(args):
             "--manifest", str(remote_manifest),
             "--heldouts", heldout,
             "--out-dir", str(archive_dir),
+            "--d", str(args.d),
         ]
         specs.append({
             "description": f"materialize transfer archive {heldout}",
             "cmd": f"{shlex.join(command)} && echo DONE",
-            "cwd": str(remote_project),
+            # scheduleurm stages from the submit host, so cwd must name the
+            # local deploy tree. Absolute paths inside cmd remain remote.
+            "cwd": str(deploy_project),
             "signature": f"KG_op/transfer_archive/{args.run_id}/{heldout}",
             "project": "KG-SYNTH",
             "vram": 0,
             "cpu": int(args.cpu),
             "ram_mb": int(args.ram_mb),
-            "require_node": nodes[index % len(nodes)],
             "allowed_nodes": list(nodes),
             "result_dir": str(archive_dir),
             "local_result_dir": str(local_archive.parent),
@@ -114,11 +126,53 @@ def build_specs(args):
             "allow_duplicate": True,
         })
 
+        if args.initial_design == "source_informed":
+            design_relative = design_relative_path(args.run_id, heldout)
+            local_design = deploy_project / design_relative
+            remote_design = remote_project / design_relative
+            design_command = [
+                "env", "LC_ALL=C", "LANG=C", "SCOLHKG_OFFLINE=1",
+                "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
+                f"OMP_NUM_THREADS={int(args.cpu)}",
+                f"MKL_NUM_THREADS={int(args.cpu)}",
+                str(args.python),
+                "performance/materialize_source_initial_designs.py",
+                "--manifest", str(remote_manifest),
+                "--heldout", heldout,
+                "--archive", str(remote_archive),
+                "--out", str(remote_design),
+                "--d", str(args.d),
+                "--n0", str(args.n0),
+                "--seed-start", str(args.seed_start),
+                "--n-seeds", str(args.n_seeds),
+            ]
+            specs.append({
+                "description": f"materialize source initial designs {heldout}",
+                "cmd": f"{shlex.join(design_command)} && echo DONE",
+                "cwd": str(deploy_project),
+                "signature": (
+                    f"KG_op/transfer_initial_design/{args.run_id}/{heldout}"
+                ),
+                "project": "KG-SYNTH",
+                "vram": 0,
+                "cpu": int(args.cpu),
+                "ram_mb": int(args.ram_mb),
+                "allowed_nodes": list(nodes),
+                "wait_for_files": [str(local_archive)],
+                "result_dir": str(remote_design.parent),
+                "local_result_dir": str(local_design.parent),
+                "stage_excludes": ["checkpoints", "profiles", "results"],
+                "allow_duplicate": True,
+            })
+
     index = 0
     for heldout in heldouts:
         relative = archive_relative_path(args.run_id, heldout)
         local_archive = deploy_project / relative
         remote_archive = remote_project / relative
+        design_relative = design_relative_path(args.run_id, heldout)
+        local_design = deploy_project / design_relative
+        remote_design = remote_project / design_relative
         for method in methods:
             for offset in range(int(args.n_seeds)):
                 seed = int(args.seed_start) + offset
@@ -142,9 +196,7 @@ def build_specs(args):
                     f"MKL_NUM_THREADS={int(args.cpu)}",
                     f"OPENBLAS_NUM_THREADS={int(args.cpu)}",
                     f"SCOLHKG_EXTERNAL_REPO_ROOT={EXTERNAL_REPOS}",
-                    "SCOLHKG_TRANSFERGPBO_OVERLAY="
-                    "/home/zhengliang01/scheduleurm_work/"
-                    "python_pkgs/transfergpbo_py310",
+                    f"SCOLHKG_TRANSFERGPBO_OVERLAY={TRANSFERGPBO_OVERLAY}",
                     "SCOLHKG_HYPERBO_OVERLAY="
                     "/home/zhengliang01/scheduleurm_work/"
                     "python_pkgs/hyperbo_py310",
@@ -157,18 +209,23 @@ def build_specs(args):
                     "--out", str(remote_result_dir / "result.json"),
                     "--checkpoint-dir", str(task_checkpoint_dir),
                     "--seed", str(seed),
+                    "--d", str(args.d),
                     "--N", str(args.N),
                     "--n0", str(args.n0),
+                    "--initial-design", args.initial_design,
                     "--source-train-steps", str(args.source_train_steps),
                     "--target-finetune-steps", str(args.target_finetune_steps),
                 ]
+                if args.initial_design == "source_informed":
+                    command.extend([
+                        "--initial-design-file", str(remote_design),
+                    ])
                 if args.implementation == "official":
                     command.insert(
                         5,
-                        "PYTHONPATH=/home/zhengliang01/scheduleurm_work/"
-                        "python_pkgs/transfergpbo_py310",
+                        "PYTHONPATH="
+                        f"{TRANSFER_TORCH_OVERLAY}:{TRANSFERGPBO_OVERLAY}",
                     )
-                node = nodes[index % len(nodes)]
                 index += 1
                 specs.append({
                     "description": (
@@ -176,7 +233,7 @@ def build_specs(args):
                         f"{method} seed={seed}"
                     ),
                     "cmd": f"{shlex.join(command)} && echo DONE",
-                    "cwd": str(remote_project),
+                    "cwd": str(deploy_project),
                     "signature": (
                         f"KG_op/transfer_fairness/{args.run_id}/"
                         f"{args.implementation}/{heldout}/{method}/"
@@ -186,9 +243,15 @@ def build_specs(args):
                     "vram": 0,
                     "cpu": int(args.cpu),
                     "ram_mb": int(args.ram_mb),
-                    "require_node": node,
                     "allowed_nodes": list(nodes),
-                    "wait_for_files": [str(local_archive)],
+                    "wait_for_files": [
+                        str(local_archive),
+                        *(
+                            [str(local_design)]
+                            if args.initial_design == "source_informed"
+                            else []
+                        ),
+                    ],
                     "ckpt_dir": str(task_checkpoint_dir),
                     "ckpt_glob": "**/*.pkl",
                     "allow_initial_resume_scan_error": True,
@@ -224,6 +287,12 @@ def main():
     parser.add_argument("--n-seeds", type=int, default=20)
     parser.add_argument("--N", type=int, default=20)
     parser.add_argument("--n0", type=int, default=10)
+    parser.add_argument("--d", type=int, default=50)
+    parser.add_argument(
+        "--initial-design",
+        choices=("common_sobol", "source_informed"),
+        default="common_sobol",
+    )
     parser.add_argument("--source-train-steps", type=int, default=0)
     parser.add_argument("--target-finetune-steps", type=int, default=100)
     parser.add_argument("--nodes", default=",".join(CPU_NODES))

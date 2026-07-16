@@ -422,6 +422,22 @@ def run_one(task):
     basis_grid = bool(args_dict.get("basis_grid", False)) or bool(
         args_dict.get("basis_pair_grid", False))
     problem, meta_diag = build_target_problem(args_dict, heldout, line, seed)
+    if str(args_dict.get("initial_design", "auto")) == "source_informed":
+        expected_source_fingerprint = str(args_dict.get(
+            "initial_design_source_archive_fingerprint", ""))
+        actual_source_fingerprint = str(
+            ((meta_diag or {}).get("training") or {}).get(
+                "source_archive_fingerprint", "")
+        )
+        if not expected_source_fingerprint:
+            raise ValueError(
+                "source-informed SC-OLH-KG requires an archive fingerprint")
+        if actual_source_fingerprint != expected_source_fingerprint:
+            raise ValueError(
+                "SC-OLH-KG source archive does not match the frozen initial "
+                f"proposal archive: {actual_source_fingerprint} != "
+                f"{expected_source_fingerprint}"
+            )
     checkpoint_path = str(args_dict.get("checkpoint_path") or "").strip()
     runtime_checkpoint_dir = str(args_dict.get("runtime_checkpoint_dir") or "").strip()
     if not runtime_checkpoint_dir and checkpoint_path:
@@ -450,6 +466,14 @@ def run_one(task):
         N=args_dict["N"],
         n0=args_dict["n0"],
         initial_design=str(args_dict.get("initial_design", "auto")),
+        initial_design_points=tuple(
+            tuple(map(int, point))
+            for point in args_dict.get("initial_design_points", ())
+        ),
+        initial_design_fingerprint=str(args_dict.get(
+            "initial_design_fingerprint", "")),
+        initial_design_source_archive_fingerprint=str(args_dict.get(
+            "initial_design_source_archive_fingerprint", "")),
         K1=args_dict["K1"],
         K2=args_dict["K2"],
         posterior_pool_size=args_dict["posterior_pool_size"],
@@ -749,6 +773,9 @@ def run_one(task):
                 "initial_design", "auto")),
             "target_initial_design_fingerprint": initial_design.get(
                 "fingerprint"),
+            "target_initial_design_source_archive_fingerprint": (
+                initial_design.get("source_archive_fingerprint")
+            ),
             "target_oracle_used_for_adaptation": False,
             "source_domains": source_training.get(
                 "source_archive_domains", []),

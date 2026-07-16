@@ -177,6 +177,13 @@ def run_one(args):
             f"fair:{args.protocol}:{args.heldout}:{args.method}:"
             f"seed={int(args.seed)}"
         ),
+        torch_device=getattr(args, "torch_device", "cpu"),
+        saas_parallel_models=bool(getattr(
+            args, "saas_parallel_models", True)),
+        saas_parallel_min_total_steps=int(getattr(
+            args, "saas_parallel_min_total_steps", 64)),
+        saas_parallel_threads_per_model=int(getattr(
+            args, "saas_parallel_threads_per_model", 0)),
     )
     started = time.time()
     payload = {
@@ -261,6 +268,17 @@ def main():
     parser.add_argument("--saas-thinning", type=int, default=16)
     parser.add_argument("--saas-max-tree-depth", type=int, default=6)
     parser.add_argument("--saas-mc-samples", type=int, default=256)
+    parser.add_argument(
+        "--saas-parallel-models",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument("--saas-parallel-min-total-steps", type=int, default=64)
+    parser.add_argument("--saas-parallel-threads-per-model", type=int, default=0)
+    parser.add_argument(
+        "--torch-device", default="cpu",
+        help="BoTorch device: cpu, cuda, cuda:N, or auto",
+    )
     args = parser.parse_args()
     payload = run_one(args)
     _atomic_json(args.out, payload)

@@ -108,6 +108,13 @@ def build_specs(args):
     return specs
 
 
+def build_dispatch_command(scheduler: Path, task_ids: list[str]) -> list[str]:
+    command = [sys.executable, str(scheduler), "dispatch"]
+    for task_id in task_ids:
+        command.extend(["--task-id", task_id])
+    return command
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
@@ -168,11 +175,15 @@ def main():
         text=True,
     )
     print(output, end="" if output.endswith("\n") else "\n")
-    if args.dispatch:
-        subprocess.check_call([
-            sys.executable, str(args.scheduler), "dispatch",
-        ])
-    print({"run_id": args.run_id, "task_count": len(specs)})
+    submitted = json.loads(output).get("submitted", [])
+    task_ids = [item["id"] for item in submitted if item.get("id")]
+    if args.dispatch and task_ids:
+        subprocess.check_call(build_dispatch_command(args.scheduler, task_ids))
+    print({
+        "run_id": args.run_id,
+        "task_count": len(task_ids),
+        "task_ids": task_ids,
+    })
 
 
 if __name__ == "__main__":

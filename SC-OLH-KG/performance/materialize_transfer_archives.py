@@ -18,16 +18,24 @@ from performance.benchmark_lodo_meta_prior import train_meta_prior  # noqa: E402
 from performance.benchmark_quality import parse_csv  # noqa: E402
 
 
-def materialize_one(manifest, heldout, output, *, overwrite=False):
+def materialize_one(
+    manifest,
+    heldout,
+    output,
+    *,
+    dimension=None,
+    overwrite=False,
+):
     output = Path(output)
+    config = oracle_free_lodo_config(manifest)
+    if dimension is not None:
+        config["d"] = int(dimension)
     if output.is_file() and not overwrite:
         archive = frozen_archive_from_path(output)
     else:
-        config = oracle_free_lodo_config(manifest)
         prior = train_meta_prior(config, heldout, 0, teacher=False)
         archive = frozen_archive_from_meta_prior(prior, source_seed=0)
         archive.save(output)
-    config = oracle_free_lodo_config(manifest)
     expected = [
         name for name in parse_csv(config["domains"]) if name != heldout
     ]
@@ -61,6 +69,7 @@ def main():
         "--out-dir",
         default=str(ROOT / "archives" / "transfer_fair_v1"),
     )
+    parser.add_argument("--d", type=int, default=None)
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
     rows = []
@@ -69,6 +78,7 @@ def main():
             args.manifest,
             heldout,
             Path(args.out_dir) / f"heldout_{heldout}.json",
+            dimension=args.d,
             overwrite=args.overwrite,
         ))
     print(json.dumps({"archives": rows}, indent=2, sort_keys=True))

@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT))
 
 from performance.benchmark_lodo_meta_prior import run_one  # noqa: E402
 from performance.benchmark_quality import json_safe  # noqa: E402
+from core.designs import load_frozen_source_informed_design  # noqa: E402
 
 
 def load_config(path):
@@ -102,6 +103,9 @@ def main():
     parser.add_argument("--experiment-variant", default="")
     parser.add_argument("--out", required=True)
     parser.add_argument("--runtime-checkpoint-dir", required=True)
+    parser.add_argument("--d", type=int, default=None)
+    parser.add_argument("--N", type=int, default=None)
+    parser.add_argument("--n0", type=int, default=None)
     parser.add_argument(
         "--ordered-cumulative-exposure",
         action=argparse.BooleanOptionalAction,
@@ -254,9 +258,10 @@ def main():
         "--source-consensus-template-count", type=int, default=0)
     parser.add_argument(
         "--initial-design",
-        choices=("auto", "common_sobol"),
+        choices=("auto", "common_sobol", "source_informed"),
         default="auto",
     )
+    parser.add_argument("--initial-design-file", default="")
     parser.add_argument(
         "--observable-mean-mode",
         choices=("atoms", "aggregate", "latent", "consensus"),
@@ -323,6 +328,11 @@ def main():
     args = parser.parse_args()
 
     config = load_config(args.manifest)
+    for key, value in (("d", args.d), ("N", args.N), ("n0", args.n0)):
+        if value is not None:
+            config[key] = int(value)
+    if int(config["n0"]) > int(config["N"]):
+        raise ValueError("LODO shard requires n0 <= N")
     config.update({
         "experiment_variant": str(args.experiment_variant),
         "meta_ordered_cumulative_exposure": bool(
@@ -451,6 +461,23 @@ def main():
     if args.task_posterior_mandatory_universal_count is not None:
         config["task_posterior_mandatory_universal_count"] = int(
             args.task_posterior_mandatory_universal_count)
+    source_design_contract = None
+    if args.initial_design == "source_informed":
+        points, source_design_contract = load_frozen_source_informed_design(
+            args.initial_design_file,
+            heldout=args.heldout,
+            seed=args.seed,
+            n0=config["n0"],
+            dimension=config["d"],
+        )
+        config.update({
+            "initial_design_points": [list(point) for point in points],
+            "initial_design_fingerprint": source_design_contract[
+                "fingerprint"],
+            "initial_design_source_archive_fingerprint": (
+                source_design_contract["source_archive_fingerprint"]
+            ),
+        })
     task = {
         "args": config,
         "heldout": str(args.heldout),
@@ -547,6 +574,15 @@ def main():
             "meta_source_universal_fraction": float(
                 args.source_universal_fraction),
             "initial_design": str(args.initial_design),
+            "initial_design_file": str(args.initial_design_file),
+            "initial_design_fingerprint": (
+                None if source_design_contract is None
+                else source_design_contract["fingerprint"]
+            ),
+            "initial_design_source_archive_fingerprint": (
+                None if source_design_contract is None
+                else source_design_contract["source_archive_fingerprint"]
+            ),
             "finalist_terminal_value_mode": str(
                 args.finalist_terminal_value_mode),
             "finalist_replication_budget": int(

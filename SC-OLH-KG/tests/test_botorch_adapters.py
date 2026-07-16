@@ -1,7 +1,12 @@
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+import io
 from pathlib import Path
+import pickle
+import re
+from unittest.mock import patch
 
 import numpy as np
 import torch
@@ -94,6 +99,37 @@ class BoTorchAdapterTests(unittest.TestCase):
             result["algorithm_fidelity"],
             "saas_fully_bayesian_nuts_constrained_qlogei",
         )
+
+    def test_saas_progress_eta_models_growing_fit_cost(self):
+        config = BoTorchBaselineConfig(
+            N=404,
+            n0=10,
+            seed=9,
+            method="botorch_saasbo",
+            progress_logging=True,
+        )
+        baseline = BoTorchBaseline(self._problem(), config)
+        exponent = 1.7
+        scale = 5.0
+        baseline._progress_start_unit = 20
+        baseline._progress_timing = [
+            (current, scale * current ** exponent)
+            for current in range(40, 240, 5)
+        ]
+        baseline.history = [None] * 240
+        elapsed = scale * 240 ** exponent
+        stream = io.StringIO()
+        with patch("baselines.botorch_adapters.time.time", return_value=elapsed):
+            with redirect_stdout(stream):
+                baseline._emit_progress(0.0)
+
+        line = stream.getvalue()
+        match = re.search(r"ETA ([0-9.]+)s", line)
+        self.assertIsNotNone(match)
+        projected_eta = float(match.group(1))
+        naive_eta = elapsed / 240.0 * (404 - 240)
+        self.assertIn("eta_model=growing_iter_cost", line)
+        self.assertGreater(projected_eta, 1.5 * naive_eta)
 
     def test_canonical_tutorial_constants_and_trust_regions(self):
         self.assertEqual(canonical_failure_tolerance(3), 4)
@@ -238,6 +274,115 @@ class BoTorchAdapterTests(unittest.TestCase):
             self.assertTrue(second["checkpoint_resumed"])
             self.assertEqual(second["n_simulations"], 6)
             self.assertEqual(first["history"], second["history"][:5])
+
+    def test_checkpoint_replays_torch_pyro_stage_rng(self):
+        with tempfile.TemporaryDirectory() as directory:
+            checkpoint = str(Path(directory) / "canonical.pkl")
+            config = BoTorchBaselineConfig(
+                N=5,
+                n0=4,
+                seed=23,
+                method="botorch_saasbo",
+                checkpoint_path=checkpoint,
+                checkpoint_interval=1,
+            )
+            first = BoTorchBaseline(self._problem(), config)
+            for x in first._initial_samples():
+                first._simulate(x)
+                first._save_checkpoint()
+            with first._deterministic_torch_stage("saas_nuts:objective") as seed_a:
+                draw_a = torch.rand(8)
+
+            with Path(checkpoint).open("rb") as handle:
+                payload = pickle.load(handle)
+            self.assertEqual(payload["schema_version"], 2)
+            self.assertEqual(
+                payload["stochastic_schedule"]["kind"],
+                "per_iteration_stage_seed_v1",
+            )
+
+            torch.manual_seed(999999)
+            resumed_config = BoTorchBaselineConfig(**{
+                **vars(config),
+                "checkpoint_resume": True,
+            })
+            resumed = BoTorchBaseline(self._problem(), resumed_config)
+            with resumed._deterministic_torch_stage("saas_nuts:objective") as seed_b:
+                draw_b = torch.rand(8)
+
+            self.assertEqual(seed_a, seed_b)
+            self.assertTrue(torch.equal(draw_a, draw_b))
+            self.assertEqual(
+                [x for x, _ in first.history],
+                [x for x, _ in resumed.history],
+            )
+            np.testing.assert_allclose(
+                np.asarray([y for _, y in first.history]),
+                np.asarray([y for _, y in resumed.history]),
+            )
+
+    def test_parallel_saas_models_match_serial_seeded_posteriors(self):
+        old_threads = torch.get_num_threads()
+        torch.set_num_threads(1)
+        try:
+            generator = torch.Generator().manual_seed(101)
+            train_X = torch.rand(
+                6, self._problem().d, dtype=torch.double,
+                generator=generator,
+            )
+            train_obj = torch.rand(
+                6, 1, dtype=torch.double, generator=generator)
+            train_con = torch.rand(
+                6, 1, dtype=torch.double, generator=generator)
+            common = dict(
+                N=6,
+                n0=4,
+                seed=29,
+                method="botorch_saasbo",
+                saas_warmup_steps=2,
+                saas_num_samples=2,
+                saas_thinning=1,
+                saas_max_tree_depth=2,
+                saas_parallel_threads_per_model=1,
+            )
+            serial = BoTorchBaseline(
+                self._problem(),
+                BoTorchBaselineConfig(
+                    **common,
+                    saas_parallel_models=False,
+                ),
+            )
+            parallel = BoTorchBaseline(
+                self._problem(),
+                BoTorchBaselineConfig(
+                    **common,
+                    saas_parallel_models=True,
+                    saas_parallel_min_total_steps=0,
+                    saas_parallel_fallback=False,
+                ),
+            )
+            serial_models = serial._fit_saas_models(
+                train_X, train_obj, train_con)
+            parallel_models = parallel._fit_saas_models(
+                train_X, train_obj, train_con)
+            probe = train_X[:2]
+            for serial_model, parallel_model in zip(
+                serial_models, parallel_models
+            ):
+                serial_posterior = serial_model.posterior(probe)
+                parallel_posterior = parallel_model.posterior(probe)
+                self.assertTrue(torch.equal(
+                    serial_posterior.mean,
+                    parallel_posterior.mean,
+                ))
+                self.assertTrue(torch.equal(
+                    serial_posterior.variance,
+                    parallel_posterior.variance,
+                ))
+            self.assertEqual(parallel._saas_parallel_fit_count, 1)
+            self.assertEqual(parallel._saas_parallel_failures, 0)
+        finally:
+            torch.set_num_threads(old_threads)
 
 
 if __name__ == "__main__":

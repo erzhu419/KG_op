@@ -19,6 +19,9 @@ from baselines.transfer_bo_adapters import (  # noqa: E402
     TransferBOConfig,
     TransferConstrainedBO,
 )
+from core.designs import (  # noqa: E402
+    load_frozen_source_informed_design,
+)
 from performance.benchmark_lodo_meta_prior import build_scalarized_problem  # noqa: E402
 from performance.benchmark_quality import json_safe, parse_weights  # noqa: E402
 
@@ -33,6 +36,22 @@ FORMAL_SOURCE_STEPS = {
     "stacked_transfer_gp_cbo": 1,
     "mtgp_cbo": 1,
 }
+
+
+def load_source_initial_design(path, *, archive, heldout, seed, n0, dimension):
+    if not path:
+        raise ValueError(
+            "source_informed comparison requires --initial-design-file")
+    points, contract = load_frozen_source_informed_design(
+        path,
+        heldout=heldout,
+        seed=seed,
+        n0=n0,
+        dimension=dimension,
+    )
+    if contract["source_archive_fingerprint"] != archive.fingerprint:
+        raise ValueError("source-informed design archive fingerprint mismatch")
+    return points, contract["fingerprint"]
 
 
 def _atomic_json(path, payload):
@@ -68,6 +87,17 @@ def run_one(args):
         args.require_source_domains
     ):
         raise ValueError("formal LODO row has the wrong number of source domains")
+    initial_points = None
+    initial_design_fingerprint = None
+    if args.initial_design == "source_informed":
+        initial_points, initial_design_fingerprint = load_source_initial_design(
+            args.initial_design_file,
+            archive=archive,
+            heldout=args.heldout,
+            seed=args.seed,
+            n0=args.n0,
+            dimension=problem.d,
+        )
     source_steps = int(args.source_train_steps)
     if source_steps <= 0:
         source_steps = FORMAL_SOURCE_STEPS[args.method]
@@ -83,7 +113,8 @@ def run_one(args):
         candidate_pool_size=args.candidate_pool_size,
         beta_g=args.beta_g,
         beta_risk=args.beta_risk,
-        initial_design="common_sobol",
+        initial_design=args.initial_design,
+        initial_points=initial_points,
         implementation=args.implementation,
         source_train_steps=source_steps,
         target_finetune_steps=args.target_finetune_steps,
@@ -117,7 +148,16 @@ def run_one(args):
                 archive.simulator_calls + args.N),
             "source_archive_identical_across_methods": True,
             "source_archive_identical_across_target_seeds": True,
-            "common_target_initial_design": "scrambled_sobol",
+            "target_initial_design": args.initial_design,
+            "common_target_initial_design": (
+                "frozen_source_informed_rank_spanning"
+                if args.initial_design == "source_informed"
+                else "scrambled_sobol"
+            ),
+            "source_informed_initial_proposal": bool(
+                args.initial_design == "source_informed"),
+            "source_informed_initial_fingerprint": (
+                initial_design_fingerprint),
             "source_oracle_aided": False,
             "target_oracle_used_for_selection": False,
             "source_training_schedule": int(source_steps),
@@ -132,6 +172,14 @@ def run_one(args):
         ] = result["target_information_contract"][
             "initial_design_fingerprint"
         ]
+        if (
+            initial_design_fingerprint is not None
+            and payload["comparison_contract"][
+                "target_initial_design_fingerprint"
+            ] != initial_design_fingerprint
+        ):
+            raise RuntimeError(
+                "optimizer did not consume the frozen initial design exactly")
         payload.update({
             "status": "ok",
             "result": result,
@@ -163,6 +211,12 @@ def main():
         "FactorShockStatePolicyRZDT1,InventorySupplyChain,QueueResourceControl"
     ))
     parser.add_argument("--archive", required=True)
+    parser.add_argument(
+        "--initial-design",
+        choices=("common_sobol", "source_informed"),
+        default="common_sobol",
+    )
+    parser.add_argument("--initial-design-file", default="")
     parser.add_argument("--out", required=True)
     parser.add_argument("--checkpoint-dir", required=True)
     parser.add_argument("--seed", type=int, required=True)
@@ -190,6 +244,8 @@ def main():
         "seed": args.seed,
         "out": args.out,
     }, indent=2))
+    if payload["status"] != "ok":
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

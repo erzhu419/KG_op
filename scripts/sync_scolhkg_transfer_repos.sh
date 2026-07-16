@@ -27,13 +27,13 @@ EXCLUDES=(
 
 mkdir -p "$DEPLOY/external_repos"
 for repo in "${REPOS[@]}"; do
-  rsync -a --delete "${EXCLUDES[@]}" \
+  rsync -a "${EXCLUDES[@]}" \
     "$ROOT/repo/clones/$repo/" "$DEPLOY/external_repos/$repo/"
 done
 
 ssh -o ConnectTimeout=30 -o BatchMode=yes -J "$PROXY" "$REMOTE" \
   "mkdir -p '$REMOTE_ROOT/external_repos'"
-rsync -a --delete "${EXCLUDES[@]}" \
+rsync -a "${EXCLUDES[@]}" \
   -e "ssh -o ConnectTimeout=30 -o BatchMode=yes -J $PROXY" \
   "$DEPLOY/external_repos/" "$REMOTE:$REMOTE_ROOT/external_repos/"
 

@@ -16,12 +16,12 @@ EXCLUDES=(
 )
 
 mkdir -p "$DEPLOY/SC-OLH-KG"
-rsync -a --delete "${EXCLUDES[@]}" \
+rsync -a "${EXCLUDES[@]}" \
   "$ROOT/SC-OLH-KG/" "$DEPLOY/SC-OLH-KG/"
 
 ssh -o ConnectTimeout=30 -o BatchMode=yes -J "$PROXY" "$REMOTE" \
   "mkdir -p '$REMOTE_ROOT/SC-OLH-KG'"
-rsync -a --delete "${EXCLUDES[@]}" \
+rsync -a "${EXCLUDES[@]}" \
   -e "ssh -o ConnectTimeout=30 -o BatchMode=yes -J $PROXY" \
   "$DEPLOY/SC-OLH-KG/" "$REMOTE:$REMOTE_ROOT/SC-OLH-KG/"
 

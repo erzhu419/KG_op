@@ -147,6 +147,9 @@ class SingleOLHKGConfig:
     N: int = 30
     n0: int = 8
     initial_design: str = "auto"
+    initial_design_points: tuple[tuple[int, ...], ...] = ()
+    initial_design_fingerprint: str = ""
+    initial_design_source_archive_fingerprint: str = ""
     K1: int = 25
     K2: int = 0
     posterior_pool_size: int = 300
@@ -768,6 +771,61 @@ class SingleOLHKGAlgorithm:
 
     def _initial_samples(self):
         initial_design = str(self.config.initial_design or "auto").lower()
+        if initial_design == "source_informed":
+            raw = np.asarray(self.config.initial_design_points, dtype=float)
+            expected_shape = (int(self.config.n0), int(self.problem.d))
+            if raw.shape != expected_shape:
+                raise ValueError(
+                    "source-informed initial design must have shape "
+                    f"{expected_shape}, got {raw.shape}"
+                )
+            if not np.all(np.isfinite(raw)) or not np.all(raw == np.rint(raw)):
+                raise ValueError(
+                    "source-informed initial design must contain finite integers"
+                )
+            samples = [tuple(map(int, row)) for row in raw]
+            if len(set(samples)) != int(self.config.n0):
+                raise ValueError(
+                    "source-informed initial design points must be unique")
+            lo, hi = self.problem.int_bounds()
+            integer = np.asarray(samples, dtype=int)
+            if np.any(integer < np.asarray(lo)) or np.any(
+                integer > np.asarray(hi)
+            ):
+                raise ValueError(
+                    "source-informed initial design contains out-of-bounds points"
+                )
+            fingerprint = integer_design_fingerprint(samples)
+            expected_fingerprint = str(
+                self.config.initial_design_fingerprint or "")
+            if not expected_fingerprint:
+                raise ValueError(
+                    "source-informed initial design requires a frozen fingerprint"
+                )
+            if fingerprint != expected_fingerprint:
+                raise ValueError(
+                    "source-informed initial design fingerprint mismatch")
+            source_fingerprint = str(
+                self.config.initial_design_source_archive_fingerprint or "")
+            if not source_fingerprint:
+                raise ValueError(
+                    "source-informed initial design requires an archive fingerprint"
+                )
+            self._task_initial_design_info = {
+                "status": "loaded",
+                "design_kind": "frozen_source_informed_rank_spanning",
+                "requested": int(self.config.n0),
+                "n_unique": int(len(samples)),
+                "seed": int(self.config.seed),
+                "fingerprint": fingerprint,
+                "source_archive_fingerprint": source_fingerprint,
+                "source_prior_used": True,
+                "source_only": True,
+                "target_labels_used": False,
+                "problem_specific_hook_used": False,
+                "target_oracle_used": False,
+            }
+            return samples
         if initial_design == "common_sobol":
             samples = common_sobol_integer_design(
                 self.problem,
@@ -789,7 +847,8 @@ class SingleOLHKGAlgorithm:
             return samples
         if initial_design != "auto":
             raise ValueError(
-                "initial_design must be 'auto' or 'common_sobol'"
+                "initial_design must be 'auto', 'common_sobol', or "
+                "'source_informed'"
             )
         samples = []
         if self.config.use_problem_initial_samples and hasattr(

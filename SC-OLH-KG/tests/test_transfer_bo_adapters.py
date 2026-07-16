@@ -1,3 +1,4 @@
+import json
 import tempfile
 from pathlib import Path
 import sys
@@ -153,6 +154,91 @@ def test_promoted_and_transfer_paths_use_byte_identical_common_sobol_n0():
     )
 
 
+def test_transfer_consumes_frozen_source_informed_design_exactly():
+    archive = _archive()
+    points = (
+        (5, 10, 15, 20),
+        (25, 30, 35, 40),
+        (45, 50, 55, 60),
+    )
+    config = TransferBOConfig(
+        method="hyperbo_cbo",
+        N=3,
+        n0=3,
+        seed=23,
+        candidate_pool_size=16,
+        initial_design="source_informed",
+        initial_points=points,
+    )
+    result = TransferConstrainedBO(_problem(), archive, config).run()
+    assert [tuple(row["x"]) for row in result["history"]] == list(points)
+    assert all(
+        row["selection_reason"] == "frozen_source_informed_initial_design"
+        for row in result["history"]
+    )
+    contract = result["target_information_contract"]
+    assert contract["source_informed_initial_design"] is True
+    assert contract["initial_design_fingerprint"] == (
+        integer_design_fingerprint(points)
+    )
+
+
+def test_source_informed_design_rejects_missing_or_duplicate_points():
+    with pytest.raises(ValueError, match="requires an explicit"):
+        TransferBOConfig(
+            method="hyperbo_cbo",
+            N=3,
+            n0=3,
+            initial_design="source_informed",
+        )
+    with pytest.raises(ValueError, match="must be unique"):
+        TransferBOConfig(
+            method="hyperbo_cbo",
+            N=3,
+            n0=3,
+            initial_design="source_informed",
+            initial_points=((1, 1), (1, 1), (2, 2)),
+        )
+
+
+def test_transfer_progress_separates_source_and_target_phases(capsys):
+    archive = _archive()
+    config = TransferBOConfig(
+        method="hyperbo_cbo",
+        N=3,
+        n0=3,
+        seed=5,
+        candidate_pool_size=16,
+        source_train_steps=1,
+        progress_logging=True,
+        progress_label="progress-test",
+    )
+    runner = TransferConstrainedBO(_problem(), archive, config)
+    source_lines = [
+        line for line in capsys.readouterr().out.splitlines()
+        if line.startswith("SCOLHKG_PROGRESS ")
+    ]
+    runner.run()
+    target_lines = [
+        line for line in capsys.readouterr().out.splitlines()
+        if line.startswith("SCOLHKG_PROGRESS ")
+    ]
+    source_payloads = [json.loads(line.split(" ", 1)[1]) for line in source_lines]
+    target_payloads = [json.loads(line.split(" ", 1)[1]) for line in target_lines]
+
+    assert source_payloads[0]["kind"] == "source_model_start"
+    assert source_payloads[-1]["kind"] == "source_model_done"
+    assert source_payloads[-1]["done"] == 3
+    assert source_payloads[-1]["total"] == 3
+    assert source_payloads[-1]["phase"] == "source_training"
+    assert source_payloads[-1]["eta_seconds"] == 0.0
+    assert target_payloads[-1]["kind"] == "target_call_done"
+    assert target_payloads[-1]["done"] == 3
+    assert target_payloads[-1]["total"] == 3
+    assert target_payloads[-1]["phase"] == "target_online"
+    assert target_payloads[-1]["eta_seconds"] == 0.0
+
+
 @pytest.mark.parametrize("method", TRANSFER_METHODS)
 def test_every_paper_core_method_obeys_the_same_call_contract(method):
     archive = _archive()
@@ -177,6 +263,9 @@ def test_every_paper_core_method_obeys_the_same_call_contract(method):
     assert result["target_information_contract"][
         "target_true_sigma_used_for_selection"
     ] is False
+    assert result["initial_truth_audit"]["computed_after_recommendation"]
+    assert result["initial_truth_audit"]["used_for_selection"] is False
+    assert result["initial_truth_audit"]["n"] == 3
     assert result["adaptation_contract"] == METHOD_CONTRACTS[method]
     assert all(row["target_true_sigma_used"] is False
                for row in result["history"])
