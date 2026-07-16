@@ -258,6 +258,35 @@ The universal support prior is supported only if its paired feasibility net is
 positive without a negative domain net; conditional regret is consulted only
 when feasibility ties.
 
+The matched support audit completed all 60 cells without failure. Both source
+designs used exactly 384 replicated source calls.
+
+- Replacing shared-uniform support with the universal low-frequency library
+  increased initial Inventory feasibility by `+5/5` for both tested profiles,
+  with no negative domain net.
+- For `low_frequency_only/proposal_only`, the support change produced final
+  feasibility net `+5` on Inventory and `+2` on Queue. Conditional Queue
+  regret also favored universal support `3/0`.
+- Within the universal-support archive, enabling the low-frequency coordinate
+  over `none` produced proposal-only feasibility net `+2` on Inventory and
+  `+1` on Queue, again with no negative domain net. It reached `15/15` final
+  feasibility.
+- The matching joint posterior reached only `14/15`; the structural posterior
+  therefore does not inherit the proposal-only promotion.
+
+The causal evidence promotes a two-level assumption: a universal
+low-frequency policy-support prior followed by a source-ranked low-frequency
+risk coordinate. It rejects the claim that low frequency, orthogonality,
+sparsity, and additivity are four coequal empirical drivers. Orthogonality,
+sparsity, and additivity remain mathematical ablations but are not promoted
+paper claims.
+
+The next gate fixes source dimension at 50 and target dimension at 200, using
+only `none` and `low_frequency_only` under universal support. Proposal-only and
+joint paths remain separate. Low-frequency-only proceeds to `d=1000` only if
+it retains the original safety floor and has a positive paired effect over the
+new full-profile `none` control at `d=200`.
+
 Scheduler entrypoints:
 
 - `scripts/submit_scolhkg_causal_prior_matrix_scheduler.py`
