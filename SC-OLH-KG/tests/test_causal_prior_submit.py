@@ -28,6 +28,7 @@ def _args(tmp_path, **overrides):
         "n_seeds": 5,
         "python": submit.REMOTE_PYTHON,
         "cpu": 12,
+        "run_cpu": 1,
         "ram_mb": 8192,
     }
     values.update(overrides)
@@ -48,6 +49,8 @@ def test_causal_matrix_retrains_every_proposal_and_separates_three_paths(tmp_pat
     assert all("--decision-backend sobol" in s["cmd"] for s in runs)
     assert all("--hvd-profile pooled" in s["cmd"] for s in runs)
     assert all("--source-discrepancy-update" in s["cmd"] for s in runs)
+    assert all(s["cpu"] == 12 for s in archive + designs)
+    assert all(s["cpu"] == 1 for s in runs)
 
     proposal_only = [s for s in runs if "/proposal_only/" in s["signature"]]
     posterior_only = [s for s in runs if "/posterior_only/" in s["signature"]]

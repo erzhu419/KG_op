@@ -288,7 +288,7 @@ def build_specs(args):
                             ),
                             "project": "KG-SYNTH",
                             "vram": 0,
-                            "cpu": int(args.cpu),
+                            "cpu": int(args.run_cpu),
                             "ram_mb": int(args.ram_mb),
                             "allowed_nodes": list(nodes),
                             "wait_for_files": wait_for_files,
@@ -331,6 +331,7 @@ def main():
     parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=5)
     parser.add_argument("--cpu", type=int, default=12)
+    parser.add_argument("--run-cpu", type=int, default=1)
     parser.add_argument("--ram-mb", type=int, default=8192)
     parser.add_argument("--no-sync", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
