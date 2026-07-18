@@ -39,6 +39,10 @@ class HVDConfig:
     cumulative_irls_steps: int = 4
     cumulative_projected_steps: int = 256
     cumulative_weight_clip: float = 20.0
+    cumulative_transfer_mode: str = "scalar"
+    cumulative_transfer_upper_z: float = 1.6448536269514722
+    cumulative_source_task_weight_mode: str = "independent"
+    cumulative_target_evidence_mode: str = "replication_only"
 
 
 def gaussian_square_subexp_params(sigma2):
@@ -103,6 +107,21 @@ class OrthogonalHVD:
         if self.config.mode not in self.VALID_MODES:
             raise ValueError(f"unknown HVD mode {mode!r}")
         self.mode = self.config.mode
+        if self.config.cumulative_transfer_mode not in {"scalar", "source_mixture"}:
+            raise ValueError(
+                "cumulative_transfer_mode must be 'scalar' or 'source_mixture'")
+        if self.config.cumulative_source_task_weight_mode not in {
+            "independent", "constraint_mean",
+        }:
+            raise ValueError(
+                "cumulative_source_task_weight_mode must be 'independent' "
+                "or 'constraint_mean'")
+        if self.config.cumulative_target_evidence_mode not in {
+            "replication_only", "prequential_upper",
+        }:
+            raise ValueError(
+                "cumulative_target_evidence_mode must be "
+                "'replication_only' or 'prequential_upper'")
         self.n_outputs = int(self.config.n_outputs)
         self.records = {i: [] for i in range(self.n_outputs)}
         self.global_var = {i: 0.01 for i in range(self.n_outputs)}
@@ -126,11 +145,32 @@ class OrthogonalHVD:
         self.cumulative_prior_upper_scale = {
             i: 1.0 for i in range(self.n_outputs)
         }
+        self.cumulative_prior_components = {
+            i: None for i in range(self.n_outputs)
+        }
+        self.cumulative_prior_component_domains = {
+            i: [] for i in range(self.n_outputs)
+        }
+        self.cumulative_prior_component_weights = {
+            i: None for i in range(self.n_outputs)
+        }
+        self.cumulative_prior_component_covariance = {
+            i: None for i in range(self.n_outputs)
+        }
+        self.cumulative_prior_shape_target_dof = {
+            i: 0.0 for i in range(self.n_outputs)
+        }
+        self.cumulative_source_task_posterior = {
+            i: None for i in range(self.n_outputs)
+        }
         self.cumulative_activation_records = {
             i: int(self.config.activation_min_records)
             for i in range(self.n_outputs)
         }
         self.replicated_keys = {i: set() for i in range(self.n_outputs)}
+        self.prequential_upper_records = {
+            i: {} for i in range(self.n_outputs)
+        }
         self.replication_dof = {i: {} for i in range(self.n_outputs)}
         self.cumulative_fit_method = {i: "inactive" for i in range(self.n_outputs)}
         self.cumulative_fit_effective_dof = {
@@ -157,8 +197,14 @@ class OrthogonalHVD:
 
     def __setstate__(self, state):
         self.__dict__.update(state)
+        if not hasattr(self.config, "cumulative_target_evidence_mode"):
+            self.config.cumulative_target_evidence_mode = "replication_only"
         if "_last_problem" not in self.__dict__:
             self._last_problem = None
+        if "prequential_upper_records" not in self.__dict__:
+            self.prequential_upper_records = {
+                i: {} for i in range(self.n_outputs)
+            }
         if "replication_dof" not in self.__dict__:
             self.replication_dof = {
                 i: {} for i in range(self.n_outputs)
@@ -176,6 +222,54 @@ class OrthogonalHVD:
             self.cumulative_fit_weight_range = {
                 i: None for i in range(self.n_outputs)
             }
+        for name, default in (
+            ("cumulative_prior_components", None),
+            ("cumulative_prior_component_domains", []),
+            ("cumulative_prior_component_weights", None),
+            ("cumulative_prior_component_covariance", None),
+            ("cumulative_prior_shape_target_dof", 0.0),
+            ("cumulative_source_task_posterior", None),
+        ):
+            if name not in self.__dict__:
+                setattr(self, name, {
+                    i: (list(default) if isinstance(default, list) else default)
+                    for i in range(self.n_outputs)
+                })
+
+    def set_source_task_posterior(
+        self,
+        output_index,
+        component_names,
+        posterior_weights,
+    ):
+        """Share the target-pilot task law with cumulative HVD transfer.
+
+        Mean and variance transfer then condition on the same latent source
+        domain.  A ``target:null`` component is retained explicitly instead
+        of silently redistributing no-transfer mass over source HVD shapes.
+        """
+
+        i = int(output_index)
+        names = [str(name) for name in component_names]
+        weights = np.maximum(
+            np.asarray(posterior_weights, dtype=float).reshape(-1), 0.0)
+        if len(names) != len(weights) or not names:
+            raise ValueError("source task names and weights must agree")
+        total = float(np.sum(weights))
+        if not np.isfinite(total) or total <= 0.0:
+            raise ValueError("source task posterior must have positive mass")
+        weights /= total
+        self.cumulative_source_task_posterior[i] = {
+            "component_names": names,
+            "posterior_weights": weights.tolist(),
+            "target_null_weight": float(sum(
+                weight for name, weight in zip(names, weights)
+                if name == "target:null"
+            )),
+            "target_data_used": True,
+            "target_oracle_used": False,
+        }
+        return dict(self.cumulative_source_task_posterior[i])
 
     @property
     def floor(self):
@@ -545,6 +639,11 @@ class OrthogonalHVD:
             resid2 = max(raw_resid2 - epistemic_correction, self.floor)
             variance_source = "innovation_minus_epistemic"
             self.records[i].append((x_tuple, resid2))
+            # This prediction was formed before observing y. Its raw squared
+            # innovation has expectation v(x) plus squared mean error, so it
+            # is conservative variance-shape evidence without target oracle
+            # information. Initial in-sample residuals never enter this map.
+            self.prequential_upper_records[i][x_tuple] = float(raw_resid2)
             self.replication_dof[i][x_tuple] = 1.0
         else:
             resid2 = max(float(replicate_variance), self.floor)
@@ -579,6 +678,119 @@ class OrthogonalHVD:
             "old_variance": float(old),
             "new_variance": float(new),
             "risk_class": int(self.risk_class(x_tuple, problem)),
+        }
+
+    def _fit_source_shape_mixture(
+        self,
+        component_design,
+        target_variance,
+        dof,
+        *,
+        source_scale,
+        prior_precision,
+        upper_scale,
+        prior_weights=None,
+    ):
+        """Fit a nonnegative low-rank source-shape posterior.
+
+        Each column of ``component_design`` is one source-domain PSD variance
+        shape evaluated at replicated target policies.  The nonnegative
+        coefficient vector preserves PSD cumulative risk by construction.
+        A Gaussian source prior supplies the precision; replicated sample
+        variances contribute their scaled-chi-square Fisher information.
+        """
+
+        design = np.asarray(component_design, dtype=float)
+        target = np.asarray(target_variance, dtype=float).reshape(-1)
+        dof = np.maximum(np.asarray(dof, dtype=float).reshape(-1), 1.0)
+        n_components = int(design.shape[1])
+        source_scale = max(float(source_scale), self.floor)
+        prior_precision = max(float(prior_precision), 1e-6)
+        if prior_weights is None:
+            normalized_prior = np.full(
+                n_components, 1.0 / float(n_components), dtype=float)
+        else:
+            normalized_prior = np.maximum(
+                np.asarray(prior_weights, dtype=float).reshape(-1), 0.0)
+            if len(normalized_prior) != n_components:
+                raise ValueError("source-shape prior weight dimension mismatch")
+            total_prior = float(np.sum(normalized_prior))
+            if not np.isfinite(total_prior) or total_prior <= 0.0:
+                raise ValueError("source-shape prior weights must have positive mass")
+            normalized_prior /= total_prior
+        theta0 = source_scale * normalized_prior
+        relative_radius = max(float(upper_scale) - 1.0, 0.10)
+        upper_z = max(float(self.config.cumulative_transfer_upper_z), 1e-6)
+        total_scale_sd = relative_radius * source_scale / upper_z
+        component_variance = np.maximum(
+            total_scale_sd ** 2 * normalized_prior,
+            self.floor ** 2,
+        )
+        prior_information = np.maximum(
+            prior_precision / component_variance,
+            1e-8,
+        )
+        prior_matrix = np.diag(prior_information)
+        theta = theta0.copy()
+        information = prior_matrix.copy()
+        weight_range = None
+        if len(target):
+            for _ in range(max(int(self.config.cumulative_irls_steps), 1)):
+                prediction = np.maximum(design @ theta, self.floor)
+                weights = dof / np.maximum(
+                    2.0 * prediction ** 2,
+                    self.floor ** 2,
+                )
+                finite = weights[np.isfinite(weights) & (weights > 0.0)]
+                if len(finite):
+                    median = max(float(np.median(finite)), 1e-12)
+                    clip = max(float(self.config.cumulative_weight_clip), 1.0)
+                    weights = np.clip(weights, median / clip, median * clip)
+                    weight_range = (
+                        float(np.min(weights)),
+                        float(np.max(weights)),
+                    )
+                else:
+                    weights = np.ones(len(target), dtype=float)
+                    weight_range = (1.0, 1.0)
+                information = (
+                    prior_matrix
+                    + design.T @ (weights[:, None] * design)
+                )
+                rhs = prior_matrix @ theta0 + design.T @ (weights * target)
+                active = np.ones(n_components, dtype=bool)
+                candidate = np.zeros(n_components, dtype=float)
+                while np.any(active):
+                    active_information = information[np.ix_(active, active)]
+                    active_rhs = rhs[active]
+                    try:
+                        active_solution = np.linalg.solve(
+                            active_information, active_rhs)
+                    except np.linalg.LinAlgError:
+                        active_solution = np.linalg.lstsq(
+                            active_information, active_rhs, rcond=None)[0]
+                    if np.all(active_solution >= 0.0):
+                        candidate[active] = active_solution
+                        break
+                    active_indices = np.flatnonzero(active)
+                    active[active_indices[int(np.argmin(active_solution))]] = False
+                if not np.any(candidate > 0.0):
+                    candidate = theta0.copy()
+                if np.allclose(candidate, theta, rtol=1e-8, atol=1e-12):
+                    theta = candidate
+                    break
+                theta = candidate
+        try:
+            covariance = np.linalg.inv(information)
+        except np.linalg.LinAlgError:
+            covariance = np.linalg.pinv(information)
+        covariance = 0.5 * (covariance + covariance.T)
+        return theta, covariance, {
+            "target_dof": float(np.sum(dof) if len(target) else 0.0),
+            "weight_range": weight_range,
+            "prior_component_variance": component_variance.tolist(),
+            "prior_information": prior_information.tolist(),
+            "prior_weights": normalized_prior.tolist(),
         }
 
     def _fit_constrained_cumulative_ridge(
@@ -707,6 +919,11 @@ class OrthogonalHVD:
         self.cumulative_prior_target_weight[i] = 0
         self.cumulative_prior_scale_source[i] = "none"
         self.cumulative_prior_upper_scale[i] = 1.0
+        self.cumulative_prior_components[i] = None
+        self.cumulative_prior_component_domains[i] = []
+        self.cumulative_prior_component_weights[i] = None
+        self.cumulative_prior_component_covariance[i] = None
+        self.cumulative_prior_shape_target_dof[i] = 0.0
         self.cumulative_fit_method[i] = "inactive"
         self.cumulative_fit_effective_dof[i] = 0.0
         self.cumulative_fit_weight_range[i] = None
@@ -714,6 +931,8 @@ class OrthogonalHVD:
         prior_replication_only = False
         problem_ref = problem or self._last_problem
         prior_beta_probe = None
+        prior_component_probe = None
+        prior_component_domains = []
         if self.mode == "factor" and problem_ref is not None and recs:
             feature_probe = self._cumulative_features(
                 recs[0][0], problem, output_index=i)
@@ -732,6 +951,31 @@ class OrthogonalHVD:
                     prior_beta_probe = np.asarray(prior_beta_probe, dtype=float)
                     if prior_beta_probe.shape != (len(feature_probe),):
                         prior_beta_probe = None
+            if (
+                str(self.config.cumulative_transfer_mode) == "source_mixture"
+                and feature_probe is not None
+                and hasattr(problem_ref, "cumulative_hvd_prior_components")
+            ):
+                try:
+                    component_payload = problem_ref.cumulative_hvd_prior_components(
+                        output_index=i,
+                        feature_dim=len(feature_probe),
+                    )
+                except TypeError:
+                    component_payload = problem_ref.cumulative_hvd_prior_components(i)
+                if isinstance(component_payload, dict):
+                    prior_component_domains = list(
+                        component_payload.get("domains", []))
+                    component_payload = component_payload.get("coefficients")
+                if component_payload is not None:
+                    component_payload = np.asarray(component_payload, dtype=float)
+                    if (
+                        component_payload.ndim == 2
+                        and component_payload.shape[0] > 0
+                        and component_payload.shape[1] == len(feature_probe)
+                        and np.all(np.isfinite(component_payload))
+                    ):
+                        prior_component_probe = component_payload
             if (
                 prior_beta_probe is not None
                 and hasattr(problem_ref, "cumulative_hvd_prior_min_records")
@@ -773,6 +1017,9 @@ class OrthogonalHVD:
                 reg = ridge_alpha * np.eye(X_c.shape[1])
                 prior_beta = prior_beta_probe
                 prior_center = np.zeros(X_c.shape[1], dtype=float)
+                scalar_calibration = False
+                source_mixture_calibration = False
+                source_mixture_diagnostics = None
                 if prior_beta is None:
                     X_fit = X_c
                     y_fit = y_c
@@ -803,23 +1050,82 @@ class OrthogonalHVD:
                             tuple(x) in self.replicated_keys.get(i, set())
                             for x, _ in recs
                         ], dtype=bool)
-                        X_fit = X_c[replicate_mask]
-                        y_fit = y_c[replicate_mask]
-                        dof_fit = dof_c[replicate_mask]
+                        prequential_mask = np.asarray([
+                            (
+                                tuple(x) in self.prequential_upper_records.get(
+                                    i, {})
+                                and not replicate_mask[index]
+                            )
+                            for index, (x, _) in enumerate(recs)
+                        ], dtype=bool)
+                        if (
+                            self.config.cumulative_target_evidence_mode
+                            != "prequential_upper"
+                        ):
+                            prequential_mask[:] = False
+                        target_evidence_mask = (
+                            replicate_mask | prequential_mask)
+                        X_fit = X_c[target_evidence_mask]
+                        y_fit = y_c[target_evidence_mask].copy()
+                        selected_records = np.flatnonzero(
+                            target_evidence_mask)
+                        for local_index, record_index in enumerate(
+                            selected_records
+                        ):
+                            if prequential_mask[record_index]:
+                                key = tuple(recs[record_index][0])
+                                y_fit[local_index] = max(float(
+                                    self.prequential_upper_records[i][key]
+                                ), self.floor)
+                        dof_fit = dof_c[target_evidence_mask]
                     else:
+                        replicate_mask = np.zeros(len(recs), dtype=bool)
+                        prequential_mask = np.zeros(len(recs), dtype=bool)
+                        target_evidence_mask = np.ones(len(recs), dtype=bool)
                         X_fit = X_c
                         y_fit = y_c
                         dof_fit = dof_c
+                    source_scale_mean = None
+                    if hasattr(problem_ref, "cumulative_hvd_prior_scale_mean"):
+                        source_scale_mean = problem_ref.cumulative_hvd_prior_scale_mean(
+                            output_index=i)
+                    normalized_shape = source_scale_mean is not None
+                    prior_shape_beta = np.asarray(prior_beta, dtype=float)
+                    if normalized_shape and exposure_layout_ref is not None:
+                        try:
+                            prior_shape_beta, _ = project_cumulative_beta(
+                                prior_shape_beta,
+                                exposure_layout_ref,
+                            )
+                            prior_shape_beta = np.asarray(
+                                prior_shape_beta, dtype=float)
+                        except (ValueError, IndexError):
+                            prior_shape_beta = np.asarray(
+                                prior_beta, dtype=float)
                     source_prediction = np.maximum(
-                        X_c @ prior_beta,
+                        X_c @ prior_shape_beta,
                         self.floor,
                     )
                     informative = y_c > 10.0 * self.floor
-                    if prior_replication_only and np.any(replicate_mask):
-                        target_values = y_c[replicate_mask]
-                        target_source_prediction = source_prediction[
-                            replicate_mask]
-                        scale_source = "within_solution_replication"
+                    if prior_replication_only:
+                        if len(y_fit):
+                            target_values = y_fit
+                            target_source_prediction = source_prediction[
+                                target_evidence_mask]
+                            if np.any(prequential_mask) and np.any(
+                                replicate_mask
+                            ):
+                                scale_source = (
+                                    "replication_and_prequential_upper")
+                            elif np.any(prequential_mask):
+                                scale_source = "prequential_upper"
+                            else:
+                                scale_source = "within_solution_replication"
+                        else:
+                            target_values = np.zeros(0, dtype=float)
+                            target_source_prediction = np.zeros(
+                                0, dtype=float)
+                            scale_source = "source_prior_fallback"
                     else:
                         identifiable = int(np.sum(informative)) >= max(
                             2,
@@ -842,12 +1148,14 @@ class OrthogonalHVD:
                         target_values / target_source_prediction,
                         dtype=float,
                     ) if len(target_values) else np.zeros(0, dtype=float)
-                    ratios = ratios[np.isfinite(ratios)]
-                    source_scale_mean = None
-                    if hasattr(problem_ref, "cumulative_hvd_prior_scale_mean"):
-                        source_scale_mean = problem_ref.cumulative_hvd_prior_scale_mean(
-                            output_index=i)
-                    normalized_shape = source_scale_mean is not None
+                    finite_ratio = np.isfinite(ratios)
+                    ratios = ratios[finite_ratio]
+                    ratio_dof = (
+                        np.maximum(np.asarray(dof_fit, dtype=float), 1.0)[
+                            finite_ratio]
+                        if len(target_values)
+                        else np.zeros(0, dtype=float)
+                    )
                     scale_prior_mean = (
                         max(float(source_scale_mean), self.floor)
                         if normalized_shape
@@ -865,42 +1173,153 @@ class OrthogonalHVD:
                     )
                     ratios = np.clip(ratios, scale_lower, scale_upper)
                     if len(ratios):
-                        moment_ratio = (
-                            float(np.mean(y_c))
-                            if normalized_shape
-                            else float(
+                        if normalized_shape:
+                            # With a frozen normalized source shape, sample
+                            # variances identify one positive target scale.
+                            # The chi-square likelihood weights each ratio by
+                            # its replication degrees of freedom.
+                            target_weight = float(np.sum(ratio_dof))
+                            moment_ratio = float(np.sum(
+                                ratio_dof * ratios
+                            ) / max(target_weight, 1.0))
+                        else:
+                            target_weight = float(len(target_values))
+                            moment_ratio = float(
                                 np.mean(target_values) / max(
                                     float(np.mean(target_source_prediction)),
                                     self.floor,
                                 )
                             )
-                        )
-                        if normalized_shape:
-                            moment_ratio = float(np.mean(target_values))
                         moment_ratio = float(np.clip(
                             moment_ratio, scale_lower, scale_upper))
                         prior_scale = float(
                             (
-                                len(target_values) * moment_ratio
+                                target_weight * moment_ratio
                                 + prior_precision * scale_prior_mean
                             )
-                            / (len(target_values) + prior_precision)
+                            / (target_weight + prior_precision)
                         )
                         prior_scale = float(np.clip(
                             prior_scale, scale_lower, scale_upper))
-                        prior_scale_se = float(
-                            np.std(ratios, ddof=1) / np.sqrt(len(ratios))
-                            if len(ratios) > 1
-                            else 0.0
-                        )
+                        if normalized_shape:
+                            prior_scale_se = float(
+                                np.sqrt(2.0)
+                                * prior_scale
+                                / np.sqrt(max(
+                                    target_weight + prior_precision, 1.0))
+                            )
+                        else:
+                            prior_scale_se = float(
+                                np.std(ratios, ddof=1) / np.sqrt(len(ratios))
+                                if len(ratios) > 1
+                                else 0.0
+                            )
                     else:
                         prior_scale = scale_prior_mean
                         prior_scale_se = 0.0
-                    centered_prior = prior_scale * prior_beta
-                    prior_center = centered_prior
-                    reg = prior_precision * np.eye(X_c.shape[1])
-                    rhs = X_fit.T @ y_fit + reg @ centered_prior
-                    solve_gram = X_fit.T @ X_fit + reg
+                    use_source_mixture = bool(
+                        prior_replication_only
+                        and normalized_shape
+                        and prior_component_probe is not None
+                        and len(prior_component_probe) > 1
+                    )
+                    if use_source_mixture:
+                        source_task_weights = None
+                        source_task = self.cumulative_source_task_posterior.get(i)
+                        if (
+                            self.config.cumulative_source_task_weight_mode
+                            == "constraint_mean"
+                            and source_task is not None
+                        ):
+                            task_weight = dict(zip(
+                                source_task["component_names"],
+                                source_task["posterior_weights"],
+                            ))
+                            source_task_weights = np.asarray([
+                                task_weight.get(
+                                    domain,
+                                    task_weight.get(f"source:{domain}", 0.0),
+                                )
+                                for domain in prior_component_domains
+                            ], dtype=float)
+                            null_weight = max(float(
+                                source_task.get("target_null_weight", 0.0)
+                            ), 0.0)
+                            if null_weight > 0.0:
+                                # The null task does not borrow a source-domain
+                                # shape.  Its PSD shape is the target pilot's
+                                # pooled variance, expressed in the same
+                                # normalized coefficient units as the source
+                                # components.
+                                null_component = np.zeros(
+                                    prior_component_probe.shape[1],
+                                    dtype=float,
+                                )
+                                null_component[0] = max(
+                                    self.global_var[i] / max(
+                                        scale_prior_mean, self.floor),
+                                    self.floor,
+                                )
+                                prior_component_probe = np.vstack([
+                                    prior_component_probe,
+                                    null_component,
+                                ])
+                                prior_component_domains = [
+                                    *prior_component_domains,
+                                    "target:null",
+                                ]
+                                source_task_weights = np.concatenate([
+                                    source_task_weights,
+                                    [null_weight],
+                                ])
+                            if float(np.sum(source_task_weights)) <= 0.0:
+                                source_task_weights = None
+                        component_design = np.maximum(
+                            X_fit @ prior_component_probe.T,
+                            self.floor,
+                        )
+                        component_weights, component_covariance, (
+                            source_mixture_diagnostics
+                        ) = self._fit_source_shape_mixture(
+                            component_design,
+                            y_fit,
+                            dof_fit,
+                            source_scale=scale_prior_mean,
+                            prior_precision=prior_precision,
+                            upper_scale=self.cumulative_prior_upper_scale[i],
+                            prior_weights=source_task_weights,
+                        )
+                        centered_prior = (
+                            prior_component_probe.T @ component_weights)
+                        prior_center = centered_prior
+                        prior_scale = float(np.sum(component_weights))
+                        prior_scale_se = float(np.sqrt(max(
+                            np.ones(len(component_weights), dtype=float)
+                            @ component_covariance
+                            @ np.ones(len(component_weights), dtype=float),
+                            0.0,
+                        )))
+                        self.cumulative_prior_components[i] = (
+                            prior_component_probe.copy())
+                        self.cumulative_prior_component_domains[i] = list(
+                            prior_component_domains)
+                        self.cumulative_prior_component_weights[i] = (
+                            component_weights.copy())
+                        self.cumulative_prior_component_covariance[i] = (
+                            component_covariance.copy())
+                        self.cumulative_prior_shape_target_dof[i] = float(
+                            source_mixture_diagnostics["target_dof"])
+                        self.cumulative_prior_scale[i] = float(prior_scale)
+                        self.cumulative_prior_scale_se[i] = float(prior_scale_se)
+                        source_mixture_calibration = True
+                    else:
+                        centered_prior = prior_scale * prior_shape_beta
+                        prior_center = centered_prior
+                        reg = prior_precision * np.eye(X_c.shape[1])
+                        rhs = X_fit.T @ y_fit + reg @ centered_prior
+                        solve_gram = X_fit.T @ X_fit + reg
+                        scalar_calibration = bool(
+                            prior_replication_only and normalized_shape)
                     self.cumulative_prior_used[i] = True
                     self.cumulative_prior_precision[i] = float(prior_precision)
                     self.cumulative_prior_scale[i] = float(prior_scale)
@@ -908,14 +1327,22 @@ class OrthogonalHVD:
                     self.cumulative_prior_target_weight[i] = int(
                         len(target_values))
                     self.cumulative_prior_scale_source[i] = scale_source
-                try:
-                    beta_c = np.linalg.solve(solve_gram, rhs)
-                except np.linalg.LinAlgError:
-                    beta_c = np.linalg.lstsq(
-                        solve_gram,
-                        rhs,
-                        rcond=None,
-                    )[0]
+                if scalar_calibration or source_mixture_calibration:
+                    # Four or five replicated target policies cannot identify
+                    # a full cumulative-risk coefficient vector. Preserve the
+                    # source-learned cone shape and update only its target
+                    # scale; the unrestricted projected IRLS fit remains the
+                    # no-source/control path.
+                    beta_c = np.asarray(prior_center, dtype=float)
+                else:
+                    try:
+                        beta_c = np.linalg.solve(solve_gram, rhs)
+                    except np.linalg.LinAlgError:
+                        beta_c = np.linalg.lstsq(
+                            solve_gram,
+                            rhs,
+                            rcond=None,
+                        )[0]
                 beta_c = np.asarray(beta_c, dtype=float)
                 params = None
                 provider_active = False
@@ -928,7 +1355,47 @@ class OrthogonalHVD:
                     ))
                 ):
                     try:
-                        if len(X_fit):
+                        if source_mixture_calibration:
+                            projected, params = project_cumulative_beta(
+                                beta_c,
+                                exposure_layout_ref,
+                            )
+                            self.cumulative_fit_method[i] = (
+                                {
+                                    "prequential_upper": (
+                                        "prequential_upper_source_shape_mixture"
+                                    ),
+                                    "replication_and_prequential_upper": (
+                                        "hybrid_source_shape_mixture"
+                                    ),
+                                }.get(
+                                    scale_source,
+                                    "replication_source_shape_mixture",
+                                )
+                                if len(X_fit) else
+                                "prior_source_shape_mixture"
+                            )
+                            self.cumulative_fit_effective_dof[i] = float(
+                                source_mixture_diagnostics["target_dof"])
+                            self.cumulative_fit_weight_range[i] = (
+                                source_mixture_diagnostics["weight_range"])
+                        elif scalar_calibration and len(X_fit):
+                            projected, params = project_cumulative_beta(
+                                beta_c,
+                                exposure_layout_ref,
+                            )
+                            self.cumulative_fit_method[i] = (
+                                "replication_scalar_calibration")
+                            self.cumulative_fit_effective_dof[i] = float(
+                                np.sum(dof_fit))
+                            self.cumulative_fit_weight_range[i] = (1.0, 1.0)
+                        elif scalar_calibration:
+                            projected, params = project_cumulative_beta(
+                                beta_c,
+                                exposure_layout_ref,
+                            )
+                            self.cumulative_fit_method[i] = "prior_projection"
+                        elif len(X_fit):
                             projected, params, fit_diagnostics = (
                                 self._fit_constrained_cumulative_ridge(
                                     X_fit,
@@ -1051,6 +1518,471 @@ class OrthogonalHVD:
             pred = self.predict_variance(i, x, problem)
         return float(max(pred, self.floor))
 
+    def information_reduction_many(
+        self,
+        i,
+        action_points,
+        reference_points,
+        problem=None,
+        *,
+        action_reliability=None,
+        reference_weights=None,
+    ):
+        """Approximate HVD parameter-uncertainty reduction per unit-cost action.
+
+        For a frozen normalized source shape ``v(x) = s h(x)``, this uses the
+        scaled-chi-square Fisher precision of the target scale ``s``. This is
+        a covariance in physical variance units and can therefore enter the
+        chance-margin delta method.
+
+        The unrestricted cumulative variance model is linear in its risk
+        features. Let ``P`` be the same replication-aware IRLS information
+        matrix used by the fit and ``Q`` the boundary-weighted second moment
+        of a reference policy pool. Adding a variance observation with feature
+        ``phi`` and IRLS reliability weight ``w`` reduces integrated
+        linear-predictor variance by
+
+        ``w phi' P^-1 Q P^-1 phi / (1 + w phi' P^-1 phi)``.
+
+        This quantity uses no target truth. A caller can downweight a fresh
+        residual-square observation while assigning unit reliability to a
+        clean within-policy replication. For pooled HVD the same expression
+        reduces to scalar variance-parameter information.
+        """
+
+        i = int(i)
+        actions = [tuple(int(v) for v in x) for x in action_points]
+        references = [tuple(int(v) for v in x) for x in reference_points]
+        if not actions:
+            return np.zeros(0, dtype=float)
+        if not references:
+            references = list(actions)
+
+        use_cumulative = bool(
+            self.mode == "factor"
+            and self.config.use_cumulative_provider
+            and self._cumulative_features(actions[0], problem, i) is not None
+        )
+        replication_only = bool(
+            use_cumulative
+            and self.cumulative_prior_replication_only.get(i, False)
+        )
+        source_mixture_calibration = bool(
+            replication_only
+            and self.cumulative_prior_component_covariance.get(i) is not None
+            and self.cumulative_prior_components.get(i) is not None
+        )
+        scalar_calibration = bool(
+            replication_only
+            and not source_mixture_calibration
+            and self.cumulative_prior_used.get(i, False)
+            and self.cumulative_prior_scale.get(i) is not None
+            and self.cumulative_beta.get(i) is not None
+        )
+        if use_cumulative:
+            raw_action_features = self._cumulative_feature_matrix(
+                actions, problem, output_index=i)
+            raw_reference_features = self._cumulative_feature_matrix(
+                references, problem, output_index=i)
+            if source_mixture_calibration:
+                components = np.asarray(
+                    self.cumulative_prior_components[i], dtype=float)
+                action_features = np.maximum(
+                    raw_action_features @ components.T, self.floor)
+                reference_features = np.maximum(
+                    raw_reference_features @ components.T, self.floor)
+
+                def feature(point):
+                    raw = self._cumulative_features(point, problem, i)
+                    return np.maximum(raw @ components.T, self.floor)
+            elif scalar_calibration:
+                scale = max(
+                    float(self.cumulative_prior_scale[i]), self.floor)
+                shape_beta = np.asarray(
+                    self.cumulative_beta[i], dtype=float) / scale
+                action_shape = np.maximum(
+                    raw_action_features @ shape_beta, self.floor)
+                reference_shape = np.maximum(
+                    raw_reference_features @ shape_beta, self.floor)
+                action_unclipped = scale * action_shape
+                reference_unclipped = scale * reference_shape
+                action_active = action_unclipped > self.floor
+                reference_active = reference_unclipped > self.floor
+                cap = self._residual_variance_cap(i, problem)
+                if cap is not None:
+                    action_active &= action_unclipped < cap
+                    reference_active &= reference_unclipped < cap
+                # Predictions use clip(s h(x), floor, cap), so the scale
+                # derivative is h(x) only in the unsaturated region. Using
+                # the raw source shape past the cap creates fictitious VOI.
+                action_features = np.where(
+                    action_active, action_shape, 0.0)[:, None]
+                reference_features = np.where(
+                    reference_active, reference_shape, 0.0)[:, None]
+
+                def feature(point):
+                    raw = self._cumulative_features(point, problem, i)
+                    shape = max(float(raw @ shape_beta), self.floor)
+                    unclipped = scale * shape
+                    active = unclipped > self.floor
+                    if cap is not None:
+                        active = active and unclipped < cap
+                    return np.asarray([shape if active else 0.0], dtype=float)
+            else:
+                action_features = raw_action_features
+                reference_features = raw_reference_features
+
+                def feature(point):
+                    return self._cumulative_features(point, problem, i)
+        elif self.mode in ("orthogonal", "factor"):
+            action_features = np.vstack([
+                self._features(point, problem) for point in actions
+            ])
+            reference_features = np.vstack([
+                self._features(point, problem) for point in references
+            ])
+
+            def feature(point):
+                return self._features(point, problem)
+        else:
+            action_features = np.ones((len(actions), 1), dtype=float)
+            reference_features = np.ones((len(references), 1), dtype=float)
+
+            def feature(point):
+                del point
+                return np.ones(1, dtype=float)
+
+        if source_mixture_calibration:
+            if reference_weights is None:
+                ref_weight = np.ones(len(references), dtype=float)
+            else:
+                ref_weight = np.maximum(
+                    np.asarray(reference_weights, dtype=float).reshape(-1),
+                    0.0,
+                )
+                if len(ref_weight) != len(references):
+                    raise ValueError("reference_weights length mismatch")
+            ref_total = float(np.sum(ref_weight))
+            if not np.isfinite(ref_total) or ref_total <= 0.0:
+                ref_weight = np.ones(len(references), dtype=float)
+                ref_total = float(len(references))
+            ref_weight /= ref_total
+            if action_reliability is None:
+                reliability = np.ones(len(actions), dtype=float)
+            else:
+                reliability = np.clip(
+                    np.asarray(action_reliability, dtype=float).reshape(-1),
+                    0.0,
+                    1.0,
+                )
+                if len(reliability) != len(actions):
+                    raise ValueError("action_reliability length mismatch")
+            covariance = np.asarray(
+                self.cumulative_prior_component_covariance[i], dtype=float)
+            reference_second_moment = (
+                reference_features.T
+                @ (ref_weight[:, None] * reference_features)
+            )
+            predicted = np.maximum(
+                self.predict_variance_many(i, actions, problem), self.floor)
+            reductions = np.zeros(len(actions), dtype=float)
+            for index, row in enumerate(action_features):
+                if reliability[index] <= 0.0:
+                    continue
+                covariance_row = covariance @ row
+                latent_variance = max(float(row @ covariance_row), 0.0)
+                observation_variance = (
+                    2.0 * predicted[index] ** 2
+                    / max(float(reliability[index]), 1e-8)
+                )
+                denominator = max(
+                    observation_variance + latent_variance,
+                    self.floor ** 2,
+                )
+                reductions[index] = float(
+                    covariance_row
+                    @ reference_second_moment
+                    @ covariance_row
+                    / denominator
+                )
+            return np.maximum(reductions, 0.0)
+
+        if scalar_calibration:
+            if reference_weights is None:
+                ref_weight = np.ones(len(references), dtype=float)
+            else:
+                ref_weight = np.maximum(
+                    np.asarray(reference_weights, dtype=float).reshape(-1),
+                    0.0,
+                )
+                if len(ref_weight) != len(references):
+                    raise ValueError("reference_weights length mismatch")
+            ref_total = float(np.sum(ref_weight))
+            if not np.isfinite(ref_total) or ref_total <= 0.0:
+                ref_weight = np.ones(len(references), dtype=float)
+                ref_total = float(len(references))
+            ref_weight /= ref_total
+
+            if action_reliability is None:
+                reliability = np.ones(len(actions), dtype=float)
+            else:
+                reliability = np.clip(
+                    np.asarray(action_reliability, dtype=float).reshape(-1),
+                    0.0,
+                    1.0,
+                )
+                if len(reliability) != len(actions):
+                    raise ValueError("action_reliability length mismatch")
+            reliability *= np.asarray(
+                action_features[:, 0] > 0.0, dtype=float)
+
+            # If v(x) = s h(x), then a sample variance divided by h(x)
+            # has scaled-chi-square variance 2 s^2 / dof. Consequently the
+            # Fisher precision for s is dof / (2 s^2), in physical variance
+            # units. This is the covariance needed by chance-margin VOI; the
+            # median-normalized IRLS matrix below is only a numerical fitting
+            # geometry and cannot be added to GPR variance reduction.
+            scale = max(float(self.cumulative_prior_scale[i]), self.floor)
+            source_pseudo_dof = max(float(
+                self.cumulative_prior_precision.get(i) or 0.0), 1e-8)
+            target_dof = float(sum(
+                self._record_replication_dof(i, point)
+                for point in self.replicated_keys.get(i, set())
+            ))
+            current_precision = (
+                source_pseudo_dof + target_dof
+            ) / max(2.0 * scale ** 2, self.floor ** 2)
+            increment = reliability / max(
+                2.0 * scale ** 2, self.floor ** 2)
+            scale_variance_reduction = increment / np.maximum(
+                current_precision * (current_precision + increment),
+                self.floor,
+            )
+            integrated_shape_square = float(np.sum(
+                ref_weight * np.asarray(
+                    reference_features[:, 0], dtype=float) ** 2
+            ))
+            return np.maximum(
+                scale_variance_reduction * integrated_shape_square,
+                0.0,
+            )
+
+        dimension = int(action_features.shape[1])
+        precision = max(float(self.config.ridge_alpha), 1e-10)
+        if use_cumulative and self.cumulative_prior_used.get(i, False):
+            learned = self.cumulative_prior_precision.get(i)
+            if learned is not None:
+                precision = max(precision, float(learned))
+        information = precision * np.eye(dimension, dtype=float)
+
+        record_rows = []
+        raw_record_weights = []
+        for point, _ in self.records.get(i, []):
+            point = tuple(point)
+            if replication_only and point not in self.replicated_keys.get(i, set()):
+                continue
+            row = np.asarray(feature(point), dtype=float)
+            if row.shape != (dimension,) or not np.all(np.isfinite(row)):
+                continue
+            predicted = max(
+                float(self.predict_variance(i, point, problem)), self.floor)
+            # This is the same relative information geometry as the
+            # replication-aware projected IRLS fit: Var(S^2) is proportional
+            # to v(x)^2 / dof.
+            weight = self._record_replication_dof(i, point) / max(
+                predicted ** 2, self.floor ** 2)
+            record_rows.append(row)
+            raw_record_weights.append(weight)
+        finite_weights = np.asarray([
+            weight for weight in raw_record_weights
+            if np.isfinite(weight) and weight > 0.0
+        ], dtype=float)
+        weight_scale = (
+            float(np.median(finite_weights)) if len(finite_weights) else 1.0
+        )
+        weight_clip = max(float(self.config.cumulative_weight_clip), 1.0)
+        for row, raw_weight in zip(record_rows, raw_record_weights):
+            weight = float(np.clip(
+                raw_weight / max(weight_scale, 1e-12),
+                1.0 / weight_clip,
+                weight_clip,
+            ))
+            information += weight * np.outer(row, row)
+
+        inverse = np.linalg.pinv(
+            0.5 * (information + information.T), hermitian=True)
+        if reference_weights is None:
+            ref_weight = np.ones(len(references), dtype=float)
+        else:
+            ref_weight = np.maximum(
+                np.asarray(reference_weights, dtype=float).reshape(-1), 0.0)
+            if len(ref_weight) != len(references):
+                raise ValueError("reference_weights length mismatch")
+        ref_total = float(np.sum(ref_weight))
+        if not np.isfinite(ref_total) or ref_total <= 0.0:
+            ref_weight = np.ones(len(references), dtype=float)
+            ref_total = float(len(references))
+        ref_weight /= ref_total
+        reference_moment = reference_features.T @ (
+            ref_weight[:, None] * reference_features)
+
+        if action_reliability is None:
+            reliability = np.ones(len(actions), dtype=float)
+        else:
+            reliability = np.clip(
+                np.asarray(action_reliability, dtype=float).reshape(-1),
+                0.0,
+                1.0,
+            )
+            if len(reliability) != len(actions):
+                raise ValueError("action_reliability length mismatch")
+        action_variance = np.asarray([
+            max(float(self.predict_variance(i, point, problem)), self.floor)
+            for point in actions
+        ], dtype=float)
+        update_weight = reliability / np.maximum(
+            action_variance ** 2, self.floor ** 2)
+        update_weight = np.clip(
+            update_weight / max(weight_scale, 1e-12),
+            0.0,
+            weight_clip,
+        )
+        projected = action_features @ inverse
+        leverage = np.einsum("ij,ij->i", projected, action_features)
+        integrated = np.einsum(
+            "ij,jk,ik->i", projected, reference_moment, projected)
+        gain = update_weight * np.maximum(integrated, 0.0) / np.maximum(
+            1.0 + update_weight * np.maximum(leverage, 0.0), 1e-12)
+        return np.maximum(np.asarray(gain, dtype=float), 0.0)
+
+    def certification_margin_information_reduction_many(
+        self,
+        i,
+        action_points,
+        reference_points,
+        problem=None,
+        *,
+        action_reliability=None,
+        reference_weights=None,
+        z_alpha=1.0,
+    ):
+        """Expected reduction of the HVD certification radius.
+
+        The hierarchical source-shape posterior contributes
+
+        ``z_h * sqrt(phi(x)' Cov(theta) phi(x))``
+
+        to ``v_C_plus``. A prospective variance observation has a deterministic
+        rank-one covariance update under the current scaled-chi-square
+        information model. This method maps that update through
+        ``z_alpha * sqrt(v_C_plus)`` before integrating over reference policies,
+        so its output has the same response units as a GPR confidence-radius
+        reduction. It intentionally returns zero when this covariance bridge is
+        unavailable instead of mixing an arbitrary HVD score into the margin.
+        """
+
+        i = int(i)
+        actions = [tuple(int(v) for v in x) for x in action_points]
+        references = [tuple(int(v) for v in x) for x in reference_points]
+        if not actions:
+            return np.zeros(0, dtype=float)
+        if not references:
+            references = list(actions)
+        components = self.cumulative_prior_components.get(i)
+        covariance = self.cumulative_prior_component_covariance.get(i)
+        source_mixture_active = bool(
+            self.mode == "factor"
+            and self.config.use_cumulative_provider
+            and self.cumulative_prior_replication_only.get(i, False)
+            and components is not None
+            and covariance is not None
+        )
+        if not source_mixture_active:
+            return np.zeros(len(actions), dtype=float)
+
+        action_raw = self._cumulative_feature_matrix(
+            actions, problem, output_index=i)
+        reference_raw = self._cumulative_feature_matrix(
+            references, problem, output_index=i)
+        if action_raw is None or reference_raw is None:
+            return np.zeros(len(actions), dtype=float)
+        components = np.asarray(components, dtype=float)
+        covariance = np.asarray(covariance, dtype=float)
+        action_features = np.maximum(
+            action_raw @ components.T, self.floor)
+        reference_features = np.maximum(
+            reference_raw @ components.T, self.floor)
+
+        if action_reliability is None:
+            reliability = np.ones(len(actions), dtype=float)
+        else:
+            reliability = np.clip(
+                np.asarray(action_reliability, dtype=float).reshape(-1),
+                0.0,
+                1.0,
+            )
+            if len(reliability) != len(actions):
+                raise ValueError("action_reliability length mismatch")
+        if reference_weights is None:
+            weights = np.ones(len(references), dtype=float)
+        else:
+            weights = np.maximum(
+                np.asarray(reference_weights, dtype=float).reshape(-1), 0.0)
+            if len(weights) != len(references):
+                raise ValueError("reference_weights length mismatch")
+        total_weight = float(np.sum(weights))
+        if not np.isfinite(total_weight) or total_weight <= 0.0:
+            weights = np.ones(len(references), dtype=float)
+            total_weight = float(len(references))
+        weights /= max(total_weight, self.floor)
+
+        predicted_action = np.maximum(
+            self.predict_variance_many(i, actions, problem), self.floor)
+        certification_variance = np.maximum(
+            self.predict_certification_variance_many(
+                i, references, problem), self.floor)
+        covariance_reference = reference_features @ covariance
+        current_shape_variance = np.maximum(np.einsum(
+            "ij,ij->i", covariance_reference, reference_features), 0.0)
+        transfer_z = max(
+            float(self.config.cumulative_transfer_upper_z), 0.0)
+        current_guard = transfer_z * np.sqrt(current_shape_variance)
+        z_alpha = max(float(z_alpha), 0.0)
+        gains = np.zeros(len(actions), dtype=float)
+        for index, row in enumerate(action_features):
+            if reliability[index] <= 0.0:
+                continue
+            covariance_row = covariance @ row
+            latent_variance = max(float(row @ covariance_row), 0.0)
+            observation_variance = (
+                2.0 * predicted_action[index] ** 2
+                / max(float(reliability[index]), 1e-8)
+            )
+            denominator = max(
+                observation_variance + latent_variance,
+                self.floor ** 2,
+            )
+            cross = reference_features @ covariance_row
+            shape_reduction = np.minimum(
+                np.maximum(cross ** 2 / denominator, 0.0),
+                current_shape_variance,
+            )
+            updated_guard = transfer_z * np.sqrt(np.maximum(
+                current_shape_variance - shape_reduction, 0.0))
+            guard_reduction = np.minimum(
+                np.maximum(current_guard - updated_guard, 0.0),
+                certification_variance - self.floor,
+            )
+            updated_certification = np.maximum(
+                certification_variance - guard_reduction, self.floor)
+            margin_reduction = z_alpha * (
+                np.sqrt(certification_variance)
+                - np.sqrt(updated_certification)
+            )
+            gains[index] = float(weights @ np.maximum(
+                margin_reduction, 0.0))
+        return np.maximum(gains, 0.0)
+
     def predict_variance(self, i, x, problem=None):
         """Predict observation-noise variance for one output channel."""
         i = int(i)
@@ -1158,6 +2090,35 @@ class OrthogonalHVD:
         )
         return np.maximum(base * scale, 0.0)
 
+    def _source_mixture_guard_many(self, i, X, problem=None):
+        """Pointwise upper radius for the transferred variance shape."""
+        i = int(i)
+        components = self.cumulative_prior_components.get(i)
+        covariance = self.cumulative_prior_component_covariance.get(i)
+        if components is None or covariance is None or len(X) == 0:
+            return np.zeros(len(X), dtype=float)
+        features = self._cumulative_feature_matrix(
+            X, problem, output_index=i)
+        if features is None:
+            return np.zeros(len(X), dtype=float)
+        component_values = np.maximum(
+            features @ np.asarray(components, dtype=float).T,
+            self.floor,
+        )
+        covariance = np.asarray(covariance, dtype=float)
+        prediction_variance = np.einsum(
+            "ni,ij,nj->n",
+            component_values,
+            covariance,
+            component_values,
+        )
+        upper_z = max(float(self.config.cumulative_transfer_upper_z), 0.0)
+        return upper_z * np.sqrt(np.maximum(prediction_variance, 0.0))
+
+    def _source_mixture_guard(self, i, x, problem=None):
+        return float(self._source_mixture_guard_many(
+            i, [x], problem)[0])
+
     def predict_certification_variance(self, i, x, problem=None):
         """Variance used inside conservative chance feasibility checks."""
         cert = (
@@ -1174,10 +2135,13 @@ class OrthogonalHVD:
             and self.cumulative_prior_replication_only.get(int(i), False)
         )
         if source_prior_active:
-            cert += (
-                max(float(self.cumulative_prior_upper_scale.get(i, 1.0)), 1.0)
-                - 1.0
-            ) * self.predict_variance(i, x, problem)
+            if self.cumulative_prior_component_covariance.get(int(i)) is not None:
+                cert += self._source_mixture_guard(i, x, problem)
+            else:
+                cert += (
+                    max(float(self.cumulative_prior_upper_scale.get(i, 1.0)), 1.0)
+                    - 1.0
+                ) * self.predict_variance(i, x, problem)
         if self.mode in ("orthogonal", "factor") and not source_prior_active:
             # Smooth log-variance fits are allowed to guide learning, but
             # feasibility certification should not be more optimistic than the
@@ -1198,10 +2162,13 @@ class OrthogonalHVD:
             and self.cumulative_prior_replication_only.get(int(i), False)
         )
         if source_prior_active:
-            cert = cert + (
-                max(float(self.cumulative_prior_upper_scale.get(i, 1.0)), 1.0)
-                - 1.0
-            ) * base
+            if self.cumulative_prior_component_covariance.get(int(i)) is not None:
+                cert = cert + self._source_mixture_guard_many(i, X, problem)
+            else:
+                cert = cert + (
+                    max(float(self.cumulative_prior_upper_scale.get(i, 1.0)), 1.0)
+                    - 1.0
+                ) * base
         if self.mode in ("orthogonal", "factor") and not source_prior_active:
             cert = np.maximum(cert, self._class_variance_many(i, X, problem))
         return np.maximum(cert, self.floor)
@@ -1292,6 +2259,13 @@ class OrthogonalHVD:
                 "v_C_plus": float(self.predict_certification_variance(i, x, problem)),
                 "tail_guard": float(self._residual_tail_uncertainty(i))
                 if self._cumulative_active(i) else 0.0,
+                "source_shape_guard": float(
+                    self._source_mixture_guard(i, x, problem))
+                if self.cumulative_prior_component_covariance.get(i) is not None
+                else float(
+                    max(self.cumulative_prior_upper_scale.get(i, 1.0) - 1.0, 0.0)
+                    * self.predict_variance(i, x, problem)
+                ) if self.cumulative_prior_used.get(i, False) else 0.0,
                 "high_frequency_floor": float(
                     self._high_frequency_residual_floor(i, x, problem)),
                 "oracle": oracle,
@@ -1409,6 +2383,25 @@ class OrthogonalHVD:
                 str(i): str(self.cumulative_fit_method.get(i, "inactive"))
                 for i in range(self.n_outputs)
             },
+            "cumulative_information_geometry": {
+                str(i): (
+                    "scaled_chi_square_source_shape_mixture"
+                    if self.cumulative_prior_component_covariance.get(i) is not None
+                    else "scaled_chi_square_scalar"
+                    if (
+                        self.cumulative_prior_replication_only.get(i, False)
+                        and self.cumulative_prior_used.get(i, False)
+                        and self.cumulative_prior_scale.get(i) is not None
+                        and self.cumulative_beta.get(i) is not None
+                    )
+                    else (
+                        "irls_linear_predictor"
+                        if self._cumulative_active(i)
+                        else "inactive"
+                    )
+                )
+                for i in range(self.n_outputs)
+            },
             "cumulative_fit_effective_dof": {
                 str(i): float(self.cumulative_fit_effective_dof.get(i, 0.0))
                 for i in range(self.n_outputs)
@@ -1468,8 +2461,54 @@ class OrthogonalHVD:
                 str(i): bool(self.cumulative_prior_replication_only.get(i, False))
                 for i in range(self.n_outputs)
             },
+            "cumulative_transfer_mode": str(
+                self.config.cumulative_transfer_mode),
+            "cumulative_source_task_weight_mode": str(
+                self.config.cumulative_source_task_weight_mode),
+            "cumulative_target_evidence_mode": str(
+                self.config.cumulative_target_evidence_mode),
+            "cumulative_source_task_posterior": {
+                str(i): (
+                    None
+                    if self.cumulative_source_task_posterior.get(i) is None
+                    else dict(self.cumulative_source_task_posterior[i])
+                )
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_component_count": {
+                str(i): int(
+                    0
+                    if self.cumulative_prior_components.get(i) is None
+                    else len(self.cumulative_prior_components[i])
+                )
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_component_domains": {
+                str(i): list(self.cumulative_prior_component_domains.get(i, []))
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_component_weights": {
+                str(i): (
+                    None
+                    if self.cumulative_prior_component_weights.get(i) is None
+                    else np.asarray(
+                        self.cumulative_prior_component_weights[i],
+                        dtype=float,
+                    ).tolist()
+                )
+                for i in range(self.n_outputs)
+            },
+            "cumulative_prior_shape_target_dof": {
+                str(i): float(self.cumulative_prior_shape_target_dof.get(i, 0.0))
+                for i in range(self.n_outputs)
+            },
             "replicated_solution_count": {
                 str(i): int(len(self.replicated_keys.get(i, set())))
+                for i in range(self.n_outputs)
+            },
+            "prequential_upper_solution_count": {
+                str(i): int(len(
+                    self.prequential_upper_records.get(i, {})))
                 for i in range(self.n_outputs)
             },
             "cumulative_activation_records": {

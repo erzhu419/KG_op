@@ -12,9 +12,11 @@ from problems.rzdt import (  # noqa: E402
     FactorShockStatePolicyRZDT1,
     RegimeRZDT1,
     StatePolicyRZDT1,
+    make_problem,
 )
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 from representation.manifold import ManifoldRiskDecomposer, PCAManifoldEncoder  # noqa: E402
+from core.cumulative_risk import params_to_beta  # noqa: E402
 from variance.orthogonal_hvd import (  # noqa: E402
     OrthogonalHVD,
     gaussian_square_subexp_params,
@@ -196,6 +198,27 @@ class OrthogonalHVDTests(unittest.TestCase):
         names = problem.cumulative_risk_feature_names(output_index=1)
         self.assertEqual(len(features), len(names))
 
+    def test_problem_factory_exposes_registered_shared_shock_scale(self):
+        low = ScalarizedProblem(make_problem(
+            "FactorShockStatePolicyRZDT1",
+            d=8,
+            L=100,
+            sigma=0.04,
+            shared_shock_scale=0.0,
+        ))
+        high = ScalarizedProblem(make_problem(
+            "FactorShockStatePolicyRZDT1",
+            d=8,
+            L=100,
+            sigma=0.04,
+            shared_shock_scale=4.0,
+        ))
+        point = tuple([50] + [95] * 7)
+        self.assertGreater(
+            high.true_sigma(point)[1] ** 2,
+            low.true_sigma(point)[1] ** 2,
+        )
+
     def test_factor_hvd_learns_cumulative_risk_ordering(self):
         base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
         problem = ScalarizedProblem(base)
@@ -240,6 +263,465 @@ class OrthogonalHVDTests(unittest.TestCase):
             float(len(X)),
         )
 
+    def test_source_hvd_shape_uses_scalar_only_target_replication_calibration(self):
+        base = ScalarizedProblem(
+            FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04))
+        source_scale = 0.01
+
+        class FrozenShapeProblem:
+            def __init__(self):
+                self.information_cap = None
+
+            def __getattr__(self, name):
+                return getattr(base, name)
+
+            def cumulative_hvd_prior_beta(
+                self, output_index=1, feature_dim=None,
+            ):
+                beta = params_to_beta(
+                    base.cumulative_risk_parameters(output_index)) / source_scale
+                if feature_dim is not None and len(beta) != int(feature_dim):
+                    return None
+                return beta
+
+            @staticmethod
+            def cumulative_hvd_prior_precision(output_index=1):
+                del output_index
+                return 1.0
+
+            @staticmethod
+            def cumulative_hvd_prior_scale_mean(output_index=1):
+                del output_index
+                return source_scale
+
+            @staticmethod
+            def cumulative_hvd_prior_upper_scale(output_index=1):
+                del output_index
+                return 1.0
+
+            @staticmethod
+            def cumulative_hvd_prior_min_records():
+                return 1
+
+            def hvd_residual_variance_cap(self, output_index=0):
+                if self.information_cap is not None:
+                    return float(self.information_cap)
+                return base.hvd_residual_variance_cap(output_index)
+
+        problem = FrozenShapeProblem()
+        model = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=1,
+        )
+        target_scale = 0.04
+        points = [
+            tuple([15] + [55] * 7),
+            tuple([35] + [72] * 7),
+            tuple([65] + [88] * 7),
+            tuple([85] + [95] * 7),
+        ]
+        source_shape = problem.cumulative_hvd_prior_beta(1)
+        for point in points:
+            feature = problem.cumulative_risk_features(point, output_index=1)
+            model.update(
+                1,
+                point,
+                0.0,
+                0.0,
+                problem=problem,
+                replicate_variance=target_scale * float(feature @ source_shape),
+                replicate_count=8,
+            )
+
+        diagnostics = model.diagnostics()
+        self.assertEqual(
+            diagnostics["cumulative_fit_method"]["1"],
+            "replication_scalar_calibration",
+        )
+        fitted = np.asarray(model.cumulative_beta[1], dtype=float)
+        fitted_shape = fitted / max(float(model.cumulative_prior_scale[1]), 1e-12)
+        np.testing.assert_allclose(fitted_shape, source_shape, rtol=1e-10, atol=1e-12)
+        self.assertGreater(model.cumulative_prior_scale[1], source_scale)
+        self.assertLess(model.cumulative_prior_scale[1], target_scale * 1.01)
+        self.assertEqual(
+            diagnostics["cumulative_fit_effective_dof"]["1"], 28.0)
+        self.assertEqual(
+            diagnostics["cumulative_information_geometry"]["1"],
+            "scaled_chi_square_scalar",
+        )
+
+        reliability = np.asarray([1.0, 0.25, 0.75, 0.5], dtype=float)
+        reference_weights = np.asarray([1.0, 2.0, 3.0, 4.0], dtype=float)
+        fitted_scale = float(model.cumulative_prior_scale[1])
+        precision = (1.0 + 28.0) / (2.0 * fitted_scale ** 2)
+        normalized_weights = reference_weights / np.sum(reference_weights)
+        shape_values = np.asarray([
+            float(problem.cumulative_risk_features(
+                point, output_index=1) @ source_shape)
+            for point in points
+        ])
+        unclipped = fitted_scale * shape_values
+        ordered_unclipped = np.sort(unclipped)
+        problem.information_cap = float(
+            0.5 * (ordered_unclipped[1] + ordered_unclipped[2]))
+        cap = float(problem.hvd_residual_variance_cap(output_index=1))
+        actual_reduction = model.information_reduction_many(
+            1,
+            points,
+            points,
+            problem,
+            action_reliability=reliability,
+            reference_weights=reference_weights,
+        )
+        active = (unclipped > model.floor) & (unclipped < cap)
+        self.assertTrue(np.any(active))
+        self.assertTrue(np.any(~active))
+        derivative = np.where(active, shape_values, 0.0)
+        integrated_shape_square = float(np.sum(
+            normalized_weights * derivative ** 2))
+        increment = reliability * active / (2.0 * fitted_scale ** 2)
+        expected_reduction = (
+            increment / (precision * (precision + increment))
+            * integrated_shape_square
+        )
+        np.testing.assert_allclose(
+            actual_reduction,
+            expected_reduction,
+            rtol=1e-12,
+            atol=1e-15,
+        )
+        np.testing.assert_array_equal(actual_reduction[~active], 0.0)
+
+    def test_source_shape_mixture_learns_target_shape_and_shrinks_guard(self):
+        base = ScalarizedProblem(
+            FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04))
+        physical = params_to_beta(
+            base.cumulative_risk_parameters(output_index=1))
+        component_a = physical / max(float(np.mean(physical)), 1e-6)
+        component_b = component_a.copy()
+        component_b[0] *= 2.5
+        component_b[1:4] *= 0.35
+        component_b[4:7] *= 1.8
+
+        class FrozenMixtureProblem:
+            def __getattr__(self, name):
+                return getattr(base, name)
+
+            @staticmethod
+            def cumulative_hvd_prior_beta(output_index=1, feature_dim=None):
+                del output_index
+                beta = 0.5 * (component_a + component_b)
+                if feature_dim is not None and len(beta) != int(feature_dim):
+                    return None
+                return beta
+
+            @staticmethod
+            def cumulative_hvd_prior_components(output_index=1, feature_dim=None):
+                del output_index
+                coefficients = np.vstack([component_a, component_b])
+                if feature_dim is not None and coefficients.shape[1] != int(feature_dim):
+                    return None
+                return {
+                    "coefficients": coefficients,
+                    "domains": ["source_a", "source_b"],
+                }
+
+            @staticmethod
+            def cumulative_hvd_prior_precision(output_index=1):
+                del output_index
+                return 1.0
+
+            @staticmethod
+            def cumulative_hvd_prior_scale_mean(output_index=1):
+                del output_index
+                return 0.02
+
+            @staticmethod
+            def cumulative_hvd_prior_upper_scale(output_index=1):
+                del output_index
+                return 2.0
+
+            @staticmethod
+            def cumulative_hvd_prior_min_records():
+                return 1
+
+        problem = FrozenMixtureProblem()
+        model = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=1,
+            cumulative_transfer_mode="source_mixture",
+        )
+        probe = tuple([10] + [45] * 7)
+        model.update(1, probe, 0.1, 0.0, problem=problem)
+        guard_before = model._source_mixture_guard(1, probe, problem)
+
+        target_weights = np.asarray([0.032, 0.008], dtype=float)
+        points = [
+            tuple([15] + [55] * 7),
+            tuple([35] + [72] * 7),
+            tuple([65] + [88] * 7),
+            tuple([85] + [95] * 7),
+        ]
+        for point in points:
+            feature = problem.cumulative_risk_features(point, output_index=1)
+            component_value = feature @ np.vstack([component_a, component_b]).T
+            model.update(
+                1,
+                point,
+                0.0,
+                0.0,
+                problem=problem,
+                replicate_variance=float(component_value @ target_weights),
+                replicate_count=8,
+            )
+
+        diagnostics = model.diagnostics()
+        self.assertEqual(
+            diagnostics["cumulative_fit_method"]["1"],
+            "replication_source_shape_mixture",
+        )
+        self.assertEqual(
+            diagnostics["cumulative_information_geometry"]["1"],
+            "scaled_chi_square_source_shape_mixture",
+        )
+        self.assertEqual(
+            diagnostics["cumulative_prior_component_domains"]["1"],
+            ["source_a", "source_b"],
+        )
+        self.assertEqual(
+            diagnostics["cumulative_prior_shape_target_dof"]["1"], 28.0)
+        fitted_weights = np.asarray(
+            diagnostics["cumulative_prior_component_weights"]["1"])
+        self.assertTrue(np.all(fitted_weights >= 0.0))
+        self.assertGreater(fitted_weights[0], fitted_weights[1])
+        self.assertLess(
+            model._source_mixture_guard(1, probe, problem), guard_before)
+        for point in points:
+            self.assertGreaterEqual(
+                model.predict_decomposition(1, point, problem)["cumulative"][
+                    "fitted_blocks"]["shared"],
+                -1e-12,
+            )
+
+    def test_constraint_mean_task_posterior_controls_hvd_shape_mixture(self):
+        base = ScalarizedProblem(
+            FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04))
+        physical = params_to_beta(
+            base.cumulative_risk_parameters(output_index=1))
+        source_a = physical / max(float(np.mean(physical)), 1e-6)
+        source_b = source_a.copy()
+        source_b[0] *= 4.0
+
+        class CoupledMixtureProblem:
+            def __getattr__(self, name):
+                return getattr(base, name)
+
+            @staticmethod
+            def cumulative_hvd_prior_beta(output_index=1, feature_dim=None):
+                del output_index
+                beta = 0.5 * (source_a + source_b)
+                if feature_dim is not None and len(beta) != int(feature_dim):
+                    return None
+                return beta
+
+            @staticmethod
+            def cumulative_hvd_prior_components(output_index=1, feature_dim=None):
+                del output_index
+                coefficients = np.vstack([source_a, source_b])
+                if feature_dim is not None and coefficients.shape[1] != int(feature_dim):
+                    return None
+                return {
+                    "coefficients": coefficients,
+                    "domains": ["source_a", "source_b"],
+                }
+
+            @staticmethod
+            def cumulative_hvd_prior_precision(output_index=1):
+                del output_index
+                return 1.0
+
+            @staticmethod
+            def cumulative_hvd_prior_scale_mean(output_index=1):
+                del output_index
+                return 0.02
+
+            @staticmethod
+            def cumulative_hvd_prior_upper_scale(output_index=1):
+                del output_index
+                return 2.0
+
+            @staticmethod
+            def cumulative_hvd_prior_min_records():
+                return 1
+
+        problem = CoupledMixtureProblem()
+        model = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=1,
+            cumulative_transfer_mode="source_mixture",
+            cumulative_source_task_weight_mode="constraint_mean",
+        )
+        model.set_source_task_posterior(
+            1,
+            ["source:source_a", "source:source_b", "target:null"],
+            [0.0, 0.0, 1.0],
+        )
+        probe = tuple([10] + [45] * 7)
+        model.update(1, probe, 0.1, 0.0, problem=problem)
+        diagnostics = model.diagnostics()
+        self.assertEqual(
+            diagnostics["cumulative_prior_component_domains"]["1"],
+            ["source_a", "source_b", "target:null"],
+        )
+        np.testing.assert_allclose(
+            diagnostics["cumulative_prior_component_weights"]["1"],
+            [0.0, 0.0, 0.02],
+            atol=1e-12,
+        )
+        self.assertAlmostEqual(
+            model.predict_cumulative_variance(1, probe, problem),
+            model.global_var[1],
+            places=12,
+        )
+        self.assertFalse(
+            diagnostics["cumulative_source_task_posterior"]["1"][
+                "target_oracle_used"])
+
+    def test_prequential_upper_updates_source_shape_without_replication(self):
+        base = ScalarizedProblem(
+            FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04))
+        physical = params_to_beta(
+            base.cumulative_risk_parameters(output_index=1))
+        source_a = physical / max(float(np.mean(physical)), 1e-6)
+        source_b = source_a.copy()
+        source_b[0] *= 2.0
+        components = np.vstack([source_a, source_b])
+
+        class PrequentialProblem:
+            def __getattr__(self, name):
+                return getattr(base, name)
+
+            @staticmethod
+            def cumulative_hvd_prior_beta(output_index=1, feature_dim=None):
+                del output_index
+                beta = 0.5 * (source_a + source_b)
+                if feature_dim is not None and len(beta) != int(feature_dim):
+                    return None
+                return beta
+
+            @staticmethod
+            def cumulative_hvd_prior_components(
+                output_index=1, feature_dim=None
+            ):
+                del output_index
+                if feature_dim is not None and components.shape[1] != int(
+                    feature_dim
+                ):
+                    return None
+                return {
+                    "coefficients": components,
+                    "domains": ["source_a", "source_b"],
+                }
+
+            @staticmethod
+            def cumulative_hvd_prior_precision(output_index=1):
+                del output_index
+                return 1.0
+
+            @staticmethod
+            def cumulative_hvd_prior_scale_mean(output_index=1):
+                del output_index
+                return 0.02
+
+            @staticmethod
+            def cumulative_hvd_prior_upper_scale(output_index=1):
+                del output_index
+                return 2.0
+
+            @staticmethod
+            def cumulative_hvd_prior_min_records():
+                return 1
+
+        problem = PrequentialProblem()
+        control = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=1,
+            cumulative_transfer_mode="source_mixture",
+            cumulative_target_evidence_mode="replication_only",
+        )
+        challenger = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=1,
+            cumulative_transfer_mode="source_mixture",
+            cumulative_target_evidence_mode="prequential_upper",
+        )
+        target_weights = np.asarray([0.03, 0.01], dtype=float)
+        points = [
+            tuple([15] + [55] * 7),
+            tuple([35] + [72] * 7),
+            tuple([65] + [88] * 7),
+            tuple([85] + [95] * 7),
+        ]
+        for point in points:
+            feature = problem.cumulative_risk_features(
+                point, output_index=1)
+            variance = float((feature @ components.T) @ target_weights)
+            observation = float(np.sqrt(max(variance, 1e-12)))
+            for model in (control, challenger):
+                model.update(
+                    1,
+                    point,
+                    observation,
+                    0.0,
+                    problem=problem,
+                    epistemic_var=0.0,
+                )
+
+        control_diagnostics = control.diagnostics()
+        challenger_diagnostics = challenger.diagnostics()
+        self.assertEqual(
+            control_diagnostics["cumulative_prior_shape_target_dof"]["1"],
+            0.0,
+        )
+        self.assertEqual(
+            challenger_diagnostics[
+                "cumulative_prior_shape_target_dof"]["1"],
+            4.0,
+        )
+        self.assertEqual(
+            challenger_diagnostics["cumulative_fit_method"]["1"],
+            "prequential_upper_source_shape_mixture",
+        )
+        self.assertEqual(
+            challenger_diagnostics["prequential_upper_solution_count"]["1"],
+            4,
+        )
+        self.assertEqual(
+            challenger_diagnostics["cumulative_prior_scale_source"]["1"],
+            "prequential_upper",
+        )
+        margin_gain = challenger.certification_margin_information_reduction_many(
+            1,
+            [points[0]],
+            points,
+            problem,
+            action_reliability=[1.0],
+            reference_weights=np.ones(len(points)),
+            z_alpha=1.6448536269514722,
+        )
+        self.assertEqual(margin_gain.shape, (1,))
+        self.assertTrue(np.all(np.isfinite(margin_gain)))
+        self.assertGreaterEqual(float(margin_gain[0]), 0.0)
+        current_radius = np.mean(np.sqrt(
+            challenger.predict_certification_variance_many(
+                1, points, problem))) * 1.6448536269514722
+        self.assertLessEqual(float(margin_gain[0]), current_radius + 1e-12)
+
     def test_factor_certification_includes_residual_tail_guard(self):
         base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
         problem = ScalarizedProblem(base)
@@ -266,6 +748,88 @@ class OrthogonalHVDTests(unittest.TestCase):
             decomposition["certification_variance"],
             decomposition["variance"] + decomposition["residual_tail_uncertainty"],
         )
+
+    def test_hvd_information_reduction_is_reliability_aware(self):
+        base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        model = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=2,
+        )
+        points = [
+            tuple([15] + [55] * 7),
+            tuple([35] + [72] * 7),
+            tuple([65] + [88] * 7),
+        ]
+        for point in points:
+            model.update(
+                1,
+                point,
+                0.0,
+                0.0,
+                problem=problem,
+                replicate_variance=problem.true_sigma(point)[1] ** 2,
+                replicate_count=2,
+            )
+        action = [tuple([50] + [80] * 7)]
+        clean = model.information_reduction_many(
+            1,
+            action,
+            points,
+            problem,
+            action_reliability=[1.0],
+        )
+        noisy = model.information_reduction_many(
+            1,
+            action,
+            points,
+            problem,
+            action_reliability=[0.2],
+        )
+        self.assertEqual(clean.shape, (1,))
+        self.assertTrue(np.all(np.isfinite(clean)))
+        self.assertGreater(clean[0], noisy[0])
+        self.assertGreaterEqual(noisy[0], 0.0)
+
+    def test_replication_reduces_future_hvd_information_gain(self):
+        base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        model = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=2,
+        )
+        points = [
+            tuple([15] + [55] * 7),
+            tuple([35] + [72] * 7),
+            tuple([65] + [88] * 7),
+        ]
+        for point in points:
+            model.update(
+                1,
+                point,
+                0.0,
+                0.0,
+                problem=problem,
+                replicate_variance=problem.true_sigma(point)[1] ** 2,
+                replicate_count=2,
+            )
+        target = points[1]
+        before = model.information_reduction_many(
+            1, [target], points, problem, action_reliability=[1.0])
+        model.update(
+            1,
+            target,
+            0.0,
+            0.0,
+            problem=problem,
+            replicate_variance=problem.true_sigma(target)[1] ** 2,
+            replicate_count=8,
+        )
+        after = model.information_reduction_many(
+            1, [target], points, problem, action_reliability=[1.0])
+        self.assertLess(after[0], before[0])
 
     def test_factor_hvd_accepts_manifold_cumulative_blocks(self):
         base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)

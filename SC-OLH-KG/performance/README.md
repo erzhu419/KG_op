@@ -47,17 +47,21 @@ Workflow:
 4. The promoted candidate metrics become `baselines/current.json`, which is the
    next validation baseline.
 
-Default quick gate:
+Legacy small-budget gate:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 SC-OLH-KG/performance/validate_performance.py \
+  --candidate_problem RegimeRZDT1 \
+  --disable_state_basis \
   --variance_mode orthogonal \
   --repeats 2 \
   --promote-if-pass
 ```
 
-The tracked baseline is intentionally small-budget and machine-local.  It is a
-development gate, not a final paper experiment.
+The tracked baseline is intentionally small-budget and machine-local. It is a
+development gate, not a final paper experiment. The current mainline defaults
+use factor HVD, state basis, and exact KG; do not compare that heavier path to
+the legacy baseline without first registering a new matched workload.
 
 Quality benchmark:
 

@@ -49,11 +49,20 @@ mathlib and its cache; later builds should be fast.
   upper-bound certification implication.
 - `SCOLHKG/Real/CertificationImplementation.lean`: code-level bridge proving
   the implemented `mu + sqrt(beta)s + z sqrt(v_C^+) <= tau` margin is the
-  Lean certification predicate and is more conservative than legacy mode.
+  Lean certification predicate and is more conservative than legacy mode. It
+  also proves the nonvacuity necessity that epistemic radius cannot exceed
+  true safety depth, equivalently
+  `beta * epistemicVariance <= safetyDepth^2` under oracle mean.
 - `SCOLHKG/Real/MeanRiskCoordinateSeparation.lean`: formal separation of the
   source-learned constraint-mean coordinate `eta` from cumulative-risk
   `psi=(A,N)`, plus joint-margin invariance and inherited certificate
   soundness.
+- `SCOLHKG/Real/SourceConstraintMeanPosterior.lean`: hierarchical source
+  coefficient uncertainty in `eta`, exact source-to-target conjugate mean
+  conditioning, target-information variance contraction, nonnegative finite
+  mixture moment projection with retained source disagreement, normalized
+  sequential predictive-likelihood reweighting, and inherited chance-
+  certificate soundness.
 - `SCOLHKG/Real/HVD.lean`: real-valued residual-square concentration event to
   HVD oracle-inequality implication.
 - `SCOLHKG/Real/HVDImplementation.lean`: code-level HVD bridges for residual
@@ -71,6 +80,19 @@ mathlib and its cache; later builds should be fast.
   residual-square uniform concentration to HVD oracle inequality, including
   nonnegative prior-centered penalties, hierarchical source/target scale, and
   the optimization-slack oracle inequality used by a finite projected solver.
+- `SCOLHKG/Real/SourceShapeMixtureHVD.lean`: nonnegative source-domain risk
+  mixtures, shared mean/HVD latent-task weighting, a nonnegative target-pooled
+  null shape, and monotone contraction of the posterior shape radius under
+  added target Fisher information. It also proves that a prediction frozen
+  before an ordinary target observation has squared-innovation expectation
+  equal to true noise second moment plus squared mean bias, which is the
+  conservative-moment bridge for optional `prequential_upper` evidence. The
+  same file proves nonnegativity of square-root radius reduction, used to put
+  GPR and HVD information gains in one chance-margin response unit.
+- `SCOLHKG/Real/JointKLChanceCertificate.lean`: one shared task law for the
+  complete chance margin, the square-root tangent envelope, centered-second-
+  moment domination of mixture epistemic variance, and validity of minimizing
+  over a finite grid of robust tangent bounds.
 - `SCOLHKG/Real/KG.lean`: real-valued exact KG and additive-proxy relation.
 - `SCOLHKG/Real/LineEnvelopeKG.lean`: certificate-level line-envelope KG
   theorem for the `compute_h` calculation once active hull intervals are
@@ -480,6 +502,19 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 121. Finite-finalist sub-Gaussian margin/objective failures and the three
      stage-level bad events are controlled by finite union bounds without
      assuming independence.
+122. Mixture epistemic variance is bounded by the source-center second moment,
+     so one common task law suffices for the mean, epistemic, and aleatoric
+     terms of the complete chance margin.
+123. Every positive square-root tangent produces a valid joint robust chance
+     upper bound, and taking the minimum of a finite family of such bounds
+     preserves validity.
+124. A source-affine boundary expert has an exact offset/scale error identity;
+     bounded coefficient error yields an explicit uniform margin radius.
+125. Positive source scale preserves the source atom's safe side, and a target
+     certificate that charges the affine-transfer radius remains sound.
+126. A normalized nonnegative interpolation of source percentile ranks remains
+     in `[0,1]`; strictly increasing source-margin rescaling leaves its order
+     unchanged, and the implemented consensus score is at most `3/2`.
 
 Remaining work is empirical/binding and assumption validation:
 

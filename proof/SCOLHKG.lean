@@ -58,9 +58,13 @@ import SCOLHKG.Real.OrderedCumulativeExposure
 import SCOLHKG.Real.OrthogonalSemiparametric
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.RidgeHVD
+import SCOLHKG.Real.SourceShapeMixtureHVD
+import SCOLHKG.Real.SourceConstraintMeanPosterior
+import SCOLHKG.Real.SourceAffineBoundaryTransfer
 import SCOLHKG.Real.RiskAlignedRepresentation
 import SCOLHKG.Real.SafeGeneralizedTaskPosterior
 import SCOLHKG.Real.JointTaskLatentPosterior
+import SCOLHKG.Real.JointKLChanceCertificate
 import SCOLHKG.Real.SafeRegret
 import SCOLHKG.Real.TrafficTrajectoryModel
 import SCOLHKG.Real.TwoStageDecision

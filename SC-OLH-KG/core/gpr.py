@@ -71,6 +71,11 @@ class ParametricGPR:
         self._adaptive_sparsity = None
         self._adaptive_records = []
         self._adaptive_spec = None
+        self._finite_mixture_components = []
+        self._finite_mixture_weights = None
+        self._finite_mixture_component_names = []
+        self._finite_mixture_sequential = False
+        self._finite_mixture_update_count = 0
         self._covariance_projection_count = 0
         self._min_quadratic_variance_seen = float("inf")
         self._max_abs_posterior_mean_seen = 0.0
@@ -407,13 +412,215 @@ class ParametricGPR:
         self._adaptive_sparsity = None
         self._adaptive_records = []
         self._adaptive_spec = None
+        self._finite_mixture_components = []
+        self._finite_mixture_weights = None
+        self._finite_mixture_component_names = []
+        self._finite_mixture_sequential = False
+        self._finite_mixture_update_count = 0
         self._covariance_projection_count = 0
         self._min_quadratic_variance_seen = float("inf")
         self._max_abs_posterior_mean_seen = 0.0
         self._invalidate_backend_cache()
 
+    def set_moment_matched_posterior(
+        self,
+        component_models,
+        weights,
+        diagnostics=None,
+        *,
+        sequential_updates=False,
+    ) -> None:
+        """Project a finite Gaussian-mixture posterior to two moments.
+
+        Every component must have been conditioned on the same observations.
+        The covariance retains both within-component uncertainty and
+        between-component disagreement, so source-model ambiguity can only
+        increase uncertainty rather than disappear during projection.
+        """
+
+        components = list(component_models)
+        weight = np.asarray(weights, dtype=float).reshape(-1)
+        if not components or len(components) != len(weight):
+            raise ValueError("mixture components and weights must align")
+        if not np.all(np.isfinite(weight)) or np.any(weight < 0.0):
+            raise ValueError("mixture weights must be finite and nonnegative")
+        total = float(np.sum(weight))
+        if total <= 0.0:
+            raise ValueError("mixture weights must have positive mass")
+        weight = weight / total
+
+        reference = components[0]
+        reference_samples = list(reference.sampled_set)
+        state_dim = len(reference.a)
+        for component in components:
+            if component.p != self.p or len(component.a) != state_dim:
+                raise ValueError("mixture component GPR dimensions disagree")
+            if list(component.sampled_set) != reference_samples:
+                raise ValueError(
+                    "mixture components must condition on identical samples"
+                )
+            if not np.all(np.isfinite(component.a)) or not np.all(
+                np.isfinite(component.C)
+            ):
+                raise FloatingPointError("mixture component state is non-finite")
+
+        mean = np.sum([
+            mass * np.asarray(component.a, dtype=float)
+            for mass, component in zip(weight, components)
+        ], axis=0)
+        covariance = np.zeros((state_dim, state_dim), dtype=float)
+        for mass, component in zip(weight, components):
+            delta = np.asarray(component.a, dtype=float) - mean
+            covariance += mass * (
+                np.asarray(component.C, dtype=float) + np.outer(delta, delta)
+            )
+        covariance = 0.5 * (covariance + covariance.T)
+        eigenvalues, eigenvectors = np.linalg.eigh(covariance)
+        covariance = (
+            eigenvectors * np.maximum(eigenvalues, 1e-12)
+        ) @ eigenvectors.T
+
+        self.a = np.asarray(mean, dtype=float)
+        self.C = np.asarray(covariance, dtype=float)
+        self.lambda_i = max(float(np.sum([
+            mass * float(component.lambda_i)
+            for mass, component in zip(weight, components)
+        ])), 1e-12)
+        self.sampled_set = reference_samples
+        self.sol_to_idx = {
+            sample: index for index, sample in enumerate(self.sampled_set)
+        }
+        self._adaptive_sparsity = None
+        self._adaptive_records = []
+        self._adaptive_spec = None
+        self._finite_mixture_components = (
+            components if bool(sequential_updates) else [])
+        self._finite_mixture_weights = (
+            np.asarray(weight, dtype=float).copy()
+            if bool(sequential_updates) else None
+        )
+        names = list((diagnostics or {}).get("component_names", []))
+        self._finite_mixture_component_names = (
+            [str(value) for value in names]
+            if len(names) == len(components)
+            else [f"component:{index}" for index in range(len(components))]
+        ) if bool(sequential_updates) else []
+        self._finite_mixture_sequential = bool(sequential_updates)
+        self._finite_mixture_update_count = int(
+            (diagnostics or {}).get("online_mixture_update_count", 0)
+        ) if bool(sequential_updates) else 0
+        self._covariance_projection_count = 0
+        self._min_quadratic_variance_seen = float("inf")
+        self._max_abs_posterior_mean_seen = 0.0
+        self.source_parametric_prior_diagnostics = dict(diagnostics or {})
+        self.source_parametric_prior_diagnostics.update({
+            "posterior_projection": "finite_mixture_moment_match",
+            "posterior_component_count": int(len(components)),
+            "posterior_weight_sum": float(np.sum(weight)),
+            "posterior_effective_component_count": float(
+                1.0 / np.sum(weight ** 2)),
+            "between_component_covariance_trace": float(
+                np.trace(covariance)
+                - np.sum([
+                    mass * np.trace(component.C)
+                    for mass, component in zip(weight, components)
+                ])
+            ),
+        })
+        self._invalidate_backend_cache()
+
+    def _update_finite_mixture(
+        self,
+        x: ArrayLike,
+        y: float,
+        observation_variance: float,
+    ) -> None:
+        """Apply one exact finite-mixture Bayes update before moment matching."""
+
+        components = list(getattr(self, "_finite_mixture_components", []))
+        weight = np.asarray(
+            getattr(self, "_finite_mixture_weights", None),
+            dtype=float,
+        ).reshape(-1)
+        if not components or len(components) != len(weight):
+            raise RuntimeError("sequential mixture state is incomplete")
+        if np.any(weight < 0.0) or not np.all(np.isfinite(weight)):
+            raise FloatingPointError("sequential mixture weights are invalid")
+        total = float(np.sum(weight))
+        if total <= 0.0:
+            raise FloatingPointError("sequential mixture has zero mass")
+        weight /= total
+
+        predictive_mean = np.asarray([
+            component.posterior_mean(x) for component in components
+        ], dtype=float)
+        predictive_variance = np.asarray([
+            component.posterior_var(x) + observation_variance
+            for component in components
+        ], dtype=float)
+        predictive_variance = np.maximum(predictive_variance, 1e-12)
+        log_predictive = -0.5 * (
+            np.log(2.0 * np.pi * predictive_variance)
+            + (float(y) - predictive_mean) ** 2 / predictive_variance
+        )
+        diagnostics = dict(getattr(
+            self, "source_parametric_prior_diagnostics", {}) or {})
+        temperature = max(
+            float(diagnostics.get("evidence_temperature", 1.0)), 1e-6)
+        log_weight = np.log(np.maximum(weight, 1e-300))
+        log_weight += log_predictive / temperature
+        log_weight -= float(np.max(log_weight))
+        posterior_weight = np.exp(log_weight)
+        posterior_weight /= float(np.sum(posterior_weight))
+
+        for component in components:
+            component.update(x, float(y), observation_variance)
+
+        update_count = int(getattr(
+            self, "_finite_mixture_update_count", 0)) + 1
+        component_names = list(getattr(
+            self, "_finite_mixture_component_names", []))
+        diagnostics.update({
+            "adaptation_mode": "sequential_target_evidence_mixture",
+            "component_names": component_names,
+            "component_posterior_weights_before": weight.tolist(),
+            "component_log_predictive": log_predictive.tolist(),
+            "component_posterior_weights": posterior_weight.tolist(),
+            "selected_component": str(component_names[int(
+                np.argmax(posterior_weight))]),
+            "target_only_posterior_weight": float(sum(
+                mass for name, mass in zip(component_names, posterior_weight)
+                if name == "target:null"
+            )),
+            "source_posterior_weight": float(sum(
+                mass for name, mass in zip(component_names, posterior_weight)
+                if name != "target:null"
+            )),
+            "target_observation_count": int(
+                diagnostics.get("target_observation_count", 0)) + 1,
+            "online_mixture_update_count": int(update_count),
+            "posterior_target_data_used": True,
+            "target_oracle_used": False,
+        })
+        self.set_moment_matched_posterior(
+            components,
+            posterior_weight,
+            diagnostics=diagnostics,
+            sequential_updates=True,
+        )
+
     def update(self, x: ArrayLike, y: float, sigma2_hat: float) -> None:
         """Rank-one Kalman update using the plug-in observation variance."""
+        if bool(getattr(self, "_finite_mixture_sequential", False)):
+            y = float(y)
+            observation_variance = max(float(sigma2_hat), 1e-12)
+            if not np.isfinite(y):
+                raise ValueError("GPR observation must be finite")
+            if not np.isfinite(observation_variance):
+                raise ValueError("GPR observation variance must be finite")
+            self._update_finite_mixture(
+                x, y, observation_variance)
+            return
         if self._adaptive_sparsity is not None:
             self._adaptive_records.append({
                 "x": tuple(int(v) for v in np.asarray(x, dtype=int)),
@@ -463,7 +670,7 @@ class ParametricGPR:
         eigenvalues = np.linalg.eigvalsh(covariance)
         minimum_seen = float(getattr(
             self, "_min_quadratic_variance_seen", float("inf")))
-        return {
+        diagnostics = {
             "finite_state": bool(
                 np.all(np.isfinite(self.a)) and np.all(np.isfinite(self.C))
             ),
@@ -480,6 +687,11 @@ class ParametricGPR:
             "max_abs_posterior_mean_seen": float(getattr(
                 self, "_max_abs_posterior_mean_seen", 0.0)),
         }
+        source_prior = getattr(
+            self, "source_parametric_prior_diagnostics", None)
+        if source_prior is not None:
+            diagnostics["source_parametric_prior"] = dict(source_prior)
+        return diagnostics
 
     def enable_adaptive_sparsity(
         self,

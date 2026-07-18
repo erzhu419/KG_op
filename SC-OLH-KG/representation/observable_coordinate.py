@@ -129,11 +129,12 @@ class SourceLearnedObservableCoordinate:
         self.ridge_grid = grid
         self.output_mode = str(output_mode).strip().lower()
         if self.output_mode not in {
-            "atoms", "aggregate", "latent", "consensus"
+            "atoms", "aggregate", "latent", "consensus", "source_affine",
+            "source_rank",
         }:
             raise ValueError(
                 "observable coordinate mode must be atoms, aggregate, latent, "
-                "or consensus"
+                "consensus, source_affine, or source_rank"
             )
         self.latent_dim = max(int(latent_dim), 0)
         self.feature_mean = None
@@ -143,6 +144,14 @@ class SourceLearnedObservableCoordinate:
         self.atom_scale = None
         self.atom_components = None
         self.model_weights = None
+        self.source_rank_atlases = []
+        self.source_rank_diagnostics = {"status": "not_requested"}
+        self.source_prior_mean = None
+        self.source_prior_covariance = None
+        self.source_prior_residual_variance = None
+        self.source_prior_domain_coefficients = {}
+        self.source_prior_domain_rows = []
+        self.source_prior_diagnostics = {"status": "unfit"}
         self.feature_dim = 0
         self.fit_status = "unfit"
 
@@ -220,7 +229,7 @@ class SourceLearnedObservableCoordinate:
             # not the arbitrary output scale of its source domain.  Scaling
             # without centering preserves the common boundary at zero.
             target_scale = 1.0
-            if self.output_mode == "consensus":
+            if self.output_mode in {"consensus", "source_affine"}:
                 target_scale = max(float(np.sqrt(np.average(
                     domain_target ** 2,
                     weights=domain_weight,
@@ -264,11 +273,18 @@ class SourceLearnedObservableCoordinate:
             float(np.sum(inverse_loss)), 1e-12)
         for model, reliability in zip(self.models, self.model_weights):
             model.reliability = float(reliability)
+        if self.output_mode == "source_rank":
+            self._fit_source_rank_atlases(
+                matrix, margins, domains, weight)
         design = np.column_stack([np.ones(len(matrix)), matrix])
         atoms = np.column_stack([
             design @ model.coefficients for model in self.models
         ])
-        atom_limit = 8.0 if self.output_mode == "consensus" else 20.0
+        atom_limit = (
+            8.0
+            if self.output_mode in {"consensus", "source_affine"}
+            else 20.0
+        )
         atoms = np.clip(atoms, -atom_limit, atom_limit)
         self.atom_mean = np.mean(atoms, axis=0)
         self.atom_scale = np.std(atoms, axis=0)
@@ -286,6 +302,10 @@ class SourceLearnedObservableCoordinate:
                 self.atom_components[row] *= -1.0
         if self.output_mode == "atoms":
             self.feature_dim = len(self.models) + 4
+        elif self.output_mode == "source_affine":
+            self.feature_dim = len(self.models)
+        elif self.output_mode == "source_rank":
+            self.feature_dim = 2
         elif self.output_mode == "aggregate":
             self.feature_dim = 4
         elif self.output_mode == "consensus":
@@ -293,7 +313,564 @@ class SourceLearnedObservableCoordinate:
         else:
             self.feature_dim = 4 + component_count
         self.fit_status = "fit"
+        self._fit_source_parametric_prior(
+            profiles,
+            margins,
+            domains,
+            weight,
+        )
         return self
+
+    @staticmethod
+    def _percentile_ranks(values):
+        """Stable lower-is-safer percentile ranks within one source domain."""
+
+        values = np.asarray(values, dtype=float).reshape(-1)
+        if len(values) <= 1:
+            return np.zeros(len(values), dtype=float)
+        order = np.argsort(values, kind="stable")
+        ranks = np.empty(len(values), dtype=float)
+        ranks[order] = (
+            np.arange(len(values), dtype=float) / float(len(values) - 1))
+        return ranks
+
+    def _fit_source_rank_atlases(
+        self,
+        standardized_library,
+        margins,
+        domains,
+        sample_weight,
+    ):
+        """Freeze one scale-invariant empirical safety atlas per source.
+
+        Only the ordering of ordinary source chance margins is retained.
+        Consequently every strictly increasing rescaling of a source domain's
+        margin leaves the learned coordinate unchanged.
+        """
+
+        matrix = np.asarray(standardized_library, dtype=float)
+        margin = np.asarray(margins, dtype=float).reshape(-1)
+        domain_values = np.asarray(domains, dtype=object).reshape(-1)
+        weights = np.maximum(
+            np.asarray(sample_weight, dtype=float).reshape(-1), 1e-8)
+        atlases = []
+        for domain in sorted(set(str(value) for value in domain_values)):
+            selected = np.asarray([
+                str(value) == domain for value in domain_values
+            ], dtype=bool)
+            atlases.append({
+                "domain": domain,
+                "features": matrix[selected].copy(),
+                "ranks": self._percentile_ranks(margin[selected]),
+                "weights": weights[selected].copy(),
+            })
+        if not atlases:
+            raise RuntimeError("source-rank coordinate has no source atlas")
+        self.source_rank_atlases = atlases
+        self.source_rank_diagnostics = {
+            "status": "fit",
+            "coordinate": "eta_source_rank",
+            "source_domains": [row["domain"] for row in atlases],
+            "source_domain_count": int(len(atlases)),
+            "source_record_count": int(sum(
+                len(row["ranks"]) for row in atlases)),
+            "rank_interpolator": "adaptive_rbf_knn",
+            "rank_neighbors": 8,
+            "rank_range": [0.0, 1.0],
+            "strict_monotone_scale_invariant": True,
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+
+    def _source_rank_features_standardized(self, standardized_library):
+        query = np.asarray(standardized_library, dtype=float)
+        if query.ndim == 1:
+            query = query.reshape(1, -1)
+        if not self.source_rank_atlases:
+            raise RuntimeError("source-rank coordinate is not fit")
+        predictions = []
+        for atlas in self.source_rank_atlases:
+            source = np.asarray(atlas["features"], dtype=float)
+            distance = (
+                np.sum(query ** 2, axis=1)[:, None]
+                + np.sum(source ** 2, axis=1)[None, :]
+                - 2.0 * query @ source.T
+            ) / max(query.shape[1], 1)
+            distance = np.maximum(distance, 0.0)
+            count = min(8, source.shape[0])
+            nearest = np.argpartition(
+                distance, count - 1, axis=1)[:, :count]
+            local_distance = np.take_along_axis(
+                distance, nearest, axis=1)
+            local_rank = np.asarray(atlas["ranks"], dtype=float)[nearest]
+            local_source_weight = np.asarray(
+                atlas["weights"], dtype=float)[nearest]
+            bandwidth = np.maximum(
+                np.median(local_distance, axis=1), 1e-8)
+            kernel = (
+                np.exp(-local_distance / bandwidth[:, None])
+                * local_source_weight
+            )
+            kernel /= np.maximum(
+                np.sum(kernel, axis=1, keepdims=True), 1e-12)
+            predictions.append(np.sum(kernel * local_rank, axis=1))
+        rank = np.column_stack(predictions)
+        mean_rank = np.mean(rank, axis=1)
+        worst_rank = np.max(rank, axis=1)
+        disagreement = np.std(rank, axis=1)
+        consensus = (
+            mean_rank + 0.25 * worst_rank + 0.25 * disagreement)
+        result = np.column_stack([consensus, disagreement])
+        if not np.all(np.isfinite(result)):
+            raise FloatingPointError("source-rank coordinate is non-finite")
+        return result
+
+    def _source_affine_prior_rows(
+        self,
+        features,
+        target,
+        domain_values,
+        weights,
+    ):
+        """Learn a source-only offset/scale law for every boundary atom.
+
+        For source atom ``h_s``, every available source domain ``r`` supplies
+        an affine calibration ``a_sr + b_sr h_s``. Their source-only
+        distribution is the prior used on a held-out target. Coefficients of
+        other atoms are fixed near zero, so a component preserves one complete
+        boundary shape instead of relearning an arbitrary cross-atom blend.
+        """
+
+        if features.shape[1] != len(self.models):
+            raise RuntimeError(
+                "source-affine features must contain one atom per source")
+        domains = sorted(set(str(value) for value in domain_values))
+        coefficient_dim = 1 + features.shape[1]
+        rows = []
+        for atom_index, source_model in enumerate(self.models):
+            calibrations = []
+            for target_domain in domains:
+                selected = np.asarray([
+                    str(value) == target_domain for value in domain_values
+                ], dtype=bool)
+                matrix = features[selected, atom_index:atom_index + 1]
+                domain_target = target[selected]
+                domain_weight = weights[selected]
+                ridge, validation_loss = self._select_ridge(
+                    matrix, domain_target, domain_weight)
+                coefficient = self._solve(
+                    matrix, domain_target, domain_weight, ridge)
+                active_design = np.column_stack([
+                    np.ones(int(np.sum(selected))), matrix
+                ])
+                residual = domain_target - active_design @ coefficient
+                residual_variance = max(float(np.average(
+                    residual ** 2, weights=domain_weight)), 1e-6)
+                penalty = np.diag([0.0, float(ridge)])
+                precision = (
+                    active_design.T
+                    @ (domain_weight[:, None] * active_design)
+                    + penalty
+                )
+                covariance = residual_variance * np.linalg.pinv(precision)
+                covariance = 0.5 * (covariance + covariance.T)
+                loss = (
+                    residual_variance
+                    if validation_loss is None
+                    else max(float(validation_loss), 1e-8)
+                )
+                calibrations.append({
+                    "target_domain": target_domain,
+                    "coefficient": np.asarray(coefficient, dtype=float),
+                    "covariance": covariance,
+                    "residual_variance": residual_variance,
+                    "ridge": float(ridge),
+                    "validation_loss": (
+                        None if validation_loss is None
+                        else float(validation_loss)
+                    ),
+                    "loss": float(loss),
+                    "mass": float(np.sum(domain_weight)),
+                    "n_records": int(np.sum(selected)),
+                })
+
+            calibration_weight = np.asarray([
+                row["mass"] for row in calibrations
+            ], dtype=float)
+            calibration_weight /= max(
+                float(np.sum(calibration_weight)), 1e-12)
+            active_mean = np.sum([
+                mass * row["coefficient"]
+                for mass, row in zip(calibration_weight, calibrations)
+            ], axis=0)
+            within = np.sum([
+                mass * row["covariance"]
+                for mass, row in zip(calibration_weight, calibrations)
+            ], axis=0)
+            between = np.sum([
+                mass * np.outer(
+                    row["coefficient"] - active_mean,
+                    row["coefficient"] - active_mean,
+                )
+                for mass, row in zip(calibration_weight, calibrations)
+            ], axis=0)
+            residual_variance = float(np.sum([
+                mass * row["residual_variance"]
+                for mass, row in zip(calibration_weight, calibrations)
+            ]))
+            active_floor = max(
+                0.05 * residual_variance / max(len(target), 1),
+                1e-6,
+            )
+            active_covariance = (
+                within + between + active_floor * np.eye(2, dtype=float))
+            coefficient = np.zeros(coefficient_dim, dtype=float)
+            active = np.asarray([0, 1 + atom_index], dtype=int)
+            coefficient[active] = active_mean
+            covariance = 1e-10 * np.eye(coefficient_dim, dtype=float)
+            covariance[np.ix_(active, active)] = active_covariance
+            validation_loss = float(np.sum([
+                mass * row["loss"]
+                for mass, row in zip(calibration_weight, calibrations)
+            ]))
+            rows.append({
+                "domain": str(source_model.domain),
+                "coefficient": coefficient,
+                "covariance": covariance,
+                "residual_variance": residual_variance,
+                "ridge": float(np.sum([
+                    mass * row["ridge"]
+                    for mass, row in zip(calibration_weight, calibrations)
+                ])),
+                "validation_loss": validation_loss,
+                "reliability": 1.0 / max(validation_loss, 1e-8),
+                "n_records": int(len(target)),
+                "active_atom_index": int(atom_index),
+                "affine_calibrations": [
+                    {
+                        "target_domain": row["target_domain"],
+                        "offset": float(row["coefficient"][0]),
+                        "scale": float(row["coefficient"][1]),
+                        "validation_loss": row["validation_loss"],
+                        "residual_variance": row["residual_variance"],
+                        "n_records": row["n_records"],
+                    }
+                    for row in calibrations
+                ],
+            })
+        return rows
+
+    def _fit_source_parametric_prior(
+        self,
+        profiles,
+        margins,
+        domains,
+        sample_weight,
+    ):
+        """Fit a hierarchical source prior for target constraint coefficients.
+
+        Each source domain supplies a Bayesian-ridge coefficient estimate in
+        the frozen ``eta`` coordinate.  Their within-domain uncertainty and
+        between-domain disagreement define the prior covariance for a held-out
+        target.  No target record is available at this stage.
+        """
+
+        features = np.vstack([
+            self.features_profile(profile) for profile in profiles
+        ])
+        target = np.asarray(margins, dtype=float).reshape(-1)
+        domain_values = np.asarray(domains, dtype=object).reshape(-1)
+        weights = np.maximum(
+            np.asarray(sample_weight, dtype=float).reshape(-1), 1e-8)
+        design = np.column_stack([np.ones(len(features)), features])
+        penalty = np.eye(design.shape[1], dtype=float)
+        penalty[0, 0] = 0.0
+
+        if self.output_mode == "source_affine":
+            domain_rows = self._source_affine_prior_rows(
+                features, target, domain_values, weights)
+        else:
+            domain_rows = []
+            for domain in sorted(set(str(value) for value in domain_values)):
+                selected = np.asarray([
+                    str(value) == domain for value in domain_values
+                ], dtype=bool)
+                domain_features = features[selected]
+                domain_target = target[selected]
+                domain_weight = weights[selected]
+                ridge, validation_loss = self._select_ridge(
+                    domain_features, domain_target, domain_weight)
+                beta = self._solve(
+                    domain_features, domain_target, domain_weight, ridge)
+                domain_design = design[selected]
+                residual = domain_target - domain_design @ beta
+                residual_variance = max(float(np.average(
+                    residual ** 2,
+                    weights=domain_weight,
+                )), 1e-6)
+                precision = (
+                    domain_design.T
+                    @ (domain_weight[:, None] * domain_design)
+                    + float(ridge) * penalty
+                )
+                covariance = residual_variance * np.linalg.pinv(precision)
+                covariance = 0.5 * (covariance + covariance.T)
+                reliability = next(
+                    (
+                        float(model.reliability)
+                        for model in self.models
+                        if model.domain == domain
+                    ),
+                    1.0,
+                )
+                domain_rows.append({
+                    "domain": domain,
+                    "coefficient": np.asarray(beta, dtype=float),
+                    "covariance": covariance,
+                    "residual_variance": residual_variance,
+                    "ridge": float(ridge),
+                    "validation_loss": (
+                        None
+                        if validation_loss is None
+                        else float(validation_loss)
+                    ),
+                    "reliability": max(reliability, 1e-8),
+                    "n_records": int(np.sum(selected)),
+                })
+
+        mixture_weight = np.asarray([
+            row["reliability"] for row in domain_rows
+        ], dtype=float)
+        mixture_weight /= max(float(np.sum(mixture_weight)), 1e-12)
+        prior_mean = np.sum([
+            weight * row["coefficient"]
+            for weight, row in zip(mixture_weight, domain_rows)
+        ], axis=0)
+        within = np.sum([
+            weight * row["covariance"]
+            for weight, row in zip(mixture_weight, domain_rows)
+        ], axis=0)
+        between = np.sum([
+            weight * np.outer(
+                row["coefficient"] - prior_mean,
+                row["coefficient"] - prior_mean,
+            )
+            for weight, row in zip(mixture_weight, domain_rows)
+        ], axis=0)
+        residual_variance = float(np.sum([
+            weight * row["residual_variance"]
+            for weight, row in zip(mixture_weight, domain_rows)
+        ]))
+        diagonal_scale = np.diag(within)
+        finite_diagonal = diagonal_scale[np.isfinite(diagonal_scale)]
+        covariance_floor = max(
+            (
+                0.05 * float(np.median(finite_diagonal))
+                if len(finite_diagonal)
+                else 0.0
+            ),
+            0.05 * residual_variance / max(len(target), 1),
+            1e-6,
+        )
+        prior_covariance = (
+            within
+            + between
+            + covariance_floor * np.eye(design.shape[1], dtype=float)
+        )
+        prior_covariance = 0.5 * (
+            prior_covariance + prior_covariance.T)
+        eigenvalues, eigenvectors = np.linalg.eigh(prior_covariance)
+        prior_covariance = (
+            eigenvectors * np.maximum(eigenvalues, covariance_floor)
+        ) @ eigenvectors.T
+
+        self.source_prior_mean = np.asarray(prior_mean, dtype=float)
+        self.source_prior_covariance = np.asarray(
+            prior_covariance, dtype=float)
+        self.source_prior_residual_variance = residual_variance
+        self.source_prior_domain_coefficients = {
+            row["domain"]: row["coefficient"].copy()
+            for row in domain_rows
+        }
+        self.source_prior_domain_rows = [
+            {
+                "domain": str(row["domain"]),
+                "coefficient": np.asarray(
+                    row["coefficient"], dtype=float).copy(),
+                "covariance": np.asarray(
+                    row["covariance"], dtype=float).copy(),
+                "residual_variance": float(row["residual_variance"]),
+                "ridge": float(row["ridge"]),
+                "validation_loss": row["validation_loss"],
+                "reliability": float(row["reliability"]),
+                "n_records": int(row["n_records"]),
+                "active_atom_index": row.get("active_atom_index"),
+                "affine_calibrations": [
+                    dict(value)
+                    for value in row.get("affine_calibrations", [])
+                ],
+            }
+            for row in domain_rows
+        ]
+        self.source_prior_diagnostics = {
+            "status": "fit",
+            "coordinate": (
+                "eta_source_affine"
+                if self.output_mode == "source_affine"
+                else (
+                    "eta_source_rank"
+                    if self.output_mode == "source_rank"
+                    else "eta"
+                )
+            ),
+            "coefficient_dim": int(len(prior_mean)),
+            "source_domains": [row["domain"] for row in domain_rows],
+            "source_domain_count": int(len(domain_rows)),
+            "source_record_count": int(len(target)),
+            "source_residual_variance": residual_variance,
+            "within_trace": float(np.trace(within)),
+            "between_trace": float(np.trace(between)),
+            "prior_covariance_trace": float(np.trace(prior_covariance)),
+            "prior_covariance_min_eigenvalue": float(
+                np.min(np.linalg.eigvalsh(prior_covariance))),
+            "covariance_floor": float(covariance_floor),
+            "domain_fits": [
+                {
+                    "domain": row["domain"],
+                    "ridge": row["ridge"],
+                    "validation_loss": row["validation_loss"],
+                    "residual_variance": row["residual_variance"],
+                    "reliability": row["reliability"],
+                    "n_records": row["n_records"],
+                    "active_atom_index": row.get("active_atom_index"),
+                    "affine_calibrations": row.get(
+                        "affine_calibrations", []),
+                }
+                for row in domain_rows
+            ],
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+
+    def source_parametric_prior(self, problem):
+        """Return the frozen source prior in the target output scale."""
+
+        if self.source_prior_mean is None or self.source_prior_covariance is None:
+            raise RuntimeError("source parametric prior is unavailable")
+        tau = float(getattr(problem, "tau", 0.0))
+        output_scale = max(
+            abs(tau),
+            float(getattr(problem, "sigma_level", 0.0)),
+            1e-6,
+        )
+        mean = output_scale * self.source_prior_mean.copy()
+        mean[0] += tau
+        covariance = (
+            output_scale ** 2 * self.source_prior_covariance.copy())
+        deviation_variance = max(
+            output_scale ** 2 * float(self.source_prior_residual_variance),
+            1e-8,
+        )
+        return {
+            "mean": mean,
+            "covariance": covariance,
+            "deviation_variance": deviation_variance,
+            "output_scale": output_scale,
+            "diagnostics": {
+                **self.source_prior_diagnostics,
+                "target_output_scale": output_scale,
+                "target_tau": tau,
+                "target_data_used": False,
+                "target_oracle_used": False,
+            },
+        }
+
+    def source_parametric_prior_components(self, problem):
+        """Return source-domain coefficient components in target units.
+
+        The components remain source-only.  Target observations may update
+        their model probabilities later, but neither target labels nor target
+        oracle values are used to construct the component means/covariances.
+        """
+
+        if not self.source_prior_domain_rows:
+            raise RuntimeError("source parametric prior components are unavailable")
+        tau = float(getattr(problem, "tau", 0.0))
+        output_scale = max(
+            abs(tau),
+            float(getattr(problem, "sigma_level", 0.0)),
+            1e-6,
+        )
+        covariance_floor = max(
+            float(self.source_prior_diagnostics.get(
+                "covariance_floor", 1e-6)),
+            1e-12,
+        )
+        reliability = np.asarray([
+            max(float(row["reliability"]), 1e-12)
+            for row in self.source_prior_domain_rows
+        ], dtype=float)
+        reliability /= max(float(np.sum(reliability)), 1e-12)
+
+        components = []
+        for prior_weight, row in zip(
+            reliability, self.source_prior_domain_rows
+        ):
+            mean = output_scale * np.asarray(
+                row["coefficient"], dtype=float).copy()
+            mean[0] += tau
+            covariance = np.asarray(row["covariance"], dtype=float)
+            covariance = 0.5 * (covariance + covariance.T)
+            component_floor = (
+                1e-10
+                if self.output_mode == "source_affine"
+                else covariance_floor
+            )
+            if self.output_mode != "source_affine":
+                covariance += covariance_floor * np.eye(
+                    covariance.shape[0], dtype=float)
+            eigenvalues, eigenvectors = np.linalg.eigh(covariance)
+            covariance = (
+                eigenvectors * np.maximum(eigenvalues, component_floor)
+            ) @ eigenvectors.T
+            components.append({
+                "name": f"source:{row['domain']}",
+                "domain": str(row["domain"]),
+                "mean": mean,
+                "covariance": output_scale ** 2 * covariance,
+                "deviation_variance": max(
+                    output_scale ** 2
+                    * float(row["residual_variance"]),
+                    1e-8,
+                ),
+                "prior_weight": float(prior_weight),
+                "diagnostics": {
+                    "domain": str(row["domain"]),
+                    "ridge": float(row["ridge"]),
+                    "validation_loss": row["validation_loss"],
+                    "source_residual_variance": float(
+                        row["residual_variance"]),
+                    "source_reliability": float(row["reliability"]),
+                    "source_record_count": int(row["n_records"]),
+                    "component_kind": (
+                        "source_boundary_affine"
+                        if self.output_mode == "source_affine"
+                        else (
+                            "source_rank_coefficient"
+                            if self.output_mode == "source_rank"
+                            else "source_coefficient"
+                        )
+                    ),
+                    "active_atom_index": row.get("active_atom_index"),
+                    "affine_calibrations": row.get(
+                        "affine_calibrations", []),
+                    "target_output_scale": output_scale,
+                    "target_tau": tau,
+                    "target_data_used": False,
+                    "target_oracle_used": False,
+                },
+            })
+        return components
 
     def _standardized_library(self, profile):
         if self.fit_status != "fit":
@@ -303,13 +880,21 @@ class SourceLearnedObservableCoordinate:
 
     def features_profile(self, profile):
         z = self._standardized_library(profile)
+        if self.output_mode == "source_rank":
+            return self._source_rank_features_standardized(z)[0]
         design = np.concatenate([[1.0], z])
         atoms = np.asarray([
             float(design @ model.coefficients)
             for model in self.models
         ], dtype=float)
-        atom_limit = 8.0 if self.output_mode == "consensus" else 20.0
+        atom_limit = (
+            8.0
+            if self.output_mode in {"consensus", "source_affine"}
+            else 20.0
+        )
         atoms = np.clip(atoms, -atom_limit, atom_limit)
+        if self.output_mode == "source_affine":
+            return atoms
         if self.output_mode == "consensus":
             weights = np.asarray(self.model_weights, dtype=float)
             signed_distance = float(np.sum(weights * atoms))
@@ -341,6 +926,15 @@ class SourceLearnedObservableCoordinate:
     def features_many(self, problem, points):
         if len(points) == 0:
             return np.empty((0, self.feature_dim), dtype=float)
+        if self.output_mode == "source_rank":
+            library = np.vstack([
+                observable_profile_library(problem.normalize(point))
+                for point in points
+            ])
+            standardized = (
+                library - self.feature_mean[None, :]
+            ) / self.feature_scale[None, :]
+            return self._source_rank_features_standardized(standardized)
         return np.vstack([self.features(problem, point) for point in points])
 
     def diagnostics(self):
@@ -368,12 +962,14 @@ class SourceLearnedObservableCoordinate:
                 for model in self.models
             ],
             "boundary_zero_preserved": bool(
-                self.output_mode == "consensus"),
+                self.output_mode in {"consensus", "source_affine"}),
             "consensus_effective_sources": (
                 None
                 if self.model_weights is None
                 else float(1.0 / np.sum(self.model_weights ** 2))
             ),
+            "source_parametric_prior": dict(self.source_prior_diagnostics),
+            "source_rank": dict(self.source_rank_diagnostics),
             "target_oracle_used": False,
             "target_labels_used_to_define_coordinate": False,
         }

@@ -96,6 +96,12 @@ HVD_PROFILES = {
     "factor_cumulative": {
         "variance_mode": "factor",
         "hvd_use_cumulative_provider": True,
+        "hvd_cumulative_transfer_mode": "scalar",
+    },
+    "factor_hierarchical": {
+        "variance_mode": "factor",
+        "hvd_use_cumulative_provider": True,
+        "hvd_cumulative_transfer_mode": "source_mixture",
     },
 }
 

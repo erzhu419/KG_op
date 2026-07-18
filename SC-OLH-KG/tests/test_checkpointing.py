@@ -64,6 +64,63 @@ class _SwitchingBasis:
 
 
 class CheckpointingTests(unittest.TestCase):
+    def test_zero_checkpoint_interval_disables_all_checkpoint_writes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            checkpoint_dir = Path(tmp) / "disabled_ckpt"
+            algorithm = SingleOLHKGAlgorithm(
+                ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03)),
+                SingleOLHKGConfig(
+                    N=10,
+                    n0=4,
+                    checkpoint_dir=str(checkpoint_dir),
+                    checkpoint_interval=0,
+                ),
+            )
+            calls = []
+
+            def payload(stage, reason):
+                calls.append((stage, reason))
+                return {"stage": stage, "reason": reason}
+
+            algorithm._runtime_checkpoint_payload = payload
+            self.assertIsNone(
+                algorithm._save_checkpoint(4, reason="initial", force=True)
+            )
+            self.assertIsNone(algorithm._save_checkpoint(6))
+            self.assertIsNone(
+                algorithm._save_checkpoint(10, reason="final", force=True)
+            )
+            self.assertEqual(calls, [])
+            self.assertFalse(checkpoint_dir.exists())
+
+    def test_checkpoint_interval_skips_serialization_and_reuses_one_inode(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            checkpoint_dir = Path(tmp) / "interval_ckpt"
+            algorithm = SingleOLHKGAlgorithm(
+                ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03)),
+                SingleOLHKGConfig(
+                    N=10,
+                    n0=4,
+                    checkpoint_dir=str(checkpoint_dir),
+                    checkpoint_interval=5,
+                ),
+            )
+            calls = []
+
+            def payload(stage, reason):
+                calls.append((stage, reason))
+                return {"stage": stage, "reason": reason}
+
+            algorithm._runtime_checkpoint_payload = payload
+            self.assertIsNone(algorithm._save_checkpoint(6))
+            self.assertEqual(calls, [])
+            latest = algorithm._save_checkpoint(10)
+            stage = checkpoint_dir / "checkpoint_stage_00010.pkl"
+            self.assertEqual(calls, [(10, "iteration")])
+            self.assertTrue(latest.exists())
+            self.assertTrue(stage.exists())
+            self.assertEqual(latest.stat().st_ino, stage.stat().st_ino)
+
     def test_repeated_observation_matches_rank_one_variance_reduction(self):
         model = ParametricGPR(d=2, lambda_i=0.2, prior_var=3.0)
         x = (4, 7)

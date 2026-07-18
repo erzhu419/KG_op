@@ -43,6 +43,12 @@ def load_config(path):
     config.setdefault(
         "task_latent_calibration_mode", "source_profiles")
     config.setdefault("adaptive_replication_voi", False)
+    config.setdefault("hvd_cumulative_transfer_mode", "scalar")
+    config.setdefault("hvd_source_task_weight_mode", "independent")
+    config.setdefault(
+        "hvd_cumulative_target_evidence_mode", "replication_only")
+    config.setdefault(
+        "task_posterior_robust_certificate_mode", "separable")
     config.setdefault("posterior_dominance_enabled", False)
     config.setdefault("posterior_dominance_delta", 0.05)
     config.setdefault("posterior_dominance_min_mean_gain", 0.0)
@@ -88,11 +94,17 @@ def load_config(path):
     config.setdefault("meta_observable_mean_latent_dim", 2)
     config.setdefault(
         "meta_observable_mean_training_target", "constraint_mean")
+    config.setdefault("source_constraint_mean_coefficient_prior", False)
+    config.setdefault("source_constraint_mean_adaptation_mode", "frozen")
+    config.setdefault("source_constraint_mean_null_weight", 0.5)
+    config.setdefault("source_constraint_mean_evidence_temperature", 1.0)
     config.setdefault("meta_source_observation_mode", "analytic")
     config.setdefault("meta_source_observation_replicates", 1)
     config.setdefault("meta_source_design_mode", "random")
     config.setdefault("meta_source_universal_fraction", 0.75)
     config.setdefault("initial_design", "auto")
+    config.setdefault("target_shared_shock_scale", 1.0)
+    config.setdefault("variance_audit_size", 128)
     config.setdefault("decision_backend", "legacy")
     config.setdefault("decision_risk_penalty", 5.0)
     config.setdefault("decision_source_utility_weight", 1.0)
@@ -119,6 +131,13 @@ def main():
     parser.add_argument("--experiment-variant", default="")
     parser.add_argument("--out", required=True)
     parser.add_argument("--runtime-checkpoint-dir", required=True)
+    parser.add_argument(
+        "--runtime-checkpoint-interval",
+        type=int,
+        default=0,
+        help="Checkpoint every N stages; 0 disables runtime checkpoints.",
+    )
+    parser.add_argument("--evaluate-interval", type=int, default=20)
     parser.add_argument("--d", type=int, default=None)
     parser.add_argument("--N", type=int, default=None)
     parser.add_argument("--n0", type=int, default=None)
@@ -206,6 +225,11 @@ def main():
     parser.add_argument(
         "--task-posterior-mandatory-universal-count", type=int, default=None)
     parser.add_argument(
+        "--task-posterior-robust-certificate-mode",
+        choices=("separable", "joint_tangent"),
+        default="separable",
+    )
+    parser.add_argument(
         "--task-latent-inference-mode",
         choices=("shadow", "authoritative"),
         default="shadow",
@@ -220,8 +244,9 @@ def main():
         "--decision-backend",
         choices=(
             "legacy", "additive", "exact_kg", "n0_best", "random",
-            "sobol", "risk_ts", "bayes_risk_ei", "constrained_ei",
-            "transfer_utility",
+            "sobol", "sobol_new", "sobol_hvd_voi", "sobol_joint_voi", "risk_ts",
+            "certificate_depth_new",
+            "bayes_risk_ei", "constrained_ei", "transfer_utility",
         ),
         default="legacy",
     )
@@ -251,6 +276,10 @@ def main():
         "--replication-candidate-count", type=int, default=None)
     parser.add_argument(
         "--replication-max-per-solution", type=int, default=None)
+    parser.add_argument(
+        "--safe-interior-candidate-count", type=int, default=None)
+    parser.add_argument("--safe-interior-pool-size", type=int, default=None)
+    parser.add_argument("--safe-interior-margin", type=float, default=None)
     parser.add_argument(
         "--posterior-dominance-enabled",
         action=argparse.BooleanOptionalAction,
@@ -322,6 +351,8 @@ def main():
     parser.add_argument("--source-universal-fraction", type=float, default=0.75)
     parser.add_argument(
         "--source-consensus-template-count", type=int, default=0)
+    parser.add_argument("--target-shared-shock-scale", type=float, default=1.0)
+    parser.add_argument("--variance-audit-size", type=int, default=128)
     parser.add_argument(
         "--meta-source-d",
         type=int,
@@ -336,7 +367,10 @@ def main():
     parser.add_argument("--initial-design-file", default="")
     parser.add_argument(
         "--observable-mean-mode",
-        choices=("atoms", "aggregate", "latent", "consensus"),
+        choices=(
+            "atoms", "aggregate", "latent", "consensus", "source_affine",
+            "source_rank",
+        ),
         default="latent",
     )
     parser.add_argument("--observable-mean-latent-dim", type=int, default=2)
@@ -344,6 +378,35 @@ def main():
         "--observable-mean-training-target",
         choices=("constraint_mean", "chance_margin"),
         default="constraint_mean",
+    )
+    parser.add_argument(
+        "--source-constraint-mean-coefficient-prior",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--source-constraint-mean-adaptation-mode",
+        choices=(
+            "frozen", "evidence_mixture", "sequential_evidence_mixture",
+        ),
+        default="frozen",
+    )
+    parser.add_argument(
+        "--hvd-source-task-weight-mode",
+        choices=("independent", "constraint_mean"),
+        default="independent",
+    )
+    parser.add_argument(
+        "--hvd-cumulative-target-evidence-mode",
+        choices=("replication_only", "prequential_upper"),
+        default="replication_only",
+    )
+    parser.add_argument(
+        "--source-constraint-mean-null-weight", type=float, default=0.5)
+    parser.add_argument(
+        "--source-constraint-mean-evidence-temperature",
+        type=float,
+        default=1.0,
     )
     parser.add_argument(
         "--finalist-terminal-value-mode",
@@ -420,6 +483,21 @@ def main():
         if args.replication_max_per_solution is None
         else args.replication_max_per_solution
     )
+    safe_interior_candidate_count = int(
+        config.get("safe_interior_candidate_count", 0)
+        if args.safe_interior_candidate_count is None
+        else args.safe_interior_candidate_count
+    )
+    safe_interior_pool_size = int(
+        config.get("safe_interior_pool_size", 300)
+        if args.safe_interior_pool_size is None
+        else args.safe_interior_pool_size
+    )
+    safe_interior_margin = float(
+        config.get("safe_interior_margin", 0.0)
+        if args.safe_interior_margin is None
+        else args.safe_interior_margin
+    )
     config.update({
         "experiment_variant": str(args.experiment_variant),
         "meta_ordered_cumulative_exposure": bool(
@@ -458,6 +536,8 @@ def main():
             args.task_posterior_safe_pairwise_history),
         "task_posterior_safe_pairwise_probability_floor": float(
             args.task_posterior_safe_pairwise_floor),
+        "task_posterior_robust_certificate_mode": str(
+            args.task_posterior_robust_certificate_mode),
         "task_latent_inference_mode": str(
             args.task_latent_inference_mode),
         "task_latent_calibration_mode": str(
@@ -473,6 +553,9 @@ def main():
         "adaptive_replication_voi": bool(args.adaptive_replication_voi),
         "replication_candidate_count": replication_candidate_count,
         "replication_max_per_solution": replication_max_per_solution,
+        "safe_interior_candidate_count": safe_interior_candidate_count,
+        "safe_interior_pool_size": safe_interior_pool_size,
+        "safe_interior_margin": safe_interior_margin,
         "posterior_dominance_enabled": bool(
             args.posterior_dominance_enabled),
         "posterior_dominance_delta": float(
@@ -513,6 +596,18 @@ def main():
             args.observable_mean_latent_dim),
         "meta_observable_mean_training_target": str(
             args.observable_mean_training_target),
+        "source_constraint_mean_coefficient_prior": bool(
+            args.source_constraint_mean_coefficient_prior),
+        "source_constraint_mean_adaptation_mode": str(
+            args.source_constraint_mean_adaptation_mode),
+        "hvd_source_task_weight_mode": str(
+            args.hvd_source_task_weight_mode),
+        "hvd_cumulative_target_evidence_mode": str(
+            args.hvd_cumulative_target_evidence_mode),
+        "source_constraint_mean_null_weight": float(
+            args.source_constraint_mean_null_weight),
+        "source_constraint_mean_evidence_temperature": float(
+            args.source_constraint_mean_evidence_temperature),
         "meta_source_observation_mode": str(
             args.source_observation_mode),
         "meta_source_observation_replicates": int(
@@ -522,6 +617,9 @@ def main():
             args.source_universal_fraction),
         "meta_source_consensus_template_count": int(
             args.source_consensus_template_count),
+        "target_shared_shock_scale": float(
+            args.target_shared_shock_scale),
+        "variance_audit_size": int(args.variance_audit_size),
         "meta_source_dimension": int(
             config["d"] if args.meta_source_d is None else args.meta_source_d),
         "initial_design": str(args.initial_design),
@@ -563,7 +661,8 @@ def main():
             args.certification_recheck_soft_margin_scale),
         "runtime_checkpoint_dir": str(args.runtime_checkpoint_dir),
         "runtime_checkpoint_resume": True,
-        "runtime_checkpoint_interval": 1,
+        "runtime_checkpoint_interval": int(args.runtime_checkpoint_interval),
+        "evaluate_interval": max(0, int(args.evaluate_interval)),
         "checkpoint_path": "",
         "resume_completed_from": "",
         "progress_logging": True,
@@ -629,6 +728,8 @@ def main():
             "structural_prior_profile": str(
                 args.structural_prior_profile),
             "hvd_ablation_profile": str(args.hvd_profile),
+            "task_posterior_robust_certificate_mode": str(
+                args.task_posterior_robust_certificate_mode),
             "meta_spectral_orthogonalization": str(
                 args.spectral_orthogonalization),
             "meta_ordered_exposure_max_frequency": int(
@@ -679,6 +780,9 @@ def main():
                 args.adaptive_replication_voi),
             "replication_candidate_count": replication_candidate_count,
             "replication_max_per_solution": replication_max_per_solution,
+            "safe_interior_candidate_count": safe_interior_candidate_count,
+            "safe_interior_pool_size": safe_interior_pool_size,
+            "safe_interior_margin": safe_interior_margin,
             "posterior_dominance_enabled": bool(
                 args.posterior_dominance_enabled),
             "posterior_dominance_delta": float(
@@ -720,6 +824,14 @@ def main():
                 args.observable_mean_latent_dim),
             "meta_observable_mean_training_target": str(
                 args.observable_mean_training_target),
+            "source_constraint_mean_coefficient_prior": bool(
+                args.source_constraint_mean_coefficient_prior),
+            "source_constraint_mean_adaptation_mode": str(
+                args.source_constraint_mean_adaptation_mode),
+            "hvd_source_task_weight_mode": str(
+                args.hvd_source_task_weight_mode),
+            "hvd_cumulative_target_evidence_mode": str(
+                args.hvd_cumulative_target_evidence_mode),
             "meta_source_observation_mode": str(
                 args.source_observation_mode),
             "meta_source_observation_replicates": int(
@@ -727,6 +839,9 @@ def main():
             "meta_source_design_mode": str(args.source_design_mode),
             "meta_source_universal_fraction": float(
                 args.source_universal_fraction),
+            "target_shared_shock_scale": float(
+                args.target_shared_shock_scale),
+            "variance_audit_size": int(args.variance_audit_size),
             "initial_design": str(args.initial_design),
             "initial_design_file": str(args.initial_design_file),
             "initial_design_fingerprint": (

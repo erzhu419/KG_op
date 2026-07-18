@@ -252,6 +252,23 @@ step weakly decreases its fixed weighted objective, while projection preserves
 membership in `K_C`. No claim is made that a one-shot coefficient projection
 must improve prediction error.
 
+### Hierarchical source-shape transfer
+
+For source-domain PSD variance shapes `h_k(x) >= 0`, the transferable target
+model is the nonnegative low-rank mixture
+
+```text
+v_C(x) = sum_k theta_k h_k(x),      theta_k >= 0.
+```
+
+Nonnegative mixing preserves the cumulative-risk cone. Replicated target
+sample variances contribute scaled-chi-square Fisher information to the
+posterior over `theta`; the certification variance adds the pointwise radius
+`z_v sqrt(h(x)^T Sigma_theta h(x))`. In each scalar posterior direction,
+adding nonnegative target information weakly decreases both posterior variance
+and this upper radius. The legacy frozen 95% source multiplier remains an
+ablation, not the hierarchical-transfer theorem.
+
 ## Theorem 6: Conservative Chance Certification
 
 Assume the posterior mean confidence event
@@ -666,12 +683,15 @@ versions needed by the manuscript:
 | Policy/trajectory occupancy decomposition | `SCOLHKG/Real/OccupancyDecomposition.lean` | Lean-proved as occupancy cumulative risk plus remainder plus explained trajectory variance |
 | GPR rank-one update / KG slope / replication VOI | `SCOLHKG/Real/GPRUpdate.lean` | Lean-proved; matches `ParametricGPR.update`, `compute_kg_vectorized`, and proves the observed-point variance reduction `q^2/(q+r)` is in `[0,q]` |
 | Chance certification | `SCOLHKG/Real/Certification.lean` | Lean-proved from GP-confidence and variance-upper events |
-| Theory certification implementation | `SCOLHKG/Real/CertificationImplementation.lean` | Lean-proved for `mu + sqrt(beta)s + z sqrt(v_C^+) <= tau`, with legacy mode dominated by theory mode |
+| Theory certification implementation | `SCOLHKG/Real/CertificationImplementation.lean` | Lean-proved for `mu + sqrt(beta)s + z sqrt(v_C^+) <= tau`, with legacy mode dominated by theory mode and the necessary nonvacuity condition `beta * v_epi <= safety_depth^2` under oracle mean |
 | Separated mean/risk coordinate bridge | `SCOLHKG/Real/MeanRiskCoordinateSeparation.lean` | Lean-proved that `eta` alone determines constraint mean/epistemic variance, `psi` alone determines certification variance, joint coordinate equivalence preserves the chance margin, and the separated implementation inherits certificate soundness |
+| Source-informed constraint-mean posterior | `SCOLHKG/Real/SourceConstraintMeanPosterior.lean` | Lean-proved nonnegativity of hierarchical source directional variance, exact scalar conjugate updating, target-information variance contraction, nonnegative finite-mixture moment variance, preservation of between-source disagreement, nonnegative normalized sequential evidence weights, and inheritance of chance-certificate soundness |
 | TCB-V2 hierarchical three-layer certificate | `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean` | Lean-proved positive target scale, planar-rotation norm preservation, nonnegative Cholesky/rotation/orthogonal-residual uncertainty, upper-margin non-relaxation, coverage-reserved frontier order, one shared frontier/terminal/recommendation upper margin, recommendation safety under coverage, and lexicographic terminal dominance |
 | TCB-V3 finite boundary-family certificate | `SCOLHKG/Real/BoundaryFamilyMixtureCertificate.lean` | Lean-proved posterior credible-mass contract, pointwise family-envelope coverage, nonnegative family-guard monotonicity, safe recommendation, target-name noninterference, and the combined `delta_family + alpha` failure bound |
 | TCB-V4 continuous boundary-family synthesis | `SCOLHKG/Real/BoundaryFamilySynthesisCertificate.lean` | Lean-proved monotonicity of nonnegative source-atom synthesis, nonnegative coefficient/residual predictive variance, upper-margin non-relaxation, recommendation safety on the coverage event, and target-name noninterference |
 | TCB-V5 orthogonal semiparametric boundary | `SCOLHKG/Real/BoundaryFamilySemiparametricCertificate.lean`, `SCOLHKG/Real/OrthogonalSemiparametric.lean` | Lean-proved source-design nullspace orthogonality, direct-sum predictive mean bookkeeping, nonnegative synthesis/residual/noise variance, upper-margin non-relaxation, and recommendation safety on the coverage event |
+| Source-affine boundary transfer | `SCOLHKG/Real/SourceAffineBoundaryTransfer.lean` | Lean-proved exact error decomposition for one frozen source boundary atom, positive-scale safe-side preservation, a uniform offset/scale transfer radius, and sound target certification when that radius is included in the upper margin |
+| Source-rank observable coordinate | `SCOLHKG/Real/SourceConsensusCommit.lean` | Lean-proved invariance of domainwise ranks under strictly increasing margin transformations, unit-interval closure of normalized nonnegative rank interpolation, and a finite `3/2` upper bound for the implementation's consensus score |
 | Noise-limited oracle certifiability | `SCOLHKG/Real/OracleCertifiability.lean` | Lean-proved nonnegative and replication-monotone oracle radius, squared-budget sufficiency, and certificate persistence under added replications |
 | Source-consensus proposal and suffix commitment | `SCOLHKG/Real/SourceConsensusCommit.lean` | Lean-proved source-rank invariance under strictly increasing domainwise rescaling, weak and strict Pareto monotonicity of the safety-objective source score, domain noninterference and membership preservation of the shared source design, target-name noninterference of a source-frozen selector, bounded-error preservation of two-arm order, and exact shortlist completion within a sufficient reserved replication budget |
 | HVD oracle inequality | `SCOLHKG/Real/HVD.lean` | Lean-proved from residual-square concentration event |
@@ -679,6 +699,8 @@ versions needed by the manuscript:
 | Factor cumulative block implementation | `SCOLHKG/Real/CumulativeRiskImplementation.lean` | Lean-proved for `floor/independent/shared/linear/total` aggregation and shared-shock omission underestimation |
 | Ridge-HVD oracle inequality | `SCOLHKG/Real/RidgeHVD.lean` | Lean-proved from ridge minimizer and uniform residual-square concentration |
 | Source-prior HVD calibration | `SCOLHKG/Real/RidgeHVD.lean`, `SCOLHKG/Real/HVDImplementation.lean` | Lean-proved nonnegativity for prior-centered penalty, hierarchical variance scale, and within-policy sample variance |
+| Hierarchical source-shape HVD | `SCOLHKG/Real/SourceShapeMixtureHVD.lean` | Lean-proved nonnegative source-shape mixing, a nonnegative target-pooled null component, preservation of nonnegative HVD shape under a shared latent-task posterior, monotone shrinkage of scalar posterior shape variance/radius under added target information, conservative-in-expectation prequential squared-innovation evidence via the exact variance-plus-squared-bias identity, and nonnegative square-root radius reduction for a unit-coherent joint VOI |
+| Joint KL task certificate | `SCOLHKG/Real/JointKLChanceCertificate.lean` | Lean-proved centered-second-moment control of mixture epistemic variance, the positive square-root tangent bound, one-common-task-law robustification, and finite-grid minimum closure |
 | Posterior recommendation | `SCOLHKG/Real/PosteriorRecommendation.lean` | Lean-proved for robust-feasible posterior certification and objective argmin |
 | Exact KG maximizer | `SCOLHKG/Real/KG.lean` | Lean-proved for expected terminal gain |
 | Line-envelope KG | `SCOLHKG/Real/LineEnvelopeKG.lean` | Lean-proved at certificate level for active hull regions and `compute_h` sum formula |

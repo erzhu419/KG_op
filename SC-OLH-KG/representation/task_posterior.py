@@ -42,6 +42,19 @@ class RobustMixtureMoments:
     radius: float
 
 
+@dataclass(frozen=True)
+class RobustChanceMargin:
+    """Joint KL-robust upper bound for one chance-constraint margin."""
+
+    upper: np.ndarray
+    nominal: np.ndarray
+    separable_upper: np.ndarray
+    tangent_epistemic_scale: np.ndarray
+    tangent_aleatoric_scale: np.ndarray
+    used_separable_upper: np.ndarray
+    radius: float
+
+
 class FiniteTaskPosterior:
     """Tempered posterior over a finite set of transferable structures.
 
@@ -431,6 +444,144 @@ class FiniteTaskPosterior:
             aleatoric_upper=np.maximum(aleatoric_upper, 0.0),
             total_upper=np.maximum(epistemic_upper + aleatoric_upper, 0.0),
             nominal=nominal,
+            radius=rho,
+        )
+
+    def robust_chance_margin(
+        self,
+        means,
+        epistemic_vars,
+        aleatoric_vars,
+        *,
+        beta_g,
+        z_alpha,
+        tau,
+        radius,
+        weights=None,
+        tangent_multipliers=(0.25, 0.5, 1.0, 2.0, 4.0),
+    ):
+        """Upper-bound the full margin under one shared KL-ball posterior.
+
+        The separable bound independently maximizes mean, epistemic variance,
+        and aleatoric variance and can therefore combine three incompatible
+        worst-case task distributions.  Here the square-root tangent identity
+
+        ``sqrt(v) <= v/(2s) + s/2``
+
+        converts every positive tangent pair into one expert payoff. A single
+        KL-robust expectation is then taken for that combined payoff. Taking
+        the minimum over a deterministic finite tangent grid preserves the
+        upper-bound guarantee.
+        """
+
+        mu = self._expert_matrix(means, "means")
+        epi = np.maximum(
+            self._expert_matrix(epistemic_vars, "epistemic variances"), 0.0)
+        alea = np.maximum(
+            self._expert_matrix(aleatoric_vars, "aleatoric variances"), 0.0)
+        if epi.shape != mu.shape or alea.shape != mu.shape:
+            raise ValueError("all expert moment matrices must have equal shape")
+        nominal = self.mixture_moments(
+            mu, epi, alea, weights=weights)
+        robust = self.robust_mixture_moments(
+            mu, epi, alea, radius, weights=weights)
+        beta_radius = np.sqrt(max(float(beta_g), 0.0))
+        aleatoric_radius = max(float(z_alpha), 0.0)
+        tau = float(tau)
+        nominal_margin = (
+            nominal.mean
+            + beta_radius * np.sqrt(np.maximum(nominal.epistemic, 0.0))
+            + aleatoric_radius * np.sqrt(np.maximum(nominal.aleatoric, 0.0))
+            - tau
+        )
+        separable_margin = (
+            robust.mean_upper
+            + beta_radius * np.sqrt(np.maximum(robust.epistemic_upper, 0.0))
+            + aleatoric_radius * np.sqrt(np.maximum(robust.aleatoric_upper, 0.0))
+            - tau
+        )
+        rho = max(float(radius), 0.0)
+        if rho <= 0.0:
+            return RobustChanceMargin(
+                upper=np.asarray(nominal_margin, dtype=float),
+                nominal=np.asarray(nominal_margin, dtype=float),
+                separable_upper=np.asarray(separable_margin, dtype=float),
+                tangent_epistemic_scale=np.sqrt(np.maximum(
+                    nominal.epistemic, self.variance_floor)),
+                tangent_aleatoric_scale=np.sqrt(np.maximum(
+                    nominal.aleatoric, self.variance_floor)),
+                used_separable_upper=np.zeros_like(
+                    nominal_margin, dtype=bool),
+                radius=0.0,
+            )
+
+        multipliers = np.asarray(tangent_multipliers, dtype=float).reshape(-1)
+        if (
+            len(multipliers) == 0
+            or np.any(~np.isfinite(multipliers))
+            or np.any(multipliers <= 0.0)
+        ):
+            raise ValueError("tangent multipliers must be finite and positive")
+        epistemic_payoff = epi + (
+            mu - nominal.mean[None, :]
+        ) ** 2
+        base_epistemic_scale = np.sqrt(np.maximum(
+            nominal.epistemic, self.variance_floor))
+        base_aleatoric_scale = np.sqrt(np.maximum(
+            nominal.aleatoric, self.variance_floor))
+        best = np.full(mu.shape[1], np.inf, dtype=float)
+        best_epistemic = base_epistemic_scale.copy()
+        best_aleatoric = base_aleatoric_scale.copy()
+        for epistemic_multiplier in multipliers:
+            epistemic_scale = np.maximum(
+                base_epistemic_scale * epistemic_multiplier,
+                np.sqrt(self.variance_floor),
+            )
+            for aleatoric_multiplier in multipliers:
+                aleatoric_scale = np.maximum(
+                    base_aleatoric_scale * aleatoric_multiplier,
+                    np.sqrt(self.variance_floor),
+                )
+                payoff = mu.copy()
+                constant = np.zeros(mu.shape[1], dtype=float)
+                if beta_radius > 0.0:
+                    payoff = payoff + (
+                        beta_radius
+                        * epistemic_payoff
+                        / (2.0 * epistemic_scale[None, :])
+                    )
+                    constant = constant + 0.5 * beta_radius * epistemic_scale
+                if aleatoric_radius > 0.0:
+                    payoff = payoff + (
+                        aleatoric_radius
+                        * alea
+                        / (2.0 * aleatoric_scale[None, :])
+                    )
+                    constant = constant + 0.5 * aleatoric_radius * aleatoric_scale
+                candidate = np.asarray(
+                    self.kl_robust_expectation(
+                        payoff, rho, weights=weights),
+                    dtype=float,
+                ) + constant - tau
+                improved = candidate < best
+                best = np.where(improved, candidate, best)
+                best_epistemic = np.where(
+                    improved, epistemic_scale, best_epistemic)
+                best_aleatoric = np.where(
+                    improved, aleatoric_scale, best_aleatoric)
+        # Every tangent candidate and the legacy separable expression is a
+        # valid upper bound. Numerical roundoff must never make the challenger
+        # less than the nominal center posterior.
+        best = np.maximum(best, nominal_margin)
+        used_separable = separable_margin < best
+        best = np.minimum(best, separable_margin)
+        return RobustChanceMargin(
+            upper=np.asarray(best, dtype=float),
+            nominal=np.asarray(nominal_margin, dtype=float),
+            separable_upper=np.asarray(separable_margin, dtype=float),
+            tangent_epistemic_scale=np.asarray(best_epistemic, dtype=float),
+            tangent_aleatoric_scale=np.asarray(best_aleatoric, dtype=float),
+            used_separable_upper=np.asarray(used_separable, dtype=bool),
             radius=rho,
         )
 
@@ -1852,6 +2003,8 @@ class TaskExpertState:
 class FiniteTaskModelEnsemble:
     """Expert surrogate ensemble sharing one finite task posterior."""
 
+    supports_precomputed_expert_moments = True
+
     def __init__(
         self,
         states,
@@ -2164,9 +2317,27 @@ class FiniteTaskModelEnsemble:
             aleatoric,
         )
 
-    def mixture_moments_many(self, output_index, X, *, certification=True):
-        moments = self.expert_moments_many(
-            output_index, X, certification=certification)
+    def _prepare_expert_moments_many(
+        self,
+        output_index,
+        X,
+        *,
+        certification=True,
+        expert_moments=None,
+    ):
+        moments = (
+            self.expert_moments_many(
+                output_index, X, certification=certification)
+            if expert_moments is None
+            else tuple(
+                np.asarray(values, dtype=float)
+                for values in expert_moments
+            )
+        )
+        if len(moments) != 3:
+            raise ValueError(
+                "expert moments must contain mean, epistemic, and aleatoric"
+            )
         weights = None
         if self.task_latent_authoritative:
             weights = self.structure_weights(
@@ -2189,35 +2360,71 @@ class FiniteTaskModelEnsemble:
                 )
         elif int(output_index) == 0 and self.posterior.safe_generalized:
             weights = self.posterior.posterior_weights()
+        return moments, weights
+
+    def mixture_moments_many(
+        self,
+        output_index,
+        X,
+        *,
+        certification=True,
+        expert_moments=None,
+    ):
+        moments, weights = self._prepare_expert_moments_many(
+            output_index,
+            X,
+            certification=certification,
+            expert_moments=expert_moments,
+        )
         return self.posterior.mixture_moments(*moments, weights=weights)
 
-    def robust_moments_many(self, output_index, X, *, certification=True):
-        moments = self.expert_moments_many(
-            output_index, X, certification=certification)
-        weights = None
-        if self.task_latent_authoritative:
-            weights = self.structure_weights(
-                objective=int(output_index) == 0)
-            if int(output_index) == 1:
-                calibration_variance = (
-                    self._task_latent().adaptive_bias_variance_many(
-                        moments[1],
-                        moments[2],
-                        self.task_bias_features_many(X),
-                    )
-                )
-                moments = (
-                    moments[0],
-                    moments[1]
-                    * self._task_latent()
-                    .conditional_epistemic_scale_squared(safe=True)[:, None]
-                    + calibration_variance,
-                    moments[2],
-                )
+    def robust_moments_many(
+        self,
+        output_index,
+        X,
+        *,
+        certification=True,
+        expert_moments=None,
+    ):
+        moments, weights = self._prepare_expert_moments_many(
+            output_index,
+            X,
+            certification=certification,
+            expert_moments=expert_moments,
+        )
         return self.posterior.robust_mixture_moments(
             *moments,
             radius=self.effective_kl_radius(),
             weights=weights,
+        )
+
+    def robust_chance_margin_many(
+        self,
+        X,
+        *,
+        beta_g,
+        z_alpha,
+        tau,
+        certification=True,
+        tangent_multipliers=(0.25, 0.5, 1.0, 2.0, 4.0),
+        expert_moments=None,
+    ):
+        """Jointly robustify a chance margin over one shared task law."""
+
+        moments, weights = self._prepare_expert_moments_many(
+            1,
+            X,
+            certification=certification,
+            expert_moments=expert_moments,
+        )
+        return self.posterior.robust_chance_margin(
+            *moments,
+            beta_g=beta_g,
+            z_alpha=z_alpha,
+            tau=tau,
+            radius=self.effective_kl_radius(),
+            weights=weights,
+            tangent_multipliers=tangent_multipliers,
         )
 
     def predictive_sample(self, x, z, expert_uniform):
@@ -2527,6 +2734,24 @@ class FiniteTaskModelEnsemble:
                     float(y[output_index]),
                     float(state_alea[output_index]),
                 )
+            constraint_model = state.gpr_models[constraint_index]
+            source_diagnostics = getattr(
+                constraint_model,
+                "source_parametric_prior_diagnostics",
+                None,
+            )
+            if (
+                source_diagnostics
+                and source_diagnostics.get("adaptation_mode")
+                == "sequential_target_evidence_mixture"
+                and hasattr(
+                    state.variance_model, "set_source_task_posterior")
+            ):
+                state.variance_model.set_source_task_posterior(
+                    constraint_index,
+                    source_diagnostics["component_names"],
+                    source_diagnostics["component_posterior_weights"],
+                )
             hvd_updates = []
             for output_index in range(len(y)):
                 replicate_values = [
@@ -2628,7 +2853,14 @@ class FiniteTaskModelEnsemble:
         return "universal"
 
     def meta_coherence_diagnostics(
-        self, X, *, tau, alpha, beta_g, algorithm_selected_x=None,
+        self,
+        X,
+        *,
+        tau,
+        alpha,
+        beta_g,
+        algorithm_selected_x=None,
+        robust_certificate_mode="separable",
     ):
         """Audit whether structural views support one target decision.
 
@@ -2690,13 +2922,28 @@ class FiniteTaskModelEnsemble:
             1, candidates, certification=True)
         mixture_objective = self.mixture_moments_many(
             0, candidates, certification=False).mean
-        mixture_margin = (
+        separable_margin = (
             robust_constraint.mean_upper
             + np.sqrt(max(float(beta_g), 0.0))
             * np.sqrt(np.maximum(robust_constraint.epistemic_upper, 0.0))
             + z_alpha
             * np.sqrt(np.maximum(robust_constraint.aleatoric_upper, 0.0))
             - float(tau)
+        )
+        joint_constraint = self.robust_chance_margin_many(
+            candidates,
+            beta_g=beta_g,
+            z_alpha=z_alpha,
+            tau=tau,
+            certification=True,
+        )
+        robust_certificate_mode = str(
+            robust_certificate_mode or "separable"
+        ).lower().replace("-", "_")
+        mixture_margin = (
+            np.asarray(joint_constraint.upper, dtype=float)
+            if robust_certificate_mode in {"joint", "joint_kl", "joint_tangent"}
+            else np.asarray(separable_margin, dtype=float)
         )
         mixture_feasible = np.where(mixture_margin <= 0.0)[0]
         if len(mixture_feasible):
@@ -2793,6 +3040,14 @@ class FiniteTaskModelEnsemble:
             ),
             "robust_reference_selected_index": selected_index,
             "robust_reference_selected_x": candidate_values[selected_index],
+            "robust_certificate_mode": robust_certificate_mode,
+            "selected_separable_margin": float(
+                separable_margin[audited_index]),
+            "selected_joint_margin": float(
+                joint_constraint.upper[audited_index]),
+            "selected_joint_tightening": float(
+                separable_margin[audited_index]
+                - joint_constraint.upper[audited_index]),
             "joint_risk_selected_index": joint_index,
             "joint_risk_selected_x": candidate_values[joint_index],
             "joint_and_robust_reference_select_same": bool(

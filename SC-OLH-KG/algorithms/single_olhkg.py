@@ -16,7 +16,7 @@ from scipy.stats import norm
 
 from acquisition.decision_backends import score_decision_backend
 from acquisition.olhkg import OLHKGAcquisition
-from core.certification import conservative_chance_margin
+from core.certification import CertificationResult, conservative_chance_margin
 from core.candidates import (
     axis_candidates,
     axis_landmark_candidates,
@@ -165,6 +165,9 @@ class SingleOLHKGConfig:
     prior_var: float = 10.0
     variance_mode: str = "factor"
     hvd_use_cumulative_provider: bool = True
+    hvd_cumulative_transfer_mode: str = "scalar"
+    hvd_source_task_weight_mode: str = "independent"
+    hvd_cumulative_target_evidence_mode: str = "replication_only"
     lambda_feas: float = 0.25
     lambda_var: float = 0.25
     lambda_mean: float = 0.10
@@ -262,6 +265,7 @@ class SingleOLHKGConfig:
     task_posterior_kl_radius_numerator: float = 0.5
     task_posterior_confidence_delta: float = 0.05
     task_posterior_max_kl_radius: float = 4.0
+    task_posterior_robust_certificate_mode: str = "separable"
     task_posterior_prior_protection_numerator: float = 0.0
     task_posterior_prior_protection_max: float = 0.5
     task_posterior_local_kernel_expert: bool = False
@@ -316,6 +320,10 @@ class SingleOLHKGConfig:
     source_mean_prior_fallback: bool = False
     source_mean_prior_z: float = 1.0
     source_mean_prior_margin_tol: float = 0.0
+    source_constraint_mean_coefficient_prior: bool = False
+    source_constraint_mean_adaptation_mode: str = "frozen"
+    source_constraint_mean_null_weight: float = 0.5
+    source_constraint_mean_evidence_temperature: float = 1.0
     truth_pool_diagnostics: bool = False
     truth_pool_good_regret: float = 0.05
     truth_pool_max_candidates: int = 0
@@ -430,6 +438,12 @@ class SingleOLHKGAlgorithm:
             n_outputs=2,
             floor=1e-8,
             use_cumulative_provider=self.config.hvd_use_cumulative_provider,
+            cumulative_transfer_mode=(
+                self.config.hvd_cumulative_transfer_mode),
+            cumulative_source_task_weight_mode=(
+                self.config.hvd_source_task_weight_mode),
+            cumulative_target_evidence_mode=(
+                self.config.hvd_cumulative_target_evidence_mode),
         )
         self.acquisition = OLHKGAcquisition(
             lambda_feas=self.config.lambda_feas,
@@ -908,6 +922,8 @@ class SingleOLHKGAlgorithm:
                 )
             self._rebuild_gpr_from_history(i, replay_sequential=False)
 
+        self._configure_hvd_source_task_posterior(
+            self.variance_model, self.gpr)
         self.variance_model.initialize(
             samples, self.observations, self.gpr, self.problem)
         self._initialize_task_ensemble(samples)
@@ -939,6 +955,15 @@ class SingleOLHKGAlgorithm:
             float(getattr(self.problem, "sigma_level", 0.0)) ** 2,
             1e-6,
         )
+        source_posterior = self._fit_source_constraint_coefficient_posterior(
+            model,
+            output_index,
+            samples,
+            y,
+            nominal_noise,
+        )
+        if source_posterior is not None:
+            return
         lambda_data = max(float(np.var(residual)), nominal_noise)
         prior_var = max(float(np.var(beta)), 1e-6)
         adaptive_spec = None
@@ -962,6 +987,334 @@ class SingleOLHKGAlgorithm:
         # and covariance reflect actually observed points.
         for x, target in zip(samples, y):
             model.update(x, float(target), lambda_data)
+
+    def _source_constraint_coefficient_prior(self, model, output_index):
+        """Read a frozen source coefficient law without consulting target truth."""
+
+        if (
+            int(output_index) != 1
+            or not self.config.source_constraint_mean_coefficient_prior
+        ):
+            return None
+        basis_map = getattr(model, "basis_map", None)
+        if basis_map is None or not hasattr(
+            basis_map, "source_parametric_prior"
+        ):
+            return None
+        prior = dict(basis_map.source_parametric_prior())
+        mean = np.asarray(prior.get("mean"), dtype=float).reshape(-1)
+        covariance = np.asarray(prior.get("covariance"), dtype=float)
+        if len(mean) != model.p or covariance.shape != (model.p, model.p):
+            raise RuntimeError(
+                "source constraint coefficient prior does not match GPR basis"
+            )
+        if not np.all(np.isfinite(mean)) or not np.all(np.isfinite(covariance)):
+            raise FloatingPointError("source constraint coefficient prior is non-finite")
+        prior["mean"] = mean
+        prior["covariance"] = covariance
+        prior["deviation_variance"] = max(
+            float(prior.get("deviation_variance", 1e-6)), 1e-12)
+        return prior
+
+    def _configure_hvd_source_task_posterior(
+        self,
+        variance_model,
+        gpr_models,
+    ):
+        mode = str(
+            self.config.hvd_source_task_weight_mode or "independent"
+        ).strip().lower()
+        if mode == "independent":
+            return None
+        if mode != "constraint_mean":
+            raise ValueError(
+                "hvd_source_task_weight_mode must be independent or "
+                "constraint_mean"
+            )
+        diagnostics = getattr(
+            gpr_models[1], "source_parametric_prior_diagnostics", None)
+        if not diagnostics or diagnostics.get(
+            "adaptation_mode"
+        ) not in {
+            "target_evidence_mixture",
+            "sequential_target_evidence_mixture",
+        }:
+            raise RuntimeError(
+                "constraint-mean HVD task weighting requires an evidence-"
+                "mixture source constraint posterior"
+            )
+        return variance_model.set_source_task_posterior(
+            1,
+            diagnostics["component_names"],
+            diagnostics["component_posterior_weights"],
+        )
+
+    def _source_constraint_coefficient_components(self, model, output_index):
+        if (
+            int(output_index) != 1
+            or not self.config.source_constraint_mean_coefficient_prior
+        ):
+            return []
+        basis_map = getattr(model, "basis_map", None)
+        if basis_map is None or not hasattr(
+            basis_map, "source_parametric_prior_components"
+        ):
+            return []
+        components = []
+        for raw in basis_map.source_parametric_prior_components():
+            component = dict(raw)
+            mean = np.asarray(component.get("mean"), dtype=float).reshape(-1)
+            covariance = np.asarray(
+                component.get("covariance"), dtype=float)
+            if len(mean) != model.p or covariance.shape != (model.p, model.p):
+                raise RuntimeError(
+                    "source constraint coefficient component does not match "
+                    "GPR basis"
+                )
+            if not np.all(np.isfinite(mean)) or not np.all(
+                np.isfinite(covariance)
+            ):
+                raise FloatingPointError(
+                    "source constraint coefficient component is non-finite"
+                )
+            component["mean"] = mean
+            component["covariance"] = covariance
+            component["deviation_variance"] = max(
+                float(component.get("deviation_variance", 1e-6)), 1e-12)
+            component["prior_weight"] = max(
+                float(component.get("prior_weight", 0.0)), 0.0)
+            components.append(component)
+        return components
+
+    @staticmethod
+    def _source_component_log_evidence(
+        model,
+        samples,
+        targets,
+        component,
+        observation_variance,
+    ):
+        phi = model.basis_matrix(samples)
+        mean = np.asarray(component["mean"], dtype=float)
+        covariance = np.asarray(component["covariance"], dtype=float)
+        target = np.asarray(targets, dtype=float).reshape(-1)
+        noise = max(
+            float(component["deviation_variance"])
+            + float(observation_variance),
+            1e-12,
+        )
+        predictive_covariance = phi @ covariance @ phi.T
+        predictive_covariance = 0.5 * (
+            predictive_covariance + predictive_covariance.T)
+        predictive_covariance += noise * np.eye(len(phi), dtype=float)
+        residual = target - phi @ mean
+        jitter = max(1e-12, 1e-10 * float(np.trace(
+            predictive_covariance)) / max(len(phi), 1))
+        for _ in range(8):
+            try:
+                chol = np.linalg.cholesky(
+                    predictive_covariance
+                    + jitter * np.eye(len(phi), dtype=float)
+                )
+                solved = np.linalg.solve(chol, residual)
+                log_det = 2.0 * float(np.sum(np.log(np.diag(chol))))
+                return float(-0.5 * (
+                    solved @ solved
+                    + log_det
+                    + len(phi) * np.log(2.0 * np.pi)
+                ))
+            except np.linalg.LinAlgError:
+                jitter *= 10.0
+        raise np.linalg.LinAlgError(
+            "source component predictive covariance is not positive definite"
+        )
+
+    def _target_null_constraint_component(self, model, aggregate_prior):
+        covariance = np.asarray(
+            aggregate_prior["covariance"], dtype=float)
+        diagonal = np.diag(covariance)
+        finite = diagonal[np.isfinite(diagonal) & (diagonal > 0.0)]
+        output_scale = max(
+            float(aggregate_prior.get("output_scale", 0.0)),
+            float(getattr(self.problem, "sigma_level", 0.0)),
+            1e-6,
+        )
+        null_variance = max(
+            float(np.median(finite)) if len(finite) else 0.0,
+            output_scale ** 2,
+            1e-6,
+        )
+        mean = np.zeros(model.p, dtype=float)
+        mean[0] = float(getattr(self.problem, "tau", 0.0))
+        return {
+            "name": "target:null",
+            "domain": None,
+            "mean": mean,
+            "covariance": null_variance * np.eye(model.p, dtype=float),
+            "deviation_variance": max(output_scale ** 2, 1e-8),
+            "prior_weight": max(
+                float(self.config.source_constraint_mean_null_weight),
+                0.0,
+            ),
+            "diagnostics": {
+                "component_kind": "nontransfer_null",
+                "null_variance": float(null_variance),
+                "target_data_used": False,
+                "target_oracle_used": False,
+            },
+        }
+
+    def _fit_source_constraint_coefficient_posterior(
+        self,
+        model,
+        output_index,
+        samples,
+        targets,
+        observation_variance,
+    ):
+        """Condition the frozen source coefficient law on charged target data."""
+
+        aggregate_prior = self._source_constraint_coefficient_prior(
+            model, output_index)
+        if aggregate_prior is None:
+            return None
+        mode = str(
+            self.config.source_constraint_mean_adaptation_mode
+            or "frozen"
+        ).strip().lower()
+        if mode in ("frozen", "aggregate", "none"):
+            model.set_parametric_prior(
+                aggregate_prior["mean"],
+                aggregate_prior["deviation_variance"],
+                aggregate_prior["covariance"],
+            )
+            diagnostics = dict(aggregate_prior.get("diagnostics", {}))
+            diagnostics.update({
+                "adaptation_mode": "frozen_aggregate",
+                "prior_target_data_used": False,
+                "posterior_target_data_used": True,
+                "target_observation_count": int(len(samples)),
+                "target_oracle_used": False,
+            })
+            model.source_parametric_prior_diagnostics = diagnostics
+            for x, target in zip(samples, targets):
+                model.update(x, float(target), observation_variance)
+            return diagnostics
+        if mode not in (
+            "evidence_mixture", "mixture", "adaptive_mixture",
+            "sequential_evidence_mixture", "sequential_mixture",
+        ):
+            raise ValueError(
+                "source constraint mean adaptation mode must be frozen or "
+                "evidence_mixture/sequential_evidence_mixture"
+            )
+        sequential_updates = mode in {
+            "sequential_evidence_mixture", "sequential_mixture",
+        }
+
+        source_components = self._source_constraint_coefficient_components(
+            model, output_index)
+        if not source_components:
+            raise RuntimeError(
+                "evidence-mixture source mean adaptation requires source "
+                "coefficient components"
+            )
+        null_weight = float(np.clip(
+            self.config.source_constraint_mean_null_weight, 0.0, 1.0))
+        source_mass = 1.0 - null_weight
+        raw_source_weight = np.asarray([
+            component["prior_weight"] for component in source_components
+        ], dtype=float)
+        if float(np.sum(raw_source_weight)) <= 0.0:
+            raw_source_weight = np.ones(len(source_components), dtype=float)
+        raw_source_weight /= float(np.sum(raw_source_weight))
+        for mass, component in zip(raw_source_weight, source_components):
+            component["prior_weight"] = float(source_mass * mass)
+        components = source_components + [
+            self._target_null_constraint_component(model, aggregate_prior)
+        ]
+        components[-1]["prior_weight"] = null_weight
+        prior_weight = np.asarray([
+            max(float(component["prior_weight"]), 1e-12)
+            for component in components
+        ], dtype=float)
+        prior_weight /= float(np.sum(prior_weight))
+        log_evidence = np.asarray([
+            self._source_component_log_evidence(
+                model,
+                samples,
+                targets,
+                component,
+                observation_variance,
+            )
+            for component in components
+        ], dtype=float)
+        temperature = max(
+            float(self.config.source_constraint_mean_evidence_temperature),
+            1e-6,
+        )
+        log_weight = np.log(prior_weight) + log_evidence / temperature
+        log_weight -= float(np.max(log_weight))
+        posterior_weight = np.exp(log_weight)
+        posterior_weight /= float(np.sum(posterior_weight))
+
+        posterior_models = []
+        for component in components:
+            component_model = ParametricGPR(
+                model.d,
+                lambda_i=model.lambda_i,
+                prior_var=1.0,
+                normalize_func=model.normalize_func,
+                basis_map=model.basis_map,
+                basis_config=copy.copy(model.basis_config),
+                numeric_backend=model.numeric_backend,
+                numeric_backend_device=model.numeric_backend_device,
+                torch_dtype=model.torch_dtype,
+                torch_min_rows=model.torch_min_rows,
+            )
+            component_model.set_parametric_prior(
+                component["mean"],
+                component["deviation_variance"],
+                component["covariance"],
+            )
+            for x, target in zip(samples, targets):
+                component_model.update(
+                    x, float(target), observation_variance)
+            posterior_models.append(component_model)
+
+        diagnostics = {
+            **dict(aggregate_prior.get("diagnostics", {})),
+            "adaptation_mode": (
+                "sequential_target_evidence_mixture"
+                if sequential_updates
+                else "target_evidence_mixture"
+            ),
+            "prior_target_data_used": False,
+            "posterior_target_data_used": True,
+            "target_observation_count": int(len(samples)),
+            "target_oracle_used": False,
+            "evidence_temperature": float(temperature),
+            "null_prior_weight": float(null_weight),
+            "component_names": [
+                str(component["name"]) for component in components
+            ],
+            "component_prior_weights": prior_weight.tolist(),
+            "component_log_evidence": log_evidence.tolist(),
+            "component_posterior_weights": posterior_weight.tolist(),
+            "selected_component": str(components[int(
+                np.argmax(posterior_weight))]["name"]),
+            "target_only_posterior_weight": float(posterior_weight[-1]),
+            "source_posterior_weight": float(
+                np.sum(posterior_weight[:-1])),
+            "online_mixture_update_count": 0,
+        }
+        model.set_moment_matched_posterior(
+            posterior_models,
+            posterior_weight,
+            diagnostics=diagnostics,
+            sequential_updates=sequential_updates,
+        )
+        return diagnostics
 
     def _initialize_task_ensemble(self, samples):
         if not self._task_posterior_requested():
@@ -1031,7 +1384,15 @@ class SingleOLHKGAlgorithm:
                 floor=1e-8,
                 use_cumulative_provider=(
                     self.config.hvd_use_cumulative_provider),
+                cumulative_transfer_mode=(
+                    self.config.hvd_cumulative_transfer_mode),
+                cumulative_source_task_weight_mode=(
+                    self.config.hvd_source_task_weight_mode),
+                cumulative_target_evidence_mode=(
+                    self.config.hvd_cumulative_target_evidence_mode),
             )
+            self._configure_hvd_source_task_posterior(
+                variance_model, expert_gpr)
             variance_model.initialize(
                 pilot_samples,
                 self.observations,
@@ -1179,6 +1540,47 @@ class SingleOLHKGAlgorithm:
         ])
         Phi = model.basis_matrix(samples)
         basis_map = getattr(model, "basis_map", None)
+        nominal_noise = max(
+            float(getattr(self.problem, "sigma_level", 0.0)) ** 2,
+            1e-6,
+        )
+        source_posterior = self._fit_source_constraint_coefficient_posterior(
+            model,
+            output_index,
+            samples,
+            y_i,
+            nominal_noise,
+        )
+        if source_posterior is not None:
+            replayed = 0
+            if replay_sequential:
+                sequential_history = self.history[n_initial:]
+                if len(sequential_history) != len(self.iteration_log):
+                    raise RuntimeError(
+                        "sequential history and iteration log disagree during GPR replay"
+                    )
+                for (history_x, history_y), row in zip(
+                    sequential_history, self.iteration_log
+                ):
+                    row_x = tuple(int(v) for v in row["x_selected"])
+                    history_x = tuple(int(v) for v in history_x)
+                    if row_x != history_x:
+                        raise RuntimeError(
+                            "iteration log candidate does not match GPR history"
+                        )
+                    sigma2 = float(row["sigma2_before"][output_index])
+                    observed = float(
+                        np.asarray(history_y, dtype=float)[output_index])
+                    model.update(history_x, observed, sigma2)
+                    replayed += 1
+            return {
+                "initial_records": int(len(initial_history)),
+                "replayed_updates": int(replayed),
+                "basis_dim": int(model.p),
+                "source_constraint_coefficient_prior": True,
+                "source_constraint_mean_adaptation_mode": str(
+                    source_posterior.get("adaptation_mode", "unknown")),
+            }
         try:
             if basis_map is not None and hasattr(
                 basis_map, "initial_parametric_coefficients"
@@ -1272,6 +1674,25 @@ class SingleOLHKGAlgorithm:
                 getattr(model, "_adaptive_records", [])),
             "adaptive_spec": copy.deepcopy(
                 getattr(model, "_adaptive_spec", None)),
+            "source_parametric_prior_diagnostics": copy.deepcopy(
+                getattr(model, "source_parametric_prior_diagnostics", None)),
+            "finite_mixture_sequential": bool(getattr(
+                model, "_finite_mixture_sequential", False)),
+            "finite_mixture_weights": (
+                None
+                if getattr(model, "_finite_mixture_weights", None) is None
+                else np.asarray(
+                    model._finite_mixture_weights, dtype=float).copy()
+            ),
+            "finite_mixture_component_names": list(getattr(
+                model, "_finite_mixture_component_names", [])),
+            "finite_mixture_update_count": int(getattr(
+                model, "_finite_mixture_update_count", 0)),
+            "finite_mixture_components": [
+                self._gpr_checkpoint_state(component)
+                for component in getattr(
+                    model, "_finite_mixture_components", [])
+            ],
             "basis_runtime_state": (
                 copy.deepcopy(basis_map.runtime_state())
                 if basis_map is not None
@@ -1301,6 +1722,36 @@ class SingleOLHKGAlgorithm:
         model._adaptive_records = copy.deepcopy(
             state.get("adaptive_records", []))
         model._adaptive_spec = copy.deepcopy(state.get("adaptive_spec"))
+        model.source_parametric_prior_diagnostics = copy.deepcopy(
+            state.get("source_parametric_prior_diagnostics"))
+        saved_components = list(state.get("finite_mixture_components", []))
+        current_components = list(getattr(
+            model, "_finite_mixture_components", []))
+        if saved_components:
+            if len(saved_components) != len(current_components):
+                raise ValueError(
+                    "checkpoint source-mixture component count does not match config"
+                )
+            for component, component_state in zip(
+                current_components, saved_components
+            ):
+                self._restore_gpr_checkpoint_state(
+                    component, component_state)
+        model._finite_mixture_components = current_components
+        saved_weight = state.get("finite_mixture_weights")
+        model._finite_mixture_weights = (
+            None
+            if saved_weight is None
+            else np.asarray(saved_weight, dtype=float).copy()
+        )
+        model._finite_mixture_component_names = [
+            str(value) for value in state.get(
+                "finite_mixture_component_names", [])
+        ]
+        model._finite_mixture_sequential = bool(state.get(
+            "finite_mixture_sequential", False))
+        model._finite_mixture_update_count = int(state.get(
+            "finite_mixture_update_count", 0))
         basis_state = state.get("basis_runtime_state")
         if (
             basis_state is not None
@@ -1408,6 +1859,25 @@ class SingleOLHKGAlgorithm:
             getattr(model, "_adaptive_records", []))
         clone._adaptive_spec = copy.deepcopy(
             getattr(model, "_adaptive_spec", None))
+        clone.source_parametric_prior_diagnostics = copy.deepcopy(
+            getattr(model, "source_parametric_prior_diagnostics", None))
+        clone._finite_mixture_components = [
+            self._clone_gpr_for_exact_kg(component)
+            for component in getattr(
+                model, "_finite_mixture_components", [])
+        ]
+        clone._finite_mixture_weights = (
+            None
+            if getattr(model, "_finite_mixture_weights", None) is None
+            else np.asarray(
+                model._finite_mixture_weights, dtype=float).copy()
+        )
+        clone._finite_mixture_component_names = list(getattr(
+            model, "_finite_mixture_component_names", []))
+        clone._finite_mixture_sequential = bool(getattr(
+            model, "_finite_mixture_sequential", False))
+        clone._finite_mixture_update_count = int(getattr(
+            model, "_finite_mixture_update_count", 0))
         if clone._adaptive_sparsity is not None and model.basis_map is not None:
             basis_clone = object.__new__(model.basis_map.__class__)
             basis_clone.__dict__ = model.basis_map.__dict__.copy()
@@ -1509,20 +1979,30 @@ class SingleOLHKGAlgorithm:
         root = self._checkpoint_root()
         if root is None:
             return None
-        interval = max(1, int(self.config.checkpoint_interval))
-        should_stage = (
+        interval = int(self.config.checkpoint_interval)
+        if interval <= 0:
+            return None
+        should_save = (
             force
             or reason in {"initial", "final"}
             or int(next_stage_n) >= int(self.config.N)
             or int(next_stage_n) % interval == 0
         )
+        if not should_save:
+            return None
         payload = self._runtime_checkpoint_payload(next_stage_n, reason)
         latest_path = root / "checkpoint_latest.pkl"
         self._write_pickle_atomic(latest_path, payload)
-        if should_stage:
-            stage_path = root / f"checkpoint_stage_{int(next_stage_n):05d}.pkl"
+        stage_path = root / f"checkpoint_stage_{int(next_stage_n):05d}.pkl"
+        stage_tmp = stage_path.with_name(stage_path.name + ".tmp")
+        try:
+            stage_tmp.unlink(missing_ok=True)
+            os.link(latest_path, stage_tmp)
+            os.replace(stage_tmp, stage_path)
+        except OSError:
+            stage_tmp.unlink(missing_ok=True)
             self._write_pickle_atomic(stage_path, payload)
-            self._prune_checkpoints(root)
+        self._prune_checkpoints(root)
         return latest_path
 
     def _reattach_runtime_handles_after_checkpoint(self):
@@ -1847,6 +2327,24 @@ class SingleOLHKGAlgorithm:
             self._true_best_feasible_cache = self.problem.true_best_feasible()
         return self._true_best_feasible_cache
 
+    def _task_robust_certificate_mode(self):
+        mode = str(
+            self.config.task_posterior_robust_certificate_mode
+            or "separable"
+        ).strip().lower().replace("-", "_")
+        aliases = {
+            "legacy": "separable",
+            "joint": "joint_tangent",
+            "joint_kl": "joint_tangent",
+        }
+        mode = aliases.get(mode, mode)
+        if mode not in {"separable", "joint_tangent"}:
+            raise ValueError(
+                "task posterior robust certificate mode must be "
+                "separable or joint_tangent"
+            )
+        return mode
+
     def _pilot_constraint_guard(self):
         if not hasattr(self.problem, "pilot_constraint_guard"):
             return 0.0
@@ -1870,19 +2368,24 @@ class SingleOLHKGAlgorithm:
     ):
         task_robust = None
         if self.task_ensemble is not None:
-            task_robust = self.task_ensemble.robust_moments_many(
-                1, candidates, certification=True)
-            mu_con = task_robust.mean_upper
-            epistemic = task_robust.epistemic_upper
-            v_con = task_robust.aleatoric_upper
+            if mu_con is None or epistemic is None or v_con is None:
+                task_robust = self.task_ensemble.robust_moments_many(
+                    1, candidates, certification=True)
+                mu_con = task_robust.mean_upper
+                epistemic = task_robust.epistemic_upper
+                v_con = task_robust.aleatoric_upper
         else:
             if v_con is None:
                 v_con = self.variance_model.predict_certification_variance_many(
                     1, candidates, self.problem)
             if epistemic is None:
                 epistemic = self.gpr[1].posterior_var_many(candidates)
-        guard = 0.0 if task_robust is not None else self._pilot_constraint_guard()
-        return conservative_chance_margin(
+        guard = (
+            0.0
+            if self.task_ensemble is not None
+            else self._pilot_constraint_guard()
+        )
+        cert = conservative_chance_margin(
             np.asarray(mu_con, dtype=float) + guard,
             epistemic,
             v_con,
@@ -1890,6 +2393,28 @@ class SingleOLHKGAlgorithm:
             alpha=self.problem.alpha,
             beta_g=self.config.beta_g,
             mode=self.config.certification_mode,
+        )
+        if (
+            task_robust is None
+            or self._task_robust_certificate_mode() != "joint_tangent"
+        ):
+            return cert
+        joint = self.task_ensemble.robust_chance_margin_many(
+            candidates,
+            beta_g=cert.beta_g,
+            z_alpha=cert.z_alpha,
+            tau=self.problem.tau,
+            certification=True,
+        )
+        return CertificationResult(
+            margin=np.asarray(joint.upper, dtype=float),
+            mu=cert.mu,
+            epistemic_var=cert.epistemic_var,
+            aleatoric_var=cert.aleatoric_var,
+            beta_g=cert.beta_g,
+            z_alpha=cert.z_alpha,
+            tau=cert.tau,
+            mode=cert.mode,
         )
 
     def _tcb_v2_mode(self):
@@ -4762,20 +5287,82 @@ class SingleOLHKGAlgorithm:
             else [tuple(int(v) for v in x) for x in pool]
         )
         coherent_contract = self._coherent_certificate_contract()
-        mu_obj = self._objective_posterior_mean_many(pool)
+        cached_expert_moments = bool(
+            self.task_ensemble is not None
+            and getattr(
+                self.task_ensemble,
+                "supports_precomputed_expert_moments",
+                False,
+            )
+        )
+        objective_expert_moments = None
+        constraint_expert_moments = None
+        if cached_expert_moments:
+            objective_expert_moments = self.task_ensemble.expert_moments_many(
+                0, pool, certification=False)
+            mu_obj = self.task_ensemble.mixture_moments_many(
+                0,
+                pool,
+                certification=False,
+                expert_moments=objective_expert_moments,
+            ).mean
+        else:
+            mu_obj = self._objective_posterior_mean_many(pool)
         empirical_aleatoric = None
+        task_observation_nominal = None
+        task_certification_nominal = None
+        task_robust = None
+        task_joint = None
         if self.task_ensemble is None:
             mu_con = self.gpr[1].posterior_mean_many(pool)
             v_con = self.variance_model.predict_certification_variance_many(
                 1, pool, self.problem)
             cert = self._certification_result(mu_con, pool, v_con)
         else:
-            task_nominal = self.task_ensemble.mixture_moments_many(
-                1, pool, certification=True)
+            if cached_expert_moments:
+                observation_expert_moments = (
+                    self.task_ensemble.expert_moments_many(
+                        1, pool, certification=False)
+                )
+                constraint_expert_moments = (
+                    self.task_ensemble.expert_moments_many(
+                        1, pool, certification=True)
+                )
+                task_observation_nominal = (
+                    self.task_ensemble.mixture_moments_many(
+                        1,
+                        pool,
+                        certification=False,
+                        expert_moments=observation_expert_moments,
+                    )
+                )
+                task_certification_nominal = (
+                    self.task_ensemble.mixture_moments_many(
+                        1,
+                        pool,
+                        certification=True,
+                        expert_moments=constraint_expert_moments,
+                    )
+                )
+                task_robust = self.task_ensemble.robust_moments_many(
+                    1,
+                    pool,
+                    certification=True,
+                    expert_moments=constraint_expert_moments,
+                )
+            else:
+                task_observation_nominal = (
+                    self.task_ensemble.mixture_moments_many(
+                        1, pool, certification=False)
+                )
+                task_certification_nominal = (
+                    self.task_ensemble.mixture_moments_many(
+                        1, pool, certification=True)
+                )
+                task_robust = self.task_ensemble.robust_moments_many(
+                    1, pool, certification=True)
             empirical_aleatoric = np.asarray(
-                task_nominal.aleatoric, dtype=float)
-            task_robust = self.task_ensemble.robust_moments_many(
-                1, pool, certification=True)
+                task_certification_nominal.aleatoric, dtype=float)
             mu_con = task_robust.mean_upper
             v_con = task_robust.aleatoric_upper
             cert = self._certification_result(
@@ -4783,6 +5370,17 @@ class SingleOLHKGAlgorithm:
                 pool,
                 v_con,
                 epistemic=task_robust.epistemic_upper,
+            )
+            joint_kwargs = {}
+            if cached_expert_moments:
+                joint_kwargs["expert_moments"] = constraint_expert_moments
+            task_joint = self.task_ensemble.robust_chance_margin_many(
+                pool,
+                beta_g=cert.beta_g,
+                z_alpha=cert.z_alpha,
+                tau=self.problem.tau,
+                certification=True,
+                **joint_kwargs,
             )
         margins = cert.margin
         sig_con = np.sqrt(np.maximum(cert.aleatoric_var, 1e-12))
@@ -4803,7 +5401,19 @@ class SingleOLHKGAlgorithm:
         effective_mu_con = np.asarray(mu_con, dtype=float)
         effective_epistemic = np.asarray(cert.epistemic_var, dtype=float)
         effective_aleatoric = np.asarray(cert.aleatoric_var, dtype=float)
-        certification_sources = np.full(len(pool), "theory", dtype=object)
+        certification_sources = np.full(
+            len(pool),
+            (
+                "task_joint_kl_hvd"
+                if (
+                    self.task_ensemble is not None
+                    and self._task_robust_certificate_mode()
+                    == "joint_tangent"
+                )
+                else "theory"
+            ),
+            dtype=object,
+        )
         tcb_v2 = self._tcb_v2_margin_many(pool)
         tcb_v2_mode = self._tcb_v2_mode()
         if tcb_v2_mode == "certified" and tcb_v2 is None:
@@ -4970,6 +5580,8 @@ class SingleOLHKGAlgorithm:
                 self.variance_model,
                 pool,
                 task_ensemble=self.task_ensemble,
+                objective_expert_moments=objective_expert_moments,
+                constraint_expert_moments=constraint_expert_moments,
             )
             bayes_components = components
             local = int(np.argmin(components["risk"]))
@@ -5239,6 +5851,155 @@ class SingleOLHKGAlgorithm:
             for index in frontier_indices
         ]
         x_best = tuple(int(v) for v in pool[local])
+
+        def margin_components(
+            mean,
+            epistemic,
+            aleatoric,
+            index,
+            extra=0.0,
+            margin_override=None,
+        ):
+            mean_term = float(np.asarray(mean, dtype=float)[index]) - float(
+                self.problem.tau)
+            epistemic_term = float(
+                np.sqrt(max(float(cert.beta_g), 0.0))
+                * np.sqrt(max(float(np.asarray(epistemic, dtype=float)[index]), 0.0))
+            )
+            aleatoric_term = float(
+                cert.z_alpha
+                * np.sqrt(max(float(np.asarray(aleatoric, dtype=float)[index]), 0.0))
+            )
+            extra_array = np.asarray(extra, dtype=float)
+            extra_term = float(
+                extra_array if extra_array.ndim == 0 else extra_array[index])
+            component_margin = float(
+                mean_term + epistemic_term + aleatoric_term + extra_term)
+            margin_value = (
+                component_margin
+                if margin_override is None
+                else float(np.asarray(margin_override, dtype=float)[index])
+            )
+            return {
+                "mean_minus_tau": mean_term,
+                "epistemic_radius": epistemic_term,
+                "aleatoric_radius": aleatoric_term,
+                "extra_guard": extra_term,
+                "component_sum_margin": component_margin,
+                "joint_coupling_correction": float(
+                    margin_value - component_margin),
+                "margin": margin_value,
+                "epistemic_variance": float(
+                    np.asarray(epistemic, dtype=float)[index]),
+                "aleatoric_variance": float(
+                    np.asarray(aleatoric, dtype=float)[index]),
+            }
+
+        def margin_audit_at(index):
+            row = {
+                "pool_index": int(index),
+                "x": [int(v) for v in pool[index]],
+                "final_certificate": margin_components(
+                    effective_mu_con,
+                    effective_epistemic,
+                    effective_aleatoric,
+                    index,
+                    safety_buffer + recommendation_slack,
+                    margin_override=robust_margins,
+                ),
+                "theory_certificate": margin_components(
+                    effective_mu_con,
+                    effective_epistemic,
+                    effective_aleatoric,
+                    index,
+                    safety_buffer,
+                    margin_override=theory_margins,
+                ),
+            }
+            if task_observation_nominal is None:
+                return row
+            observation = margin_components(
+                task_observation_nominal.mean,
+                task_observation_nominal.epistemic,
+                task_observation_nominal.aleatoric,
+                index,
+            )
+            expert_certified = margin_components(
+                task_certification_nominal.mean,
+                task_certification_nominal.epistemic,
+                task_certification_nominal.aleatoric,
+                index,
+            )
+            separable_robust = margin_components(
+                task_robust.mean_upper,
+                task_robust.epistemic_upper,
+                task_robust.aleatoric_upper,
+                index,
+            )
+            joint_robust = margin_components(
+                task_robust.mean_upper,
+                task_robust.epistemic_upper,
+                task_robust.aleatoric_upper,
+                index,
+                margin_override=task_joint.upper,
+            )
+            robust = (
+                joint_robust
+                if self._task_robust_certificate_mode() == "joint_tangent"
+                else separable_robust
+            )
+            observation_aleatoric = max(
+                float(observation["aleatoric_variance"]), 1e-12)
+            expert_aleatoric = max(
+                float(expert_certified["aleatoric_variance"]), 1e-12)
+            observation_epistemic = max(
+                float(observation["epistemic_variance"]), 1e-12)
+            expert_epistemic = max(
+                float(expert_certified["epistemic_variance"]), 1e-12)
+            row.update({
+                "observation_nominal": observation,
+                "expert_certified": expert_certified,
+                "task_robust": robust,
+                "task_separable_robust": separable_robust,
+                "task_joint_robust": joint_robust,
+                "task_joint_tightening": float(
+                    separable_robust["margin"] - joint_robust["margin"]),
+                "task_joint_used_separable_upper": bool(
+                    task_joint.used_separable_upper[index]),
+                "task_joint_epistemic_tangent_scale": float(
+                    task_joint.tangent_epistemic_scale[index]),
+                "task_joint_aleatoric_tangent_scale": float(
+                    task_joint.tangent_aleatoric_scale[index]),
+                "expert_to_observation_aleatoric_ratio": float(
+                    expert_aleatoric / observation_aleatoric),
+                "robust_to_expert_aleatoric_ratio": float(
+                    max(float(robust["aleatoric_variance"]), 1e-12)
+                    / expert_aleatoric),
+                "expert_to_observation_epistemic_ratio": float(
+                    expert_epistemic / observation_epistemic),
+                "robust_to_expert_epistemic_ratio": float(
+                    max(float(robust["epistemic_variance"]), 1e-12)
+                    / expert_epistemic),
+                "robust_mean_inflation": float(
+                    robust["mean_minus_tau"]
+                    - expert_certified["mean_minus_tau"]),
+            })
+            return row
+
+        minimum_margin_index = int(np.argmin(robust_margins))
+        certification_margin_decomposition = {
+            "schema_version": 1,
+            "task_posterior_active": bool(self.task_ensemble is not None),
+            "task_robust_certificate_mode": (
+                self._task_robust_certificate_mode()
+                if self.task_ensemble is not None else None
+            ),
+            "selected": margin_audit_at(local),
+            "minimum_margin": margin_audit_at(minimum_margin_index),
+            "selected_is_minimum_margin": bool(local == minimum_margin_index),
+            "n_pool": int(len(pool)),
+            "n_certified": int(np.sum(robust_margins <= 0.0)),
+        }
         calibration_details = {}
         if calibrated_cert is not None:
             calibration_details = {
@@ -5332,6 +6093,8 @@ class SingleOLHKGAlgorithm:
             "posterior_theory_chance_margin": float(theory_margins[local]),
             "posterior_robust_chance_margin": float(robust_margins[local]),
             "posterior_certification_source": str(certification_sources[local]),
+            "certification_margin_decomposition": (
+                certification_margin_decomposition),
             "tcb_v2_mode": tcb_v2_mode,
             "tcb_v2_available": bool(tcb_v2 is not None),
             "tcb_v2_authoritative": bool(tcb_v2_authoritative),
@@ -5508,6 +6271,8 @@ class SingleOLHKGAlgorithm:
         pool,
         task_ensemble=None,
         risk_penalty=None,
+        objective_expert_moments=None,
+        constraint_expert_moments=None,
     ):
         """Fixed posterior Bayes risk used by smooth constrained KG.
 
@@ -5582,12 +6347,19 @@ class SingleOLHKGAlgorithm:
             model_disagreement = np.sqrt(epistemic)
             kl_radius = 0.0
         else:
-            obj_mu, obj_epistemic, _ = task_ensemble.expert_moments_many(
-                0, pool, certification=False)
+            if objective_expert_moments is None:
+                objective_expert_moments = (
+                    task_ensemble.expert_moments_many(
+                        0, pool, certification=False)
+                )
+            if constraint_expert_moments is None:
+                constraint_expert_moments = (
+                    task_ensemble.expert_moments_many(
+                        1, pool, certification=True)
+                )
+            obj_mu, obj_epistemic, _ = objective_expert_moments
             con_mu, con_epistemic, con_aleatoric = (
-                task_ensemble.expert_moments_many(
-                    1, pool, certification=True)
-            )
+                constraint_expert_moments)
             decision_weights = task_ensemble.posterior.decision_weights()
             objective_weights = (
                 task_ensemble.posterior.posterior_weights()
@@ -6052,7 +6824,21 @@ class SingleOLHKGAlgorithm:
             beta_g=self.config.beta_g,
             mode=self.config.certification_mode,
         )
-        margin = np.asarray(cert.margin, dtype=float)
+        joint = None
+        if (
+            task_ensemble is not None
+            and self._task_robust_certificate_mode() == "joint_tangent"
+        ):
+            joint = task_ensemble.robust_chance_margin_many(
+                pool,
+                beta_g=cert.beta_g,
+                z_alpha=cert.z_alpha,
+                tau=self.problem.tau,
+                certification=True,
+            )
+            margin = np.asarray(joint.upper, dtype=float)
+        else:
+            margin = np.asarray(cert.margin, dtype=float)
         if cert.mode != "theory":
             sigma = np.sqrt(np.maximum(cert.aleatoric_var, 1e-12))
             nominal_floor = (
@@ -6067,11 +6853,20 @@ class SingleOLHKGAlgorithm:
         return {
             "objective": objective,
             "margin": np.asarray(margin, dtype=float),
-            "source": "theory_hvd",
+            "source": (
+                "task_joint_kl_hvd"
+                if joint is not None else "theory_hvd"
+            ),
             "tcb_v2": None,
             "mu_con": mu_con,
             "epistemic": np.asarray(cert.epistemic_var, dtype=float),
             "aleatoric": np.asarray(cert.aleatoric_var, dtype=float),
+            "separable_margin": np.asarray(cert.margin, dtype=float),
+            "joint_margin": (
+                None
+                if joint is None
+                else np.asarray(joint.upper, dtype=float)
+            ),
         }
 
     def _effective_exact_terminal_mode(self):
@@ -8032,6 +8827,9 @@ class SingleOLHKGAlgorithm:
             "missed_true_feasible_rate": mean_bool("candidate_missed_true_feasible"),
             "missed_true_safe_good_rate": mean_bool("candidate_missed_true_safe_good"),
             "mean_pool_true_feasible_rate": mean_float("candidate_true_feasible_rate"),
+            "mean_pool_min_true_margin": mean_float("candidate_true_min_margin"),
+            "mean_pool_min_posterior_margin": mean_float(
+                "candidate_posterior_min_margin"),
             "mean_pool_best_feasible_regret": mean_float(
                 "candidate_true_best_feasible_regret"),
             "mean_selected_true_regret": mean_float("candidate_selected_true_regret"),
@@ -8193,6 +8991,11 @@ class SingleOLHKGAlgorithm:
                     risk_penalty=self.config.decision_risk_penalty,
                     source_utility_weight=(
                         self.config.decision_source_utility_weight),
+                    replication_max_per_solution=(
+                        self.config.replication_max_per_solution),
+                    certification_beta_g=self.config.beta_g,
+                    robust_certificate_mode=(
+                        self.config.task_posterior_robust_certificate_mode),
                 )
                 score["total"] = backend_score["total"]
             row["decision_backend"] = decision_backend
@@ -8317,10 +9120,17 @@ class SingleOLHKGAlgorithm:
                     "stochastic_margin_mean",
                     "expected_violation",
                     "probability_feasible",
+                    "theory_margin",
                     "bayes_risk",
                     "bayes_risk_ei",
                     "constrained_ei",
                     "transfer_utility",
+                    "hvd_information_reduction",
+                    "constraint_epistemic_information_reduction",
+                    "hvd_margin_information_reduction",
+                    "joint_information_reduction",
+                    "hvd_action_reliability",
+                    "hvd_action_is_replicate",
                 )
                 for field in backend_fields:
                     values = backend_score.get(field)
@@ -8335,6 +9145,12 @@ class SingleOLHKGAlgorithm:
                     "sampled_expert")
                 row["decision_transfer_utility_status"] = backend_score.get(
                     "transfer_utility_status")
+                row["decision_joint_information_unit"] = backend_score.get(
+                    "joint_information_unit")
+                row["decision_joint_information_contract"] = backend_score.get(
+                    "joint_information_contract")
+                row["decision_hvd_sobol_new_index"] = backend_score.get(
+                    "hvd_sobol_new_index")
             if finalist_info.get("terminal_kg_selected_gain") is not None:
                 row["terminal_kg_selected_gain"] = float(
                     finalist_info["terminal_kg_selected_gain"])
@@ -8447,6 +9263,13 @@ class SingleOLHKGAlgorithm:
             t0 = time.time()
             for i in range(2):
                 self.gpr[i].update(x_arr, y[i], sigma2_before[i])
+            if str(
+                self.config.source_constraint_mean_adaptation_mode
+            ).strip().lower() in {
+                "sequential_evidence_mixture", "sequential_mixture",
+            }:
+                self._configure_hvd_source_task_posterior(
+                    self.variance_model, self.gpr)
             row["adaptive_sparsity"] = [
                 model.adaptive_sparsity_diagnostics()
                 for model in self.gpr
@@ -8511,9 +9334,24 @@ class SingleOLHKGAlgorithm:
                 row["recommendation_after"] = list(map(int, rec_x_after))
                 row["eval"] = {**rec_after, **eval_after}
             row["t_eval"] = time.time() - t0
-            row["t_total"] = time.time() - t_iter
+            row["t_total_pre_checkpoint"] = time.time() - t_iter
+            attributed = sum(float(row.get(name, 0.0) or 0.0) for name in (
+                "t_candidate_gen",
+                "t_kg_compute",
+                "t_simulate",
+                "t_update",
+                "t_eval",
+            ))
+            row["t_unattributed_pre_checkpoint"] = max(
+                0.0, row["t_total_pre_checkpoint"] - attributed)
+            row["t_checkpoint"] = None
             self.iteration_log.append(row)
-            self._save_checkpoint(n + 1, reason="iteration")
+            checkpoint_started = time.time()
+            checkpoint_path = self._save_checkpoint(
+                n + 1, reason="iteration")
+            row["t_checkpoint"] = time.time() - checkpoint_started
+            row["checkpoint_saved"] = checkpoint_path is not None
+            row["t_total"] = time.time() - t_iter
             self._progress_emit(
                 n=n,
                 frac=1.0,
@@ -8525,7 +9363,9 @@ class SingleOLHKGAlgorithm:
                     f"cand={row['t_candidate_gen']:.3f}s "
                     f"sim={row['t_simulate']:.3f}s "
                     f"update={row['t_update']:.3f}s "
-                    f"eval={row['t_eval']:.3f}s"
+                    f"eval={row['t_eval']:.3f}s "
+                    f"other={row['t_unattributed_pre_checkpoint']:.3f}s "
+                    f"ckpt={row['t_checkpoint']:.3f}s"
                 ),
             )
             if verbose:
@@ -8598,6 +9438,16 @@ class SingleOLHKGAlgorithm:
         ]
         decision_backend_summary = {
             "configured": str(self.config.decision_backend),
+            "joint_information_units": sorted({
+                str(row["decision_joint_information_unit"])
+                for row in decision_backend_rows
+                if row.get("decision_joint_information_unit") is not None
+            }),
+            "joint_information_contracts": sorted({
+                str(row["decision_joint_information_contract"])
+                for row in decision_backend_rows
+                if row.get("decision_joint_information_contract") is not None
+            }),
             "effective_counts": {
                 name: int(sum(
                     row.get("decision_backend") == name
@@ -8624,6 +9474,56 @@ class SingleOLHKGAlgorithm:
                 )
                 else None
             ),
+            "mean_selected_constraint_epistemic_information_reduction": (
+                float(np.mean([
+                    row[
+                        "decision_constraint_epistemic_information_reduction_selected"
+                    ]
+                    for row in decision_backend_rows
+                    if row.get(
+                        "decision_constraint_epistemic_information_reduction_selected"
+                    ) is not None
+                ]))
+                if any(
+                    row.get(
+                        "decision_constraint_epistemic_information_reduction_selected"
+                    ) is not None
+                    for row in decision_backend_rows
+                )
+                else None
+            ),
+            "mean_selected_hvd_margin_information_reduction": (
+                float(np.mean([
+                    row["decision_hvd_margin_information_reduction_selected"]
+                    for row in decision_backend_rows
+                    if row.get(
+                        "decision_hvd_margin_information_reduction_selected"
+                    ) is not None
+                ]))
+                if any(
+                    row.get(
+                        "decision_hvd_margin_information_reduction_selected"
+                    ) is not None
+                    for row in decision_backend_rows
+                )
+                else None
+            ),
+            "mean_selected_joint_information_reduction": (
+                float(np.mean([
+                    row["decision_joint_information_reduction_selected"]
+                    for row in decision_backend_rows
+                    if row.get(
+                        "decision_joint_information_reduction_selected"
+                    ) is not None
+                ]))
+                if any(
+                    row.get(
+                        "decision_joint_information_reduction_selected"
+                    ) is not None
+                    for row in decision_backend_rows
+                )
+                else None
+            ),
             "target_oracle_used": False,
         }
         adaptive_replication_summary = {
@@ -8632,7 +9532,15 @@ class SingleOLHKGAlgorithm:
             "maximum_replicates_per_solution": int(max(
                 1, self.config.replication_max_per_solution)),
             "action_space": "new_and_observed_points",
-            "value": "exact_posterior_bayes_risk_reduction_per_unit_cost",
+            "value": (
+                "chance_margin_joint_epistemic_hvd_reduction_per_unit_cost"
+                if str(self.config.decision_backend).lower().replace(
+                    "-", "_") in {"sobol_joint_voi", "joint_voi_sobol"}
+                else "boundary_weighted_hvd_information_reduction_per_unit_cost"
+                if str(self.config.decision_backend).lower().replace(
+                    "-", "_") in {"sobol_hvd_voi", "hvd_voi_sobol"}
+                else "exact_posterior_bayes_risk_reduction_per_unit_cost"
+            ),
             "unit_evaluation_cost": 1.0,
             "selected_replication_count": int(sum(
                 row.get("action_kind") == "replicate"
@@ -8651,6 +9559,19 @@ class SingleOLHKGAlgorithm:
                 and str(self.config.decision_backend).lower()
                 in {"legacy", "legacy_kg", "exact_kg"}
                 and str(self.config.acquisition_mode).lower() == "exact_mc"
+            ),
+            "unified_hvd_voi": bool(
+                self.config.adaptive_replication_voi
+                and str(self.config.decision_backend).lower().replace(
+                    "-", "_") in {
+                        "sobol_hvd_voi", "hvd_voi_sobol",
+                        "sobol_joint_voi", "joint_voi_sobol",
+                    }
+            ),
+            "unified_joint_margin_voi": bool(
+                self.config.adaptive_replication_voi
+                and str(self.config.decision_backend).lower().replace(
+                    "-", "_") in {"sobol_joint_voi", "joint_voi_sobol"}
             ),
             "target_oracle_used": False,
         }
@@ -8778,6 +9699,8 @@ class SingleOLHKGAlgorithm:
                 alpha=self.problem.alpha,
                 beta_g=self.config.beta_g,
                 algorithm_selected_x=final_x,
+                robust_certificate_mode=(
+                    self._task_robust_certificate_mode()),
             )
         )
         final_post["terminal_pool_shared"] = bool(

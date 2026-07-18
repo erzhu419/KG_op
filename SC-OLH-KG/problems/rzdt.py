@@ -1252,8 +1252,17 @@ PROBLEM_REGISTRY = {
 }
 
 
-def make_problem(name="RZDT1", d=5, L=100, sigma=0.04, alpha=0.05):
+def make_problem(
+    name="RZDT1", d=5, L=100, sigma=0.04, alpha=0.05, **problem_kwargs,
+):
     cls = PROBLEM_REGISTRY[name]
-    problem = cls(d=d, L=L, sigma=sigma, heteroscedastic=True, alpha=alpha)
+    problem = cls(
+        d=d,
+        L=L,
+        sigma=sigma,
+        heteroscedastic=True,
+        alpha=alpha,
+        **problem_kwargs,
+    )
     problem.tau = 0.0
     return problem

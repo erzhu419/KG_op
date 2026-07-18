@@ -901,6 +901,22 @@ class MetaPriorTests(unittest.TestCase):
             target.cumulative_hvd_prior_precision(output_index=1), 0.0)
         self.assertGreaterEqual(
             target.cumulative_hvd_prior_upper_scale(output_index=1), 1.0)
+        components = target.cumulative_hvd_prior_components(
+            output_index=1, feature_dim=len(beta))
+        self.assertIsNotNone(components)
+        self.assertEqual(
+            components["domains"],
+            ["FactorShockStatePolicyRZDT1", "InventorySupplyChain"],
+        )
+        self.assertEqual(components["coefficients"].shape, (2, len(beta)))
+        duplicate_components = duplicate_target.cumulative_hvd_prior_components(
+            output_index=1, feature_dim=len(beta))
+        np.testing.assert_allclose(
+            components["coefficients"],
+            duplicate_components["coefficients"],
+            atol=0.0,
+            rtol=0.0,
+        )
         sensitivity = target.task_sensitivity_prior()
         self.assertEqual(sensitivity["status"], "fit_functional_bias_scale")
         self.assertAlmostEqual(

@@ -4,6 +4,7 @@ import multiprocessing
 import sys
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -18,6 +19,58 @@ from problems.single_objective import ScalarizedProblem  # noqa: E402
 
 
 class ExactKGTests(unittest.TestCase):
+    def test_joint_task_certificate_is_shared_by_filter_and_terminal_value(self):
+        class FakeTaskEnsemble:
+            @staticmethod
+            def robust_moments_many(output_index, pool, certification=True):
+                del output_index, certification
+                n = len(pool)
+                nominal = SimpleNamespace(
+                    between_mean=np.zeros(n, dtype=float))
+                return SimpleNamespace(
+                    mean_upper=np.full(n, 0.10, dtype=float),
+                    epistemic_upper=np.full(n, 0.16, dtype=float),
+                    aleatoric_upper=np.full(n, 0.09, dtype=float),
+                    nominal=nominal,
+                )
+
+            @staticmethod
+            def robust_chance_margin_many(
+                pool, *, beta_g, z_alpha, tau, certification=True,
+            ):
+                del beta_g, z_alpha, tau, certification
+                n = len(pool)
+                return SimpleNamespace(
+                    upper=np.full(n, -0.20, dtype=float),
+                    separable_upper=np.full(n, 1.0, dtype=float),
+                )
+
+            @staticmethod
+            def mixture_moments_many(output_index, pool, certification=False):
+                del output_index, certification
+                return SimpleNamespace(mean=np.arange(len(pool), dtype=float))
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                task_posterior_robust_certificate_mode="joint_tangent",
+                recommendation_slack_initial=0.0,
+                seed=244,
+            ),
+        )
+        ensemble = FakeTaskEnsemble()
+        algorithm.task_ensemble = ensemble
+        pool = [(2, 2, 2), (4, 4, 4)]
+        direct = algorithm._certification_result(
+            np.zeros(2), pool, np.ones(2))
+        terminal = algorithm._terminal_certificate_components(
+            [None, None], None, pool, task_ensemble=ensemble)
+        np.testing.assert_allclose(direct.margin, [-0.20, -0.20])
+        np.testing.assert_allclose(terminal["margin"], direct.margin)
+        self.assertEqual(terminal["source"], "task_joint_kl_hvd")
+        self.assertTrue(np.all(terminal["separable_margin"] > 0.0))
+
     def test_iid_exact_kg_sample_plan_has_equal_normalized_weights(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
         algorithm = SingleOLHKGAlgorithm(
@@ -957,6 +1010,19 @@ class ExactKGTests(unittest.TestCase):
             diagnostics["calibrated_recommendation_reason"],
             "disabled_by_coherent_certificate_contract",
         )
+        audit = diagnostics["certification_margin_decomposition"]
+        self.assertEqual(audit["schema_version"], 1)
+        self.assertEqual(audit["n_pool"], 3)
+        selected = audit["selected"]["final_certificate"]
+        reconstructed = (
+            selected["mean_minus_tau"]
+            + selected["epistemic_radius"]
+            + selected["aleatoric_radius"]
+            + selected["extra_guard"]
+        )
+        self.assertAlmostEqual(selected["margin"], reconstructed)
+        self.assertAlmostEqual(
+            selected["margin"], diagnostics["posterior_chance_margin"])
 
     def test_decision_contract_audit_distinguishes_closed_from_legacy(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))

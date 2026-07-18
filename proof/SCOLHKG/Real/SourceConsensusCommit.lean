@@ -42,6 +42,39 @@ theorem strictlyMonotone_order_invariant
   · intro h
     exact hMono.monotone h
 
+noncomputable def weightedSourceRank {k : ℕ}
+    (weight rank : Fin k → ℝ) : ℝ :=
+  ∑ i, weight i * rank i
+
+theorem weightedSourceRank_mem_unit_interval {k : ℕ}
+    (weight rank : Fin k → ℝ)
+    (hWeight : ∀ i, 0 ≤ weight i)
+    (hMass : (∑ i, weight i) = 1)
+    (hRankLower : ∀ i, 0 ≤ rank i)
+    (hRankUpper : ∀ i, rank i ≤ 1) :
+    weightedSourceRank weight rank ∈ Set.Icc (0 : ℝ) 1 := by
+  constructor
+  · unfold weightedSourceRank
+    exact Finset.sum_nonneg fun i _ =>
+      mul_nonneg (hWeight i) (hRankLower i)
+  · unfold weightedSourceRank
+    calc
+      (∑ i, weight i * rank i) ≤ ∑ i, weight i * 1 := by
+        apply Finset.sum_le_sum
+        intro i hi
+        exact mul_le_mul_of_nonneg_left (hRankUpper i) (hWeight i)
+      _ = 1 := by simpa using hMass
+
+theorem sourceConsensusScore_le_three_halves
+    {meanRank worstRank disagreement : ℝ}
+    (hMean : meanRank ≤ 1)
+    (hWorst : worstRank ≤ 1)
+    (hDisagreement : disagreement ≤ 1) :
+    sourceConsensusScore meanRank worstRank disagreement ≤ (3 / 2 : ℝ) := by
+  unfold sourceConsensusScore
+  norm_num at *
+  linarith
+
 noncomputable def sourceSafetyObjectiveScore
     (weight safetyRank objectiveRank : ℝ) : ℝ :=
   weight * safetyRank + (1 - weight) * objectiveRank

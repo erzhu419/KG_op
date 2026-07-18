@@ -502,11 +502,12 @@ class LearnedMetaPrior:
         self.observable_mean_mode = str(
             observable_mean_mode).strip().lower()
         if self.observable_mean_mode not in {
-            "atoms", "aggregate", "latent", "consensus"
+            "atoms", "aggregate", "latent", "consensus", "source_affine",
+            "source_rank",
         }:
             raise ValueError(
                 "observable_mean_mode must be atoms, aggregate, latent, or "
-                "consensus"
+                "consensus/source_affine/source_rank"
             )
         self.observable_mean_latent_dim = max(
             int(observable_mean_latent_dim), 0)
@@ -577,10 +578,14 @@ class LearnedMetaPrior:
         self.beta_prior_precision = {}
         self.beta_prior_reference_mean = {}
         self.beta_prior_upper_scale = {}
+        self.beta_prior_components = {}
+        self.beta_prior_component_domains = {}
         self.unaligned_beta_prior = {}
         self.unaligned_beta_prior_precision = {}
         self.unaligned_beta_prior_reference_mean = {}
         self.unaligned_beta_prior_upper_scale = {}
+        self.unaligned_beta_prior_components = {}
+        self.unaligned_beta_prior_component_domains = {}
         self.task_sensitivity_prior_ = {
             "status": "unfit",
             "class_names": ["stable", "balanced", "sensitive"],
@@ -4074,6 +4079,9 @@ class LearnedMetaPrior:
                 stack = np.vstack(rows)
                 mean_beta = np.mean(stack, axis=0)
                 self.beta_prior[out_idx] = mean_beta
+                self.beta_prior_components[out_idx] = stack.copy()
+                self.beta_prior_component_domains[out_idx] = list(
+                    beta_domains_by_output[out_idx])
                 reference_predictions = np.concatenate([
                     np.maximum(F @ mean_beta, 1e-12)
                     for F in cumulative_features_by_domain.values()
@@ -4252,6 +4260,9 @@ class LearnedMetaPrior:
             stack = np.vstack(rows)
             mean_beta = np.mean(stack, axis=0)
             self.unaligned_beta_prior[output_index] = mean_beta
+            self.unaligned_beta_prior_components[output_index] = stack.copy()
+            self.unaligned_beta_prior_component_domains[output_index] = list(
+                beta_domains[output_index])
             reference_predictions = np.concatenate([
                 np.maximum(matrix @ mean_beta, 1e-12)
                 for matrix in feature_by_domain.values()
@@ -5427,6 +5438,17 @@ class LearnedMetaPrior:
             )
         raise ValueError(f"unknown HVD coordinate variant {coordinate_variant!r}")
 
+    def _hvd_prior_component_family(self, coordinate_variant="aligned"):
+        variant = str(coordinate_variant or "aligned").lower()
+        if variant in ("aligned", "risk_aligned", "cumulative"):
+            return self.beta_prior_components, self.beta_prior_component_domains
+        if variant in ("unaligned", "universal", "source"):
+            return (
+                self.unaligned_beta_prior_components,
+                self.unaligned_beta_prior_component_domains,
+            )
+        raise ValueError(f"unknown HVD coordinate variant {coordinate_variant!r}")
+
     def cumulative_hvd_prior_beta(
         self,
         output_index=1,
@@ -5458,6 +5480,30 @@ class LearnedMetaPrior:
         _, precision_store, _, _ = self._hvd_prior_family(coordinate_variant)
         value = precision_store.get(int(output_index))
         return None if value is None else float(value)
+
+    def cumulative_hvd_prior_components(
+        self,
+        output_index=1,
+        feature_dim=None,
+        coordinate_variant="aligned",
+    ):
+        """Return source-domain PSD coefficient shapes for hierarchical transfer."""
+        if not self.component_enabled("hvd"):
+            return None
+        component_store, domain_store = self._hvd_prior_component_family(
+            coordinate_variant)
+        components = component_store.get(int(output_index))
+        if components is None:
+            return None
+        components = np.asarray(components, dtype=float)
+        if components.ndim != 2 or components.shape[0] == 0:
+            return None
+        if feature_dim is not None and components.shape[1] != int(feature_dim):
+            return None
+        return {
+            "coefficients": components.copy(),
+            "domains": list(domain_store.get(int(output_index), [])),
+        }
 
     def cumulative_hvd_prior_scale_mean(
         self, output_index=1, coordinate_variant="aligned"):
@@ -5747,6 +5793,35 @@ class ObservableConstraintMeanBasis:
             "variance_coordinate": "expert_specific_psi=(A,N)",
             "target_labels_used_to_define_coordinate": False,
         }
+
+    def source_parametric_prior(self):
+        """Return the source-only coefficient law for target conditioning."""
+
+        prior = self.meta_prior.observable_mean_model.source_parametric_prior(
+            self.problem)
+        expected = 1 + self.feature_dim
+        if len(np.asarray(prior["mean"]).reshape(-1)) != expected:
+            raise RuntimeError("observable source prior changed coefficient dimension")
+        return prior
+
+    def source_parametric_prior_components(self):
+        """Return source-domain coefficient laws before target reweighting."""
+
+        components = (
+            self.meta_prior.observable_mean_model
+            .source_parametric_prior_components(self.problem)
+        )
+        expected = 1 + self.feature_dim
+        for component in components:
+            mean = np.asarray(component["mean"], dtype=float).reshape(-1)
+            covariance = np.asarray(component["covariance"], dtype=float)
+            if len(mean) != expected or covariance.shape != (
+                expected, expected
+            ):
+                raise RuntimeError(
+                    "observable source component changed coefficient dimension"
+                )
+        return components
 
 
 class PilotGatedMetaPriorBasis:
@@ -8173,6 +8248,44 @@ class TaskExpertProblemView:
             coordinate_variant=("aligned" if self.aligned else "unaligned"),
         )
 
+    def cumulative_hvd_prior_components(self, output_index=1, feature_dim=None):
+        if self.expert_name == "null_universal" or self.expert_name in self.ORDERED_EXPERTS:
+            return None
+        coordinate_variant = "aligned" if self.aligned else "unaligned"
+        payload = self.meta_prior.cumulative_hvd_prior_components(
+            output_index=output_index,
+            feature_dim=feature_dim,
+            coordinate_variant=coordinate_variant,
+        )
+        if payload is None or self.meta_prior.component_stage != "spectral_hvd":
+            return payload
+        coefficients = np.asarray(payload["coefficients"], dtype=float)
+        lo, hi = self.int_bounds()
+        lo = np.asarray(lo, dtype=int)
+        hi = np.asarray(hi, dtype=int)
+        expert_seed = sum(
+            (index + 1) * ord(char)
+            for index, char in enumerate(self.expert_name)
+        )
+        rng = np.random.default_rng(
+            self.meta_prior.seed + 209759 + 7919 * int(output_index)
+            + expert_seed)
+        rows = [
+            tuple(int(value) for value in rng.integers(lo, hi + 1))
+            for _ in range(256)
+        ]
+        features = np.vstack([
+            self.cumulative_risk_features(x, output_index=output_index)
+            for x in rows
+        ])
+        references = np.mean(np.maximum(
+            features @ coefficients.T, 1e-12), axis=0)
+        normalized = coefficients / np.maximum(references[:, None], 1e-12)
+        return {
+            "coefficients": normalized,
+            "domains": list(payload.get("domains", [])),
+        }
+
     def cumulative_hvd_prior_scale_mean(self, output_index=1):
         if self.expert_name == "null_universal":
             return None
@@ -8381,6 +8494,33 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
     def cumulative_hvd_prior_precision(self, output_index=1):
         return self.meta_prior.cumulative_hvd_prior_precision(
             output_index=output_index)
+
+    def cumulative_hvd_prior_components(self, output_index=1, feature_dim=None):
+        payload = self.meta_prior.cumulative_hvd_prior_components(
+            output_index=output_index,
+            feature_dim=feature_dim,
+        )
+        if payload is None or self.meta_prior.component_stage != "spectral_hvd":
+            return payload
+        coefficients = np.asarray(payload["coefficients"], dtype=float)
+        rng = np.random.default_rng(
+            self.meta_prior.seed + 209759 + 7919 * int(output_index))
+        rows = [
+            self.base.sample_random(rng)
+            for _ in range(self._hvd_shape_reference_pool_size)
+        ]
+        features = np.vstack([
+            self.meta_prior.cumulative_features(
+                self, x, output_index=output_index)
+            for x in rows
+        ])
+        references = np.mean(np.maximum(
+            features @ coefficients.T, 1e-12), axis=0)
+        normalized = coefficients / np.maximum(references[:, None], 1e-12)
+        return {
+            "coefficients": normalized,
+            "domains": list(payload.get("domains", [])),
+        }
 
     def cumulative_hvd_prior_scale_mean(self, output_index=1):
         return self.meta_prior.cumulative_hvd_prior_scale_mean(

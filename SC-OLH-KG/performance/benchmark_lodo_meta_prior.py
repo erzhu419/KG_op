@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT))
 
 from algorithms.single_olhkg import SingleOLHKGAlgorithm, SingleOLHKGConfig  # noqa: E402
 from core.admissibility import domain_tuned_audit  # noqa: E402
+from core.designs import common_sobol_integer_design  # noqa: E402
 from performance.benchmark_quality import json_safe, parse_csv, parse_weights, write_csv  # noqa: E402
 from problems.rzdt import make_problem  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
@@ -57,9 +58,18 @@ def mean_bool(values):
     return float(sum(vals) / len(vals)) if vals else None
 
 
-def build_scalarized_problem(name, d, L, sigma, alpha, weights):
+def build_scalarized_problem(
+    name, d, L, sigma, alpha, weights, *, problem_kwargs=None,
+):
     return ScalarizedProblem(
-        make_problem(name, d=d, L=L, sigma=sigma, alpha=alpha),
+        make_problem(
+            name,
+            d=d,
+            L=L,
+            sigma=sigma,
+            alpha=alpha,
+            **dict(problem_kwargs or {}),
+        ),
         weights=weights,
     )
 
@@ -386,6 +396,10 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
 
 def build_target_problem(args_dict, heldout, line, seed):
     weights = parse_weights(args_dict["weights"])
+    target_problem_kwargs = {}
+    if heldout == "FactorShockStatePolicyRZDT1":
+        target_problem_kwargs["shared_shock_scale"] = float(
+            args_dict.get("target_shared_shock_scale", 1.0))
     target = build_scalarized_problem(
         heldout,
         args_dict["d"],
@@ -393,6 +407,7 @@ def build_target_problem(args_dict, heldout, line, seed):
         args_dict["sigma"],
         args_dict["alpha"],
         weights,
+        problem_kwargs=target_problem_kwargs,
     )
     line = str(line)
     meta_diag = None
@@ -415,6 +430,67 @@ def build_target_problem(args_dict, heldout, line, seed):
     if line == "domain":
         return target, meta_diag
     raise ValueError(f"unknown line {line!r}")
+
+
+def post_run_variance_calibration_audit(
+    algorithm, problem, *, seed, audit_size=128,
+):
+    """Audit aleatoric calibration on a fixed target-oracle holdout pool.
+
+    The pool and truth are constructed only after optimization has terminated;
+    neither is exposed to proposal generation, posterior updates, acquisition,
+    or recommendation.
+    """
+
+    points = common_sobol_integer_design(
+        problem,
+        max(8, int(audit_size)),
+        int(seed),
+        seed_offset=880_301,
+    )
+    true_variance = np.asarray([
+        float(problem.true_sigma(point)[1]) ** 2 for point in points
+    ], dtype=float)
+    if algorithm.task_ensemble is None:
+        predicted = algorithm.variance_model.predict_variance_many(
+            1, points, problem)
+        certified = algorithm.variance_model.predict_certification_variance_many(
+            1, points, problem)
+        posterior_source = "single_hvd"
+    else:
+        _, _, per_expert = algorithm.task_ensemble.expert_moments_many(
+            1, points, certification=False)
+        weights = np.asarray(
+            algorithm.task_ensemble.structure_weights(objective=False),
+            dtype=float,
+        )
+        weights = np.maximum(weights, 0.0)
+        weights /= max(float(np.sum(weights)), 1e-12)
+        predicted = weights @ np.asarray(per_expert, dtype=float)
+        certified = algorithm.task_ensemble.robust_moments_many(
+            1, points, certification=True).aleatoric_upper
+        posterior_source = "task_posterior_hvd_mixture"
+    predicted = np.maximum(np.asarray(predicted, dtype=float), 1e-12)
+    certified = np.maximum(np.asarray(certified, dtype=float), 1e-12)
+    truth = np.maximum(true_variance, 1e-12)
+    predicted_ratio = predicted / truth
+    certified_ratio = certified / truth
+    log_error = np.log(predicted) - np.log(truth)
+    certified_log_error = np.log(certified) - np.log(truth)
+    return {
+        "status": "audited",
+        "audit_size": int(len(points)),
+        "posterior_source": posterior_source,
+        "log_variance_rmse": float(np.sqrt(np.mean(log_error ** 2))),
+        "certified_log_variance_rmse": float(np.sqrt(
+            np.mean(certified_log_error ** 2))),
+        "median_predicted_true_ratio": float(np.median(predicted_ratio)),
+        "median_certified_true_ratio": float(np.median(certified_ratio)),
+        "variance_upper_coverage": float(np.mean(certified >= truth)),
+        "underprediction_rate": float(np.mean(predicted < truth)),
+        "target_oracle_used_for_decision": False,
+        "target_oracle_used_for_post_run_audit": True,
+    }
 
 
 def run_one(task):
@@ -494,6 +570,12 @@ def run_one(task):
         variance_mode=args_dict["variance_mode"],
         hvd_use_cumulative_provider=bool(args_dict.get(
             "hvd_use_cumulative_provider", True)),
+        hvd_cumulative_transfer_mode=str(args_dict.get(
+            "hvd_cumulative_transfer_mode", "scalar")),
+        hvd_source_task_weight_mode=str(args_dict.get(
+            "hvd_source_task_weight_mode", "independent")),
+        hvd_cumulative_target_evidence_mode=str(args_dict.get(
+            "hvd_cumulative_target_evidence_mode", "replication_only")),
         lambda_feas=args_dict["lambda_feas"],
         lambda_var=args_dict["lambda_var"],
         lambda_mean=args_dict["lambda_mean"],
@@ -600,6 +682,8 @@ def run_one(task):
             "task_posterior_confidence_delta"],
         task_posterior_max_kl_radius=args_dict[
             "task_posterior_max_kl_radius"],
+        task_posterior_robust_certificate_mode=str(args_dict.get(
+            "task_posterior_robust_certificate_mode", "separable")),
         task_posterior_prior_protection_numerator=args_dict[
             "task_posterior_prior_protection_numerator"],
         task_posterior_prior_protection_max=args_dict[
@@ -724,6 +808,14 @@ def run_one(task):
         source_mean_prior_fallback=bool(args_dict["source_mean_prior_fallback"]),
         source_mean_prior_z=args_dict["source_mean_prior_z"],
         source_mean_prior_margin_tol=args_dict["source_mean_prior_margin_tol"],
+        source_constraint_mean_coefficient_prior=bool(args_dict.get(
+            "source_constraint_mean_coefficient_prior", False)),
+        source_constraint_mean_adaptation_mode=str(args_dict.get(
+            "source_constraint_mean_adaptation_mode", "frozen")),
+        source_constraint_mean_null_weight=float(args_dict.get(
+            "source_constraint_mean_null_weight", 0.5)),
+        source_constraint_mean_evidence_temperature=float(args_dict.get(
+            "source_constraint_mean_evidence_temperature", 1.0)),
         truth_pool_diagnostics=bool(args_dict["truth_pool_diagnostics"]),
         truth_pool_good_regret=args_dict["truth_pool_good_regret"],
         truth_pool_max_candidates=args_dict["truth_pool_max_candidates"],
@@ -741,6 +833,7 @@ def run_one(task):
         checkpoint_dir=runtime_checkpoint_dir,
         checkpoint_resume=bool(args_dict["runtime_checkpoint_resume"]),
         checkpoint_interval=args_dict["runtime_checkpoint_interval"],
+        evaluate_interval=int(args_dict.get("evaluate_interval", 5)),
         progress_logging=bool(args_dict["progress_logging"]),
         progress_label=(
             f"{line}:{heldout}:{basis_label}:seed{int(seed)}"
@@ -768,12 +861,23 @@ def run_one(task):
         (meta_diag or {}).get("training", {})
         if line in ("lodo", "lodo_teacher") else {}
     )
+    variance_calibration = post_run_variance_calibration_audit(
+        alg,
+        problem,
+        seed=seed,
+        audit_size=int(args_dict.get("variance_audit_size", 128)),
+    )
     return {
         "line": line,
         "heldout": heldout,
         "seed": seed,
         "source_target_adaptation_contract": {
             "source_prior_frozen_online": True,
+            "source_constraint_coefficient_prior_used": bool(args_dict.get(
+                "source_constraint_mean_coefficient_prior", False)),
+            "source_constraint_mean_adaptation_mode": str(args_dict.get(
+                "source_constraint_mean_adaptation_mode", "frozen")),
+            "source_constraint_coefficient_prior_target_oracle_used": False,
             "gradient_finetuning": False,
             "adaptation_kind": (
                 "posterior_conditioning_expert_reweighting_and_"
@@ -791,6 +895,14 @@ def run_one(task):
                         "each_expert_target_gpr_posterior",
                         "each_expert_target_hvd_posterior",
                         "budgeted_target_basis_and_risk_alignment_gate",
+                        *(
+                            ["source_eta_coefficient_posterior"]
+                            if bool(args_dict.get(
+                                "source_constraint_mean_coefficient_prior",
+                                False,
+                            ))
+                            else []
+                        ),
                     ]
                     if line in ("lodo", "lodo_teacher") else []
                 ),
@@ -834,6 +946,14 @@ def run_one(task):
             "meta_observable_mean_latent_dim", 2)),
         "meta_observable_mean_training_target": str(args_dict.get(
             "meta_observable_mean_training_target", "constraint_mean")),
+        "source_constraint_mean_coefficient_prior": bool(args_dict.get(
+            "source_constraint_mean_coefficient_prior", False)),
+        "source_constraint_mean_adaptation_mode": str(args_dict.get(
+            "source_constraint_mean_adaptation_mode", "frozen")),
+        "source_constraint_mean_null_weight": float(args_dict.get(
+            "source_constraint_mean_null_weight", 0.5)),
+        "source_constraint_mean_evidence_temperature": float(args_dict.get(
+            "source_constraint_mean_evidence_temperature", 1.0)),
         "meta_source_observation_mode": str(args_dict.get(
             "meta_source_observation_mode", "analytic")),
         "meta_source_observation_replicates": int(args_dict.get(
@@ -852,6 +972,8 @@ def run_one(task):
             "structural_prior_profile", "inherit")),
         "hvd_ablation_profile": str(args_dict.get(
             "hvd_ablation_profile", "inherit")),
+        "target_shared_shock_scale": float(args_dict.get(
+            "target_shared_shock_scale", 1.0)),
         "meta_ordered_exposure_max_frequency": int(args_dict.get(
             "meta_ordered_exposure_max_frequency", 8)),
         "meta_ordered_exposure_frequency_penalty": float(args_dict.get(
@@ -1048,6 +1170,14 @@ def run_one(task):
         "adaptive_sparsity": result.get("adaptive_sparsity"),
         "hvd_use_cumulative_provider": bool(args_dict.get(
             "hvd_use_cumulative_provider", True)),
+        "hvd_cumulative_transfer_mode": str(args_dict.get(
+            "hvd_cumulative_transfer_mode", "scalar")),
+        "hvd_source_task_weight_mode": str(args_dict.get(
+            "hvd_source_task_weight_mode", "independent")),
+        "hvd_cumulative_target_evidence_mode": str(args_dict.get(
+            "hvd_cumulative_target_evidence_mode", "replication_only")),
+        "task_posterior_robust_certificate_mode": str(args_dict.get(
+            "task_posterior_robust_certificate_mode", "separable")),
         "gpr_numerics": result.get("gpr_numerics"),
         "true_feasible": true_feasible,
         "posterior_feasible": posterior_feasible,
@@ -1065,6 +1195,8 @@ def run_one(task):
         "posterior_calibrated_chance_margin": result.get(
             "posterior_calibrated_chance_margin"),
         "posterior_certification_source": result.get("posterior_certification_source"),
+        "certification_margin_decomposition": result.get(
+            "certification_margin_decomposition"),
         "posterior_bayes_risk_used": result.get(
             "posterior_bayes_risk_used"),
         "posterior_bayes_risk": result.get("posterior_bayes_risk"),
@@ -1273,7 +1405,18 @@ def run_one(task):
         "n_posterior_feasible": int(result.get("n_posterior_feasible", 0)),
         "wall_time_sec": float(time.time() - started),
         "algorithm_time_sec": float(result["total_time_sec"]),
+        "stage_times": result.get("stage_times", {}),
         "variance_diagnostics": result.get("variance", {}),
+        "variance_calibration_audit": variance_calibration,
+        "variance_log_rmse": variance_calibration["log_variance_rmse"],
+        "certified_variance_log_rmse": variance_calibration[
+            "certified_log_variance_rmse"],
+        "median_predicted_true_variance_ratio": variance_calibration[
+            "median_predicted_true_ratio"],
+        "median_certified_true_variance_ratio": variance_calibration[
+            "median_certified_true_ratio"],
+        "variance_upper_coverage": variance_calibration[
+            "variance_upper_coverage"],
         "candidate_source_counts": result.get("candidate_source_counts", {}),
         "truth_pool_diagnostics": result.get("truth_pool_diagnostics", {}),
         "llm_prior": result.get("llm_prior", {}),
@@ -1849,6 +1992,8 @@ def main():
     parser.add_argument("--L", type=int, default=100)
     parser.add_argument("--sigma", type=float, default=0.04)
     parser.add_argument("--alpha", type=float, default=0.05)
+    parser.add_argument("--target_shared_shock_scale", type=float, default=1.0)
+    parser.add_argument("--variance_audit_size", type=int, default=128)
     parser.add_argument("--weights", default="0.5,0.5")
     parser.add_argument("--N", type=int, default=30)
     parser.add_argument("--n0", type=int, default=8)
@@ -1923,6 +2068,10 @@ def main():
             "n0_best",
             "random",
             "sobol",
+            "sobol_new",
+            "sobol_hvd_voi",
+            "sobol_joint_voi",
+            "certificate_depth_new",
             "risk_ts",
             "bayes_risk_ei",
             "constrained_ei",
@@ -2044,6 +2193,11 @@ def main():
         "--task_posterior_confidence_delta", type=float, default=0.05)
     parser.add_argument(
         "--task_posterior_max_kl_radius", type=float, default=4.0)
+    parser.add_argument(
+        "--task_posterior_robust_certificate_mode",
+        choices=("separable", "joint_tangent"),
+        default="separable",
+    )
     parser.add_argument(
         "--task_posterior_prior_protection_numerator",
         type=float,
@@ -2248,7 +2402,13 @@ def main():
     parser.add_argument("--llm_prior_max_observations", type=int, default=24)
     parser.add_argument("--runtime_checkpoint_dir", default="")
     parser.add_argument("--runtime_checkpoint_resume", action="store_true")
-    parser.add_argument("--runtime_checkpoint_interval", type=int, default=1)
+    parser.add_argument(
+        "--runtime_checkpoint_interval",
+        type=int,
+        default=0,
+        help="Checkpoint every N stages; 0 disables runtime checkpoints.",
+    )
+    parser.add_argument("--evaluate_interval", type=int, default=5)
     parser.add_argument("--progress_logging", action="store_true")
     parser.add_argument("--progress_units_per_iteration", type=int, default=100)
     parser.add_argument("--progress_exact_updates", type=int, default=10)
@@ -2350,7 +2510,10 @@ def main():
         default="0.01,0.1,1.0,10.0,100.0")
     parser.add_argument(
         "--meta_observable_mean_mode",
-        choices=["atoms", "aggregate", "latent", "consensus"],
+        choices=[
+            "atoms", "aggregate", "latent", "consensus", "source_affine",
+            "source_rank",
+        ],
         default="latent",
     )
     parser.add_argument(
@@ -2359,6 +2522,33 @@ def main():
         "--meta_observable_mean_training_target",
         choices=["constraint_mean", "chance_margin"],
         default="constraint_mean",
+    )
+    parser.add_argument(
+        "--source_constraint_mean_coefficient_prior",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Initialize the target constraint GPR from the source-learned "
+            "eta coefficient law and condition it on charged target calls."
+        ),
+    )
+    parser.add_argument(
+        "--source_constraint_mean_adaptation_mode",
+        choices=[
+            "frozen", "evidence_mixture", "sequential_evidence_mixture",
+        ],
+        default="frozen",
+        help=(
+            "Use a frozen aggregate source coefficient law or update a "
+            "source-domain-plus-null mixture from charged target calls."
+        ),
+    )
+    parser.add_argument(
+        "--source_constraint_mean_null_weight", type=float, default=0.5)
+    parser.add_argument(
+        "--source_constraint_mean_evidence_temperature",
+        type=float,
+        default=1.0,
     )
     parser.add_argument(
         "--meta_source_observation_mode",

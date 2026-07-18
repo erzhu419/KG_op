@@ -26,9 +26,279 @@ from representation.meta_prior import (  # noqa: E402
     LearnedMetaPrior,
     MetaPriorProblemAdapter,
 )
+from core.gpr import ParametricGPR  # noqa: E402
 
 
 class FiniteTaskPosteriorTests(unittest.TestCase):
+    def test_sequential_source_mixture_reweights_and_clones_independently(self):
+        left = ParametricGPR(d=1, lambda_i=0.05, prior_var=0.01)
+        right = ParametricGPR(d=1, lambda_i=0.05, prior_var=0.01)
+        left_mean = np.zeros(left.p, dtype=float)
+        right_mean = np.zeros(right.p, dtype=float)
+        left_mean[0] = -1.0
+        right_mean[0] = 1.0
+        left.set_parametric_prior(left_mean, 0.05, 0.01)
+        right.set_parametric_prior(right_mean, 0.05, 0.01)
+
+        mixture = ParametricGPR(d=1, lambda_i=0.05, prior_var=1.0)
+        mixture.set_moment_matched_posterior(
+            [left, right],
+            [0.5, 0.5],
+            diagnostics={
+                "adaptation_mode": "sequential_target_evidence_mixture",
+                "component_names": ["source:left", "target:null"],
+                "component_posterior_weights": [0.5, 0.5],
+                "evidence_temperature": 1.0,
+                "target_observation_count": 0,
+                "online_mixture_update_count": 0,
+            },
+            sequential_updates=True,
+        )
+        mixture.update((0,), 0.9, 0.01)
+        diagnostics = mixture.numerical_diagnostics()[
+            "source_parametric_prior"]
+        weights = np.asarray(
+            diagnostics["component_posterior_weights"], dtype=float)
+
+        self.assertAlmostEqual(float(np.sum(weights)), 1.0, places=12)
+        self.assertGreater(weights[1], weights[0])
+        self.assertEqual(diagnostics["online_mixture_update_count"], 1)
+        self.assertEqual(diagnostics["target_observation_count"], 1)
+        self.assertEqual(
+            diagnostics["adaptation_mode"],
+            "sequential_target_evidence_mixture",
+        )
+        self.assertTrue(np.all(np.linalg.eigvalsh(
+            0.5 * (mixture.C + mixture.C.T)) >= -1e-10))
+
+        algorithm = object.__new__(SingleOLHKGAlgorithm)
+        clone = algorithm._clone_gpr_for_exact_kg(mixture)
+        original_weights = mixture._finite_mixture_weights.copy()
+        clone.update((1,), -0.9, 0.01)
+        np.testing.assert_allclose(
+            mixture._finite_mixture_weights, original_weights)
+        self.assertFalse(np.allclose(
+            clone._finite_mixture_weights, original_weights))
+
+    def test_source_constraint_coefficient_prior_conditions_on_target_pilot(self):
+        def problem(name):
+            return ScalarizedProblem(make_problem(
+                name, d=5, L=30, sigma=0.04))
+
+        prior = LearnedMetaPrior(
+            local_dim=2,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="consensus",
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            seed=940,
+        ).fit_from_source_problems(
+            [
+                ("FactorShockStatePolicyRZDT1", problem(
+                    "FactorShockStatePolicyRZDT1")),
+                ("InventorySupplyChain", problem("InventorySupplyChain")),
+            ],
+            n_records_per_domain=8,
+            rng=np.random.default_rng(941),
+        )
+        target = MetaPriorProblemAdapter(
+            problem("QueueResourceControl"), prior)
+        algorithm = SingleOLHKGAlgorithm(
+            target,
+            SingleOLHKGConfig(
+                N=4,
+                n0=4,
+                K1=1,
+                K2=0,
+                posterior_pool_size=6,
+                posterior_keep=2,
+                axis_candidate_count=0,
+                state_candidate_count=0,
+                eval_pool_size=6,
+                evaluate_interval=0,
+                use_problem_initial_samples=True,
+                use_boundary_initial_samples=False,
+                use_recommendation_refinement=False,
+                recommendation_axis_oracle=False,
+                recommendation_axis_candidate_count=0,
+                task_posterior_mode="finite",
+                source_constraint_mean_coefficient_prior=True,
+                seed=942,
+            ),
+        )
+        samples = algorithm._initial_samples()
+        source_mean = target.gpr_basis_map(
+            output_index=1).source_parametric_prior()["mean"]
+        algorithm._fit_initial_belief(samples)
+
+        constraint = algorithm.gpr[1]
+        diagnostics = constraint.numerical_diagnostics()
+        self.assertIn("source_parametric_prior", diagnostics)
+        self.assertEqual(len(constraint.sampled_set), len(samples))
+        self.assertFalse(np.allclose(constraint.a[:constraint.p], source_mean))
+        self.assertTrue(np.all(np.linalg.eigvalsh(
+            0.5 * (constraint.C + constraint.C.T)) >= -1e-10))
+        for state in algorithm.task_ensemble.states:
+            expert_constraint = state.gpr_models[1]
+            self.assertIn(
+                "source_parametric_prior",
+                expert_constraint.numerical_diagnostics(),
+            )
+            self.assertEqual(len(expert_constraint.sampled_set), len(samples))
+
+    def test_source_constraint_evidence_mixture_is_oracle_free_and_psd(self):
+        def problem(name):
+            return ScalarizedProblem(make_problem(
+                name, d=5, L=30, sigma=0.04))
+
+        prior = LearnedMetaPrior(
+            local_dim=2,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="latent",
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            seed=943,
+        ).fit_from_source_problems(
+            [
+                ("FactorShockStatePolicyRZDT1", problem(
+                    "FactorShockStatePolicyRZDT1")),
+                ("QueueResourceControl", problem("QueueResourceControl")),
+            ],
+            n_records_per_domain=8,
+            rng=np.random.default_rng(944),
+        )
+        target = MetaPriorProblemAdapter(
+            problem("InventorySupplyChain"), prior)
+        algorithm = SingleOLHKGAlgorithm(
+            target,
+            SingleOLHKGConfig(
+                N=4,
+                n0=4,
+                K1=1,
+                K2=0,
+                posterior_pool_size=6,
+                posterior_keep=2,
+                axis_candidate_count=0,
+                state_candidate_count=0,
+                eval_pool_size=6,
+                evaluate_interval=0,
+                use_problem_initial_samples=True,
+                use_boundary_initial_samples=False,
+                use_recommendation_refinement=False,
+                recommendation_axis_oracle=False,
+                recommendation_axis_candidate_count=0,
+                source_constraint_mean_coefficient_prior=True,
+                source_constraint_mean_adaptation_mode="evidence_mixture",
+                source_constraint_mean_null_weight=0.5,
+                seed=945,
+            ),
+        )
+        samples = algorithm._initial_samples()
+        algorithm._fit_initial_belief(samples)
+        constraint = algorithm.gpr[1]
+        diagnostics = constraint.numerical_diagnostics()[
+            "source_parametric_prior"]
+        weights = np.asarray(
+            diagnostics["component_posterior_weights"], dtype=float)
+
+        self.assertEqual(
+            diagnostics["adaptation_mode"], "target_evidence_mixture")
+        self.assertEqual(
+            diagnostics["posterior_projection"],
+            "finite_mixture_moment_match",
+        )
+        self.assertAlmostEqual(float(np.sum(weights)), 1.0, places=12)
+        self.assertTrue(np.all(weights >= 0.0))
+        self.assertIn("target:null", diagnostics["component_names"])
+        self.assertTrue(diagnostics["posterior_target_data_used"])
+        self.assertFalse(diagnostics["target_oracle_used"])
+        self.assertEqual(len(constraint.sampled_set), len(samples))
+        self.assertTrue(np.all(np.linalg.eigvalsh(
+            0.5 * (constraint.C + constraint.C.T)) >= -1e-10))
+
+    def test_sequential_source_mixture_updates_shared_hvd_task_law(self):
+        def problem(name):
+            return ScalarizedProblem(make_problem(
+                name, d=5, L=30, sigma=0.04))
+
+        prior = LearnedMetaPrior(
+            local_dim=2,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="latent",
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            seed=946,
+        ).fit_from_source_problems(
+            [
+                ("FactorShockStatePolicyRZDT1", problem(
+                    "FactorShockStatePolicyRZDT1")),
+                ("QueueResourceControl", problem("QueueResourceControl")),
+            ],
+            n_records_per_domain=8,
+            rng=np.random.default_rng(947),
+        )
+        target = MetaPriorProblemAdapter(
+            problem("InventorySupplyChain"), prior)
+        algorithm = SingleOLHKGAlgorithm(
+            target,
+            SingleOLHKGConfig(
+                N=4,
+                n0=4,
+                K1=1,
+                K2=0,
+                posterior_pool_size=6,
+                posterior_keep=2,
+                axis_candidate_count=0,
+                state_candidate_count=0,
+                eval_pool_size=6,
+                evaluate_interval=0,
+                use_problem_initial_samples=True,
+                use_boundary_initial_samples=False,
+                use_recommendation_refinement=False,
+                recommendation_axis_oracle=False,
+                recommendation_axis_candidate_count=0,
+                source_constraint_mean_coefficient_prior=True,
+                source_constraint_mean_adaptation_mode=(
+                    "sequential_evidence_mixture"),
+                hvd_source_task_weight_mode="constraint_mean",
+                seed=948,
+            ),
+        )
+        samples = algorithm._initial_samples()
+        algorithm._fit_initial_belief(samples)
+        constraint = algorithm.gpr[1]
+        before = np.asarray(
+            constraint.source_parametric_prior_diagnostics[
+                "component_posterior_weights"],
+            dtype=float,
+        )
+
+        x = tuple(samples[0])
+        y = target.simulate(x, np.random.default_rng(949))
+        sigma2 = algorithm.variance_model.predict_variance(1, x, target)
+        constraint.update(x, float(y[1]), float(sigma2))
+        algorithm._configure_hvd_source_task_posterior(
+            algorithm.variance_model, algorithm.gpr)
+        diagnostics = constraint.source_parametric_prior_diagnostics
+        after = np.asarray(
+            diagnostics["component_posterior_weights"], dtype=float)
+        shared = algorithm.variance_model.cumulative_source_task_posterior[1]
+
+        self.assertEqual(diagnostics["online_mixture_update_count"], 1)
+        self.assertFalse(np.allclose(before, after))
+        np.testing.assert_allclose(
+            shared["posterior_weights"], after, atol=1e-12, rtol=1e-12)
+        self.assertFalse(diagnostics["target_oracle_used"])
+
     def test_joint_task_latent_posterior_learns_structure_sensitivity_coupling(self):
         structure = FiniteTaskPosterior(
             ["broad_error", "local_fit"],
@@ -605,6 +875,117 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
         np.testing.assert_allclose(objective.mean, [1.0, 1.0])
         np.testing.assert_allclose(constraint.mean, [9.0, 9.0])
 
+    def test_precomputed_expert_moments_preserve_all_posterior_outputs(self):
+        class CountingModel:
+            def __init__(self, mean, variance):
+                self.mean = float(mean)
+                self.variance = float(variance)
+                self.mean_calls = 0
+                self.variance_calls = 0
+
+            def posterior_mean_many(self, X):
+                self.mean_calls += 1
+                return np.full(len(X), self.mean, dtype=float)
+
+            def posterior_var_many(self, X):
+                self.variance_calls += 1
+                return np.full(len(X), self.variance, dtype=float)
+
+        class ConstantVariance:
+            def __init__(self, value):
+                self.value = float(value)
+
+            def predict_variance_many(self, output_index, X, problem):
+                del output_index, problem
+                return np.full(len(X), self.value, dtype=float)
+
+            def predict_certification_variance_many(
+                self, output_index, X, problem,
+            ):
+                del output_index, problem
+                return np.full(len(X), 2.0 * self.value, dtype=float)
+
+        models = [
+            CountingModel(-0.5, 0.2),
+            CountingModel(0.75, 0.3),
+        ]
+        posterior = FiniteTaskPosterior(
+            ["left", "right"], [0.4, 0.6], safe_generalized=True)
+        ensemble = FiniteTaskModelEnsemble(
+            [
+                TaskExpertState(
+                    "left",
+                    [CountingModel(0.0, 0.1), models[0]],
+                    ConstantVariance(0.04),
+                    object(),
+                ),
+                TaskExpertState(
+                    "right",
+                    [CountingModel(1.0, 0.1), models[1]],
+                    ConstantVariance(0.09),
+                    object(),
+                ),
+            ],
+            posterior,
+            kl_radius_numerator=0.0,
+            maximum_kl_radius=0.0,
+        )
+        X = [(0,), (1,), (2,)]
+        raw = ensemble.expert_moments_many(
+            1, X, certification=True)
+        calls_after_raw = sum(
+            model.mean_calls + model.variance_calls for model in models)
+
+        cached_mix = ensemble.mixture_moments_many(
+            1, X, certification=True, expert_moments=raw)
+        cached_robust = ensemble.robust_moments_many(
+            1, X, certification=True, expert_moments=raw)
+        cached_joint = ensemble.robust_chance_margin_many(
+            X,
+            beta_g=2.0,
+            z_alpha=1.64,
+            tau=0.0,
+            certification=True,
+            expert_moments=raw,
+        )
+        self.assertEqual(
+            sum(model.mean_calls + model.variance_calls for model in models),
+            calls_after_raw,
+        )
+
+        uncached_mix = ensemble.mixture_moments_many(
+            1, X, certification=True)
+        uncached_robust = ensemble.robust_moments_many(
+            1, X, certification=True)
+        uncached_joint = ensemble.robust_chance_margin_many(
+            X,
+            beta_g=2.0,
+            z_alpha=1.64,
+            tau=0.0,
+            certification=True,
+        )
+        for field in (
+            "mean", "within_epistemic", "between_mean",
+            "epistemic", "aleatoric", "total",
+        ):
+            np.testing.assert_allclose(
+                getattr(cached_mix, field), getattr(uncached_mix, field))
+        for field in (
+            "mean_upper", "epistemic_upper", "aleatoric_upper",
+            "total_upper",
+        ):
+            np.testing.assert_allclose(
+                getattr(cached_robust, field),
+                getattr(uncached_robust, field),
+            )
+        for field in (
+            "upper", "nominal", "separable_upper",
+            "tangent_epistemic_scale", "tangent_aleatoric_scale",
+            "used_separable_upper",
+        ):
+            np.testing.assert_allclose(
+                getattr(cached_joint, field), getattr(uncached_joint, field))
+
     def test_prequential_pairwise_score_rewards_correct_boundary_order(self):
         posterior = FiniteTaskPosterior(
             ["wrong", "right"],
@@ -717,6 +1098,68 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             centered.mean_upper[0],
             float(authoritative_center @ means[:, 0]),
         )
+
+    def test_joint_kl_chance_margin_is_tighter_and_bounds_shared_task_law(self):
+        posterior = FiniteTaskPosterior(
+            ["mean_worst", "epistemic_worst", "aleatoric_worst"],
+            [1.0 / 3.0] * 3,
+            robust_dual_grid_size=81,
+        )
+        means = np.asarray([[1.2], [0.0], [0.0]])
+        epistemic = np.asarray([[0.01], [1.5], [0.01]])
+        aleatoric = np.asarray([[0.01], [0.01], [1.5]])
+        beta_g = 2.0
+        z_alpha = 1.6448536269514722
+        radius = 0.35
+        result = posterior.robust_chance_margin(
+            means,
+            epistemic,
+            aleatoric,
+            beta_g=beta_g,
+            z_alpha=z_alpha,
+            tau=0.0,
+            radius=radius,
+        )
+        self.assertLess(result.upper[0], result.separable_upper[0] - 0.5)
+        self.assertFalse(result.used_separable_upper[0])
+
+        rng = np.random.default_rng(77)
+        samples = rng.dirichlet(np.ones(3), size=100_000)
+        center = np.full(3, 1.0 / 3.0)
+        kl = np.sum(samples * (
+            np.log(np.maximum(samples, 1e-300))
+            - np.log(center[None, :])
+        ), axis=1)
+        admissible = samples[kl <= radius]
+        mixture_mean = admissible @ means[:, 0]
+        mixture_epistemic = (
+            admissible @ epistemic[:, 0]
+            + np.sum(
+                admissible
+                * (means[:, 0][None, :] - mixture_mean[:, None]) ** 2,
+                axis=1,
+            )
+        )
+        mixture_aleatoric = admissible @ aleatoric[:, 0]
+        sampled_margin = (
+            mixture_mean
+            + np.sqrt(beta_g) * np.sqrt(mixture_epistemic)
+            + z_alpha * np.sqrt(mixture_aleatoric)
+        )
+        self.assertLessEqual(
+            float(np.max(sampled_margin)), result.upper[0] + 1e-10)
+
+        centered = posterior.robust_chance_margin(
+            means,
+            epistemic,
+            aleatoric,
+            beta_g=beta_g,
+            z_alpha=z_alpha,
+            tau=0.0,
+            radius=0.0,
+        )
+        self.assertAlmostEqual(centered.upper[0], centered.nominal[0])
+        self.assertFalse(centered.used_separable_upper[0])
 
     def test_batched_entropic_dual_dominates_sampled_kl_ball(self):
         posterior = FiniteTaskPosterior(

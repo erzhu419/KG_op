@@ -91,4 +91,54 @@ theorem implementation_certifies_true_quantile
     hSigma
     (theory_margin_certificate_matches_Certified hMargin)
 
+theorem oracle_mean_certifiable_requires_epistemic_radius_le_safety_depth
+    {trueChanceMargin beta epistemicVar : ℝ}
+    (hCertificate :
+      trueChanceMargin
+          + implementationEpistemicSlack beta epistemicVar ≤ 0) :
+    implementationEpistemicSlack beta epistemicVar
+      ≤ -trueChanceMargin := by
+  linarith
+
+theorem oracle_mean_certificate_vacuous_of_shallow_safety
+    {trueChanceMargin beta epistemicVar : ℝ}
+    (hShallow :
+      -trueChanceMargin
+        < implementationEpistemicSlack beta epistemicVar) :
+    0 < trueChanceMargin
+        + implementationEpistemicSlack beta epistemicVar := by
+  linarith
+
+theorem oracle_mean_certifiable_requires_epistemic_variance_threshold
+    {trueChanceMargin beta epistemicVar : ℝ}
+    (hBeta : 0 ≤ beta)
+    (hEpistemic : 0 ≤ epistemicVar)
+    (hCertificate :
+      trueChanceMargin
+          + implementationEpistemicSlack beta epistemicVar ≤ 0) :
+    beta * epistemicVar ≤ (-trueChanceMargin) ^ 2 := by
+  have hRadiusNonnegative :
+      0 ≤ implementationEpistemicSlack beta epistemicVar := by
+    exact mul_nonneg (Real.sqrt_nonneg _) (Real.sqrt_nonneg _)
+  have hDepthNonnegative : 0 ≤ -trueChanceMargin := by
+    have hRadiusDepth :=
+      oracle_mean_certifiable_requires_epistemic_radius_le_safety_depth
+        hCertificate
+    linarith
+  have hRadiusDepth :
+      implementationEpistemicSlack beta epistemicVar
+        ≤ -trueChanceMargin :=
+    oracle_mean_certifiable_requires_epistemic_radius_le_safety_depth
+      hCertificate
+  have hSquared :
+      (implementationEpistemicSlack beta epistemicVar) ^ 2
+        ≤ (-trueChanceMargin) ^ 2 := by
+    nlinarith
+  have hRadiusSquare :
+      (implementationEpistemicSlack beta epistemicVar) ^ 2
+        = beta * epistemicVar := by
+    unfold implementationEpistemicSlack
+    rw [mul_pow, Real.sq_sqrt hBeta, Real.sq_sqrt hEpistemic]
+  linarith
+
 end SCOLHKG.Real
