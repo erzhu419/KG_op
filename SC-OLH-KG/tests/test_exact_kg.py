@@ -598,6 +598,33 @@ class ExactKGTests(unittest.TestCase):
             weights, [0.1, 0.1, 0.15, 0.15, 0.25, 0.25])
         self.assertAlmostEqual(float(np.sum(weights)), 1.0)
 
+    def test_stratified_plan_integrates_mean_variance_product_posterior(self):
+        class Ensemble:
+            @staticmethod
+            def predictive_selector_weights():
+                return np.asarray([0.08, 0.32, 0.12, 0.48], dtype=float)
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                exact_kg_sampling_mode="stratified_expert",
+                seed=9,
+            ),
+        )
+        algorithm.task_ensemble = Ensemble()
+        z_rows, uniforms, weights = algorithm._exact_kg_sample_plan(2)
+        self.assertEqual(z_rows.shape, (8, 2))
+        np.testing.assert_allclose(
+            uniforms,
+            [0.04, 0.04, 0.24, 0.24, 0.46, 0.46, 0.76, 0.76],
+        )
+        np.testing.assert_allclose(
+            weights,
+            [0.04, 0.04, 0.16, 0.16, 0.06, 0.06, 0.24, 0.24],
+        )
+        self.assertAlmostEqual(float(np.sum(weights)), 1.0)
+
     def test_parallel_exact_scores_match_serial_scores(self):
         problem_a = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
         problem_b = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))

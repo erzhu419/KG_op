@@ -28,6 +28,28 @@ from variance.orthogonal_hvd import OrthogonalHVD  # noqa: E402
 
 
 class CumulativeRiskProviderTests(unittest.TestCase):
+    def test_factor_shock_scalarized_oracle_uses_cumulative_variance(self):
+        weights = np.array([0.5, 0.5], dtype=float)
+        weak = FactorShockStatePolicyRZDT1(
+            d=8, L=100, sigma=0.04, shared_shock_scale=0.0)
+        moderate = FactorShockStatePolicyRZDT1(
+            d=8, L=100, sigma=0.04, shared_shock_scale=4.0)
+        infeasible = FactorShockStatePolicyRZDT1(
+            d=8, L=100, sigma=0.04, shared_shock_scale=8.0)
+
+        weak_x, weak_obj = weak.scalarized_true_best_feasible(weights)
+        moderate_x, moderate_obj = moderate.scalarized_true_best_feasible(weights)
+        infeasible_x, infeasible_obj = (
+            infeasible.scalarized_true_best_feasible(weights))
+
+        self.assertIsNotNone(weak_x)
+        self.assertIsNotNone(moderate_x)
+        self.assertTrue(weak.is_truly_feasible(weak_x))
+        self.assertTrue(moderate.is_truly_feasible(moderate_x))
+        self.assertGreaterEqual(moderate_obj, weak_obj)
+        self.assertIsNone(infeasible_x)
+        self.assertTrue(np.isinf(infeasible_obj))
+
     def _check_problem_formula(self, problem, x):
         exposure = get_risk_exposure(problem, x, output_index=1)
         params = problem.cumulative_risk_parameters(output_index=1)

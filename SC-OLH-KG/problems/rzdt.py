@@ -16,6 +16,7 @@ from core.cumulative_risk import (
     decompose_cumulative_risk,
 )
 from core.metrics import pareto_filter
+from representation.observable_exposure import grouped_policy_state_exposure
 
 
 @dataclass
@@ -528,6 +529,19 @@ class HighDimStatePolicyRZDT1(TestProblem):
         spread = float(np.std(tail))
         return u, q, spread
 
+    def observable_state_exposure(self, x):
+        """Observable control/state summary, independent of hidden targets."""
+
+        z = self.normalize(x)
+        head = z[:1]
+        tail = z[1:] if len(z) > 1 else z
+        return grouped_policy_state_exposure(
+            z,
+            (head, tail),
+            channel_names=("primary_control", "aggregate_tail_control"),
+            provider="state_policy_control_schema",
+        )
+
     def _objectives_from_state(self, u, q, spread):
         state_loss = (
             2.5 * (u - self.u_star) ** 2
@@ -611,7 +625,11 @@ class HighDimStatePolicyRZDT1(TestProblem):
             for q_i in range(0, self.L + 1):
                 q = q_i / float(self.L)
                 f1, f2, f3 = self._objectives_from_state(u, q, 0.0)
-                margin = f3 + z_alpha * self._sigma_from_state(u, q, 0.0) - self.tau
+                x = self._constant_tail_x(u, q)
+                # Subclasses can replace pointwise noise with cumulative
+                # shared-shock risk, so the oracle must use the same public
+                # truth interface as feasibility evaluation.
+                margin = f3 + z_alpha * float(self.true_sigma(x)[2]) - self.tau
                 if margin > 0.0:
                     continue
                 obj = float(weights[0] * f1 + weights[1] * f2)
@@ -871,6 +889,18 @@ class InventorySupplyChainProblem(CumulativeRiskFeatureProvider, TestProblem):
         dispersion = float(np.std(z))
         return stock, reorder, safety, dispersion
 
+    def observable_state_exposure(self, x):
+        """Observable inventory-control channels before any outcome query."""
+
+        z = self.normalize(x)
+        groups = tuple(np.array_split(z, 3))
+        return grouped_policy_state_exposure(
+            z,
+            groups,
+            channel_names=("stock_control", "reorder_control", "safety_control"),
+            provider="inventory_control_schema",
+        )
+
     def true_objectives(self, x):
         stock, reorder, safety, dispersion = self._policy_summary(x)
         holding = 0.7 * max(stock - self.target_stock, 0.0) ** 2
@@ -1057,6 +1087,20 @@ class QueueResourceControlProblem(CumulativeRiskFeatureProvider, TestProblem):
         smoothing = float(np.mean(thirds[2]))
         imbalance = float(np.std(z))
         return capacity, priority, smoothing, imbalance
+
+    def observable_state_exposure(self, x):
+        """Observable resource-control channels before any outcome query."""
+
+        z = self.normalize(x)
+        groups = tuple(np.array_split(z, 3))
+        return grouped_policy_state_exposure(
+            z,
+            groups,
+            channel_names=(
+                "capacity_control", "priority_control", "smoothing_control"
+            ),
+            provider="queue_control_schema",
+        )
 
     def true_objectives(self, x):
         capacity, priority, smoothing, imbalance = self._policy_summary(x)

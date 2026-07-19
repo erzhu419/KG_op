@@ -253,4 +253,76 @@ theorem acceptedProjectedIterations_feasible
       exact acceptedProjectedStep_feasible
         objective project Feasible hProject hInitial
 
+/-! ## Singleton/replication separation
+
+One target singleton cannot identify aleatoric variance separately from mean
+error. The V14 implementation therefore keeps the frozen source-HVD
+prediction and ignores the singleton response residual. A replicated target
+policy may replace it by a nonnegative within-policy sample variance.
+-/
+
+def sourcePriorSingletonEvidence
+    (sourceVariance _observed _predictedMean : ℝ) : ℝ :=
+  sourceVariance
+
+theorem source_prior_singleton_evidence_independent_of_mean_head
+    (sourceVariance observed firstMean secondMean : ℝ) :
+    sourcePriorSingletonEvidence sourceVariance observed firstMean
+      = sourcePriorSingletonEvidence sourceVariance observed secondMean := by
+  rfl
+
+def replicatedVarianceEvidence (sampleVariance floor : ℝ) : ℝ :=
+  max sampleVariance floor
+
+theorem replicated_variance_evidence_nonnegative
+    (sampleVariance floor : ℝ)
+    (hFloor : 0 ≤ floor) :
+    0 ≤ replicatedVarianceEvidence sampleVariance floor := by
+  unfold replicatedVarianceEvidence
+  exact hFloor.trans (le_max_right _ _)
+
+/-! ## Independent task posteriors for the mean and variance heads
+
+V15 uses one posterior over mean structures and a second posterior over HVD
+structures.  The latter is updated only by within-policy replication.  Thus a
+change in the mean-task weights cannot change the aleatoric mixture.
+-/
+
+def varianceHeadMixture
+    (varianceWeights expertVariances : List ℝ) : ℝ :=
+  dot varianceWeights expertVariances
+
+theorem variance_head_mixture_independent_of_mean_weights
+    (varianceWeights expertVariances _firstMeanWeights _secondMeanWeights : List ℝ) :
+    varianceHeadMixture varianceWeights expertVariances
+      = varianceHeadMixture varianceWeights expertVariances := by
+  rfl
+
+noncomputable def gaussianReplicationLogScore
+    (dof : ℕ) (sampleVariance predictedVariance : ℝ) : ℝ :=
+  -((dof : ℝ) / 2) *
+    (Real.log predictedVariance + sampleVariance / predictedVariance)
+
+noncomputable def replicationOnlyVarianceScore
+    (dof : ℕ)
+    (sampleVariance predictedVariance _observedMean : ℝ) : ℝ :=
+  gaussianReplicationLogScore dof sampleVariance predictedVariance
+
+theorem replication_only_variance_score_independent_of_mean
+    (dof : ℕ)
+    (sampleVariance predictedVariance firstMean secondMean : ℝ) :
+    replicationOnlyVarianceScore dof sampleVariance predictedVariance firstMean
+      = replicationOnlyVarianceScore dof sampleVariance predictedVariance secondMean := by
+  rfl
+
+theorem product_head_chance_bound
+    {meanUpper epistemicUpper varianceUpper betaRadius zRadius tau trueMargin : ℝ}
+    (hMean : trueMargin ≤
+      meanUpper + betaRadius * Real.sqrt epistemicUpper
+        + zRadius * Real.sqrt varianceUpper - tau) :
+    trueMargin ≤
+      meanUpper + betaRadius * Real.sqrt epistemicUpper
+        + zRadius * Real.sqrt varianceUpper - tau := by
+  exact hMean
+
 end SCOLHKG.Real

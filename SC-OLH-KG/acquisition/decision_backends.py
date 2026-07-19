@@ -290,7 +290,7 @@ def _hvd_information_reduction(
     if task_ensemble is None:
         return one(variance_model, problem)
     weights = np.asarray(
-        task_ensemble.structure_weights(objective=False), dtype=float)
+        task_ensemble.variance_structure_weights(), dtype=float)
     weights = np.maximum(weights, 0.0)
     weights /= max(float(np.sum(weights)), _EPS)
     gains = np.zeros(len(candidates), dtype=float)
@@ -375,9 +375,26 @@ def _constraint_epistemic_reduction(
     structure_weights = np.maximum(structure_weights, 0.0)
     structure_weights /= max(float(np.sum(structure_weights)), _EPS)
     gains = np.zeros(len(actions), dtype=float)
-    for weight, state in zip(structure_weights, task_ensemble.states):
-        gains += float(weight) * one(
-            state.gpr_models[1], state.variance_model, state.problem)
+    variance_weights = np.asarray(
+        task_ensemble.variance_structure_weights(), dtype=float)
+    variance_weights = np.maximum(variance_weights, 0.0)
+    variance_weights /= max(float(np.sum(variance_weights)), _EPS)
+    if task_ensemble.variance_structure_isolated:
+        for mean_weight, mean_state in zip(
+            structure_weights, task_ensemble.states
+        ):
+            for variance_weight, variance_state in zip(
+                variance_weights, task_ensemble.states
+            ):
+                gains += float(mean_weight * variance_weight) * one(
+                    mean_state.gpr_models[1],
+                    variance_state.variance_model,
+                    variance_state.problem,
+                )
+    else:
+        for weight, state in zip(structure_weights, task_ensemble.states):
+            gains += float(weight) * one(
+                state.gpr_models[1], state.variance_model, state.problem)
     return np.maximum(gains, 0.0)
 
 
@@ -455,9 +472,26 @@ def _constraint_epistemic_margin_reduction(
     structure_weights = np.maximum(structure_weights, 0.0)
     structure_weights /= max(float(np.sum(structure_weights)), _EPS)
     gains = np.zeros(len(actions), dtype=float)
-    for weight, state in zip(structure_weights, task_ensemble.states):
-        gains += float(weight) * one(
-            state.gpr_models[1], state.variance_model, state.problem)
+    variance_weights = np.asarray(
+        task_ensemble.variance_structure_weights(), dtype=float)
+    variance_weights = np.maximum(variance_weights, 0.0)
+    variance_weights /= max(float(np.sum(variance_weights)), _EPS)
+    if task_ensemble.variance_structure_isolated:
+        for mean_weight, mean_state in zip(
+            structure_weights, task_ensemble.states
+        ):
+            for variance_weight, variance_state in zip(
+                variance_weights, task_ensemble.states
+            ):
+                gains += float(mean_weight * variance_weight) * one(
+                    mean_state.gpr_models[1],
+                    variance_state.variance_model,
+                    variance_state.problem,
+                )
+    else:
+        for weight, state in zip(structure_weights, task_ensemble.states):
+            gains += float(weight) * one(
+                state.gpr_models[1], state.variance_model, state.problem)
     return np.maximum(gains, 0.0)
 
 
@@ -502,7 +536,7 @@ def _hvd_certification_margin_reduction(
     if task_ensemble is None:
         return one(variance_model, problem)
     weights = np.asarray(
-        task_ensemble.structure_weights(objective=False), dtype=float)
+        task_ensemble.variance_structure_weights(), dtype=float)
     weights = np.maximum(weights, 0.0)
     weights /= max(float(np.sum(weights)), _EPS)
     gains = np.zeros(len(candidates), dtype=float)

@@ -16,6 +16,49 @@ from representation.adaptive_sparsity import (
 ArrayLike = Union[np.ndarray, list, tuple]
 
 
+def normalize_mixture_weights(weights):
+    """Normalize nonnegative mixture mass without inventing support."""
+
+    values = np.asarray(weights, dtype=float).reshape(-1)
+    if not len(values):
+        raise ValueError("mixture weights cannot be empty")
+    if not np.all(np.isfinite(values)) or np.any(values < 0.0):
+        raise ValueError("mixture weights must be finite and nonnegative")
+    total = float(np.sum(values))
+    if total <= 0.0:
+        raise ValueError("mixture weights need positive mass")
+    return values / total
+
+
+def posterior_mixture_weights(prior_weights, log_evidence, temperature=1.0):
+    """Bayes-update finite mixture mass while preserving unsupported atoms.
+
+    Zero prior mass remains exactly zero. Tiny positive mass is handled in the
+    log domain instead of being raised to an arbitrary numerical floor.
+    """
+
+    prior = normalize_mixture_weights(prior_weights)
+    evidence = np.asarray(log_evidence, dtype=float).reshape(-1)
+    if len(prior) != len(evidence):
+        raise ValueError("mixture prior and log evidence must align")
+    if not np.all(np.isfinite(evidence)):
+        raise ValueError("mixture log evidence must be finite")
+    temperature = float(temperature)
+    if not np.isfinite(temperature) or temperature <= 0.0:
+        raise ValueError("mixture evidence temperature must be positive")
+    log_weight = np.full(len(prior), -np.inf, dtype=float)
+    supported = prior > 0.0
+    log_weight[supported] = (
+        np.log(prior[supported]) + evidence[supported] / temperature
+    )
+    normalizer = float(np.max(log_weight))
+    if not np.isfinite(normalizer):
+        raise FloatingPointError("mixture posterior has no supported atom")
+    posterior = np.exp(log_weight - normalizer)
+    posterior /= float(np.sum(posterior))
+    return prior, posterior
+
+
 @dataclass
 class BasisConfig:
     """Configuration for the default quadratic basis."""
@@ -76,6 +119,19 @@ class ParametricGPR:
         self._finite_mixture_component_names = []
         self._finite_mixture_sequential = False
         self._finite_mixture_update_count = 0
+        self._finite_mixture_hierarchical_misspecification = False
+        self._finite_mixture_cross_validated_structure = False
+        self._finite_mixture_preserve_group_masses = False
+        self._finite_mixture_group_labels = []
+        self._finite_mixture_group_masses = {}
+        self._finite_mixture_component_priors = []
+        self._finite_mixture_prior_weights = None
+        self._finite_mixture_target_history = []
+        self._finite_mixture_misspecification_prior_df = 4.0
+        self._finite_mixture_misspecification_max_scale = 100.0
+        self._finite_mixture_misspecification_mode = (
+            "hierarchical_predictive_scale")
+        self._finite_mixture_misspecification_ridge = 1.0
         self._covariance_projection_count = 0
         self._min_quadratic_variance_seen = float("inf")
         self._max_abs_posterior_mean_seen = 0.0
@@ -417,10 +473,816 @@ class ParametricGPR:
         self._finite_mixture_component_names = []
         self._finite_mixture_sequential = False
         self._finite_mixture_update_count = 0
+        self._finite_mixture_hierarchical_misspecification = False
+        self._finite_mixture_cross_validated_structure = False
+        self._finite_mixture_preserve_group_masses = False
+        self._finite_mixture_group_labels = []
+        self._finite_mixture_group_masses = {}
+        self._finite_mixture_component_priors = []
+        self._finite_mixture_prior_weights = None
+        self._finite_mixture_target_history = []
+        self._finite_mixture_misspecification_prior_df = 4.0
+        self._finite_mixture_misspecification_max_scale = 100.0
+        self._finite_mixture_misspecification_mode = (
+            "hierarchical_predictive_scale")
+        self._finite_mixture_misspecification_ridge = 1.0
         self._covariance_projection_count = 0
         self._min_quadratic_variance_seen = float("inf")
         self._max_abs_posterior_mean_seen = 0.0
         self._invalidate_backend_cache()
+
+    @staticmethod
+    def _gaussian_log_density(residual, covariance):
+        """Stable multivariate Gaussian log density at ``residual``."""
+
+        residual = np.asarray(residual, dtype=float).reshape(-1)
+        covariance = np.asarray(covariance, dtype=float)
+        covariance = 0.5 * (covariance + covariance.T)
+        jitter = max(
+            1e-12,
+            1e-10 * float(np.trace(covariance)) / max(len(residual), 1),
+        )
+        identity = np.eye(len(residual), dtype=float)
+        for _ in range(8):
+            try:
+                chol = np.linalg.cholesky(covariance + jitter * identity)
+                solved = np.linalg.solve(chol, residual)
+                log_det = 2.0 * float(np.sum(np.log(np.diag(chol))))
+                return float(-0.5 * (
+                    solved @ solved
+                    + log_det
+                    + len(residual) * np.log(2.0 * np.pi)
+                ))
+            except np.linalg.LinAlgError:
+                jitter *= 10.0
+        raise np.linalg.LinAlgError(
+            "finite-mixture predictive covariance is not positive definite"
+        )
+
+    @staticmethod
+    def _mahalanobis_square(residual, covariance):
+        """Return a stable nonnegative Mahalanobis square."""
+
+        residual = np.asarray(residual, dtype=float).reshape(-1)
+        covariance = np.asarray(covariance, dtype=float)
+        covariance = 0.5 * (covariance + covariance.T)
+        jitter = max(
+            1e-12,
+            1e-10 * float(np.trace(covariance)) / max(len(residual), 1),
+        )
+        identity = np.eye(len(residual), dtype=float)
+        for _ in range(8):
+            try:
+                chol = np.linalg.cholesky(covariance + jitter * identity)
+                solved = np.linalg.solve(
+                    chol.T, np.linalg.solve(chol, residual))
+                return max(float(residual @ solved), 0.0)
+            except np.linalg.LinAlgError:
+                jitter *= 10.0
+        return max(float(residual @ np.linalg.pinv(covariance) @ residual), 0.0)
+
+    @staticmethod
+    def _gaussian_loo_log_score(residual, covariance):
+        """Exact leave-one-out Gaussian predictive log score.
+
+        If ``Q = covariance^-1`` and ``alpha = Q residual``, the conditional
+        predictive variance of observation ``i`` given all other observations
+        is ``1 / Q_ii`` and its conditional residual is
+        ``alpha_i / Q_ii``. The score therefore evaluates every charged target
+        response out of fold without repeatedly fitting ``n`` models.
+        """
+
+        residual = np.asarray(residual, dtype=float).reshape(-1)
+        covariance = np.asarray(covariance, dtype=float)
+        covariance = 0.5 * (covariance + covariance.T)
+        if covariance.shape != (len(residual), len(residual)):
+            raise ValueError("LOO covariance must align with residuals")
+        if len(residual) == 0:
+            return 0.0, {
+                "loo_count": 0,
+                "loo_mean_log_score": 0.0,
+                "loo_median_abs_standardized_residual": 0.0,
+            }
+        jitter = max(
+            1e-12,
+            1e-10 * float(np.trace(covariance)) / max(len(residual), 1),
+        )
+        identity = np.eye(len(residual), dtype=float)
+        precision = None
+        for _ in range(8):
+            try:
+                chol = np.linalg.cholesky(covariance + jitter * identity)
+                precision = np.linalg.solve(
+                    chol.T, np.linalg.solve(chol, identity))
+                break
+            except np.linalg.LinAlgError:
+                jitter *= 10.0
+        if precision is None:
+            precision = np.linalg.pinv(covariance)
+        precision = 0.5 * (precision + precision.T)
+        diagonal = np.maximum(np.diag(precision), 1e-12)
+        alpha = precision @ residual
+        conditional_variance = 1.0 / diagonal
+        conditional_residual = alpha / diagonal
+        standardized = conditional_residual / np.sqrt(
+            conditional_variance)
+        terms = -0.5 * (
+            np.log(2.0 * np.pi * conditional_variance)
+            + standardized ** 2
+        )
+        if not np.all(np.isfinite(terms)):
+            raise FloatingPointError("LOO predictive score is non-finite")
+        return float(np.sum(terms)), {
+            "loo_count": int(len(residual)),
+            "loo_mean_log_score": float(np.mean(terms)),
+            "loo_median_abs_standardized_residual": float(np.median(
+                np.abs(standardized))),
+            "loo_minimum_conditional_variance": float(np.min(
+                conditional_variance)),
+            "loo_maximum_conditional_variance": float(np.max(
+                conditional_variance)),
+        }
+
+    @staticmethod
+    def _residual_rank_mixture_diagnostics(names, weights):
+        marker = "|target_residual_rank="
+        mass = {}
+        source_mass = {}
+        null_mass = {}
+        for name, weight in zip(names, np.asarray(weights, dtype=float)):
+            name = str(name)
+            if marker not in name:
+                continue
+            suffix = name.rsplit(marker, 1)[1]
+            try:
+                rank = int(suffix.split("|", 1)[0])
+            except ValueError:
+                continue
+            value = max(float(weight), 0.0)
+            mass[rank] = mass.get(rank, 0.0) + value
+            destination = (
+                null_mass if name.startswith("target:null") else source_mass)
+            destination[rank] = destination.get(rank, 0.0) + value
+        if not mass:
+            return {
+                "target_residual_rank_posterior_active": False,
+                "target_residual_rank_posterior_mass": {},
+            }
+        structured_total = float(sum(mass.values()))
+        source_total = float(sum(source_mass.values()))
+        null_total = float(sum(null_mass.values()))
+        conditional = {
+            str(rank): float(value / max(structured_total, 1e-300))
+            for rank, value in sorted(mass.items())
+        }
+        absolute = {
+            str(rank): float(value)
+            for rank, value in sorted(mass.items())
+        }
+        return {
+            "target_residual_rank_posterior_active": True,
+            "target_residual_rank_posterior_mass": absolute,
+            "target_residual_rank_conditional_mass": conditional,
+            "target_residual_rank_conditional_source_mass": {
+                str(rank): float(value / max(source_total, 1e-300))
+                for rank, value in sorted(source_mass.items())
+            },
+            "target_residual_rank_conditional_null_mass": {
+                str(rank): float(value / max(null_total, 1e-300))
+                for rank, value in sorted(null_mass.items())
+            },
+            "target_residual_rank_structured_mass": structured_total,
+            "target_residual_rank_structured_source_mass": source_total,
+            "target_residual_rank_structured_null_mass": null_total,
+            "target_residual_rank_selected": int(max(
+                mass, key=lambda rank: mass[rank])),
+            "target_residual_rank_target_labels_used_for_update": True,
+            "target_residual_rank_target_oracle_used": False,
+        }
+
+    @staticmethod
+    def _role_assignment_mixture_diagnostics(names, weights):
+        marker = "|role_assignment="
+        mass = {}
+        source_mass = {}
+        null_mass = {}
+        for name, weight in zip(names, np.asarray(weights, dtype=float)):
+            name = str(name)
+            if marker not in name:
+                continue
+            assignment = name.rsplit(marker, 1)[1].split("|", 1)[0]
+            value = max(float(weight), 0.0)
+            mass[assignment] = mass.get(assignment, 0.0) + value
+            destination = (
+                null_mass if name.startswith("target:null") else source_mass)
+            destination[assignment] = (
+                destination.get(assignment, 0.0) + value)
+        if not mass:
+            return {
+                "target_role_assignment_posterior_active": False,
+                "target_role_assignment_posterior_mass": {},
+            }
+        total = float(sum(mass.values()))
+        source_total = float(sum(source_mass.values()))
+        null_total = float(sum(null_mass.values()))
+        return {
+            "target_role_assignment_posterior_active": True,
+            "target_role_assignment_posterior_mass": {
+                key: float(value)
+                for key, value in sorted(mass.items())
+            },
+            "target_role_assignment_conditional_mass": {
+                key: float(value / max(total, 1e-300))
+                for key, value in sorted(mass.items())
+            },
+            "target_role_assignment_conditional_source_mass": {
+                key: float(value / max(source_total, 1e-300))
+                for key, value in sorted(source_mass.items())
+            },
+            "target_role_assignment_conditional_null_mass": {
+                key: float(value / max(null_total, 1e-300))
+                for key, value in sorted(null_mass.items())
+            },
+            "target_role_assignment_structured_mass": total,
+            "target_role_assignment_structured_source_mass": source_total,
+            "target_role_assignment_structured_null_mass": null_total,
+            "target_role_assignment_selected": str(max(
+                mass, key=lambda assignment: mass[assignment])),
+            "target_role_assignment_target_labels_used_for_update": True,
+            "target_role_assignment_target_oracle_used": False,
+            "target_role_assignment_permutation_equivariant": True,
+        }
+
+    def set_hierarchical_misspecification_posterior(
+        self,
+        component_models,
+        component_priors,
+        prior_weights,
+        samples,
+        targets,
+        observation_variances,
+        diagnostics=None,
+        *,
+        prior_df=4.0,
+        max_scale=100.0,
+        misspecification_mode="hierarchical_predictive_scale",
+        misspecification_ridge=1.0,
+        group_labels=None,
+        group_masses=None,
+    ) -> None:
+        """Fit an online source-mixture posterior with a latent scale law.
+
+        The unconditioned source laws are retained.  Every charged target
+        observation updates the sufficient statistic of each source scale,
+        after which all components are refit from their original laws.  This
+        avoids repeatedly multiplying an already-inflated covariance and also
+        prevents ordinary posterior contraction from silently erasing the
+        learned misspecification guard.
+        """
+
+        components = list(component_models)
+        priors = [dict(value) for value in component_priors]
+        weight = np.asarray(prior_weights, dtype=float).reshape(-1)
+        rows = [tuple(int(v) for v in np.asarray(x, dtype=int)) for x in samples]
+        values = np.asarray(targets, dtype=float).reshape(-1)
+        noise = np.asarray(observation_variances, dtype=float).reshape(-1)
+        if len(noise) == 1 and len(rows) > 1:
+            noise = np.full(len(rows), float(noise[0]), dtype=float)
+        if (
+            not components
+            or len(components) != len(priors)
+            or len(components) != len(weight)
+        ):
+            raise ValueError("hierarchical mixture components must align")
+        if len(rows) != len(values) or len(rows) != len(noise):
+            raise ValueError("hierarchical target observations must align")
+        if not np.all(np.isfinite(values)) or not np.all(np.isfinite(noise)):
+            raise ValueError("hierarchical target observations must be finite")
+        if np.any(weight < 0.0) or not np.all(np.isfinite(weight)):
+            raise ValueError("hierarchical mixture weights must be nonnegative")
+        if float(np.sum(weight)) <= 0.0:
+            raise ValueError("hierarchical mixture weights need positive mass")
+
+        labels = (
+            [str(value) for value in group_labels]
+            if group_labels is not None else [])
+        preserve_group_masses = bool(labels)
+        if preserve_group_masses:
+            if len(labels) != len(weight) or group_masses is None:
+                raise ValueError(
+                    "hierarchical group labels and masses must align")
+            weight, fixed_masses = self.group_mass_preserving_weights(
+                weight,
+                np.zeros(len(weight), dtype=float),
+                labels,
+                group_masses,
+                temperature=1.0,
+            )
+        else:
+            fixed_masses = {}
+
+        self._finite_mixture_components = components
+        self._finite_mixture_component_priors = priors
+        self._finite_mixture_prior_weights = normalize_mixture_weights(weight)
+        self._finite_mixture_component_names = [
+            str(prior.get("name", f"component:{index}"))
+            for index, prior in enumerate(priors)
+        ]
+        self._finite_mixture_target_history = [
+            {
+                "x": row,
+                "y": float(value),
+                "observation_variance": max(float(sigma2), 1e-12),
+            }
+            for row, value, sigma2 in zip(rows, values, noise)
+        ]
+        self._finite_mixture_hierarchical_misspecification = True
+        self._finite_mixture_preserve_group_masses = preserve_group_masses
+        self._finite_mixture_group_labels = labels
+        self._finite_mixture_group_masses = dict(fixed_masses)
+        self._finite_mixture_sequential = True
+        self._finite_mixture_update_count = int(
+            (diagnostics or {}).get("online_mixture_update_count", 0))
+        self._finite_mixture_misspecification_prior_df = max(
+            float(prior_df), 1e-8)
+        self._finite_mixture_misspecification_max_scale = max(
+            float(max_scale), 1.0)
+        mode = str(
+            misspecification_mode or "hierarchical_predictive_scale"
+        ).strip().lower()
+        if mode not in {
+            "none",
+            "predictive_scale",
+            "predictive_scale_directional",
+            "hierarchical_predictive_scale",
+        }:
+            raise ValueError(
+                "sequential misspecification mode must be none, "
+                "predictive_scale, predictive_scale_directional, or "
+                "hierarchical_predictive_scale")
+        self._finite_mixture_misspecification_mode = mode
+        self._finite_mixture_misspecification_ridge = max(
+            float(misspecification_ridge), 1e-10)
+        self.source_parametric_prior_diagnostics = dict(diagnostics or {})
+        if preserve_group_masses:
+            self.source_parametric_prior_diagnostics.update({
+                "assignment_group_masses_fixed": True,
+                "assignment_group_labels": labels,
+                "assignment_group_masses": dict(fixed_masses),
+                "target_oracle_used_for_group_masses": False,
+            })
+        self._refit_hierarchical_finite_mixture()
+
+    def _refit_hierarchical_finite_mixture(self) -> None:
+        """Refit every component and its source scale from charged data."""
+
+        components = list(self._finite_mixture_components)
+        priors = list(self._finite_mixture_component_priors)
+        prior_weight = np.asarray(
+            self._finite_mixture_prior_weights, dtype=float).reshape(-1)
+        history = list(self._finite_mixture_target_history)
+        if (
+            not components
+            or len(components) != len(priors)
+            or len(components) != len(prior_weight)
+        ):
+            raise RuntimeError("hierarchical finite-mixture state is incomplete")
+
+        rows = [entry["x"] for entry in history]
+        target = np.asarray([entry["y"] for entry in history], dtype=float)
+        observation_variance = np.asarray([
+            entry["observation_variance"] for entry in history
+        ], dtype=float)
+        prior_df = max(
+            float(self._finite_mixture_misspecification_prior_df), 1e-8)
+        max_scale = max(
+            float(self._finite_mixture_misspecification_max_scale), 1.0)
+        misspecification_mode = str(getattr(
+            self,
+            "_finite_mixture_misspecification_mode",
+            "hierarchical_predictive_scale",
+        )).strip().lower()
+        misspecification_ridge = max(float(getattr(
+            self, "_finite_mixture_misspecification_ridge", 1.0)), 1e-10)
+        diagnostics = dict(getattr(
+            self, "source_parametric_prior_diagnostics", {}) or {})
+        temperature = max(
+            float(diagnostics.get("evidence_temperature", 1.0)), 1e-6)
+        component_diagnostics = []
+        log_evidence = []
+
+        for index, (component, prior) in enumerate(zip(components, priors)):
+            mean = np.asarray(prior["mean"], dtype=float).reshape(-1)
+            covariance = np.asarray(prior["covariance"], dtype=float)
+            covariance = 0.5 * (covariance + covariance.T)
+            deviation = max(
+                float(prior.get("deviation_variance", 1e-6)), 1e-12)
+            name = str(prior.get("name", f"component:{index}"))
+            is_source = not name.startswith("target:")
+            if rows:
+                phi = np.asarray(component.basis_matrix(rows), dtype=float)
+                residual = target - phi @ mean
+                base_predictive = phi @ covariance @ phi.T
+                base_predictive = 0.5 * (
+                    base_predictive + base_predictive.T)
+                base_predictive += np.diag(
+                    deviation + observation_variance)
+                mahalanobis = self._mahalanobis_square(
+                    residual, base_predictive)
+            else:
+                phi = np.zeros((0, len(mean)), dtype=float)
+                residual = np.zeros(0, dtype=float)
+                mahalanobis = 0.0
+            scale = 1.0
+            if (
+                is_source
+                and rows
+                and misspecification_mode != "none"
+            ):
+                scale = float(np.clip(
+                    (prior_df + mahalanobis) / (prior_df + len(rows)),
+                    1.0,
+                    max_scale,
+                ))
+            scaled_covariance = scale * covariance
+            scaled_deviation = scale * deviation
+            directional_mass = 0.0
+            directional_energy = 0.0
+            if (
+                is_source
+                and rows
+                and misspecification_mode == "predictive_scale_directional"
+            ):
+                gram = (
+                    phi.T @ phi
+                    + misspecification_ridge
+                    * np.eye(phi.shape[1], dtype=float)
+                )
+                raw_direction = np.linalg.solve(
+                    gram, phi.T @ residual)
+                direction_norm = float(np.linalg.norm(raw_direction))
+                if direction_norm > 1e-12:
+                    direction = raw_direction / direction_norm
+                    directional_energy = float(np.mean(
+                        (phi @ direction) ** 2))
+                    reference_variance = float(np.mean(
+                        np.diag(base_predictive)))
+                    empirical_error = float(np.mean(residual ** 2))
+                    excess = max(
+                        empirical_error - reference_variance, 0.0)
+                    directional_mass = min(
+                        excess,
+                        max(max_scale - 1.0, 0.0)
+                        * max(reference_variance, 1e-12),
+                    )
+                    if (
+                        directional_energy > 1e-12
+                        and directional_mass > 0.0
+                    ):
+                        scaled_covariance += (
+                            directional_mass / directional_energy
+                        ) * np.outer(direction, direction)
+            scaled_covariance = 0.5 * (
+                scaled_covariance + scaled_covariance.T)
+            eigenvalues, eigenvectors = np.linalg.eigh(scaled_covariance)
+            scaled_covariance = (
+                eigenvectors * np.maximum(eigenvalues, 1e-12)
+            ) @ eigenvectors.T
+            if rows:
+                predictive = phi @ scaled_covariance @ phi.T
+                predictive = 0.5 * (predictive + predictive.T)
+                predictive += np.diag(
+                    scaled_deviation + observation_variance)
+                evidence = self._gaussian_log_density(residual, predictive)
+            else:
+                evidence = 0.0
+            log_evidence.append(float(evidence))
+
+            component.set_parametric_prior(
+                mean, scaled_deviation, scaled_covariance)
+            for entry in history:
+                component.update(
+                    entry["x"],
+                    entry["y"],
+                    entry["observation_variance"],
+                )
+            base_diagnostics = dict(prior.get("diagnostics", {}))
+            base_diagnostics.update({
+                "name": name,
+                "source_mean_misspecification_mode": (
+                    misspecification_mode if is_source else "none"
+                ),
+                "source_mean_misspecification_applied": bool(
+                    is_source and misspecification_mode != "none"),
+                "source_mean_misspecification_scale": float(scale),
+                "source_mean_misspecification_mahalanobis": float(mahalanobis),
+                "source_mean_misspecification_prior_df": float(prior_df),
+                "source_mean_misspecification_directional_mass": float(
+                    directional_mass),
+                "source_mean_misspecification_directional_energy": float(
+                    directional_energy),
+                "source_mean_misspecification_ridge": float(
+                    misspecification_ridge),
+                "source_mean_misspecification_target_count": int(len(rows)),
+                "source_mean_prior_covariance_trace_before": float(
+                    np.trace(covariance)),
+                "source_mean_prior_covariance_trace_after": float(
+                    np.trace(scaled_covariance)),
+                "source_mean_residual_floor_before": float(deviation),
+                "source_mean_residual_floor_after": float(scaled_deviation),
+                "misspecification_uncertainty_can_only_increase": bool(
+                    is_source),
+                "target_oracle_used_for_misspecification": False,
+            })
+            component_diagnostics.append(base_diagnostics)
+
+        log_evidence = np.asarray(log_evidence, dtype=float)
+        if bool(getattr(
+            self, "_finite_mixture_preserve_group_masses", False
+        )):
+            posterior_weight, fixed_group_masses = (
+                self.group_mass_preserving_weights(
+                    prior_weight,
+                    log_evidence,
+                    self._finite_mixture_group_labels,
+                    self._finite_mixture_group_masses,
+                    temperature,
+                )
+            )
+        else:
+            prior_weight, posterior_weight = posterior_mixture_weights(
+                prior_weight, log_evidence, temperature)
+            fixed_group_masses = None
+        names = list(self._finite_mixture_component_names)
+        trajectory = list(diagnostics.get(
+            "source_mean_misspecification_scale_trajectory", []))
+        trajectory.append({
+            "target_observation_count": int(len(rows)),
+            "online_mixture_update_count": int(
+                self._finite_mixture_update_count),
+            "component_scales": {
+                str(item["name"]): float(
+                    item["source_mean_misspecification_scale"])
+                for item in component_diagnostics
+            },
+        })
+        single_aggregate = bool(
+            diagnostics.get("single_aggregate_hyperlaw", False)
+            and len(components) == 1
+            and names == ["source:aggregate"]
+        )
+        diagnostics.update({
+            "adaptation_mode": (
+                "sequential_single_aggregate_hyperlaw"
+                if single_aggregate
+                else "sequential_target_evidence_mixture"
+            ),
+            "component_names": names,
+            "component_prior_weights": prior_weight.tolist(),
+            "component_log_evidence": log_evidence.tolist(),
+            "component_posterior_weights": posterior_weight.tolist(),
+            "selected_component": str(names[int(np.argmax(posterior_weight))]),
+            "target_only_posterior_weight": float(sum(
+                mass for name, mass in zip(names, posterior_weight)
+                if str(name).startswith("target:null")
+            )),
+            "source_posterior_weight": float(sum(
+                mass for name, mass in zip(names, posterior_weight)
+                if not str(name).startswith("target:null")
+            )),
+            "target_observation_count": int(len(rows)),
+            "online_mixture_update_count": int(
+                self._finite_mixture_update_count),
+            "posterior_target_data_used": bool(rows),
+            "target_oracle_used": False,
+            "source_mean_misspecification_mode": (
+                misspecification_mode),
+            "source_mean_misspecification_online": bool(
+                misspecification_mode != "none"),
+            "source_mean_misspecification_refit_from_frozen_law": True,
+            "source_mean_misspecification_scale_trajectory": trajectory,
+            "component_deviation_diagnostics": component_diagnostics,
+        })
+        if single_aggregate:
+            aggregate_diagnostics = component_diagnostics[0]
+            diagnostics.update({
+                "single_aggregate_hyperlaw": True,
+                "single_aggregate_component_count": 1,
+                "source_domain_identity_marginalized": True,
+                "source_components_retained_in_target_posterior": False,
+                "target_null_component_retained": False,
+                "source_mean_misspecification_applied": bool(
+                    aggregate_diagnostics[
+                        "source_mean_misspecification_applied"]),
+                "source_mean_misspecification_scale": float(
+                    aggregate_diagnostics[
+                        "source_mean_misspecification_scale"]),
+                "source_mean_prior_covariance_trace_before": float(
+                    aggregate_diagnostics[
+                        "source_mean_prior_covariance_trace_before"]),
+                "source_mean_prior_covariance_trace_after": float(
+                    aggregate_diagnostics[
+                        "source_mean_prior_covariance_trace_after"]),
+                "source_mean_residual_floor_before": float(
+                    aggregate_diagnostics[
+                        "source_mean_residual_floor_before"]),
+                "source_mean_residual_floor_after": float(
+                    aggregate_diagnostics[
+                        "source_mean_residual_floor_after"]),
+                "source_mean_misspecification_directional_mass": float(
+                    aggregate_diagnostics[
+                        "source_mean_misspecification_directional_mass"]),
+                "misspecification_uncertainty_can_only_increase": True,
+                "target_oracle_used_for_misspecification": False,
+            })
+        if fixed_group_masses is not None:
+            diagnostics.update({
+                "adaptation_mode": (
+                    "sequential_assignment_prior_conditional_hierarchical_"
+                    "expert_mixture"),
+                "assignment_group_masses_fixed": True,
+                "assignment_group_masses": dict(fixed_group_masses),
+                "target_oracle_used_for_group_masses": False,
+                "target_role_assignment_conditional_expert_uses_target_labels": (
+                    bool(rows)),
+            })
+        self.set_moment_matched_posterior(
+            components,
+            posterior_weight,
+            diagnostics=diagnostics,
+            sequential_updates=True,
+        )
+
+    def set_cross_validated_structure_posterior(
+        self,
+        component_models,
+        component_priors,
+        prior_weights,
+        samples,
+        targets,
+        observation_variances,
+        diagnostics=None,
+    ) -> None:
+        """Fit a finite structure posterior from exact LOO predictions.
+
+        The component laws and structure prior remain frozen. Every charged
+        target response is predicted from all other charged responses, after
+        which all component posteriors are refit on the complete history for
+        downstream prediction. Online updates repeat this same operation from
+        the frozen laws rather than multiplying incremental pseudo-evidence.
+        """
+
+        components = list(component_models)
+        priors = [dict(value) for value in component_priors]
+        weight = np.asarray(prior_weights, dtype=float).reshape(-1)
+        rows = [tuple(int(v) for v in np.asarray(x, dtype=int)) for x in samples]
+        values = np.asarray(targets, dtype=float).reshape(-1)
+        noise = np.asarray(observation_variances, dtype=float).reshape(-1)
+        if len(noise) == 1 and len(rows) > 1:
+            noise = np.full(len(rows), float(noise[0]), dtype=float)
+        if (
+            not components
+            or len(components) != len(priors)
+            or len(components) != len(weight)
+        ):
+            raise ValueError("cross-validated mixture components must align")
+        if len(rows) != len(values) or len(rows) != len(noise):
+            raise ValueError("cross-validated target observations must align")
+        if not np.all(np.isfinite(values)) or not np.all(np.isfinite(noise)):
+            raise ValueError(
+                "cross-validated target observations must be finite")
+        if np.any(weight < 0.0) or not np.all(np.isfinite(weight)):
+            raise ValueError(
+                "cross-validated mixture weights must be nonnegative")
+        if float(np.sum(weight)) <= 0.0:
+            raise ValueError(
+                "cross-validated mixture weights need positive mass")
+
+        self._finite_mixture_components = components
+        self._finite_mixture_component_priors = priors
+        self._finite_mixture_prior_weights = normalize_mixture_weights(weight)
+        self._finite_mixture_component_names = [
+            str(prior.get("name", f"component:{index}"))
+            for index, prior in enumerate(priors)
+        ]
+        self._finite_mixture_target_history = [
+            {
+                "x": row,
+                "y": float(value),
+                "observation_variance": max(float(sigma2), 1e-12),
+            }
+            for row, value, sigma2 in zip(rows, values, noise)
+        ]
+        self._finite_mixture_cross_validated_structure = True
+        self._finite_mixture_hierarchical_misspecification = False
+        self._finite_mixture_sequential = True
+        self._finite_mixture_update_count = int(
+            (diagnostics or {}).get("online_mixture_update_count", 0))
+        self.source_parametric_prior_diagnostics = dict(diagnostics or {})
+        self._refit_cross_validated_finite_mixture()
+
+    def _refit_cross_validated_finite_mixture(self) -> None:
+        """Recompute LOO structure evidence from the frozen component laws."""
+
+        components = list(self._finite_mixture_components)
+        priors = list(self._finite_mixture_component_priors)
+        prior_weight = np.asarray(
+            self._finite_mixture_prior_weights, dtype=float).reshape(-1)
+        history = list(self._finite_mixture_target_history)
+        if (
+            not components
+            or len(components) != len(priors)
+            or len(components) != len(prior_weight)
+        ):
+            raise RuntimeError(
+                "cross-validated finite-mixture state is incomplete")
+
+        rows = [entry["x"] for entry in history]
+        target = np.asarray([entry["y"] for entry in history], dtype=float)
+        observation_variance = np.asarray([
+            entry["observation_variance"] for entry in history
+        ], dtype=float)
+        diagnostics = dict(getattr(
+            self, "source_parametric_prior_diagnostics", {}) or {})
+        temperature = max(
+            float(diagnostics.get("evidence_temperature", 1.0)), 1e-6)
+        log_score = []
+        score_diagnostics = []
+
+        for index, (component, prior) in enumerate(zip(components, priors)):
+            mean = np.asarray(prior["mean"], dtype=float).reshape(-1)
+            covariance = np.asarray(prior["covariance"], dtype=float)
+            covariance = 0.5 * (covariance + covariance.T)
+            deviation = max(
+                float(prior.get("deviation_variance", 1e-6)), 1e-12)
+            if rows:
+                phi = np.asarray(component.basis_matrix(rows), dtype=float)
+                residual = target - phi @ mean
+                predictive = phi @ covariance @ phi.T
+                predictive = 0.5 * (predictive + predictive.T)
+                predictive += np.diag(deviation + observation_variance)
+                score, score_info = self._gaussian_loo_log_score(
+                    residual, predictive)
+            else:
+                score = 0.0
+                score_info = {
+                    "loo_count": 0,
+                    "loo_mean_log_score": 0.0,
+                    "loo_median_abs_standardized_residual": 0.0,
+                }
+            log_score.append(float(score))
+            score_diagnostics.append({
+                "name": str(prior.get("name", f"component:{index}")),
+                **score_info,
+                "target_oracle_used_for_structure_score": False,
+            })
+
+            component.set_parametric_prior(
+                mean, deviation, covariance)
+            for entry in history:
+                component.update(
+                    entry["x"],
+                    entry["y"],
+                    entry["observation_variance"],
+                )
+
+        log_score = np.asarray(log_score, dtype=float)
+        prior_weight, posterior_weight = posterior_mixture_weights(
+            prior_weight, log_score, temperature)
+        names = list(self._finite_mixture_component_names)
+        diagnostics.update({
+            "adaptation_mode": (
+                "sequential_cross_validated_target_evidence_mixture"),
+            "structure_score_mode": "loo_predictive",
+            "structure_score_cross_fitted": True,
+            "component_names": names,
+            "component_prior_weights": prior_weight.tolist(),
+            "component_log_evidence": log_score.tolist(),
+            "component_loo_predictive_diagnostics": score_diagnostics,
+            "component_posterior_weights": posterior_weight.tolist(),
+            "selected_component": str(names[int(
+                np.argmax(posterior_weight))]),
+            "target_only_posterior_weight": float(sum(
+                mass for name, mass in zip(names, posterior_weight)
+                if str(name).startswith("target:null")
+            )),
+            "source_posterior_weight": float(sum(
+                mass for name, mass in zip(names, posterior_weight)
+                if not str(name).startswith("target:null")
+            )),
+            "target_observation_count": int(len(rows)),
+            "online_mixture_update_count": int(
+                self._finite_mixture_update_count),
+            "posterior_target_data_used": bool(rows),
+            "target_oracle_used": False,
+            "target_oracle_used_for_structure_score": False,
+        })
+        self.set_moment_matched_posterior(
+            components,
+            posterior_weight,
+            diagnostics=diagnostics,
+            sequential_updates=True,
+        )
 
     def set_moment_matched_posterior(
         self,
@@ -513,8 +1375,16 @@ class ParametricGPR:
         self._min_quadratic_variance_seen = float("inf")
         self._max_abs_posterior_mean_seen = 0.0
         self.source_parametric_prior_diagnostics = dict(diagnostics or {})
+        single_aggregate = bool(
+            (diagnostics or {}).get("single_aggregate_hyperlaw", False)
+            and len(components) == 1
+        )
         self.source_parametric_prior_diagnostics.update({
-            "posterior_projection": "finite_mixture_moment_match",
+            "posterior_projection": (
+                "single_gaussian_identity_projection"
+                if single_aggregate
+                else "finite_mixture_moment_match"
+            ),
             "posterior_component_count": int(len(components)),
             "posterior_weight_sum": float(np.sum(weight)),
             "posterior_effective_component_count": float(
@@ -527,7 +1397,130 @@ class ParametricGPR:
                 ])
             ),
         })
+        diagnostic_names = (
+            self._finite_mixture_component_names
+            if self._finite_mixture_component_names else [
+                str(value) for value in names
+            ]
+        )
+        self.source_parametric_prior_diagnostics.update(
+            self._residual_rank_mixture_diagnostics(
+                diagnostic_names, weight))
+        role_diagnostics = self._role_assignment_mixture_diagnostics(
+            diagnostic_names, weight)
+        if bool((diagnostics or {}).get(
+            "assignment_group_masses_fixed", False
+        )):
+            role_diagnostics.update({
+                "target_role_assignment_target_labels_used_for_update": False,
+                "target_role_assignment_target_labels_used_for_prior": bool(
+                    (diagnostics or {}).get(
+                        "target_labels_used_for_group_masses", False)),
+                "target_role_assignment_target_labels_used_for_online_update": (
+                    False),
+                "target_role_assignment_conditional_expert_uses_target_labels": (
+                    bool((diagnostics or {}).get(
+                        "posterior_target_data_used", False))
+                ),
+                "target_role_assignment_update_scope": (
+                    "charged_pilot_assignment_prior_then_frozen_"
+                    "conditional_expert_only"
+                    if bool((diagnostics or {}).get(
+                        "target_labels_used_for_group_masses", False))
+                    else "frozen_assignment_marginal_conditional_expert_only"),
+            })
+        self.source_parametric_prior_diagnostics.update(role_diagnostics)
         self._invalidate_backend_cache()
+
+    @staticmethod
+    def group_mass_preserving_weights(
+        weights,
+        log_evidence,
+        group_labels,
+        group_masses,
+        temperature=1.0,
+    ):
+        """Update component conditionals while keeping group masses fixed."""
+
+        weight = np.asarray(weights, dtype=float).reshape(-1)
+        evidence = np.asarray(log_evidence, dtype=float).reshape(-1)
+        labels = [str(value) for value in group_labels]
+        if len(weight) == 0 or len(weight) != len(evidence):
+            raise ValueError("grouped mixture weights and evidence must align")
+        if len(labels) != len(weight):
+            raise ValueError("group labels must align with mixture components")
+        if np.any(weight < 0.0) or not np.all(np.isfinite(weight)):
+            raise ValueError("grouped mixture weights must be nonnegative")
+        if not np.all(np.isfinite(evidence)):
+            raise ValueError("grouped mixture evidence must be finite")
+        masses = {
+            str(key): max(float(value), 0.0)
+            for key, value in dict(group_masses).items()
+        }
+        groups = sorted(set(labels))
+        if set(masses) != set(groups):
+            raise ValueError("fixed group masses must cover every group")
+        total_mass = float(sum(masses.values()))
+        if total_mass <= 0.0:
+            raise ValueError("fixed group masses need positive total mass")
+        masses = {key: value / total_mass for key, value in masses.items()}
+        posterior = np.zeros(len(weight), dtype=float)
+        for group in groups:
+            indices = np.asarray([
+                index for index, label in enumerate(labels) if label == group
+            ], dtype=int)
+            conditional = weight[indices]
+            if float(np.sum(conditional)) <= 0.0:
+                conditional = np.ones(len(indices), dtype=float)
+            conditional /= float(np.sum(conditional))
+            _, updated = posterior_mixture_weights(
+                conditional,
+                evidence[indices],
+                max(float(temperature), 1e-6),
+            )
+            posterior[indices] = float(masses[group]) * updated
+        posterior /= float(np.sum(posterior))
+        return posterior, masses
+
+    def set_group_mass_preserving_posterior(
+        self,
+        component_models,
+        weights,
+        group_labels,
+        group_masses,
+        diagnostics=None,
+    ) -> None:
+        """Install a hierarchical mixture with frozen top-level masses."""
+
+        components = list(component_models)
+        labels = [str(value) for value in group_labels]
+        weight = np.asarray(weights, dtype=float).reshape(-1)
+        if len(components) != len(weight) or len(labels) != len(weight):
+            raise ValueError("grouped posterior components must align")
+        zero_evidence = np.zeros(len(weight), dtype=float)
+        normalized, masses = self.group_mass_preserving_weights(
+            weight,
+            zero_evidence,
+            labels,
+            group_masses,
+            temperature=1.0,
+        )
+        payload = dict(diagnostics or {})
+        payload.update({
+            "assignment_group_masses_fixed": True,
+            "assignment_group_labels": labels,
+            "assignment_group_masses": dict(masses),
+            "target_oracle_used_for_group_masses": False,
+        })
+        self.set_moment_matched_posterior(
+            components,
+            normalized,
+            diagnostics=payload,
+            sequential_updates=True,
+        )
+        self._finite_mixture_preserve_group_masses = True
+        self._finite_mixture_group_labels = labels
+        self._finite_mixture_group_masses = dict(masses)
 
     def _update_finite_mixture(
         self,
@@ -536,6 +1529,34 @@ class ParametricGPR:
         observation_variance: float,
     ) -> None:
         """Apply one exact finite-mixture Bayes update before moment matching."""
+
+        if bool(getattr(
+            self, "_finite_mixture_cross_validated_structure", False
+        )):
+            self._finite_mixture_target_history.append({
+                "x": tuple(int(v) for v in np.asarray(x, dtype=int)),
+                "y": float(y),
+                "observation_variance": max(
+                    float(observation_variance), 1e-12),
+            })
+            self._finite_mixture_update_count = int(getattr(
+                self, "_finite_mixture_update_count", 0)) + 1
+            self._refit_cross_validated_finite_mixture()
+            return
+
+        if bool(getattr(
+            self, "_finite_mixture_hierarchical_misspecification", False
+        )):
+            self._finite_mixture_target_history.append({
+                "x": tuple(int(v) for v in np.asarray(x, dtype=int)),
+                "y": float(y),
+                "observation_variance": max(
+                    float(observation_variance), 1e-12),
+            })
+            self._finite_mixture_update_count = int(getattr(
+                self, "_finite_mixture_update_count", 0)) + 1
+            self._refit_hierarchical_finite_mixture()
+            return
 
         components = list(getattr(self, "_finite_mixture_components", []))
         weight = np.asarray(
@@ -567,11 +1588,23 @@ class ParametricGPR:
             self, "source_parametric_prior_diagnostics", {}) or {})
         temperature = max(
             float(diagnostics.get("evidence_temperature", 1.0)), 1e-6)
-        log_weight = np.log(np.maximum(weight, 1e-300))
-        log_weight += log_predictive / temperature
-        log_weight -= float(np.max(log_weight))
-        posterior_weight = np.exp(log_weight)
-        posterior_weight /= float(np.sum(posterior_weight))
+        weight_before = weight.copy()
+        if bool(getattr(
+            self, "_finite_mixture_preserve_group_masses", False
+        )):
+            posterior_weight, fixed_group_masses = (
+                self.group_mass_preserving_weights(
+                    weight,
+                    log_predictive,
+                    self._finite_mixture_group_labels,
+                    self._finite_mixture_group_masses,
+                    temperature,
+                )
+            )
+        else:
+            weight_before, posterior_weight = posterior_mixture_weights(
+                weight, log_predictive, temperature)
+            fixed_group_masses = None
 
         for component in components:
             component.update(x, float(y), observation_variance)
@@ -583,18 +1616,18 @@ class ParametricGPR:
         diagnostics.update({
             "adaptation_mode": "sequential_target_evidence_mixture",
             "component_names": component_names,
-            "component_posterior_weights_before": weight.tolist(),
+            "component_posterior_weights_before": weight_before.tolist(),
             "component_log_predictive": log_predictive.tolist(),
             "component_posterior_weights": posterior_weight.tolist(),
             "selected_component": str(component_names[int(
                 np.argmax(posterior_weight))]),
             "target_only_posterior_weight": float(sum(
                 mass for name, mass in zip(component_names, posterior_weight)
-                if name == "target:null"
+                if str(name).startswith("target:null")
             )),
             "source_posterior_weight": float(sum(
                 mass for name, mass in zip(component_names, posterior_weight)
-                if name != "target:null"
+                if not str(name).startswith("target:null")
             )),
             "target_observation_count": int(
                 diagnostics.get("target_observation_count", 0)) + 1,
@@ -602,6 +1635,14 @@ class ParametricGPR:
             "posterior_target_data_used": True,
             "target_oracle_used": False,
         })
+        if fixed_group_masses is not None:
+            diagnostics.update({
+                "adaptation_mode": (
+                    "sequential_assignment_prior_conditional_expert_mixture"),
+                "assignment_group_masses_fixed": True,
+                "assignment_group_masses": dict(fixed_group_masses),
+                "target_oracle_used_for_group_masses": False,
+            })
         self.set_moment_matched_posterior(
             components,
             posterior_weight,
@@ -691,6 +1732,16 @@ class ParametricGPR:
             self, "source_parametric_prior_diagnostics", None)
         if source_prior is not None:
             diagnostics["source_parametric_prior"] = dict(source_prior)
+        if (
+            self.basis_map is not None
+            and hasattr(self.basis_map, "posterior_coefficient_diagnostics")
+        ):
+            basis_posterior = (
+                self.basis_map.posterior_coefficient_diagnostics(
+                    self.a[:self.p], self.C[:self.p, :self.p])
+            )
+            if basis_posterior is not None:
+                diagnostics["basis_posterior"] = basis_posterior
         return diagnostics
 
     def enable_adaptive_sparsity(

@@ -27,6 +27,7 @@ from core.cumulative_risk import (  # noqa: E402
     RiskExposure,
     canonical_risk_descriptor,
 )
+from core.gpr import ParametricGPR  # noqa: E402
 
 
 class MetaPriorTests(unittest.TestCase):
@@ -617,6 +618,907 @@ class MetaPriorTests(unittest.TestCase):
             "universal_coordinate").risk_exposures(x)
         self.assertEqual(exposure.A.shape, (3,))
         self.assertEqual(exposure.N.shape, (2,))
+
+    def test_boundary_aligned_phi_and_excitation_pool_are_oracle_free(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+        ]
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("oracle was called")
+
+        for _name, problem in sources:
+            problem.true_sigma = forbidden
+            problem.true_outputs = forbidden
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_latent_dim=2,
+            source_observation_mode="replicated",
+            source_observation_replicates=3,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            seed=519,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(519),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=100), prior)
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        pool = target.boundary_excitation_candidates(
+            n=64,
+            rng=np.random.default_rng(520),
+            pool_size=64,
+        )
+        self.assertEqual(len(pool), 64)
+        self.assertEqual(len(set(pool)), 64)
+        self.assertTrue(all(len(point) == 100 for point in pool))
+        contract = target.mean_risk_coordinate_contract()
+        self.assertEqual(
+            contract["constraint_mean_coordinate"],
+            "phi=source_aligned_chance_boundary",
+        )
+        self.assertEqual(
+            contract["coefficient_prior_training_target"],
+            "constraint_mean",
+        )
+        basis = target.gpr_basis_map(output_index=1)
+        self.assertEqual(basis.feature_dim, 2)
+        self.assertEqual(
+            basis.diagnostics()["output_mode"], "boundary_aligned")
+        diagnostics = prior.boundary_excitation_diagnostics
+        self.assertTrue(diagnostics["source_only"])
+        self.assertFalse(diagnostics["target_data_used"])
+        self.assertFalse(diagnostics["target_oracle_used"])
+
+    def test_boundary_aligned_mode_requires_chance_margin_supervision(self):
+        with self.assertRaisesRegex(ValueError, "chance-margin strata"):
+            LearnedMetaPrior(
+                observable_mean_coordinate=True,
+                observable_mean_mode="boundary_aligned",
+                observable_mean_training_target="constraint_mean",
+            )
+
+    def test_source_learned_exposure_mean_head_is_oracle_free(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="source_learned_exposure",
+            observable_mean_latent_dim=4,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=521,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(521),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target structural provider was called")
+
+        target.base.risk_exposures = forbidden
+        target.base.cumulative_risk_features = forbidden
+        x = target.sample_random(np.random.default_rng(522))
+        basis = target.gpr_basis_map(output_index=1)
+        features = basis.features(x)
+        self.assertEqual(features.shape, (4,))
+        self.assertTrue(np.all(np.isfinite(features)))
+        diagnostics = basis.diagnostics()
+        self.assertEqual(
+            diagnostics["mean_coordinate_input"],
+            "source_learned_exposure",
+        )
+        self.assertTrue(diagnostics["separate_mean_variance_heads"])
+        contract = target.mean_risk_coordinate_contract()
+        self.assertEqual(
+            contract["constraint_mean_input"],
+            "source_learned_exposure",
+        )
+        self.assertTrue(contract["separate_mean_variance_heads"])
+        audit = target.admissibility_audit()
+        self.assertTrue(audit["admissible_strict_lodo"])
+        self.assertFalse(audit["tcb_target_structural_provider_used"])
+
+    def test_observable_state_mean_head_is_oracle_free(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_latent_dim=4,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=527,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(527),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target outcome or risk provider was called")
+
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        target.base.risk_exposures = forbidden
+        x = target.sample_random(np.random.default_rng(528))
+        basis = target.gpr_basis_map(output_index=1)
+        features = basis.features(x)
+        self.assertEqual(features.shape, (4,))
+        self.assertTrue(np.all(np.isfinite(features)))
+        diagnostics = basis.diagnostics()
+        self.assertEqual(
+            diagnostics["mean_coordinate_input"],
+            "observable_state_exposure",
+        )
+        self.assertTrue(diagnostics["separate_mean_variance_heads"])
+        self.assertTrue(
+            diagnostics["alignment"]["observable_state_exposure"])
+        audit = target.admissibility_audit()
+        self.assertTrue(audit["admissible_strict_lodo"])
+        self.assertTrue(audit["observable_state_exposure_used"])
+        self.assertFalse(audit["tcb_target_structural_provider_used"])
+
+    def test_invariant_quadratic_mean_head_contract_is_frozen_and_auditable(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_descriptor_mode="set_invariant",
+            observable_mean_feature_mode="diagonal_quadratic",
+            observable_mean_latent_dim=3,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=529,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(529),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=100), prior)
+        basis = target.gpr_basis_map(output_index=1)
+        x = target.sample_random(np.random.default_rng(530))
+        self.assertEqual(basis.features(x).shape, (6,))
+        diagnostics = basis.diagnostics()
+        self.assertEqual(
+            diagnostics["observable_descriptor_mode"], "set_invariant")
+        self.assertEqual(
+            diagnostics["boundary_feature_mode"], "diagonal_quadratic")
+        contract = target.mean_risk_coordinate_contract()
+        self.assertEqual(
+            contract["constraint_mean_descriptor_mode"], "set_invariant")
+        self.assertEqual(
+            contract["constraint_mean_feature_mode"],
+            "diagonal_quadratic",
+        )
+        self.assertFalse(contract["coordinate_definition_uses_target_labels"])
+
+    def test_role_aligned_linear_mean_head_matches_target_without_labels(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_descriptor_mode="role_aligned",
+            observable_mean_feature_mode="linear",
+            observable_mean_latent_dim=3,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=531,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(531),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target outcome or oracle was called")
+
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        target.base.risk_exposures = forbidden
+        basis = target.gpr_basis_map(output_index=1)
+        x = target.sample_random(np.random.default_rng(532))
+        self.assertEqual(basis.features(x).shape, (3,))
+        diagnostics = basis.diagnostics()
+        self.assertEqual(
+            diagnostics["observable_descriptor_mode"], "role_aligned")
+        role_diagnostics = diagnostics["alignment"][
+            "channel_role_alignment"]
+        self.assertFalse(role_diagnostics["target_labels_used"])
+        self.assertFalse(role_diagnostics["target_oracle_used"])
+        self.assertTrue(role_diagnostics["target_matches"])
+        contract = target.mean_risk_coordinate_contract()
+        self.assertEqual(
+            contract["constraint_mean_descriptor_mode"], "role_aligned")
+        self.assertFalse(contract["coordinate_definition_uses_target_labels"])
+
+    def test_role_transport_mean_head_supports_unseen_cardinality(self):
+        sources = [
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_descriptor_mode="role_transport",
+            observable_mean_feature_mode="linear",
+            observable_mean_latent_dim=3,
+            observable_mean_latent_transform="source_tanh",
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=537,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(537),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("FactorShockStatePolicyRZDT1", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target outcome or oracle was called")
+
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        target.base.risk_exposures = forbidden
+        basis = target.gpr_basis_map(output_index=1)
+        x = target.sample_random(np.random.default_rng(538))
+        features = basis.features(x)
+        diagnostics = basis.diagnostics()
+        alignment = diagnostics["alignment"]["channel_role_alignment"]
+        target_match = next(iter(alignment["target_matches"].values()))
+        self.assertEqual(features.shape, (3,))
+        self.assertTrue(np.all(np.isfinite(features)))
+        self.assertEqual(
+            diagnostics["observable_descriptor_mode"], "role_transport")
+        self.assertTrue(alignment["partial_transport"])
+        self.assertEqual(target_match["channel_count"], 2)
+        self.assertEqual(len(target_match["transport_weights"]), 2)
+        calibration = basis.source_target_epistemic_calibration()
+        self.assertGreaterEqual(
+            calibration["epistemic_covariance_scale"], 1.0)
+        self.assertFalse(calibration["target_labels_used"])
+        self.assertFalse(calibration["target_oracle_used"])
+
+    def test_role_assignment_posterior_is_finite_low_rank_and_oracle_free(self):
+        sources = [
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_descriptor_mode="role_adaptive_ordered",
+            observable_mean_feature_mode="linear",
+            observable_mean_latent_dim=3,
+            observable_mean_latent_transform="source_tanh",
+            observable_mean_role_assignment_posterior=True,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=543,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(543),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("FactorShockStatePolicyRZDT1", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target outcome or oracle was called")
+
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        target.base.risk_exposures = forbidden
+        basis = target.gpr_basis_map(output_index=1)
+        x = target.sample_random(np.random.default_rng(544))
+        diagnostics = basis.diagnostics()["role_assignment_posterior"]
+        self.assertEqual(diagnostics["assignment_count"], 6)
+        self.assertEqual(diagnostics["active_feature_dim_per_atom"], 3)
+        self.assertEqual(basis.features(x).shape, (18,))
+        self.assertTrue(diagnostics["permutation_equivariant"])
+        self.assertFalse(
+            diagnostics["target_labels_used_to_define_assignments"])
+        self.assertFalse(
+            diagnostics["target_oracle_used_to_define_assignments"])
+
+        components = basis.source_parametric_prior_components()
+        self.assertEqual(len(components), 12)
+        self.assertTrue(all(
+            len(component["mean"]) == 19
+            and component["covariance"].shape == (19, 19)
+            and len(component["diagnostics"][
+                "role_assignment_active_coefficients"]) == 4
+            for component in components
+        ))
+        aggregate = basis.source_parametric_prior()
+        self.assertEqual(aggregate["mean"].shape, (19,))
+        self.assertGreaterEqual(
+            float(np.min(np.linalg.eigvalsh(aggregate["covariance"]))),
+            -1e-9,
+        )
+        null = dict(aggregate)
+        null["name"] = "target:null"
+        null["prior_weight"] = 0.5
+        null_components = basis.expand_target_role_assignment_components([null])
+        self.assertEqual(len(null_components), 6)
+        self.assertAlmostEqual(
+            sum(component["prior_weight"] for component in null_components),
+            0.5,
+        )
+        contract = target.mean_risk_coordinate_contract()
+        self.assertTrue(contract["channel_role_assignment_posterior"])
+        self.assertTrue(
+            contract[
+                "channel_role_assignment_weights_use_charged_target_labels"])
+        self.assertFalse(
+            contract["channel_role_assignment_weights_use_target_oracle"])
+
+    def test_source_geometry_role_prior_is_shared_by_source_and_null_orbits(self):
+        sources = [
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_descriptor_mode="role_adaptive_ordered",
+            observable_mean_feature_mode="linear",
+            observable_mean_latent_dim=3,
+            observable_mean_latent_transform="source_tanh",
+            observable_mean_role_assignment_posterior=True,
+            observable_mean_role_assignment_prior="source_geometry",
+            observable_mean_role_assignment_prior_temperature_scale=0.5,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=545,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(545),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("FactorShockStatePolicyRZDT1", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target outcome or oracle was called")
+
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        target.base.risk_exposures = forbidden
+        basis = target.gpr_basis_map(output_index=1)
+        role = basis.diagnostics()["role_assignment_posterior"]
+        assignments = list(role["assignments"])
+        expected = np.asarray(role["assignment_prior_weights"], dtype=float)
+        prior_diagnostics = role["assignment_prior_diagnostics"]
+        self.assertAlmostEqual(float(np.sum(expected)), 1.0, places=12)
+        self.assertGreater(float(np.max(expected)), float(np.min(expected)))
+        self.assertTrue(
+            prior_diagnostics["maximum_prior_matches_hard_assignment"])
+        self.assertFalse(prior_diagnostics["target_labels_used"])
+        self.assertFalse(prior_diagnostics["target_oracle_used"])
+
+        source_mass = {assignment: 0.0 for assignment in assignments}
+        for component in basis.source_parametric_prior_components():
+            label = component["diagnostics"]["role_assignment"]
+            source_mass[label] += float(component["prior_weight"])
+        source = np.asarray([
+            source_mass[assignment] for assignment in assignments],
+            dtype=float,
+        )
+        source /= float(np.sum(source))
+        np.testing.assert_allclose(source, expected, atol=1e-12, rtol=1e-12)
+
+        aggregate = basis.source_parametric_prior()
+        null = dict(aggregate)
+        null["name"] = "target:null"
+        null["prior_weight"] = 1.0
+        expanded = basis.expand_target_role_assignment_components([null])
+        null_mass = {
+            component["diagnostics"]["role_assignment"]: float(
+                component["prior_weight"])
+            for component in expanded
+        }
+        np.testing.assert_allclose(
+            [null_mass[assignment] for assignment in assignments],
+            expected,
+            atol=1e-12,
+            rtol=1e-12,
+        )
+
+    def test_intervention_transport_uses_source_only_response_roles(self):
+        sources = [
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=18)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=18)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_descriptor_mode="role_intervention_transport",
+            observable_mean_feature_mode="linear",
+            observable_mean_latent_dim=3,
+            observable_mean_latent_transform="source_tanh",
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=539,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(539),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("FactorShockStatePolicyRZDT1", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target outcome or oracle was called")
+
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        target.base.risk_exposures = forbidden
+        basis = target.gpr_basis_map(output_index=1)
+        x = target.sample_random(np.random.default_rng(540))
+        self.assertEqual(basis.features(x).shape, (3,))
+        diagnostics = basis.diagnostics()
+        alignment = diagnostics["alignment"]["channel_role_alignment"]
+        target_match = next(iter(alignment["target_matches"].values()))
+        self.assertEqual(
+            diagnostics["observable_descriptor_mode"],
+            "role_intervention_transport",
+        )
+        self.assertEqual(alignment["signature_mode"], "intervention_response")
+        self.assertTrue(alignment["barycentric_transport"])
+        self.assertEqual(
+            alignment["source_signature_pool"],
+            "deterministic_unlabeled_intervention_pool",
+        )
+        self.assertEqual(
+            target_match["transport_geometry"], "barycentric_response")
+        self.assertFalse(target_match["target_labels_used"])
+        self.assertFalse(target_match["target_oracle_used"])
+
+    def test_target_orthogonal_residual_is_outcome_free_and_updates_online(self):
+        sources = [
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=18)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=18)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_descriptor_mode="role_adaptive_ordered",
+            observable_mean_feature_mode="linear",
+            observable_mean_latent_dim=3,
+            observable_mean_latent_transform="source_tanh",
+            observable_mean_target_residual_rank=2,
+            observable_mean_target_residual_prior_scale=0.5,
+            observable_mean_target_residual_pool_size=64,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=541,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(541),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("FactorShockStatePolicyRZDT1", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target outcome or oracle was called")
+
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        target.base.risk_exposures = forbidden
+        basis = target.gpr_basis_map(output_index=1)
+        diagnostics = basis.diagnostics()["target_orthogonal_residual"]
+        self.assertEqual(diagnostics["status"], "fit")
+        self.assertEqual(diagnostics["effective_rank"], 2)
+        self.assertLess(diagnostics["maximum_base_cross_moment"], 1e-8)
+        self.assertFalse(diagnostics["target_labels_used"])
+        self.assertFalse(diagnostics["target_oracle_used"])
+
+        pool = basis._target_residual_points
+        features = basis.features_many(pool)
+        base = np.column_stack([
+            np.ones(len(pool)), features[:, :basis.base_feature_dim]])
+        residual = features[:, basis.base_feature_dim:]
+        np.testing.assert_allclose(
+            base.T @ residual / len(pool),
+            0.0,
+            atol=1e-8,
+            rtol=0.0,
+        )
+        source_prior = basis.source_parametric_prior()
+        self.assertEqual(source_prior["mean"].shape, (1 + basis.feature_dim,))
+        self.assertEqual(
+            source_prior["covariance"].shape,
+            (1 + basis.feature_dim, 1 + basis.feature_dim),
+        )
+        np.testing.assert_allclose(source_prior["mean"][-2:], 0.0)
+        np.testing.assert_allclose(
+            source_prior["covariance"][:-2, -2:], 0.0)
+
+        rank_components = basis.expand_target_residual_rank_components(
+            basis.source_parametric_prior_components(),
+            [0.7, 0.2, 0.1],
+        )
+        self.assertEqual(
+            len(rank_components),
+            3 * len(basis.source_parametric_prior_components()),
+        )
+        self.assertAlmostEqual(
+            sum(component["prior_weight"] for component in rank_components),
+            sum(component["prior_weight"] for component in
+                basis.source_parametric_prior_components()),
+            places=12,
+        )
+        by_rank = {
+            component["diagnostics"]["target_residual_structure_rank"]:
+            component
+            for component in rank_components[:3]
+        }
+        rank0 = np.diag(by_rank[0]["covariance"])[-2:]
+        rank1 = np.diag(by_rank[1]["covariance"])[-2:]
+        rank2 = np.diag(by_rank[2]["covariance"])[-2:]
+        np.testing.assert_allclose(rank0, 1e-12)
+        self.assertGreater(rank1[0], 1e-12)
+        self.assertAlmostEqual(rank1[1], 1e-12)
+        self.assertTrue(np.all(rank2 > 1e-12))
+        self.assertTrue(all(
+            not component["diagnostics"][
+                "target_oracle_used_to_define_structure_prior"]
+            for component in rank_components
+        ))
+
+        model = ParametricGPR(d=target.d, basis_map=basis)
+        model.set_parametric_prior(
+            source_prior["mean"],
+            source_prior["deviation_variance"],
+            source_prior["covariance"],
+        )
+        candidate_index = int(np.argmax(np.linalg.norm(residual, axis=1)))
+        candidate = pool[candidate_index]
+        residual_slice = slice(
+            1 + basis.base_feature_dim,
+            1 + basis.base_feature_dim + basis.target_residual_rank,
+        )
+        before = float(np.trace(model.C[residual_slice, residual_slice]))
+        model.update(candidate, 0.25, 0.01)
+        after = float(np.trace(model.C[residual_slice, residual_slice]))
+        self.assertLess(after, before)
+
+    def test_role_adaptive_mean_head_falls_back_on_unseen_cardinality(self):
+        sources = [
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_descriptor_mode="role_adaptive_set_invariant",
+            observable_mean_feature_mode="linear",
+            observable_mean_latent_dim=3,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=533,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(533),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("FactorShockStatePolicyRZDT1", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target outcome or oracle was called")
+
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        target.base.risk_exposures = forbidden
+        basis = target.gpr_basis_map(output_index=1)
+        x = target.sample_random(np.random.default_rng(534))
+        self.assertEqual(basis.features(x).shape, (3,))
+        diagnostics = basis.diagnostics()
+        selection = diagnostics["role_coordinate_selection"]
+        self.assertFalse(selection["channel_cardinality_supported"])
+        self.assertEqual(selection["selected_coordinate"], "set_invariant")
+        self.assertFalse(selection["target_labels_used"])
+        self.assertFalse(selection["target_oracle_used"])
+        self.assertEqual(
+            basis.source_target_coordinate_selection(), selection)
+        components = basis.source_parametric_prior_components()
+        self.assertTrue(components)
+        self.assertTrue(all(
+            component["diagnostics"]["role_coordinate_selection"]
+            ["selected_coordinate"] == "set_invariant"
+            for component in components
+        ))
+
+    def test_role_adaptive_support_residual_is_oracle_free_and_linear(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("QueueResourceControl", self._problem(
+                "QueueResourceControl", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="observable_state_exposure",
+            observable_mean_descriptor_mode="role_adaptive_ordered",
+            observable_mean_feature_mode="linear",
+            observable_mean_latent_dim=3,
+            observable_mean_latent_transform="source_support_residual",
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=535,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(535),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("InventorySupplyChain", d=100), prior)
+
+        def forbidden(*_args, **_kwargs):
+            raise AssertionError("target outcome or oracle was called")
+
+        target.base.true_objective = forbidden
+        target.base.true_constraint_mean = forbidden
+        target.base.true_sigma = forbidden
+        target.base.risk_exposures = forbidden
+        basis = target.gpr_basis_map(output_index=1)
+        x = target.sample_random(np.random.default_rng(536))
+        features = basis.features(x)
+        diagnostics = basis.diagnostics()["selected_coordinate_diagnostics"]
+        transform = diagnostics["latent_transform_diagnostics"]
+
+        self.assertEqual(features.shape, (4,))
+        self.assertTrue(np.all(np.isfinite(features)))
+        self.assertGreaterEqual(features[-1], 0.0)
+        self.assertLessEqual(features[-1], 1.0)
+        self.assertEqual(
+            diagnostics["latent_transform"], "source_support_residual")
+        self.assertTrue(transform["residual_channel"])
+        self.assertFalse(transform["selection_uses_target_data"])
+        self.assertFalse(transform["selection_uses_target_oracle"])
+        source_prior = basis.source_parametric_prior()
+        self.assertEqual(source_prior["mean"].shape, (5,))
+        self.assertEqual(source_prior["covariance"].shape, (5, 5))
+
+    def test_provider_exposure_mean_head_is_upper_bound_only(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+        ]
+        prior = LearnedMetaPrior(
+            local_dim=3,
+            shared_dim=2,
+            component_stage="coordinate",
+            observable_mean_coordinate=True,
+            observable_mean_mode="boundary_aligned",
+            observable_mean_training_target="chance_margin",
+            observable_mean_input_mode="provider_exposure",
+            observable_mean_latent_dim=2,
+            source_observation_mode="replicated",
+            source_observation_replicates=2,
+            source_design_mode="universal_mixture",
+            source_universal_fraction=1.0,
+            teacher_records_per_domain=0,
+            seed=523,
+        ).fit_from_source_problems(
+            sources,
+            n_records_per_domain=16,
+            rng=np.random.default_rng(523),
+        )
+        target = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=100), prior)
+        basis = target.gpr_basis_map(output_index=1)
+        x = target.sample_random(np.random.default_rng(524))
+        self.assertTrue(np.all(np.isfinite(basis.features(x))))
+        audit = target.admissibility_audit()
+        self.assertFalse(audit["admissible_strict_lodo"])
+        self.assertFalse(audit["admissible_mainline"])
+        self.assertTrue(audit["tcb_target_structural_provider_used"])
+        self.assertTrue(audit["uses_problem_specific_formula"])
+
+    def test_template_free_boundary_pool_is_shared_across_mean_heads(self):
+        sources = [
+            ("FactorShockStatePolicyRZDT1", self._problem(
+                "FactorShockStatePolicyRZDT1", d=12)),
+            ("InventorySupplyChain", self._problem(
+                "InventorySupplyChain", d=12)),
+        ]
+
+        def fit(input_mode):
+            return LearnedMetaPrior(
+                local_dim=3,
+                shared_dim=2,
+                component_stage="coordinate",
+                observable_mean_coordinate=True,
+                observable_mean_mode="boundary_aligned",
+                observable_mean_training_target="chance_margin",
+                observable_mean_input_mode=input_mode,
+                observable_mean_latent_dim=2,
+                source_observation_mode="replicated",
+                source_observation_replicates=2,
+                source_design_mode="universal_mixture",
+                source_universal_fraction=1.0,
+                teacher_records_per_domain=0,
+                seed=525,
+            ).fit_from_source_problems(
+                sources,
+                n_records_per_domain=16,
+                rng=np.random.default_rng(525),
+            )
+
+        profile = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=100),
+            fit("policy_profile"),
+        )
+        exposure = MetaPriorProblemAdapter(
+            self._problem("QueueResourceControl", d=100),
+            fit("source_learned_exposure"),
+        )
+        kwargs = {
+            "n": 64,
+            "pool_size": 64,
+            "include_source_templates": False,
+        }
+        left = profile.boundary_excitation_candidates(
+            rng=np.random.default_rng(526), **kwargs)
+        right = exposure.boundary_excitation_candidates(
+            rng=np.random.default_rng(526), **kwargs)
+        self.assertEqual(left, right)
+        self.assertEqual(len(left), 64)
+        self.assertFalse(profile.meta_prior.boundary_excitation_diagnostics[
+            "source_boundary_templates_enabled"])
 
     def test_source_consensus_templates_are_oracle_free_ranked_and_varied(self):
         sources = [

@@ -43,6 +43,7 @@ class HVDConfig:
     cumulative_transfer_upper_z: float = 1.6448536269514722
     cumulative_source_task_weight_mode: str = "independent"
     cumulative_target_evidence_mode: str = "replication_only"
+    singleton_evidence_mode: str = "in_sample_residual"
 
 
 def gaussian_square_subexp_params(sigma2):
@@ -122,6 +123,12 @@ class OrthogonalHVD:
             raise ValueError(
                 "cumulative_target_evidence_mode must be "
                 "'replication_only' or 'prequential_upper'")
+        if self.config.singleton_evidence_mode not in {
+            "in_sample_residual", "source_prior",
+        }:
+            raise ValueError(
+                "singleton_evidence_mode must be in_sample_residual or "
+                "source_prior")
         self.n_outputs = int(self.config.n_outputs)
         self.records = {i: [] for i in range(self.n_outputs)}
         self.global_var = {i: 0.01 for i in range(self.n_outputs)}
@@ -168,6 +175,9 @@ class OrthogonalHVD:
             for i in range(self.n_outputs)
         }
         self.replicated_keys = {i: set() for i in range(self.n_outputs)}
+        self.source_prior_pseudo_keys = {
+            i: set() for i in range(self.n_outputs)
+        }
         self.prequential_upper_records = {
             i: {} for i in range(self.n_outputs)
         }
@@ -199,6 +209,8 @@ class OrthogonalHVD:
         self.__dict__.update(state)
         if not hasattr(self.config, "cumulative_target_evidence_mode"):
             self.config.cumulative_target_evidence_mode = "replication_only"
+        if not hasattr(self.config, "singleton_evidence_mode"):
+            self.config.singleton_evidence_mode = "in_sample_residual"
         if "_last_problem" not in self.__dict__:
             self._last_problem = None
         if "prequential_upper_records" not in self.__dict__:
@@ -208,6 +220,10 @@ class OrthogonalHVD:
         if "replication_dof" not in self.__dict__:
             self.replication_dof = {
                 i: {} for i in range(self.n_outputs)
+            }
+        if "source_prior_pseudo_keys" not in self.__dict__:
+            self.source_prior_pseudo_keys = {
+                i: set() for i in range(self.n_outputs)
             }
         if "cumulative_fit_method" not in self.__dict__:
             self.cumulative_fit_method = {
@@ -515,6 +531,7 @@ class OrthogonalHVD:
         return float(sum(
             self._record_replication_dof(i, x)
             for x, _ in self.records.get(int(i), [])
+            if tuple(x) not in self.source_prior_pseudo_keys.get(int(i), set())
         ))
 
     def _residual_square_tail_radius(self, i):
@@ -594,6 +611,97 @@ class OrthogonalHVD:
             self.replication_dof[i][x_tuple] = 1.0
         self._fit_output(i, problem)
 
+    def _source_prior_singleton_variance(self, i, x, problem=None):
+        """Predict singleton variance without reading its response residual.
+
+        Source HVD coefficients come from ordinary replicated source
+        simulations. Their held-out target prediction supplies an
+        outcome-free placeholder until the same target policy is replicated.
+        """
+
+        problem_ref = problem or self._last_problem
+        i = int(i)
+        x_tuple = tuple(int(value) for value in np.asarray(x, dtype=int))
+        if problem_ref is None:
+            return float(max(self.global_var.get(i, 0.01), self.floor))
+        feature = self._cumulative_features(
+            x_tuple, problem_ref, output_index=i)
+        if feature is None:
+            sigma = max(float(getattr(problem_ref, "sigma_level", 0.0)), 0.0)
+            return float(max(sigma ** 2, self.floor))
+        feature = np.asarray(feature, dtype=float).reshape(-1)
+        scale = 1.0
+        if hasattr(problem_ref, "cumulative_hvd_prior_scale_mean"):
+            value = problem_ref.cumulative_hvd_prior_scale_mean(
+                output_index=i)
+            if value is not None:
+                scale = max(float(value), self.floor)
+
+        coefficients = None
+        domains = []
+        if (
+            str(self.config.cumulative_transfer_mode) == "source_mixture"
+            and hasattr(problem_ref, "cumulative_hvd_prior_components")
+        ):
+            try:
+                payload = problem_ref.cumulative_hvd_prior_components(
+                    output_index=i, feature_dim=len(feature))
+            except TypeError:
+                payload = problem_ref.cumulative_hvd_prior_components(i)
+            if isinstance(payload, dict):
+                domains = list(payload.get("domains", []))
+                payload = payload.get("coefficients")
+            if payload is not None:
+                matrix = np.asarray(payload, dtype=float)
+                if (
+                    matrix.ndim == 2
+                    and matrix.shape[1] == len(feature)
+                    and len(matrix) > 0
+                    and np.all(np.isfinite(matrix))
+                ):
+                    weights = np.full(
+                        len(matrix), 1.0 / float(len(matrix)), dtype=float)
+                    task = self.cumulative_source_task_posterior.get(i)
+                    if (
+                        self.config.cumulative_source_task_weight_mode
+                        == "constraint_mean"
+                        and task is not None
+                        and domains
+                    ):
+                        task_weight = dict(zip(
+                            task["component_names"],
+                            task["posterior_weights"],
+                        ))
+                        candidate = np.asarray([
+                            task_weight.get(
+                                domain,
+                                task_weight.get(f"source:{domain}", 0.0),
+                            )
+                            for domain in domains
+                        ], dtype=float)
+                        if float(np.sum(candidate)) > 0.0:
+                            weights = candidate / float(np.sum(candidate))
+                    coefficients = weights @ matrix
+        if coefficients is None and hasattr(
+            problem_ref, "cumulative_hvd_prior_beta"
+        ):
+            try:
+                coefficients = problem_ref.cumulative_hvd_prior_beta(
+                    output_index=i, feature_dim=len(feature))
+            except TypeError:
+                coefficients = problem_ref.cumulative_hvd_prior_beta(i)
+        if coefficients is None:
+            sigma = max(float(getattr(problem_ref, "sigma_level", 0.0)), 0.0)
+            return float(max(sigma ** 2, self.floor))
+        coefficients = np.asarray(coefficients, dtype=float).reshape(-1)
+        if len(coefficients) != len(feature):
+            raise RuntimeError("source HVD singleton prior changed dimension")
+        variance = scale * max(float(feature @ coefficients), self.floor)
+        cap = self._residual_variance_cap(i, problem_ref)
+        if cap is not None:
+            variance = min(variance, float(cap))
+        return float(max(variance, self.floor))
+
     def initialize(self, samples, observations, gpr_models, problem=None):
         """Initialize from pre-sample residuals.
 
@@ -601,6 +709,29 @@ class OrthogonalHVD:
         contains all output channels.
         """
         self._last_problem = problem or self._last_problem
+        if self.config.singleton_evidence_mode == "source_prior":
+            for x_tuple in samples:
+                key = tuple(int(value) for value in x_tuple)
+                obs_list = list(observations.get(key, []))
+                if not obs_list:
+                    continue
+                for i in range(self.n_outputs):
+                    values = np.asarray([
+                        float(observation[i]) for observation in obs_list
+                    ], dtype=float)
+                    if len(values) >= 2:
+                        variance = max(float(np.var(values, ddof=1)), self.floor)
+                        self.replicated_keys[i].add(key)
+                        self.replication_dof[i][key] = float(len(values) - 1)
+                    else:
+                        variance = self._source_prior_singleton_variance(
+                            i, key, problem)
+                        self.source_prior_pseudo_keys[i].add(key)
+                        self.replication_dof[i][key] = 0.0
+                    self.records[i].append((key, variance))
+            for i in range(self.n_outputs):
+                self._fit_output(i, problem)
+            return
         for x_tuple in samples:
             obs_list = observations.get(tuple(x_tuple), [])
             if not obs_list:
@@ -636,15 +767,25 @@ class OrthogonalHVD:
         raw_resid2 = self._safe_residual_square(float(y) - float(mu), i, problem)
         epistemic_correction = max(float(epistemic_var or 0.0), 0.0)
         if replicate_variance is None:
-            resid2 = max(raw_resid2 - epistemic_correction, self.floor)
-            variance_source = "innovation_minus_epistemic"
-            self.records[i].append((x_tuple, resid2))
-            # This prediction was formed before observing y. Its raw squared
-            # innovation has expectation v(x) plus squared mean error, so it
-            # is conservative variance-shape evidence without target oracle
-            # information. Initial in-sample residuals never enter this map.
-            self.prequential_upper_records[i][x_tuple] = float(raw_resid2)
-            self.replication_dof[i][x_tuple] = 1.0
+            if self.config.singleton_evidence_mode == "source_prior":
+                resid2 = self._source_prior_singleton_variance(
+                    i, x_tuple, problem)
+                variance_source = "source_prior_singleton"
+                if not any(
+                    tuple(record[0]) == x_tuple for record in self.records[i]
+                ):
+                    self.records[i].append((x_tuple, resid2))
+                self.source_prior_pseudo_keys[i].add(x_tuple)
+                self.replication_dof[i][x_tuple] = 0.0
+            else:
+                resid2 = max(raw_resid2 - epistemic_correction, self.floor)
+                variance_source = "innovation_minus_epistemic"
+                self.records[i].append((x_tuple, resid2))
+                # This prediction was formed before observing y. Its raw
+                # squared innovation has expectation v(x) plus squared mean
+                # error, so it is conservative variance-shape evidence.
+                self.prequential_upper_records[i][x_tuple] = float(raw_resid2)
+                self.replication_dof[i][x_tuple] = 1.0
         else:
             resid2 = max(float(replicate_variance), self.floor)
             variance_source = "within_solution_replication"
@@ -654,6 +795,7 @@ class OrthogonalHVD:
             ]
             self.records[i].append((x_tuple, resid2))
             self.replicated_keys[i].add(x_tuple)
+            self.source_prior_pseudo_keys[i].discard(x_tuple)
             count = 2 if replicate_count is None else max(
                 int(replicate_count), 2)
             self.replication_dof[i][x_tuple] = float(count - 1)
@@ -2467,6 +2609,8 @@ class OrthogonalHVD:
                 self.config.cumulative_source_task_weight_mode),
             "cumulative_target_evidence_mode": str(
                 self.config.cumulative_target_evidence_mode),
+            "singleton_evidence_mode": str(
+                self.config.singleton_evidence_mode),
             "cumulative_source_task_posterior": {
                 str(i): (
                     None
@@ -2504,6 +2648,10 @@ class OrthogonalHVD:
             },
             "replicated_solution_count": {
                 str(i): int(len(self.replicated_keys.get(i, set())))
+                for i in range(self.n_outputs)
+            },
+            "source_prior_singleton_count": {
+                str(i): int(len(self.source_prior_pseudo_keys.get(i, set())))
                 for i in range(self.n_outputs)
             },
             "prequential_upper_solution_count": {

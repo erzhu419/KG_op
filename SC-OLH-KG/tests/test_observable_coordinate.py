@@ -6,6 +6,10 @@ from representation.observable_coordinate import (
     SourceLearnedObservableCoordinate,
     observable_profile_library,
 )
+from representation.boundary_coordinate import (
+    SourceAlignedBoundaryCoordinate,
+    select_boundary_coordinate_candidates,
+)
 
 
 def test_observable_library_is_fixed_finite_and_triadic():
@@ -254,3 +258,230 @@ def test_observable_library_accepts_problem_normalization():
     features = observable_profile_library(profile)
     assert features.ndim == 1
     assert np.all(np.isfinite(features))
+
+
+def test_boundary_aligned_coordinate_separates_representation_and_mean_targets():
+    rng = np.random.default_rng(125)
+    profiles = []
+    boundary = []
+    means = []
+    domains = []
+    for domain, nuisance_sign in (("a", -1.0), ("b", 1.0)):
+        for value in np.linspace(0.12, 0.88, 48):
+            positions = (np.arange(50, dtype=float) + 0.5) / 50.0
+            profile = (
+                value
+                + 0.10 * np.cos(np.pi * positions)
+                + nuisance_sign * 0.15 * np.cos(8.0 * np.pi * positions)
+                + rng.normal(0.0, 0.005, size=50)
+            )
+            profiles.append(np.clip(profile, 0.0, 1.0))
+            means.append(0.5 * (value - 0.50))
+            boundary.append(value - 0.50 + 0.08 * nuisance_sign)
+            domains.append(domain)
+    model = SourceAlignedBoundaryCoordinate(latent_dim=2).fit(
+        profiles,
+        boundary,
+        domains,
+        coefficient_targets=means,
+    )
+    features = np.vstack([
+        model.features_profile(profile) for profile in profiles
+    ])
+    correlation = np.corrcoef(features[:, 0], boundary)[0, 1]
+    assert abs(float(correlation)) > 0.80
+    assert model.feature_dim == 2
+    assert np.all(np.isfinite(features))
+    diagnostics = model.diagnostics()
+    assert diagnostics["alignment"]["representation_training_target"] == (
+        "chance_margin_bin")
+    assert diagnostics["alignment"]["coefficient_prior_training_target"] == (
+        "constraint_mean")
+    assert diagnostics["target_oracle_used"] is False
+    prior = model.source_parametric_prior(
+        InventorySupplyChainProblem(d=50))
+    assert prior["mean"].shape == (3,)
+    assert float(np.min(np.linalg.eigvalsh(prior["covariance"]))) > 0.0
+
+
+def test_source_tanh_boundary_coordinate_is_bounded_and_source_selected():
+    rng = np.random.default_rng(127)
+    profiles = []
+    boundary = []
+    means = []
+    domains = []
+    for domain, shift in (("left", -0.08), ("right", 0.08)):
+        for value in np.linspace(0.08, 0.92, 32):
+            profile = np.clip(
+                value + shift + rng.normal(0.0, 0.01, size=40),
+                0.0,
+                1.0,
+            )
+            profiles.append(profile)
+            boundary.append(value - 0.5 + shift)
+            means.append(0.4 * (value - 0.5) + 0.2 * shift)
+            domains.append(domain)
+    model = SourceAlignedBoundaryCoordinate(
+        latent_dim=3,
+        feature_mode="linear",
+        latent_transform="source_tanh",
+    ).fit(
+        profiles,
+        boundary,
+        domains,
+        coefficient_targets=means,
+    )
+    source_features = np.vstack([
+        model.features_profile(profile) for profile in profiles
+    ])
+    extreme = model.features_profile(np.full(40, 10.0))
+    assert np.max(np.abs(source_features)) <= 1.0 + 1e-12
+    assert np.max(np.abs(extreme)) <= 1.0 + 1e-12
+    diagnostics = model.diagnostics()["latent_transform_diagnostics"]
+    assert diagnostics["status"] == "source_lodo_selected"
+    assert diagnostics["selected_temperature"] in {0.5, 1.0, 2.0, 4.0}
+    assert diagnostics["selection_uses_target_data"] is False
+    assert diagnostics["selection_uses_target_oracle"] is False
+    assert len(diagnostics["candidate_scores"]) == 4
+
+
+def test_source_support_clip_preserves_source_support_and_bounds_target_shift():
+    rng = np.random.default_rng(128)
+    profiles = []
+    boundary = []
+    means = []
+    domains = []
+    for domain, shift in (("left", -0.06), ("right", 0.06)):
+        for value in np.linspace(0.10, 0.90, 36):
+            profile = np.clip(
+                value + shift + rng.normal(0.0, 0.008, size=40),
+                0.0,
+                1.0,
+            )
+            profiles.append(profile)
+            boundary.append(value - 0.5 + shift)
+            means.append(0.5 * (value - 0.5) + 0.1 * shift)
+            domains.append(domain)
+    identity = SourceAlignedBoundaryCoordinate(
+        latent_dim=3,
+        feature_mode="linear",
+        latent_transform="identity",
+    ).fit(profiles, boundary, domains, coefficient_targets=means)
+    clipped = SourceAlignedBoundaryCoordinate(
+        latent_dim=3,
+        feature_mode="linear",
+        latent_transform="source_support_clip",
+    ).fit(profiles, boundary, domains, coefficient_targets=means)
+
+    diagnostics = clipped.diagnostics()["latent_transform_diagnostics"]
+    bounds = np.asarray(diagnostics["support_bounds"], dtype=float)
+    source_features = clipped.features_many(
+        InventorySupplyChainProblem(d=40),
+        [tuple(np.rint(100.0 * row).astype(int)) for row in profiles],
+    )
+    extreme = clipped.features_profile(np.full(40, 100.0))
+    assert diagnostics["status"] == "source_lodo_selected"
+    assert diagnostics["selected_quantile"] in {0.8, 0.9, 0.95, 1.0}
+    assert diagnostics["selection_uses_target_data"] is False
+    assert diagnostics["selection_uses_target_oracle"] is False
+    assert clipped.feature_dim == identity.feature_dim == 3
+    assert np.all(np.max(np.abs(source_features), axis=0) <= bounds + 1e-12)
+    assert np.all(np.abs(extreme) <= bounds + 1e-12)
+
+
+def test_source_support_residual_adds_bounded_target_discrepancy_channel():
+    profiles = []
+    boundary = []
+    means = []
+    domains = []
+    for domain, shift in (("a", -0.05), ("b", 0.05)):
+        for value in np.linspace(0.15, 0.85, 32):
+            profile = np.clip(value + shift, 0.0, 1.0) * np.ones(40)
+            profiles.append(profile)
+            boundary.append(value - 0.5 + shift)
+            means.append(0.4 * (value - 0.5))
+            domains.append(domain)
+    model = SourceAlignedBoundaryCoordinate(
+        latent_dim=3,
+        feature_mode="linear",
+        latent_transform="source_support_residual",
+    ).fit(profiles, boundary, domains, coefficient_targets=means)
+    in_support = model.features_profile(profiles[len(profiles) // 2])
+    extreme = model.features_profile(np.full(40, 100.0))
+    diagnostics = model.diagnostics()["latent_transform_diagnostics"]
+
+    assert model.feature_dim == 4
+    assert diagnostics["residual_channel"] is True
+    assert diagnostics["residual_channel_index"] == 3
+    assert 0.0 <= in_support[-1] <= 1.0
+    assert 0.0 < extreme[-1] <= 1.0
+    assert np.all(np.isfinite(extreme))
+
+
+def test_boundary_feature_library_supports_nonlinear_chance_geometry():
+    rng = np.random.default_rng(126)
+    profiles = rng.uniform(0.0, 1.0, size=(96, 50))
+    domains = np.asarray(["a"] * 48 + ["b"] * 48, dtype=object)
+    local = np.column_stack([
+        np.mean(profiles[:, :17], axis=1),
+        np.mean(profiles[:, 17:34], axis=1),
+        np.mean(profiles[:, 34:], axis=1),
+    ])
+    boundary = (
+        (local[:, 0] - 0.55) ** 2
+        + (local[:, 1] - 0.35) ** 2
+        + (local[:, 2] - 0.45) ** 2
+        - 0.025
+    )
+    means = local[:, 0] - local[:, 1]
+    expected = {
+        "linear": 3,
+        "diagonal_quadratic": 6,
+        "full_quadratic": 9,
+    }
+    for mode, dimension in expected.items():
+        model = SourceAlignedBoundaryCoordinate(
+            latent_dim=3, feature_mode=mode).fit(
+                profiles,
+                boundary,
+                domains,
+                coefficient_targets=means,
+            )
+        features = model.features_many(
+            InventorySupplyChainProblem(d=50),
+            [tuple(np.rint(100.0 * row).astype(int)) for row in profiles[:5]],
+        )
+        assert model.feature_dim == dimension
+        assert features.shape == (5, dimension)
+        assert np.all(np.isfinite(features))
+        assert model.diagnostics()["boundary_feature_mode"] == mode
+
+
+def test_boundary_coordinate_selector_allocates_safe_boundary_and_coverage():
+    features = np.column_stack([
+        np.linspace(-2.0, 2.0, 21),
+        np.cos(np.linspace(0.0, 2.0 * np.pi, 21)),
+    ])
+    posterior_mean = np.linspace(-1.0, 1.0, 21)
+    posterior_variance = np.linspace(0.05, 0.20, 21)
+    chance_margin = posterior_mean + 0.10
+    selection = select_boundary_coordinate_candidates(
+        features,
+        features[[0, 10]],
+        posterior_mean,
+        posterior_variance,
+        chance_margin,
+        count=10,
+        safe_fraction=0.30,
+        boundary_fraction=0.40,
+        coverage_fraction=0.30,
+    )
+    assert len(selection.indices) == 10
+    assert len(set(selection.indices)) == 10
+    assert set(selection.roles) == {"safe", "boundary", "coverage"}
+    assert selection.diagnostics["role_counts"] == {
+        "boundary": 4,
+        "coverage": 3,
+        "safe": 3,
+    }
+    assert selection.diagnostics["target_oracle_used"] is False

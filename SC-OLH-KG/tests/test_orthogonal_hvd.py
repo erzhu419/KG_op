@@ -505,6 +505,141 @@ class OrthogonalHVDTests(unittest.TestCase):
                 -1e-12,
             )
 
+    def test_source_prior_singletons_are_independent_of_constraint_mean_head(self):
+        base = ScalarizedProblem(
+            FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04))
+        physical = params_to_beta(
+            base.cumulative_risk_parameters(output_index=1))
+        normalized = physical / max(float(np.mean(physical)), 1e-6)
+
+        class FrozenProblem:
+            def __getattr__(self, name):
+                return getattr(base, name)
+
+            @staticmethod
+            def cumulative_hvd_prior_beta(output_index=1, feature_dim=None):
+                del output_index
+                if feature_dim is not None and len(normalized) != int(feature_dim):
+                    return None
+                return normalized
+
+            @staticmethod
+            def cumulative_hvd_prior_components(
+                output_index=1, feature_dim=None,
+            ):
+                del output_index
+                coefficients = np.vstack([normalized, 1.2 * normalized])
+                if feature_dim is not None and coefficients.shape[1] != int(feature_dim):
+                    return None
+                return {
+                    "coefficients": coefficients,
+                    "domains": ["source_a", "source_b"],
+                }
+
+            @staticmethod
+            def cumulative_hvd_prior_precision(output_index=1):
+                del output_index
+                return 1.0
+
+            @staticmethod
+            def cumulative_hvd_prior_scale_mean(output_index=1):
+                del output_index
+                return 0.02
+
+            @staticmethod
+            def cumulative_hvd_prior_upper_scale(output_index=1):
+                del output_index
+                return 2.0
+
+            @staticmethod
+            def cumulative_hvd_prior_min_records():
+                return 1
+
+        class ConstantMean:
+            def __init__(self, value):
+                self.value = float(value)
+
+            def posterior_mean(self, _x):
+                return self.value
+
+        problem = FrozenProblem()
+        samples = [
+            tuple([value] + [45] * 7) for value in (10, 25, 40, 55, 70)
+        ]
+        observations = {
+            point: [np.asarray([0.3, -0.2], dtype=float)]
+            for point in samples
+        }
+        left = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=1,
+            cumulative_transfer_mode="source_mixture",
+            singleton_evidence_mode="source_prior",
+        )
+        right = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=1,
+            cumulative_transfer_mode="source_mixture",
+            singleton_evidence_mode="source_prior",
+        )
+        left.initialize(
+            samples,
+            observations,
+            [ConstantMean(-100.0), ConstantMean(-100.0)],
+            problem,
+        )
+        right.initialize(
+            samples,
+            observations,
+            [ConstantMean(100.0), ConstantMean(100.0)],
+            problem,
+        )
+
+        for output_index in range(2):
+            np.testing.assert_allclose(
+                [value for _, value in left.records[output_index]],
+                [value for _, value in right.records[output_index]],
+                atol=0.0,
+                rtol=0.0,
+            )
+            self.assertAlmostEqual(
+                left.global_var[output_index], right.global_var[output_index])
+            self.assertEqual(
+                left.diagnostics()["source_prior_singleton_count"][
+                    str(output_index)],
+                len(samples),
+            )
+            self.assertEqual(
+                left.diagnostics()["residual_square_tail"][str(output_index)][
+                    "effective_dof"],
+                0.0,
+            )
+
+        probe = samples[0]
+        before = left.predict_variance(1, probe, problem)
+        detail = left.update(
+            1, probe, 1e6, -1e6, problem=problem)
+        self.assertEqual(detail["variance_source"], "source_prior_singleton")
+        self.assertAlmostEqual(
+            left.predict_variance(1, probe, problem), before)
+        left.update(
+            1,
+            probe,
+            0.0,
+            0.0,
+            problem=problem,
+            replicate_variance=0.003,
+            replicate_count=8,
+        )
+        self.assertEqual(
+            left.diagnostics()["source_prior_singleton_count"]["1"],
+            len(samples) - 1,
+        )
+        self.assertEqual(
+            left.diagnostics()["replicated_solution_count"]["1"], 1)
+
     def test_constraint_mean_task_posterior_controls_hvd_shape_mixture(self):
         base = ScalarizedProblem(
             FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04))

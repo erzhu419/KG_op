@@ -32,7 +32,11 @@ from core.designs import (
     common_sobol_integer_design,
     integer_design_fingerprint,
 )
-from core.gpr import ParametricGPR
+from core.gpr import (
+    ParametricGPR,
+    normalize_mixture_weights,
+    posterior_mixture_weights,
+)
 from core.metrics import summarize_stage_times
 from encoders.policy_state_encoder import (
     ContrastivePolicyEncoder,
@@ -50,6 +54,9 @@ from encoders.policy_state_encoder import (
 )
 from representation.llm_structural_prior import LLMStructuralPriorAdvisor
 from representation.manifold import ManifoldRiskDecomposer
+from representation.boundary_coordinate import (
+    select_boundary_coordinate_candidates,
+)
 from representation.task_posterior import (
     FiniteTaskModelEnsemble,
     FiniteTaskPosterior,
@@ -168,6 +175,7 @@ class SingleOLHKGConfig:
     hvd_cumulative_transfer_mode: str = "scalar"
     hvd_source_task_weight_mode: str = "independent"
     hvd_cumulative_target_evidence_mode: str = "replication_only"
+    hvd_singleton_evidence_mode: str = "in_sample_residual"
     lambda_feas: float = 0.25
     lambda_var: float = 0.25
     lambda_mean: float = 0.10
@@ -275,6 +283,7 @@ class SingleOLHKGConfig:
     task_posterior_proposal_exploration: float = 0.10
     task_posterior_proposal_min_per_expert: int = 2
     task_posterior_sensitivity_mode: str = "off"
+    task_variance_posterior_mode: str = "shared"
     task_latent_inference_mode: str = "shadow"
     task_latent_calibration_mode: str = "source_profiles"
     constraint_uncertain_candidate_count: int = 0
@@ -322,8 +331,26 @@ class SingleOLHKGConfig:
     source_mean_prior_margin_tol: float = 0.0
     source_constraint_mean_coefficient_prior: bool = False
     source_constraint_mean_adaptation_mode: str = "frozen"
+    source_constraint_mean_deviation_mode: str = "raw_independent"
+    source_constraint_mean_misspecification_mode: str = "none"
+    source_constraint_mean_misspecification_prior_df: float = 4.0
+    source_constraint_mean_misspecification_ridge: float = 1.0
+    source_constraint_mean_misspecification_max_scale: float = 100.0
+    source_constraint_mean_contrast_scale: float = 1.0
+    source_constraint_mean_role_epistemic_mode: str = "none"
     source_constraint_mean_null_weight: float = 0.5
+    source_constraint_mean_null_geometry: str = "isotropic"
+    source_constraint_mean_null_geometry_ridge: float = 1e-3
     source_constraint_mean_evidence_temperature: float = 1.0
+    source_constraint_mean_structure_score_mode: str = "marginal_likelihood"
+    source_constraint_mean_residual_rank_posterior: bool = False
+    source_constraint_mean_residual_rank_prior: str = "0.70,0.20,0.10"
+    source_constraint_mean_residual_rank_inactive_variance: float = 1e-12
+    boundary_coordinate_candidate_count: int = 0
+    boundary_coordinate_pool_size: int = 512
+    boundary_coordinate_safe_fraction: float = 0.30
+    boundary_coordinate_boundary_fraction: float = 0.40
+    boundary_coordinate_coverage_fraction: float = 0.30
     truth_pool_diagnostics: bool = False
     truth_pool_good_regret: float = 0.05
     truth_pool_max_candidates: int = 0
@@ -444,6 +471,8 @@ class SingleOLHKGAlgorithm:
                 self.config.hvd_source_task_weight_mode),
             cumulative_target_evidence_mode=(
                 self.config.hvd_cumulative_target_evidence_mode),
+            singleton_evidence_mode=(
+                self.config.hvd_singleton_evidence_mode),
         )
         self.acquisition = OLHKGAcquisition(
             lambda_feas=self.config.lambda_feas,
@@ -479,6 +508,11 @@ class SingleOLHKGAlgorithm:
             "status": "not_called",
             "requested": 0,
         }
+        self._last_boundary_coordinate_proposal_info = {
+            "status": "not_called",
+            "requested": 0,
+        }
+        self._boundary_raw_pool_audit_cache = None
         self._task_initial_design_info = {
             "status": "not_called",
             "requested": 0,
@@ -1016,6 +1050,378 @@ class SingleOLHKGAlgorithm:
             float(prior.get("deviation_variance", 1e-6)), 1e-12)
         return prior
 
+    def _calibrate_source_constraint_deviation(self, model, component):
+        """Place transferable source discrepancy in the latent coefficient law.
+
+        A source residual is not necessarily an independent deviation attached
+        to every raw policy.  Under ``latent_shared`` it is split into a
+        coefficient-space discrepancy shared by policies with similar mean
+        features and a finite residual floor.  At reference feature energy
+        ``E[||phi||^2] = p`` the two pieces preserve the original source
+        residual variance, while charged target observations can contract the
+        shared coefficient uncertainty.
+        """
+
+        calibrated = copy.deepcopy(component)
+        mode = str(
+            self.config.source_constraint_mean_deviation_mode
+            or "raw_independent"
+        ).strip().lower()
+        if mode not in {"raw_independent", "latent_shared"}:
+            raise ValueError(
+                "source constraint mean deviation mode must be "
+                "raw_independent or latent_shared"
+            )
+        original = max(
+            float(calibrated.get("deviation_variance", 1e-6)), 1e-12)
+        diagnostics = dict(calibrated.get("diagnostics", {}))
+        n_records = max(int(diagnostics.get(
+            "source_record_count",
+            diagnostics.get("n_records", 1),
+        )), 1)
+        if mode == "raw_independent":
+            diagnostics.update({
+                "source_deviation_mode": mode,
+                "source_original_deviation_variance": float(original),
+                "source_latent_discrepancy_trace": 0.0,
+                "source_residual_floor": float(original),
+                "source_reference_predictive_variance": float(original),
+            })
+            calibrated["diagnostics"] = diagnostics
+            return calibrated
+
+        residual_floor = original / float(n_records)
+        latent_mass = max(original - residual_floor, 0.0)
+        active_coefficients = diagnostics.get(
+            "role_assignment_active_coefficients")
+        if active_coefficients is None:
+            active = np.arange(int(model.p), dtype=int)
+        else:
+            active = np.asarray(active_coefficients, dtype=int).reshape(-1)
+            active = np.unique(active[
+                (active >= 0) & (active < int(model.p))
+            ])
+            if len(active) == 0:
+                raise RuntimeError(
+                    "role-assignment component has no active coefficient")
+        feature_dim = max(int(len(active)), 1)
+        covariance = np.asarray(
+            calibrated["covariance"], dtype=float).copy()
+        covariance[np.ix_(active, active)] += (
+            latent_mass / float(feature_dim)
+        ) * np.eye(feature_dim, dtype=float)
+        covariance = 0.5 * (covariance + covariance.T)
+        eigenvalues, eigenvectors = np.linalg.eigh(covariance)
+        covariance = (
+            eigenvectors * np.maximum(eigenvalues, 1e-12)
+        ) @ eigenvectors.T
+        calibrated["covariance"] = covariance
+        calibrated["deviation_variance"] = max(residual_floor, 1e-12)
+        diagnostics.update({
+            "source_deviation_mode": mode,
+            "source_original_deviation_variance": float(original),
+            "source_latent_discrepancy_trace": float(latent_mass),
+            "source_residual_floor": float(residual_floor),
+            "source_reference_feature_energy": int(feature_dim),
+            "source_latent_discrepancy_active_coefficients": active.tolist(),
+            "source_reference_predictive_variance": float(
+                latent_mass + residual_floor),
+            "source_record_count_for_deviation_split": int(n_records),
+            "target_data_used_for_deviation_split": False,
+            "target_oracle_used_for_deviation_split": False,
+        })
+        calibrated["diagnostics"] = diagnostics
+        return calibrated
+
+    def _calibrate_source_constraint_misspecification(
+        self,
+        model,
+        component,
+        samples,
+        targets,
+        observation_variance,
+    ):
+        """Inflate a source mean law when charged target residuals reject it.
+
+        This is a conservative empirical-Bayes scale posterior.  It never
+        contracts a source covariance or residual floor.  The directional
+        variant adds a PSD rank-one term along the coefficient direction that
+        best explains the target residual, allowing ordinary posterior
+        conditioning to correct a biased source expert without treating that
+        expert as certain.  Target truth outside the charged observations is
+        never consulted.
+        """
+
+        calibrated = copy.deepcopy(component)
+        mode = str(
+            self.config.source_constraint_mean_misspecification_mode or "none"
+        ).strip().lower()
+        if mode not in {
+            "none",
+            "predictive_scale",
+            "predictive_scale_directional",
+            "hierarchical_predictive_scale",
+            "source_contrast",
+        }:
+            raise ValueError(
+                "source constraint mean misspecification mode must be none, "
+                "predictive_scale, predictive_scale_directional, or "
+                "hierarchical_predictive_scale/source_contrast"
+            )
+        diagnostics = dict(calibrated.get("diagnostics", {}))
+        component_name = str(calibrated.get("name", "source:aggregate"))
+        is_source = not component_name.startswith("target:")
+        if mode == "none" or not is_source or len(samples) == 0:
+            diagnostics.update({
+                "source_mean_misspecification_mode": mode,
+                "source_mean_misspecification_applied": False,
+                "source_mean_misspecification_scale": 1.0,
+                "source_mean_misspecification_directional_mass": 0.0,
+                "target_observations_used_for_misspecification": int(
+                    len(samples) if is_source and mode != "none" else 0),
+                "target_oracle_used_for_misspecification": False,
+            })
+            calibrated["diagnostics"] = diagnostics
+            return calibrated
+
+        if mode == "source_contrast" and diagnostics.get(
+            "source_mean_misspecification_applied", False
+        ):
+            calibrated["diagnostics"] = diagnostics
+            return calibrated
+
+        if mode in {"hierarchical_predictive_scale", "source_contrast"}:
+            diagnostics.update({
+                "source_mean_misspecification_mode": mode,
+                "source_mean_misspecification_applied": False,
+                "source_mean_misspecification_deferred_to_online_mixture": bool(
+                    mode == "hierarchical_predictive_scale"),
+                "source_mean_misspecification_deferred_to_component_bank": bool(
+                    mode == "source_contrast"),
+                "source_mean_misspecification_scale": 1.0,
+                "source_mean_misspecification_directional_mass": 0.0,
+                "target_observations_used_for_misspecification": 0,
+                "target_oracle_used_for_misspecification": False,
+            })
+            calibrated["diagnostics"] = diagnostics
+            return calibrated
+
+        phi = np.asarray(model.basis_matrix(samples), dtype=float)
+        target = np.asarray(targets, dtype=float).reshape(-1)
+        mean = np.asarray(calibrated["mean"], dtype=float).reshape(-1)
+        covariance = np.asarray(
+            calibrated["covariance"], dtype=float).copy()
+        covariance = 0.5 * (covariance + covariance.T)
+        eigenvalues, eigenvectors = np.linalg.eigh(covariance)
+        covariance = (
+            eigenvectors * np.maximum(eigenvalues, 1e-12)
+        ) @ eigenvectors.T
+        deviation = max(
+            float(calibrated.get("deviation_variance", 1e-6)), 1e-12)
+        observation_variance = max(float(observation_variance), 1e-12)
+        residual = target - phi @ mean
+        predictive = phi @ covariance @ phi.T
+        predictive = 0.5 * (predictive + predictive.T)
+        predictive += (
+            deviation + observation_variance
+        ) * np.eye(len(phi), dtype=float)
+        jitter = max(
+            1e-12,
+            1e-10 * float(np.trace(predictive)) / max(len(phi), 1),
+        )
+        solved = None
+        for _ in range(8):
+            try:
+                chol = np.linalg.cholesky(
+                    predictive + jitter * np.eye(len(phi), dtype=float))
+                solved = np.linalg.solve(chol.T, np.linalg.solve(chol, residual))
+                break
+            except np.linalg.LinAlgError:
+                jitter *= 10.0
+        if solved is None:
+            solved = np.linalg.pinv(predictive) @ residual
+        mahalanobis = max(float(residual @ solved), 0.0)
+        prior_df = max(
+            float(
+                self.config.source_constraint_mean_misspecification_prior_df
+            ),
+            1e-8,
+        )
+        max_scale = max(
+            float(
+                self.config.source_constraint_mean_misspecification_max_scale
+            ),
+            1.0,
+        )
+        posterior_scale = float(np.clip(
+            (prior_df + mahalanobis) / (prior_df + len(phi)),
+            1.0,
+            max_scale,
+        ))
+        inflated_covariance = posterior_scale * covariance
+        inflated_deviation = posterior_scale * deviation
+        directional_mass = 0.0
+        directional_energy = 0.0
+        if mode == "predictive_scale_directional":
+            ridge = max(
+                float(
+                    self.config.source_constraint_mean_misspecification_ridge
+                ),
+                1e-10,
+            )
+            gram = phi.T @ phi + ridge * np.eye(phi.shape[1], dtype=float)
+            raw_direction = np.linalg.solve(gram, phi.T @ residual)
+            direction_norm = float(np.linalg.norm(raw_direction))
+            if direction_norm > 1e-12:
+                direction = raw_direction / direction_norm
+                directional_energy = float(np.mean((phi @ direction) ** 2))
+                reference_variance = float(np.mean(np.diag(predictive)))
+                empirical_error = float(np.mean(residual ** 2))
+                excess = max(empirical_error - reference_variance, 0.0)
+                directional_mass = min(
+                    excess,
+                    max(max_scale - 1.0, 0.0)
+                    * max(reference_variance, 1e-12),
+                )
+                if directional_energy > 1e-12 and directional_mass > 0.0:
+                    inflated_covariance += (
+                        directional_mass / directional_energy
+                    ) * np.outer(direction, direction)
+        inflated_covariance = 0.5 * (
+            inflated_covariance + inflated_covariance.T)
+        eigenvalues, eigenvectors = np.linalg.eigh(inflated_covariance)
+        inflated_covariance = (
+            eigenvectors * np.maximum(eigenvalues, 1e-12)
+        ) @ eigenvectors.T
+        calibrated["covariance"] = inflated_covariance
+        calibrated["deviation_variance"] = max(
+            inflated_deviation, deviation)
+        diagnostics.update({
+            "source_mean_misspecification_mode": mode,
+            "source_mean_misspecification_applied": True,
+            "source_mean_misspecification_scale": posterior_scale,
+            "source_mean_misspecification_mahalanobis": mahalanobis,
+            "source_mean_misspecification_prior_df": prior_df,
+            "source_mean_misspecification_directional_mass": float(
+                directional_mass),
+            "source_mean_misspecification_directional_energy": float(
+                directional_energy),
+            "source_mean_prior_covariance_trace_before": float(
+                np.trace(covariance)),
+            "source_mean_prior_covariance_trace_after": float(
+                np.trace(inflated_covariance)),
+            "source_mean_residual_floor_before": float(deviation),
+            "source_mean_residual_floor_after": float(
+                calibrated["deviation_variance"]),
+            "source_mean_bias_adaptation": (
+                "ordinary_target_posterior_conditioning_under_inflated_law"
+            ),
+            "target_observations_used_for_misspecification": int(len(samples)),
+            "target_oracle_used_for_misspecification": False,
+            "misspecification_uncertainty_can_only_increase": True,
+        })
+        calibrated["diagnostics"] = diagnostics
+        return calibrated
+
+    def _calibrate_source_contrast_posterior(self, components):
+        """Add a source-only low-rank discrepancy law to every expert.
+
+        Differences between source-domain coefficient means identify the only
+        directions in which source evidence supports a transferable mean
+        correction.  Their weighted covariance is PSD and has rank at most
+        ``n_source - 1``.  Target observations subsequently update the mean in
+        that frozen subspace through ordinary Bayesian conditioning; target
+        truth is never used to construct the subspace or its scale.
+        """
+
+        rows = [copy.deepcopy(component) for component in components]
+        mode = str(
+            self.config.source_constraint_mean_misspecification_mode or "none"
+        ).strip().lower()
+        if mode != "source_contrast" or not rows:
+            return rows
+        scale = max(
+            float(self.config.source_constraint_mean_contrast_scale), 0.0)
+        marker = "|role_assignment="
+        groups = {}
+        for index, component in enumerate(rows):
+            name = str(component.get("name", f"source:{index}"))
+            group = (
+                name.rsplit(marker, 1)[1].split("|", 1)[0]
+                if marker in name else "all"
+            )
+            groups.setdefault(group, []).append(index)
+        for group, indices in groups.items():
+            means = np.vstack([
+                np.asarray(rows[index]["mean"], dtype=float).reshape(-1)
+                for index in indices
+            ])
+            weights = np.asarray([
+                max(float(rows[index].get("prior_weight", 0.0)), 0.0)
+                for index in indices
+            ], dtype=float)
+            if float(np.sum(weights)) <= 0.0:
+                weights = np.ones(len(indices), dtype=float)
+            weights /= float(np.sum(weights))
+            center = np.sum(weights[:, None] * means, axis=0)
+            centered = means - center
+            contrast = scale * np.einsum(
+                "i,ij,ik->jk", weights, centered, centered)
+            contrast = 0.5 * (contrast + contrast.T)
+            eigenvalues, eigenvectors = np.linalg.eigh(contrast)
+            tolerance = max(
+                1e-12,
+                1e-10 * float(np.max(np.abs(eigenvalues)))
+                if len(eigenvalues) else 1e-12,
+            )
+            positive = np.maximum(eigenvalues, 0.0)
+            contrast = (eigenvectors * positive) @ eigenvectors.T
+            contrast = 0.5 * (contrast + contrast.T)
+            rank = int(np.sum(positive > tolerance))
+            for index in indices:
+                component = rows[index]
+                covariance = np.asarray(
+                    component["covariance"], dtype=float)
+                covariance = 0.5 * (covariance + covariance.T)
+                calibrated = covariance + contrast
+                calibrated = 0.5 * (calibrated + calibrated.T)
+                component["covariance"] = calibrated
+                diagnostics = dict(component.get("diagnostics", {}))
+                diagnostics.update({
+                    "source_mean_misspecification_mode": "source_contrast",
+                    "source_mean_misspecification_applied": True,
+                    "source_mean_misspecification_scale": 1.0,
+                    "source_mean_misspecification_directional_mass": float(
+                        np.trace(contrast)),
+                    "source_contrast_scale": float(scale),
+                    "source_contrast_rank": int(rank),
+                    "source_contrast_rank_bound": max(len(indices) - 1, 0),
+                    "source_contrast_covariance_trace": float(
+                        np.trace(contrast)),
+                    "source_contrast_assignment_group": str(group),
+                    "source_contrast_assignment_conditional": bool(
+                        marker in str(component.get("name", ""))),
+                    "source_contrast_group_component_count": int(
+                        len(indices)),
+                    "source_mean_prior_covariance_trace_before": float(
+                        np.trace(covariance)),
+                    "source_mean_prior_covariance_trace_after": float(
+                        np.trace(calibrated)),
+                    "source_mean_residual_floor_before": float(
+                        component["deviation_variance"]),
+                    "source_mean_residual_floor_after": float(
+                        component["deviation_variance"]),
+                    "source_mean_bias_adaptation": (
+                        "target_posterior_conditioning_in_frozen_"
+                        "assignment_conditional_source_contrast_subspace"),
+                    "source_contrast_uses_target_data": False,
+                    "target_observations_used_for_misspecification": 0,
+                    "target_oracle_used_for_misspecification": False,
+                    "misspecification_uncertainty_can_only_increase": True,
+                })
+                component["diagnostics"] = diagnostics
+        return rows
+
     def _configure_hvd_source_task_posterior(
         self,
         variance_model,
@@ -1086,6 +1492,83 @@ class SingleOLHKGAlgorithm:
             components.append(component)
         return components
 
+    def _source_constraint_role_epistemic_calibration(self, model):
+        """Return the outcome-free source mass retained by role alignment."""
+
+        mode = str(
+            self.config.source_constraint_mean_role_epistemic_mode or "none"
+        ).strip().lower()
+        if mode == "none":
+            return {
+                "status": "disabled",
+                "mode": mode,
+                "source_role_trust": 1.0,
+                "target_labels_used": False,
+                "target_oracle_used": False,
+            }
+        if mode not in {"matching_loss", "matching_uncertainty"}:
+            raise ValueError(
+                "source constraint mean role epistemic mode must be none or "
+                "matching_loss/matching_uncertainty")
+        basis_map = getattr(model, "basis_map", None)
+        if basis_map is None or not hasattr(
+            basis_map, "source_target_epistemic_calibration"
+        ):
+            raise RuntimeError(
+                "matching-loss role calibration requires an observable "
+                "constraint mean basis")
+        diagnostics = dict(
+            basis_map.source_target_epistemic_calibration())
+        diagnostics["mode"] = mode
+        diagnostics["source_role_trust"] = (
+            1.0
+            if mode == "matching_uncertainty"
+            else float(np.clip(
+                diagnostics.get("source_role_trust", 1.0), 0.0, 1.0))
+        )
+        diagnostics["epistemic_covariance_scale"] = max(
+            float(diagnostics.get("epistemic_covariance_scale", 1.0)),
+            1.0,
+        )
+        if diagnostics.get("target_labels_used") or diagnostics.get(
+            "target_oracle_used"
+        ):
+            raise RuntimeError(
+                "role epistemic calibration must be outcome-free")
+        return diagnostics
+
+    def _expand_source_constraint_residual_rank_posterior(
+        self,
+        model,
+        components,
+    ):
+        if not bool(
+            self.config.source_constraint_mean_residual_rank_posterior
+        ):
+            return list(components)
+        basis_map = getattr(model, "basis_map", None)
+        if basis_map is None or not hasattr(
+            basis_map, "expand_target_residual_rank_components"
+        ):
+            raise RuntimeError(
+                "residual-rank posterior requires an observable constraint "
+                "mean basis with nested target residual features")
+        raw = self.config.source_constraint_mean_residual_rank_prior
+        if isinstance(raw, str):
+            rank_prior = [
+                float(value.strip())
+                for value in raw.split(",") if value.strip()
+            ]
+        else:
+            rank_prior = [float(value) for value in raw]
+        return basis_map.expand_target_residual_rank_components(
+            components,
+            rank_prior,
+            inactive_variance=(
+                self.config
+                .source_constraint_mean_residual_rank_inactive_variance),
+        )
+
     @staticmethod
     def _source_component_log_evidence(
         model,
@@ -1144,13 +1627,95 @@ class SingleOLHKGAlgorithm:
             output_scale ** 2,
             1e-6,
         )
+        geometry_mode = str(
+            self.config.source_constraint_mean_null_geometry or "isotropic"
+        ).strip().lower().replace("-", "_")
+        if geometry_mode not in {"isotropic", "target_pool"}:
+            raise ValueError(
+                "source constraint mean null geometry must be isotropic or "
+                "target_pool")
+        null_covariance = null_variance * np.eye(model.p, dtype=float)
+        geometry_diagnostics = {
+            "null_geometry_mode": geometry_mode,
+            "target_labels_used_for_null_geometry": False,
+            "target_oracle_used_for_null_geometry": False,
+        }
+        if geometry_mode == "target_pool":
+            basis_map = getattr(model, "basis_map", None)
+            bridge = (
+                basis_map.target_null_feature_geometry()
+                if basis_map is not None
+                and hasattr(basis_map, "target_null_feature_geometry")
+                else {"status": "unavailable"}
+            )
+            if bridge.get("status") != "available":
+                raise RuntimeError(
+                    "target-pool null geometry requires an unlabeled feature "
+                    "geometry bridge")
+            if (
+                bridge.get("target_labels_used", True)
+                or bridge.get("target_oracle_used", True)
+            ):
+                raise RuntimeError(
+                    "target-pool null geometry must be outcome-free")
+            design = np.asarray(bridge["basis_matrix"], dtype=float)
+            if (
+                design.ndim != 2
+                or design.shape[1] != model.p
+                or len(design) < model.p
+                or not np.all(np.isfinite(design))
+            ):
+                raise RuntimeError(
+                    "target-pool null geometry has an invalid design")
+            gram = design.T @ design / float(len(design))
+            gram = 0.5 * (gram + gram.T)
+            average_scale = max(
+                float(np.trace(gram)) / max(model.p, 1), 1e-12)
+            relative_ridge = max(float(
+                self.config.source_constraint_mean_null_geometry_ridge), 1e-10)
+            regularized = (
+                gram + relative_ridge * average_scale
+                * np.eye(model.p, dtype=float))
+            inverse = np.linalg.pinv(regularized)
+            inverse = 0.5 * (inverse + inverse.T)
+            isotropic_average = max(
+                float(null_variance * np.trace(gram)), 1e-12)
+            raw_average = max(float(np.trace(gram @ inverse)), 1e-12)
+            null_covariance = (isotropic_average / raw_average) * inverse
+            null_covariance = 0.5 * (
+                null_covariance + null_covariance.T)
+            eigenvalues, eigenvectors = np.linalg.eigh(null_covariance)
+            null_covariance = (
+                eigenvectors * np.maximum(eigenvalues, 1e-12)
+            ) @ eigenvectors.T
+            geometric_average = float(np.trace(gram @ null_covariance))
+            geometry_diagnostics.update({
+                "target_geometry_pool_size": int(len(design)),
+                "target_geometry_basis_dim": int(design.shape[1]),
+                "target_geometry_pool_source": str(
+                    bridge.get("pool_source", "unknown")),
+                "target_geometry_relative_ridge": float(relative_ridge),
+                "target_geometry_gram_condition": float(np.linalg.cond(
+                    regularized)),
+                "isotropic_average_predictive_variance": float(
+                    isotropic_average),
+                "geometric_average_predictive_variance": float(
+                    geometric_average),
+                "average_predictive_variance_ratio": float(
+                    geometric_average / isotropic_average),
+                "average_predictive_scale_preserved": bool(
+                    abs(geometric_average - isotropic_average)
+                    <= 1e-8 * max(isotropic_average, 1.0)),
+                "minimum_covariance_eigenvalue": float(np.min(
+                    np.linalg.eigvalsh(null_covariance))),
+            })
         mean = np.zeros(model.p, dtype=float)
         mean[0] = float(getattr(self.problem, "tau", 0.0))
         return {
             "name": "target:null",
             "domain": None,
             "mean": mean,
-            "covariance": null_variance * np.eye(model.p, dtype=float),
+            "covariance": null_covariance,
             "deviation_variance": max(output_scale ** 2, 1e-8),
             "prior_weight": max(
                 float(self.config.source_constraint_mean_null_weight),
@@ -1159,6 +1724,7 @@ class SingleOLHKGAlgorithm:
             "diagnostics": {
                 "component_kind": "nontransfer_null",
                 "null_variance": float(null_variance),
+                **geometry_diagnostics,
                 "target_data_used": False,
                 "target_oracle_used": False,
             },
@@ -1174,15 +1740,128 @@ class SingleOLHKGAlgorithm:
     ):
         """Condition the frozen source coefficient law on charged target data."""
 
-        aggregate_prior = self._source_constraint_coefficient_prior(
+        basis_map = getattr(model, "basis_map", None)
+        if (
+            int(output_index) == 1
+            and basis_map is not None
+            and hasattr(
+                basis_map,
+                "calibrate_role_assignment_boundary_posterior",
+            )
+        ):
+            basis_map.calibrate_role_assignment_boundary_posterior(
+                samples,
+                targets,
+                np.full(
+                    len(samples), observation_variance, dtype=float),
+            )
+        raw_aggregate_prior = self._source_constraint_coefficient_prior(
             model, output_index)
-        if aggregate_prior is None:
+        if raw_aggregate_prior is None:
             return None
+        aggregate_prior = self._calibrate_source_constraint_deviation(
+            model, raw_aggregate_prior)
         mode = str(
             self.config.source_constraint_mean_adaptation_mode
             or "frozen"
         ).strip().lower()
+        if mode == "sequential_aggregate_hyperlaw":
+            misspecification_mode = str(
+                self.config.source_constraint_mean_misspecification_mode
+                or "none"
+            ).strip().lower()
+            if misspecification_mode not in {
+                "none",
+                "predictive_scale",
+                "predictive_scale_directional",
+                "hierarchical_predictive_scale",
+            }:
+                raise ValueError(
+                    "sequential aggregate hyperlaw requires none, "
+                    "predictive_scale, predictive_scale_directional, or "
+                    "hierarchical_predictive_scale misspecification")
+            aggregate_component = copy.deepcopy(aggregate_prior)
+            aggregate_component["name"] = "source:aggregate"
+            aggregate_component["prior_weight"] = 1.0
+            component_diagnostics = dict(
+                aggregate_component.get("diagnostics", {}))
+            component_diagnostics.update({
+                "component_kind": (
+                    "exchangeable_empirical_bayes_gaussian_hyperlaw"),
+                "single_aggregate_hyperlaw": True,
+                "source_domain_identity_marginalized": True,
+                "source_components_retained_in_target_posterior": False,
+                "target_null_component_retained": False,
+                "target_data_used_to_define_aggregate": False,
+                "target_oracle_used_to_define_aggregate": False,
+            })
+            aggregate_component["diagnostics"] = component_diagnostics
+            component_model = ParametricGPR(
+                model.d,
+                lambda_i=model.lambda_i,
+                prior_var=1.0,
+                normalize_func=model.normalize_func,
+                basis_map=model.basis_map,
+                basis_config=copy.copy(model.basis_config),
+                numeric_backend=model.numeric_backend,
+                numeric_backend_device=model.numeric_backend_device,
+                torch_dtype=model.torch_dtype,
+                torch_min_rows=model.torch_min_rows,
+            )
+            diagnostics = {
+                **dict(aggregate_prior.get("diagnostics", {})),
+                "adaptation_mode": "sequential_single_aggregate_hyperlaw",
+                "single_aggregate_hyperlaw": True,
+                "single_aggregate_component_count": 1,
+                "source_domain_identity_marginalized": True,
+                "source_components_retained_in_target_posterior": False,
+                "target_null_component_retained": False,
+                "prior_target_data_used": False,
+                "posterior_target_data_used": bool(len(samples)),
+                "target_observation_count": int(len(samples)),
+                "online_mixture_update_count": 0,
+                "target_oracle_used": False,
+                "null_prior_weight": 0.0,
+                "requested_null_prior_weight": 0.0,
+                "source_prior_mass_after_role_calibration": 1.0,
+                "source_mean_misspecification_mode": misspecification_mode,
+            }
+            model.set_hierarchical_misspecification_posterior(
+                [component_model],
+                [aggregate_component],
+                np.asarray([1.0], dtype=float),
+                samples,
+                targets,
+                np.full(
+                    len(samples), observation_variance, dtype=float),
+                diagnostics=diagnostics,
+                prior_df=(
+                    self.config
+                    .source_constraint_mean_misspecification_prior_df),
+                max_scale=(
+                    self.config
+                    .source_constraint_mean_misspecification_max_scale),
+                misspecification_mode=misspecification_mode,
+                misspecification_ridge=(
+                    self.config
+                    .source_constraint_mean_misspecification_ridge),
+            )
+            return dict(model.source_parametric_prior_diagnostics)
+
+        aggregate_prior = self._calibrate_source_constraint_misspecification(
+            model,
+            aggregate_prior,
+            samples,
+            targets,
+            observation_variance,
+        )
         if mode in ("frozen", "aggregate", "none"):
+            if str(
+                self.config.source_constraint_mean_misspecification_mode
+            ).strip().lower() == "source_contrast":
+                raise ValueError(
+                    "source_contrast misspecification requires an evidence "
+                    "mixture with source-domain components")
             model.set_parametric_prior(
                 aggregate_prior["mean"],
                 aggregate_prior["deviation_variance"],
@@ -1203,25 +1882,117 @@ class SingleOLHKGAlgorithm:
         if mode not in (
             "evidence_mixture", "mixture", "adaptive_mixture",
             "sequential_evidence_mixture", "sequential_mixture",
+            "aggregate_mixture", "sequential_aggregate_mixture",
+            "sequential_aggregate_hyperlaw",
+            "support_adaptive_aggregate_mixture",
+            "sequential_support_adaptive_aggregate_mixture",
         ):
             raise ValueError(
                 "source constraint mean adaptation mode must be frozen or "
-                "evidence_mixture/sequential_evidence_mixture"
+                "evidence_mixture/sequential_evidence_mixture/"
+                "aggregate_mixture/sequential_aggregate_mixture/"
+                "sequential_aggregate_hyperlaw/"
+                "support_adaptive_aggregate_mixture/"
+                "sequential_support_adaptive_aggregate_mixture"
             )
         sequential_updates = mode in {
             "sequential_evidence_mixture", "sequential_mixture",
+            "sequential_aggregate_mixture",
+            "sequential_support_adaptive_aggregate_mixture",
         }
+        support_adaptive_aggregate = mode in {
+            "support_adaptive_aggregate_mixture",
+            "sequential_support_adaptive_aggregate_mixture",
+        }
+        support_selection = None
+        if support_adaptive_aggregate:
+            basis_map = getattr(model, "basis_map", None)
+            if basis_map is None or not hasattr(
+                basis_map, "source_target_coordinate_selection"
+            ):
+                raise RuntimeError(
+                    "support-adaptive aggregate transfer requires a "
+                    "coordinate-selection bridge")
+            support_selection = dict(
+                basis_map.source_target_coordinate_selection())
+        aggregate_mixture = mode in {
+            "aggregate_mixture", "sequential_aggregate_mixture",
+        } or bool(
+            support_adaptive_aggregate
+            and support_selection["channel_cardinality_supported"])
 
-        source_components = self._source_constraint_coefficient_components(
-            model, output_index)
+        if aggregate_mixture:
+            aggregate_component = copy.deepcopy(aggregate_prior)
+            aggregate_component["name"] = "source:aggregate"
+            aggregate_component["prior_weight"] = 1.0
+            aggregate_diagnostics = dict(
+                aggregate_component.get("diagnostics", {}))
+            aggregate_diagnostics.update({
+                "component_kind": "hierarchical_source_aggregate",
+                "aggregate_contains_within_source_uncertainty": True,
+                "aggregate_contains_between_source_disagreement": True,
+                "target_data_used_to_define_aggregate": False,
+                "target_oracle_used_to_define_aggregate": False,
+            })
+            aggregate_component["diagnostics"] = aggregate_diagnostics
+            source_components = [aggregate_component]
+        else:
+            source_components = [
+                self._calibrate_source_constraint_deviation(model, component)
+                for component in self._source_constraint_coefficient_components(
+                    model, output_index)
+            ]
+            source_components = self._calibrate_source_contrast_posterior(
+                source_components)
+            calibrated_components = []
+            for component in source_components:
+                component = self._calibrate_source_constraint_misspecification(
+                    model,
+                    component,
+                    samples,
+                    targets,
+                    observation_variance,
+                )
+                calibrated_components.append(component)
+            source_components = calibrated_components
         if not source_components:
             raise RuntimeError(
                 "evidence-mixture source mean adaptation requires source "
                 "coefficient components"
             )
-        null_weight = float(np.clip(
+        requested_null_weight = float(np.clip(
             self.config.source_constraint_mean_null_weight, 0.0, 1.0))
-        source_mass = 1.0 - null_weight
+        role_epistemic = self._source_constraint_role_epistemic_calibration(
+            model)
+        if role_epistemic["mode"] == "matching_uncertainty":
+            covariance_scale = min(
+                float(role_epistemic["epistemic_covariance_scale"]),
+                max(float(
+                    self.config
+                    .source_constraint_mean_misspecification_max_scale
+                ), 1.0),
+            )
+            for component in source_components:
+                covariance = np.asarray(
+                    component["covariance"], dtype=float)
+                component["covariance"] = (
+                    covariance_scale * covariance)
+                component_diagnostics = dict(
+                    component.get("diagnostics", {}))
+                component_diagnostics.update({
+                    "role_matching_epistemic_covariance_scale": float(
+                        covariance_scale),
+                    "role_matching_uncertainty_monotone": True,
+                    "role_matching_target_labels_used": False,
+                    "role_matching_target_oracle_used": False,
+                })
+                component["diagnostics"] = component_diagnostics
+        source_mass_before_role_calibration = 1.0 - requested_null_weight
+        source_mass = (
+            source_mass_before_role_calibration
+            * float(role_epistemic["source_role_trust"])
+        )
+        null_weight = 1.0 - source_mass
         raw_source_weight = np.asarray([
             component["prior_weight"] for component in source_components
         ], dtype=float)
@@ -1231,14 +2002,383 @@ class SingleOLHKGAlgorithm:
         for mass, component in zip(raw_source_weight, source_components):
             component["prior_weight"] = float(source_mass * mass)
         components = source_components + [
-            self._target_null_constraint_component(model, aggregate_prior)
+            self._target_null_constraint_component(model, raw_aggregate_prior)
         ]
         components[-1]["prior_weight"] = null_weight
-        prior_weight = np.asarray([
-            max(float(component["prior_weight"]), 1e-12)
+        basis_map = getattr(model, "basis_map", None)
+        if basis_map is not None and hasattr(
+            basis_map, "expand_target_role_assignment_components"
+        ):
+            components = basis_map.expand_target_role_assignment_components(
+                components)
+        components = self._expand_source_constraint_residual_rank_posterior(
+            model, components)
+        prior_weight = normalize_mixture_weights([
+            max(float(component["prior_weight"]), 0.0)
             for component in components
-        ], dtype=float)
-        prior_weight /= float(np.sum(prior_weight))
+        ])
+        misspecification_mode = str(
+            self.config.source_constraint_mean_misspecification_mode or "none"
+        ).strip().lower()
+        structure_score_mode = str(
+            self.config.source_constraint_mean_structure_score_mode
+            or "marginal_likelihood"
+        ).strip().lower().replace("-", "_")
+        if structure_score_mode not in {
+            "marginal_likelihood", "loo_predictive", "geometry_conditional"
+        }:
+            raise ValueError(
+                "source constraint mean structure score mode must be "
+                "marginal_likelihood, loo_predictive, or "
+                "geometry_conditional")
+        if (
+            structure_score_mode == "loo_predictive"
+            and misspecification_mode == "hierarchical_predictive_scale"
+        ):
+            raise ValueError(
+                "LOO structure scoring and hierarchical predictive scaling "
+                "must be evaluated as separate calibration mechanisms")
+        if structure_score_mode == "geometry_conditional":
+            basis_map = getattr(model, "basis_map", None)
+            role_diagnostics = (
+                basis_map.diagnostics().get("role_assignment_posterior", {})
+                if basis_map is not None and hasattr(basis_map, "diagnostics")
+                else {}
+            )
+            if role_diagnostics.get("prior") not in {
+                "source_geometry", "source_geometry_boundary"
+            }:
+                raise ValueError(
+                    "geometry-conditional adaptation requires the "
+                    "source_geometry/source_geometry_boundary "
+                    "role-assignment prior")
+            assignment_prior_target_labels_used = bool(
+                role_diagnostics.get(
+                    "target_labels_used_to_define_assignments", False))
+            marker = "|role_assignment="
+            group_labels = []
+            for component in components:
+                name = str(component["name"])
+                if marker not in name:
+                    raise RuntimeError(
+                        "geometry-conditional component has no assignment")
+                group_labels.append(
+                    name.rsplit(marker, 1)[1].split("|", 1)[0])
+            group_masses = {}
+            for label, mass in zip(group_labels, prior_weight):
+                group_masses[label] = (
+                    group_masses.get(label, 0.0) + float(mass))
+            names = [str(component["name"]) for component in components]
+            if misspecification_mode == "hierarchical_predictive_scale":
+                posterior_models = [
+                    ParametricGPR(
+                        model.d,
+                        lambda_i=model.lambda_i,
+                        prior_var=1.0,
+                        normalize_func=model.normalize_func,
+                        basis_map=model.basis_map,
+                        basis_config=copy.copy(model.basis_config),
+                        numeric_backend=model.numeric_backend,
+                        numeric_backend_device=model.numeric_backend_device,
+                        torch_dtype=model.torch_dtype,
+                        torch_min_rows=model.torch_min_rows,
+                    )
+                    for _component in components
+                ]
+                diagnostics = {
+                    **dict(aggregate_prior.get("diagnostics", {})),
+                    "adaptation_mode": (
+                        "sequential_assignment_prior_conditional_"
+                        "hierarchical_expert_mixture"),
+                    "structure_score_mode": "geometry_conditional",
+                    "structure_score_cross_fitted": False,
+                    "prior_target_data_used": False,
+                    "posterior_target_data_used": True,
+                    "target_observation_count": int(len(samples)),
+                    "target_oracle_used": False,
+                    "evidence_temperature": float(max(
+                        self.config
+                        .source_constraint_mean_evidence_temperature,
+                        1e-6,
+                    )),
+                    "null_prior_weight": float(null_weight),
+                    "requested_null_prior_weight": float(
+                        requested_null_weight),
+                    "source_prior_mass_before_role_calibration": float(
+                        source_mass_before_role_calibration),
+                    "source_prior_mass_after_role_calibration": float(
+                        source_mass),
+                    "source_role_epistemic_calibration": dict(
+                        role_epistemic),
+                    "component_names": names,
+                    "component_prior_weights": prior_weight.tolist(),
+                    "online_mixture_update_count": 0,
+                    "source_deviation_mode": str(
+                        self.config.source_constraint_mean_deviation_mode),
+                    "source_mean_misspecification_mode": (
+                        misspecification_mode),
+                    "assignment_group_masses_fixed": True,
+                    "assignment_group_masses": dict(group_masses),
+                    "target_labels_used_for_group_masses": bool(
+                        assignment_prior_target_labels_used),
+                    "target_oracle_used_for_group_masses": False,
+                    "component_deviation_diagnostics": [
+                        {
+                            "name": str(component["name"]),
+                            **dict(component.get("diagnostics", {})),
+                        }
+                        for component in components
+                    ],
+                }
+                model.set_hierarchical_misspecification_posterior(
+                    posterior_models,
+                    components,
+                    prior_weight,
+                    samples,
+                    targets,
+                    np.full(
+                        len(samples), observation_variance, dtype=float),
+                    diagnostics=diagnostics,
+                    prior_df=(
+                        self.config
+                        .source_constraint_mean_misspecification_prior_df),
+                    max_scale=(
+                        self.config
+                        .source_constraint_mean_misspecification_max_scale),
+                    group_labels=group_labels,
+                    group_masses=group_masses,
+                )
+                return dict(model.source_parametric_prior_diagnostics)
+            log_evidence = np.asarray([
+                self._source_component_log_evidence(
+                    model,
+                    samples,
+                    targets,
+                    component,
+                    observation_variance,
+                )
+                for component in components
+            ], dtype=float)
+            posterior_weight, group_masses = (
+                ParametricGPR.group_mass_preserving_weights(
+                    prior_weight,
+                    log_evidence,
+                    group_labels,
+                    group_masses,
+                    self.config.source_constraint_mean_evidence_temperature,
+                )
+            )
+            posterior_models = []
+            for component in components:
+                component_model = ParametricGPR(
+                    model.d,
+                    lambda_i=model.lambda_i,
+                    prior_var=1.0,
+                    normalize_func=model.normalize_func,
+                    basis_map=model.basis_map,
+                    basis_config=copy.copy(model.basis_config),
+                    numeric_backend=model.numeric_backend,
+                    numeric_backend_device=model.numeric_backend_device,
+                    torch_dtype=model.torch_dtype,
+                    torch_min_rows=model.torch_min_rows,
+                )
+                component_model.set_parametric_prior(
+                    component["mean"],
+                    component["deviation_variance"],
+                    component["covariance"],
+                )
+                for x, target in zip(samples, targets):
+                    component_model.update(
+                        x, float(target), observation_variance)
+                posterior_models.append(component_model)
+            diagnostics = {
+                **dict(aggregate_prior.get("diagnostics", {})),
+                "adaptation_mode": (
+                    "sequential_assignment_prior_conditional_expert_mixture"),
+                "structure_score_mode": "geometry_conditional",
+                "structure_score_cross_fitted": False,
+                "prior_target_data_used": False,
+                "posterior_target_data_used": True,
+                "target_observation_count": int(len(samples)),
+                "target_oracle_used": False,
+                "evidence_temperature": float(max(
+                    self.config.source_constraint_mean_evidence_temperature,
+                    1e-6,
+                )),
+                "null_prior_weight": float(null_weight),
+                "requested_null_prior_weight": float(requested_null_weight),
+                "source_prior_mass_before_role_calibration": float(
+                    source_mass_before_role_calibration),
+                "source_prior_mass_after_role_calibration": float(
+                    source_mass),
+                "source_role_epistemic_calibration": dict(role_epistemic),
+                "component_names": names,
+                "component_prior_weights": prior_weight.tolist(),
+                "component_log_evidence": log_evidence.tolist(),
+                "component_posterior_weights": posterior_weight.tolist(),
+                "selected_component": str(names[int(
+                    np.argmax(posterior_weight))]),
+                "target_only_posterior_weight": float(sum(
+                    mass for name, mass in zip(names, posterior_weight)
+                    if str(name).startswith("target:null"))),
+                "source_posterior_weight": float(sum(
+                    mass for name, mass in zip(names, posterior_weight)
+                    if not str(name).startswith("target:null"))),
+                "online_mixture_update_count": 0,
+                "source_deviation_mode": str(
+                    self.config.source_constraint_mean_deviation_mode),
+                "source_mean_misspecification_mode": misspecification_mode,
+                "assignment_group_masses_fixed": True,
+                "assignment_group_masses": dict(group_masses),
+                "target_labels_used_for_group_masses": bool(
+                    assignment_prior_target_labels_used),
+                "target_oracle_used_for_group_masses": False,
+                "component_deviation_diagnostics": [
+                    {
+                        "name": str(component["name"]),
+                        **dict(component.get("diagnostics", {})),
+                    }
+                    for component in components
+                ],
+            }
+            model.set_group_mass_preserving_posterior(
+                posterior_models,
+                posterior_weight,
+                group_labels,
+                group_masses,
+                diagnostics=diagnostics,
+            )
+            return dict(model.source_parametric_prior_diagnostics)
+        if structure_score_mode == "loo_predictive":
+            component_models = [
+                ParametricGPR(
+                    model.d,
+                    lambda_i=model.lambda_i,
+                    prior_var=1.0,
+                    normalize_func=model.normalize_func,
+                    basis_map=model.basis_map,
+                    basis_config=copy.copy(model.basis_config),
+                    numeric_backend=model.numeric_backend,
+                    numeric_backend_device=model.numeric_backend_device,
+                    torch_dtype=model.torch_dtype,
+                    torch_min_rows=model.torch_min_rows,
+                )
+                for _component in components
+            ]
+            diagnostics = {
+                **dict(aggregate_prior.get("diagnostics", {})),
+                "adaptation_mode": (
+                    "sequential_cross_validated_target_evidence_mixture"),
+                "structure_score_mode": "loo_predictive",
+                "structure_score_cross_fitted": True,
+                "prior_target_data_used": False,
+                "posterior_target_data_used": True,
+                "target_observation_count": int(len(samples)),
+                "target_oracle_used": False,
+                "evidence_temperature": float(max(
+                    self.config.source_constraint_mean_evidence_temperature,
+                    1e-6,
+                )),
+                "null_prior_weight": float(null_weight),
+                "requested_null_prior_weight": float(requested_null_weight),
+                "source_prior_mass_before_role_calibration": float(
+                    source_mass_before_role_calibration),
+                "source_prior_mass_after_role_calibration": float(
+                    source_mass),
+                "source_role_epistemic_calibration": dict(role_epistemic),
+                "component_names": [
+                    str(component["name"]) for component in components
+                ],
+                "component_prior_weights": prior_weight.tolist(),
+                "online_mixture_update_count": 0,
+                "source_deviation_mode": str(
+                    self.config.source_constraint_mean_deviation_mode),
+                "source_mean_misspecification_mode": misspecification_mode,
+                "component_deviation_diagnostics": [
+                    {
+                        "name": str(component["name"]),
+                        **dict(component.get("diagnostics", {})),
+                    }
+                    for component in components
+                ],
+            }
+            model.set_cross_validated_structure_posterior(
+                component_models,
+                components,
+                prior_weight,
+                samples,
+                targets,
+                np.full(
+                    len(samples), observation_variance, dtype=float),
+                diagnostics=diagnostics,
+            )
+            return dict(model.source_parametric_prior_diagnostics)
+        if misspecification_mode == "hierarchical_predictive_scale":
+            component_models = []
+            for component in components:
+                component_models.append(ParametricGPR(
+                    model.d,
+                    lambda_i=model.lambda_i,
+                    prior_var=1.0,
+                    normalize_func=model.normalize_func,
+                    basis_map=model.basis_map,
+                    basis_config=copy.copy(model.basis_config),
+                    numeric_backend=model.numeric_backend,
+                    numeric_backend_device=model.numeric_backend_device,
+                    torch_dtype=model.torch_dtype,
+                    torch_min_rows=model.torch_min_rows,
+                ))
+            diagnostics = {
+                **dict(aggregate_prior.get("diagnostics", {})),
+                "adaptation_mode": "sequential_target_evidence_mixture",
+                "prior_target_data_used": False,
+                "posterior_target_data_used": True,
+                "target_observation_count": int(len(samples)),
+                "target_oracle_used": False,
+                "evidence_temperature": float(max(
+                    self.config.source_constraint_mean_evidence_temperature,
+                    1e-6,
+                )),
+                "null_prior_weight": float(null_weight),
+                "requested_null_prior_weight": float(requested_null_weight),
+                "source_prior_mass_before_role_calibration": float(
+                    source_mass_before_role_calibration),
+                "source_prior_mass_after_role_calibration": float(source_mass),
+                "source_role_epistemic_calibration": dict(role_epistemic),
+                "component_names": [
+                    str(component["name"]) for component in components
+                ],
+                "component_prior_weights": prior_weight.tolist(),
+                "online_mixture_update_count": 0,
+                "source_deviation_mode": str(
+                    self.config.source_constraint_mean_deviation_mode),
+                "source_mean_misspecification_mode": misspecification_mode,
+                "component_deviation_diagnostics": [
+                    {
+                        "name": str(component["name"]),
+                        **dict(component.get("diagnostics", {})),
+                    }
+                    for component in components
+                ],
+            }
+            model.set_hierarchical_misspecification_posterior(
+                component_models,
+                components,
+                prior_weight,
+                samples,
+                targets,
+                np.full(
+                    len(samples), observation_variance, dtype=float),
+                diagnostics=diagnostics,
+                prior_df=(
+                    self.config.source_constraint_mean_misspecification_prior_df
+                ),
+                max_scale=(
+                    self.config.source_constraint_mean_misspecification_max_scale
+                ),
+            )
+            return dict(model.source_parametric_prior_diagnostics)
+
         log_evidence = np.asarray([
             self._source_component_log_evidence(
                 model,
@@ -1253,10 +2393,8 @@ class SingleOLHKGAlgorithm:
             float(self.config.source_constraint_mean_evidence_temperature),
             1e-6,
         )
-        log_weight = np.log(prior_weight) + log_evidence / temperature
-        log_weight -= float(np.max(log_weight))
-        posterior_weight = np.exp(log_weight)
-        posterior_weight /= float(np.sum(posterior_weight))
+        prior_weight, posterior_weight = posterior_mixture_weights(
+            prior_weight, log_evidence, temperature)
 
         posterior_models = []
         for component in components:
@@ -1285,9 +2423,17 @@ class SingleOLHKGAlgorithm:
         diagnostics = {
             **dict(aggregate_prior.get("diagnostics", {})),
             "adaptation_mode": (
-                "sequential_target_evidence_mixture"
-                if sequential_updates
-                else "target_evidence_mixture"
+                (
+                    "sequential_aggregate_target_evidence_mixture"
+                    if sequential_updates
+                    else "aggregate_target_evidence_mixture"
+                )
+                if aggregate_mixture
+                else (
+                    "sequential_target_evidence_mixture"
+                    if sequential_updates
+                    else "target_evidence_mixture"
+                )
             ),
             "prior_target_data_used": False,
             "posterior_target_data_used": True,
@@ -1295,6 +2441,11 @@ class SingleOLHKGAlgorithm:
             "target_oracle_used": False,
             "evidence_temperature": float(temperature),
             "null_prior_weight": float(null_weight),
+            "requested_null_prior_weight": float(requested_null_weight),
+            "source_prior_mass_before_role_calibration": float(
+                source_mass_before_role_calibration),
+            "source_prior_mass_after_role_calibration": float(source_mass),
+            "source_role_epistemic_calibration": dict(role_epistemic),
             "component_names": [
                 str(component["name"]) for component in components
             ],
@@ -1303,10 +2454,36 @@ class SingleOLHKGAlgorithm:
             "component_posterior_weights": posterior_weight.tolist(),
             "selected_component": str(components[int(
                 np.argmax(posterior_weight))]["name"]),
-            "target_only_posterior_weight": float(posterior_weight[-1]),
-            "source_posterior_weight": float(
-                np.sum(posterior_weight[:-1])),
+            "target_only_posterior_weight": float(sum(
+                mass for component, mass in zip(
+                    components, posterior_weight)
+                if str(component["name"]).startswith("target:null"))),
+            "source_posterior_weight": float(sum(
+                mass for component, mass in zip(
+                    components, posterior_weight)
+                if not str(component["name"]).startswith("target:null"))),
             "online_mixture_update_count": 0,
+            "source_deviation_mode": str(
+                self.config.source_constraint_mean_deviation_mode),
+            "source_mean_misspecification_mode": str(
+                self.config.source_constraint_mean_misspecification_mode),
+            "structure_score_mode": "marginal_likelihood",
+            "structure_score_cross_fitted": False,
+            "aggregate_transferability_latent": bool(aggregate_mixture),
+            "support_adaptive_aggregate_requested": bool(
+                support_adaptive_aggregate),
+            "support_adaptive_aggregate_selection": copy.deepcopy(
+                support_selection),
+            "effective_source_adaptation": (
+                "aggregate_latent" if aggregate_mixture
+                else "domain_mixture"),
+            "component_deviation_diagnostics": [
+                {
+                    "name": str(component["name"]),
+                    **dict(component.get("diagnostics", {})),
+                }
+                for component in components
+            ],
         }
         model.set_moment_matched_posterior(
             posterior_models,
@@ -1390,6 +2567,8 @@ class SingleOLHKGAlgorithm:
                     self.config.hvd_source_task_weight_mode),
                 cumulative_target_evidence_mode=(
                     self.config.hvd_cumulative_target_evidence_mode),
+                singleton_evidence_mode=(
+                    self.config.hvd_singleton_evidence_mode),
             )
             self._configure_hvd_source_task_posterior(
                 variance_model, expert_gpr)
@@ -1505,6 +2684,8 @@ class SingleOLHKGAlgorithm:
                 self.config.task_latent_calibration_mode),
             source_discrepancy_update=(
                 self.config.source_discrepancy_update),
+            variance_structure_posterior_mode=(
+                self.config.task_variance_posterior_mode),
         )
         # Score the remaining initial observations prequentially: each label
         # updates Q before it is inserted into any expert GPR/HVD.
@@ -1688,6 +2869,32 @@ class SingleOLHKGAlgorithm:
                 model, "_finite_mixture_component_names", [])),
             "finite_mixture_update_count": int(getattr(
                 model, "_finite_mixture_update_count", 0)),
+            "finite_mixture_hierarchical_misspecification": bool(getattr(
+                model,
+                "_finite_mixture_hierarchical_misspecification",
+                False,
+            )),
+            "finite_mixture_component_priors": copy.deepcopy(getattr(
+                model, "_finite_mixture_component_priors", [])),
+            "finite_mixture_prior_weights": (
+                None
+                if getattr(model, "_finite_mixture_prior_weights", None) is None
+                else np.asarray(
+                    model._finite_mixture_prior_weights, dtype=float).copy()
+            ),
+            "finite_mixture_target_history": copy.deepcopy(getattr(
+                model, "_finite_mixture_target_history", [])),
+            "finite_mixture_misspecification_prior_df": float(getattr(
+                model, "_finite_mixture_misspecification_prior_df", 4.0)),
+            "finite_mixture_misspecification_max_scale": float(getattr(
+                model, "_finite_mixture_misspecification_max_scale", 100.0)),
+            "finite_mixture_misspecification_mode": str(getattr(
+                model,
+                "_finite_mixture_misspecification_mode",
+                "hierarchical_predictive_scale",
+            )),
+            "finite_mixture_misspecification_ridge": float(getattr(
+                model, "_finite_mixture_misspecification_ridge", 1.0)),
             "finite_mixture_components": [
                 self._gpr_checkpoint_state(component)
                 for component in getattr(
@@ -1752,6 +2959,28 @@ class SingleOLHKGAlgorithm:
             "finite_mixture_sequential", False))
         model._finite_mixture_update_count = int(state.get(
             "finite_mixture_update_count", 0))
+        model._finite_mixture_hierarchical_misspecification = bool(state.get(
+            "finite_mixture_hierarchical_misspecification", False))
+        model._finite_mixture_component_priors = copy.deepcopy(state.get(
+            "finite_mixture_component_priors", []))
+        saved_prior_weight = state.get("finite_mixture_prior_weights")
+        model._finite_mixture_prior_weights = (
+            None
+            if saved_prior_weight is None
+            else np.asarray(saved_prior_weight, dtype=float).copy()
+        )
+        model._finite_mixture_target_history = copy.deepcopy(state.get(
+            "finite_mixture_target_history", []))
+        model._finite_mixture_misspecification_prior_df = float(state.get(
+            "finite_mixture_misspecification_prior_df", 4.0))
+        model._finite_mixture_misspecification_max_scale = float(state.get(
+            "finite_mixture_misspecification_max_scale", 100.0))
+        model._finite_mixture_misspecification_mode = str(state.get(
+            "finite_mixture_misspecification_mode",
+            "hierarchical_predictive_scale",
+        ))
+        model._finite_mixture_misspecification_ridge = float(state.get(
+            "finite_mixture_misspecification_ridge", 1.0))
         basis_state = state.get("basis_runtime_state")
         if (
             basis_state is not None
@@ -1775,6 +3004,10 @@ class SingleOLHKGAlgorithm:
                 self.task_ensemble.task_latent_inference_mode),
             "task_latent_calibration_mode": str(
                 self.task_ensemble.task_latent_calibration_mode),
+            "variance_structure_posterior_mode": str(
+                self.task_ensemble.variance_structure_posterior_mode),
+            "variance_structure_posterior": copy.deepcopy(
+                self.task_ensemble.variance_structure_posterior),
             "last_update": copy.deepcopy(self.task_ensemble.last_update),
             "pilot_count": int(self.task_ensemble.pilot_count),
             "safe_history": copy.deepcopy(
@@ -1832,6 +3065,13 @@ class SingleOLHKGAlgorithm:
             "task_latent_calibration_mode",
             self.task_ensemble.task_latent_calibration_mode,
         ))
+        self.task_ensemble.variance_structure_posterior_mode = str(state.get(
+            "variance_structure_posterior_mode",
+            self.task_ensemble.variance_structure_posterior_mode,
+        ))
+        if "variance_structure_posterior" in state:
+            self.task_ensemble.variance_structure_posterior = copy.deepcopy(
+                state["variance_structure_posterior"])
         self.task_ensemble.pilot_count = int(state.get(
             "pilot_count", self.task_ensemble.pilot_count))
         self.task_ensemble.safe_history = copy.deepcopy(state.get(
@@ -1878,6 +3118,32 @@ class SingleOLHKGAlgorithm:
             model, "_finite_mixture_sequential", False))
         clone._finite_mixture_update_count = int(getattr(
             model, "_finite_mixture_update_count", 0))
+        clone._finite_mixture_hierarchical_misspecification = bool(getattr(
+            model,
+            "_finite_mixture_hierarchical_misspecification",
+            False,
+        ))
+        clone._finite_mixture_component_priors = copy.deepcopy(getattr(
+            model, "_finite_mixture_component_priors", []))
+        clone._finite_mixture_prior_weights = (
+            None
+            if getattr(model, "_finite_mixture_prior_weights", None) is None
+            else np.asarray(
+                model._finite_mixture_prior_weights, dtype=float).copy()
+        )
+        clone._finite_mixture_target_history = copy.deepcopy(getattr(
+            model, "_finite_mixture_target_history", []))
+        clone._finite_mixture_misspecification_prior_df = float(getattr(
+            model, "_finite_mixture_misspecification_prior_df", 4.0))
+        clone._finite_mixture_misspecification_max_scale = float(getattr(
+            model, "_finite_mixture_misspecification_max_scale", 100.0))
+        clone._finite_mixture_misspecification_mode = str(getattr(
+            model,
+            "_finite_mixture_misspecification_mode",
+            "hierarchical_predictive_scale",
+        ))
+        clone._finite_mixture_misspecification_ridge = float(getattr(
+            model, "_finite_mixture_misspecification_ridge", 1.0))
         if clone._adaptive_sparsity is not None and model.basis_map is not None:
             basis_clone = object.__new__(model.basis_map.__class__)
             basis_clone.__dict__ = model.basis_map.__dict__.copy()
@@ -2862,6 +4128,113 @@ class SingleOLHKGAlgorithm:
             }
         return batches
 
+    def _boundary_coordinate_proposal_batches(self, rng, *, record=False):
+        """Rank a generic/source-frozen pool with the target-calibrated phi."""
+
+        requested = max(
+            0, int(self.config.boundary_coordinate_candidate_count))
+        basis_map = getattr(self.gpr[1], "basis_map", None)
+        diagnostics = (
+            basis_map.diagnostics()
+            if basis_map is not None and hasattr(basis_map, "diagnostics")
+            else {}
+        )
+        if (
+            requested == 0
+            or basis_map is None
+            or not getattr(basis_map, "constraint_mean_coordinate", False)
+            or str(diagnostics.get("output_mode", "")).lower()
+            != "boundary_aligned"
+            or not hasattr(self.problem, "boundary_excitation_candidates")
+        ):
+            if record:
+                self._last_boundary_coordinate_proposal_info = {
+                    "status": "disabled_or_missing_phi",
+                    "requested": int(requested),
+                    "coordinate_output_mode": diagnostics.get("output_mode"),
+                    "target_oracle_used": False,
+                }
+            return []
+
+        pool_size = max(
+            requested,
+            int(self.config.boundary_coordinate_pool_size),
+        )
+        pool = self.problem.boundary_excitation_candidates(
+            n=pool_size,
+            rng=rng,
+            pool_size=pool_size,
+        )
+        observed = set(tuple(int(v) for v in x) for x in self.observations)
+        pool = [
+            tuple(int(v) for v in x)
+            for x in unique_candidates(pool)
+            if tuple(int(v) for v in x) not in observed
+        ]
+        if not pool:
+            if record:
+                self._last_boundary_coordinate_proposal_info = {
+                    "status": "empty_pool",
+                    "requested": int(requested),
+                    "target_oracle_used": False,
+                }
+            return []
+
+        phi = basis_map.features_many(pool)
+        observed_points = list(self.observations)
+        observed_phi = (
+            basis_map.features_many(observed_points)
+            if observed_points
+            else np.empty((0, phi.shape[1]), dtype=float)
+        )
+        if self.task_ensemble is None:
+            mu = self.gpr[1].posterior_mean_many(pool)
+            epistemic = self.gpr[1].posterior_var_many(pool)
+            cert = self._certification_result(
+                mu, pool, epistemic=epistemic)
+        else:
+            cert = self._certification_result(None, pool)
+            mu = np.asarray(cert.mu, dtype=float)
+            epistemic = np.asarray(cert.epistemic_var, dtype=float)
+        selection = select_boundary_coordinate_candidates(
+            phi,
+            observed_phi,
+            mu,
+            epistemic,
+            cert.margin,
+            count=requested,
+            safe_fraction=self.config.boundary_coordinate_safe_fraction,
+            boundary_fraction=(
+                self.config.boundary_coordinate_boundary_fraction),
+            coverage_fraction=(
+                self.config.boundary_coordinate_coverage_fraction),
+        )
+        batches = []
+        for role in sorted(set(selection.roles)):
+            rows = [
+                pool[index]
+                for index, selected_role in zip(
+                    selection.indices, selection.roles)
+                if selected_role == role
+            ]
+            if rows:
+                batches.append((role, rows))
+        if record:
+            self._last_boundary_coordinate_proposal_info = {
+                **selection.diagnostics,
+                "coordinate": "phi=source_aligned_chance_boundary",
+                "mean_model": "target_conditioned_constraint_gpr",
+                "variance_model": "frozen_current_cumulative_hvd",
+                "source_pool_contract": copy.deepcopy(getattr(
+                    getattr(basis_map, "meta_prior", None),
+                    "boundary_excitation_diagnostics",
+                    {},
+                )),
+                "target_observation_count": int(len(self.history)),
+                "target_oracle_used": False,
+            }
+        return batches
+
     def _generate_candidates(self, iteration):
         candidates = []
         sources = {}
@@ -2901,6 +4274,11 @@ class SingleOLHKGAlgorithm:
             record=True,
         ):
             add(rows, f"task_expert:{expert_name}")
+        for role, rows in self._boundary_coordinate_proposal_batches(
+            self.rng,
+            record=True,
+        ):
+            add(rows, f"boundary_phi:{role}")
         if hasattr(self.problem, "frozen_source_consensus_candidates"):
             add(
                 self.problem.frozen_source_consensus_candidates(),
@@ -7975,13 +9353,14 @@ class SingleOLHKGAlgorithm:
             gaussian_rows.append(np.zeros(2, dtype=float))
         gaussian_rows = np.asarray(gaussian_rows, dtype=float).reshape(mc, 2)
 
-        if bool(getattr(
+        if hasattr(self.task_ensemble, "predictive_selector_weights"):
+            selector_weights = (
+                self.task_ensemble.predictive_selector_weights())
+        elif bool(getattr(
             self.task_ensemble, "task_latent_authoritative", False
         )):
-            selector_weights = (
-                self.task_ensemble._task_latent().posterior_weights(
-                    safe=True).reshape(-1)
-            )
+            selector_weights = self.task_ensemble._task_latent(
+            ).posterior_weights(safe=True).reshape(-1)
         elif hasattr(self.task_ensemble, "structure_weights"):
             selector_weights = self.task_ensemble.structure_weights(
                 objective=False)
@@ -8468,7 +9847,13 @@ class SingleOLHKGAlgorithm:
             - self.problem.tau
         )
 
-    def _truth_pool_diagnostics(self, pool, selected=None, prefix="candidate"):
+    def _truth_pool_diagnostics(
+        self,
+        pool,
+        selected=None,
+        prefix="candidate",
+        sources=None,
+    ):
         if not self.config.truth_pool_diagnostics or not pool:
             return {}
         pool = [tuple(int(v) for v in x) for x in unique_candidates(pool)]
@@ -8483,18 +9868,30 @@ class SingleOLHKGAlgorithm:
             true_best_obj = np.inf
         margins = []
         regrets = []
+        true_means = []
+        true_variances = []
+        retained_pool = []
         for x in pool:
             try:
                 margin = self._true_chance_margin(x)
                 obj = float(self.problem.true_objective(x))
+                true_mean = float(self.problem.true_constraint_mean(x))
+                true_variance = float(self.problem.true_sigma(x)[1]) ** 2
             except Exception:
                 continue
+            retained_pool.append(x)
             margins.append(margin)
             regrets.append(obj - true_best_obj if np.isfinite(true_best_obj) else np.nan)
+            true_means.append(true_mean)
+            true_variances.append(true_variance)
         if not margins:
             return {f"{prefix}_truth_diagnostics_available": False}
+        pool = retained_pool
         margins = np.asarray(margins, dtype=float)
         regrets = np.asarray(regrets, dtype=float)
+        true_means = np.asarray(true_means, dtype=float)
+        true_variances = np.maximum(
+            np.asarray(true_variances, dtype=float), 1e-12)
         feasible = margins <= 0.0
         good_eps = float(self.config.truth_pool_good_regret)
         good = feasible & np.isfinite(regrets) & (regrets <= good_eps)
@@ -8533,8 +9930,160 @@ class SingleOLHKGAlgorithm:
                     posterior_margins[best_pos] <= 0.0)
                 out[f"{prefix}_best_true_feasible_regret_audit"] = float(
                     regrets[best_pos])
+            predicted_mean = np.asarray(cert.mu, dtype=float)
+            predicted_variance = np.maximum(
+                np.asarray(cert.aleatoric_var, dtype=float), 1e-12)
+            epistemic_radius = np.sqrt(
+                max(float(cert.beta_g), 0.0)
+                * np.maximum(np.asarray(
+                    cert.epistemic_var, dtype=float), 0.0)
+            )
+            oracle_variance_margin = (
+                predicted_mean
+                + epistemic_radius
+                + float(cert.z_alpha) * np.sqrt(true_variances)
+                - float(cert.tau)
+            )
+            oracle_mean_margin = (
+                true_means
+                + epistemic_radius
+                + float(cert.z_alpha) * np.sqrt(predicted_variance)
+                - float(cert.tau)
+            )
+            oracle_both_margin = (
+                true_means
+                + epistemic_radius
+                + float(cert.z_alpha) * np.sqrt(true_variances)
+                - float(cert.tau)
+            )
+
+            def rank_correlation(left, right):
+                left = np.asarray(left, dtype=float)
+                right = np.asarray(right, dtype=float)
+                if len(left) < 2:
+                    return None
+                left_order = np.argsort(left, kind="stable")
+                right_order = np.argsort(right, kind="stable")
+                left_rank = np.empty(len(left), dtype=float)
+                right_rank = np.empty(len(right), dtype=float)
+                left_rank[left_order] = np.arange(len(left), dtype=float)
+                right_rank[right_order] = np.arange(len(right), dtype=float)
+                left_rank -= float(np.mean(left_rank))
+                right_rank -= float(np.mean(right_rank))
+                denominator = float(
+                    np.linalg.norm(left_rank) * np.linalg.norm(right_rank))
+                return (
+                    None if denominator <= 1e-12
+                    else float(left_rank @ right_rank / denominator)
+                )
+
+            full_count = int(np.sum(posterior_margins <= 0.0))
+            posterior_certified = posterior_margins <= 0.0
+            true_certified_count = int(np.sum(
+                posterior_certified & feasible))
+            false_certified_count = int(np.sum(
+                posterior_certified & ~feasible))
+            certificate_precision = (
+                None
+                if full_count == 0
+                else float(true_certified_count / full_count)
+            )
+            oracle_variance_count = int(np.sum(
+                oracle_variance_margin <= 0.0))
+            oracle_mean_count = int(np.sum(oracle_mean_margin <= 0.0))
+            oracle_both_count = int(np.sum(oracle_both_margin <= 0.0))
+            if not np.any(feasible):
+                failure_layer = "candidate_support"
+            elif oracle_both_count == 0:
+                failure_layer = "epistemic_or_safety_depth"
+            elif full_count > 0:
+                failure_layer = "closed"
+            elif (
+                oracle_mean_count - full_count
+                >= oracle_variance_count - full_count
+            ):
+                failure_layer = "constraint_mean"
+            else:
+                failure_layer = "cumulative_variance"
+            out.update({
+                f"{prefix}_failure_decomposition_available": True,
+                f"{prefix}_failure_layer": failure_layer,
+                f"{prefix}_constraint_mean_rank_correlation": rank_correlation(
+                    predicted_mean, true_means),
+                f"{prefix}_chance_margin_rank_correlation": rank_correlation(
+                    posterior_margins, margins),
+                f"{prefix}_constraint_mean_median_abs_error": float(
+                    np.median(np.abs(predicted_mean - true_means))),
+                f"{prefix}_variance_median_abs_log_error": float(np.median(
+                    np.abs(np.log(predicted_variance)
+                           - np.log(true_variances)))),
+                f"{prefix}_full_certified_count": full_count,
+                f"{prefix}_true_certified_count": true_certified_count,
+                f"{prefix}_false_certified_count": false_certified_count,
+                f"{prefix}_certificate_precision": certificate_precision,
+                f"{prefix}_oracle_variance_certified_count": (
+                    oracle_variance_count),
+                f"{prefix}_oracle_mean_certified_count": oracle_mean_count,
+                f"{prefix}_oracle_mean_variance_certified_count": (
+                    oracle_both_count),
+                f"{prefix}_median_oracle_variance_margin": float(
+                    np.median(oracle_variance_margin)),
+                f"{prefix}_median_oracle_mean_margin": float(
+                    np.median(oracle_mean_margin)),
+                f"{prefix}_median_oracle_mean_variance_margin": float(
+                    np.median(oracle_both_margin)),
+                f"{prefix}_minimum_oracle_mean_variance_margin": float(
+                    np.min(oracle_both_margin)),
+                f"{prefix}_minimum_epistemic_radius": float(
+                    np.min(epistemic_radius)),
+                f"{prefix}_audit_target_oracle_used_for_decision": False,
+            })
+            basis_map = getattr(self.gpr[1], "basis_map", None)
+            if basis_map is not None and hasattr(
+                basis_map, "role_assignment_oracle_expressivity_audit"
+            ):
+                out[f"{prefix}_role_assignment_oracle_expressivity"] = (
+                    basis_map.role_assignment_oracle_expressivity_audit(
+                        pool, true_means)
+                )
+            if np.any(feasible):
+                feasible_indices = np.flatnonzero(feasible)
+                safest = int(feasible_indices[int(np.argmin(
+                    oracle_both_margin[feasible_indices]))])
+                out.update({
+                    f"{prefix}_best_feasible_oracle_mean_variance_margin": (
+                        float(oracle_both_margin[safest])
+                    ),
+                    f"{prefix}_best_feasible_epistemic_radius": float(
+                        epistemic_radius[safest]),
+                    f"{prefix}_best_feasible_true_margin": float(
+                        margins[safest]),
+                })
         except Exception:
             out[f"{prefix}_posterior_audit_available"] = False
+        if sources:
+            source_rows = {}
+            for index, x in enumerate(pool):
+                source = str(sources.get(tuple(x), "unknown"))
+                row = source_rows.setdefault(source, {
+                    "count": 0,
+                    "true_feasible_count": 0,
+                    "true_min_margin": np.inf,
+                })
+                row["count"] += 1
+                row["true_feasible_count"] += int(bool(feasible[index]))
+                row["true_min_margin"] = min(
+                    float(row["true_min_margin"]), float(margins[index]))
+            out[f"{prefix}_source_truth_support"] = {
+                source: {
+                    "count": int(row["count"]),
+                    "true_feasible_count": int(row["true_feasible_count"]),
+                    "has_true_feasible": bool(row["true_feasible_count"] > 0),
+                    "true_min_margin": float(row["true_min_margin"]),
+                    "target_oracle_used_for_decision": False,
+                }
+                for source, row in source_rows.items()
+            }
         if selected is not None:
             selected = tuple(int(v) for v in selected)
             try:
@@ -8818,6 +10367,25 @@ class SingleOLHKGAlgorithm:
                 if np.isfinite(val):
                     vals.append(val)
             return float(np.mean(vals)) if vals else None
+        failure_layers = {}
+        phi_support_iterations = 0
+        phi_feasible_iterations = 0
+        for row in rows:
+            layer = row.get("candidate_failure_layer")
+            if layer is not None:
+                failure_layers[str(layer)] = int(
+                    failure_layers.get(str(layer), 0) + 1)
+            source_support = row.get("candidate_source_truth_support") or {}
+            phi_rows = [
+                value for source, value in source_support.items()
+                if str(source).startswith("boundary_phi:")
+            ]
+            if phi_rows:
+                phi_support_iterations += 1
+                phi_feasible_iterations += int(any(
+                    bool(value.get("has_true_feasible", False))
+                    for value in phi_rows
+                ))
         return {
             "enabled": True,
             "n_logged": int(len(rows)),
@@ -8848,7 +10416,129 @@ class SingleOLHKGAlgorithm:
                 "acquisition_selected_minus_highest_feasible_score"),
             "terminal_frontier_selected_rate": mean_bool(
                 "terminal_frontier_selected"),
+            "failure_layer_counts": failure_layers,
+            "mean_constraint_mean_rank_correlation": mean_float(
+                "candidate_constraint_mean_rank_correlation"),
+            "mean_chance_margin_rank_correlation": mean_float(
+                "candidate_chance_margin_rank_correlation"),
+            "mean_constraint_mean_median_abs_error": mean_float(
+                "candidate_constraint_mean_median_abs_error"),
+            "mean_variance_median_abs_log_error": mean_float(
+                "candidate_variance_median_abs_log_error"),
+            "mean_oracle_variance_certified_count": mean_float(
+                "candidate_oracle_variance_certified_count"),
+            "mean_oracle_mean_certified_count": mean_float(
+                "candidate_oracle_mean_certified_count"),
+            "mean_oracle_mean_variance_certified_count": mean_float(
+                "candidate_oracle_mean_variance_certified_count"),
+            "phi_candidate_iteration_count": int(phi_support_iterations),
+            "phi_candidate_true_feasible_iteration_rate": (
+                float(phi_feasible_iterations / phi_support_iterations)
+                if phi_support_iterations else None
+            ),
+            "target_oracle_used_for_decision": False,
         }
+
+    def _summarize_boundary_coordinate_proposals(self):
+        rows = [
+            row.get("boundary_coordinate_proposal") or {}
+            for row in self.iteration_log
+        ]
+        generated = [row for row in rows if row.get("status") == "selected"]
+        role_counts = {}
+        for row in generated:
+            for role, count in (row.get("role_counts") or {}).items():
+                role_counts[str(role)] = int(
+                    role_counts.get(str(role), 0) + int(count))
+        return {
+            "enabled": bool(
+                self.config.boundary_coordinate_candidate_count > 0),
+            "generated_iteration_count": int(len(generated)),
+            "selected_candidate_count": int(sum(
+                int(row.get("selected", 0)) for row in generated)),
+            "role_counts": role_counts,
+            "last": copy.deepcopy(
+                rows[-1] if rows
+                else self._last_boundary_coordinate_proposal_info),
+            "coordinate": "phi=source_aligned_chance_boundary",
+            "target_observations_used_for_calibration": True,
+            "target_oracle_used": False,
+        }
+
+    def _boundary_coordinate_raw_pool_audit(self):
+        """Audit one shared unlabeled pool after all decisions are frozen.
+
+        Source-stratum templates are deliberately disabled here. This makes
+        the raw policy pool identical across latent, profile-phi, learned
+        exposure-phi, and provider upper-bound variants for a fixed seed.
+        Target truth is read only by ``_truth_pool_diagnostics`` after the
+        recommendation has already been selected.
+        """
+
+        if self._boundary_raw_pool_audit_cache is not None:
+            return copy.deepcopy(self._boundary_raw_pool_audit_cache)
+        if (
+            not self.config.truth_pool_diagnostics
+            or not hasattr(self.problem, "boundary_excitation_candidates")
+        ):
+            result = {
+                "status": "disabled",
+                "post_run_only": True,
+                "target_oracle_used_for_decision": False,
+            }
+            self._boundary_raw_pool_audit_cache = result
+            return copy.deepcopy(result)
+
+        pool_size = max(1, int(self.config.boundary_coordinate_pool_size))
+        audit_rng = np.random.default_rng(
+            int(self.config.seed) + 8_300_003)
+        try:
+            pool = self.problem.boundary_excitation_candidates(
+                n=pool_size,
+                rng=audit_rng,
+                pool_size=pool_size,
+                include_source_templates=False,
+            )
+        except TypeError:
+            pool = self.problem.boundary_excitation_candidates(
+                n=pool_size,
+                rng=audit_rng,
+                pool_size=pool_size,
+            )
+        pool = [tuple(int(v) for v in x) for x in unique_candidates(pool)]
+        diagnostics = self._truth_pool_diagnostics(
+            pool,
+            prefix="boundary_raw_pool",
+        )
+        basis_map = getattr(self.gpr[1], "basis_map", None)
+        basis_diagnostics = (
+            basis_map.diagnostics()
+            if basis_map is not None and hasattr(basis_map, "diagnostics")
+            else {}
+        )
+        result = {
+            "status": (
+                "audited"
+                if diagnostics.get(
+                    "boundary_raw_pool_truth_diagnostics_available", False)
+                else "truth_unavailable"
+            ),
+            "pool_size": int(len(pool)),
+            "pool_contract": "universal_low_frequency_no_source_templates",
+            "coordinate_output_mode": basis_diagnostics.get("output_mode"),
+            "coordinate_input_mode": (
+                basis_diagnostics.get("input_mode")
+                or basis_diagnostics.get("mean_coordinate_input")
+            ),
+            "separate_mean_variance_heads": bool(
+                basis_diagnostics.get("separate_mean_variance_heads", False)),
+            "post_run_only": True,
+            "target_truth_used_for_audit": True,
+            "target_oracle_used_for_decision": False,
+            **diagnostics,
+        }
+        self._boundary_raw_pool_audit_cache = copy.deepcopy(result)
+        return result
 
     def run(self, verbose=False):
         t_start = time.time()
@@ -8955,6 +10645,8 @@ class SingleOLHKGAlgorithm:
             row["llm_prior"] = dict(self._last_llm_prior_info)
             row["task_expert_proposals"] = copy.deepcopy(
                 self._last_task_proposal_info)
+            row["boundary_coordinate_proposal"] = copy.deepcopy(
+                self._last_boundary_coordinate_proposal_info)
 
             t0 = time.time()
             score = self.acquisition.score(
@@ -9163,6 +10855,7 @@ class SingleOLHKGAlgorithm:
                 candidates,
                 selected=x_selected,
                 prefix="candidate",
+                sources=candidate_sources,
             ))
             row.update(self._truth_acquisition_score_audit(
                 candidates,
@@ -9794,6 +11487,10 @@ class SingleOLHKGAlgorithm:
                 self._task_initial_design_info),
             "llm_prior": llm_prior_summary,
             "truth_pool_diagnostics": self._summarize_truth_pool_diagnostics(),
+            "boundary_raw_pool_truth_diagnostics": (
+                self._boundary_coordinate_raw_pool_audit()),
+            "boundary_coordinate_proposal": (
+                self._summarize_boundary_coordinate_proposals()),
             "variance": self.variance_model.diagnostics(),
             "adaptive_sparsity": [
                 model.adaptive_sparsity_diagnostics()

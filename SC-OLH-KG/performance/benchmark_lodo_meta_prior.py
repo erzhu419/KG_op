@@ -321,6 +321,35 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
             "meta_observable_mean_latent_dim", 2)),
         observable_mean_training_target=str(args_dict.get(
             "meta_observable_mean_training_target", "constraint_mean")),
+        observable_mean_input_mode=str(args_dict.get(
+            "meta_observable_mean_input_mode", "policy_profile")),
+        observable_mean_descriptor_mode=str(args_dict.get(
+            "meta_observable_mean_descriptor_mode", "ordered")),
+        observable_mean_feature_mode=str(args_dict.get(
+            "meta_observable_mean_feature_mode", "linear")),
+        observable_mean_latent_transform=str(args_dict.get(
+            "meta_observable_mean_latent_transform", "identity")),
+        observable_mean_target_residual_rank=int(args_dict.get(
+            "meta_observable_mean_target_residual_rank", 0)),
+        observable_mean_target_residual_prior_scale=float(args_dict.get(
+            "meta_observable_mean_target_residual_prior_scale", 1.0)),
+        observable_mean_target_residual_pool_size=int(args_dict.get(
+            "meta_observable_mean_target_residual_pool_size", 128)),
+        observable_mean_target_residual_rcond=float(args_dict.get(
+            "meta_observable_mean_target_residual_rcond", 1e-8)),
+        observable_mean_role_assignment_posterior=bool(args_dict.get(
+            "meta_observable_mean_role_assignment_posterior", False)),
+        observable_mean_role_assignment_prior=str(args_dict.get(
+            "meta_observable_mean_role_assignment_prior", "uniform")),
+        observable_mean_role_assignment_prior_temperature_scale=float(
+            args_dict.get(
+                "meta_observable_mean_role_assignment_prior_temperature_scale",
+                1.0,
+            )),
+        observable_mean_role_assignment_inactive_variance=float(args_dict.get(
+            "meta_observable_mean_role_assignment_inactive_variance", 1e-12)),
+        observable_variance_input_mode=str(args_dict.get(
+            "meta_observable_variance_input_mode", "legacy_policy_proxy")),
         source_observation_mode=str(args_dict.get(
             "meta_source_observation_mode", "analytic")),
         source_observation_replicates=int(args_dict.get(
@@ -461,7 +490,7 @@ def post_run_variance_calibration_audit(
         _, _, per_expert = algorithm.task_ensemble.expert_moments_many(
             1, points, certification=False)
         weights = np.asarray(
-            algorithm.task_ensemble.structure_weights(objective=False),
+            algorithm.task_ensemble.variance_structure_weights(),
             dtype=float,
         )
         weights = np.maximum(weights, 0.0)
@@ -469,7 +498,11 @@ def post_run_variance_calibration_audit(
         predicted = weights @ np.asarray(per_expert, dtype=float)
         certified = algorithm.task_ensemble.robust_moments_many(
             1, points, certification=True).aleatoric_upper
-        posterior_source = "task_posterior_hvd_mixture"
+        posterior_source = (
+            "replication_variance_task_posterior_hvd_mixture"
+            if algorithm.task_ensemble.variance_structure_isolated
+            else "task_posterior_hvd_mixture"
+        )
     predicted = np.maximum(np.asarray(predicted, dtype=float), 1e-12)
     certified = np.maximum(np.asarray(certified, dtype=float), 1e-12)
     truth = np.maximum(true_variance, 1e-12)
@@ -481,6 +514,11 @@ def post_run_variance_calibration_audit(
         "status": "audited",
         "audit_size": int(len(points)),
         "posterior_source": posterior_source,
+        "variance_structure_posterior_mode": str(getattr(
+            algorithm.task_ensemble,
+            "variance_structure_posterior_mode",
+            "single_hvd" if algorithm.task_ensemble is None else "shared",
+        )) if algorithm.task_ensemble is not None else "single_hvd",
         "log_variance_rmse": float(np.sqrt(np.mean(log_error ** 2))),
         "certified_log_variance_rmse": float(np.sqrt(
             np.mean(certified_log_error ** 2))),
@@ -576,6 +614,8 @@ def run_one(task):
             "hvd_source_task_weight_mode", "independent")),
         hvd_cumulative_target_evidence_mode=str(args_dict.get(
             "hvd_cumulative_target_evidence_mode", "replication_only")),
+        hvd_singleton_evidence_mode=str(args_dict.get(
+            "hvd_singleton_evidence_mode", "in_sample_residual")),
         lambda_feas=args_dict["lambda_feas"],
         lambda_var=args_dict["lambda_var"],
         lambda_mean=args_dict["lambda_mean"],
@@ -702,6 +742,8 @@ def run_one(task):
             "task_posterior_proposal_min_per_expert"],
         task_posterior_sensitivity_mode=args_dict[
             "task_posterior_sensitivity_mode"],
+        task_variance_posterior_mode=str(args_dict.get(
+            "task_variance_posterior_mode", "shared")),
         task_latent_inference_mode=args_dict.get(
             "task_latent_inference_mode", "shadow"),
         task_latent_calibration_mode=args_dict.get(
@@ -812,10 +854,50 @@ def run_one(task):
             "source_constraint_mean_coefficient_prior", False)),
         source_constraint_mean_adaptation_mode=str(args_dict.get(
             "source_constraint_mean_adaptation_mode", "frozen")),
+        source_constraint_mean_deviation_mode=str(args_dict.get(
+            "source_constraint_mean_deviation_mode", "raw_independent")),
+        source_constraint_mean_misspecification_mode=str(args_dict.get(
+            "source_constraint_mean_misspecification_mode", "none")),
+        source_constraint_mean_misspecification_prior_df=float(args_dict.get(
+            "source_constraint_mean_misspecification_prior_df", 4.0)),
+        source_constraint_mean_misspecification_ridge=float(args_dict.get(
+            "source_constraint_mean_misspecification_ridge", 1.0)),
+        source_constraint_mean_misspecification_max_scale=float(args_dict.get(
+            "source_constraint_mean_misspecification_max_scale", 100.0)),
+        source_constraint_mean_contrast_scale=float(args_dict.get(
+            "source_constraint_mean_contrast_scale", 1.0)),
+        source_constraint_mean_role_epistemic_mode=str(args_dict.get(
+            "source_constraint_mean_role_epistemic_mode", "none")),
         source_constraint_mean_null_weight=float(args_dict.get(
             "source_constraint_mean_null_weight", 0.5)),
+        source_constraint_mean_null_geometry=str(args_dict.get(
+            "source_constraint_mean_null_geometry", "isotropic")),
+        source_constraint_mean_null_geometry_ridge=float(args_dict.get(
+            "source_constraint_mean_null_geometry_ridge", 1e-3)),
         source_constraint_mean_evidence_temperature=float(args_dict.get(
             "source_constraint_mean_evidence_temperature", 1.0)),
+        source_constraint_mean_structure_score_mode=str(args_dict.get(
+            "source_constraint_mean_structure_score_mode",
+            "marginal_likelihood")),
+        source_constraint_mean_residual_rank_posterior=bool(args_dict.get(
+            "source_constraint_mean_residual_rank_posterior", False)),
+        source_constraint_mean_residual_rank_prior=str(args_dict.get(
+            "source_constraint_mean_residual_rank_prior",
+            "0.70,0.20,0.10")),
+        source_constraint_mean_residual_rank_inactive_variance=float(
+            args_dict.get(
+                "source_constraint_mean_residual_rank_inactive_variance",
+                1e-12)),
+        boundary_coordinate_candidate_count=int(args_dict.get(
+            "boundary_coordinate_candidate_count", 0)),
+        boundary_coordinate_pool_size=int(args_dict.get(
+            "boundary_coordinate_pool_size", 512)),
+        boundary_coordinate_safe_fraction=float(args_dict.get(
+            "boundary_coordinate_safe_fraction", 0.30)),
+        boundary_coordinate_boundary_fraction=float(args_dict.get(
+            "boundary_coordinate_boundary_fraction", 0.40)),
+        boundary_coordinate_coverage_fraction=float(args_dict.get(
+            "boundary_coordinate_coverage_fraction", 0.30)),
         truth_pool_diagnostics=bool(args_dict["truth_pool_diagnostics"]),
         truth_pool_good_regret=args_dict["truth_pool_good_regret"],
         truth_pool_max_candidates=args_dict["truth_pool_max_candidates"],
@@ -946,14 +1028,88 @@ def run_one(task):
             "meta_observable_mean_latent_dim", 2)),
         "meta_observable_mean_training_target": str(args_dict.get(
             "meta_observable_mean_training_target", "constraint_mean")),
+        "meta_observable_mean_input_mode": str(args_dict.get(
+            "meta_observable_mean_input_mode", "policy_profile")),
+        "meta_observable_mean_descriptor_mode": str(args_dict.get(
+            "meta_observable_mean_descriptor_mode", "ordered")),
+        "meta_observable_mean_feature_mode": str(args_dict.get(
+            "meta_observable_mean_feature_mode", "linear")),
+        "meta_observable_mean_latent_transform": str(args_dict.get(
+            "meta_observable_mean_latent_transform", "identity")),
+        "meta_observable_mean_target_residual_rank": int(args_dict.get(
+            "meta_observable_mean_target_residual_rank", 0)),
+        "meta_observable_mean_target_residual_prior_scale": float(
+            args_dict.get(
+                "meta_observable_mean_target_residual_prior_scale", 1.0)),
+        "meta_observable_mean_target_residual_pool_size": int(args_dict.get(
+            "meta_observable_mean_target_residual_pool_size", 128)),
+        "meta_observable_mean_target_residual_rcond": float(args_dict.get(
+            "meta_observable_mean_target_residual_rcond", 1e-8)),
+        "meta_observable_mean_role_assignment_posterior": bool(args_dict.get(
+            "meta_observable_mean_role_assignment_posterior", False)),
+        "meta_observable_mean_role_assignment_prior": str(args_dict.get(
+            "meta_observable_mean_role_assignment_prior", "uniform")),
+        "meta_observable_mean_role_assignment_prior_temperature_scale": float(
+            args_dict.get(
+                "meta_observable_mean_role_assignment_prior_temperature_scale",
+                1.0,
+            )),
+        "meta_observable_mean_role_assignment_inactive_variance": float(
+            args_dict.get(
+                "meta_observable_mean_role_assignment_inactive_variance",
+                1e-12)),
+        "meta_observable_variance_input_mode": str(args_dict.get(
+            "meta_observable_variance_input_mode", "legacy_policy_proxy")),
         "source_constraint_mean_coefficient_prior": bool(args_dict.get(
             "source_constraint_mean_coefficient_prior", False)),
         "source_constraint_mean_adaptation_mode": str(args_dict.get(
             "source_constraint_mean_adaptation_mode", "frozen")),
+        "source_constraint_mean_deviation_mode": str(args_dict.get(
+            "source_constraint_mean_deviation_mode", "raw_independent")),
+        "source_constraint_mean_misspecification_mode": str(args_dict.get(
+            "source_constraint_mean_misspecification_mode", "none")),
+        "source_constraint_mean_misspecification_prior_df": float(
+            args_dict.get(
+                "source_constraint_mean_misspecification_prior_df", 4.0)),
+        "source_constraint_mean_misspecification_ridge": float(args_dict.get(
+            "source_constraint_mean_misspecification_ridge", 1.0)),
+        "source_constraint_mean_misspecification_max_scale": float(
+            args_dict.get(
+                "source_constraint_mean_misspecification_max_scale", 100.0)),
+        "source_constraint_mean_contrast_scale": float(args_dict.get(
+            "source_constraint_mean_contrast_scale", 1.0)),
+        "source_constraint_mean_role_epistemic_mode": str(args_dict.get(
+            "source_constraint_mean_role_epistemic_mode", "none")),
         "source_constraint_mean_null_weight": float(args_dict.get(
             "source_constraint_mean_null_weight", 0.5)),
+        "source_constraint_mean_null_geometry": str(args_dict.get(
+            "source_constraint_mean_null_geometry", "isotropic")),
+        "source_constraint_mean_null_geometry_ridge": float(args_dict.get(
+            "source_constraint_mean_null_geometry_ridge", 1e-3)),
         "source_constraint_mean_evidence_temperature": float(args_dict.get(
             "source_constraint_mean_evidence_temperature", 1.0)),
+        "source_constraint_mean_structure_score_mode": str(args_dict.get(
+            "source_constraint_mean_structure_score_mode",
+            "marginal_likelihood")),
+        "source_constraint_mean_residual_rank_posterior": bool(args_dict.get(
+            "source_constraint_mean_residual_rank_posterior", False)),
+        "source_constraint_mean_residual_rank_prior": str(args_dict.get(
+            "source_constraint_mean_residual_rank_prior",
+            "0.70,0.20,0.10")),
+        "source_constraint_mean_residual_rank_inactive_variance": float(
+            args_dict.get(
+                "source_constraint_mean_residual_rank_inactive_variance",
+                1e-12)),
+        "boundary_coordinate_candidate_count": int(args_dict.get(
+            "boundary_coordinate_candidate_count", 0)),
+        "boundary_coordinate_pool_size": int(args_dict.get(
+            "boundary_coordinate_pool_size", 512)),
+        "boundary_coordinate_safe_fraction": float(args_dict.get(
+            "boundary_coordinate_safe_fraction", 0.30)),
+        "boundary_coordinate_boundary_fraction": float(args_dict.get(
+            "boundary_coordinate_boundary_fraction", 0.40)),
+        "boundary_coordinate_coverage_fraction": float(args_dict.get(
+            "boundary_coordinate_coverage_fraction", 0.30)),
         "meta_source_observation_mode": str(args_dict.get(
             "meta_source_observation_mode", "analytic")),
         "meta_source_observation_replicates": int(args_dict.get(
@@ -986,6 +1142,8 @@ def run_one(task):
             "meta_ordered_exposure_adaptive_sparsity", False)),
         "task_posterior_sensitivity_mode": args_dict[
             "task_posterior_sensitivity_mode"],
+        "task_variance_posterior_mode": str(args_dict.get(
+            "task_variance_posterior_mode", "shared")),
         "task_latent_inference_mode": args_dict.get(
             "task_latent_inference_mode", "shadow"),
         "task_latent_calibration_mode": args_dict.get(
@@ -1176,6 +1334,8 @@ def run_one(task):
             "hvd_source_task_weight_mode", "independent")),
         "hvd_cumulative_target_evidence_mode": str(args_dict.get(
             "hvd_cumulative_target_evidence_mode", "replication_only")),
+        "hvd_singleton_evidence_mode": str(args_dict.get(
+            "hvd_singleton_evidence_mode", "in_sample_residual")),
         "task_posterior_robust_certificate_mode": str(args_dict.get(
             "task_posterior_robust_certificate_mode", "separable")),
         "gpr_numerics": result.get("gpr_numerics"),
@@ -1419,6 +1579,10 @@ def run_one(task):
             "variance_upper_coverage"],
         "candidate_source_counts": result.get("candidate_source_counts", {}),
         "truth_pool_diagnostics": result.get("truth_pool_diagnostics", {}),
+        "boundary_raw_pool_truth_diagnostics": result.get(
+            "boundary_raw_pool_truth_diagnostics", {}),
+        "boundary_coordinate_proposal": result.get(
+            "boundary_coordinate_proposal", {}),
         "llm_prior": result.get("llm_prior", {}),
         "x_recommended": result["x_recommended"],
     }
@@ -2223,6 +2387,11 @@ def main():
     parser.add_argument(
         "--task_posterior_sensitivity_mode", default="off")
     parser.add_argument(
+        "--task_variance_posterior_mode",
+        choices=("shared", "replication_only"),
+        default="shared",
+    )
+    parser.add_argument(
         "--task_latent_inference_mode",
         choices=("shadow", "authoritative"),
         default="shadow",
@@ -2512,7 +2681,7 @@ def main():
         "--meta_observable_mean_mode",
         choices=[
             "atoms", "aggregate", "latent", "consensus", "source_affine",
-            "source_rank",
+            "source_rank", "boundary_aligned",
         ],
         default="latent",
     )
@@ -2522,6 +2691,93 @@ def main():
         "--meta_observable_mean_training_target",
         choices=["constraint_mean", "chance_margin"],
         default="constraint_mean",
+    )
+    parser.add_argument(
+        "--meta_observable_mean_input_mode",
+        choices=[
+            "policy_profile",
+            "source_learned_exposure",
+            "observable_state_exposure",
+            "provider_exposure",
+        ],
+        default="policy_profile",
+    )
+    parser.add_argument(
+        "--meta_observable_mean_descriptor_mode",
+        choices=[
+            "ordered",
+            "set_invariant",
+            "role_aligned",
+            "role_transport",
+            "role_intervention_transport",
+            "role_adaptive_ordered",
+            "role_adaptive_set_invariant",
+            "exchangeable_equivariant",
+        ],
+        default="ordered",
+    )
+    parser.add_argument(
+        "--meta_observable_mean_feature_mode",
+        choices=["linear", "diagonal_quadratic", "full_quadratic"],
+        default="linear",
+    )
+    parser.add_argument(
+        "--meta_observable_mean_latent_transform",
+        choices=[
+            "identity",
+            "source_tanh",
+            "source_support_clip",
+            "source_support_residual",
+        ],
+        default="identity",
+    )
+    parser.add_argument(
+        "--meta_observable_mean_target_residual_rank", type=int, default=0)
+    parser.add_argument(
+        "--meta_observable_mean_target_residual_prior_scale",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--meta_observable_mean_target_residual_pool_size",
+        type=int,
+        default=128,
+    )
+    parser.add_argument(
+        "--meta_observable_mean_target_residual_rcond",
+        type=float,
+        default=1e-8,
+    )
+    parser.add_argument(
+        "--meta_observable_mean_role_assignment_posterior",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--meta_observable_mean_role_assignment_prior",
+        choices=[
+            "uniform", "source_geometry", "source_geometry_boundary",
+        ],
+        default="uniform",
+    )
+    parser.add_argument(
+        "--meta_observable_mean_role_assignment_prior_temperature_scale",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--meta_observable_mean_role_assignment_inactive_variance",
+        type=float,
+        default=1e-12,
+    )
+    parser.add_argument(
+        "--meta_observable_variance_input_mode",
+        choices=["legacy_policy_proxy", "observable_state_exposure"],
+        default="legacy_policy_proxy",
+        help=(
+            "Fit cumulative factor-HVD coordinates from the same observable "
+            "state/trajectory exposure used by the separate mean head."
+        ),
     )
     parser.add_argument(
         "--source_constraint_mean_coefficient_prior",
@@ -2536,20 +2792,115 @@ def main():
         "--source_constraint_mean_adaptation_mode",
         choices=[
             "frozen", "evidence_mixture", "sequential_evidence_mixture",
+            "aggregate_mixture", "sequential_aggregate_mixture",
+            "sequential_aggregate_hyperlaw",
+            "support_adaptive_aggregate_mixture",
+            "sequential_support_adaptive_aggregate_mixture",
         ],
         default="frozen",
         help=(
-            "Use a frozen aggregate source coefficient law or update a "
-            "source-domain-plus-null mixture from charged target calls."
+            "Use a frozen aggregate source coefficient law, a source-domain "
+            "mixture, or an aggregate-source-versus-target-null mixture "
+            "updated from charged target calls."
         ),
     )
     parser.add_argument(
+        "--source_constraint_mean_deviation_mode",
+        choices=["raw_independent", "latent_shared"],
+        default="raw_independent",
+        help=(
+            "Represent source residual discrepancy as an independent raw-"
+            "policy floor or as uncertainty in the transferable latent "
+            "coefficient law plus a finite residual floor."
+        ),
+    )
+    parser.add_argument(
+        "--source_constraint_mean_misspecification_mode",
+        choices=[
+            "none",
+            "predictive_scale",
+            "predictive_scale_directional",
+            "hierarchical_predictive_scale",
+            "source_contrast",
+        ],
+        default="none",
+        help=(
+            "Conservatively inflate a source mean coefficient law when "
+            "charged target residuals reject its predictive distribution."
+        ),
+    )
+    parser.add_argument(
+        "--source_constraint_mean_misspecification_prior_df",
+        type=float,
+        default=4.0,
+    )
+    parser.add_argument(
+        "--source_constraint_mean_misspecification_ridge",
+        type=float,
+        default=1.0,
+    )
+    parser.add_argument(
+        "--source_constraint_mean_misspecification_max_scale",
+        type=float,
+        default=100.0,
+    )
+    parser.add_argument(
+        "--source_constraint_mean_contrast_scale", type=float, default=1.0)
+    parser.add_argument(
+        "--source_constraint_mean_role_epistemic_mode",
+        choices=["none", "matching_loss", "matching_uncertainty"],
+        default="none",
+    )
+    parser.add_argument(
         "--source_constraint_mean_null_weight", type=float, default=0.5)
+    parser.add_argument(
+        "--source_constraint_mean_null_geometry",
+        choices=["isotropic", "target_pool"],
+        default="isotropic",
+    )
+    parser.add_argument(
+        "--source_constraint_mean_null_geometry_ridge",
+        type=float,
+        default=1e-3,
+    )
     parser.add_argument(
         "--source_constraint_mean_evidence_temperature",
         type=float,
         default=1.0,
     )
+    parser.add_argument(
+        "--source_constraint_mean_structure_score_mode",
+        choices=[
+            "marginal_likelihood",
+            "loo_predictive",
+            "geometry_conditional",
+        ],
+        default="marginal_likelihood",
+    )
+    parser.add_argument(
+        "--source_constraint_mean_residual_rank_posterior",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--source_constraint_mean_residual_rank_prior",
+        default="0.70,0.20,0.10",
+    )
+    parser.add_argument(
+        "--source_constraint_mean_residual_rank_inactive_variance",
+        type=float,
+        default=1e-12,
+    )
+    parser.add_argument(
+        "--boundary_coordinate_candidate_count", type=int, default=0)
+    parser.add_argument(
+        "--boundary_coordinate_pool_size", type=int, default=512)
+    parser.add_argument(
+        "--boundary_coordinate_safe_fraction", type=float, default=0.30)
+    parser.add_argument(
+        "--boundary_coordinate_boundary_fraction", type=float, default=0.40)
+    parser.add_argument(
+        "--boundary_coordinate_coverage_fraction", type=float, default=0.30)
     parser.add_argument(
         "--meta_source_observation_mode",
         choices=["analytic", "nominal", "replicated"],

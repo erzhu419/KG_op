@@ -52,38 +52,37 @@ terms into `B`, and residual rates into `omega`.
 
 ## Assumption A2: Policy-State Occupancy Representation
 
-Each design `x` induces a distribution over trajectories.  Its state-coupled
-cumulative risk coordinate is
+Each design `x` induces a distribution over trajectories and a common
+observable state/trajectory exposure `e(x)`. Two independently fitted heads
+construct
 
 ```text
-psi(x) = (A(x), N(x)).
+phi_mu(x) = h_mu(e(x)),
+psi_v(x)  = h_v(e(x)) = (A(x), N(x)).
 ```
 
-The same `psi` is used for HVD features, SC candidate anchors, certification
-variance, and exact-KG variance updates. It is **not** assumed sufficient for
-the constraint mean. A separate observable coordinate
+`phi_mu` parameterizes the GPR constraint mean and epistemic variance;
+`psi_v` supplies the local and shared cumulative-risk blocks used by HVD,
+certification variance, and variance-aware decisions. The heads share no
+parameters and are not assumed to be interchangeable. They meet only in the
+single certified chance margin
 
 ```text
-eta(x) = frozen source-learned multiscale policy/exposure scores
-```
-
-parameterizes the GPR constraint mean and epistemic variance. The coordinates
-meet only in the single certified chance margin
-
-```text
-rho(x) = m_g(eta(x)) + sqrt(beta_g) s_g(eta(x))
-         + z_alpha sqrt(v_C^+(psi(x))) - tau.
+rho(x) = m_g(phi_mu(x)) + sqrt(beta_g) s_g(phi_mu(x))
+         + z_alpha sqrt(v_C^+(psi_v(x))) - tau.
 ```
 
 This separation corrects the empirically false assumption that one coordinate
 must simultaneously explain conditional mean and cumulative heteroscedastic
 risk. Both maps are frozen from source observations before the held-out run;
 only their posterior coefficients are updated by charged target evaluations.
-The source regression target for `eta` is the replicated constraint mean, not
-the source chance margin. Chance-margin proximity enters only as a nonnegative
-training weight. Thus aleatoric scale cannot be silently absorbed into the
-mean coordinate; it enters the deployed certificate exclusively through
-`v_C^+(psi)`.
+The source regression target for `phi_mu` is the replicated constraint mean;
+source chance-margin strata define only its representation. The independent
+`psi_v` head is aligned using domain-standardized log variance estimated from
+ordinary source replications, after which factor-HVD learns its cumulative
+coefficients. Thus aleatoric scale cannot be silently absorbed into the mean
+coordinate; it enters the deployed certificate exclusively through
+`v_C^+(psi_v)`.
 The occupancy summary `s(x)` determines expected exposures
 
 ```text
@@ -471,6 +470,237 @@ mu_g + sqrt(beta_g) sqrt(s_g^2 max(1,c_scale)^2)
   + z_alpha sqrt(v_C_plus) - tau.
 ```
 
+V5 preserves useful channel roles without assuming that source and target
+enumerate those roles identically. Source domains learn canonical role
+prototypes from observable channel distributions. The held-out assignment is
+computed from an unlabeled target policy/exposure pool. Simultaneously
+permuting channels and their assignment leaves every aligned role value, and
+therefore every downstream mean descriptor, unchanged. This equivariance is
+Lean-proved in `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean`; whether the
+learned roles are semantically sufficient remains an empirical transfer gate.
+
+The same file formalizes V5 source-mean misspecification calibration. A
+residual-driven scale is lower-bounded by one, so scaling a PSD source
+coefficient law and nonnegative residual floor cannot reduce uncertainty. An
+optional PSD directional term can only increase it further. Thus target data
+may weaken or redirect a wrong source expert, but the calibration mechanism
+cannot make a theory certificate less conservative merely by claiming lower
+source uncertainty.
+
+V6 corrects the temporal limitation of that construction. Each source expert
+retains its unconditioned frozen law, and every charged target observation adds
+a nonnegative standardized innovation square to a full-history sufficient
+statistic. The implementation recomputes the source scale and mixture evidence,
+then refits from the frozen law. Lean proves accumulation of the statistic,
+the unit lower bound of every recomputed scale, and non-relaxation relative to
+the frozen coefficient and residual variances. It intentionally does not claim
+that successive learned scales are monotone: additional compatible target data
+may legitimately reduce a previous empirical scale while it remains at least
+one. The nontransfer `target:null` law is exactly unchanged.
+
+V7 separates two failures that a scalar residual scale cannot identify.
+Semantic support is estimated from source-standardized channel-role signatures
+and an unlabeled target exposure pool. The resulting exponential trust lies in
+`(0,1]`, so it may move prior mass from source experts to `target:null` but can
+never increase transferred source mass. Conditional on support, frozen source
+coefficient means define a PSD low-rank contrast covariance. Its projected
+variance is nonnegative and can only enlarge epistemic uncertainty. The first
+mechanism represents uncertainty about coordinate semantics; the second
+represents directional disagreement among source mean laws. Neither reads
+target outcomes or oracle feasibility. These are finite implementation
+bridges, not a theorem that held-out semantic alignment must succeed.
+
+V8 addresses the remaining representation failure instead of attempting to
+calibrate coefficients inside a semantically unsupported coordinate. The
+role-aligned coordinate and a fallback coordinate are fitted independently on
+the same frozen source archive. A selector that reads only source and unlabeled
+target channel cardinalities uses the role coordinate when that structural
+support was observed in source domains and otherwise uses the fallback. Lean
+proves the finite closure statement: if both branch-specific certification
+bridges are sound, selecting either branch preserves soundness. It does not
+assert that cardinality support is sufficient for semantic transfer; that is a
+paired empirical gate.
+
+V12 addresses target-candidate extrapolation without changing the HVD head.
+The aligned latent coordinate is passed through a source-LODO-selected tanh
+map, so every feature is strictly bounded independently of the selected
+temperature. The nontransfer `target:null` component may replace its
+coordinate-dependent isotropic covariance by an inverse-Gram geometry learned
+from the deterministic unlabeled target role-matching pool. Its scale preserves
+the previous average prior predictive variance on that pool. Lean proves both
+boundedness and this exact scale-preservation identity; whether the resulting
+coordinate is sufficient remains a held-out empirical gate.
+
+V13 replaces global compression by a source-support projection. The selected
+coordinate is exactly linear within the source-supported interval and bounded
+outside it. An optional scalar overflow feature is zero on support and bounded
+by one off support. Its coefficient is part of the same conjugate target mean
+posterior, so ordinary charged observations can learn a held-out mean
+discrepancy without restoring unbounded extrapolation. Lean proves the finite
+support, identity, and residual-channel bounds; transfer sufficiency remains a
+paired empirical claim.
+
+V14 closes the remaining initialization leak between these heads. A singleton
+target response is not treated as variance evidence because its squared
+residual mixes mean misspecification and aleatoric noise. The HVD head instead
+retains the frozen replicated-source variance prediction until a target policy
+is evaluated repeatedly; a within-policy sample variance then supplies target
+variance evidence. Lean proves singleton evidence is invariant to the chosen
+mean head and replicated evidence remains nonnegative.
+
+V15 also closes the ensemble-level mixture path. The task law is factorized as
+`Q_t^mu x Q_t^v`: target response and boundary scores update `Q_t^mu`, while
+`Q_t^v` remains at its frozen source prior until a within-policy replication
+provides sample-variance evidence. Mean and epistemic bounds are taken under
+the first posterior, cumulative aleatoric bounds under the second, and the
+separable certified margin combines the two valid upper bounds. Exact-KG uses
+the same Cartesian-product posterior in every fantasy clone. Lean proves that
+the variance mixture and replication score are independent of all mean-head
+weights and predictions.
+
+V16 addresses variable observable-channel semantics without recoupling the
+heads. A source-only partial transport maps channels to canonical roles and
+retains missing-role mass. Its target matching residual can only multiply the
+source mean coefficient covariance by a factor at least one. The Lean bridge
+proves nonnegative role mass, a unit lower bound on the mismatch scale, and
+non-decreasing scalar epistemic variance. Empirical sufficiency of the
+transported coordinate remains a preregistered held-out-domain gate.
+
+V17 changes the role-identification statistic rather than relaxing the
+certificate. Source and target channels are probed by the same normalized
+low-frequency policy interventions; a variable-cardinality target response is
+represented by a nonnegative unit-mass barycenter of source-role responses.
+Consequently each scalar aligned response stays in the source-role convex
+hull. Target residuals may separately inflate the source mean-coefficient law
+through the hierarchical misspecification posterior, but cannot reduce source
+epistemic variance and cannot alter `target:null`. These statements do not
+assert held-out response sufficiency; that remains the V17 empirical gate.
+
+V18 keeps the V15 source mean coordinate and adds only a target-specific
+orthogonal residual dictionary. A deterministic unlabeled target policy pool
+defines raw observable exposure features. Their projection onto the source
+mean span is removed before a rank-one or rank-two SVD basis is retained. The
+new coefficient prior has mean zero and an independent PSD covariance block,
+so it cannot shift the frozen source prior mean or reduce predictive
+uncertainty. Charged target observations perform the only outcome-dependent
+update. Lean proves the corresponding mean preservation, non-decreasing
+variance, and exact source-plus-residual energy decomposition. Whether this
+small residual span is sufficient on a held-out domain remains an empirical
+claim rather than a theorem.
+
+V19 does not select that rank by target name. It embeds ranks zero through two
+in one maximum-rank feature map, expands both source and target-null laws over
+the same nested structure variable, and updates their joint mass with ordinary
+charged target likelihoods. The moment projection includes between-rank
+disagreement, so uncertainty about structure can only add epistemic variance.
+Lean proves nonnegative active/inactive rank variance, probability
+normalization of the target-evidence update, and the variance non-reduction
+property. Empirical promotion still requires nonvacuous true certificates.
+
+V20 instead treats every admissible channel-to-role injection as one finite
+structure atom. V21 changes only the evidence used to weight those atoms. For
+assignment `pi`, let `s_pi` be the sum of Gaussian log predictive densities in
+which each charged target margin is predicted while omitted from that atom's
+conditioning set. The generalized-Bayes structure posterior is
+
+```text
+q(pi | D_t) proportional to q_0(pi) exp(s_pi / T).
+```
+
+The source laws, assignment orbit, and temperature are frozen before target
+outcomes. The score uses ordinary charged target responses but no target
+oracle. After scoring, each atom is conditioned on the complete target history
+and moment matching retains between-assignment disagreement. Lean proves
+strict positivity of every exponentiated finite score, positive evidence mass
+for any nontrivial nonnegative prior, normalized nonnegative posterior weights,
+and exact commutation of the likelihood with assignment relabeling. It does not
+claim that ten observations identify the oracle-best assignment; that is the
+V21 empirical gate.
+
+V22 does not erase the source-learned geometric match before that update. Let
+`L_t(pi)` be the matching cost between observable target channel signatures and
+the frozen source role atlas. The signatures use a deterministic unlabeled
+target policy pool. A source-domain best/second-best cost gap calibrates
+`T_src > 0`, giving
+
+```text
+q_0(pi | E_t) proportional to exp(-L_t(pi) / (s T_src)).
+```
+
+The scale `s` is preregistered, and no target response or oracle enters this
+prior. Simultaneous channel/assignment relabeling only permutes its finite
+atoms. Lean proves positive geometry likelihoods, monotonic preference for
+lower costs at positive temperature, and a normalized nonnegative posterior.
+Whether source geometry remains semantically useful is still an empirical
+held-out-domain claim.
+
+V23 prevents charged target outcomes from rewriting that semantic match merely
+to compensate for a misspecified source mean. It introduces a separate expert
+index `e` and uses the hierarchical law
+
+```text
+q(pi, e | D_t, E_t) = q_0(pi | E_t) q(e | pi, D_t).
+```
+
+Target outcomes update the source/null conditional law within each assignment,
+while the geometry-derived assignment marginal remains fixed. If every
+conditional expert law sums to one, summing the joint law over `e` recovers
+exactly `q_0(pi | E_t)` before and after any target-evidence update. Lean proves
+this marginal invariance, joint nonnegativity, and joint normalization. The
+implementation additionally retains between-assignment and between-expert
+disagreement in epistemic covariance and keeps the cumulative HVD posterior in
+an independent product factor.
+
+V24 tests whether a noncontractive full-history scale can calibrate the
+conditional source expert while preserving the V23 assignment marginal. The
+formal marginal statement is exact, but the empirical gate showed that global
+scale inflation can make a diffuse wrong source expert dominate and can erase
+all remaining certification depth. V25 therefore moves semantic adaptation to
+the finite role law itself. Source domains define a Gaussian law for each
+canonical role's Fisher-transformed association with the chance margin; the
+charged target pilot supplies the analogous noisy channel statistics. For an
+injection `pi`, the code uses
+
+```text
+ell(pi) = -1/2 sum_j [
+  (z_t,j-z_s,pi(j))^2 / (u_t,j^2+u_s,pi(j)^2)
+  + log(u_t,j^2+u_s,pi(j)^2)
+].
+```
+
+Multiplying `exp(ell(pi)/T)` by the source-geometry prior and normalizing gives
+a finite posterior. Lean proves positive evidence, normalized nonnegative
+mass, and exact equivariance when target channels and the injection are
+relabelled together. The target truth pool is excluded: only charged pilot
+responses enter this update. Afterward the assignment law is frozen and the
+conditional expert posterior adapts online. Source coefficient disagreement
+is also estimated separately inside each assignment block; Lean proves zero
+contrast gain outside the active block, while the existing source-contrast
+theorems prove nonnegative epistemic gain inside it.
+
+V26 removes the assumption that a source channel has a transferable discrete
+role at all. Each source domain first fits the same fixed-dimensional linear
+mean coordinate. Its channel coefficient blocks are then reduced to one
+exchangeable block law and copied to every target channel. Thus the frozen
+source prior carries a distribution over channel effects, but no source channel
+identity. For target channel permutation `pi`, the scalar mean satisfies
+
+```text
+m(b_(pi(j)), phi_(pi(j))) = m(b_j, phi_j),
+```
+
+when coefficients and observable channel features are relabelled together, and
+the product source score is unchanged because every channel uses the same block
+law. These two invariances are Lean-proved. Ordinary charged target observations
+condition the individual blocks, so their posterior means may acquire different
+signs and magnitudes. The existing hierarchical predictive-scale posterior is
+applied independently to each frozen source expert and can only increase its
+epistemic uncertainty; `target:null` remains unscaled. The cumulative HVD
+posterior remains the independent `Q_t^v` factor from V15. The theorem does not
+assert that ten target observations identify a sufficient held-out boundary
+coordinate. Recovery of true feasibility, oracle certifiability, and rank
+quality is the paired V26 empirical gate.
+
 The signed bias `b(psi)` (including a source-frozen low-rank functional bias)
 is used by posterior Bayes ranking but is absent from this
 certificate. This margin is never smaller than the sensitivity-free theory margin. Product-
@@ -685,6 +915,19 @@ versions needed by the manuscript:
 | Chance certification | `SCOLHKG/Real/Certification.lean` | Lean-proved from GP-confidence and variance-upper events |
 | Theory certification implementation | `SCOLHKG/Real/CertificationImplementation.lean` | Lean-proved for `mu + sqrt(beta)s + z sqrt(v_C^+) <= tau`, with legacy mode dominated by theory mode and the necessary nonvacuity condition `beta * v_epi <= safety_depth^2` under oracle mean |
 | Separated mean/risk coordinate bridge | `SCOLHKG/Real/MeanRiskCoordinateSeparation.lean` | Lean-proved that `eta` alone determines constraint mean/epistemic variance, `psi` alone determines certification variance, joint coordinate equivalence preserves the chance margin, and the separated implementation inherits certificate soundness |
+| Source-aligned chance-boundary coordinate | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | Lean-proved exact mean/variance oracle-substitution identities; factorization of distinct `phi_mu` and `psi_v` heads through one observable state/trajectory exposure; invariance of the complete separated margin under equal exposures; certificate soundness, head noninterference, candidate-support necessity/restoration, and non-relaxation by a nonnegative transfer guard. V4 proves exact preservation of source discrepancy at reference feature energy. V5 proves conservative static source-law inflation and role-permutation equivariance. V6 proves nonnegative online sufficient-statistic accumulation, a unit lower bound for every recomputed scale, conservative refitting relative to the same frozen source law, and exact invariance of the target-null component. V7 proves role-support trust is in `(0,1]`, cannot increase source mass, and that source-contrast uncertainty is nonnegative and can only increase epistemic variance. V8 proves reduction and sound-property closure for the source-support adaptive role/fallback selector. V12 proves strict source-tanh boundedness and nonnegative average-variance-preserving target-feature rescaling. V13 proves on-support identity, off-support clipping, and a zero-on-support bounded discrepancy feature. It deliberately does not assert temporal monotonicity or universal semantic alignment. Held-out coordinate sufficiency remains an explicit empirical gate rather than an assumed theorem. |
+| Variable-cardinality role transport | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V16 Lean-proves nonnegative partial-role mass, a unit lower bound for the source/target matching epistemic scale, and that multiplying a nonnegative source covariance by that scale cannot decrease predictive variance. Target-free transport fitting and held-out sufficiency remain implementation and empirical contracts. |
+| Intervention-response barycentric role transport | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V17 Lean-proves convex-hull containment for nonnegative unit-mass role responses, exact non-inflation of the target-null mean law, and non-decrease of source epistemic variance under hierarchical misspecification scaling. Source-only role learning and held-out sufficiency remain audited implementation and empirical contracts. |
+| Target-orthogonal residual mean coordinate | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V18 Lean-proves that a zero-mean residual law preserves the source prior mean, an independent nonnegative residual variance cannot reduce predictive uncertainty, and orthogonality gives an exact additive energy decomposition. Outcome-free construction and held-out sufficiency remain implementation and empirical contracts. |
+| Bayesian residual-rank structure posterior | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V19 Lean-proves nonnegative nested active/inactive coefficient variance, normalized nonnegative target-evidence rank weights, and non-reduction of predictive variance when between-rank disagreement is retained. Oracle-free construction and held-out usefulness remain implementation and empirical contracts. |
+| Finite channel-role assignment posterior | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V20 Lean-proves unit mass of the uniform finite assignment prior, invariance of the mixture mean under atom relabeling induced by channel permutations, non-reduction of predictive variance when between-assignment disagreement is retained, and normalized nonnegative target-evidence assignment weights. The source-only hypothesis construction, one-block-per-atom implementation, and post-run-only oracle expressivity audit are implementation contracts checked by the V20 gate. |
+| Cross-fitted assignment structure posterior | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V21 Lean-proves positivity of exponentiated finite LOO scores, positive evidence mass under any nontrivial nonnegative assignment prior, normalization/nonnegativity of the resulting generalized-Bayes posterior, and score-likelihood equivariance under assignment relabeling. Exact Gaussian LOO arithmetic, refitting from frozen component laws, oracle exclusion, and independent HVD state are executable contracts checked by the V21 gate. |
+| Source-geometry assignment prior | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V22 Lean-proves positivity of exponentiated negative matching costs, monotone preference for lower-cost assignments at positive source-calibrated temperature, and normalization/nonnegativity of the finite prior. Source-only temperature calibration, unlabeled target cost construction, source/null orbit equality, and HVD isolation are executable contracts checked by the V22 gate. |
+| Factorized assignment/misspecification posterior | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V23 Lean-proves that a normalized frozen assignment marginal times normalized assignment-conditional expert laws is a nonnegative unit-mass joint posterior, that marginalizing experts exactly recovers the frozen assignment law, and that changing the normalized conditional expert posterior cannot alter that marginal. Geometry-only assignment construction, target-only conditional expert updating, moment-matched disagreement, and HVD isolation are executable contracts checked by the V23 gate. |
+| Factorized hierarchical source-mean calibration | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V24 combines the V6 noncontractive full-history source-scale refit with the V23 hierarchical law. Lean proves that any normalized before/after hierarchical expert conditionals have the same frozen assignment marginal. Refitting from frozen component laws, target-only scale statistics, ten sequential updates, and independent HVD state are executable contracts checked by the V24 gate. |
+| Charged-pilot boundary-role posterior | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V25 Lean-proves positivity and normalization of Gaussian boundary-role assignment evidence, exact channel/assignment relabel equivariance, and zero source-contrast predictive gain outside an assignment's active block. Source-only role statistics, charged-pilot-only target statistics, post-pilot freezing, assignment-conditional covariance construction, target-oracle exclusion, and HVD isolation are executable contracts checked by the V25 gate. |
+| Exchangeable target-linear mean coordinate | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V26 Lean-proves exact scalar-mean equivariance under simultaneous channel feature/coefficient relabeling and exact invariance of a shared exchangeable channel-block prior score. Source-domain block reduction, copied source laws, charged-target-only posterior differentiation, hierarchical misspecification noncontraction, target-null invariance, target-oracle exclusion, and HVD isolation are executable contracts. Held-out boundary sufficiency and certification nonvacuity remain empirical gate criteria. |
+| Single exchangeable empirical-Bayes hyperlaw | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V27 Lean-proves nonnegativity of every projected moment-matched covariance, exact reduction of a one-atom aggregate law to that atom's mean and covariance, and exact one-step growth of the charged target history. Full-history refitting from the frozen law, absence of source identity/null atoms, exact-KG clone equivalence, target-oracle exclusion, and HVD isolation are executable contracts. Held-out mean adequacy and certification nonvacuity remain empirical gate criteria. |
 | Source-informed constraint-mean posterior | `SCOLHKG/Real/SourceConstraintMeanPosterior.lean` | Lean-proved nonnegativity of hierarchical source directional variance, exact scalar conjugate updating, target-information variance contraction, nonnegative finite-mixture moment variance, preservation of between-source disagreement, nonnegative normalized sequential evidence weights, and inheritance of chance-certificate soundness |
 | TCB-V2 hierarchical three-layer certificate | `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean` | Lean-proved positive target scale, planar-rotation norm preservation, nonnegative Cholesky/rotation/orthogonal-residual uncertainty, upper-margin non-relaxation, coverage-reserved frontier order, one shared frontier/terminal/recommendation upper margin, recommendation safety under coverage, and lexicographic terminal dominance |
 | TCB-V3 finite boundary-family certificate | `SCOLHKG/Real/BoundaryFamilyMixtureCertificate.lean` | Lean-proved posterior credible-mass contract, pointwise family-envelope coverage, nonnegative family-guard monotonicity, safe recommendation, target-name noninterference, and the combined `delta_family + alpha` failure bound |

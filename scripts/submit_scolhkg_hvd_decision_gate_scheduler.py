@@ -45,7 +45,8 @@ MEAN_PROFILES = (
     "eta_source_sequential",
 )
 OBSERVABLE_MEAN_MODES = (
-    "latent", "consensus", "source_affine", "source_rank")
+    "latent", "consensus", "source_affine", "source_rank",
+    "boundary_aligned")
 DEFAULT_SOURCE_RUN_ID = (
     "scolh_lowfreq_support_dimholdout_d1000_s5_20260716/"
     "proposals/risk_objective_atlas/low_frequency_only"
@@ -80,7 +81,11 @@ def _base_flags(observable_mean_mode="latent"):
             if observable_mean_mode in {"consensus", "source_rank"}
             else "2"
         ),
-        "--observable-mean-training-target", "constraint_mean",
+        "--observable-mean-training-target", (
+            "chance_margin"
+            if observable_mean_mode == "boundary_aligned"
+            else "constraint_mean"
+        ),
         "--task-posterior-safe-generalized",
         "--task-posterior-safe-boundary-weight", "1.0",
         "--task-posterior-safe-pairwise-weight", "1.0",

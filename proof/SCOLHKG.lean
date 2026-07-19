@@ -24,6 +24,7 @@ import SCOLHKG.Real.BoundaryFamilyMixtureCertificate
 import SCOLHKG.Real.BoundaryFamilySynthesisCertificate
 import SCOLHKG.Real.BoundaryFamilySemiparametricCertificate
 import SCOLHKG.Real.BoundaryExcitation
+import SCOLHKG.Real.BoundaryCoordinateSufficiency
 import SCOLHKG.Real.SourceConsensusCommit
 import SCOLHKG.Real.Certification
 import SCOLHKG.Real.CertificationImplementation

@@ -113,6 +113,12 @@ class ScalarizedProblem:
             return self.base.risk_exposures(x, output_index=output_index)
         raise AttributeError("base problem does not expose risk_exposures")
 
+    def observable_state_exposure(self, x):
+        if hasattr(self.base, "observable_state_exposure"):
+            return self.base.observable_state_exposure(x)
+        raise AttributeError(
+            "base problem does not expose observable_state_exposure")
+
     def cumulative_risk_parameters(self, output_index=1):
         if hasattr(self.base, "cumulative_risk_parameters"):
             return self.base.cumulative_risk_parameters(output_index=output_index)

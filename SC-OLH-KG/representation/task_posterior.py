@@ -778,6 +778,184 @@ class FiniteTaskPosterior:
         }
 
 
+class ReplicationVarianceTaskPosterior:
+    """Finite posterior over variance structures using replication only.
+
+    The posterior deliberately ignores response means and singleton residuals.
+    Each distinct replicated policy contributes one Gaussian sample-variance
+    likelihood with ``replicate_count - 1`` degrees of freedom. Replacing a
+    policy record and refitting from the frozen prior avoids double counting
+    nested sample variances when a policy receives a third or later replicate.
+    """
+
+    def __init__(
+        self,
+        expert_names,
+        prior_weights=None,
+        *,
+        temperature=1.0,
+        variance_floor=1e-10,
+        minimum_weight=1e-12,
+    ):
+        names = tuple(str(name) for name in expert_names)
+        if not names or len(set(names)) != len(names):
+            raise ValueError(
+                "variance experts must be a non-empty unique sequence")
+        prior = (
+            np.ones(len(names), dtype=float)
+            if prior_weights is None
+            else np.asarray(prior_weights, dtype=float).reshape(-1)
+        )
+        if (
+            len(prior) != len(names)
+            or np.any(prior < 0.0)
+            or not np.all(np.isfinite(prior))
+            or float(np.sum(prior)) <= 0.0
+        ):
+            raise ValueError(
+                "variance prior weights must be finite, non-negative, and "
+                "match experts")
+        prior /= float(np.sum(prior))
+        self.expert_names = names
+        self.temperature = max(float(temperature), 0.0)
+        self.variance_floor = max(float(variance_floor), 1e-15)
+        self.minimum_weight = max(float(minimum_weight), 0.0)
+        self._log_prior = np.log(np.maximum(
+            prior, self.minimum_weight or 1e-300))
+        self._log_prior -= logsumexp(self._log_prior)
+        self._log_weights = self._log_prior.copy()
+        self.records = {}
+        self.n_updates = 0
+        self.last_update = {"status": "initialized"}
+
+    def clone(self):
+        return copy.deepcopy(self)
+
+    def prior_weights(self):
+        return np.exp(self._log_prior).copy()
+
+    def posterior_weights(self):
+        return np.exp(self._log_weights).copy()
+
+    @property
+    def evidence_count(self):
+        return int(len(self.records))
+
+    @property
+    def effective_dof(self):
+        return int(sum(
+            max(int(record["replicate_count"]) - 1, 0)
+            for record in self.records.values()
+        ))
+
+    def kl_from_prior(self):
+        weights = self.posterior_weights()
+        prior = self.prior_weights()
+        return float(np.sum(weights * (
+            np.log(np.maximum(weights, 1e-300))
+            - np.log(np.maximum(prior, 1e-300))
+        )))
+
+    def _refit(self):
+        log_weights = self._log_prior.copy()
+        cumulative_score = np.zeros(len(self.expert_names), dtype=float)
+        for record in self.records.values():
+            dof = max(int(record["replicate_count"]) - 1, 1)
+            sample_variance = max(
+                float(record["sample_variance"]), self.variance_floor)
+            predicted = np.maximum(
+                np.asarray(record["predicted_variances"], dtype=float),
+                self.variance_floor,
+            )
+            # Exact Gaussian sample-variance log likelihood up to terms that
+            # are common to every expert.
+            cumulative_score += -0.5 * float(dof) * (
+                np.log(predicted) + sample_variance / predicted)
+        log_weights += self.temperature * cumulative_score
+        log_weights -= logsumexp(log_weights)
+        if self.minimum_weight > 0.0:
+            weights = np.maximum(np.exp(log_weights), self.minimum_weight)
+            weights /= float(np.sum(weights))
+            log_weights = np.log(weights)
+        self._log_weights = log_weights
+        return cumulative_score
+
+    def update_from_replication(
+        self,
+        key,
+        sample_variance,
+        predicted_variances,
+        replicate_count,
+    ):
+        count = int(replicate_count)
+        predicted = np.asarray(predicted_variances, dtype=float).reshape(-1)
+        if count < 2:
+            self.last_update = {
+                "status": "ignored_singleton",
+                "replicate_count": count,
+                "target_mean_used": False,
+            }
+            return copy.deepcopy(self.last_update)
+        if (
+            len(predicted) != len(self.expert_names)
+            or not np.all(np.isfinite(predicted))
+            or np.any(predicted < 0.0)
+        ):
+            raise ValueError(
+                "predicted replication variances must be finite, "
+                "non-negative, and match experts")
+        sample_variance = float(sample_variance)
+        if not np.isfinite(sample_variance) or sample_variance < 0.0:
+            raise ValueError(
+                "replication sample variance must be finite and non-negative")
+        record_key = tuple(key) if isinstance(key, (tuple, list)) else key
+        before = self.posterior_weights()
+        self.records[record_key] = {
+            "sample_variance": sample_variance,
+            "predicted_variances": np.maximum(
+                predicted, self.variance_floor).tolist(),
+            "replicate_count": count,
+        }
+        cumulative_score = self._refit()
+        self.n_updates += 1
+        self.last_update = {
+            "status": "updated_from_replication",
+            "record_key": list(record_key)
+            if isinstance(record_key, tuple) else str(record_key),
+            "replicate_count": count,
+            "effective_dof": self.effective_dof,
+            "weights_before": before.tolist(),
+            "weights_after": self.posterior_weights().tolist(),
+            "cumulative_log_score": cumulative_score.tolist(),
+            "target_mean_used": False,
+            "singleton_residual_used": False,
+            "target_oracle_used": False,
+        }
+        return copy.deepcopy(self.last_update)
+
+    def diagnostics(self):
+        weights = self.posterior_weights()
+        return {
+            "status": "fit" if self.evidence_count else "frozen_source_prior",
+            "mode": "replication_only",
+            "expert_names": list(self.expert_names),
+            "prior_weights": self.prior_weights().tolist(),
+            "posterior_weights": weights.tolist(),
+            "posterior_by_expert": {
+                name: float(weight)
+                for name, weight in zip(self.expert_names, weights)
+            },
+            "evidence_count": self.evidence_count,
+            "effective_dof": self.effective_dof,
+            "n_updates": int(self.n_updates),
+            "kl_from_prior": self.kl_from_prior(),
+            "target_mean_used": False,
+            "singleton_residual_used": False,
+            "target_oracle_used": False,
+            "last_update": copy.deepcopy(self.last_update),
+        }
+
+
 class FiniteTaskSensitivityPosterior:
     """Posterior over task-level surrogate error sensitivity.
 
@@ -2022,6 +2200,8 @@ class FiniteTaskModelEnsemble:
         task_latent_inference_mode="shadow",
         task_latent_calibration_mode="source_profiles",
         source_discrepancy_update=True,
+        variance_structure_posterior_mode="shared",
+        variance_structure_posterior=None,
     ):
         self.states = list(states)
         self.posterior = posterior
@@ -2051,6 +2231,35 @@ class FiniteTaskModelEnsemble:
                 "expert_ridge")
         self.task_latent_calibration_mode = calibration_mode
         self.source_discrepancy_update = bool(source_discrepancy_update)
+        variance_mode = str(
+            variance_structure_posterior_mode or "shared"
+        ).strip().lower().replace("-", "_")
+        if variance_mode not in {"shared", "replication_only"}:
+            raise ValueError(
+                "variance structure posterior mode must be shared or "
+                "replication_only")
+        self.variance_structure_posterior_mode = variance_mode
+        self.variance_structure_posterior = (
+            None
+            if variance_mode == "shared"
+            else (
+                ReplicationVarianceTaskPosterior(
+                    names,
+                    posterior.prior_weights(),
+                    temperature=max(float(posterior.temperature), 1e-12),
+                    variance_floor=posterior.variance_floor,
+                    minimum_weight=posterior.minimum_weight,
+                )
+                if variance_structure_posterior is None
+                else variance_structure_posterior
+            )
+        )
+        if (
+            self.variance_structure_posterior is not None
+            and tuple(self.variance_structure_posterior.expert_names) != names
+        ):
+            raise ValueError(
+                "variance structure posterior and expert states disagree")
         self.task_latent_posterior = (
             FiniteTaskLatentPosterior(
                 posterior,
@@ -2166,6 +2375,13 @@ class FiniteTaskModelEnsemble:
             task_latent_inference_mode=self.task_latent_inference_mode,
             task_latent_calibration_mode=self.task_latent_calibration_mode,
             source_discrepancy_update=self.source_discrepancy_update,
+            variance_structure_posterior_mode=(
+                self.variance_structure_posterior_mode),
+            variance_structure_posterior=(
+                None
+                if self.variance_structure_posterior is None
+                else self.variance_structure_posterior.clone()
+            ),
         )
         clone.last_update = copy.deepcopy(self.last_update)
         return clone
@@ -2201,6 +2417,105 @@ class FiniteTaskModelEnsemble:
         if objective and self.posterior.safe_generalized:
             return self.posterior.posterior_weights()
         return self.posterior.decision_weights()
+
+    @property
+    def variance_structure_isolated(self):
+        return str(getattr(
+            self, "variance_structure_posterior_mode", "shared"
+        )).strip().lower().replace("-", "_") == "replication_only"
+
+    def _replication_variance_posterior(self):
+        """Lazily upgrade checkpoints written before the V15 head split."""
+        if not self.variance_structure_isolated:
+            return None
+        posterior = getattr(self, "variance_structure_posterior", None)
+        if posterior is None:
+            posterior = ReplicationVarianceTaskPosterior(
+                [state.name for state in self.states],
+                self.posterior.prior_weights(),
+                temperature=max(float(self.posterior.temperature), 1e-12),
+                variance_floor=self.posterior.variance_floor,
+                minimum_weight=self.posterior.minimum_weight,
+            )
+            self.variance_structure_posterior = posterior
+        return posterior
+
+    def variance_structure_weights(self):
+        """Weights for HVD shapes, independent of response means in V15."""
+        posterior = self._replication_variance_posterior()
+        if posterior is None:
+            return self.structure_weights(objective=False)
+        return posterior.posterior_weights()
+
+    def variance_effective_kl_radius(self):
+        posterior = self._replication_variance_posterior()
+        if posterior is None:
+            return self.effective_kl_radius()
+        evidence = max(int(posterior.effective_dof), 1)
+        complexity = (
+            self.kl_radius_numerator
+            + posterior.kl_from_prior()
+            + np.log(1.0 / self.confidence_delta)
+        )
+        return float(min(
+            self.maximum_kl_radius,
+            max(complexity / float(evidence), 0.0),
+        ))
+
+    def predictive_selector_weights(self):
+        """Joint selector law for mean and variance structures.
+
+        Under the isolated model a single uniform draw indexes the Cartesian
+        product of the mean-task and HVD-task posteriors. This keeps exact-KG
+        sampling closed under the same product posterior without requiring a
+        second random-number API.
+        """
+        if self.task_latent_authoritative:
+            mean_weights = self._task_latent().posterior_weights(
+                safe=True).reshape(-1)
+        else:
+            mean_weights = np.asarray(
+                self.posterior.decision_weights(), dtype=float).reshape(-1)
+        mean_weights = np.maximum(mean_weights, 0.0)
+        mean_weights /= max(float(np.sum(mean_weights)), 1e-300)
+        if not self.variance_structure_isolated:
+            return mean_weights
+        variance_weights = np.maximum(np.asarray(
+            self.variance_structure_weights(), dtype=float).reshape(-1), 0.0)
+        variance_weights /= max(float(np.sum(variance_weights)), 1e-300)
+        product = np.outer(mean_weights, variance_weights).reshape(-1)
+        return product / max(float(np.sum(product)), 1e-300)
+
+    def _predictive_selector_indices(self, expert_uniform):
+        weights = self.predictive_selector_weights()
+        flat_index = int(np.searchsorted(
+            np.cumsum(weights),
+            np.clip(float(expert_uniform), 0.0, 1.0 - 1e-15),
+            side="right",
+        ))
+        flat_index = min(flat_index, len(weights) - 1)
+        if self.task_latent_authoritative:
+            latent_shape = self._task_latent().posterior_weights(
+                safe=True).shape
+            mean_state_count = int(np.prod(latent_shape))
+        else:
+            latent_shape = None
+            mean_state_count = len(self.states)
+        if self.variance_structure_isolated:
+            mean_index, variance_index = np.unravel_index(
+                flat_index, (mean_state_count, len(self.states)))
+        else:
+            mean_index = flat_index
+            variance_index = None
+        if latent_shape is not None:
+            expert_index, sensitivity_index = np.unravel_index(
+                mean_index, latent_shape)
+        else:
+            expert_index = int(mean_index)
+            sensitivity_index = None
+        if variance_index is None:
+            variance_index = expert_index
+        return int(expert_index), int(variance_index), sensitivity_index
 
     def inference_weights(self):
         if self.task_latent_authoritative:
@@ -2376,7 +2691,23 @@ class FiniteTaskModelEnsemble:
             certification=certification,
             expert_moments=expert_moments,
         )
-        return self.posterior.mixture_moments(*moments, weights=weights)
+        nominal = self.posterior.mixture_moments(
+            *moments, weights=weights)
+        if not self.variance_structure_isolated:
+            return nominal
+        variance_weights = np.asarray(
+            self.variance_structure_weights(), dtype=float).reshape(-1)
+        variance_weights /= max(float(np.sum(variance_weights)), 1e-300)
+        aleatoric = variance_weights @ np.maximum(
+            np.asarray(moments[2], dtype=float), 0.0)
+        return MixtureMoments(
+            mean=nominal.mean,
+            within_epistemic=nominal.within_epistemic,
+            between_mean=nominal.between_mean,
+            epistemic=nominal.epistemic,
+            aleatoric=np.asarray(aleatoric, dtype=float),
+            total=nominal.epistemic + np.asarray(aleatoric, dtype=float),
+        )
 
     def robust_moments_many(
         self,
@@ -2392,10 +2723,45 @@ class FiniteTaskModelEnsemble:
             certification=certification,
             expert_moments=expert_moments,
         )
-        return self.posterior.robust_mixture_moments(
+        mean_robust = self.posterior.robust_mixture_moments(
             *moments,
             radius=self.effective_kl_radius(),
             weights=weights,
+        )
+        if not self.variance_structure_isolated:
+            return mean_robust
+        zeros = np.zeros_like(np.asarray(moments[2], dtype=float))
+        variance_robust = self.posterior.robust_mixture_moments(
+            zeros,
+            zeros,
+            moments[2],
+            radius=self.variance_effective_kl_radius(),
+            weights=self.variance_structure_weights(),
+        )
+        nominal = MixtureMoments(
+            mean=mean_robust.nominal.mean,
+            within_epistemic=mean_robust.nominal.within_epistemic,
+            between_mean=mean_robust.nominal.between_mean,
+            epistemic=mean_robust.nominal.epistemic,
+            aleatoric=variance_robust.nominal.aleatoric,
+            total=(
+                mean_robust.nominal.epistemic
+                + variance_robust.nominal.aleatoric
+            ),
+        )
+        return RobustMixtureMoments(
+            mean_upper=mean_robust.mean_upper,
+            epistemic_upper=mean_robust.epistemic_upper,
+            aleatoric_upper=variance_robust.aleatoric_upper,
+            total_upper=(
+                mean_robust.epistemic_upper
+                + variance_robust.aleatoric_upper
+            ),
+            nominal=nominal,
+            radius=max(
+                float(mean_robust.radius),
+                float(variance_robust.radius),
+            ),
         )
 
     def robust_chance_margin_many(
@@ -2417,6 +2783,52 @@ class FiniteTaskModelEnsemble:
             certification=certification,
             expert_moments=expert_moments,
         )
+        if self.variance_structure_isolated:
+            nominal = self.mixture_moments_many(
+                1,
+                X,
+                certification=certification,
+                expert_moments=expert_moments,
+            )
+            robust = self.robust_moments_many(
+                1,
+                X,
+                certification=certification,
+                expert_moments=expert_moments,
+            )
+            beta_radius = np.sqrt(max(float(beta_g), 0.0))
+            aleatoric_radius = max(float(z_alpha), 0.0)
+            nominal_margin = (
+                nominal.mean
+                + beta_radius * np.sqrt(np.maximum(
+                    nominal.epistemic, 0.0))
+                + aleatoric_radius * np.sqrt(np.maximum(
+                    nominal.aleatoric, 0.0))
+                - float(tau)
+            )
+            separable = (
+                robust.mean_upper
+                + beta_radius * np.sqrt(np.maximum(
+                    robust.epistemic_upper, 0.0))
+                + aleatoric_radius * np.sqrt(np.maximum(
+                    robust.aleatoric_upper, 0.0))
+                - float(tau)
+            )
+            return RobustChanceMargin(
+                upper=np.asarray(separable, dtype=float),
+                nominal=np.asarray(nominal_margin, dtype=float),
+                separable_upper=np.asarray(separable, dtype=float),
+                tangent_epistemic_scale=np.sqrt(np.maximum(
+                    nominal.epistemic, self.posterior.variance_floor)),
+                tangent_aleatoric_scale=np.sqrt(np.maximum(
+                    nominal.aleatoric, self.posterior.variance_floor)),
+                used_separable_upper=np.ones_like(
+                    nominal_margin, dtype=bool),
+                radius=max(
+                    self.effective_kl_radius(),
+                    self.variance_effective_kl_radius(),
+                ),
+            )
         return self.posterior.robust_chance_margin(
             *moments,
             beta_g=beta_g,
@@ -2428,22 +2840,13 @@ class FiniteTaskModelEnsemble:
         )
 
     def predictive_sample(self, x, z, expert_uniform):
-        """Sample one shared expert identity and all output channels."""
+        """Sample the mean/HVD product posterior with one categorical draw."""
         sensitivity_scale = 1.0
         sensitivity_bias = 0.0
         sensitivity_bias_coefficients = None
-        if self.task_latent_authoritative:
-            joint = self._task_latent().posterior_weights(safe=True)
-            flat = joint.reshape(-1)
-            cumulative = np.cumsum(flat)
-            joint_index = int(np.searchsorted(
-                cumulative,
-                np.clip(float(expert_uniform), 0.0, 1.0 - 1e-15),
-                side="right",
-            ))
-            joint_index = min(joint_index, len(flat) - 1)
-            expert_index, sensitivity_index = np.unravel_index(
-                joint_index, joint.shape)
+        expert_index, variance_expert_index, sensitivity_index = (
+            self._predictive_selector_indices(expert_uniform))
+        if sensitivity_index is not None:
             sensitivity_scale = float(
                 self._task_latent().sensitivity_scales[sensitivity_index])
             sensitivity_bias = float(
@@ -2453,24 +2856,16 @@ class FiniteTaskModelEnsemble:
             if coefficients is not None:
                 sensitivity_bias_coefficients = np.asarray(
                     coefficients[sensitivity_index], dtype=float)
-        else:
-            weights = self.posterior.decision_weights()
-            cumulative = np.cumsum(weights)
-            expert_index = int(np.searchsorted(
-                cumulative,
-                np.clip(float(expert_uniform), 0.0, 1.0 - 1e-15),
-                side="right",
-            ))
-            expert_index = min(expert_index, len(self.states) - 1)
         state = self.states[expert_index]
+        variance_state = self.states[variance_expert_index]
         z = np.asarray(z, dtype=float).reshape(-1)
         values = []
         for output_index, standard_normal in enumerate(z):
             model = state.gpr_models[output_index]
             mu = float(model.posterior_mean(x))
             epi = float(model.posterior_var(x))
-            alea = float(state.variance_model.predict_variance(
-                output_index, x, state.problem))
+            alea = float(variance_state.variance_model.predict_variance(
+                output_index, x, variance_state.problem))
             if output_index == 1:
                 reference_sd = np.sqrt(max(
                     epi + alea, self.posterior.variance_floor))
@@ -2724,6 +3119,32 @@ class FiniteTaskModelEnsemble:
                     -self.safe_pairwise_max_history:
                 ]
         existing = list(existing_observations or [])
+        variance_posterior = self._replication_variance_posterior()
+        if variance_posterior is None:
+            variance_posterior_update = {
+                "status": "shared_with_mean_task_posterior",
+            }
+        else:
+            replicate_values = [
+                float(np.asarray(value, dtype=float)[constraint_index])
+                for value in existing
+            ] + [float(y[constraint_index])]
+            replicate_variance = (
+                float(np.var(replicate_values, ddof=1))
+                if len(replicate_values) >= 2
+                else 0.0
+            )
+            variance_posterior_update = (
+                variance_posterior.update_from_replication(
+                    (constraint_index, *point[0]),
+                    replicate_variance,
+                    [
+                        state_alea[constraint_index]
+                        for _, _, state_alea in per_state
+                    ],
+                    len(replicate_values),
+                )
+            )
         expert_updates = []
         for state, (state_mu, state_epi, state_alea) in zip(
             self.states, per_state
@@ -2786,8 +3207,11 @@ class FiniteTaskModelEnsemble:
             "safe_pairwise": pairwise_diagnostics,
             "sensitivity_posterior": sensitivity_update,
             "task_latent_posterior": task_latent_update,
+            "variance_structure_posterior": variance_posterior_update,
             "experts": expert_updates,
             "effective_kl_radius": self.effective_kl_radius(),
+            "variance_effective_kl_radius": (
+                self.variance_effective_kl_radius()),
         }
         return copy.deepcopy(self.last_update)
 
@@ -3105,6 +3529,18 @@ class FiniteTaskModelEnsemble:
             "source_discrepancy_update": bool(
                 self.source_discrepancy_update),
             "posterior": self.posterior.diagnostics(),
+            "variance_structure_posterior_mode": str(getattr(
+                self, "variance_structure_posterior_mode", "shared")),
+            "variance_structure_posterior": (
+                {
+                    "status": "shared_with_mean_task_posterior",
+                    "posterior_weights": self.structure_weights(
+                        objective=False).tolist(),
+                    "target_mean_used": True,
+                }
+                if self._replication_variance_posterior() is None
+                else self._replication_variance_posterior().diagnostics()
+            ),
             "sensitivity_posterior": (
                 {"status": "disabled"}
                 if self.sensitivity_posterior is None
@@ -3112,6 +3548,8 @@ class FiniteTaskModelEnsemble:
             ),
             "task_latent_posterior": latent_diagnostics,
             "effective_kl_radius": self.effective_kl_radius(),
+            "variance_effective_kl_radius": (
+                self.variance_effective_kl_radius()),
             "kl_radius_numerator": self.kl_radius_numerator,
             "confidence_delta": self.confidence_delta,
             "maximum_kl_radius": self.maximum_kl_radius,

@@ -107,12 +107,13 @@ def run_cell(args):
             problem.simulate(x, rng)[1]
             for _ in range(args.replicates)
         ], dtype=float)
+        replicate_mean = float(np.mean(replicates))
         replicate_variance = float(np.var(replicates, ddof=1))
         hvd.update(
             1,
             x,
-            float(np.mean(replicates)),
-            problem.true_constraint_mean(x),
+            replicate_mean,
+            replicate_mean,
             problem=problem,
             replicate_variance=replicate_variance,
             replicate_count=args.replicates,
@@ -175,6 +176,14 @@ def run_cell(args):
             _safe_spearman(true_shared[valid_shared], fitted_shared_array[valid_shared])
             if int(np.sum(valid_shared)) >= 3 else None
         ),
+        "median_true_variance": float(np.median(true_variance)),
+        "median_predicted_variance": float(np.median(predicted)),
+        "median_certified_variance": float(np.median(certified)),
+        "median_true_shared_risk": float(np.median(true_shared)),
+        "median_fitted_shared_risk": (
+            float(np.median(fitted_shared_array[valid_shared]))
+            if np.any(valid_shared) else None
+        ),
         "median_predicted_true_ratio": float(np.median(
             predicted / np.maximum(true_variance, 1e-12))),
         "median_certified_true_ratio": float(np.median(
@@ -213,7 +222,9 @@ def run_cell(args):
         "information_contract": {
             "oracle_used_for_fit": False,
             "oracle_used_for_post_run_audit": True,
-            "fit_inputs": "ordinary_replicated_simulator_observations",
+            "fit_inputs": (
+                "ordinary_replicate_sample_mean_and_sample_variance"),
+            "true_constraint_mean_used_for_fit": False,
             "objective_search_involved": False,
         },
     }

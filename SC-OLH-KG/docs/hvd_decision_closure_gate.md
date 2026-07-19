@@ -691,8 +691,39 @@ regret, chance margins, variance calibration, and all posterior diagnostics
 were unchanged. This cached implementation is therefore promoted as the new
 performance baseline; it does not alter the rejected `N=80` statistical gate.
 
+The registered follow-up is now the source-aligned chance-boundary coordinate
+gate in `docs/boundary_coordinate_gate.md`. It changes the observable
+constraint-mean coordinate and candidate support while freezing cumulative
+HVD and the neutral decision backend. This supersedes further HVD/VOI tuning
+until the new coordinate passes its causal gate.
+
+## Replication Identifiability Result
+
+The isolated oracle-free replication gate
+`scolh_hvd_replication_identifiability_v18_s5_20260719_oracle_free`
+completed all 60 shards over pooled/cumulative-factor HVD, shared-shock scales
+zero/four, two/four/eight within-policy replications, and five seeds. Fitting
+used only ordinary replicate sample means and sample variances; analytic truth
+was reserved for post-run audit.
+
+The corrected gate passed every criterion. Cumulative factor-HVD recovered the
+strong-versus-weak shock ordering in 100% of paired cells. Its candidate
+variance Spearman correlation had median 0.724 and was positive in 96.7% of
+cells; pooled variance is constant, so its Spearman correlation is
+mathematically undefined. Factor-HVD improved median log-variance RMSE over
+pooled by 0.024 and produced 28 fewer false-feasible audit decisions. Raising
+replication from two to eight improved factor log-variance RMSE by a median
+0.702 without adding a false-feasible decision.
+
+This establishes a clean identifiability result: cumulative shared-shock shape
+is learnable from ordinary target data when within-policy replication is
+available, but it is not identifiable from singleton responses independently
+of mean misspecification. Adaptive evaluate-or-replicate therefore remains a
+statistical requirement of the final action space, not a performance patch.
+
 ## Entrypoints
 
 - `scripts/submit_scolhkg_hvd_decision_gate_scheduler.py`
 - `SC-OLH-KG/performance/analyze_hvd_decision_gate.py`
 - `scripts/submit_scolhkg_hvd_identifiability_scheduler.py`
+- `scripts/submit_scolhkg_boundary_coordinate_gate_scheduler.py`

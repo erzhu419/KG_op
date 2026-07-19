@@ -60,5 +60,9 @@ def test_identifiability_cell_uses_only_replicated_fit_observations():
     assert result["hvd_diagnostics"]["residual_square_tail"]["1"][
         "effective_dof"] == 18 * (3 - 1)
     assert result["information_contract"]["oracle_used_for_fit"] is False
+    assert result["information_contract"][
+        "true_constraint_mean_used_for_fit"] is False
+    assert result["information_contract"]["fit_inputs"] == (
+        "ordinary_replicate_sample_mean_and_sample_variance")
     assert result["information_contract"]["oracle_used_for_post_run_audit"] is True
     assert result["hvd_diagnostics"]["cumulative_active"]["1"] is True

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import copy
 from dataclasses import dataclass
+from itertools import permutations
 
 import numpy as np
 from scipy.stats import norm
@@ -47,6 +48,25 @@ from representation.source_boundary_episodes import (
 )
 from representation.observable_coordinate import (
     SourceLearnedObservableCoordinate,
+)
+from representation.observable_exposure import (
+    canonical_observable_state_descriptor,
+    canonical_set_invariant_observable_state_descriptor,
+    get_observable_state_exposure,
+    role_aligned_observable_state_descriptor,
+)
+from representation.channel_role_alignment import (
+    EquivariantChannelRoleAligner,
+)
+from representation.boundary_coordinate import (
+    SourceAlignedBoundaryCoordinate,
+    SourceSupportedRoleBoundaryCoordinate,
+)
+from representation.exchangeable_mean import (
+    ExchangeableBoundaryMeanCoordinate,
+)
+from representation.variance_coordinate import (
+    SourceAlignedVarianceRiskCoordinate,
 )
 from representation.transferable_boundary import (
     HierarchicalSignedDistancePosterior,
@@ -133,6 +153,9 @@ class SourceRecord:
     alpha: float
     sigma_level: float
     constraint_sigma: float | None = None
+    observable_state_descriptor: np.ndarray | None = None
+    observable_state_invariant_descriptor: np.ndarray | None = None
+    observable_state_exposure: object | None = None
     provider_risk_descriptor: np.ndarray | None = None
     provider_risk_coordinate: np.ndarray | None = None
     origin: str = "random"
@@ -261,6 +284,19 @@ class LearnedMetaPrior:
         observable_mean_mode="latent",
         observable_mean_latent_dim=2,
         observable_mean_training_target="constraint_mean",
+        observable_mean_input_mode="policy_profile",
+        observable_mean_descriptor_mode="ordered",
+        observable_mean_feature_mode="linear",
+        observable_mean_latent_transform="identity",
+        observable_mean_target_residual_rank=0,
+        observable_mean_target_residual_prior_scale=1.0,
+        observable_mean_target_residual_pool_size=128,
+        observable_mean_target_residual_rcond=1e-8,
+        observable_mean_role_assignment_posterior=False,
+        observable_mean_role_assignment_prior="uniform",
+        observable_mean_role_assignment_prior_temperature_scale=1.0,
+        observable_mean_role_assignment_inactive_variance=1e-12,
+        observable_variance_input_mode="legacy_policy_proxy",
         source_observation_mode="analytic",
         source_observation_replicates=1,
         source_design_mode="random",
@@ -503,11 +539,11 @@ class LearnedMetaPrior:
             observable_mean_mode).strip().lower()
         if self.observable_mean_mode not in {
             "atoms", "aggregate", "latent", "consensus", "source_affine",
-            "source_rank",
+            "source_rank", "boundary_aligned",
         }:
             raise ValueError(
                 "observable_mean_mode must be atoms, aggregate, latent, or "
-                "consensus/source_affine/source_rank"
+                "consensus/source_affine/source_rank/boundary_aligned"
             )
         self.observable_mean_latent_dim = max(
             int(observable_mean_latent_dim), 0)
@@ -519,6 +555,128 @@ class LearnedMetaPrior:
             raise ValueError(
                 "observable_mean_training_target must be constraint_mean "
                 "or chance_margin"
+            )
+        if (
+            self.observable_mean_mode == "boundary_aligned"
+            and self.observable_mean_training_target != "chance_margin"
+        ):
+            raise ValueError(
+                "boundary_aligned representation must be trained from "
+                "source chance-margin strata"
+            )
+        self.observable_mean_input_mode = str(
+            observable_mean_input_mode).strip().lower()
+        if self.observable_mean_input_mode not in {
+            "policy_profile",
+            "source_learned_exposure",
+            "observable_state_exposure",
+            "provider_exposure",
+        }:
+            raise ValueError(
+                "observable_mean_input_mode must be policy_profile, "
+                "source_learned_exposure, observable_state_exposure, "
+                "or provider_exposure"
+            )
+        if (
+            self.observable_mean_input_mode != "policy_profile"
+            and self.observable_mean_mode != "boundary_aligned"
+        ):
+            raise ValueError(
+                "exposure input currently requires the separate "
+                "boundary_aligned mean head"
+            )
+        self.observable_mean_descriptor_mode = str(
+            observable_mean_descriptor_mode or "ordered"
+        ).strip().lower().replace("-", "_")
+        if self.observable_mean_descriptor_mode not in {
+            "ordered", "set_invariant", "role_aligned",
+            "role_transport", "role_intervention_transport",
+            "role_adaptive_ordered", "role_adaptive_set_invariant",
+            "exchangeable_equivariant",
+        }:
+            raise ValueError(
+                "observable mean descriptor mode must be ordered, "
+                "set_invariant, role_aligned, role_transport, "
+                "role_intervention_transport, "
+                "role_adaptive_ordered, role_adaptive_set_invariant, or "
+                "exchangeable_equivariant")
+        self.observable_mean_feature_mode = str(
+            observable_mean_feature_mode or "linear"
+        ).strip().lower().replace("-", "_")
+        if self.observable_mean_feature_mode not in {
+            "linear", "diagonal_quadratic", "full_quadratic"
+        }:
+            raise ValueError(
+                "observable mean feature mode must be linear, "
+                "diagonal_quadratic, or full_quadratic")
+        self.observable_mean_latent_transform = str(
+            observable_mean_latent_transform or "identity"
+        ).strip().lower().replace("-", "_")
+        if self.observable_mean_latent_transform not in {
+            "identity",
+            "source_tanh",
+            "source_support_clip",
+            "source_support_residual",
+        }:
+            raise ValueError(
+                "observable mean latent transform must be identity, "
+                "source_tanh, source_support_clip, or "
+                "source_support_residual")
+        self.observable_mean_target_residual_rank = max(
+            0, min(int(observable_mean_target_residual_rank), 8))
+        self.observable_mean_target_residual_prior_scale = max(
+            float(observable_mean_target_residual_prior_scale), 1e-8)
+        self.observable_mean_target_residual_pool_size = max(
+            int(observable_mean_target_residual_pool_size), 32)
+        self.observable_mean_target_residual_rcond = max(
+            float(observable_mean_target_residual_rcond), 1e-12)
+        self.observable_mean_role_assignment_posterior = bool(
+            observable_mean_role_assignment_posterior)
+        self.observable_mean_role_assignment_prior = str(
+            observable_mean_role_assignment_prior or "uniform"
+        ).strip().lower().replace("-", "_")
+        if self.observable_mean_role_assignment_prior not in {
+            "uniform", "source_geometry", "source_geometry_boundary"
+        }:
+            raise ValueError(
+                "observable mean role-assignment prior must be uniform or "
+                "source_geometry/source_geometry_boundary")
+        self.observable_mean_role_assignment_prior_temperature_scale = max(
+            float(observable_mean_role_assignment_prior_temperature_scale),
+            1e-8,
+        )
+        self.observable_mean_role_assignment_inactive_variance = max(
+            float(observable_mean_role_assignment_inactive_variance), 1e-12)
+        if (
+            self.observable_mean_role_assignment_posterior
+            and self.observable_mean_input_mode != "observable_state_exposure"
+        ):
+            raise ValueError(
+                "role-assignment posterior requires observable-state exposure")
+        if (
+            self.observable_mean_role_assignment_posterior
+            and self.observable_mean_target_residual_rank > 0
+        ):
+            raise ValueError(
+                "role-assignment and residual-rank posteriors are separate "
+                "registered challengers")
+        if (
+            self.observable_mean_role_assignment_posterior
+            and self.observable_mean_descriptor_mode
+            == "exchangeable_equivariant"
+        ):
+            raise ValueError(
+                "exchangeable coefficients replace the discrete source-role "
+                "assignment posterior")
+        self.observable_variance_input_mode = str(
+            observable_variance_input_mode).strip().lower()
+        if self.observable_variance_input_mode not in {
+            "legacy_policy_proxy",
+            "observable_state_exposure",
+        }:
+            raise ValueError(
+                "observable_variance_input_mode must be "
+                "legacy_policy_proxy or observable_state_exposure"
             )
         self.source_observation_mode = str(
             source_observation_mode).strip().lower()
@@ -568,6 +726,12 @@ class LearnedMetaPrior:
             "target_oracle_used": False,
         }
         self.risk_objective_proposal_diagnostics = {
+            "status": "not_materialized",
+            "source_only": True,
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+        self.boundary_excitation_diagnostics = {
             "status": "not_materialized",
             "source_only": True,
             "target_data_used": False,
@@ -642,6 +806,8 @@ class LearnedMetaPrior:
             "status": "not_requested",
         }
         self.observable_mean_model = None
+        self.observable_channel_role_aligner = None
+        self.observable_variance_model = None
         self.source_domains = []
         self.n_records = 0
         self.source_records_ = []
@@ -727,6 +893,18 @@ class LearnedMetaPrior:
         if exposure is None:
             return None
         return np.concatenate([exposure.A, exposure.N]).astype(float)
+
+    @staticmethod
+    def observable_state_descriptor(problem, x, mode="ordered"):
+        """Describe a declared target-observable state/trajectory record."""
+
+        exposure = get_observable_state_exposure(problem, x)
+        if exposure is None:
+            return None
+        mode = str(mode or "ordered").strip().lower().replace("-", "_")
+        if mode == "set_invariant":
+            return canonical_set_invariant_observable_state_descriptor(exposure)
+        return canonical_observable_state_descriptor(exposure)
 
     def boundary_descriptor_from_raw(
         self,
@@ -1375,6 +1553,9 @@ class LearnedMetaPrior:
         return np.asarray(mixing @ values, dtype=float)
 
     def ordered_cumulative_risk_exposure(self, problem, x, output_index=1):
+        if self.observable_variance_input_mode == "observable_state_exposure":
+            return self.observable_variance_risk_exposure(
+                problem, x, output_index=output_index)
         del output_index
         descriptor = self.descriptor(problem, x)
         if (
@@ -1431,11 +1612,54 @@ class LearnedMetaPrior:
         exposure = self.risk_exposure_from_descriptor(descriptor)
         return np.concatenate([exposure.A, exposure.N]).astype(float)
 
+    def observable_variance_risk_exposure_from_descriptor(self, descriptor):
+        if self.observable_variance_model is None:
+            raise RuntimeError("observable variance coordinate is unavailable")
+        return self.observable_variance_model.risk_exposure_from_descriptor(
+            descriptor)
+
+    def observable_variance_risk_exposure(
+        self, problem, x, output_index=1,
+    ):
+        del output_index
+        if self.observable_variance_model is None:
+            raise RuntimeError("observable variance coordinate is unavailable")
+        descriptor = self.observable_state_descriptor(problem, x)
+        if descriptor is None:
+            raise ValueError(
+                "observable variance coordinate requires a declared "
+                "observable state/trajectory exposure"
+            )
+        return self.observable_variance_risk_exposure_from_descriptor(
+            descriptor)
+
+    def _cumulative_risk_exposure_from_record(self, record, *, aligned=True):
+        if self.observable_variance_input_mode == "observable_state_exposure":
+            if record.observable_state_descriptor is None:
+                raise ValueError(
+                    "observable variance coordinate requires source exposure "
+                    "coverage for every record"
+                )
+            return self.observable_variance_risk_exposure_from_descriptor(
+                record.observable_state_descriptor)
+        if aligned:
+            return self.cumulative_risk_exposure_from_descriptor(
+                record.descriptor,
+                domain=record.domain,
+            )
+        return self.risk_exposure_from_descriptor(record.descriptor)
+
     def risk_exposure(self, problem, x, output_index=1):
+        if self.observable_variance_input_mode == "observable_state_exposure":
+            return self.observable_variance_risk_exposure(
+                problem, x, output_index=output_index)
         del output_index
         return self.risk_exposure_from_descriptor(self.descriptor(problem, x))
 
     def cumulative_risk_exposure(self, problem, x, output_index=1):
+        if self.observable_variance_input_mode == "observable_state_exposure":
+            return self.observable_variance_risk_exposure(
+                problem, x, output_index=output_index)
         del output_index
         return self.cumulative_risk_exposure_from_descriptor(
             self.descriptor(problem, x))
@@ -1449,6 +1673,21 @@ class LearnedMetaPrior:
             problem, x, output_index=output_index))
 
     def cumulative_feature_names(self):
+        if self.observable_variance_input_mode == "observable_state_exposure":
+            prefix_local = "observable_variance_local_"
+            prefix_shared = "observable_variance_regime_"
+            return cumulative_feature_names(RiskExposure(
+                np.zeros(self.local_dim),
+                np.zeros(self.shared_dim),
+                local_names=tuple(
+                    prefix_local + str(index)
+                    for index in range(self.local_dim)
+                ),
+                shared_names=tuple(
+                    prefix_shared + str(index)
+                    for index in range(self.shared_dim)
+                ),
+            ))
         aligned = (
             self.component_stage == "spectral_hvd"
             and self.risk_subspace_alignment is not None
@@ -1862,6 +2101,13 @@ class LearnedMetaPrior:
                     alpha=float(getattr(problem, "alpha", 0.05)),
                     sigma_level=float(getattr(problem, "sigma_level", 0.04)),
                     constraint_sigma=sigma,
+                    observable_state_descriptor=(
+                        self.observable_state_descriptor(problem, x)),
+                    observable_state_invariant_descriptor=(
+                        self.observable_state_descriptor(
+                            problem, x, mode="set_invariant")),
+                    observable_state_exposure=(
+                        get_observable_state_exposure(problem, x)),
                     provider_risk_descriptor=self.provider_risk_descriptor(
                         problem, x),
                     provider_risk_coordinate=self.provider_risk_coordinate(
@@ -2014,6 +2260,13 @@ class LearnedMetaPrior:
                 alpha=float(getattr(problem, "alpha", 0.05)),
                 sigma_level=float(getattr(problem, "sigma_level", 0.04)),
                 constraint_sigma=float(row["sigma_con"]),
+                observable_state_descriptor=(
+                    self.observable_state_descriptor(problem, row["x"])),
+                observable_state_invariant_descriptor=(
+                    self.observable_state_descriptor(
+                        problem, row["x"], mode="set_invariant")),
+                observable_state_exposure=(
+                    get_observable_state_exposure(problem, row["x"])),
                 provider_risk_descriptor=self.provider_risk_descriptor(
                     problem, row["x"]),
                 provider_risk_coordinate=self.provider_risk_coordinate(
@@ -2150,33 +2403,350 @@ class LearnedMetaPrior:
         self.training_diagnostics["source_consensus_templates"] = copy.deepcopy(
             self.source_consensus_diagnostics)
         if self.observable_mean_coordinate:
-            usable = [rec for rec in records if rec.profile is not None]
-            self.observable_mean_model = SourceLearnedObservableCoordinate(
-                ridge_grid=self.observable_mean_ridges,
-                output_mode=self.observable_mean_mode,
-                latent_dim=self.observable_mean_latent_dim,
-            ).fit(
-                [rec.profile for rec in usable],
-                [
+            role_descriptor_requested = self.observable_mean_descriptor_mode in {
+                "role_aligned",
+                "role_transport",
+                "role_intervention_transport",
+                "role_adaptive_ordered",
+                "role_adaptive_set_invariant",
+            }
+            usable = [
+                rec for rec in records
+                if rec.profile is not None
+                and (
                     (
-                        (float(rec.y[1]) - float(rec.tau))
-                        if self.observable_mean_training_target
-                        == "constraint_mean"
-                        else self._source_margin(rec)
-                    ) / self._source_margin_scale(rec)
-                    for rec in usable
-                ],
-                [rec.domain for rec in usable],
-                sample_weight=[
-                    self._boundary_sample_weight(rec) for rec in usable
-                ],
-            )
+                        self.observable_mean_input_mode
+                        != "provider_exposure"
+                        or rec.provider_risk_descriptor is not None
+                    )
+                    and (
+                        self.observable_mean_input_mode
+                        != "observable_state_exposure"
+                        or (
+                            rec.observable_state_exposure is not None
+                            if role_descriptor_requested
+                            else (
+                                rec.observable_state_invariant_descriptor is not None
+                                if self.observable_mean_descriptor_mode
+                                == "set_invariant"
+                                else rec.observable_state_descriptor is not None
+                            )
+                        )
+                    )
+                )
+            ]
+            if (
+                self.observable_mean_input_mode == "provider_exposure"
+                and len(usable) != len(records)
+            ):
+                raise ValueError(
+                    "provider exposure mean coordinate requires source "
+                    "provider coverage for every record"
+                )
+            if (
+                self.observable_mean_input_mode == "observable_state_exposure"
+                and len(usable) != len(records)
+            ):
+                raise ValueError(
+                    "observable-state mean coordinate requires a declared "
+                    "observable exposure for every source record"
+                )
+            profiles = [rec.profile for rec in usable]
+            domains = [rec.domain for rec in usable]
+            observable_weight = [
+                self._boundary_sample_weight(rec) for rec in usable
+            ]
+            if (
+                self.observable_mean_input_mode
+                == "observable_state_exposure"
+                and role_descriptor_requested
+            ):
+                self.observable_channel_role_aligner = (
+                    EquivariantChannelRoleAligner(
+                        seed=self.seed,
+                        partial_transport=(
+                            self.observable_mean_descriptor_mode in {
+                                "role_transport",
+                                "role_intervention_transport",
+                            }),
+                        signature_mode=(
+                            "intervention_response"
+                            if self.observable_mean_descriptor_mode
+                            == "role_intervention_transport"
+                            else "distribution"
+                        ),
+                        barycentric_transport=(
+                            self.observable_mean_descriptor_mode
+                            == "role_intervention_transport"),
+                    ).fit(
+                        [rec.observable_state_exposure for rec in usable],
+                        domains,
+                        boundary_margins=[
+                            self._source_margin(rec)
+                            / self._source_margin_scale(rec)
+                            for rec in usable
+                        ],
+                        profiles=[rec.profile for rec in usable],
+                        source_problems=source_problems,
+                    )
+                )
+            if self.observable_mean_mode == "boundary_aligned":
+                # Representation supervision and coefficient supervision are
+                # deliberately different. Chance-margin strata define phi;
+                # source constraint means define the target GPR prior.
+                if self.observable_mean_input_mode == "provider_exposure":
+                    coordinate_inputs = [
+                        rec.provider_risk_descriptor for rec in usable]
+                elif (
+                    self.observable_mean_input_mode
+                    == "observable_state_exposure"
+                ):
+                    if role_descriptor_requested:
+                        coordinate_inputs = [
+                            (
+                                self.observable_channel_role_aligner
+                                .source_transport_descriptor(
+                                    rec.domain,
+                                    rec.observable_state_exposure,
+                                )
+                                if self.observable_mean_descriptor_mode in {
+                                    "role_transport",
+                                    "role_intervention_transport",
+                                }
+                                else self.observable_channel_role_aligner
+                                .source_descriptor(
+                                    rec.domain,
+                                    rec.observable_state_exposure,
+                                )
+                            )
+                            for rec in usable
+                        ]
+                    else:
+                        coordinate_inputs = [
+                            (
+                                rec.observable_state_invariant_descriptor
+                                if self.observable_mean_descriptor_mode
+                                == "set_invariant"
+                                else rec.observable_state_descriptor
+                            )
+                            for rec in usable
+                        ]
+                elif (
+                    self.observable_mean_input_mode
+                    == "source_learned_exposure"
+                ):
+                    coordinate_inputs = [
+                        canonical_risk_descriptor(
+                            self.risk_exposure_from_descriptor(rec.descriptor))
+                        for rec in usable
+                    ]
+                else:
+                    coordinate_inputs = profiles
+                primary_descriptor_mode = (
+                    (
+                        "role_transport"
+                        if self.observable_mean_descriptor_mode in {
+                            "role_transport",
+                            "role_intervention_transport",
+                        }
+                        else "role_aligned"
+                    ) if role_descriptor_requested
+                    else self.observable_mean_descriptor_mode)
+                if (
+                    self.observable_mean_descriptor_mode
+                    == "exchangeable_equivariant"
+                ):
+                    primary_model = ExchangeableBoundaryMeanCoordinate(
+                        ridge_grid=self.observable_mean_ridges,
+                    ).fit(
+                        [
+                            rec.observable_state_exposure
+                            for rec in usable
+                        ],
+                        [
+                            (float(rec.y[1]) - float(rec.tau))
+                            / self._source_margin_scale(rec)
+                            for rec in usable
+                        ],
+                        domains,
+                        sample_weight=observable_weight,
+                    )
+                else:
+                    primary_model = SourceAlignedBoundaryCoordinate(
+                        ridge_grid=self.observable_mean_ridges,
+                        latent_dim=self.observable_mean_latent_dim,
+                        input_mode=self.observable_mean_input_mode,
+                        observable_descriptor_mode=primary_descriptor_mode,
+                        feature_mode=self.observable_mean_feature_mode,
+                        latent_transform=self.observable_mean_latent_transform,
+                        channel_role_aligner=(
+                            self.observable_channel_role_aligner),
+                    ).fit(
+                        coordinate_inputs,
+                        [
+                            self._source_margin(rec)
+                            / self._source_margin_scale(rec)
+                            for rec in usable
+                        ],
+                        domains,
+                        sample_weight=observable_weight,
+                        coefficient_targets=[
+                            (float(rec.y[1]) - float(rec.tau))
+                            / self._source_margin_scale(rec)
+                            for rec in usable
+                        ],
+                        proposal_profiles=profiles,
+                    )
+                if self.observable_mean_descriptor_mode in {
+                    "role_adaptive_ordered",
+                    "role_adaptive_set_invariant",
+                }:
+                    fallback_mode = (
+                        "set_invariant"
+                        if self.observable_mean_descriptor_mode.endswith(
+                            "set_invariant")
+                        else "ordered"
+                    )
+                    fallback_inputs = [
+                        (
+                            rec.observable_state_invariant_descriptor
+                            if fallback_mode == "set_invariant"
+                            else rec.observable_state_descriptor
+                        )
+                        for rec in usable
+                    ]
+                    fallback_model = SourceAlignedBoundaryCoordinate(
+                        ridge_grid=self.observable_mean_ridges,
+                        latent_dim=self.observable_mean_latent_dim,
+                        input_mode=self.observable_mean_input_mode,
+                        observable_descriptor_mode=fallback_mode,
+                        feature_mode=self.observable_mean_feature_mode,
+                        latent_transform=(
+                            self.observable_mean_latent_transform),
+                    ).fit(
+                        fallback_inputs,
+                        [
+                            self._source_margin(rec)
+                            / self._source_margin_scale(rec)
+                            for rec in usable
+                        ],
+                        domains,
+                        sample_weight=observable_weight,
+                        coefficient_targets=[
+                            (float(rec.y[1]) - float(rec.tau))
+                            / self._source_margin_scale(rec)
+                            for rec in usable
+                        ],
+                        proposal_profiles=profiles,
+                    )
+                    self.observable_mean_model = (
+                        SourceSupportedRoleBoundaryCoordinate(
+                            primary_model,
+                            fallback_model,
+                            self.observable_channel_role_aligner,
+                            fallback_mode=fallback_mode,
+                        )
+                    )
+                else:
+                    self.observable_mean_model = primary_model
+            else:
+                self.observable_mean_model = SourceLearnedObservableCoordinate(
+                    ridge_grid=self.observable_mean_ridges,
+                    output_mode=self.observable_mean_mode,
+                    latent_dim=self.observable_mean_latent_dim,
+                ).fit(
+                    profiles,
+                    [
+                        (
+                            (float(rec.y[1]) - float(rec.tau))
+                            if self.observable_mean_training_target
+                            == "constraint_mean"
+                            else self._source_margin(rec)
+                        ) / self._source_margin_scale(rec)
+                        for rec in usable
+                    ],
+                    domains,
+                    sample_weight=observable_weight,
+                )
             self.training_diagnostics["observable_mean_coordinate"] = (
                 self.observable_mean_model.diagnostics())
             self.training_diagnostics["observable_mean_coordinate"].update({
                 "training_target": self.observable_mean_training_target,
+                "coefficient_prior_training_target": (
+                    "constraint_mean"
+                    if self.observable_mean_mode == "boundary_aligned"
+                    else self.observable_mean_training_target
+                ),
                 "chance_boundary_weighted": True,
+                "input_mode": self.observable_mean_input_mode,
+                "observable_descriptor_mode": (
+                    self.observable_mean_descriptor_mode),
+                "boundary_feature_mode": self.observable_mean_feature_mode,
+                "latent_transform": self.observable_mean_latent_transform,
+                "provider_structural_input": bool(
+                    self.observable_mean_input_mode == "provider_exposure"),
+                "observable_state_input": bool(
+                    self.observable_mean_input_mode
+                    == "observable_state_exposure"),
+                "channel_role_alignment": (
+                    None
+                    if self.observable_channel_role_aligner is None
+                    else self.observable_channel_role_aligner.diagnostics()
+                ),
             })
+        if self.observable_variance_input_mode == "observable_state_exposure":
+            usable_variance = [
+                rec for rec in records
+                if rec.observable_state_descriptor is not None
+            ]
+            if len(usable_variance) != len(records):
+                raise ValueError(
+                    "observable-state variance coordinate requires a declared "
+                    "observable exposure for every source record"
+                )
+            self.observable_variance_model = (
+                SourceAlignedVarianceRiskCoordinate(
+                    local_dim=self.local_dim,
+                    shared_dim=self.shared_dim,
+                    ridge_grid=self.observable_mean_ridges,
+                    alignment_ridge=max(self.ridge, 0.1),
+                    domain_penalty=1.0,
+                    within_bin_weight=0.1,
+                    soft_temperature=self.soft_temperature,
+                ).fit(
+                    [
+                        rec.observable_state_descriptor
+                        for rec in usable_variance
+                    ],
+                    [
+                        max(float(
+                            rec.constraint_sigma
+                            if rec.constraint_sigma is not None
+                            else rec.sigma_level
+                        ) ** 2, 1e-12)
+                        for rec in usable_variance
+                    ],
+                    [rec.domain for rec in usable_variance],
+                    sample_weight=[
+                        self._boundary_sample_weight(rec)
+                        for rec in usable_variance
+                    ],
+                )
+            )
+            self.training_diagnostics["observable_variance_coordinate"] = {
+                **self.observable_variance_model.diagnostics(),
+                "variance_label_source": (
+                    "source_replicated_sample_variance"
+                    if self.source_observation_mode == "replicated"
+                    else f"source_{self.source_observation_mode}_variance"
+                ),
+                "shared_observable_input_with_mean": bool(
+                    self.observable_mean_model is not None
+                    and self.observable_mean_input_mode
+                    == "observable_state_exposure"
+                ),
+                "independent_head_parameters": True,
+            }
         if hierarchical_boundary_config is not None:
             self._fit_hierarchical_boundary(
                 records,
@@ -3957,9 +4527,9 @@ class LearnedMetaPrior:
             ])
             F = np.vstack([
                 cumulative_feature_vector(
-                    self.cumulative_risk_exposure_from_descriptor(
-                        rec.descriptor,
-                        domain=rec.domain,
+                    self._cumulative_risk_exposure_from_record(
+                        rec,
+                        aligned=True,
                     )
                 )
                 for rec in domain_records
@@ -4167,7 +4737,10 @@ class LearnedMetaPrior:
             mean_features_by_domain[domain] = descriptors
             features = np.vstack([
                 cumulative_feature_vector(
-                    self.risk_exposure_from_descriptor(rec.descriptor)
+                    self._cumulative_risk_exposure_from_record(
+                        rec,
+                        aligned=False,
+                    )
                 )
                 for rec in domain_records
             ])
@@ -4795,6 +5368,155 @@ class LearnedMetaPrior:
             order = rng.permutation(len(tail))[:need]
             head.extend(tail[int(i)] for i in order)
         return unique_candidates(head)[:n_take]
+
+    def boundary_excitation_candidates(
+        self,
+        problem,
+        n=0,
+        rng=None,
+        *,
+        include_source_templates=True,
+    ):
+        """Generate a dimension-equivariant unlabeled pool for ``phi`` search.
+
+        The pool combines a fixed universal library, source boundary-stratum
+        profiles, and random low-frequency perturbations. It never calls a
+        held-out objective, constraint, risk provider, state anchor, or oracle.
+        Target observations enter only later when the fitted boundary posterior
+        ranks this frozen-form candidate pool.
+        """
+
+        n_take = max(0, int(n))
+        if n_take <= 0:
+            return []
+        rng = rng or np.random.default_rng(self.seed)
+        d = max(1, int(getattr(problem, "d", 1)))
+        # Reserve room for source-stratum replay and stochastic low-frequency
+        # coverage.  The deterministic universal block is still large enough
+        # to contain the full coarse head/tail grid at the paper pool size.
+        universal_budget = min(
+            n_take,
+            max(64, int(np.ceil(0.625 * n_take))),
+        )
+        rows = self.universal_shape_candidates(
+            problem, n=universal_budget, rng=rng, force=True)
+        # This denser support library is intentionally scoped to the unlabeled
+        # target candidate pool. Keeping it out of
+        # ``universal_shape_candidates`` preserves the frozen source archive
+        # and its proposal hash.
+        dense_budget = max(0, universal_budget - len(rows))
+        if dense_budget:
+            levels = [float(value) for value in np.linspace(0.10, 0.90, 9)]
+            dense_rows = []
+            for head in levels:
+                for tail in levels:
+                    z = np.full(d, tail, dtype=float)
+                    z[0] = head
+                    dense_rows.append(self._continuous_to_tuple(problem, z))
+            third_levels = [0.10, 0.30, 0.50, 0.70, 0.90]
+            triples = [
+                (first, second, third)
+                for first in third_levels
+                for second in third_levels
+                for third in third_levels
+            ]
+            universal_rng = np.random.default_rng(20_260_718)
+            triples = [
+                triples[int(index)]
+                for index in universal_rng.permutation(len(triples))
+            ]
+            for first, second, third in triples:
+                z = np.empty(d, dtype=float)
+                for index in range(d):
+                    z[index] = (first, second, third)[min(
+                        2, int(3 * index / max(d, 1)))]
+                dense_rows.append(self._continuous_to_tuple(problem, z))
+            rows.extend(dense_rows[:dense_budget])
+        templates = (
+            list(getattr(
+                self.observable_mean_model,
+                "boundary_profile_templates",
+                [],
+            ))
+            if include_source_templates else []
+        )
+        for template in templates:
+            if len(rows) >= n_take:
+                break
+            candidate = self._profile_to_target_candidate(
+                problem, template["profile"])
+            if candidate is not None:
+                rows.append(candidate)
+        rows = unique_candidates(rows)
+
+        positions = (np.arange(d, dtype=float) + 0.5) / float(d)
+        attempts = 0
+        max_attempts = max(8 * n_take, 64)
+        while len(rows) < n_take and attempts < max_attempts:
+            family = attempts % 4
+            if family == 0:
+                # Piecewise policies span domain-generic local regimes.
+                levels = rng.beta(2.0, 2.0, size=3)
+                z = np.empty(d, dtype=float)
+                for index in range(d):
+                    z[index] = levels[min(
+                        2, int(3 * index / max(d, 1)))]
+            elif family == 1:
+                # Head/tail policies cover the state-policy family without a
+                # target-specific interpretation of either coordinate.
+                z = np.full(d, float(rng.beta(2.0, 2.0)), dtype=float)
+                z[0] = float(rng.beta(2.0, 2.0))
+            elif family == 2 or not templates:
+                # Smooth random Fourier profiles implement the shared
+                # low-frequency structural prior at any raw dimension.
+                z = np.full(d, float(rng.uniform(0.12, 0.88)), dtype=float)
+                for frequency in range(1, 5):
+                    coefficient = float(rng.normal(
+                        0.0, 0.20 / float(frequency)))
+                    z += coefficient * np.cos(
+                        np.pi * frequency * positions)
+            else:
+                # Perturb a source boundary stratum in normalized profile
+                # space; source labels choose the template before target time.
+                template = templates[int(rng.integers(len(templates)))]
+                profile = np.asarray(
+                    template["profile"], dtype=float).reshape(-1)
+                z = np.interp(
+                    np.linspace(0.0, 1.0, d),
+                    np.linspace(0.0, 1.0, len(profile)),
+                    profile,
+                )
+                z += float(rng.normal(0.0, 0.05))
+                for frequency in range(1, 4):
+                    z += float(rng.normal(
+                        0.0, 0.08 / frequency)) * np.cos(
+                            np.pi * frequency * positions)
+            rows.append(self._continuous_to_tuple(
+                problem, np.clip(z, 0.0, 1.0)))
+            rows = unique_candidates(rows)
+            attempts += 1
+
+        self.boundary_excitation_diagnostics = {
+            "status": "materialized",
+            "source_only": True,
+            "target_data_used": False,
+            "target_oracle_used": False,
+            "pool_size": int(len(rows[:n_take])),
+            "target_policy_dimension": int(d),
+            "source_boundary_template_count": int(len(templates)),
+            "source_boundary_templates_enabled": bool(
+                include_source_templates),
+            "universal_and_low_frequency_families": [
+                "constant_head_tail_piecewise_ramp",
+                "target_unlabeled_dense_tenth_head_tail",
+                "target_unlabeled_dense_three_block",
+                "continuous_piecewise_thirds",
+                "continuous_head_tail",
+                "random_cosine_1_to_4",
+                "source_stratum_cosine_perturbation",
+            ],
+        }
+        return rows[:n_take]
 
     def _profile_to_target_candidate(self, problem, profile):
         profile = np.asarray(profile, dtype=float).reshape(-1)
@@ -5554,6 +6276,9 @@ class LearnedMetaPrior:
             ],
             "source_domains": list(self.source_domains),
             "n_records": int(self.n_records),
+            "observable_mean_descriptor_mode": (
+                self.observable_mean_descriptor_mode),
+            "observable_mean_feature_mode": self.observable_mean_feature_mode,
             "local_dim": int(self.local_dim),
             "shared_dim": int(self.shared_dim),
             "n_anchors": int(len(self.anchor_psi)),
@@ -5566,6 +6291,8 @@ class LearnedMetaPrior:
                 self.dimension_equivariant_proposal_diagnostics),
             "risk_objective_proposal": copy.deepcopy(
                 self.risk_objective_proposal_diagnostics),
+            "boundary_excitation_proposal": copy.deepcopy(
+                self.boundary_excitation_diagnostics),
             "n_alignment_profile_templates": int(
                 len(self.alignment_profile_templates)),
             "universal_shape_count": int(self.universal_shape_count),
@@ -5613,8 +6340,26 @@ class LearnedMetaPrior:
                 else {
                     **self.observable_mean_model.diagnostics(),
                     "training_target": self.observable_mean_training_target,
+                    "input_mode": self.observable_mean_input_mode,
                     "chance_boundary_weighted": True,
                 }
+            ),
+            "observable_mean_role_assignment": {
+                "enabled": bool(
+                    self.observable_mean_role_assignment_posterior),
+                "prior": self.observable_mean_role_assignment_prior,
+                "prior_temperature_scale": float(
+                    self.observable_mean_role_assignment_prior_temperature_scale
+                ),
+                "inactive_variance": float(
+                    self.observable_mean_role_assignment_inactive_variance),
+                "hypotheses_use_target_labels": False,
+                "hypotheses_use_target_oracle": False,
+            },
+            "observable_variance_coordinate": (
+                None
+                if self.observable_variance_model is None
+                else self.observable_variance_model.diagnostics()
             ),
             "spectral_basis": (
                 None
@@ -5756,9 +6501,11 @@ class MetaPriorSurrogateBasis:
 class ObservableConstraintMeanBasis:
     """Frozen source boundary coordinate for the target constraint mean.
 
-    This basis is deliberately independent of ``psi=(A,N)``.  Target
-    observations learn only its regression coefficients; cumulative HVD and
-    certification continue to use the expert-specific risk coordinate.
+    The profile variant is independent of ``psi=(A,N)``.  The exposure variant
+    reads the same observable state exposure but applies a separate nonlinear
+    mean map and separate coefficients; cumulative HVD retains its own direct
+    variance parameterization. Target observations learn only mean-head
+    coefficients.
     """
 
     constraint_mean_coordinate = True
@@ -5768,13 +6515,369 @@ class ObservableConstraintMeanBasis:
             raise ValueError("observable mean coordinate is unavailable")
         self.meta_prior = meta_prior
         self.problem = problem
-        self.feature_dim = int(meta_prior.observable_mean_model.feature_dim)
+        self._role_assignment_model = None
+        self._role_assignments = ()
+        self._role_assignment_prior_weights = np.empty(0, dtype=float)
+        self._role_assignment_geometry_prior_weights = np.empty(
+            0, dtype=float)
+        self._role_assignment_feature_dim = 0
+        self._role_assignment_diagnostics = {"status": "disabled"}
+        self._fit_role_assignment_bank()
+        self.base_feature_dim = (
+            len(self._role_assignments) * self._role_assignment_feature_dim
+            if self._role_assignments
+            else int(meta_prior.observable_mean_model.feature_dim)
+        )
+        self._target_residual_raw_mean = None
+        self._target_residual_raw_scale = None
+        self._target_residual_projection = None
+        self._target_residual_components = None
+        self._target_residual_score_scale = None
+        self._target_residual_points = []
+        self._target_residual_diagnostics = {
+            "status": "disabled",
+            "requested_rank": int(
+                meta_prior.observable_mean_target_residual_rank),
+            "effective_rank": 0,
+            "target_labels_used": False,
+            "target_oracle_used": False,
+        }
+        self._fit_target_residual_coordinate()
+        self.target_residual_rank = int(
+            0 if self._target_residual_components is None
+            else len(self._target_residual_components))
+        self.feature_dim = self.base_feature_dim + self.target_residual_rank
+
+    @staticmethod
+    def _assignment_label(assignment):
+        return "-".join(str(int(value)) for value in assignment)
+
+    def _fit_role_assignment_bank(self):
+        if not self.meta_prior.observable_mean_role_assignment_posterior:
+            return
+        model = self.meta_prior.observable_mean_model
+        role_model = getattr(model, "role_model", model)
+        aligner = self.meta_prior.observable_channel_role_aligner
+        if aligner is None or not hasattr(role_model, "features_profile"):
+            raise RuntimeError(
+                "role-assignment posterior requires a fitted role coordinate")
+        points = list(aligner.target_policy_pool(self.problem))
+        if not points:
+            raise RuntimeError(
+                "role-assignment posterior requires an unlabeled target pool")
+        exposure = get_observable_state_exposure(self.problem, points[0])
+        if exposure is None:
+            raise RuntimeError(
+                "role-assignment posterior requires observable target exposure")
+        channel_count = int(len(exposure.channel_means))
+        role_count = int(aligner.n_roles)
+        if channel_count <= 0 or role_count <= 0 or channel_count > role_count:
+            raise RuntimeError(
+                "target channel cardinality cannot be injected into source roles")
+        assignments = tuple(
+            tuple(int(value) for value in assignment)
+            for assignment in permutations(range(role_count), channel_count)
+        )
+        if not assignments:
+            raise RuntimeError("role-assignment posterior has no admissible atom")
+        self._role_assignment_model = role_model
+        self._role_assignments = assignments
+        self._role_assignment_feature_dim = int(role_model.feature_dim)
+        if self.meta_prior.observable_mean_role_assignment_prior in {
+            "source_geometry", "source_geometry_boundary"
+        }:
+            prior_weights, prior_diagnostics = aligner.target_assignment_prior(
+                self.problem,
+                assignments,
+                temperature_scale=(
+                    self.meta_prior
+                    .observable_mean_role_assignment_prior_temperature_scale
+                ),
+            )
+        else:
+            prior_weights = np.full(
+                len(assignments), 1.0 / float(len(assignments)), dtype=float)
+            prior_diagnostics = {
+                "status": "fit",
+                "mode": "uniform",
+                "weights": prior_weights.tolist(),
+                "effective_assignment_count": float(len(assignments)),
+                "target_labels_used": False,
+                "target_oracle_used": False,
+                "permutation_equivariant": True,
+            }
+        self._role_assignment_prior_weights = np.asarray(
+            prior_weights, dtype=float)
+        self._role_assignment_geometry_prior_weights = np.asarray(
+            prior_weights, dtype=float).copy()
+        self._role_assignment_diagnostics = {
+            "status": "fit",
+            "posterior": "finite_channel_role_assignment",
+            "prior": self.meta_prior.observable_mean_role_assignment_prior,
+            "assignment_count": int(len(assignments)),
+            "channel_count": channel_count,
+            "role_count": role_count,
+            "assignments": [
+                self._assignment_label(value) for value in assignments
+            ],
+            "assignment_prior_weights": (
+                self._role_assignment_prior_weights.tolist()),
+            "assignment_prior_diagnostics": copy.deepcopy(
+                prior_diagnostics),
+            "permutation_equivariant": True,
+            "active_feature_dim_per_atom": int(
+                self._role_assignment_feature_dim),
+            "total_stored_feature_dim": int(
+                len(assignments) * self._role_assignment_feature_dim),
+            "target_labels_used_to_define_assignments": False,
+            "target_oracle_used_to_define_assignments": False,
+        }
+
+    def calibrate_role_assignment_boundary_posterior(
+        self,
+        samples,
+        targets,
+        observation_variances,
+    ):
+        """Update finite role mass from charged pilot chance margins."""
+
+        if self.meta_prior.observable_mean_role_assignment_prior != (
+            "source_geometry_boundary"
+        ):
+            return copy.deepcopy(self._role_assignment_diagnostics)
+        if not self._role_assignments:
+            raise RuntimeError(
+                "boundary role posterior requires an assignment bank")
+        aligner = self.meta_prior.observable_channel_role_aligner
+        posterior, calibration = (
+            aligner.target_boundary_assignment_posterior(
+                self.problem,
+                self._role_assignments,
+                samples,
+                targets,
+                observation_variances,
+                geometry_prior_weights=(
+                    self._role_assignment_geometry_prior_weights),
+            )
+        )
+        self._role_assignment_prior_weights = np.asarray(
+            posterior, dtype=float)
+        self._role_assignment_diagnostics.update({
+            "assignment_prior_weights": (
+                self._role_assignment_prior_weights.tolist()),
+            "boundary_calibration": copy.deepcopy(calibration),
+            "target_labels_used_to_define_assignments": bool(
+                calibration.get("target_labels_used", False)),
+            "target_oracle_used_to_define_assignments": False,
+            "assignment_update_scope": (
+                "charged_pilot_boundary_summary_then_frozen"),
+        })
+        return copy.deepcopy(self._role_assignment_diagnostics)
+
+    def _target_policy_pool(self):
+        requested = int(
+            self.meta_prior.observable_mean_target_residual_pool_size)
+        aligner = self.meta_prior.observable_channel_role_aligner
+        if aligner is not None:
+            points = list(aligner.target_policy_pool(self.problem))
+            source = "deterministic_unlabeled_role_matching_pool"
+        else:
+            d = max(int(getattr(self.problem, "d", 1)), 1)
+            positions = (np.arange(d, dtype=float) + 0.5) / float(d)
+            profiles = [
+                np.full(d, float(level), dtype=float)
+                for level in np.linspace(0.05, 0.95, 12)
+            ]
+            profiles.extend([
+                np.linspace(left, right, d)
+                for left, right in (
+                    (0.15, 0.85), (0.30, 0.70), (0.85, 0.15), (0.70, 0.30)
+                )
+            ])
+            rng = np.random.default_rng(
+                self.meta_prior.seed + 1_300_021 + 31 * d)
+            while len(profiles) < requested:
+                row = np.full(d, float(rng.uniform(0.1, 0.9)), dtype=float)
+                for frequency in range(1, 5):
+                    row += float(rng.normal(0.0, 0.16 / frequency)) * np.cos(
+                        np.pi * frequency * positions)
+                profiles.append(np.clip(row, 0.0, 1.0))
+            points = [
+                tuple(int(value) for value in self.problem.continuous_to_int(row))
+                for row in profiles
+            ]
+            source = "deterministic_unlabeled_low_frequency_pool"
+        points = unique_candidates(points)
+        return points[:requested], source
+
+    def _ordered_observable_descriptors(self, points):
+        rows = []
+        for point in points:
+            exposure = get_observable_state_exposure(self.problem, point)
+            if exposure is None:
+                raise ValueError(
+                    "target residual mean coordinate requires observable exposure")
+            rows.append(canonical_observable_state_descriptor(
+                exposure, mode="ordered"))
+        if not rows:
+            return np.empty((0, 0), dtype=float)
+        values = np.vstack(rows)
+        if not np.all(np.isfinite(values)):
+            raise FloatingPointError(
+                "target residual observable descriptors are non-finite")
+        return values
+
+    @staticmethod
+    def _orient_components(components):
+        oriented = np.asarray(components, dtype=float).copy()
+        for index, row in enumerate(oriented):
+            pivot = int(np.argmax(np.abs(row)))
+            if row[pivot] < 0.0:
+                oriented[index] *= -1.0
+        return oriented
+
+    def _fit_target_residual_coordinate(self):
+        requested_rank = int(
+            self.meta_prior.observable_mean_target_residual_rank)
+        if requested_rank <= 0:
+            return
+        points, pool_source = self._target_policy_pool()
+        if len(points) < 4:
+            self._target_residual_diagnostics.update({
+                "status": "insufficient_unlabeled_pool",
+                "pool_size": int(len(points)),
+                "pool_source": pool_source,
+            })
+            return
+        base = np.asarray(
+            self.meta_prior.observable_mean_model.features_many(
+                self.problem, points),
+            dtype=float,
+        )
+        if base.shape != (len(points), self.base_feature_dim):
+            raise RuntimeError("base observable mean feature dimension changed")
+        base_design = np.column_stack([np.ones(len(base)), base])
+        raw = self._ordered_observable_descriptors(points)
+        raw_mean = np.mean(raw, axis=0)
+        raw_scale = np.std(raw, axis=0)
+        raw_scale = np.where(raw_scale > 1e-10, raw_scale, 1.0)
+        standardized = (raw - raw_mean) / raw_scale
+        rcond = float(self.meta_prior.observable_mean_target_residual_rcond)
+        projection = np.linalg.pinv(base_design, rcond=rcond) @ standardized
+        residual = standardized - base_design @ projection
+        _, singular_values, right = np.linalg.svd(
+            residual, full_matrices=False)
+        tolerance = max(
+            rcond * float(singular_values[0]) if len(singular_values) else 0.0,
+            1e-10,
+        )
+        available_rank = int(np.sum(singular_values > tolerance))
+        rank = min(requested_rank, available_rank)
+        if rank <= 0:
+            self._target_residual_diagnostics.update({
+                "status": "empty_orthogonal_complement",
+                "pool_size": int(len(points)),
+                "pool_source": pool_source,
+                "raw_descriptor_dim": int(raw.shape[1]),
+                "base_design_rank": int(np.linalg.matrix_rank(base_design)),
+            })
+            return
+        components = self._orient_components(right[:rank])
+        scores = residual @ components.T
+        score_scale = np.sqrt(np.mean(scores ** 2, axis=0))
+        score_scale = np.maximum(score_scale, 1e-10)
+        normalized = scores / score_scale
+        cross = base_design.T @ normalized / float(len(base_design))
+        total_energy = float(np.sum(singular_values ** 2))
+        retained_energy = float(np.sum(singular_values[:rank] ** 2))
+        self._target_residual_raw_mean = raw_mean
+        self._target_residual_raw_scale = raw_scale
+        self._target_residual_projection = projection
+        self._target_residual_components = components
+        self._target_residual_score_scale = score_scale
+        self._target_residual_points = list(points)
+        self._target_residual_diagnostics = {
+            "status": "fit",
+            "requested_rank": requested_rank,
+            "effective_rank": int(rank),
+            "pool_size": int(len(points)),
+            "pool_source": pool_source,
+            "raw_descriptor": "canonical_ordered_observable_state",
+            "raw_descriptor_dim": int(raw.shape[1]),
+            "base_feature_dim": int(self.base_feature_dim),
+            "base_design_rank": int(np.linalg.matrix_rank(base_design)),
+            "orthogonal_complement_rank": available_rank,
+            "maximum_base_cross_moment": float(np.max(np.abs(cross))),
+            "retained_residual_energy_fraction": float(
+                retained_energy / max(total_energy, 1e-12)),
+            "coefficient_prior_mean": "zero",
+            "coefficient_prior_scale_source": (
+                "source_deviation_and_coefficient_covariance"),
+            "target_labels_used_to_define_coordinate": False,
+            "target_oracle_used_to_define_coordinate": False,
+            "target_labels_used": False,
+            "target_oracle_used": False,
+        }
+
+    def _base_features_many(self, X):
+        if len(X) == 0:
+            return np.empty((0, self.base_feature_dim), dtype=float)
+        if self._role_assignments:
+            blocks = []
+            role_count = int(
+                self.meta_prior.observable_channel_role_aligner.n_roles)
+            for assignment in self._role_assignments:
+                rows = []
+                for point in X:
+                    exposure = get_observable_state_exposure(
+                        self.problem, point)
+                    if exposure is None:
+                        raise RuntimeError(
+                            "role-assignment feature has no observable exposure")
+                    descriptor = role_aligned_observable_state_descriptor(
+                        exposure,
+                        assignment,
+                        n_roles=role_count,
+                    )
+                    rows.append(
+                        self._role_assignment_model.features_profile(descriptor))
+                block = np.asarray(rows, dtype=float)
+                if block.shape != (
+                    len(X), self._role_assignment_feature_dim
+                ):
+                    raise RuntimeError(
+                        "role-assignment feature dimension changed")
+                blocks.append(block)
+            values = np.hstack(blocks)
+            if not np.all(np.isfinite(values)):
+                raise FloatingPointError(
+                    "role-assignment mean features are non-finite")
+            return values
+        return np.asarray(
+            self.meta_prior.observable_mean_model.features_many(
+                self.problem, X),
+            dtype=float,
+        )
+
+    def _target_residual_features_many(self, X, base=None):
+        if self.target_residual_rank <= 0:
+            return np.empty((len(X), 0), dtype=float)
+        base = self._base_features_many(X) if base is None else np.asarray(base)
+        raw = self._ordered_observable_descriptors(X)
+        standardized = (
+            raw - self._target_residual_raw_mean
+        ) / self._target_residual_raw_scale
+        design = np.column_stack([np.ones(len(base)), base])
+        residual = standardized - design @ self._target_residual_projection
+        values = (
+            residual @ self._target_residual_components.T
+        ) / self._target_residual_score_scale
+        if not np.all(np.isfinite(values)):
+            raise FloatingPointError("target residual mean features are non-finite")
+        return values
 
     def features(self, x):
-        values = np.asarray(
-            self.meta_prior.observable_mean_features(self.problem, x),
-            dtype=float,
-        ).reshape(-1)
+        values = self.features_many([x])[0]
         if len(values) != self.feature_dim:
             raise RuntimeError("observable mean coordinate changed dimension")
         return values
@@ -5782,23 +6885,313 @@ class ObservableConstraintMeanBasis:
     def features_many(self, X):
         if len(X) == 0:
             return np.empty((0, self.feature_dim), dtype=float)
-        return self.meta_prior.observable_mean_model.features_many(
-            self.problem, X)
+        base = self._base_features_many(X)
+        residual = self._target_residual_features_many(X, base=base)
+        return np.hstack([base, residual])
 
     def diagnostics(self):
+        aligned = self.meta_prior.observable_mean_mode == "boundary_aligned"
+        input_mode = str(self.meta_prior.observable_mean_input_mode)
+        model = self.meta_prior.observable_mean_model
+        model_diagnostics = (
+            model.diagnostics_for_problem(self.problem)
+            if hasattr(model, "diagnostics_for_problem")
+            else model.diagnostics()
+        )
         return {
-            **self.meta_prior.observable_mean_model.diagnostics(),
-            "selected_basis": "source_observable_constraint_mean_eta",
-            "mean_coordinate": "eta",
-            "variance_coordinate": "expert_specific_psi=(A,N)",
-            "target_labels_used_to_define_coordinate": False,
+            **model_diagnostics,
+            "selected_basis": (
+                "source_aligned_chance_boundary_phi"
+                if aligned else "source_observable_constraint_mean_eta"
+            ),
+            "mean_coordinate": "phi" if aligned else "eta",
+            "mean_coordinate_input": input_mode,
+            "observable_descriptor_mode": (
+                self.meta_prior.observable_mean_descriptor_mode),
+            "boundary_feature_mode": (
+                self.meta_prior.observable_mean_feature_mode),
+            "latent_transform": (
+                self.meta_prior.observable_mean_latent_transform),
+            "target_orthogonal_residual": copy.deepcopy(
+                self._target_residual_diagnostics),
+            "target_residual_rank": int(self.target_residual_rank),
+            "target_residual_prior_scale": float(
+                self.meta_prior.observable_mean_target_residual_prior_scale),
+            "role_assignment_posterior": copy.deepcopy(
+                self._role_assignment_diagnostics),
+            "variance_coordinate": (
+                "psi_v=h_v(observable_state_exposure)"
+                if self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"
+                else "expert_specific_psi=(A,N)"
+            ),
+            "shared_observable_exposure_input": bool(
+                input_mode == "observable_state_exposure"
+                and self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"
+            ),
+            "separate_mean_variance_heads": True,
+            "target_labels_used_to_define_coordinate": bool(
+                self._role_assignment_diagnostics.get(
+                    "target_labels_used_to_define_assignments", False)),
+            "target_oracle_used_to_define_coordinate": False,
         }
+
+    def posterior_coefficient_diagnostics(self, mean, covariance):
+        """Audit target-learned channel roles in the exchangeable head."""
+
+        if (
+            self.meta_prior.observable_mean_descriptor_mode
+            != "exchangeable_equivariant"
+        ):
+            return None
+        model = self.meta_prior.observable_mean_model
+        block_dim = int(model.channel_block_dim)
+        channel_count = int(model._target_channel_count(self.problem))
+        expected = 1 + int(self.feature_dim)
+        mean = np.asarray(mean, dtype=float).reshape(-1)
+        covariance = np.asarray(covariance, dtype=float)
+        if len(mean) < expected or covariance.shape[0] < expected:
+            raise RuntimeError(
+                "exchangeable posterior coefficient dimension changed")
+        mean = mean[:expected]
+        covariance = covariance[:expected, :expected]
+
+        def blocks(values):
+            return np.vstack([
+                values[
+                    1 + channel * block_dim:
+                    1 + (channel + 1) * block_dim
+                ]
+                for channel in range(channel_count)
+            ])
+
+        posterior_blocks = blocks(mean)
+        source = self.source_parametric_prior()
+        source_blocks = blocks(np.asarray(source["mean"], dtype=float))
+
+        def maximum_distance(values):
+            if len(values) < 2:
+                return 0.0
+            return float(max(
+                np.linalg.norm(values[left] - values[right])
+                for left in range(len(values))
+                for right in range(left + 1, len(values))
+            ))
+
+        traces = []
+        for channel in range(channel_count):
+            indices = np.arange(
+                1 + channel * block_dim,
+                1 + (channel + 1) * block_dim,
+            )
+            traces.append(float(np.trace(
+                covariance[np.ix_(indices, indices)])))
+        prior_spread = maximum_distance(source_blocks)
+        posterior_spread = maximum_distance(posterior_blocks)
+        return {
+            "status": "audited",
+            "posterior": "target_linear_channel_coefficients",
+            "channel_count": channel_count,
+            "channel_block_dim": block_dim,
+            "source_channel_block_means": source_blocks.tolist(),
+            "posterior_channel_block_means": posterior_blocks.tolist(),
+            "posterior_channel_block_covariance_traces": traces,
+            "source_channel_block_maximum_distance": prior_spread,
+            "posterior_channel_block_maximum_distance": posterior_spread,
+            "source_prior_exchangeable": bool(prior_spread <= 1e-10),
+            "target_channel_roles_differentiated": bool(
+                posterior_spread > max(1e-8, 1e-6 * np.linalg.norm(mean))),
+            "source_role_identity_transferred": False,
+            "target_coefficients_updated_by_gpr_posterior": True,
+            "target_oracle_used": False,
+        }
+
+    def _extend_source_prior(self, prior):
+        prior = copy.deepcopy(prior)
+        if self.target_residual_rank <= 0:
+            return prior
+        mean = np.asarray(prior["mean"], dtype=float).reshape(-1)
+        covariance = np.asarray(prior["covariance"], dtype=float)
+        expected_base = 1 + self.base_feature_dim
+        if len(mean) != expected_base or covariance.shape != (
+            expected_base, expected_base
+        ):
+            raise RuntimeError(
+                "base observable source prior changed coefficient dimension")
+        finite_diagonal = np.diag(covariance)
+        finite_diagonal = finite_diagonal[
+            np.isfinite(finite_diagonal) & (finite_diagonal > 0.0)]
+        deviation = max(float(prior.get("deviation_variance", 0.0)), 1e-12)
+        coefficient_reference = (
+            float(np.median(finite_diagonal))
+            if len(finite_diagonal) else 0.0)
+        residual_variance = max(
+            deviation,
+            coefficient_reference,
+            1e-10,
+        ) * float(self.meta_prior.observable_mean_target_residual_prior_scale)
+        extended_mean = np.concatenate([
+            mean, np.zeros(self.target_residual_rank, dtype=float)])
+        extended_covariance = np.zeros(
+            (len(extended_mean), len(extended_mean)), dtype=float)
+        extended_covariance[:expected_base, :expected_base] = covariance
+        extended_covariance[expected_base:, expected_base:] = (
+            residual_variance
+            * np.eye(self.target_residual_rank, dtype=float))
+        prior["mean"] = extended_mean
+        prior["covariance"] = extended_covariance
+        diagnostics = dict(prior.get("diagnostics", {}))
+        diagnostics.update({
+            "target_orthogonal_residual_rank": int(self.target_residual_rank),
+            "target_orthogonal_residual_prior_mean": 0.0,
+            "target_orthogonal_residual_prior_variance": float(
+                residual_variance),
+            "target_orthogonal_residual_prior_scale": float(
+                self.meta_prior.observable_mean_target_residual_prior_scale),
+            "target_orthogonal_residual_prior_reference_deviation": float(
+                deviation),
+            "target_orthogonal_residual_prior_reference_coefficient": float(
+                coefficient_reference),
+            "target_orthogonal_residual_cross_covariance": 0.0,
+            "target_labels_used_to_define_residual_prior": False,
+            "target_oracle_used_to_define_residual_prior": False,
+        })
+        prior["diagnostics"] = diagnostics
+        return prior
+
+    def _expand_role_assignment_component(self, component):
+        component = copy.deepcopy(component)
+        if not self._role_assignments:
+            return [component]
+        mean = np.asarray(component["mean"], dtype=float).reshape(-1)
+        covariance = np.asarray(component["covariance"], dtype=float)
+        block_dim = int(self._role_assignment_feature_dim)
+        if len(mean) != 1 + block_dim or covariance.shape != (
+            1 + block_dim, 1 + block_dim
+        ):
+            raise RuntimeError(
+                "role source prior does not match one assignment block")
+        inactive = float(
+            self.meta_prior.observable_mean_role_assignment_inactive_variance)
+        total_dim = 1 + self.base_feature_dim
+        original_weight = max(
+            float(component.get("prior_weight", 0.0)), 0.0)
+        expanded = []
+        for assignment_index, (assignment, assignment_mass) in enumerate(zip(
+            self._role_assignments, self._role_assignment_prior_weights
+        )):
+            assignment_mass = float(assignment_mass)
+            start = 1 + assignment_index * block_dim
+            stop = start + block_dim
+            atom_mean = np.zeros(total_dim, dtype=float)
+            atom_mean[0] = float(mean[0])
+            atom_mean[start:stop] = mean[1:]
+            atom_covariance = inactive * np.eye(total_dim, dtype=float)
+            atom_covariance[0, 0] = float(covariance[0, 0])
+            atom_covariance[start:stop, start:stop] = covariance[1:, 1:]
+            atom_covariance[0, start:stop] = covariance[0, 1:]
+            atom_covariance[start:stop, 0] = covariance[1:, 0]
+            atom = copy.deepcopy(component)
+            atom["mean"] = atom_mean
+            atom["covariance"] = 0.5 * (
+                atom_covariance + atom_covariance.T)
+            atom["prior_weight"] = float(
+                original_weight * assignment_mass)
+            label = self._assignment_label(assignment)
+            atom["name"] = (
+                f"{component.get('name', 'source')}"
+                f"|role_assignment={label}")
+            diagnostics = dict(atom.get("diagnostics", {}))
+            diagnostics.update({
+                "role_assignment_structure_posterior": True,
+                "role_assignment": label,
+                "role_assignment_index": int(assignment_index),
+                "role_assignment_count": int(len(self._role_assignments)),
+                "role_assignment_prior_mass": float(assignment_mass),
+                "role_assignment_active_coefficients": [
+                    0, *range(start, stop)
+                ],
+                "role_assignment_inactive_variance": inactive,
+                "role_assignment_permutation_equivariant": True,
+                "target_labels_used_to_define_role_assignment": bool(
+                    self._role_assignment_diagnostics.get(
+                        "target_labels_used_to_define_assignments", False)),
+                "target_oracle_used_to_define_role_assignment": False,
+            })
+            atom["diagnostics"] = diagnostics
+            expanded.append(atom)
+        return expanded
+
+    @staticmethod
+    def _moment_match_components(components, diagnostics):
+        weights = np.asarray([
+            max(float(component.get("prior_weight", 0.0)), 0.0)
+            for component in components
+        ], dtype=float)
+        if float(np.sum(weights)) <= 0.0:
+            weights = np.ones(len(components), dtype=float)
+        weights /= float(np.sum(weights))
+        means = np.vstack([
+            np.asarray(component["mean"], dtype=float).reshape(-1)
+            for component in components
+        ])
+        mean = np.sum(weights[:, None] * means, axis=0)
+        covariance = np.zeros((len(mean), len(mean)), dtype=float)
+        for weight, component, component_mean in zip(
+            weights, components, means
+        ):
+            delta = component_mean - mean
+            covariance += float(weight) * (
+                np.asarray(component["covariance"], dtype=float)
+                + np.outer(delta, delta)
+            )
+        covariance = 0.5 * (covariance + covariance.T)
+        deviation = float(np.sum(weights * np.asarray([
+            max(float(component.get("deviation_variance", 1e-12)), 1e-12)
+            for component in components
+        ], dtype=float)))
+        result = copy.deepcopy(diagnostics)
+        result.update({
+            "mean": mean,
+            "covariance": covariance,
+            "deviation_variance": deviation,
+            "prior_weight": 1.0,
+        })
+        result_diagnostics = dict(result.get("diagnostics", {}))
+        target_labels_used = any(bool(
+            dict(component.get("diagnostics", {})).get(
+                "target_labels_used_to_define_role_assignment", False)
+        ) for component in components)
+        result_diagnostics.update({
+            "role_assignment_structure_posterior": True,
+            "role_assignment_component_count": int(len(components)),
+            "role_assignment_moment_matched_aggregate": True,
+            "target_labels_used_to_define_role_assignment": bool(
+                target_labels_used),
+            "target_oracle_used_to_define_role_assignment": False,
+        })
+        result["diagnostics"] = result_diagnostics
+        return result
 
     def source_parametric_prior(self):
         """Return the source-only coefficient law for target conditioning."""
-
-        prior = self.meta_prior.observable_mean_model.source_parametric_prior(
-            self.problem)
+        if self._role_assignments:
+            base = copy.deepcopy(
+                self._role_assignment_model.source_parametric_prior(
+                    self.problem))
+            components = []
+            for component in (
+                self._role_assignment_model
+                .source_parametric_prior_components(self.problem)
+            ):
+                components.extend(
+                    self._expand_role_assignment_component(component))
+            prior = self._moment_match_components(components, base)
+        else:
+            prior = self._extend_source_prior(
+                self.meta_prior.observable_mean_model.source_parametric_prior(
+                    self.problem))
         expected = 1 + self.feature_dim
         if len(np.asarray(prior["mean"]).reshape(-1)) != expected:
             raise RuntimeError("observable source prior changed coefficient dimension")
@@ -5806,11 +7199,22 @@ class ObservableConstraintMeanBasis:
 
     def source_parametric_prior_components(self):
         """Return source-domain coefficient laws before target reweighting."""
-
-        components = (
-            self.meta_prior.observable_mean_model
-            .source_parametric_prior_components(self.problem)
-        )
+        if self._role_assignments:
+            components = []
+            for component in (
+                self._role_assignment_model
+                .source_parametric_prior_components(self.problem)
+            ):
+                components.extend(
+                    self._expand_role_assignment_component(component))
+        else:
+            components = [
+                self._extend_source_prior(component)
+                for component in (
+                    self.meta_prior.observable_mean_model
+                    .source_parametric_prior_components(self.problem)
+                )
+            ]
         expected = 1 + self.feature_dim
         for component in components:
             mean = np.asarray(component["mean"], dtype=float).reshape(-1)
@@ -5822,6 +7226,285 @@ class ObservableConstraintMeanBasis:
                     "observable source component changed coefficient dimension"
                 )
         return components
+
+    def expand_target_role_assignment_components(self, components):
+        """Give the target-null law the same finite assignment posterior."""
+
+        if not self._role_assignments:
+            return [copy.deepcopy(component) for component in components]
+        block_dim = int(self._role_assignment_feature_dim)
+        inactive = float(
+            self.meta_prior.observable_mean_role_assignment_inactive_variance)
+        total_dim = 1 + self.base_feature_dim
+        expanded = []
+        for component in components:
+            name = str(component.get("name", "component"))
+            if "|role_assignment=" in name:
+                expanded.append(copy.deepcopy(component))
+                continue
+            mean = np.asarray(component["mean"], dtype=float).reshape(-1)
+            covariance = np.asarray(component["covariance"], dtype=float)
+            if len(mean) != total_dim or covariance.shape != (
+                total_dim, total_dim
+            ):
+                raise RuntimeError(
+                    "unstructured role-assignment component changed dimension")
+            original_weight = max(
+                float(component.get("prior_weight", 0.0)), 0.0)
+            for assignment_index, (assignment, assignment_mass) in enumerate(
+                zip(
+                    self._role_assignments,
+                    self._role_assignment_prior_weights,
+                )
+            ):
+                assignment_mass = float(assignment_mass)
+                start = 1 + assignment_index * block_dim
+                stop = start + block_dim
+                atom_mean = np.zeros(total_dim, dtype=float)
+                atom_mean[0] = float(mean[0])
+                atom_mean[start:stop] = mean[start:stop]
+                atom_covariance = inactive * np.eye(total_dim, dtype=float)
+                indices = np.asarray([0, *range(start, stop)], dtype=int)
+                atom_covariance[np.ix_(indices, indices)] = covariance[
+                    np.ix_(indices, indices)]
+                atom = copy.deepcopy(component)
+                atom["mean"] = atom_mean
+                atom["covariance"] = 0.5 * (
+                    atom_covariance + atom_covariance.T)
+                atom["prior_weight"] = float(
+                    original_weight * assignment_mass)
+                label = self._assignment_label(assignment)
+                atom["name"] = f"{name}|role_assignment={label}"
+                diagnostics = dict(atom.get("diagnostics", {}))
+                diagnostics.update({
+                    "role_assignment_structure_posterior": True,
+                    "role_assignment": label,
+                    "role_assignment_index": int(assignment_index),
+                    "role_assignment_count": int(len(self._role_assignments)),
+                    "role_assignment_prior_mass": float(assignment_mass),
+                    "role_assignment_active_coefficients": indices.tolist(),
+                    "role_assignment_inactive_variance": inactive,
+                    "role_assignment_permutation_equivariant": True,
+                    "target_labels_used_to_define_role_assignment": bool(
+                        self._role_assignment_diagnostics.get(
+                            "target_labels_used_to_define_assignments",
+                            False)),
+                    "target_oracle_used_to_define_role_assignment": False,
+                })
+                atom["diagnostics"] = diagnostics
+                expanded.append(atom)
+        return expanded
+
+    def role_assignment_oracle_expressivity_audit(self, points, targets):
+        """Post-run oracle audit of the registered assignment function family."""
+
+        if not self._role_assignments:
+            return {"status": "disabled"}
+        values = self._base_features_many(points)
+        target = np.asarray(targets, dtype=float).reshape(-1)
+        if len(values) != len(target):
+            raise ValueError("role-assignment audit rows must align")
+
+        def rank_correlation(left, right):
+            left = np.asarray(left, dtype=float)
+            right = np.asarray(right, dtype=float)
+            if len(left) < 2:
+                return None
+            left_rank = np.argsort(np.argsort(left, kind="stable"), kind="stable")
+            right_rank = np.argsort(
+                np.argsort(right, kind="stable"), kind="stable")
+            left_rank = left_rank.astype(float) - float(np.mean(left_rank))
+            right_rank = right_rank.astype(float) - float(np.mean(right_rank))
+            denominator = float(
+                np.linalg.norm(left_rank) * np.linalg.norm(right_rank))
+            return (
+                None if denominator <= 1e-12
+                else float(left_rank @ right_rank / denominator)
+            )
+
+        rows = []
+        block_dim = int(self._role_assignment_feature_dim)
+        for index, assignment in enumerate(self._role_assignments):
+            block = values[:, index * block_dim:(index + 1) * block_dim]
+            design = np.column_stack([np.ones(len(block)), block])
+            gram = design.T @ design + 1e-6 * np.eye(
+                design.shape[1], dtype=float)
+            coefficient = np.linalg.solve(gram, design.T @ target)
+            prediction = design @ coefficient
+            rows.append({
+                "assignment": self._assignment_label(assignment),
+                "median_abs_error": float(np.median(
+                    np.abs(prediction - target))),
+                "rank_correlation": rank_correlation(prediction, target),
+            })
+        best_mae = min(rows, key=lambda row: row["median_abs_error"])
+        finite_rank = [
+            row for row in rows if row["rank_correlation"] is not None
+        ]
+        best_rank = max(
+            finite_rank, key=lambda row: row["rank_correlation"]
+        ) if finite_rank else None
+        return {
+            "status": "audited",
+            "assignment_count": int(len(rows)),
+            "best_median_abs_error": float(best_mae["median_abs_error"]),
+            "best_mae_assignment": str(best_mae["assignment"]),
+            "best_rank_correlation": (
+                None if best_rank is None
+                else float(best_rank["rank_correlation"])),
+            "best_rank_assignment": (
+                None if best_rank is None else str(best_rank["assignment"])),
+            "assignments": rows,
+            "post_run_only": True,
+            "target_oracle_used": True,
+            "target_oracle_used_for_decision": False,
+        }
+
+    def expand_target_residual_rank_components(
+        self,
+        components,
+        rank_prior,
+        *,
+        inactive_variance=1e-12,
+    ):
+        """Expand source laws over a nested residual-rank latent variable.
+
+        All atoms share the same maximum-rank feature map.  Rank ``k`` keeps
+        the first ``k`` orthogonal residual coefficients active and pins the
+        remaining coefficients to zero up to numerical variance.  Target
+        observations may therefore update rank mass by ordinary Gaussian
+        marginal likelihood without changing coordinates or consulting an
+        oracle.
+        """
+
+        values = [copy.deepcopy(component) for component in components]
+        rank = int(self.target_residual_rank)
+        if rank <= 0:
+            return values
+        probability = np.asarray(rank_prior, dtype=float).reshape(-1)
+        if len(probability) != rank + 1:
+            raise ValueError(
+                "target residual rank prior must contain one mass for each "
+                f"rank 0..{rank}")
+        if not np.all(np.isfinite(probability)) or np.any(probability < 0.0):
+            raise ValueError(
+                "target residual rank prior must be finite and nonnegative")
+        if float(np.sum(probability)) <= 0.0:
+            raise ValueError("target residual rank prior needs positive mass")
+        probability /= float(np.sum(probability))
+        inactive_variance = max(float(inactive_variance), 1e-12)
+        base = 1 + int(self.base_feature_dim)
+        expanded = []
+        for component in values:
+            covariance = np.asarray(
+                component["covariance"], dtype=float).copy()
+            if covariance.shape != (base + rank, base + rank):
+                raise RuntimeError(
+                    "target residual source component dimension changed")
+            residual_diagonal = np.maximum(
+                np.diag(covariance)[base:], inactive_variance)
+            original_weight = max(
+                float(component.get("prior_weight", 0.0)), 0.0)
+            for active_rank, mass in enumerate(probability):
+                atom = copy.deepcopy(component)
+                atom_covariance = covariance.copy()
+                for index in range(rank):
+                    coefficient = base + index
+                    atom_covariance[coefficient, :] = 0.0
+                    atom_covariance[:, coefficient] = 0.0
+                    atom_covariance[coefficient, coefficient] = (
+                        float(residual_diagonal[index])
+                        if index < active_rank else inactive_variance)
+                atom["covariance"] = atom_covariance
+                atom["prior_weight"] = float(original_weight * mass)
+                atom["name"] = (
+                    f"{component.get('name', 'source')}"
+                    f"|target_residual_rank={active_rank}")
+                diagnostics = dict(atom.get("diagnostics", {}))
+                diagnostics.update({
+                    "target_residual_structure_posterior": True,
+                    "target_residual_structure_rank": int(active_rank),
+                    "target_residual_structure_max_rank": int(rank),
+                    "target_residual_structure_prior_mass": float(mass),
+                    "target_residual_structure_inactive_variance": float(
+                        inactive_variance),
+                    "target_residual_structure_nested": True,
+                    "target_labels_used_to_define_structure_prior": False,
+                    "target_oracle_used_to_define_structure_prior": False,
+                })
+                atom["diagnostics"] = diagnostics
+                expanded.append(atom)
+        return expanded
+
+    def source_target_epistemic_calibration(self):
+        """Calibrate role-transfer mass from source/target signature support."""
+
+        if self.meta_prior.observable_mean_descriptor_mode not in {
+            "role_aligned",
+            "role_transport",
+            "role_intervention_transport",
+            "role_adaptive_ordered",
+            "role_adaptive_set_invariant",
+        }:
+            return {
+                "status": "not_role_aligned",
+                "source_role_trust": 1.0,
+                "target_labels_used": False,
+                "target_oracle_used": False,
+            }
+        aligner = self.meta_prior.observable_channel_role_aligner
+        if aligner is None:
+            raise RuntimeError("role-aligned mean basis has no channel aligner")
+        return aligner.target_epistemic_calibration(self.problem)
+
+    def source_target_coordinate_selection(self):
+        """Return the outcome-free role/fallback identifiability decision."""
+
+        model = self.meta_prior.observable_mean_model
+        if not hasattr(model, "selection"):
+            raise RuntimeError(
+                "support-adaptive coefficient transfer requires a "
+                "support-adaptive observable mean coordinate")
+        selection = dict(model.selection(self.problem))
+        if (
+            selection.get("target_labels_used")
+            or selection.get("target_oracle_used")
+            or selection.get("selection_uses_target_labels")
+            or selection.get("selection_uses_target_oracle")
+        ):
+            raise RuntimeError(
+                "coordinate support selection must be outcome-free")
+        return selection
+
+    def target_null_feature_geometry(self):
+        """Return an unlabeled target design for function-space calibration.
+
+        The same deterministic policy pool used to match observable channel
+        roles defines the geometry.  It contains no target response, simulator
+        noise realization, feasibility label, or post-run oracle quantity.
+        """
+
+        aligner = self.meta_prior.observable_channel_role_aligner
+        if aligner is None:
+            return {
+                "status": "unavailable",
+                "target_labels_used": False,
+                "target_oracle_used": False,
+            }
+        points = aligner.target_policy_pool(self.problem)
+        features = self.features_many(points)
+        if len(features) == 0 or not np.all(np.isfinite(features)):
+            raise RuntimeError("target null feature geometry is unavailable")
+        basis = np.column_stack([np.ones(len(features)), features])
+        return {
+            "status": "available",
+            "basis_matrix": basis,
+            "pool_size": int(len(basis)),
+            "basis_dim": int(basis.shape[1]),
+            "pool_source": "deterministic_unlabeled_role_matching_pool",
+            "target_labels_used": False,
+            "target_oracle_used": False,
+        }
 
 
 class PilotGatedMetaPriorBasis:
@@ -8152,7 +9835,10 @@ class TaskExpertProblemView:
             "provider": "TaskExpertProblemView",
             "expert": self.expert_name,
             "coordinate": (
-                "frozen_source_learned_ordered_cumulative"
+                "source_aligned_observable_variance_psi_v=h_v(e)"
+                if self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"
+                else "frozen_source_learned_ordered_cumulative"
                 if self.expert_name in self.ORDERED_EXPERTS
                 else "frozen_source_boundary_alignment"
                 if self.aligned
@@ -8164,22 +9850,94 @@ class TaskExpertProblemView:
 
     def mean_risk_coordinate_contract(self):
         separated = self.meta_prior.observable_mean_model is not None
+        aligned = bool(
+            separated
+            and self.meta_prior.observable_mean_mode == "boundary_aligned"
+        )
+        exchangeable = bool(
+            aligned
+            and self.meta_prior.observable_mean_descriptor_mode
+            == "exchangeable_equivariant"
+        )
         return {
             "status": "separated" if separated else "legacy_shared_coordinate",
             "constraint_mean_coordinate": (
-                "eta=source_observable_constraint_mean_scores"
+                "phi_eq=exchangeable_target_linear_chance_boundary"
+                if exchangeable else
+                "phi=source_aligned_chance_boundary"
+                if aligned
+                else "eta=source_observable_constraint_mean_scores"
                 if separated else "psi/source_spectral"
             ),
-            "cumulative_variance_coordinate": "psi=(A,N)",
+            "cumulative_variance_coordinate": (
+                "psi_v=h_v(observable_state_exposure)"
+                if self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"
+                else "psi=(A,N)"
+            ),
+            "constraint_mean_input": (
+                self.meta_prior.observable_mean_input_mode
+                if separated else "legacy"),
+            "constraint_mean_descriptor_mode": (
+                self.meta_prior.observable_mean_descriptor_mode
+                if separated else "legacy"),
+            "constraint_mean_feature_mode": (
+                self.meta_prior.observable_mean_feature_mode
+                if separated else "legacy"),
+            "constraint_mean_target_residual_rank": int(
+                self.meta_prior.observable_mean_target_residual_rank
+                if separated else 0),
+            "constraint_mean_target_residual_definition": (
+                "unlabeled_target_geometry_orthogonal_to_source_mean_span"
+                if separated
+                and self.meta_prior.observable_mean_target_residual_rank > 0
+                else "disabled"),
+            "separate_mean_variance_heads": bool(separated),
+            "shared_observable_exposure_input": bool(
+                separated
+                and self.meta_prior.observable_mean_input_mode
+                == "observable_state_exposure"
+                and self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"
+            ),
             "joined_object": (
-                "mu_g(eta)+sqrt(beta_g)s_g(eta)"
-                "+z_alpha*sqrt(v_C_plus(psi))-tau"
+                (
+                    "mu_g(phi)+sqrt(beta_g)s_g(phi)"
+                    if aligned else
+                    "mu_g(eta)+sqrt(beta_g)s_g(eta)"
+                )
+                + "+z_alpha*sqrt(v_C_plus(psi))-tau"
             ),
             "coordinate_definition_uses_target_labels": False,
+            "channel_role_alignment_used": bool(
+                separated
+                and self.meta_prior.observable_mean_descriptor_mode in {
+                    "role_aligned",
+                    "role_transport",
+                    "role_intervention_transport",
+                    "role_adaptive_ordered",
+                    "role_adaptive_set_invariant",
+                }
+            ),
+            "exchangeable_channel_role_posterior": exchangeable,
+            "source_role_identity_transferred": False if exchangeable else None,
+            "target_channel_roles_learned_from_charged_data": exchangeable,
+            "channel_role_target_matching_uses_labels": False,
+            "channel_role_target_matching_uses_oracle": False,
+            "channel_role_assignment_posterior": bool(
+                self.meta_prior.observable_mean_role_assignment_posterior),
+            "channel_role_assignment_hypotheses_use_target_labels": False,
+            "channel_role_assignment_weights_use_charged_target_labels": bool(
+                self.meta_prior.observable_mean_role_assignment_posterior),
+            "channel_role_assignment_weights_use_target_oracle": False,
             "source_observation_mode": self.meta_prior.source_observation_mode,
             "source_design_mode": self.meta_prior.source_design_mode,
             "eta_source_training_target": (
                 self.meta_prior.observable_mean_training_target),
+            "coefficient_prior_training_target": (
+                "constraint_mean" if aligned
+                else self.meta_prior.observable_mean_training_target
+            ),
             "source_oracle_aided": bool(
                 self.meta_prior.training_diagnostics.get(
                     "source_analytic_sigma_used", False)
@@ -8365,7 +10123,9 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         ).to_dict()
         provider_boundary = bool(
             "provider_"
-            in self.meta_prior.hierarchical_boundary_descriptor_mode)
+            in self.meta_prior.hierarchical_boundary_descriptor_mode
+            or self.meta_prior.observable_mean_input_mode
+            == "provider_exposure")
         source_oracle_aided = bool(
             source_true_outputs
             or source_true_sigma
@@ -8378,6 +10138,18 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             "tcb_boundary_descriptor_mode": (
                 self.meta_prior.hierarchical_boundary_descriptor_mode),
             "tcb_target_structural_provider_used": provider_boundary,
+            "observable_state_exposure_used": bool(
+                self.meta_prior.observable_mean_input_mode
+                == "observable_state_exposure"
+                or self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"),
+            "observable_state_mean_head_used": bool(
+                self.meta_prior.observable_mean_input_mode
+                == "observable_state_exposure"),
+            "observable_state_variance_head_used": bool(
+                self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"),
+            "observable_state_exposure_uses_target_outcomes": False,
             "source_oracle_aided": source_oracle_aided,
             "admissible_strict_lodo": bool(
                 not provider_boundary and not source_oracle_aided),
@@ -8402,13 +10174,39 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         out["meta_prior"] = self.meta_prior.diagnostics()
         return out
 
+    def observable_boundary_exposure(self, x):
+        """Source-frozen exposure available to the oracle-free mean head."""
+
+        return self.meta_prior.risk_exposure(self, x, output_index=1)
+
+    def observable_state_exposure(self, x):
+        """Target-observable state/trajectory record with no outcome access."""
+
+        exposure = get_observable_state_exposure(self.base, x)
+        if exposure is None:
+            raise ValueError(
+                "held-out target has no observable state/trajectory exposure"
+            )
+        return exposure
+
+    def provider_boundary_exposure(self, x):
+        """Declared target exposure for structure-aware upper bounds only."""
+
+        exposure = get_risk_exposure(self.base, x, output_index=1)
+        if exposure is None:
+            raise ValueError("held-out target has no declared risk provider")
+        return exposure
+
     def cumulative_risk_provider_status(self):
         aligned = self.meta_prior.component_stage == "spectral_hvd"
         return {
             "status": "available",
             "provider": "LearnedMetaPrior",
             "coordinate": (
-                "frozen_source_boundary_aligned_psi=(A,N)"
+                "source_aligned_observable_variance_psi_v=h_v(e)"
+                if self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"
+                else "frozen_source_boundary_aligned_psi=(A,N)"
                 if aligned
                 else "frozen_source_trained_psi=(A,N)"
             ),
@@ -8421,22 +10219,86 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
 
     def mean_risk_coordinate_contract(self):
         separated = self.meta_prior.observable_mean_model is not None
+        aligned = bool(
+            separated
+            and self.meta_prior.observable_mean_mode == "boundary_aligned"
+        )
+        exchangeable = bool(
+            aligned
+            and self.meta_prior.observable_mean_descriptor_mode
+            == "exchangeable_equivariant"
+        )
         return {
             "status": "separated" if separated else "legacy_shared_coordinate",
             "constraint_mean_coordinate": (
-                "eta=source_observable_constraint_mean_scores"
+                "phi_eq=exchangeable_target_linear_chance_boundary"
+                if exchangeable else
+                "phi=source_aligned_chance_boundary"
+                if aligned
+                else "eta=source_observable_constraint_mean_scores"
                 if separated else "psi/source_spectral"
             ),
-            "cumulative_variance_coordinate": "psi=(A,N)",
+            "cumulative_variance_coordinate": (
+                "psi_v=h_v(observable_state_exposure)"
+                if self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"
+                else "psi=(A,N)"
+            ),
+            "constraint_mean_input": (
+                self.meta_prior.observable_mean_input_mode
+                if separated else "legacy"),
+            "constraint_mean_descriptor_mode": (
+                self.meta_prior.observable_mean_descriptor_mode
+                if separated else "legacy"),
+            "constraint_mean_feature_mode": (
+                self.meta_prior.observable_mean_feature_mode
+                if separated else "legacy"),
+            "separate_mean_variance_heads": bool(separated),
+            "shared_observable_exposure_input": bool(
+                separated
+                and self.meta_prior.observable_mean_input_mode
+                == "observable_state_exposure"
+                and self.meta_prior.observable_variance_input_mode
+                == "observable_state_exposure"
+            ),
             "joined_object": (
-                "mu_g(eta)+sqrt(beta_g)s_g(eta)"
-                "+z_alpha*sqrt(v_C_plus(psi))-tau"
+                (
+                    "mu_g(phi)+sqrt(beta_g)s_g(phi)"
+                    if aligned else
+                    "mu_g(eta)+sqrt(beta_g)s_g(eta)"
+                )
+                + "+z_alpha*sqrt(v_C_plus(psi))-tau"
             ),
             "coordinate_definition_uses_target_labels": False,
+            "channel_role_alignment_used": bool(
+                separated
+                and self.meta_prior.observable_mean_descriptor_mode in {
+                    "role_aligned",
+                    "role_transport",
+                    "role_intervention_transport",
+                    "role_adaptive_ordered",
+                    "role_adaptive_set_invariant",
+                }
+            ),
+            "exchangeable_channel_role_posterior": exchangeable,
+            "source_role_identity_transferred": False if exchangeable else None,
+            "target_channel_roles_learned_from_charged_data": exchangeable,
+            "channel_role_target_matching_uses_labels": False,
+            "channel_role_target_matching_uses_oracle": False,
+            "channel_role_assignment_posterior": bool(
+                self.meta_prior.observable_mean_role_assignment_posterior),
+            "channel_role_assignment_hypotheses_use_target_labels": False,
+            "channel_role_assignment_weights_use_charged_target_labels": bool(
+                self.meta_prior.observable_mean_role_assignment_posterior),
+            "channel_role_assignment_weights_use_target_oracle": False,
             "source_observation_mode": self.meta_prior.source_observation_mode,
             "source_design_mode": self.meta_prior.source_design_mode,
             "eta_source_training_target": (
                 self.meta_prior.observable_mean_training_target),
+            "coefficient_prior_training_target": (
+                "constraint_mean" if aligned
+                else self.meta_prior.observable_mean_training_target
+            ),
             "source_oracle_aided": bool(
                 self.meta_prior.training_diagnostics.get(
                     "source_analytic_sigma_used", False)
@@ -8570,8 +10432,37 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             )
         )
 
+    def boundary_excitation_candidates(
+        self,
+        n=1,
+        rng=None,
+        pool_size=None,
+        *,
+        include_source_templates=True,
+    ):
+        """Expose only the domain-generic/source-frozen ``phi`` pool."""
+
+        requested = max(
+            int(n),
+            int(self.proposal_pool_size if pool_size is None else pool_size),
+        )
+        return self.meta_prior.boundary_excitation_candidates(
+            self,
+            n=requested,
+            rng=rng,
+            include_source_templates=include_source_templates,
+        )
+
     def source_calibrated_recommendation_slack(self):
         return self.meta_prior.source_calibrated_recommendation_slack()
+
+    def _observable_constraint_mean_basis(self):
+        if self.meta_prior.observable_mean_model is None:
+            return None
+        if 1 not in self._gpr_basis_maps:
+            self._gpr_basis_maps[1] = ObservableConstraintMeanBasis(
+                self.meta_prior, self)
+        return self._gpr_basis_maps[1]
 
     def surrogate_basis_map(self):
         # Recommendation and certification calibration model the constraint
@@ -8582,7 +10473,7 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
         if constraint_basis is not None:
             return constraint_basis
         if self.meta_prior.observable_mean_model is not None:
-            return ObservableConstraintMeanBasis(self.meta_prior, self)
+            return self._observable_constraint_mean_basis()
         return MetaPriorSurrogateBasis(self.meta_prior, self)
 
     def gpr_basis_map(self, output_index=0):
@@ -8594,8 +10485,7 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
                 output_index == 1
                 and self.meta_prior.observable_mean_model is not None
             ):
-                basis = ObservableConstraintMeanBasis(
-                    self.meta_prior, self)
+                basis = self._observable_constraint_mean_basis()
             elif self.meta_prior.component_enabled("spectral"):
                 basis = PilotGatedMetaPriorBasis(
                     self.meta_prior,
@@ -8719,7 +10609,7 @@ class MetaPriorProblemAdapter(AdmissibleProblemAdapter):
             int(output_index) == 1
             and self.meta_prior.observable_mean_model is not None
         ):
-            return ObservableConstraintMeanBasis(self.meta_prior, self)
+            return self._observable_constraint_mean_basis()
         return FixedTaskExpertBasis(
             self.meta_prior,
             self,
