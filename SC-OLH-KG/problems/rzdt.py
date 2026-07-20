@@ -117,6 +117,20 @@ class TestProblem:
         return 2
 
 
+def _task_geometry(shift=None, radius_scale=1.0):
+    """Validate a domain-independent normalized task-context draw."""
+
+    values = np.zeros(3, dtype=float) if shift is None else np.asarray(
+        shift, dtype=float).reshape(-1)
+    if len(values) != 3 or not np.all(np.isfinite(values)):
+        raise ValueError("task_geometry_shift must contain three finite values")
+    scale = float(radius_scale)
+    if not np.isfinite(scale) or scale <= 0.0:
+        raise ValueError(
+            "task_geometry_radius_scale must be positive and finite")
+    return values.copy(), float(np.clip(scale, 0.50, 2.0))
+
+
 class RZDT1(TestProblem):
     """Convex front with monotone heteroscedasticity."""
 
@@ -520,6 +534,10 @@ class HighDimStatePolicyRZDT1(TestProblem):
         super().__init__(d=d, L=L, sigma=sigma, heteroscedastic=heteroscedastic, alpha=alpha)
         self.u_star = 0.22
         self.q_star = 0.72
+        self.constraint_u_center = 0.25
+        self.constraint_q_center = self.q_star
+        self.constraint_spread_center = 0.0
+        self.constraint_radius_scale = 1.0
 
     def policy_state(self, x):
         z = self.normalize(x)
@@ -550,11 +568,21 @@ class HighDimStatePolicyRZDT1(TestProblem):
         )
         f1 = 0.28 + state_loss
         f2 = 0.32 + state_loss + 0.05 * u + 0.02 * abs(q - self.q_star)
-        pocket = (
-            ((u - 0.25) / 0.18) ** 2
-            + ((q - self.q_star) / 0.12) ** 2
-            + 0.7 * (spread / 0.12) ** 2
-        )
+        if getattr(self, "task_geometry_is_nominal", True):
+            pocket = (
+                ((u - 0.25) / 0.18) ** 2
+                + ((q - self.q_star) / 0.12) ** 2
+                + 0.7 * (spread / 0.12) ** 2
+            )
+        else:
+            radius = float(self.constraint_radius_scale)
+            pocket = (
+                ((u - self.constraint_u_center) / (0.18 * radius)) ** 2
+                + ((q - self.constraint_q_center) / (0.12 * radius)) ** 2
+                + 0.7 * (
+                    (spread - self.constraint_spread_center) / (0.12 * radius)
+                ) ** 2
+            )
         f3 = 0.09 * (pocket - 1.0)
         return float(f1), float(f2), float(f3)
 
@@ -740,6 +768,8 @@ class FactorShockStatePolicyRZDT1(CumulativeRiskFeatureProvider, HighDimStatePol
         heteroscedastic=True,
         alpha=0.05,
         shared_shock_scale=1.0,
+        task_geometry_shift=None,
+        task_geometry_radius_scale=1.0,
     ):
         super().__init__(
             d=d,
@@ -749,6 +779,21 @@ class FactorShockStatePolicyRZDT1(CumulativeRiskFeatureProvider, HighDimStatePol
             alpha=alpha,
         )
         self.shared_shock_scale = max(float(shared_shock_scale), 0.0)
+        shift, radius = _task_geometry(
+            task_geometry_shift, task_geometry_radius_scale)
+        self.task_geometry_shift = shift
+        self.task_geometry_radius_scale = radius
+        self.task_geometry_is_nominal = bool(
+            np.all(shift == 0.0) and radius == 1.0)
+        if not self.task_geometry_is_nominal:
+            self.u_star = float(np.clip(0.22 + shift[0], 0.05, 0.55))
+            self.q_star = float(np.clip(0.72 + shift[1], 0.35, 0.95))
+            self.constraint_u_center = float(np.clip(
+                self.u_star + 0.03, 0.05, 0.60))
+            self.constraint_q_center = self.q_star
+            self.constraint_spread_center = float(np.clip(
+                shift[2], 0.0, 0.12))
+            self.constraint_radius_scale = radius
 
     def _risk_exposures_from_state(self, u, q, spread):
         q_gap = abs(q - self.q_star)
@@ -873,11 +918,31 @@ class InventorySupplyChainProblem(CumulativeRiskFeatureProvider, TestProblem):
     variance_features = (0, 1, 2)
     recommended_partition_features = (0, 1, 2)
 
-    def __init__(self, d=6, L=100, sigma=0.04, heteroscedastic=True, alpha=0.05):
+    def __init__(
+        self,
+        d=6,
+        L=100,
+        sigma=0.04,
+        heteroscedastic=True,
+        alpha=0.05,
+        task_geometry_shift=None,
+        task_geometry_radius_scale=1.0,
+    ):
         super().__init__(d=max(4, int(d)), L=L, sigma=sigma, heteroscedastic=heteroscedastic, alpha=alpha)
-        self.target_stock = 0.58
-        self.target_reorder = 0.36
-        self.target_safety = 0.42
+        shift, radius = _task_geometry(
+            task_geometry_shift, task_geometry_radius_scale)
+        self.task_geometry_shift = shift
+        self.task_geometry_radius_scale = radius
+        self.task_geometry_is_nominal = bool(
+            np.all(shift == 0.0) and radius == 1.0)
+        if self.task_geometry_is_nominal:
+            self.target_stock = 0.58
+            self.target_reorder = 0.36
+            self.target_safety = 0.42
+        else:
+            self.target_stock = float(np.clip(0.58 + shift[0], 0.25, 0.85))
+            self.target_reorder = float(np.clip(0.36 + shift[1], 0.15, 0.75))
+            self.target_safety = float(np.clip(0.42 + shift[2], 0.20, 0.80))
         self.tau = 0.0
 
     def _policy_summary(self, x):
@@ -909,12 +974,21 @@ class InventorySupplyChainProblem(CumulativeRiskFeatureProvider, TestProblem):
         safety_loss = 1.1 * (safety - self.target_safety) ** 2
         f1 = 0.25 + holding + backlog + reorder_loss + 0.3 * dispersion ** 2
         f2 = 0.30 + safety_loss + 0.5 * reorder_loss + 0.5 * backlog
-        service_gap = (
-            ((stock - 0.56) / 0.20) ** 2
-            + ((reorder - 0.34) / 0.22) ** 2
-            + ((safety - 0.44) / 0.18) ** 2
-            + 0.4 * (dispersion / 0.25) ** 2
-        )
+        if self.task_geometry_is_nominal:
+            service_gap = (
+                ((stock - 0.56) / 0.20) ** 2
+                + ((reorder - 0.34) / 0.22) ** 2
+                + ((safety - 0.44) / 0.18) ** 2
+                + 0.4 * (dispersion / 0.25) ** 2
+            )
+        else:
+            radius = self.task_geometry_radius_scale
+            service_gap = (
+                ((stock - (self.target_stock - 0.02)) / (0.20 * radius)) ** 2
+                + ((reorder - (self.target_reorder - 0.02)) / (0.22 * radius)) ** 2
+                + ((safety - (self.target_safety + 0.02)) / (0.18 * radius)) ** 2
+                + 0.4 * (dispersion / (0.25 * radius)) ** 2
+            )
         f3 = 0.10 * (service_gap - 1.0)
         return float(f1), float(f2), float(f3)
 
@@ -929,11 +1003,25 @@ class InventorySupplyChainProblem(CumulativeRiskFeatureProvider, TestProblem):
     def risk_exposures(self, x, output_index=1):
         del output_index
         stock, reorder, safety, dispersion = self._policy_summary(x)
-        backlog = max(0.0, 0.62 - stock)
-        holding = max(0.0, stock - 0.58)
-        stockout = max(0.0, 0.48 - safety) + 0.35 * max(0.0, 0.30 - reorder)
-        demand_level = 0.20 + max(0.0, 0.55 - stock) + 0.35 * abs(reorder - 0.35)
-        demand_volatility = 0.15 + dispersion + 0.5 * max(0.0, 0.50 - safety)
+        if self.task_geometry_is_nominal:
+            backlog = max(0.0, 0.62 - stock)
+            holding = max(0.0, stock - 0.58)
+            stockout = max(0.0, 0.48 - safety) + 0.35 * max(
+                0.0, 0.30 - reorder)
+            demand_level = 0.20 + max(
+                0.0, 0.55 - stock) + 0.35 * abs(reorder - 0.35)
+            demand_volatility = 0.15 + dispersion + 0.5 * max(
+                0.0, 0.50 - safety)
+        else:
+            backlog = max(0.0, self.target_stock + 0.04 - stock)
+            holding = max(0.0, stock - self.target_stock)
+            stockout = max(0.0, self.target_safety + 0.06 - safety) + 0.35 * max(
+                0.0, self.target_reorder - 0.06 - reorder)
+            demand_level = 0.20 + max(
+                0.0, self.target_stock - 0.03 - stock) + 0.35 * abs(
+                    reorder - (self.target_reorder - 0.01))
+            demand_volatility = 0.15 + dispersion + 0.5 * max(
+                0.0, self.target_safety + 0.08 - safety)
         return RiskExposure(
             [0.20 + backlog, 0.15 + holding, 0.10 + stockout],
             [demand_level, demand_volatility],
@@ -1073,11 +1161,31 @@ class QueueResourceControlProblem(CumulativeRiskFeatureProvider, TestProblem):
     variance_features = (0, 1, 2)
     recommended_partition_features = (0, 1, 2)
 
-    def __init__(self, d=6, L=100, sigma=0.04, heteroscedastic=True, alpha=0.05):
+    def __init__(
+        self,
+        d=6,
+        L=100,
+        sigma=0.04,
+        heteroscedastic=True,
+        alpha=0.05,
+        task_geometry_shift=None,
+        task_geometry_radius_scale=1.0,
+    ):
         super().__init__(d=max(4, int(d)), L=L, sigma=sigma, heteroscedastic=heteroscedastic, alpha=alpha)
-        self.target_capacity = 0.64
-        self.target_priority = 0.38
-        self.target_smoothing = 0.52
+        shift, radius = _task_geometry(
+            task_geometry_shift, task_geometry_radius_scale)
+        self.task_geometry_shift = shift
+        self.task_geometry_radius_scale = radius
+        self.task_geometry_is_nominal = bool(
+            np.all(shift == 0.0) and radius == 1.0)
+        if self.task_geometry_is_nominal:
+            self.target_capacity = 0.64
+            self.target_priority = 0.38
+            self.target_smoothing = 0.52
+        else:
+            self.target_capacity = float(np.clip(0.64 + shift[0], 0.30, 0.90))
+            self.target_priority = float(np.clip(0.38 + shift[1], 0.15, 0.80))
+            self.target_smoothing = float(np.clip(0.52 + shift[2], 0.20, 0.85))
 
     def _policy_summary(self, x):
         z = self.normalize(x)
@@ -1104,16 +1212,39 @@ class QueueResourceControlProblem(CumulativeRiskFeatureProvider, TestProblem):
 
     def true_objectives(self, x):
         capacity, priority, smoothing, imbalance = self._policy_summary(x)
-        wait_loss = 2.0 * max(0.0, 0.58 - capacity) ** 2 + 0.8 * (priority - 0.36) ** 2
-        resource_loss = 0.7 * max(0.0, capacity - 0.72) ** 2 + 0.5 * (smoothing - 0.50) ** 2
+        if self.task_geometry_is_nominal:
+            wait_loss = (
+                2.0 * max(0.0, 0.58 - capacity) ** 2
+                + 0.8 * (priority - 0.36) ** 2
+            )
+            resource_loss = (
+                0.7 * max(0.0, capacity - 0.72) ** 2
+                + 0.5 * (smoothing - 0.50) ** 2
+            )
+        else:
+            wait_loss = 2.0 * max(
+                0.0, self.target_capacity - 0.06 - capacity) ** 2 + 0.8 * (
+                    priority - (self.target_priority - 0.02)) ** 2
+            resource_loss = 0.7 * max(
+                0.0, capacity - (self.target_capacity + 0.08)) ** 2 + 0.5 * (
+                    smoothing - (self.target_smoothing - 0.02)) ** 2
         f1 = 0.24 + wait_loss + 0.25 * imbalance ** 2
         f2 = 0.30 + resource_loss + 0.35 * wait_loss
-        pocket = (
-            ((capacity - 0.64) / 0.18) ** 2
-            + ((priority - 0.38) / 0.20) ** 2
-            + ((smoothing - 0.52) / 0.20) ** 2
-            + 0.45 * (imbalance / 0.28) ** 2
-        )
+        if self.task_geometry_is_nominal:
+            pocket = (
+                ((capacity - 0.64) / 0.18) ** 2
+                + ((priority - 0.38) / 0.20) ** 2
+                + ((smoothing - 0.52) / 0.20) ** 2
+                + 0.45 * (imbalance / 0.28) ** 2
+            )
+        else:
+            radius = self.task_geometry_radius_scale
+            pocket = (
+                ((capacity - self.target_capacity) / (0.18 * radius)) ** 2
+                + ((priority - self.target_priority) / (0.20 * radius)) ** 2
+                + ((smoothing - self.target_smoothing) / (0.20 * radius)) ** 2
+                + 0.45 * (imbalance / (0.28 * radius)) ** 2
+            )
         f3 = 0.095 * (pocket - 1.0)
         return float(f1), float(f2), float(f3)
 
@@ -1128,11 +1259,26 @@ class QueueResourceControlProblem(CumulativeRiskFeatureProvider, TestProblem):
     def risk_exposures(self, x, output_index=1):
         del output_index
         capacity, priority, smoothing, imbalance = self._policy_summary(x)
-        queue = max(0.0, 0.62 - capacity) + 0.25 * imbalance
-        wait = max(0.0, 0.44 - priority) + 0.15 * max(0.0, 0.45 - smoothing)
-        utilization = max(0.0, capacity - 0.70) + 0.20 * imbalance
-        arrival_burst = 0.15 + max(0.0, 0.60 - smoothing) + 0.45 * imbalance
-        common_load = 0.20 + abs(capacity - 0.64) + 0.35 * abs(priority - 0.38)
+        if self.task_geometry_is_nominal:
+            queue = max(0.0, 0.62 - capacity) + 0.25 * imbalance
+            wait = max(0.0, 0.44 - priority) + 0.15 * max(
+                0.0, 0.45 - smoothing)
+            utilization = max(0.0, capacity - 0.70) + 0.20 * imbalance
+            arrival_burst = 0.15 + max(
+                0.0, 0.60 - smoothing) + 0.45 * imbalance
+            common_load = 0.20 + abs(capacity - 0.64) + 0.35 * abs(
+                priority - 0.38)
+        else:
+            queue = max(
+                0.0, self.target_capacity - 0.02 - capacity) + 0.25 * imbalance
+            wait = max(0.0, self.target_priority + 0.06 - priority) + 0.15 * max(
+                0.0, self.target_smoothing - 0.07 - smoothing)
+            utilization = max(
+                0.0, capacity - (self.target_capacity + 0.06)) + 0.20 * imbalance
+            arrival_burst = 0.15 + max(
+                0.0, self.target_smoothing + 0.08 - smoothing) + 0.45 * imbalance
+            common_load = 0.20 + abs(capacity - self.target_capacity) + 0.35 * abs(
+                priority - self.target_priority)
         return RiskExposure(
             [0.10 + queue, 0.12 + wait, 0.10 + utilization],
             [arrival_burst, common_load],

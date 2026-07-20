@@ -127,3 +127,84 @@ def common_sobol_integer_design(
     raise RuntimeError(
         "integer search space cannot supply the requested unique Sobol design"
     )
+
+
+def next_sobol_integer_candidate(
+    problem,
+    seed,
+    *,
+    observed=(),
+    seed_offset=0,
+):
+    """Return the first unobserved point in one canonical Sobol sequence.
+
+    Recomputing the deterministic sequence and skipping observed integer
+    designs makes continuation independent of model-generated candidate pools.
+    This is the neutral online counterpart of ``common_sobol_integer_design``.
+    """
+
+    if not hasattr(problem, "continuous_to_int"):
+        raise TypeError("problem must expose continuous_to_int")
+    observed_points = {
+        tuple(map(int, point)) for point in observed
+    }
+    requested = max(2, 2 * (len(observed_points) + 1))
+    for _ in range(16):
+        exponent = int(math.ceil(math.log2(requested)))
+        profiles = qmc.Sobol(
+            d=int(problem.d),
+            scramble=True,
+            seed=int(seed) + int(seed_offset),
+        ).random_base2(exponent)
+        sequence_points = set()
+        for profile in profiles:
+            point = tuple(map(int, problem.continuous_to_int(profile)))
+            if point in sequence_points:
+                continue
+            sequence_points.add(point)
+            if point not in observed_points:
+                return point
+        requested *= 2
+    raise RuntimeError(
+        "integer search space cannot supply an unobserved Sobol candidate"
+    )
+
+
+def sobol_integer_sequence(
+    problem,
+    n,
+    seed,
+    *,
+    seed_offset=0,
+):
+    """Materialize the first ``n`` unique points of a Sobol integer sequence."""
+
+    n = int(n)
+    if n < 0:
+        raise ValueError("Sobol sequence size must be nonnegative")
+    if n == 0:
+        return []
+    if not hasattr(problem, "continuous_to_int"):
+        raise TypeError("problem must expose continuous_to_int")
+    requested = max(2, 2 * n)
+    for _ in range(16):
+        exponent = int(math.ceil(math.log2(requested)))
+        profiles = qmc.Sobol(
+            d=int(problem.d),
+            scramble=True,
+            seed=int(seed) + int(seed_offset),
+        ).random_base2(exponent)
+        points = []
+        seen = set()
+        for profile in profiles:
+            point = tuple(map(int, problem.continuous_to_int(profile)))
+            if point in seen:
+                continue
+            seen.add(point)
+            points.append(point)
+            if len(points) == n:
+                return points
+        requested *= 2
+    raise RuntimeError(
+        "integer search space cannot supply the requested Sobol sequence"
+    )

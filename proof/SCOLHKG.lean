@@ -62,6 +62,7 @@ import SCOLHKG.Real.RidgeHVD
 import SCOLHKG.Real.SourceShapeMixtureHVD
 import SCOLHKG.Real.SourceConstraintMeanPosterior
 import SCOLHKG.Real.SourceAffineBoundaryTransfer
+import SCOLHKG.Real.SharedLowRankSourceHyperlaw
 import SCOLHKG.Real.RiskAlignedRepresentation
 import SCOLHKG.Real.SafeGeneralizedTaskPosterior
 import SCOLHKG.Real.JointTaskLatentPosterior

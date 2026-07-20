@@ -38,6 +38,7 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
     def _hierarchical_mixture_fixture(
         misspecification_mode="hierarchical_predictive_scale",
         misspecification_ridge=1.0,
+        misspecification_delta=0.05,
     ):
         parent = ParametricGPR(d=2, lambda_i=0.1, prior_var=1.0)
         source = ParametricGPR(d=2, lambda_i=0.1, prior_var=1.0)
@@ -74,6 +75,7 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             max_scale=20.0,
             misspecification_mode=misspecification_mode,
             misspecification_ridge=misspecification_ridge,
+            misspecification_delta=misspecification_delta,
         )
         return parent
 
@@ -318,6 +320,7 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             "predictive_scale_directional",
         )
         self.assertEqual(restored._finite_mixture_misspecification_ridge, 0.25)
+        self.assertEqual(restored._finite_mixture_misspecification_delta, 0.05)
         np.testing.assert_allclose(restored.a, model.a)
         np.testing.assert_allclose(restored.C, model.C)
         np.testing.assert_allclose(
@@ -330,6 +333,170 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             model.source_parametric_prior_diagnostics[
                 "source_mean_misspecification_scale_trajectory"],
         )
+
+    def test_upper_scale_preserves_mean_and_only_increases_posterior_variance(self):
+        control = self._hierarchical_mixture_fixture(
+            misspecification_mode="none")
+        calibrated = self._hierarchical_mixture_fixture(
+            misspecification_mode="predictive_scale_upper",
+            misspecification_delta=0.05,
+        )
+        np.testing.assert_allclose(calibrated.a, control.a, atol=1e-12, rtol=0.0)
+        covariance_gain = 0.5 * (
+            calibrated.C - control.C + (calibrated.C - control.C).T)
+        self.assertGreaterEqual(
+            float(np.min(np.linalg.eigvalsh(covariance_gain))), -1e-10)
+        self.assertGreaterEqual(calibrated.lambda_i, control.lambda_i)
+        diagnostics = calibrated.source_parametric_prior_diagnostics
+        source = next(
+            row for row in diagnostics["component_deviation_diagnostics"]
+            if row["name"] == "source:wrong")
+        self.assertEqual(
+            source["source_mean_misspecification_application"],
+            "posterior_covariance_only",
+        )
+        self.assertTrue(source["source_mean_posterior_mean_preserved"])
+        self.assertGreaterEqual(
+            source["source_mean_misspecification_scale"], 1.0)
+        self.assertGreaterEqual(
+            source["source_mean_posterior_covariance_trace_after"],
+            source["source_mean_posterior_covariance_trace_before"],
+        )
+        self.assertFalse(source["target_oracle_used_for_misspecification"])
+
+    def test_hc3_sandwich_preserves_mean_and_adds_psd_local_uncertainty(self):
+        control = self._hierarchical_mixture_fixture(
+            misspecification_mode="none")
+        calibrated = self._hierarchical_mixture_fixture(
+            misspecification_mode="predictive_sandwich_hc3_task",
+            misspecification_delta=0.05,
+        )
+        np.testing.assert_allclose(calibrated.a, control.a, atol=1e-12, rtol=0.0)
+        covariance_gain = 0.5 * (
+            calibrated.C - control.C + (calibrated.C - control.C).T)
+        self.assertGreaterEqual(
+            float(np.min(np.linalg.eigvalsh(covariance_gain))), -1e-10)
+        self.assertEqual(calibrated.lambda_i, control.lambda_i)
+        diagnostics = calibrated.source_parametric_prior_diagnostics
+        source = next(
+            row for row in diagnostics["component_deviation_diagnostics"]
+            if row["name"] == "source:wrong")
+        self.assertEqual(
+            source["source_mean_misspecification_application"],
+            "posterior_sandwich_covariance_only",
+        )
+        self.assertTrue(source["source_mean_posterior_mean_preserved"])
+        self.assertTrue(source["source_mean_sandwich_applied"])
+        self.assertGreater(source["source_mean_sandwich_covariance_trace"], 0.0)
+        self.assertGreaterEqual(
+            source["source_mean_sandwich_total_multiplier"], 1.0)
+        self.assertGreaterEqual(
+            source["source_mean_sandwich_source_task_multiplier"], 1.0)
+        self.assertLess(source["source_mean_sandwich_maximum_leverage"], 1.0)
+        self.assertFalse(source["target_oracle_used_for_misspecification"])
+
+    def test_hc3_collapses_replicates_into_unique_policy_clusters(self):
+        rows = [(0, 0), (0, 0), (10, 10), (10, 10), (10, 10)]
+        design = np.asarray([
+            [1.0, 0.0],
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [1.0, 1.0],
+            [1.0, 1.0],
+        ])
+        target = np.asarray([1.0, 3.0, 2.0, 4.0, 6.0])
+        variance = np.asarray([1.0, 1.0, 2.0, 2.0, 2.0])
+        phi, means, effective_variance, counts = (
+            ParametricGPR._collapse_replicated_hc3_design(
+                rows, design, target, variance)
+        )
+        np.testing.assert_allclose(phi, [[1.0, 0.0], [1.0, 1.0]])
+        np.testing.assert_allclose(means, [2.0, 4.0])
+        np.testing.assert_allclose(effective_variance, [0.5, 2.0 / 3.0])
+        np.testing.assert_array_equal(counts, [2, 3])
+
+    def test_hc3_diagnostics_count_replicated_policy_clusters(self):
+        model = self._hierarchical_mixture_fixture(
+            misspecification_mode=(
+                "predictive_scale_sandwich_hc3_confidence"))
+        model.update((0, 0), 4.2, 0.01)
+        model.update((0, 0), 3.8, 0.01)
+        diagnostics = model.source_parametric_prior_diagnostics
+        source = next(
+            row for row in diagnostics["component_deviation_diagnostics"]
+            if row["name"] == "source:wrong")
+        self.assertTrue(source["source_mean_sandwich_clustered_replicates"])
+        self.assertEqual(source["source_mean_sandwich_cluster_count"], 2)
+        self.assertEqual(
+            source["source_mean_sandwich_replicated_cluster_count"], 1)
+        self.assertEqual(
+            source["source_mean_sandwich_maximum_cluster_size"], 3)
+        self.assertTrue(np.isfinite(
+            source["source_mean_sandwich_covariance_trace"]))
+
+    def test_scaled_hc3_updates_mean_then_adds_psd_local_uncertainty(self):
+        scaled = self._hierarchical_mixture_fixture(
+            misspecification_mode="predictive_scale")
+        calibrated = self._hierarchical_mixture_fixture(
+            misspecification_mode="predictive_scale_sandwich_hc3_task",
+            misspecification_delta=0.05,
+        )
+        np.testing.assert_allclose(
+            calibrated.a, scaled.a, atol=1e-12, rtol=0.0)
+        covariance_gain = 0.5 * (
+            calibrated.C - scaled.C + (calibrated.C - scaled.C).T)
+        self.assertGreaterEqual(
+            float(np.min(np.linalg.eigvalsh(covariance_gain))), -1e-10)
+        self.assertAlmostEqual(calibrated.lambda_i, scaled.lambda_i, places=12)
+        diagnostics = calibrated.source_parametric_prior_diagnostics
+        source = next(
+            row for row in diagnostics["component_deviation_diagnostics"]
+            if row["name"] == "source:wrong")
+        self.assertEqual(
+            source["source_mean_misspecification_application"],
+            "source_prior_scale_then_posterior_sandwich",
+        )
+        self.assertTrue(source["source_mean_prior_scaled_before_conditioning"])
+        self.assertTrue(source["source_mean_posterior_mean_preserved"])
+        self.assertTrue(source["source_mean_sandwich_applied"])
+        self.assertGreater(source["source_mean_sandwich_covariance_trace"], 0.0)
+        self.assertGreaterEqual(
+            source["source_mean_sandwich_total_multiplier"], 1.0)
+        self.assertGreaterEqual(
+            source["source_mean_sandwich_source_task_multiplier"], 1.0)
+        self.assertFalse(source["target_oracle_used_for_misspecification"])
+
+    def test_confidence_only_sandwich_separates_prediction_and_coverage(self):
+        scaled = self._hierarchical_mixture_fixture(
+            misspecification_mode="predictive_scale")
+        joint = self._hierarchical_mixture_fixture(
+            misspecification_mode="predictive_scale_sandwich_hc3_task")
+        confidence = self._hierarchical_mixture_fixture(
+            misspecification_mode=(
+                "predictive_scale_sandwich_hc3_task_confidence"))
+        np.testing.assert_allclose(confidence.a, joint.a, atol=1e-12, rtol=0.0)
+        np.testing.assert_allclose(confidence.C, joint.C, atol=1e-12, rtol=0.0)
+        points = [(0, 0), (100, 100), (50, 25)]
+        np.testing.assert_allclose(
+            confidence.decision_posterior_var_many(points),
+            scaled.posterior_var_many(points),
+            atol=1e-10,
+            rtol=1e-10,
+        )
+        self.assertTrue(np.all(
+            confidence.posterior_var_many(points)
+            + 1e-10
+            >= confidence.decision_posterior_var_many(points)))
+        diagnostics = confidence.source_parametric_prior_diagnostics
+        self.assertEqual(
+            diagnostics["source_mean_sandwich_decision_authority"],
+            "confidence_only",
+        )
+        self.assertTrue(diagnostics["decision_covariance_available"])
+        self.assertTrue(
+            diagnostics["decision_covariance_no_larger_than_robust"])
+        self.assertFalse(
+            diagnostics["target_oracle_used_for_decision_covariance"])
 
     def test_source_mean_misspecification_only_increases_uncertainty(self):
         model = ParametricGPR(d=2, lambda_i=0.1, prior_var=1.0)
@@ -1391,15 +1558,21 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             "aggregate_contains_between_source_disagreement"])
         self.assertFalse(source["target_data_used_to_define_aggregate"])
         self.assertFalse(source["target_oracle_used_to_define_aggregate"])
-        weights_before = np.asarray(
-            diagnostics["component_posterior_weights"], dtype=float)
+        target_observations_before = int(
+            diagnostics["target_observation_count"])
         constraint.update(samples[0], 3.0, 0.01)
         updated = constraint.source_parametric_prior_diagnostics
         self.assertEqual(updated["online_mixture_update_count"], 1)
-        self.assertFalse(np.allclose(
-            weights_before,
-            np.asarray(updated["component_posterior_weights"], dtype=float),
-        ))
+        self.assertEqual(
+            updated["target_observation_count"],
+            target_observations_before + 1,
+        )
+        log_predictive = np.asarray(
+            updated["component_log_predictive"], dtype=float)
+        self.assertEqual(log_predictive.shape, (2,))
+        self.assertTrue(np.all(np.isfinite(log_predictive)))
+        self.assertTrue(updated["posterior_target_data_used"])
+        self.assertFalse(updated["target_oracle_used"])
 
     def test_target_calibrated_boundary_phi_generates_three_proposal_roles(self):
         def problem(name):
@@ -3007,6 +3180,9 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             exact_kg_mc_samples=1,
             exact_kg_jobs=2,
             exact_kg_parallel_backend="process_fork",
+            exact_kg_terminal_mode="bayes_risk",
+            certification_head_authority="split_gpr_cumulative_hvd",
+            posterior_dominance_enabled=True,
             task_posterior_mode="finite",
             task_posterior_safe_generalized=True,
             task_posterior_safe_pairwise_max_history=8,
@@ -3030,8 +3206,8 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
             result = algorithm.run()
             diagnostics = result["task_posterior"]
             bayes_components = algorithm._terminal_bayes_risk_components(
-                None,
-                None,
+                algorithm.gpr,
+                algorithm.variance_model,
                 algorithm._recommendation_pool(),
                 task_ensemble=algorithm.task_ensemble,
             )
@@ -3039,8 +3215,11 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
                 bayes_components["risk"])))
             self.assertTrue(np.all(
                 bayes_components["expected_violation"] >= 0.0))
-            self.assertGreater(
-                bayes_components["kl_radius"], 0.0)
+            self.assertEqual(bayes_components["kl_radius"], 0.0)
+            self.assertEqual(
+                bayes_components["certification_head_authority"],
+                "split_gpr_cumulative_hvd",
+            )
             self.assertIsNotNone(diagnostics)
             self.assertIn(
                 "local_risk_kernel",

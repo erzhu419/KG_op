@@ -9,9 +9,12 @@ the source proposal, or the online decision rule.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 
 import numpy as np
 from scipy.stats import norm, qmc
+
+from core.designs import next_sobol_integer_candidate
 
 
 _EPS = 1e-12
@@ -93,26 +96,63 @@ def posterior_moments(
     problem,
     *,
     task_ensemble=None,
+    aleatoric_mode="certification_upper",
+    ambiguity_mode="kl_robust",
 ):
     """Extract common posterior moments for every online backend."""
+
+    mode = str(
+        aleatoric_mode or "certification_upper"
+    ).strip().lower().replace("-", "_")
+    if mode not in {"certification_upper", "posterior_central"}:
+        raise ValueError(
+            "aleatoric mode must be certification_upper or posterior_central"
+        )
+    ambiguity = str(
+        ambiguity_mode or "kl_robust"
+    ).strip().lower().replace("-", "_")
+    if ambiguity not in {"kl_robust", "posterior_nominal"}:
+        raise ValueError(
+            "ambiguity mode must be kl_robust or posterior_nominal"
+        )
 
     if task_ensemble is not None:
         objective = task_ensemble.mixture_moments_many(
             0, candidates, certification=False)
-        constraint = task_ensemble.robust_moments_many(
-            1, candidates, certification=True)
+        if ambiguity == "posterior_nominal":
+            constraint = task_ensemble.mixture_moments_many(
+                1,
+                candidates,
+                certification=(mode == "certification_upper"),
+            )
+            constraint_mean = constraint.mean
+            constraint_epistemic = constraint.epistemic
+            constraint_aleatoric = constraint.aleatoric
+            constraint_between = constraint.between_mean
+            source = "task_posterior_nominal_cumulative"
+        else:
+            constraint = task_ensemble.robust_moments_many(
+                1,
+                candidates,
+                certification=(mode == "certification_upper"),
+            )
+            constraint_mean = constraint.mean_upper
+            constraint_epistemic = constraint.epistemic_upper
+            constraint_aleatoric = constraint.aleatoric_upper
+            constraint_between = constraint.nominal.between_mean
+            source = "task_posterior_robust_cumulative"
         return DecisionMoments(
             objective_mean=np.asarray(objective.mean, dtype=float),
             objective_epistemic=np.maximum(
                 np.asarray(objective.epistemic, dtype=float), _EPS),
-            constraint_mean=np.asarray(constraint.mean_upper, dtype=float),
+            constraint_mean=np.asarray(constraint_mean, dtype=float),
             constraint_epistemic=np.maximum(
-                np.asarray(constraint.epistemic_upper, dtype=float), _EPS),
+                np.asarray(constraint_epistemic, dtype=float), _EPS),
             constraint_aleatoric=np.maximum(
-                np.asarray(constraint.aleatoric_upper, dtype=float), _EPS),
+                np.asarray(constraint_aleatoric, dtype=float), _EPS),
             constraint_between_expert=np.maximum(
-                np.asarray(constraint.nominal.between_mean, dtype=float), 0.0),
-            source="task_posterior_robust_cumulative",
+                np.asarray(constraint_between, dtype=float), 0.0),
+            source=source,
         )
 
     return DecisionMoments(
@@ -124,8 +164,12 @@ def posterior_moments(
             con_gpr.posterior_mean_many(candidates), dtype=float),
         constraint_epistemic=np.maximum(np.asarray(
             con_gpr.posterior_var_many(candidates), dtype=float), _EPS),
-        constraint_aleatoric=_variance_model_many(
-            variance_model, 1, candidates, problem),
+        constraint_aleatoric=(
+            _variance_model_many(variance_model, 1, candidates, problem)
+            if mode == "certification_upper"
+            else _nominal_variance_model_many(
+                variance_model, 1, candidates, problem)
+        ),
         constraint_between_expert=np.zeros(len(candidates), dtype=float),
         source="single_cumulative_hvd",
     )
@@ -168,7 +212,19 @@ def _task_posterior_draw(task_ensemble, candidates, rng):
     )
 
 
-def _posterior_loss_components(moments, problem, risk_penalty):
+def _posterior_loss_components(
+    moments,
+    problem,
+    risk_penalty,
+    violation_loss_mode="positive_part",
+):
+    loss_mode = str(
+        violation_loss_mode or "positive_part"
+    ).strip().lower().replace("-", "_")
+    if loss_mode not in {"positive_part", "failure_probability"}:
+        raise ValueError(
+            "violation loss mode must be positive_part or failure_probability"
+        )
     z_alpha = float(norm.ppf(1.0 - float(problem.alpha)))
     stochastic_margin_mean = (
         moments.constraint_mean
@@ -178,13 +234,22 @@ def _posterior_loss_components(moments, problem, risk_penalty):
     margin_sd = np.sqrt(np.maximum(moments.constraint_epistemic, _EPS))
     expected_violation = normal_positive_part(
         stochastic_margin_mean, margin_sd)
+    probability_violation = norm.cdf(stochastic_margin_mean / margin_sd)
+    violation_loss = (
+        probability_violation
+        if loss_mode == "failure_probability"
+        else expected_violation
+    )
     bayes_risk = (
-        moments.objective_mean + float(risk_penalty) * expected_violation)
-    probability_feasible = norm.cdf(-stochastic_margin_mean / margin_sd)
+        moments.objective_mean + float(risk_penalty) * violation_loss)
+    probability_feasible = 1.0 - probability_violation
     return {
         "stochastic_margin_mean": stochastic_margin_mean,
         "margin_sd": margin_sd,
         "expected_violation": expected_violation,
+        "probability_violation": probability_violation,
+        "violation_loss": violation_loss,
+        "violation_loss_mode": loss_mode,
         "bayes_risk": bayes_risk,
         "probability_feasible": probability_feasible,
     }
@@ -199,6 +264,9 @@ def _observed_incumbent_loss(
     task_ensemble,
     risk_penalty,
     fallback,
+    aleatoric_mode="certification_upper",
+    violation_loss_mode="positive_part",
+    ambiguity_mode="kl_robust",
 ):
     points = []
     for item in observed or []:
@@ -217,9 +285,15 @@ def _observed_incumbent_loss(
         variance_model,
         problem,
         task_ensemble=task_ensemble,
+        aleatoric_mode=aleatoric_mode,
+        ambiguity_mode=ambiguity_mode,
     )
     loss = _posterior_loss_components(
-        moments, problem, risk_penalty)["bayes_risk"]
+        moments,
+        problem,
+        risk_penalty,
+        violation_loss_mode=violation_loss_mode,
+    )["bayes_risk"]
     return float(np.min(loss))
 
 
@@ -255,11 +329,139 @@ def _sobol_scores(problem, candidates, iteration, seed):
         scramble=True,
         seed=int(seed),
     )
-    target = engine.random(max(1, int(iteration) + 1))[-1]
+    index = max(0, int(iteration))
+    exponent = int(math.ceil(math.log2(index + 1)))
+    target = engine.random_base2(exponent)[index]
     normalized = (
         np.asarray(candidates, dtype=float) - lo
     ) / np.maximum(hi - lo, 1.0)
     return -np.sum((normalized - target) ** 2, axis=1)
+
+
+def evaluate_or_replicate_action_set(
+    candidates,
+    observed,
+    problem,
+    *,
+    iteration,
+    seed,
+    replication_max_per_solution=5,
+    canonical_sobol_candidate=None,
+    allow_replication_actions=True,
+    new_action_count=1,
+    new_action_policy="canonical_sobol",
+    new_action_priority=None,
+):
+    """Return a finite evaluate-or-replicate action set.
+
+    The default preserves the historical contract: one canonical Sobol new
+    point against every eligible replication.  ``canonical_plus_posterior``
+    expands that discretization with the lowest-priority unobserved points;
+    the caller supplies posterior Bayes risk as ``new_action_priority``.  The
+    expensive fantasy refit still decides among the resulting actions.
+    """
+
+    candidates = [tuple(int(v) for v in x) for x in candidates]
+    if not candidates:
+        return {
+            "active_indices": np.empty(0, dtype=int),
+            "active_mask": np.empty(0, dtype=bool),
+            "replicate_mask": np.empty(0, dtype=bool),
+            "sobol_new_index": None,
+            "canonical_sobol_index": None,
+            "new_action_indices": np.empty(0, dtype=int),
+            "new_action_policy": str(new_action_policy),
+            "sobol_scores": np.empty(0, dtype=float),
+        }
+    sobol_score = _sobol_scores(problem, candidates, iteration, seed)
+    observed_counts = _observed_point_counts(observed)
+    observed_mask = np.asarray([
+        x in observed_counts for x in candidates
+    ], dtype=bool)
+    replicate_mask = np.asarray([
+        bool(allow_replication_actions)
+        and 0 < observed_counts.get(x, 0)
+        < max(1, int(replication_max_per_solution))
+        for x in candidates
+    ], dtype=bool)
+    active_indices = list(np.flatnonzero(replicate_mask))
+    new_indices = np.flatnonzero(~observed_mask)
+    sobol_new_index = None
+    canonical_sobol_index = None
+    selected_new_indices = []
+    if len(new_indices):
+        observed_points = _observed_point_set(observed)
+        canonical = (
+            None
+            if canonical_sobol_candidate is None
+            else tuple(int(value) for value in canonical_sobol_candidate)
+        )
+        if canonical is None:
+            try:
+                canonical = next_sobol_integer_candidate(
+                    problem,
+                    seed,
+                    observed=observed_points,
+                )
+            except (TypeError, RuntimeError):
+                canonical = None
+        canonical_indices = [
+            int(index) for index in new_indices
+            if canonical is not None and candidates[int(index)] == canonical
+        ]
+        if canonical_indices:
+            canonical_sobol_index = canonical_indices[0]
+            sobol_new_index = canonical_sobol_index
+        else:
+            sobol_new_index = int(
+                new_indices[int(np.argmax(sobol_score[new_indices]))])
+        selected_new_indices.append(int(sobol_new_index))
+        policy = str(new_action_policy or "canonical_sobol").strip().lower()
+        policy = policy.replace("-", "_")
+        requested_new = max(1, int(new_action_count))
+        if policy in {
+            "canonical_plus_posterior", "canonical_plus_posterior_risk",
+            "posterior_risk",
+        }:
+            if new_action_priority is None:
+                raise ValueError(
+                    "posterior-risk new action policy requires priorities")
+            priority = np.asarray(new_action_priority, dtype=float).reshape(-1)
+            if len(priority) != len(candidates):
+                raise ValueError(
+                    "new action priorities must match candidate count")
+            finite_priority = np.where(
+                np.isfinite(priority), priority, np.inf)
+            ordered_new = sorted(
+                (int(index) for index in new_indices),
+                key=lambda index: (float(finite_priority[index]), index),
+            )
+            for index in ordered_new:
+                if index not in selected_new_indices:
+                    selected_new_indices.append(index)
+                if len(selected_new_indices) >= requested_new:
+                    break
+        elif policy not in {"canonical_sobol", "sobol"}:
+            raise ValueError(f"unknown new action policy {new_action_policy!r}")
+        selected_new_indices = selected_new_indices[:requested_new]
+        active_indices = selected_new_indices + active_indices
+    if not active_indices:
+        active_indices = [int(np.argmax(sobol_score))]
+        sobol_new_index = active_indices[0]
+        selected_new_indices = [active_indices[0]]
+    active_indices = np.asarray(list(dict.fromkeys(active_indices)), dtype=int)
+    active_mask = np.zeros(len(candidates), dtype=bool)
+    active_mask[active_indices] = True
+    return {
+        "active_indices": active_indices,
+        "active_mask": active_mask,
+        "replicate_mask": replicate_mask,
+        "sobol_new_index": sobol_new_index,
+        "canonical_sobol_index": canonical_sobol_index,
+        "new_action_indices": np.asarray(selected_new_indices, dtype=int),
+        "new_action_policy": str(new_action_policy),
+        "sobol_scores": sobol_score,
+    }
 
 
 def _hvd_information_reduction(
@@ -600,10 +802,17 @@ def score_decision_backend(
     iteration=0,
     seed=0,
     risk_penalty=5.0,
+    decision_aleatoric_mode="certification_upper",
+    violation_loss_mode="positive_part",
+    decision_ambiguity_mode="kl_robust",
     source_utility_weight=1.0,
     replication_max_per_solution=5,
     certification_beta_g=1.0,
     robust_certificate_mode="separable",
+    canonical_sobol_candidate=None,
+    allow_replication_actions=True,
+    evaluate_or_replicate_new_action_count=1,
+    evaluate_or_replicate_new_action_policy="canonical_sobol",
 ):
     """Rank candidates under one named backend.
 
@@ -625,15 +834,40 @@ def score_decision_backend(
         variance_model,
         problem,
         task_ensemble=task_ensemble,
+        aleatoric_mode=decision_aleatoric_mode,
+        ambiguity_mode=decision_ambiguity_mode,
     )
-    components = _posterior_loss_components(moments, problem, risk_penalty)
+    components = _posterior_loss_components(
+        moments,
+        problem,
+        risk_penalty,
+        violation_loss_mode=violation_loss_mode,
+    )
+    certification_moments = (
+        moments
+        if str(decision_aleatoric_mode).strip().lower().replace(
+            "-", "_") == "certification_upper"
+        and str(decision_ambiguity_mode).strip().lower().replace(
+            "-", "_") == "kl_robust"
+        else posterior_moments(
+            candidates,
+            obj_gpr,
+            con_gpr,
+            variance_model,
+            problem,
+            task_ensemble=task_ensemble,
+            aleatoric_mode="certification_upper",
+            ambiguity_mode="kl_robust",
+        )
+    )
     z_alpha = float(norm.ppf(1.0 - float(problem.alpha)))
     theory_margin = (
-        moments.constraint_mean
+        certification_moments.constraint_mean
         + np.sqrt(max(float(certification_beta_g), 0.0))
-        * np.sqrt(np.maximum(moments.constraint_epistemic, _EPS))
+        * np.sqrt(np.maximum(
+            certification_moments.constraint_epistemic, _EPS))
         + z_alpha * np.sqrt(np.maximum(
-            moments.constraint_aleatoric, _EPS))
+            certification_moments.constraint_aleatoric, _EPS))
         - float(problem.tau)
     )
     certificate_mode = str(
@@ -661,6 +895,9 @@ def score_decision_backend(
         task_ensemble,
         risk_penalty,
         components["bayes_risk"],
+        aleatoric_mode=decision_aleatoric_mode,
+        violation_loss_mode=violation_loss_mode,
+        ambiguity_mode=decision_ambiguity_mode,
     )
     objective_sd = np.sqrt(np.maximum(moments.objective_epistemic, _EPS))
     bayes_ei = minimization_expected_improvement(
@@ -676,23 +913,53 @@ def score_decision_backend(
     hvd_reliability = None
     hvd_is_replicate = None
     hvd_sobol_new_index = None
+    canonical_sobol_index = None
     constraint_epistemic_information = None
     hvd_margin_information = None
     joint_information = None
+    evaluate_or_replicate_active_indices = None
+    exact_refit_required = False
 
     if name in {"random", "random_continuation"}:
         total = rng.random(len(candidates))
     elif name in {"sobol", "sobol_continuation"}:
         total = _sobol_scores(problem, candidates, iteration, seed)
     elif name in {"sobol_new", "sobol_new_only"}:
-        total = _sobol_scores(problem, candidates, iteration, seed)
         observed_points = _observed_point_set(observed)
-        new_mask = np.asarray([
-            tuple(int(v) for v in x) not in observed_points
-            for x in candidates
-        ], dtype=bool)
-        if np.any(new_mask):
-            total = np.where(new_mask, total, -1e300)
+        canonical = (
+            None
+            if canonical_sobol_candidate is None
+            else tuple(int(value) for value in canonical_sobol_candidate)
+        )
+        if canonical is None:
+            try:
+                canonical = next_sobol_integer_candidate(
+                    problem,
+                    seed,
+                    observed=observed_points,
+                )
+            except (TypeError, RuntimeError):
+                canonical = None
+        canonical_indices = [
+            index for index, candidate in enumerate(candidates)
+            if canonical is not None
+            and tuple(int(value) for value in candidate) == canonical
+        ]
+        if canonical_indices:
+            canonical_sobol_index = int(canonical_indices[0])
+            total = np.full(len(candidates), -1e300, dtype=float)
+            total[canonical_sobol_index] = 0.0
+        else:
+            # Compatibility fallback for callers that rank an externally
+            # supplied pool. The algorithm mainline always injects the exact
+            # canonical continuation point before reaching this backend.
+            total = _sobol_scores(problem, candidates, iteration, seed)
+            new_mask = np.asarray([
+                tuple(int(v) for v in x) not in observed_points
+                for x in candidates
+            ], dtype=bool)
+            if np.any(new_mask):
+                total = np.where(new_mask, total, -1e300)
     elif name in {
         "certificate_depth_new", "cert_depth_new", "safe_depth_new",
     }:
@@ -710,94 +977,108 @@ def score_decision_backend(
     elif name in {
         "sobol_hvd_voi", "hvd_voi_sobol",
         "sobol_joint_voi", "joint_voi_sobol",
+        "sobol_exact_joint_voi", "exact_joint_voi_sobol",
     }:
         joint_voi = name in {"sobol_joint_voi", "joint_voi_sobol"}
-        sobol_score = _sobol_scores(problem, candidates, iteration, seed)
-        observed_counts = _observed_point_counts(observed)
-        observed_mask = np.asarray([
-            tuple(int(v) for v in x) in observed_counts
-            for x in candidates
-        ], dtype=bool)
-        hvd_is_replicate = np.asarray([
-            0 < observed_counts.get(tuple(int(v) for v in x), 0)
-            < max(1, int(replication_max_per_solution))
-            for x in candidates
-        ], dtype=bool)
-        new_indices = np.flatnonzero(~observed_mask)
-        active_indices = list(np.flatnonzero(hvd_is_replicate))
-        if len(new_indices):
-            hvd_sobol_new_index = int(
-                new_indices[int(np.argmax(sobol_score[new_indices]))])
-            active_indices.insert(0, hvd_sobol_new_index)
-        if not active_indices:
-            active_indices = [int(np.argmax(sobol_score))]
-            hvd_sobol_new_index = active_indices[0]
-
-        hvd_reliability = np.ones(len(candidates), dtype=float)
-        fresh_reliability = (
-            moments.constraint_aleatoric
-            / np.maximum(
-                moments.constraint_aleatoric
-                + moments.constraint_epistemic
-                + moments.constraint_between_expert,
-                _EPS,
-            )
-        )
-        hvd_reliability[~hvd_is_replicate] = np.clip(
-            fresh_reliability[~hvd_is_replicate], 0.0, 1.0)
-        boundary_weight = 0.05 + np.exp(-0.5 * (
-            components["stochastic_margin_mean"]
-            / np.maximum(components["margin_sd"], 1e-8)
-        ) ** 2)
-        action_candidates = [candidates[index] for index in active_indices]
-        action_reliability = hvd_reliability[active_indices]
-        active_gain = _hvd_information_reduction(
-            action_candidates,
+        exact_refit_required = name in {
+            "sobol_exact_joint_voi", "exact_joint_voi_sobol",
+        }
+        action_set = evaluate_or_replicate_action_set(
             candidates,
-            variance_model,
+            observed,
             problem,
-            action_reliability=action_reliability,
-            reference_weights=boundary_weight,
-            task_ensemble=task_ensemble,
+            iteration=iteration,
+            seed=seed,
+            replication_max_per_solution=replication_max_per_solution,
+            canonical_sobol_candidate=canonical_sobol_candidate,
+            allow_replication_actions=allow_replication_actions,
+            new_action_count=evaluate_or_replicate_new_action_count,
+            new_action_policy=evaluate_or_replicate_new_action_policy,
+            new_action_priority=components["bayes_risk"],
         )
-        hvd_information = np.zeros(len(candidates), dtype=float)
-        hvd_information[active_indices] = active_gain
-        if joint_voi:
-            z_alpha = float(norm.ppf(1.0 - float(problem.alpha)))
-            margin_hvd_gain = _hvd_certification_margin_reduction(
+        active_indices = np.asarray(
+            action_set["active_indices"], dtype=int)
+        evaluate_or_replicate_active_indices = active_indices
+        hvd_is_replicate = np.asarray(
+            action_set["replicate_mask"], dtype=bool)
+        hvd_sobol_new_index = action_set["sobol_new_index"]
+        canonical_sobol_index = action_set["canonical_sobol_index"]
+        evaluate_or_replicate_new_indices = np.asarray(
+            action_set["new_action_indices"], dtype=int)
+        evaluate_or_replicate_new_policy = str(
+            action_set["new_action_policy"])
+
+        if exact_refit_required:
+            # The caller replaces these placeholders with fantasy-update
+            # values after cloning and refitting GPR, robust HC3 and HVD.
+            total = np.full(len(candidates), -1e300, dtype=float)
+            total[active_indices] = 0.0
+        else:
+            hvd_reliability = np.ones(len(candidates), dtype=float)
+            fresh_reliability = (
+                moments.constraint_aleatoric
+                / np.maximum(
+                    moments.constraint_aleatoric
+                    + moments.constraint_epistemic
+                    + moments.constraint_between_expert,
+                    _EPS,
+                )
+            )
+            hvd_reliability[~hvd_is_replicate] = np.clip(
+                fresh_reliability[~hvd_is_replicate], 0.0, 1.0)
+            boundary_weight = 0.05 + np.exp(-0.5 * (
+                components["stochastic_margin_mean"]
+                / np.maximum(components["margin_sd"], 1e-8)
+            ) ** 2)
+            action_candidates = [candidates[index] for index in active_indices]
+            action_reliability = hvd_reliability[active_indices]
+            active_gain = _hvd_information_reduction(
                 action_candidates,
                 candidates,
                 variance_model,
                 problem,
                 action_reliability=action_reliability,
                 reference_weights=boundary_weight,
-                z_alpha=z_alpha,
                 task_ensemble=task_ensemble,
             )
-            epistemic_gain = _constraint_epistemic_margin_reduction(
-                action_candidates,
-                candidates,
-                con_gpr,
-                variance_model,
-                problem,
-                reference_weights=boundary_weight,
-                beta_g=certification_beta_g,
-                task_ensemble=task_ensemble,
-            )
-            hvd_margin_information = np.zeros(len(candidates), dtype=float)
-            constraint_epistemic_information = np.zeros(
-                len(candidates), dtype=float)
-            joint_information = np.zeros(len(candidates), dtype=float)
-            hvd_margin_information[active_indices] = margin_hvd_gain
-            constraint_epistemic_information[active_indices] = epistemic_gain
-            joint_information[active_indices] = (
-                margin_hvd_gain + epistemic_gain)
-            active_gain = joint_information[active_indices]
-        total = np.full(len(candidates), -1e300, dtype=float)
-        total[active_indices] = active_gain
-        if hvd_sobol_new_index is not None:
-            tie_scale = max(float(np.max(active_gain)), 1.0)
-            total[hvd_sobol_new_index] += np.finfo(float).eps * tie_scale
+            hvd_information = np.zeros(len(candidates), dtype=float)
+            hvd_information[active_indices] = active_gain
+            if joint_voi:
+                z_alpha = float(norm.ppf(1.0 - float(problem.alpha)))
+                margin_hvd_gain = _hvd_certification_margin_reduction(
+                    action_candidates,
+                    candidates,
+                    variance_model,
+                    problem,
+                    action_reliability=action_reliability,
+                    reference_weights=boundary_weight,
+                    z_alpha=z_alpha,
+                    task_ensemble=task_ensemble,
+                )
+                epistemic_gain = _constraint_epistemic_margin_reduction(
+                    action_candidates,
+                    candidates,
+                    con_gpr,
+                    variance_model,
+                    problem,
+                    reference_weights=boundary_weight,
+                    beta_g=certification_beta_g,
+                    task_ensemble=task_ensemble,
+                )
+                hvd_margin_information = np.zeros(len(candidates), dtype=float)
+                constraint_epistemic_information = np.zeros(
+                    len(candidates), dtype=float)
+                joint_information = np.zeros(len(candidates), dtype=float)
+                hvd_margin_information[active_indices] = margin_hvd_gain
+                constraint_epistemic_information[active_indices] = epistemic_gain
+                joint_information[active_indices] = (
+                    margin_hvd_gain + epistemic_gain)
+                active_gain = joint_information[active_indices]
+            total = np.full(len(candidates), -1e300, dtype=float)
+            total[active_indices] = active_gain
+            if hvd_sobol_new_index is not None:
+                tie_scale = max(float(np.max(active_gain)), 1.0)
+                total[hvd_sobol_new_index] += np.finfo(float).eps * tie_scale
     elif name in {"risk_ts", "risk_aware_ts", "thompson"}:
         if task_ensemble is None:
             sampled_objective = _joint_gpr_draw(obj_gpr, candidates, rng)
@@ -812,10 +1093,14 @@ def score_decision_backend(
                 moments.constraint_aleatoric, _EPS))
             - float(problem.tau)
         )
+        sampled_violation_loss = (
+            (sampled_margin > 0.0).astype(float)
+            if components["violation_loss_mode"] == "failure_probability"
+            else np.maximum(sampled_margin, 0.0)
+        )
         total = -(
             sampled_objective
-            + float(risk_penalty) * np.maximum(sampled_margin, 0.0)
-        )
+            + float(risk_penalty) * sampled_violation_loss)
     elif name in {"bayes_risk_ei", "risk_ei"}:
         total = bayes_ei
     elif name in {"constrained_ei", "cei"}:
@@ -851,6 +1136,11 @@ def score_decision_backend(
         "constraint_between_expert": moments.constraint_between_expert,
         "stochastic_margin_mean": components["stochastic_margin_mean"],
         "expected_violation": components["expected_violation"],
+        "probability_violation": components["probability_violation"],
+        "violation_loss": components["violation_loss"],
+        "violation_loss_mode": components["violation_loss_mode"],
+        "decision_aleatoric_mode": str(decision_aleatoric_mode),
+        "decision_ambiguity_mode": str(decision_ambiguity_mode),
         "probability_feasible": components["probability_feasible"],
         "theory_margin": np.asarray(theory_margin, dtype=float),
         "robust_certificate_mode": certificate_mode,
@@ -859,6 +1149,17 @@ def score_decision_backend(
         "constrained_ei": constrained_ei,
         "incumbent_bayes_risk": float(incumbent),
         "sampled_expert": sampled_expert,
+        "canonical_sobol_index": canonical_sobol_index,
+        "canonical_sobol_injected": canonical_sobol_index is not None,
+        "replication_actions_enabled": bool(allow_replication_actions),
+        "evaluate_or_replicate_active_indices": (
+            None
+            if evaluate_or_replicate_active_indices is None
+            else np.asarray(
+                evaluate_or_replicate_active_indices, dtype=int)
+        ),
+        "evaluate_or_replicate_exact_refit_required": bool(
+            exact_refit_required),
     }
     if name in {"transfer_utility", "source_utility", "utility"}:
         out["transfer_utility_status"] = utility_status
@@ -868,6 +1169,23 @@ def score_decision_backend(
         out["hvd_action_reliability"] = hvd_reliability
         out["hvd_action_is_replicate"] = hvd_is_replicate.astype(float)
         out["hvd_sobol_new_index"] = hvd_sobol_new_index
+    elif evaluate_or_replicate_active_indices is not None:
+        out["hvd_action_is_replicate"] = hvd_is_replicate.astype(float)
+        out["hvd_sobol_new_index"] = hvd_sobol_new_index
+    if evaluate_or_replicate_active_indices is not None:
+        active = np.asarray(
+            evaluate_or_replicate_active_indices, dtype=int)
+        out["evaluate_or_replicate_active_count"] = int(len(active))
+        out["evaluate_or_replicate_new_action_count"] = int(sum(
+            not bool(hvd_is_replicate[index]) for index in active
+        ))
+        out["evaluate_or_replicate_replication_action_count"] = int(sum(
+            bool(hvd_is_replicate[index]) for index in active
+        ))
+        out["evaluate_or_replicate_new_action_indices"] = (
+            evaluate_or_replicate_new_indices.copy())
+        out["evaluate_or_replicate_new_action_policy"] = (
+            evaluate_or_replicate_new_policy)
     if constraint_epistemic_information is not None:
         out["constraint_epistemic_information_reduction"] = (
             constraint_epistemic_information)

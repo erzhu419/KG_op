@@ -74,6 +74,27 @@ def build_scalarized_problem(
     )
 
 
+def _source_episode_record_counts(total_records, n_augments, budget_mode):
+    total = int(total_records)
+    count = max(1, int(n_augments))
+    mode = str(budget_mode).strip().lower()
+    if total <= 0:
+        raise ValueError("source_records_per_domain must be positive")
+    if mode == "per_episode":
+        return [total] * count
+    if mode != "per_base_domain":
+        raise ValueError(
+            "meta_source_budget_mode must be per_episode or per_base_domain")
+    if total < count:
+        raise ValueError(
+            "per_base_domain budget must provide at least one record per episode")
+    quotient, remainder = divmod(total, count)
+    return [
+        quotient + (1 if index < remainder else 0)
+        for index in range(count)
+    ]
+
+
 def _source_augmented_problem_specs(args_dict, source_names, seed):
     rng = np.random.default_rng(int(args_dict["meta_seed"]) + 4243 * int(seed))
     n_aug = max(1, int(args_dict.get("meta_source_augments", 1)))
@@ -83,14 +104,34 @@ def _source_augmented_problem_specs(args_dict, source_names, seed):
     sigma_jitter = max(float(args_dict.get("meta_source_sigma_jitter", 0.0)), 0.0)
     alpha_jitter = max(float(args_dict.get("meta_source_alpha_jitter", 0.0)), 0.0)
     weight_jitter = max(float(args_dict.get("meta_source_weight_jitter", 0.0)), 0.0)
+    geometry_shift_scale = max(float(args_dict.get(
+        "meta_source_geometry_shift_scale", 0.0)), 0.0)
+    geometry_radius_jitter = max(float(args_dict.get(
+        "meta_source_geometry_log_radius_jitter", 0.0)), 0.0)
+    budget_mode = str(args_dict.get(
+        "meta_source_budget_mode", "per_episode")).lower()
+    record_counts = _source_episode_record_counts(
+        args_dict["source_records_per_domain"], n_aug, budget_mode)
+    geometry_requested = bool(
+        geometry_shift_scale > 0.0 or geometry_radius_jitter > 0.0)
+    geometry_domains = {
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl",
+    }
     specs = []
     for name in source_names:
+        if geometry_requested and name not in geometry_domains:
+            raise ValueError(
+                f"source task geometry is unavailable for {name}")
         for aug_idx in range(n_aug):
             if aug_idx == 0:
                 sigma = base_sigma
                 alpha = base_alpha
                 weights = base_weights
                 label = name
+                shift = np.zeros(3, dtype=float)
+                radius_scale = 1.0
             else:
                 sigma = base_sigma * float(np.exp(rng.normal(0.0, sigma_jitter)))
                 alpha = base_alpha * float(np.exp(rng.normal(0.0, alpha_jitter)))
@@ -103,8 +144,28 @@ def _source_augmented_problem_specs(args_dict, source_names, seed):
                     weights = weights / max(float(np.sum(weights)), 1e-12)
                 else:
                     weights = base_weights
-                label = f"{name}#aug{aug_idx}"
-            specs.append((label, name, sigma, alpha, weights))
+                label = f"{name}#episode{aug_idx}"
+                shift = rng.normal(
+                    0.0, geometry_shift_scale, size=3)
+                radius_scale = float(np.exp(rng.normal(
+                    0.0, geometry_radius_jitter)))
+            problem_kwargs = {}
+            if geometry_requested:
+                problem_kwargs = {
+                    "task_geometry_shift": np.asarray(
+                        shift, dtype=float).tolist(),
+                    "task_geometry_radius_scale": float(radius_scale),
+                }
+            specs.append({
+                "label": label,
+                "base_domain": name,
+                "sigma": float(sigma),
+                "alpha": float(alpha),
+                "weights": np.asarray(weights, dtype=float),
+                "problem_kwargs": problem_kwargs,
+                "record_count": int(record_counts[aug_idx]),
+                "episode_index": int(aug_idx),
+            })
     return specs
 
 
@@ -126,23 +187,25 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
     source_seed = meta_source_seed(args_dict, seed)
     source_dimension = int(args_dict.get(
         "meta_source_dimension", args_dict["d"]))
+    source_specs = _source_augmented_problem_specs(
+        args_dict,
+        source_names,
+        source_seed,
+    )
     source_problems = [
         (
-            label,
+            spec["label"],
             build_scalarized_problem(
-                name,
+                spec["base_domain"],
                 source_dimension,
                 args_dict["L"],
-                sigma,
-                alpha,
-                weights,
+                spec["sigma"],
+                spec["alpha"],
+                spec["weights"],
+                problem_kwargs=spec["problem_kwargs"],
             ),
         )
-        for label, name, sigma, alpha, weights in _source_augmented_problem_specs(
-            args_dict,
-            source_names,
-            source_seed,
-        )
+        for spec in source_specs
     ]
     prior = LearnedMetaPrior(
         local_dim=args_dict["meta_local_dim"],
@@ -365,6 +428,9 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
     prior.fit_from_source_problems(
         source_problems,
         n_records_per_domain=args_dict["source_records_per_domain"],
+        n_records_by_problem=[
+            spec["record_count"] for spec in source_specs
+        ],
         rng=np.random.default_rng(
             int(args_dict["meta_seed"]) + 1009 * int(source_seed)),
         hierarchical_boundary_config=(
@@ -405,6 +471,34 @@ def train_meta_prior(args_dict, heldout, seed, *, teacher=False):
         "source_policy_dimension": int(source_dimension),
         "target_policy_dimension": int(args_dict["d"]),
         "dimension_holdout": bool(source_dimension != int(args_dict["d"])),
+        "source_base_domains": list(source_names),
+        "source_base_domain_count": int(len(source_names)),
+        "source_episode_count_per_base_domain": int(
+            args_dict.get("meta_source_augments", 1)),
+        "source_episode_budget_mode": str(args_dict.get(
+            "meta_source_budget_mode", "per_episode")),
+        "source_episode_record_budget": int(sum(
+            spec["record_count"] for spec in source_specs)),
+        "source_episode_cost_matched": bool(
+            str(args_dict.get(
+                "meta_source_budget_mode", "per_episode"
+            )).lower() == "per_base_domain"
+        ),
+        "source_episode_specs": [
+            {
+                "label": spec["label"],
+                "base_domain": spec["base_domain"],
+                "episode_index": spec["episode_index"],
+                "record_count": spec["record_count"],
+                "task_geometry_shift": spec["problem_kwargs"].get(
+                    "task_geometry_shift", [0.0, 0.0, 0.0]),
+                "task_geometry_radius_scale": spec["problem_kwargs"].get(
+                    "task_geometry_radius_scale", 1.0),
+            }
+            for spec in source_specs
+        ],
+        "source_episode_target_data_used": False,
+        "source_episode_target_oracle_used": False,
     })
     if str(args_dict.get(
         "meta_source_observation_mode", "analytic"
@@ -531,6 +625,64 @@ def post_run_variance_calibration_audit(
     }
 
 
+def _source_informed_archive_contract(args_dict, meta_diag):
+    mode = str(args_dict.get(
+        "initial_design_archive_match_mode", "exact")).strip().lower()
+    if mode not in {"exact", "paired_frozen_control"}:
+        raise ValueError(
+            "initial_design_archive_match_mode must be exact or "
+            "paired_frozen_control")
+    if str(args_dict.get("initial_design", "auto")) != "source_informed":
+        if mode != "exact":
+            raise ValueError(
+                "paired_frozen_control requires a source-informed design")
+        return {
+            "status": "not_applicable",
+            "mode": mode,
+            "matches": True,
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+
+    expected = str(args_dict.get(
+        "initial_design_source_archive_fingerprint", ""))
+    training = dict((meta_diag or {}).get("training") or {})
+    actual = str(training.get("source_archive_fingerprint", ""))
+    if not expected:
+        raise ValueError(
+            "source-informed SC-OLH-KG requires an archive fingerprint")
+    if not actual:
+        raise ValueError("source training is missing an archive fingerprint")
+    matches = actual == expected
+    if mode == "exact" and not matches:
+        raise ValueError(
+            "SC-OLH-KG source archive does not match the frozen initial "
+            f"proposal archive: {actual} != {expected}"
+        )
+    if mode == "paired_frozen_control":
+        if str(args_dict.get(
+            "meta_source_budget_mode", "per_episode"
+        )).strip().lower() != "per_base_domain":
+            raise ValueError(
+                "paired_frozen_control requires a cost-matched source budget")
+        if training.get("source_episode_target_data_used", True):
+            raise ValueError(
+                "paired_frozen_control source episodes used target data")
+        if training.get("source_episode_target_oracle_used", True):
+            raise ValueError(
+                "paired_frozen_control source episodes used target oracle")
+    return {
+        "status": "audited",
+        "mode": mode,
+        "proposal_archive_fingerprint": expected,
+        "posterior_archive_fingerprint": actual,
+        "matches": bool(matches),
+        "proposal_frozen_across_arms": mode == "paired_frozen_control",
+        "target_data_used": False,
+        "target_oracle_used": False,
+    }
+
+
 def run_one(task):
     args_dict = task["args"]
     heldout = task["heldout"]
@@ -543,22 +695,8 @@ def run_one(task):
     basis_grid = bool(args_dict.get("basis_grid", False)) or bool(
         args_dict.get("basis_pair_grid", False))
     problem, meta_diag = build_target_problem(args_dict, heldout, line, seed)
-    if str(args_dict.get("initial_design", "auto")) == "source_informed":
-        expected_source_fingerprint = str(args_dict.get(
-            "initial_design_source_archive_fingerprint", ""))
-        actual_source_fingerprint = str(
-            ((meta_diag or {}).get("training") or {}).get(
-                "source_archive_fingerprint", "")
-        )
-        if not expected_source_fingerprint:
-            raise ValueError(
-                "source-informed SC-OLH-KG requires an archive fingerprint")
-        if actual_source_fingerprint != expected_source_fingerprint:
-            raise ValueError(
-                "SC-OLH-KG source archive does not match the frozen initial "
-                f"proposal archive: {actual_source_fingerprint} != "
-                f"{expected_source_fingerprint}"
-            )
+    initial_design_archive_contract = _source_informed_archive_contract(
+        args_dict, meta_diag)
     checkpoint_path = str(args_dict.get("checkpoint_path") or "").strip()
     runtime_checkpoint_dir = str(args_dict.get("runtime_checkpoint_dir") or "").strip()
     if not runtime_checkpoint_dir and checkpoint_path:
@@ -650,6 +788,12 @@ def run_one(task):
         acquisition_mode=args_dict["acquisition_mode"],
         decision_backend=args_dict.get("decision_backend", "legacy"),
         decision_risk_penalty=args_dict.get("decision_risk_penalty", 5.0),
+        decision_aleatoric_mode=args_dict.get(
+            "decision_aleatoric_mode", "certification_upper"),
+        decision_violation_loss_mode=args_dict.get(
+            "decision_violation_loss_mode", "positive_part"),
+        decision_ambiguity_mode=args_dict.get(
+            "decision_ambiguity_mode", "kl_robust"),
         decision_source_utility_weight=args_dict.get(
             "decision_source_utility_weight", 1.0),
         decision_backend_seed_offset=args_dict.get(
@@ -724,6 +868,8 @@ def run_one(task):
             "task_posterior_max_kl_radius"],
         task_posterior_robust_certificate_mode=str(args_dict.get(
             "task_posterior_robust_certificate_mode", "separable")),
+        certification_head_authority=str(args_dict.get(
+            "certification_head_authority", "task_joint")),
         task_posterior_prior_protection_numerator=args_dict[
             "task_posterior_prior_protection_numerator"],
         task_posterior_prior_protection_max=args_dict[
@@ -761,6 +907,10 @@ def run_one(task):
             "replication_candidate_count"],
         replication_max_per_solution=args_dict[
             "replication_max_per_solution"],
+        evaluate_or_replicate_new_action_count=int(args_dict.get(
+            "evaluate_or_replicate_new_action_count", 1)),
+        evaluate_or_replicate_new_action_policy=str(args_dict.get(
+            "evaluate_or_replicate_new_action_policy", "canonical_sobol")),
         replication_margin_softening=args_dict[
             "replication_margin_softening"],
         adaptive_replication_voi=bool(args_dict.get(
@@ -771,6 +921,8 @@ def run_one(task):
             "posterior_dominance_delta", 0.05)),
         posterior_dominance_min_mean_gain=float(args_dict.get(
             "posterior_dominance_min_mean_gain", 0.0)),
+        posterior_dominance_initialization=str(args_dict.get(
+            "posterior_dominance_initialization", "risk")),
         certification_recheck_top_k=args_dict[
             "certification_recheck_top_k"],
         certification_recheck_min_replicates=args_dict[
@@ -852,6 +1004,8 @@ def run_one(task):
         source_mean_prior_margin_tol=args_dict["source_mean_prior_margin_tol"],
         source_constraint_mean_coefficient_prior=bool(args_dict.get(
             "source_constraint_mean_coefficient_prior", False)),
+        source_constraint_mean_hyperlaw_mode=str(args_dict.get(
+            "source_constraint_mean_hyperlaw_mode", "single_gaussian_draw")),
         source_constraint_mean_adaptation_mode=str(args_dict.get(
             "source_constraint_mean_adaptation_mode", "frozen")),
         source_constraint_mean_deviation_mode=str(args_dict.get(
@@ -864,6 +1018,12 @@ def run_one(task):
             "source_constraint_mean_misspecification_ridge", 1.0)),
         source_constraint_mean_misspecification_max_scale=float(args_dict.get(
             "source_constraint_mean_misspecification_max_scale", 100.0)),
+        source_constraint_mean_misspecification_delta=float(args_dict.get(
+            "source_constraint_mean_misspecification_delta", 0.05)),
+        source_constraint_mean_confidence_mode=str(args_dict.get(
+            "source_constraint_mean_confidence_mode", "model")),
+        source_constraint_mean_confidence_delta=float(args_dict.get(
+            "source_constraint_mean_confidence_delta", 0.05)),
         source_constraint_mean_contrast_scale=float(args_dict.get(
             "source_constraint_mean_contrast_scale", 1.0)),
         source_constraint_mean_role_epistemic_mode=str(args_dict.get(
@@ -953,6 +1113,7 @@ def run_one(task):
         "line": line,
         "heldout": heldout,
         "seed": seed,
+        "initial_design_archive_contract": initial_design_archive_contract,
         "source_target_adaptation_contract": {
             "source_prior_frozen_online": True,
             "source_constraint_coefficient_prior_used": bool(args_dict.get(
@@ -997,6 +1158,10 @@ def run_one(task):
             "target_initial_design_source_archive_fingerprint": (
                 initial_design.get("source_archive_fingerprint")
             ),
+            "initial_design_archive_match_mode": (
+                initial_design_archive_contract["mode"]),
+            "initial_design_archive_matches_posterior_archive": bool(
+                initial_design_archive_contract["matches"]),
             "target_oracle_used_for_adaptation": False,
             "source_domains": source_training.get(
                 "source_archive_domains", []),
@@ -1062,6 +1227,8 @@ def run_one(task):
             "meta_observable_variance_input_mode", "legacy_policy_proxy")),
         "source_constraint_mean_coefficient_prior": bool(args_dict.get(
             "source_constraint_mean_coefficient_prior", False)),
+        "source_constraint_mean_hyperlaw_mode": str(args_dict.get(
+            "source_constraint_mean_hyperlaw_mode", "single_gaussian_draw")),
         "source_constraint_mean_adaptation_mode": str(args_dict.get(
             "source_constraint_mean_adaptation_mode", "frozen")),
         "source_constraint_mean_deviation_mode": str(args_dict.get(
@@ -1076,6 +1243,13 @@ def run_one(task):
         "source_constraint_mean_misspecification_max_scale": float(
             args_dict.get(
                 "source_constraint_mean_misspecification_max_scale", 100.0)),
+        "source_constraint_mean_misspecification_delta": float(
+            args_dict.get(
+                "source_constraint_mean_misspecification_delta", 0.05)),
+        "source_constraint_mean_confidence_mode": str(args_dict.get(
+            "source_constraint_mean_confidence_mode", "model")),
+        "source_constraint_mean_confidence_delta": float(args_dict.get(
+            "source_constraint_mean_confidence_delta", 0.05)),
         "source_constraint_mean_contrast_scale": float(args_dict.get(
             "source_constraint_mean_contrast_scale", 1.0)),
         "source_constraint_mean_role_epistemic_mode": str(args_dict.get(
@@ -1172,12 +1346,65 @@ def run_one(task):
             "decision_backend", "legacy")),
         "decision_risk_penalty": float(args_dict.get(
             "decision_risk_penalty", 5.0)),
+        "decision_aleatoric_mode": str(args_dict.get(
+            "decision_aleatoric_mode", "certification_upper")),
+        "decision_violation_loss_mode": str(args_dict.get(
+            "decision_violation_loss_mode", "positive_part")),
+        "decision_ambiguity_mode": str(args_dict.get(
+            "decision_ambiguity_mode", "kl_robust")),
         "decision_source_utility_weight": float(args_dict.get(
             "decision_source_utility_weight", 1.0)),
         "decision_backend_diagnostics": result.get(
             "decision_backend_diagnostics"),
         "decision_backend_contract": result.get(
             "decision_backend_contract"),
+        "decision_backend_terminal_rule": result.get(
+            "decision_backend_terminal_rule"),
+        "decision_backend_terminal_value": result.get(
+            "decision_backend_terminal_value"),
+        "decision_backend_terminal_status": result.get(
+            "decision_backend_terminal_status"),
+        "decision_backend_terminal_certified_count": result.get(
+            "decision_backend_terminal_certified_count"),
+        "decision_backend_terminal_margin": result.get(
+            "decision_backend_terminal_margin"),
+        "decision_backend_terminal_used": bool(result.get(
+            "decision_backend_terminal_used", False)),
+        "decision_backend_terminal_risk": result.get(
+            "decision_backend_terminal_risk"),
+        "decision_backend_terminal_expected_violation": result.get(
+            "decision_backend_terminal_expected_violation"),
+        "decision_backend_terminal_probability_violation": result.get(
+            "decision_backend_terminal_probability_violation"),
+        "decision_backend_terminal_violation_loss": result.get(
+            "decision_backend_terminal_violation_loss"),
+        "decision_backend_terminal_violation_loss_mode": result.get(
+            "decision_backend_terminal_violation_loss_mode"),
+        "decision_backend_terminal_aleatoric_mode": result.get(
+            "decision_backend_terminal_aleatoric_mode"),
+        "decision_backend_terminal_ambiguity_mode": result.get(
+            "decision_backend_terminal_ambiguity_mode"),
+        "decision_backend_terminal_nominal_expected_violation": result.get(
+            "decision_backend_terminal_nominal_expected_violation"),
+        "decision_backend_terminal_robust_expected_violation": result.get(
+            "decision_backend_terminal_robust_expected_violation"),
+        "decision_backend_terminal_nominal_probability_violation": result.get(
+            "decision_backend_terminal_nominal_probability_violation"),
+        "decision_backend_terminal_robust_probability_violation": result.get(
+            "decision_backend_terminal_robust_probability_violation"),
+        "terminal_bayes_pool_audit": result.get(
+            "terminal_bayes_pool_audit"),
+        "target_design_fingerprint": result.get(
+            "target_design_fingerprint"),
+        "online_action_trace": result.get("online_action_trace"),
+        "online_action_sequence_fingerprint": result.get(
+            "online_action_sequence_fingerprint"),
+        "online_action_trace_target_oracle_used": bool(result.get(
+            "online_action_trace_target_oracle_used", True)),
+        "simulation_randomness_contract": result.get(
+            "simulation_randomness_contract"),
+        "proposal_randomness_contract": result.get(
+            "proposal_randomness_contract"),
         "adaptive_replication_voi_enabled": bool(args_dict.get(
             "adaptive_replication_voi", False)),
         "adaptive_replication_voi": result.get(
@@ -1338,7 +1565,11 @@ def run_one(task):
             "hvd_singleton_evidence_mode", "in_sample_residual")),
         "task_posterior_robust_certificate_mode": str(args_dict.get(
             "task_posterior_robust_certificate_mode", "separable")),
+        "certification_head_authority": str(args_dict.get(
+            "certification_head_authority", "task_joint")),
         "gpr_numerics": result.get("gpr_numerics"),
+        "source_conditioned_confidence": result.get(
+            "source_conditioned_confidence"),
         "true_feasible": true_feasible,
         "posterior_feasible": posterior_feasible,
         "false_feasible": bool(posterior_feasible and not true_feasible),
@@ -2235,6 +2466,7 @@ def main():
             "sobol_new",
             "sobol_hvd_voi",
             "sobol_joint_voi",
+            "sobol_exact_joint_voi",
             "certificate_depth_new",
             "risk_ts",
             "bayes_risk_ei",
@@ -2243,6 +2475,21 @@ def main():
         ),
     )
     parser.add_argument("--decision_risk_penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--decision_aleatoric_mode",
+        choices=("certification_upper", "posterior_central"),
+        default="certification_upper",
+    )
+    parser.add_argument(
+        "--decision_violation_loss_mode",
+        choices=("positive_part", "failure_probability"),
+        default="positive_part",
+    )
+    parser.add_argument(
+        "--decision_ambiguity_mode",
+        choices=("kl_robust", "posterior_nominal"),
+        default="kl_robust",
+    )
     parser.add_argument(
         "--decision_source_utility_weight", type=float, default=1.0)
     parser.add_argument(
@@ -2363,6 +2610,15 @@ def main():
         default="separable",
     )
     parser.add_argument(
+        "--certification_head_authority",
+        choices=(
+            "task_joint",
+            "split_gpr_task_hvd",
+            "split_gpr_cumulative_hvd",
+        ),
+        default="task_joint",
+    )
+    parser.add_argument(
         "--task_posterior_prior_protection_numerator",
         type=float,
         default=0.0,
@@ -2436,6 +2692,13 @@ def main():
     parser.add_argument("--constraint_epistemic_margin_softening", type=float, default=3.0)
     parser.add_argument("--replication_candidate_count", type=int, default=3)
     parser.add_argument("--replication_max_per_solution", type=int, default=5)
+    parser.add_argument(
+        "--evaluate_or_replicate_new_action_count", type=int, default=1)
+    parser.add_argument(
+        "--evaluate_or_replicate_new_action_policy",
+        choices=("canonical_sobol", "canonical_plus_posterior_risk"),
+        default="canonical_sobol",
+    )
     parser.add_argument("--replication_margin_softening", type=float, default=3.0)
     parser.add_argument(
         "--adaptive_replication_voi",
@@ -2451,6 +2714,11 @@ def main():
         "--posterior_dominance_delta", type=float, default=0.05)
     parser.add_argument(
         "--posterior_dominance_min_mean_gain", type=float, default=0.0)
+    parser.add_argument(
+        "--posterior_dominance_initialization",
+        choices=("risk", "certificate_lexicographic", "certified_only"),
+        default="risk",
+    )
     parser.add_argument("--certification_recheck_top_k", type=int, default=0)
     parser.add_argument(
         "--certification_recheck_min_replicates", type=int, default=3)
@@ -2789,6 +3057,20 @@ def main():
         ),
     )
     parser.add_argument(
+        "--source_constraint_mean_hyperlaw_mode",
+        choices=[
+            "single_gaussian_draw",
+            "shared_low_rank_discrepancy",
+            "shared_low_rank_predictive",
+            "grouped_task_discrepancy",
+            "grouped_task_predictive",
+            "grouped_task_deconvolved",
+            "grouped_task_deconvolved_predictive",
+        ],
+        default="single_gaussian_draw",
+        help="Choose the frozen source-to-target coefficient hyperlaw.",
+    )
+    parser.add_argument(
         "--source_constraint_mean_adaptation_mode",
         choices=[
             "frozen", "evidence_mixture", "sequential_evidence_mixture",
@@ -2820,6 +3102,14 @@ def main():
             "none",
             "predictive_scale",
             "predictive_scale_directional",
+            "predictive_scale_upper_target",
+            "predictive_scale_upper",
+            "predictive_sandwich_hc3",
+            "predictive_sandwich_hc3_task",
+            "predictive_scale_sandwich_hc3",
+            "predictive_scale_sandwich_hc3_task",
+            "predictive_scale_sandwich_hc3_confidence",
+            "predictive_scale_sandwich_hc3_task_confidence",
             "hierarchical_predictive_scale",
             "source_contrast",
         ],
@@ -2843,6 +3133,21 @@ def main():
         "--source_constraint_mean_misspecification_max_scale",
         type=float,
         default=100.0,
+    )
+    parser.add_argument(
+        "--source_constraint_mean_misspecification_delta",
+        type=float,
+        default=0.05,
+    )
+    parser.add_argument(
+        "--source_constraint_mean_confidence_mode",
+        choices=["model", "source_bayes", "source_self_normalized"],
+        default="model",
+    )
+    parser.add_argument(
+        "--source_constraint_mean_confidence_delta",
+        type=float,
+        default=0.05,
     )
     parser.add_argument(
         "--source_constraint_mean_contrast_scale", type=float, default=1.0)
@@ -3091,6 +3396,18 @@ def main():
     )
     parser.add_argument("--meta_coordinate_relevance_floor", type=float, default=0.05)
     parser.add_argument("--meta_source_augments", type=int, default=1)
+    parser.add_argument(
+        "--meta_source_budget_mode",
+        choices=["per_episode", "per_base_domain"],
+        default="per_episode",
+    )
+    parser.add_argument(
+        "--meta_source_geometry_shift_scale", type=float, default=0.0)
+    parser.add_argument(
+        "--meta_source_geometry_log_radius_jitter",
+        type=float,
+        default=0.0,
+    )
     parser.add_argument("--meta_source_sigma_jitter", type=float, default=0.20)
     parser.add_argument("--meta_source_alpha_jitter", type=float, default=0.25)
     parser.add_argument("--meta_source_weight_jitter", type=float, default=0.05)

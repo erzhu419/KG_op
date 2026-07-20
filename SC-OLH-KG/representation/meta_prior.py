@@ -2084,11 +2084,29 @@ class LearnedMetaPrior:
             "target_oracle_used": False,
         }
 
-    def _record_source_data(self, source_problems, n_records_per_domain, rng):
+    def _record_source_data(
+        self,
+        source_problems,
+        n_records_per_domain,
+        rng,
+        n_records_by_problem=None,
+    ):
+        source_problems = list(source_problems)
+        if n_records_by_problem is None:
+            counts = [int(n_records_per_domain)] * len(source_problems)
+        else:
+            counts = [int(value) for value in n_records_by_problem]
+            if len(counts) != len(source_problems):
+                raise ValueError(
+                    "n_records_by_problem must match source_problems")
+        if any(value <= 0 for value in counts):
+            raise ValueError("every source task must receive at least one record")
         records = []
-        for domain_name, problem in source_problems:
+        for (domain_name, problem), record_count in zip(
+            source_problems, counts,
+        ):
             for x, origin in self._source_design_candidates(
-                problem, n_records_per_domain, rng):
+                problem, record_count, rng):
                 y, sigma, replicate_count, replicate_values = self._source_observation(
                     problem, x, rng)
                 records.append(SourceRecord(
@@ -2379,12 +2397,15 @@ class LearnedMetaPrior:
         n_records_per_domain=128,
         rng=None,
         hierarchical_boundary_config=None,
+        n_records_by_problem=None,
     ):
         rng = rng or np.random.default_rng(self.seed)
         source_problems = list(source_problems)
         if not source_problems:
             raise ValueError("at least one source domain is required")
-        records = self._record_source_data(source_problems, n_records_per_domain, rng)
+        records = self._record_source_data(
+            source_problems, n_records_per_domain, rng,
+            n_records_by_problem=n_records_by_problem)
         if not records:
             raise ValueError("source training produced no records")
         # Preserve the exact ordinary observations consumed by source training.
@@ -2399,6 +2420,17 @@ class LearnedMetaPrior:
         self.fit_status = "fitting"
         weights = [self._boundary_sample_weight(rec) for rec in records]
         self._record_training_diagnostics(records, weights)
+        record_counts = {
+            domain: int(sum(rec.domain == domain for rec in records))
+            for domain in self.source_domains
+        }
+        self.training_diagnostics.update({
+            "source_task_count": int(len(self.source_domains)),
+            "source_task_record_counts": record_counts,
+            "source_task_record_budget": int(sum(record_counts.values())),
+            "source_task_record_budget_exact": bool(
+                sum(record_counts.values()) == len(records)),
+        })
         self._fit_source_consensus_templates(records)
         self.training_diagnostics["source_consensus_templates"] = copy.deepcopy(
             self.source_consensus_diagnostics)
@@ -7058,6 +7090,17 @@ class ObservableConstraintMeanBasis:
             "target_oracle_used_to_define_residual_prior": False,
         })
         prior["diagnostics"] = diagnostics
+        for nested_key in (
+            "shared_low_rank_prior",
+            "shared_low_rank_predictive_prior",
+            "grouped_task_prior",
+            "grouped_task_predictive_prior",
+            "grouped_task_deconvolved_prior",
+            "grouped_task_deconvolved_predictive_prior",
+        ):
+            nested = prior.get(nested_key)
+            if nested is not None:
+                prior[nested_key] = self._extend_source_prior(nested)
         return prior
 
     def _expand_role_assignment_component(self, component):

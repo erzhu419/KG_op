@@ -86,6 +86,7 @@ def main():
     parser.add_argument("--misspecification-prior-df", type=float, default=4.0)
     parser.add_argument("--misspecification-ridge", type=float, default=1.0)
     parser.add_argument("--misspecification-max-scale", type=float, default=100.0)
+    parser.add_argument("--misspecification-delta", type=float, default=0.05)
     parser.add_argument("--contrast-scale", type=float, default=1.0)
     parser.add_argument("--null-geometry-ridge", type=float, default=1e-3)
     parser.add_argument("--cpu", type=int, default=1)

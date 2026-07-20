@@ -278,7 +278,17 @@ def test_frozen_exchangeable_hyperlaw_conditions_without_source_mixture():
     )
 
     for index, mode in enumerate((
-        "none", "predictive_scale", "predictive_scale_directional"
+        "none",
+        "predictive_scale",
+        "predictive_scale_directional",
+        "predictive_scale_upper_target",
+        "predictive_scale_upper",
+        "predictive_sandwich_hc3",
+        "predictive_sandwich_hc3_task",
+        "predictive_scale_sandwich_hc3",
+        "predictive_scale_sandwich_hc3_task",
+        "predictive_scale_sandwich_hc3_confidence",
+        "predictive_scale_sandwich_hc3_task_confidence",
     )):
         target = MetaPriorProblemAdapter(
             problem("FactorShockStatePolicyRZDT1"), prior)
@@ -351,6 +361,44 @@ def test_frozen_exchangeable_hyperlaw_conditions_without_source_mixture():
                 covariance_trace_before
                 - 1e-12 * max(1.0, abs(covariance_trace_before))
             )
+            if mode in {
+                "predictive_scale_upper_target",
+                "predictive_scale_upper",
+            }:
+                assert diagnostics[
+                    "source_mean_misspecification_application"] == (
+                        "posterior_covariance_only")
+                assert diagnostics["source_mean_posterior_mean_preserved"]
+            if mode in {
+                "predictive_sandwich_hc3",
+                "predictive_sandwich_hc3_task",
+                "predictive_scale_sandwich_hc3",
+                "predictive_scale_sandwich_hc3_task",
+                "predictive_scale_sandwich_hc3_confidence",
+                "predictive_scale_sandwich_hc3_task_confidence",
+            }:
+                expected_application = (
+                    "source_prior_scale_then_posterior_sandwich"
+                    if mode.startswith("predictive_scale_sandwich")
+                    else "posterior_sandwich_covariance_only"
+                )
+                assert diagnostics[
+                    "source_mean_misspecification_application"
+                ] == expected_application
+                assert diagnostics["source_mean_posterior_mean_preserved"]
+                assert diagnostics["source_mean_sandwich_applied"]
+                assert diagnostics[
+                    "source_mean_sandwich_covariance_trace"] >= 0.0
+                assert diagnostics[
+                    "source_mean_prior_scaled_before_conditioning"
+                ] == mode.startswith("predictive_scale_sandwich")
+                assert diagnostics[
+                    "source_mean_sandwich_decision_authority"
+                ] == (
+                    "confidence_only"
+                    if mode.endswith("_confidence")
+                    else "joint_predictive"
+                )
 
         x = tuple(int(value) for value in target.sample_random(
             np.random.default_rng(820 + index)))
@@ -359,12 +407,29 @@ def test_frozen_exchangeable_hyperlaw_conditions_without_source_mixture():
         exact_kg_clone = algorithm._clone_gpr_for_exact_kg(algorithm.gpr[1])
         assert exact_kg_clone._finite_mixture_misspecification_mode == mode
         assert exact_kg_clone._finite_mixture_misspecification_ridge == 1.0
+        original_decision_covariance = (
+            None
+            if algorithm.gpr[1]._decision_covariance is None
+            else algorithm.gpr[1]._decision_covariance.copy()
+        )
+        if mode.endswith("_confidence"):
+            assert exact_kg_clone._decision_covariance is not (
+                algorithm.gpr[1]._decision_covariance)
+            np.testing.assert_allclose(
+                exact_kg_clone._decision_covariance,
+                original_decision_covariance,
+            )
         exact_kg_clone.update(x, float(y[1]), float(sigma2))
         assert exact_kg_clone._finite_mixture_update_count == 1
         assert algorithm.gpr[1]._finite_mixture_update_count == 0
         assert len(exact_kg_clone._finite_mixture_target_history) == (
             len(samples) + 1)
         assert len(algorithm.gpr[1]._finite_mixture_target_history) == len(samples)
+        if mode.endswith("_confidence"):
+            np.testing.assert_allclose(
+                algorithm.gpr[1]._decision_covariance,
+                original_decision_covariance,
+            )
 
         algorithm.gpr[1].update(x, float(y[1]), float(sigma2))
         updated = algorithm.gpr[1].source_parametric_prior_diagnostics

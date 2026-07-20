@@ -7,6 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
+from scipy.stats import norm
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,6 +20,193 @@ from problems.single_objective import ScalarizedProblem  # noqa: E402
 
 
 class ExactKGTests(unittest.TestCase):
+    def test_confidence_only_sandwich_separates_ranking_from_certificate(self):
+        class ObjectiveGPR:
+            @staticmethod
+            def posterior_mean_many(pool):
+                return np.zeros(len(pool), dtype=float)
+
+            @staticmethod
+            def posterior_var_many(pool):
+                return np.full(len(pool), 0.01, dtype=float)
+
+        class ConstraintGPR:
+            @staticmethod
+            def posterior_mean_many(pool):
+                return np.full(len(pool), -0.1, dtype=float)
+
+            @staticmethod
+            def posterior_var_many(pool):
+                return np.full(len(pool), 1.0, dtype=float)
+
+            @staticmethod
+            def decision_posterior_var_many(pool):
+                return np.full(len(pool), 0.01, dtype=float)
+
+        class Variance:
+            @staticmethod
+            def predict_certification_variance_many(
+                output_index, pool, problem,
+            ):
+                del output_index, problem
+                return np.full(len(pool), 0.01, dtype=float)
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                certification_head_authority="split_gpr_cumulative_hvd",
+                source_constraint_mean_misspecification_mode=(
+                    "predictive_scale_sandwich_hc3_confidence"),
+            ),
+        )
+        pool = [(1, 1, 1), (2, 2, 2)]
+        models = [ObjectiveGPR(), ConstraintGPR()]
+        risk = algorithm._terminal_bayes_risk_components(
+            models, Variance(), pool)
+        certificate = algorithm._terminal_certificate_components(
+            models, Variance(), pool)
+        z_alpha = float(norm.ppf(1 - problem.alpha))
+        margin_mean = -0.1 + z_alpha * 0.1 - problem.tau
+        expected = algorithm._normal_positive_part(
+            np.full(2, margin_mean), np.full(2, 0.01))
+        np.testing.assert_allclose(risk["expected_violation"], expected)
+        np.testing.assert_allclose(certificate["epistemic"], 1.0)
+        self.assertTrue(np.all(risk["violation_variance"] > 0.01))
+
+    def test_split_certificate_authority_is_shared_by_filter_and_terminal(self):
+        class FakeGPR:
+            @staticmethod
+            def posterior_mean_many(pool):
+                return np.full(len(pool), 0.20, dtype=float)
+
+            @staticmethod
+            def posterior_var_many(pool):
+                return np.full(len(pool), 0.04, dtype=float)
+
+        class FakeVariance:
+            @staticmethod
+            def predict_certification_variance_many(
+                output_index, pool, problem,
+            ):
+                del output_index, problem
+                return np.full(len(pool), 0.01, dtype=float)
+
+        class FakeTaskEnsemble:
+            joint_calls = 0
+            posterior = SimpleNamespace(
+                safe_generalized=False,
+                decision_weights=lambda: np.asarray([1.0]),
+                posterior_weights=lambda: np.asarray([1.0]),
+            )
+
+            @classmethod
+            def robust_moments_many(
+                cls, output_index, pool, certification=True,
+            ):
+                del cls, output_index, certification
+                n = len(pool)
+                return SimpleNamespace(
+                    mean_upper=np.full(n, 9.0, dtype=float),
+                    epistemic_upper=np.full(n, 4.0, dtype=float),
+                    aleatoric_upper=np.full(n, 0.25, dtype=float),
+                    nominal=SimpleNamespace(
+                        between_mean=np.zeros(n, dtype=float)),
+                )
+
+            @classmethod
+            def robust_chance_margin_many(cls, pool, **kwargs):
+                del kwargs
+                cls.joint_calls += 1
+                return SimpleNamespace(
+                    upper=np.full(len(pool), -99.0, dtype=float),
+                    separable_upper=np.full(len(pool), 99.0, dtype=float),
+                )
+
+            @staticmethod
+            def mixture_moments_many(output_index, pool, certification=False):
+                del output_index, certification
+                return SimpleNamespace(mean=np.zeros(len(pool), dtype=float))
+
+            @staticmethod
+            def expert_moments_many(output_index, pool, certification=False):
+                del certification
+                if output_index != 0:
+                    raise AssertionError(
+                        "split Bayes risk must not request constraint experts")
+                n = len(pool)
+                return (
+                    np.zeros((1, n), dtype=float),
+                    np.full((1, n), 0.02, dtype=float),
+                    np.zeros((1, n), dtype=float),
+                )
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        pool = [(2, 2, 2), (4, 4, 4)]
+        expected = {
+            "split_gpr_task_hvd": (
+                0.25, "split_aggregate_gpr_task_hvd"),
+            "split_gpr_cumulative_hvd": (
+                0.01, "split_aggregate_gpr_cumulative_hvd"),
+        }
+        for authority, (variance, source) in expected.items():
+            with self.subTest(authority=authority):
+                algorithm = SingleOLHKGAlgorithm(
+                    problem,
+                    SingleOLHKGConfig(
+                        task_posterior_robust_certificate_mode="joint_tangent",
+                        certification_head_authority=authority,
+                        recommendation_slack_initial=0.0,
+                        seed=245,
+                    ),
+                )
+                gpr = FakeGPR()
+                variance_model = FakeVariance()
+                ensemble = FakeTaskEnsemble()
+                algorithm.gpr[1] = gpr
+                algorithm.variance_model = variance_model
+                algorithm.task_ensemble = ensemble
+                FakeTaskEnsemble.joint_calls = 0
+
+                direct = algorithm._certification_result(
+                    np.full(2, 100.0),
+                    pool,
+                    np.full(2, 100.0),
+                    epistemic=np.full(2, 100.0),
+                )
+                terminal = algorithm._terminal_certificate_components(
+                    [None, gpr],
+                    variance_model,
+                    pool,
+                    task_ensemble=ensemble,
+                )
+                bayes = algorithm._terminal_bayes_risk_components(
+                    [None, gpr],
+                    variance_model,
+                    pool,
+                    task_ensemble=ensemble,
+                )
+
+                np.testing.assert_allclose(direct.mu, 0.20)
+                np.testing.assert_allclose(direct.epistemic_var, 0.04)
+                np.testing.assert_allclose(direct.aleatoric_var, variance)
+                np.testing.assert_allclose(terminal["mu_con"], direct.mu)
+                np.testing.assert_allclose(
+                    terminal["epistemic"], direct.epistemic_var)
+                np.testing.assert_allclose(
+                    terminal["aleatoric"], direct.aleatoric_var)
+                np.testing.assert_allclose(terminal["margin"], direct.margin)
+                self.assertEqual(terminal["source"], source)
+                self.assertEqual(
+                    terminal["certification_head_authority"], authority)
+                self.assertEqual(
+                    bayes["certification_head_authority"], authority)
+                self.assertEqual(
+                    bayes["constraint_posterior_source"], source)
+                self.assertTrue(np.all(np.isfinite(
+                    bayes["expected_violation"])))
+                self.assertEqual(FakeTaskEnsemble.joint_calls, 0)
+
     def test_joint_task_certificate_is_shared_by_filter_and_terminal_value(self):
         class FakeTaskEnsemble:
             @staticmethod
@@ -202,6 +390,259 @@ class ExactKGTests(unittest.TestCase):
             observations=algorithm.observations,
         )
         self.assertAlmostEqual(observed_value, 1.0, places=10)
+
+    def test_posterior_dominance_initializes_from_canonical_certificate(self):
+        class FakeGPR:
+            def __init__(self, means):
+                self.means = means
+
+            def posterior_mean_many(self, pool):
+                return np.asarray([
+                    self.means[int(np.asarray(x)[0])] for x in pool
+                ], dtype=float)
+
+            def posterior_var_many(self, pool):
+                return np.zeros(len(pool), dtype=float)
+
+        class FakeVariance:
+            @staticmethod
+            def predict_certification_variance_many(output_index, pool, problem):
+                del output_index, problem
+                return np.zeros(len(pool), dtype=float)
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                posterior_dominance_enabled=True,
+                posterior_dominance_initialization=(
+                    "certificate_lexicographic"),
+                terminal_bayes_violation_penalty=5.0,
+            ),
+        )
+        unsafe_low_objective = (0, 0, 0)
+        safe_higher_objective = (1, 0, 0)
+        objective = FakeGPR({0: -100.0, 1: 0.0})
+        constraint = FakeGPR({0: 1.0, 1: -1.0})
+        selected, _, details = (
+            algorithm._posterior_dominance_decision_from_models(
+                [objective, constraint],
+                FakeVariance(),
+                [unsafe_low_objective, safe_higher_objective],
+                None,
+            )
+        )
+        self.assertEqual(selected, safe_higher_objective)
+        self.assertEqual(details["status"], "initialized_certified")
+        self.assertEqual(details["initial_certified_count"], 1)
+        self.assertEqual(
+            details["posterior_dominance_initialization"],
+            "certificate_lexicographic",
+        )
+        self.assertLessEqual(details["selected_certificate_margin"], 0.0)
+        self.assertFalse(details["target_oracle_used"])
+
+    def test_certified_only_dominance_stays_uninitialized_without_certificate(
+        self,
+    ):
+        class FakeGPR:
+            def __init__(self, means):
+                self.means = means
+
+            def posterior_mean_many(self, pool):
+                return np.asarray([
+                    self.means[int(np.asarray(x)[0])] for x in pool
+                ], dtype=float)
+
+            def posterior_var_many(self, pool):
+                return np.zeros(len(pool), dtype=float)
+
+        class FakeVariance:
+            @staticmethod
+            def predict_certification_variance_many(output_index, pool, problem):
+                del output_index, problem
+                return np.zeros(len(pool), dtype=float)
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                posterior_dominance_enabled=True,
+                posterior_dominance_initialization="certified_only",
+            ),
+        )
+        pool = [(0, 0, 0), (1, 0, 0)]
+        objective = FakeGPR({0: -1.0, 1: 0.0})
+        constraint = FakeGPR({0: 2.0, 1: 1.5})
+        selected, value, details = (
+            algorithm._posterior_dominance_decision_from_models(
+                [objective, constraint], FakeVariance(), pool, None)
+        )
+        self.assertIsNone(selected)
+        self.assertTrue(np.isinf(value))
+        self.assertEqual(details["status"], "uninitialized_no_certificate")
+        self.assertEqual(details["initial_certified_count"], 0)
+        self.assertTrue(details["terminal_fallback_required"])
+        self.assertFalse(details["switch_accepted"])
+        self.assertFalse(details["target_oracle_used"])
+
+    def test_terminal_bayes_pool_audit_freezes_rank_before_truth_join(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(truth_pool_diagnostics=True),
+        )
+        pool = [(0, 0, 0), (1, 0, 0)]
+        algorithm._true_chance_margin = lambda x: {
+            pool[0]: -0.2,
+            pool[1]: 0.1,
+        }[tuple(x)]
+        audit = algorithm._terminal_bayes_pool_audit(
+            pool,
+            {"risk": np.asarray([1.0, 2.0])},
+            pool[1],
+        )
+        self.assertEqual(audit["selected_risk_rank"], 2)
+        self.assertFalse(audit["selected_matches_counterfactual_bayes"])
+        self.assertFalse(audit["selected_true_feasible"])
+        self.assertTrue(audit["counterfactual_bayes_true_feasible"])
+        self.assertFalse(audit["target_oracle_used_for_ranking"])
+        self.assertFalse(audit["truth_admissible_decision_input"])
+        self.assertFalse(audit["target_oracle_used_for_decision"])
+        self.assertEqual(len(audit["posterior_ranked_candidates"]), 2)
+        self.assertEqual(
+            audit["best_true_feasible_post_rank"]["posterior_rank"], 1)
+
+    def test_terminal_probability_loss_uses_central_hvd_only_for_decision(self):
+        class FakeGPR:
+            def __init__(self, mean, variance):
+                self.mean = float(mean)
+                self.variance = float(variance)
+
+            def posterior_mean_many(self, pool):
+                return np.full(len(pool), self.mean, dtype=float)
+
+            def posterior_var_many(self, pool):
+                return np.full(len(pool), self.variance, dtype=float)
+
+        class SplitVariance:
+            @staticmethod
+            def predict_variance_many(output_index, pool, problem):
+                del output_index, problem
+                return np.full(len(pool), 0.01, dtype=float)
+
+            @staticmethod
+            def predict_certification_variance_many(
+                output_index, pool, problem,
+            ):
+                del output_index, problem
+                return np.full(len(pool), 1.0, dtype=float)
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                certification_head_authority="split_gpr_cumulative_hvd",
+                decision_aleatoric_mode="posterior_central",
+                decision_violation_loss_mode="failure_probability",
+                terminal_bayes_violation_penalty=7.0,
+            ),
+        )
+        pool = [(0, 0, 0), (1, 0, 0)]
+        components = algorithm._terminal_bayes_risk_components(
+            [FakeGPR(0.2, 0.01), FakeGPR(0.1, 0.04)],
+            SplitVariance(),
+            pool,
+        )
+        np.testing.assert_allclose(
+            components["violation_loss"],
+            components["probability_violation"],
+        )
+        np.testing.assert_allclose(
+            components["risk"],
+            components["objective"]
+            + 7.0 * components["probability_violation"],
+        )
+        self.assertEqual(
+            components["decision_aleatoric_mode"], "posterior_central")
+        self.assertEqual(
+            components["violation_loss_mode"], "failure_probability")
+
+    def test_terminal_nominal_task_mixture_separates_bayes_risk_from_robustness(self):
+        class Posterior:
+            safe_generalized = False
+
+            @staticmethod
+            def decision_weights():
+                return np.asarray([0.5, 0.5], dtype=float)
+
+            @staticmethod
+            def posterior_weights():
+                return np.asarray([0.5, 0.5], dtype=float)
+
+            @staticmethod
+            def kl_robust_expectation(values, radius):
+                assert radius == 1.0
+                return np.max(np.asarray(values, dtype=float), axis=0)
+
+        class Ensemble:
+            posterior = Posterior()
+            task_latent_authoritative = False
+
+            @staticmethod
+            def effective_kl_radius():
+                return 1.0
+
+            @staticmethod
+            def expert_moments_many(output_index, pool, certification=False):
+                del certification
+                n = len(pool)
+                if int(output_index) == 0:
+                    return (
+                        np.vstack([np.full(n, 0.2), np.full(n, 0.2)]),
+                        np.full((2, n), 0.01),
+                        np.zeros((2, n)),
+                    )
+                return (
+                    np.asarray([[0.0, 0.2], [0.4, 0.2]], dtype=float),
+                    np.full((2, n), 0.01),
+                    np.full((2, n), 0.01),
+                )
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        pool = [(0, 0, 0), (1, 0, 0)]
+
+        def components(mode):
+            algorithm = SingleOLHKGAlgorithm(
+                problem,
+                SingleOLHKGConfig(
+                    certification_head_authority="task_joint",
+                    decision_aleatoric_mode="posterior_central",
+                    decision_ambiguity_mode=mode,
+                    terminal_bayes_violation_penalty=5.0,
+                ),
+            )
+            return algorithm._terminal_bayes_risk_components(
+                [object(), object()],
+                object(),
+                pool,
+                task_ensemble=Ensemble(),
+            )
+
+        robust = components("kl_robust")
+        nominal = components("posterior_nominal")
+        np.testing.assert_allclose(
+            nominal["expected_violation"],
+            nominal["nominal_expected_violation"],
+        )
+        np.testing.assert_allclose(
+            robust["expected_violation"],
+            robust["robust_expected_violation"],
+        )
+        self.assertTrue(np.all(
+            nominal["risk"] <= robust["risk"] + 1e-12))
+        self.assertEqual(
+            nominal["decision_ambiguity_mode"], "posterior_nominal")
 
     def test_bayes_terminal_uses_fixed_unscaled_risk(self):
         class FakeGPR:
@@ -530,6 +971,36 @@ class ExactKGTests(unittest.TestCase):
         self.assertTrue(np.all(scores >= 0.0))
         self.assertEqual(len(alg.history), config.n0)
 
+    def test_exact_action_scope_refits_only_declared_candidates(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        config = SingleOLHKGConfig(
+            N=5,
+            n0=4,
+            K1=4,
+            K2=0,
+            decision_backend="sobol_exact_joint_voi",
+            adaptive_replication_voi=True,
+            exact_kg_mc_samples=2,
+            exact_kg_jobs=1,
+            eval_pool_size=12,
+            seed=71,
+        )
+        algorithm = SingleOLHKGAlgorithm(problem, config)
+        algorithm._fit_initial_belief(algorithm._initial_samples())
+        candidates = [(0, 0, 0), (10, 0, 0), (20, 0, 0)]
+        scores = algorithm._exact_posterior_update_scores_for_actions(
+            candidates,
+            algorithm._recommendation_pool(),
+            [0, 2],
+        )
+        self.assertEqual(scores.shape, (3,))
+        self.assertLess(scores[1], -1e250)
+        self.assertTrue(np.all(np.isfinite(scores[[0, 2]])))
+        self.assertTrue(np.isnan(
+            algorithm._last_exact_kg_raw_scores[1]))
+        np.testing.assert_array_equal(
+            algorithm._last_exact_kg_active_indices, [0, 2])
+
     def test_raw_exact_scores_are_not_silently_clipped(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
         config = SingleOLHKGConfig(
@@ -683,7 +1154,7 @@ class ExactKGTests(unittest.TestCase):
             problem_b,
             SingleOLHKGConfig(
                 **base,
-                exact_kg_jobs=3,
+                exact_kg_jobs=8,
                 exact_kg_parallel_backend="process_fork",
             ),
         )
@@ -699,6 +1170,8 @@ class ExactKGTests(unittest.TestCase):
             candidates, forked._recommendation_pool())
         np.testing.assert_allclose(
             serial_scores, forked_scores, rtol=0.0, atol=1e-12)
+        self.assertEqual(forked._last_exact_kg_parallel_workers, 8)
+        self.assertEqual(forked._last_exact_kg_chunks_per_candidate, 2)
 
     def test_optional_exact_posterior_update_runner_smoke(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))

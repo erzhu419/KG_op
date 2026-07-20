@@ -27,6 +27,13 @@ def _nearest_psd(matrix, floor):
     return (vectors * np.maximum(values, float(floor))) @ vectors.T
 
 
+def _base_source_domain(label):
+    """Drop only the frozen source-episode suffix used by LODO training."""
+
+    value = str(label)
+    return value.split("#episode", 1)[0]
+
+
 class ExchangeableBoundaryMeanCoordinate:
     """Low-dimensional target-linear mean head with an exchangeable prior.
 
@@ -276,8 +283,11 @@ class ExchangeableBoundaryMeanCoordinate:
                 np.outer(value - block_mean, value - block_mean)
                 for value in block_coefficients
             ], axis=0)
+            block_estimation_covariance = np.mean(
+                block_covariances, axis=0)
+            block_role_covariance = _nearest_psd(block_between, 0.0)
             block_covariance = (
-                np.mean(block_covariances, axis=0) + block_between)
+                block_estimation_covariance + block_role_covariance)
             block_covariance = _nearest_psd(
                 block_covariance, self.covariance_floor)
             common_indices = np.asarray(
@@ -292,6 +302,9 @@ class ExchangeableBoundaryMeanCoordinate:
                 ),
                 "block_mean": block_mean,
                 "block_covariance": block_covariance,
+                "block_estimation_covariance": _nearest_psd(
+                    block_estimation_covariance, self.covariance_floor),
+                "block_role_covariance": block_role_covariance,
                 "residual_variance": residual_variance,
                 "ridge": float(ridge),
                 "validation_loss": (
@@ -451,6 +464,362 @@ class ExchangeableBoundaryMeanCoordinate:
             for row, mass in zip(self.domain_rows, reliability)
         ]
 
+    def _target_hierarchy_covariance_parts(self, row, problem):
+        """Separate source-fit error from transferable channel variation."""
+
+        channel_count = self._target_channel_count(problem)
+        dimension = 1 + self.feature_dim
+        estimation = self.covariance_floor * np.eye(
+            dimension, dtype=float)
+        role = np.zeros((dimension, dimension), dtype=float)
+        common_indices = np.asarray(
+            [0, 1 + self._global_index], dtype=int)
+        estimation[np.ix_(common_indices, common_indices)] = row[
+            "common_covariance"]
+        block_estimation = np.asarray(
+            row.get("block_estimation_covariance", row["block_covariance"]),
+            dtype=float,
+        )
+        block_role = np.asarray(
+            row.get(
+                "block_role_covariance",
+                np.zeros_like(block_estimation),
+            ),
+            dtype=float,
+        )
+        for channel in range(channel_count):
+            indices = np.arange(
+                1 + channel * self.channel_block_dim,
+                1 + (channel + 1) * self.channel_block_dim,
+            )
+            estimation[np.ix_(indices, indices)] = block_estimation
+            role[np.ix_(indices, indices)] = block_role
+        output_scale = max(
+            abs(float(getattr(problem, "tau", 0.0))),
+            float(getattr(problem, "sigma_level", 0.0)),
+            1e-6,
+        )
+        return (
+            output_scale ** 2 * _nearest_psd(
+                estimation, self.covariance_floor),
+            output_scale ** 2 * _nearest_psd(role, 0.0),
+        )
+
+    @staticmethod
+    def _covariance_rank(matrix):
+        eigenvalues = np.linalg.eigvalsh(_nearest_psd(matrix, 0.0))
+        tolerance = max(
+            float(np.max(eigenvalues)) * 1e-10
+            if len(eigenvalues) else 0.0,
+            1e-14,
+        )
+        return int(np.sum(eigenvalues > tolerance))
+
+    def _channel_role_estimation_noise(
+        self, estimation, source_channel_count, target_channel_count
+    ):
+        """Projected fit noise inside a centered source-channel contrast."""
+
+        estimation = np.asarray(estimation, dtype=float)
+        correction = np.zeros_like(estimation)
+        source_channel_count = int(source_channel_count)
+        if source_channel_count <= 1:
+            return correction
+        multiplier = float(source_channel_count - 1) / source_channel_count
+        available_channel_blocks = max(
+            (estimation.shape[0] - 1) // self.channel_block_dim,
+            0,
+        )
+        for channel in range(min(
+            int(target_channel_count), int(available_channel_blocks)
+        )):
+            indices = np.arange(
+                1 + channel * self.channel_block_dim,
+                1 + (channel + 1) * self.channel_block_dim,
+            )
+            correction[np.ix_(indices, indices)] = (
+                multiplier * estimation[np.ix_(indices, indices)])
+        return _nearest_psd(correction, 0.0)
+
+    def _grouped_source_task_hyperlaws(
+        self,
+        problem,
+        components,
+        estimation_parts,
+        role_parts,
+        deconvolve=False,
+    ):
+        """Pool frozen task episodes within their source base domains.
+
+        Episode fits are repeated measurements of a base-domain task law, not
+        additional independent domains. Their contrasts estimate transferable
+        task variation; their fit covariance contracts only the base mean.
+        """
+
+        if not (
+            len(components) == len(estimation_parts) == len(role_parts)
+        ):
+            raise RuntimeError("source hierarchy components are misaligned")
+        grouped_indices = {}
+        for index, component in enumerate(components):
+            base = _base_source_domain(component.get("domain", ""))
+            grouped_indices.setdefault(base, []).append(index)
+        within_rank_upper_bound = int(sum(
+            max(len(indices) - 1, 0)
+            for indices in grouped_indices.values()
+        ))
+        if len(grouped_indices) < 2 or within_rank_upper_bound <= 0:
+            return None, None
+
+        group_rows = []
+        target_channel_count = self._target_channel_count(problem)
+        for base, indices in grouped_indices.items():
+            episode_means = np.vstack([
+                np.asarray(components[index]["mean"], dtype=float)
+                for index in indices
+            ])
+            episode_count = len(indices)
+            group_mean = np.mean(episode_means, axis=0)
+            episode_estimations = [
+                np.asarray(estimation_parts[index], dtype=float)
+                for index in indices
+            ]
+            estimation_sum = np.sum(episode_estimations, axis=0)
+            group_estimation = estimation_sum / float(episode_count ** 2)
+            role_observed = np.mean([
+                np.asarray(role_parts[index], dtype=float)
+                for index in indices
+            ], axis=0)
+            role_noise = np.mean([
+                self._channel_role_estimation_noise(
+                    estimation_parts[index],
+                    dict(components[index].get("diagnostics", {})).get(
+                        "source_channel_count",
+                        target_channel_count,
+                    ),
+                    target_channel_count,
+                )
+                for index in indices
+            ], axis=0)
+            group_role = _nearest_psd(
+                role_observed - role_noise if deconvolve else role_observed,
+                0.0,
+            )
+            within_observed = np.mean([
+                np.outer(value - group_mean, value - group_mean)
+                for value in episode_means
+            ], axis=0)
+            within_noise = (
+                float(episode_count - 1) / float(episode_count ** 2)
+            ) * estimation_sum
+            group_within = _nearest_psd(
+                within_observed - within_noise
+                if deconvolve else within_observed,
+                0.0,
+            )
+            group_deviation = float(np.mean([
+                float(components[index]["deviation_variance"])
+                for index in indices
+            ]))
+            group_rows.append({
+                "base": base,
+                "episode_count": int(episode_count),
+                "mean": group_mean,
+                "estimation": _nearest_psd(group_estimation, 0.0),
+                "role": group_role,
+                "role_observed": _nearest_psd(role_observed, 0.0),
+                "role_noise": _nearest_psd(role_noise, 0.0),
+                "within": group_within,
+                "within_observed": _nearest_psd(within_observed, 0.0),
+                "within_noise": _nearest_psd(within_noise, 0.0),
+                "deviation": group_deviation,
+            })
+
+        base_count = len(group_rows)
+        base_means = np.vstack([row["mean"] for row in group_rows])
+        mean = np.mean(base_means, axis=0)
+        shared_mean_covariance = np.sum([
+            row["estimation"] for row in group_rows
+        ], axis=0) / float(base_count ** 2)
+        channel_role_covariance = np.mean([
+            row["role"] for row in group_rows
+        ], axis=0)
+        role_observed_covariance = np.mean([
+            row["role_observed"] for row in group_rows
+        ], axis=0)
+        role_noise_covariance = np.mean([
+            row["role_noise"] for row in group_rows
+        ], axis=0)
+        between_observed_covariance = np.mean([
+            np.outer(value - mean, value - mean)
+            for value in base_means
+        ], axis=0)
+        between_noise_covariance = (
+            float(base_count - 1) / float(base_count ** 2)
+        ) * np.sum([
+            row["estimation"] for row in group_rows
+        ], axis=0)
+        between_covariance = _nearest_psd(
+            between_observed_covariance - between_noise_covariance
+            if deconvolve else between_observed_covariance,
+            0.0,
+        )
+        within_covariance = _nearest_psd(np.mean([
+            row["within"] for row in group_rows
+        ], axis=0), 0.0)
+        within_observed_covariance = np.mean([
+            row["within_observed"] for row in group_rows
+        ], axis=0)
+        within_noise_covariance = np.mean([
+            row["within_noise"] for row in group_rows
+        ], axis=0)
+        deviation = max(float(np.mean([
+            row["deviation"] for row in group_rows
+        ])), 1e-8)
+        covariance_floor = self.covariance_floor * max(
+            float(getattr(problem, "sigma_level", 0.0)) ** 2,
+            1e-12,
+        )
+        covariance = _nearest_psd(
+            shared_mean_covariance
+            + channel_role_covariance
+            + between_covariance
+            + within_covariance,
+            covariance_floor,
+        )
+
+        between_rank = self._covariance_rank(between_covariance)
+        within_rank = self._covariance_rank(within_covariance)
+        discrepancy_rank = self._covariance_rank(
+            between_covariance + within_covariance)
+        episode_counts = {
+            row["base"]: int(row["episode_count"])
+            for row in group_rows
+        }
+        common_diagnostics = {
+            **copy.deepcopy(self.fit_diagnostics),
+            "source_domain_identity_marginalized": True,
+            "source_episode_identity_marginalized": True,
+            "source_episode_labels_used_only_for_grouping": True,
+            "source_components_retained_in_target_posterior": False,
+            "random_effects_deconvolution": bool(deconvolve),
+            "source_estimation_covariance_used_for_deconvolution": bool(
+                deconvolve),
+            "source_estimation_covariance_enters_shared_mean_only": True,
+            "within_source_estimation_as_target_variation": False,
+            "channel_role_covariance_retained": True,
+            "between_base_domain_covariance_included": True,
+            "within_base_task_covariance_included": True,
+            "source_component_count": int(len(components)),
+            "source_base_domain_count": int(base_count),
+            "source_episode_counts_by_base_domain": episode_counts,
+            "between_base_discrepancy_rank": int(between_rank),
+            "between_base_discrepancy_rank_upper_bound": int(base_count - 1),
+            "within_base_task_discrepancy_rank": int(within_rank),
+            "within_base_task_discrepancy_rank_upper_bound": int(
+                within_rank_upper_bound),
+            "combined_discrepancy_rank": int(discrepancy_rank),
+            "combined_discrepancy_rank_upper_bound": int(
+                base_count - 1 + within_rank_upper_bound),
+            "shared_mean_covariance_trace": float(np.trace(
+                shared_mean_covariance)),
+            "channel_role_covariance_trace": float(np.trace(
+                channel_role_covariance)),
+            "channel_role_observed_covariance_trace": float(np.trace(
+                role_observed_covariance)),
+            "channel_role_estimation_noise_trace": float(np.trace(
+                role_noise_covariance)),
+            "between_base_domain_covariance_trace": float(np.trace(
+                between_covariance)),
+            "between_base_observed_covariance_trace": float(np.trace(
+                between_observed_covariance)),
+            "between_base_estimation_noise_trace": float(np.trace(
+                between_noise_covariance)),
+            "within_base_task_covariance_trace": float(np.trace(
+                within_covariance)),
+            "within_base_observed_covariance_trace": float(np.trace(
+                within_observed_covariance)),
+            "within_base_estimation_noise_trace": float(np.trace(
+                within_noise_covariance)),
+            "prior_covariance_trace": float(np.trace(covariance)),
+            "prior_covariance_min_eigenvalue": float(np.min(
+                np.linalg.eigvalsh(covariance))),
+            "target_channel_count": self._target_channel_count(problem),
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+        population_prior = {
+            "mean": mean.copy(),
+            "covariance": covariance,
+            "deviation_variance": deviation,
+            "diagnostics": {
+                **copy.deepcopy(common_diagnostics),
+                "prior_kind": (
+                    "exchangeable_grouped_task_deconvolved_hyperlaw"
+                    if deconvolve
+                    else "exchangeable_grouped_task_hyperlaw"
+                ),
+                "target_task_law": (
+                    "shared_base_mean_plus_deconvolved_task_discrepancy"
+                    if deconvolve else
+                    "shared_base_mean_plus_within_base_task_discrepancy"
+                ),
+                "finite_source_predictive_correction": False,
+            },
+        }
+
+        between_multiplier = float(base_count + 1) / float(base_count - 1)
+        predictive_between = between_multiplier * between_covariance
+        predictive_within_parts = []
+        episode_multipliers = {}
+        for row in group_rows:
+            episode_count = int(row["episode_count"])
+            multiplier = (
+                float(episode_count + 1) / float(episode_count - 1)
+                if episode_count > 1 else 0.0
+            )
+            episode_multipliers[row["base"]] = multiplier
+            predictive_within_parts.append(multiplier * row["within"])
+        predictive_within = _nearest_psd(
+            np.mean(predictive_within_parts, axis=0), 0.0)
+        predictive_covariance = _nearest_psd(
+            shared_mean_covariance
+            + channel_role_covariance
+            + predictive_between
+            + predictive_within,
+            covariance_floor,
+        )
+        predictive_prior = {
+            "mean": mean.copy(),
+            "covariance": predictive_covariance,
+            "deviation_variance": deviation,
+            "diagnostics": {
+                **copy.deepcopy(common_diagnostics),
+                "prior_kind": (
+                    "exchangeable_grouped_task_deconvolved_predictive_hyperlaw"
+                    if deconvolve else
+                    "exchangeable_grouped_task_predictive_hyperlaw"
+                ),
+                "target_task_law": (
+                    "shared_base_mean_plus_deconvolved_predictive_discrepancy"
+                    if deconvolve else
+                    "shared_base_mean_plus_finite_task_predictive_discrepancy"
+                ),
+                "finite_source_predictive_correction": True,
+                "between_base_predictive_multiplier": between_multiplier,
+                "within_base_predictive_multipliers": episode_multipliers,
+                "between_base_predictive_covariance_trace": float(
+                    np.trace(predictive_between)),
+                "within_base_predictive_covariance_trace": float(
+                    np.trace(predictive_within)),
+                "prior_covariance_trace": float(np.trace(
+                    predictive_covariance)),
+                "prior_covariance_min_eigenvalue": float(np.min(
+                    np.linalg.eigvalsh(predictive_covariance))),
+            },
+        }
+        return population_prior, predictive_prior
+
     def source_parametric_prior(self, problem):
         components = self.source_parametric_prior_components(problem)
         weights = np.asarray([
@@ -474,11 +843,165 @@ class ExchangeableBoundaryMeanCoordinate:
         deviation = float(np.sum(weights * np.asarray([
             component["deviation_variance"] for component in components
         ], dtype=float)))
+        estimation_parts = []
+        role_parts = []
+        for row in self.domain_rows:
+            estimation, role = self._target_hierarchy_covariance_parts(
+                row, problem)
+            estimation_parts.append(estimation)
+            role_parts.append(role)
+        shared_mean_covariance = np.sum([
+            float(weight) ** 2 * estimation
+            for weight, estimation in zip(weights, estimation_parts)
+        ], axis=0)
+        channel_role_covariance = np.sum([
+            float(weight) * role
+            for weight, role in zip(weights, role_parts)
+        ], axis=0)
+        between_covariance = np.sum([
+            float(weight) * np.outer(
+                component_mean - mean, component_mean - mean)
+            for weight, component_mean in zip(weights, means)
+        ], axis=0)
+        between_covariance = _nearest_psd(between_covariance, 0.0)
+        between_eigenvalues = np.linalg.eigvalsh(between_covariance)
+        between_tolerance = max(
+            float(np.max(between_eigenvalues)) * 1e-10
+            if len(between_eigenvalues) else 0.0,
+            1e-14,
+        )
+        discrepancy_rank = int(np.sum(
+            between_eigenvalues > between_tolerance))
+        low_rank_covariance = _nearest_psd(
+            shared_mean_covariance
+            + channel_role_covariance
+            + between_covariance,
+            self.covariance_floor
+            * max(float(getattr(problem, "sigma_level", 0.0)) ** 2, 1e-12),
+        )
+        weight_concentration = float(np.sum(weights ** 2))
+        predictive_denominator = 1.0 - weight_concentration
+        predictive_available = bool(
+            len(components) >= 2 and predictive_denominator > 1e-12)
+        predictive_multiplier = (
+            (1.0 + weight_concentration) / predictive_denominator
+            if predictive_available else None
+        )
+        predictive_between_covariance = (
+            float(predictive_multiplier) * between_covariance
+            if predictive_available else None
+        )
+        predictive_covariance = (
+            _nearest_psd(
+                shared_mean_covariance + channel_role_covariance
+                + predictive_between_covariance,
+                self.covariance_floor
+                * max(float(getattr(problem, "sigma_level", 0.0)) ** 2, 1e-12),
+            ) if predictive_available else None
+        )
+        low_rank_diagnostics = {
+            **copy.deepcopy(self.fit_diagnostics),
+            "prior_kind": (
+                "exchangeable_shared_low_rank_domain_hyperlaw"),
+            "target_task_law": (
+                "shared_mean_plus_low_rank_domain_discrepancy"),
+            "source_domain_identity_marginalized": True,
+            "source_components_retained_in_target_posterior": False,
+            "source_estimation_covariance_enters_shared_mean_only": True,
+            "within_source_estimation_as_target_variation": False,
+            "channel_role_covariance_retained": True,
+            "between_source_covariance_included": True,
+            "domain_discrepancy_rank": int(discrepancy_rank),
+            "domain_discrepancy_rank_upper_bound": int(max(
+                len(components) - 1, 0)),
+            "shared_mean_covariance_trace": float(np.trace(
+                shared_mean_covariance)),
+            "channel_role_covariance_trace": float(np.trace(
+                channel_role_covariance)),
+            "between_domain_covariance_trace": float(np.trace(
+                between_covariance)),
+            "weighted_source_concentration": weight_concentration,
+            "effective_source_count": float(1.0 / weight_concentration),
+            "finite_source_predictive_correction_available": bool(
+                predictive_available),
+            "prior_covariance_trace": float(np.trace(low_rank_covariance)),
+            "prior_covariance_min_eigenvalue": float(
+                np.min(np.linalg.eigvalsh(low_rank_covariance))),
+            "target_channel_count": self._target_channel_count(problem),
+            "source_component_count": int(len(components)),
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+        predictive_diagnostics = None
+        if predictive_available:
+            predictive_diagnostics = {
+                **copy.deepcopy(low_rank_diagnostics),
+                "prior_kind": (
+                    "exchangeable_shared_low_rank_predictive_hyperlaw"),
+                "target_task_law": (
+                    "shared_mean_plus_finite_source_predictive_discrepancy"),
+                "finite_source_predictive_correction": True,
+                "finite_source_predictive_multiplier": float(
+                    predictive_multiplier),
+                "between_domain_population_covariance_trace": float(
+                    np.trace(between_covariance)),
+                "between_domain_predictive_covariance_trace": float(
+                    np.trace(predictive_between_covariance)),
+                "between_domain_covariance_trace": float(
+                    np.trace(predictive_between_covariance)),
+                "prior_covariance_trace": float(np.trace(
+                    predictive_covariance)),
+                "prior_covariance_min_eigenvalue": float(np.min(
+                    np.linalg.eigvalsh(predictive_covariance))),
+                "predictive_discrepancy_rank": int(discrepancy_rank),
+                "source_estimation_covariance_enters_shared_mean_only": True,
+                "within_source_estimation_as_target_variation": False,
+                "target_data_used": False,
+                "target_oracle_used": False,
+            }
+        grouped_prior, grouped_predictive_prior = (
+            self._grouped_source_task_hyperlaws(
+                problem,
+                components,
+                estimation_parts,
+                role_parts,
+            )
+        )
+        (
+            grouped_deconvolved_prior,
+            grouped_deconvolved_predictive_prior,
+        ) = self._grouped_source_task_hyperlaws(
+            problem,
+            components,
+            estimation_parts,
+            role_parts,
+            deconvolve=True,
+        )
         return {
             "mean": mean,
             "covariance": covariance,
             "deviation_variance": max(deviation, 1e-8),
             "prior_weight": 1.0,
+            "shared_low_rank_prior": {
+                "mean": mean.copy(),
+                "covariance": low_rank_covariance,
+                "deviation_variance": max(deviation, 1e-8),
+                "diagnostics": low_rank_diagnostics,
+            },
+            "shared_low_rank_predictive_prior": (
+                None if not predictive_available else {
+                    "mean": mean.copy(),
+                    "covariance": predictive_covariance,
+                    "deviation_variance": max(deviation, 1e-8),
+                    "diagnostics": predictive_diagnostics,
+                }
+            ),
+            "grouped_task_prior": grouped_prior,
+            "grouped_task_predictive_prior": grouped_predictive_prior,
+            "grouped_task_deconvolved_prior": grouped_deconvolved_prior,
+            "grouped_task_deconvolved_predictive_prior": (
+                grouped_deconvolved_predictive_prior
+            ),
             "diagnostics": {
                 **copy.deepcopy(self.fit_diagnostics),
                 "prior_kind": (

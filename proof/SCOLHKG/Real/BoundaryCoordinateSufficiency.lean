@@ -1455,4 +1455,424 @@ theorem append_one_target_observation_count {Observation : Type}
     (history ++ [observation]).length = history.length + 1 := by
   simp
 
+/-! ## V28 constraint-head authority separation
+
+The aggregate target GPR is authoritative for the constraint mean and its
+epistemic variance. Exactly one HVD head is authoritative for aleatoric risk.
+Legacy task-joint mean and epistemic moments remain explicit arguments only to
+state, and prove, that neither can affect the separated certificate or terminal
+Bayes-margin mean.
+-/
+
+inductive HvdHeadAuthority where
+  | taskRobust
+  | directCumulative
+  deriving DecidableEq
+
+def authoritativeHvdVariance
+    (authority : HvdHeadAuthority)
+    (taskAleatoric cumulativeAleatoric : ℝ) : ℝ :=
+  match authority with
+  | .taskRobust => taskAleatoric
+  | .directCumulative => cumulativeAleatoric
+
+noncomputable def separatedConstraintUpper
+    (authority : HvdHeadAuthority)
+    (aggregateMean aggregateEpistemic : ℝ)
+    (taskAleatoric cumulativeAleatoric : ℝ)
+    (_legacyTaskMean _legacyTaskEpistemic : ℝ)
+  (beta zAlpha tau : ℝ) : ℝ :=
+  aggregateMean
+    + Real.sqrt beta * Real.sqrt aggregateEpistemic
+    + zAlpha * Real.sqrt
+      (authoritativeHvdVariance authority
+        taskAleatoric cumulativeAleatoric)
+    - tau
+
+noncomputable def separatedBayesMarginMean
+    (authority : HvdHeadAuthority)
+    (aggregateMean : ℝ)
+    (taskAleatoric cumulativeAleatoric : ℝ)
+    (_legacyTaskMean _legacyTaskEpistemic : ℝ)
+    (zAlpha tau : ℝ) : ℝ :=
+  aggregateMean
+    + zAlpha * Real.sqrt
+      (authoritativeHvdVariance authority
+        taskAleatoric cumulativeAleatoric)
+    - tau
+
+theorem separated_constraint_upper_ignores_legacy_task_heads
+    (authority : HvdHeadAuthority)
+    (aggregateMean aggregateEpistemic : ℝ)
+    (taskAleatoric cumulativeAleatoric : ℝ)
+    (legacyMean₁ legacyEpistemic₁ legacyMean₂ legacyEpistemic₂ : ℝ)
+    (beta zAlpha tau : ℝ) :
+    separatedConstraintUpper authority aggregateMean aggregateEpistemic
+        taskAleatoric cumulativeAleatoric legacyMean₁ legacyEpistemic₁
+        beta zAlpha tau
+      = separatedConstraintUpper authority aggregateMean aggregateEpistemic
+        taskAleatoric cumulativeAleatoric legacyMean₂ legacyEpistemic₂
+        beta zAlpha tau := by
+  rfl
+
+theorem direct_cumulative_authority_selects_only_cumulative_hvd
+    (aggregateMean aggregateEpistemic taskAleatoric cumulativeAleatoric : ℝ)
+    (legacyTaskMean legacyTaskEpistemic beta zAlpha tau : ℝ) :
+    separatedConstraintUpper .directCumulative
+        aggregateMean aggregateEpistemic
+        taskAleatoric cumulativeAleatoric
+        legacyTaskMean legacyTaskEpistemic beta zAlpha tau
+      = aggregateMean
+        + Real.sqrt beta * Real.sqrt aggregateEpistemic
+        + zAlpha * Real.sqrt cumulativeAleatoric
+        - tau := by
+  rfl
+
+theorem task_hvd_authority_selects_only_task_aleatoric
+    (aggregateMean aggregateEpistemic taskAleatoric cumulativeAleatoric : ℝ)
+    (legacyTaskMean legacyTaskEpistemic beta zAlpha tau : ℝ) :
+    separatedConstraintUpper .taskRobust
+        aggregateMean aggregateEpistemic
+        taskAleatoric cumulativeAleatoric
+        legacyTaskMean legacyTaskEpistemic beta zAlpha tau
+      = aggregateMean
+        + Real.sqrt beta * Real.sqrt aggregateEpistemic
+        + zAlpha * Real.sqrt taskAleatoric
+        - tau := by
+  rfl
+
+theorem separated_bayes_margin_ignores_legacy_task_heads
+    (authority : HvdHeadAuthority)
+    (aggregateMean taskAleatoric cumulativeAleatoric : ℝ)
+    (legacyMean₁ legacyEpistemic₁ legacyMean₂ legacyEpistemic₂ : ℝ)
+    (zAlpha tau : ℝ) :
+    separatedBayesMarginMean authority aggregateMean
+        taskAleatoric cumulativeAleatoric legacyMean₁ legacyEpistemic₁
+        zAlpha tau
+      = separatedBayesMarginMean authority aggregateMean
+        taskAleatoric cumulativeAleatoric legacyMean₂ legacyEpistemic₂
+        zAlpha tau := by
+  rfl
+
+/-! ## V29 posterior-dominance incumbent preservation
+
+The runtime does not assume that incumbent and challenger posterior losses are
+independent.  It upper-bounds the variance of their difference by the square
+of the sum of posterior standard deviations.  Given the one-sided Cantelli
+bound for that difference, accepting only when the corresponding improvement
+lower bound is at least `1 - delta` controls the posterior false-switch
+probability by `delta`.
+-/
+
+noncomputable def covarianceFreeDifferenceVarianceUpper
+    (incumbentVariance challengerVariance : ℝ) : ℝ :=
+  (Real.sqrt (max incumbentVariance 0)
+    + Real.sqrt (max challengerVariance 0)) ^ 2
+
+noncomputable def cantelliImprovementLowerBound
+    (meanGain varianceUpper : ℝ) : ℝ :=
+  meanGain ^ 2 / (meanGain ^ 2 + varianceUpper)
+
+noncomputable def cantelliFalseSwitchUpperBound
+    (meanGain varianceUpper : ℝ) : ℝ :=
+  varianceUpper / (meanGain ^ 2 + varianceUpper)
+
+theorem covariance_free_difference_variance_upper
+    (incumbentVariance challengerVariance covariance : ℝ)
+    (hIncumbent : 0 ≤ incumbentVariance)
+    (hChallenger : 0 ≤ challengerVariance)
+    (hCovariance :
+      -Real.sqrt incumbentVariance * Real.sqrt challengerVariance
+        ≤ covariance) :
+    incumbentVariance + challengerVariance - 2 * covariance
+      ≤ covarianceFreeDifferenceVarianceUpper
+        incumbentVariance challengerVariance := by
+  have hIncumbentSqrt :
+      (Real.sqrt incumbentVariance) ^ 2 = incumbentVariance :=
+    Real.sq_sqrt hIncumbent
+  have hChallengerSqrt :
+      (Real.sqrt challengerVariance) ^ 2 = challengerVariance :=
+    Real.sq_sqrt hChallenger
+  unfold covarianceFreeDifferenceVarianceUpper
+  rw [max_eq_left hIncumbent, max_eq_left hChallenger]
+  nlinarith
+
+theorem cantelli_improvement_and_false_switch_sum_one
+    (meanGain varianceUpper : ℝ)
+    (hGain : 0 < meanGain)
+    (hVariance : 0 ≤ varianceUpper) :
+    cantelliImprovementLowerBound meanGain varianceUpper
+      + cantelliFalseSwitchUpperBound meanGain varianceUpper = 1 := by
+  have hDenominator : meanGain ^ 2 + varianceUpper ≠ 0 := by
+    nlinarith [sq_pos_of_pos hGain]
+  unfold cantelliImprovementLowerBound cantelliFalseSwitchUpperBound
+  field_simp [hDenominator]
+
+theorem accepted_cantelli_switch_controls_posterior_error
+    (meanGain varianceUpper posteriorFalseSwitch delta : ℝ)
+    (hGain : 0 < meanGain)
+    (hVariance : 0 ≤ varianceUpper)
+    (hCantelli :
+      posteriorFalseSwitch
+        ≤ cantelliFalseSwitchUpperBound meanGain varianceUpper)
+    (hAccepted :
+      1 - delta
+        ≤ cantelliImprovementLowerBound meanGain varianceUpper) :
+    posteriorFalseSwitch ≤ delta := by
+  have hPartition := cantelli_improvement_and_false_switch_sum_one
+    meanGain varianceUpper hGain hVariance
+  linarith
+
+/-! ## V30--V34 finite-sample mean-misspecification calibration
+
+V30 multiplies a conditioned covariance by an upper scale that is clipped
+below at one. V31 adds a local HC3 sandwich covariance. V34 first relaxes the
+source hyperlaw before target conditioning and then adds the HC3 correction to
+the resulting target posterior. The scalar projection lemmas below are the
+implementation bridge needed by certification: neither operation can reduce
+posterior uncertainty, and the post-conditioning sandwich operation does not
+alter the already-conditioned posterior mean.
+-/
+
+def posteriorScaleVariance (baseVariance scale : ℝ) : ℝ :=
+  scale * baseVariance
+
+theorem posterior_scale_at_least_one_cannot_reduce_variance
+    (baseVariance scale : ℝ)
+    (hVariance : 0 ≤ baseVariance)
+    (hScale : 1 ≤ scale) :
+    baseVariance ≤ posteriorScaleVariance baseVariance scale := by
+  unfold posteriorScaleVariance
+  nlinarith
+
+noncomputable def hc3ProjectedCorrection {n : ℕ}
+    (weight projectedScore : Fin n → ℝ) : ℝ :=
+  ∑ index, weight index * (projectedScore index) ^ 2
+
+theorem hc3_projected_correction_nonnegative {n : ℕ}
+    (weight projectedScore : Fin n → ℝ)
+    (hWeight : ∀ index, 0 ≤ weight index) :
+    0 ≤ hc3ProjectedCorrection weight projectedScore := by
+  unfold hc3ProjectedCorrection
+  exact Finset.sum_nonneg fun index _ =>
+    mul_nonneg (hWeight index) (sq_nonneg _)
+
+def sandwichCorrectedVariance
+    (conditionedVariance correction : ℝ) : ℝ :=
+  conditionedVariance + correction
+
+theorem sandwich_correction_cannot_reduce_variance
+    (conditionedVariance correction : ℝ)
+    (hCorrection : 0 ≤ correction) :
+    conditionedVariance ≤
+      sandwichCorrectedVariance conditionedVariance correction := by
+  unfold sandwichCorrectedVariance
+  linarith
+
+def sandwichCorrectedMean
+    (conditionedMean _correction : ℝ) : ℝ :=
+  conditionedMean
+
+theorem sandwich_correction_preserves_conditioned_mean
+    (conditionedMean correction : ℝ) :
+    sandwichCorrectedMean conditionedMean correction = conditionedMean := by
+  rfl
+
+def robustEmpiricalBayesProjectedVariance
+    (baseVariance priorScale sandwichCorrection : ℝ) : ℝ :=
+  posteriorScaleVariance baseVariance priorScale + sandwichCorrection
+
+theorem robust_empirical_bayes_two_layer_variance_nonshrinking
+    (baseVariance priorScale sandwichCorrection : ℝ)
+    (hVariance : 0 ≤ baseVariance)
+    (hScale : 1 ≤ priorScale)
+    (hCorrection : 0 ≤ sandwichCorrection) :
+    baseVariance ≤ robustEmpiricalBayesProjectedVariance
+      baseVariance priorScale sandwichCorrection := by
+  unfold robustEmpiricalBayesProjectedVariance
+  have hScaled := posterior_scale_at_least_one_cannot_reduce_variance
+    baseVariance priorScale hVariance hScale
+  linarith
+
+def centralPredictiveVariance
+    (baseVariance priorScale : ℝ) : ℝ :=
+  posteriorScaleVariance baseVariance priorScale
+
+def robustConfidenceVariance
+    (baseVariance priorScale sandwichCorrection : ℝ) : ℝ :=
+  robustEmpiricalBayesProjectedVariance
+    baseVariance priorScale sandwichCorrection
+
+theorem robust_confidence_variance_dominates_central_prediction
+    (baseVariance priorScale sandwichCorrection : ℝ)
+    (hCorrection : 0 ≤ sandwichCorrection) :
+    centralPredictiveVariance baseVariance priorScale
+      ≤ robustConfidenceVariance
+        baseVariance priorScale sandwichCorrection := by
+  unfold centralPredictiveVariance robustConfidenceVariance
+  unfold robustEmpiricalBayesProjectedVariance
+  linarith
+
+def confidenceOnlyBayesRiskVariance
+    (centralVariance _robustConfidenceVariance : ℝ) : ℝ :=
+  centralVariance
+
+theorem confidence_only_correction_does_not_change_bayes_ranking_variance
+    (centralVariance robustVariance : ℝ) :
+    confidenceOnlyBayesRiskVariance centralVariance robustVariance
+      = centralVariance := by
+  rfl
+
+noncomputable def certifiedInitialIndices {n : ℕ}
+    (upperMargin : Fin n → ℝ) : Finset (Fin n) :=
+  Finset.univ.filter fun index => upperMargin index ≤ 0
+
+theorem mem_certified_initial_indices_iff {n : ℕ}
+    (upperMargin : Fin n → ℝ) (index : Fin n) :
+    index ∈ certifiedInitialIndices upperMargin
+      ↔ upperMargin index ≤ 0 := by
+  simp [certifiedInitialIndices]
+
+theorem certified_initializer_is_safe_when_certificate_nonempty {n : ℕ}
+    (upperMargin : Fin n → ℝ)
+    (chosen : Fin n)
+    (hChosen : chosen ∈ certifiedInitialIndices upperMargin) :
+    upperMargin chosen ≤ 0 := by
+  exact (mem_certified_initial_indices_iff upperMargin chosen).mp hChosen
+
+theorem empty_certificate_has_no_certified_initializer {n : ℕ}
+    (upperMargin : Fin n → ℝ)
+    (hEmpty : certifiedInitialIndices upperMargin = ∅) :
+    ∀ chosen, ¬ upperMargin chosen ≤ 0 := by
+  intro chosen hMargin
+  have hMember : chosen ∈ certifiedInitialIndices upperMargin :=
+    (mem_certified_initial_indices_iff upperMargin chosen).mpr hMargin
+  rw [hEmpty] at hMember
+  simp at hMember
+
+def CertifiedOnlyInitializerContract {n : ℕ}
+    (upperMargin : Fin n → ℝ) (chosen : Option (Fin n)) : Prop :=
+  match chosen with
+  | none => certifiedInitialIndices upperMargin = ∅
+  | some index => index ∈ certifiedInitialIndices upperMargin
+
+theorem certified_only_initializer_some_is_safe {n : ℕ}
+    (upperMargin : Fin n → ℝ) (chosen : Fin n)
+    (hContract :
+      CertifiedOnlyInitializerContract upperMargin (some chosen)) :
+    upperMargin chosen ≤ 0 := by
+  apply certified_initializer_is_safe_when_certificate_nonempty upperMargin chosen
+  simpa [CertifiedOnlyInitializerContract] using hContract
+
+theorem certified_only_initializer_none_requires_empty {n : ℕ}
+    (upperMargin : Fin n → ℝ)
+    (hContract : CertifiedOnlyInitializerContract upperMargin none) :
+    certifiedInitialIndices upperMargin = ∅ := by
+  simpa [CertifiedOnlyInitializerContract] using hContract
+
+theorem certified_only_initializer_cannot_fabricate_incumbent {n : ℕ}
+    (upperMargin : Fin n → ℝ)
+    (hEmpty : certifiedInitialIndices upperMargin = ∅) (chosen : Fin n) :
+    ¬ CertifiedOnlyInitializerContract upperMargin (some chosen) := by
+  intro hContract
+  have hMember : chosen ∈ certifiedInitialIndices upperMargin := by
+    simpa [CertifiedOnlyInitializerContract] using hContract
+  rw [hEmpty] at hMember
+  simp at hMember
+
+noncomputable def posteriorCentralAleatoricMargin
+    (mean z centralVariance threshold : ℝ) : ℝ :=
+  mean + z * Real.sqrt centralVariance - threshold
+
+noncomputable def certificationUpperAleatoricMargin
+    (mean epistemicRadius z upperVariance threshold : ℝ) : ℝ :=
+  mean + epistemicRadius + z * Real.sqrt upperVariance - threshold
+
+theorem certification_upper_margin_independent_of_decision_variance
+    (mean epistemicRadius z upperVariance threshold
+      _centralVariance₁ _centralVariance₂ : ℝ) :
+    certificationUpperAleatoricMargin
+        mean epistemicRadius z upperVariance threshold
+      = certificationUpperAleatoricMargin
+        mean epistemicRadius z upperVariance threshold := by
+  rfl
+
+theorem central_decision_margin_cannot_relax_upper_certificate
+    (mean epistemicRadius z centralVariance upperVariance threshold : ℝ)
+    (hEpistemic : 0 ≤ epistemicRadius) (hZ : 0 ≤ z)
+    (hVariance : centralVariance ≤ upperVariance) :
+    posteriorCentralAleatoricMargin mean z centralVariance threshold
+      ≤ certificationUpperAleatoricMargin
+        mean epistemicRadius z upperVariance threshold := by
+  have hSqrt : Real.sqrt centralVariance ≤ Real.sqrt upperVariance :=
+    Real.sqrt_le_sqrt hVariance
+  have hScaled :
+      z * Real.sqrt centralVariance ≤ z * Real.sqrt upperVariance :=
+    mul_le_mul_of_nonneg_left hSqrt hZ
+  unfold posteriorCentralAleatoricMargin
+  unfold certificationUpperAleatoricMargin
+  linarith
+
+def posteriorBinaryChanceRisk
+    (objective penalty failureProbability : ℝ) : ℝ :=
+  objective + penalty * failureProbability
+
+theorem posterior_binary_chance_risk_monotone
+    (objective penalty p q : ℝ) (hPenalty : 0 ≤ penalty) (hPQ : p ≤ q) :
+    posteriorBinaryChanceRisk objective penalty p
+      ≤ posteriorBinaryChanceRisk objective penalty q := by
+  unfold posteriorBinaryChanceRisk
+  linarith [mul_le_mul_of_nonneg_left hPQ hPenalty]
+
+theorem posterior_binary_chance_risk_excess_nonnegative
+    (objective penalty p : ℝ) (hPenalty : 0 ≤ penalty) (hP : 0 ≤ p) :
+    objective ≤ posteriorBinaryChanceRisk objective penalty p := by
+  unfold posteriorBinaryChanceRisk
+  linarith [mul_nonneg hPenalty hP]
+
+def posteriorNominalDecisionRisk
+    (objective penalty nominalViolation : ℝ) : ℝ :=
+  objective + penalty * nominalViolation
+
+def klRobustDecisionRisk
+    (objective penalty nominalViolation ambiguityPremium : ℝ) : ℝ :=
+  objective + penalty * (nominalViolation + ambiguityPremium)
+
+theorem kl_robust_decision_risk_decomposition
+    (objective penalty nominalViolation ambiguityPremium : ℝ) :
+    klRobustDecisionRisk
+        objective penalty nominalViolation ambiguityPremium
+      = posteriorNominalDecisionRisk objective penalty nominalViolation
+        + penalty * ambiguityPremium := by
+  unfold klRobustDecisionRisk posteriorNominalDecisionRisk
+  ring
+
+theorem posterior_nominal_decision_risk_le_kl_robust
+    (objective penalty nominalViolation ambiguityPremium : ℝ)
+    (hPenalty : 0 ≤ penalty) (hPremium : 0 ≤ ambiguityPremium) :
+    posteriorNominalDecisionRisk objective penalty nominalViolation
+      ≤ klRobustDecisionRisk
+        objective penalty nominalViolation ambiguityPremium := by
+  rw [kl_robust_decision_risk_decomposition]
+  exact le_add_of_nonneg_right (mul_nonneg hPenalty hPremium)
+
+theorem certification_upper_margin_independent_of_decision_ambiguity
+    (mean epistemicRadius z upperVariance threshold
+      _nominalAmbiguity _robustAmbiguity : ℝ) :
+    certificationUpperAleatoricMargin
+        mean epistemicRadius z upperVariance threshold
+      = certificationUpperAleatoricMargin
+        mean epistemicRadius z upperVariance threshold := by
+  rfl
+
+theorem finite_action_set_expansion_cannot_reduce_best_voi
+    {Action : Type*} [DecidableEq Action]
+    (small large : Finset Action) (voi : Action → ℝ)
+    (bestSmall bestLarge : Action)
+    (hBestSmallMem : bestSmall ∈ small)
+    (hSubset : small ⊆ large)
+    (hBestLarge : ∀ action ∈ large, voi action ≤ voi bestLarge) :
+    voi bestSmall ≤ voi bestLarge := by
+  exact hBestLarge bestSmall (hSubset hBestSmallMem)
+
 end SCOLHKG.Real

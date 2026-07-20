@@ -163,3 +163,39 @@ def test_lodo_rejects_source_archive_mismatch_before_target_calls(monkeypatch):
             "line": "lodo",
             "seed": 7,
         })
+
+
+def test_paired_frozen_control_audits_archive_intervention():
+    contract = lodo._source_informed_archive_contract(
+        {
+            "initial_design": "source_informed",
+            "initial_design_source_archive_fingerprint": "proposal-archive",
+            "initial_design_archive_match_mode": "paired_frozen_control",
+            "meta_source_budget_mode": "per_base_domain",
+        },
+        {"training": {
+            "source_archive_fingerprint": "posterior-archive",
+            "source_episode_target_data_used": False,
+            "source_episode_target_oracle_used": False,
+        }},
+    )
+    assert contract["mode"] == "paired_frozen_control"
+    assert contract["matches"] is False
+    assert contract["proposal_frozen_across_arms"] is True
+    assert contract["target_data_used"] is False
+    assert contract["target_oracle_used"] is False
+
+
+def test_paired_frozen_control_requires_cost_matched_source_budget():
+    with pytest.raises(ValueError, match="cost-matched"):
+        lodo._source_informed_archive_contract(
+            {
+                "initial_design": "source_informed",
+                "initial_design_source_archive_fingerprint": "proposal-archive",
+                "initial_design_archive_match_mode": "paired_frozen_control",
+                "meta_source_budget_mode": "per_episode",
+            },
+            {"training": {
+                "source_archive_fingerprint": "posterior-archive",
+            }},
+        )

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Callable, Optional, Union
 
 import numpy as np
+from scipy.stats import chi2, norm, t
 
 from representation.adaptive_sparsity import (
     AdaptiveGroupRidgePosterior,
@@ -132,6 +133,10 @@ class ParametricGPR:
         self._finite_mixture_misspecification_mode = (
             "hierarchical_predictive_scale")
         self._finite_mixture_misspecification_ridge = 1.0
+        self._finite_mixture_misspecification_delta = 0.05
+        self._decision_covariance = None
+        self._decision_lambda_i = None
+        self._source_conditioned_confidence = None
         self._covariance_projection_count = 0
         self._min_quadratic_variance_seen = float("inf")
         self._max_abs_posterior_mean_seen = 0.0
@@ -400,6 +405,213 @@ class ParametricGPR:
         var += self.adaptive_model_uncertainty_many(X)
         return np.maximum(var, 1e-12)
 
+    def decision_posterior_var_many(
+        self, X: list[ArrayLike] | np.ndarray
+    ) -> np.ndarray:
+        """Central predictive variance before robust sandwich correction.
+
+        A sandwich covariance is a confidence correction for the fitted mean,
+        not an additional generative noise law. When no such correction is
+        installed this method is exactly ``posterior_var_many``.
+        """
+        covariance = getattr(self, "_decision_covariance", None)
+        decision_lambda = getattr(self, "_decision_lambda_i", None)
+        if covariance is None or decision_lambda is None:
+            return self.posterior_var_many(X)
+        if len(X) == 0:
+            return np.zeros(0, dtype=float)
+        A = self.augmented_feature_matrix(X)
+        covariance = np.asarray(covariance, dtype=float)
+        if covariance.shape != (A.shape[1], A.shape[1]):
+            raise ValueError("decision covariance does not match GPR features")
+        values = np.einsum("ij,jk,ik->i", A, covariance, A)
+        if not np.all(np.isfinite(values)):
+            raise FloatingPointError("non-finite decision posterior variances")
+        values = np.maximum(np.asarray(values, dtype=float), 0.0)
+        unseen = np.array([
+            tuple(int(v) for v in np.asarray(x, dtype=int)) not in self.sol_to_idx
+            for x in X
+        ], dtype=bool)
+        values[unseen] += max(float(decision_lambda), 1e-12)
+        values += self.adaptive_model_uncertainty_many(X)
+        return np.maximum(values, 1e-12)
+
+    @staticmethod
+    def _stable_logdet_psd(matrix: np.ndarray) -> float:
+        """Log determinant on the numerically supported PSD subspace."""
+
+        matrix = np.asarray(matrix, dtype=float)
+        matrix = 0.5 * (matrix + matrix.T)
+        eigenvalues = np.linalg.eigvalsh(matrix)
+        if not np.all(np.isfinite(eigenvalues)):
+            raise FloatingPointError("non-finite confidence covariance")
+        scale = max(float(np.max(eigenvalues)), 1.0)
+        floor = 1e-12 * scale
+        return float(np.sum(np.log(np.maximum(eigenvalues, floor))))
+
+    def set_source_conditioned_confidence(
+        self,
+        prior_covariance,
+        posterior_covariance,
+        residual_floor,
+        *,
+        source_domain_count,
+        target_count,
+        prior_df,
+        delta,
+    ) -> None:
+        """Install the frozen-source confidence law used for certification.
+
+        The coefficient covariance is the ordinary source-conditioned
+        posterior, before any HC3 correction. The finite residual floor is
+        retained as a separate transfer-misspecification radius, rather than
+        being counted again as an independent latent deviation after the HVD
+        head has already modeled aleatoric risk.
+        """
+
+        prior = np.asarray(prior_covariance, dtype=float)
+        posterior = np.asarray(posterior_covariance, dtype=float)
+        if prior.shape != (self.p, self.p) or posterior.shape != (self.p, self.p):
+            raise ValueError("source confidence covariances must match basis dim")
+        if not np.all(np.isfinite(prior)) or not np.all(np.isfinite(posterior)):
+            raise ValueError("source confidence covariances must be finite")
+        prior = 0.5 * (prior + prior.T)
+        posterior = 0.5 * (posterior + posterior.T)
+        prior_values, prior_vectors = np.linalg.eigh(prior)
+        posterior_values, posterior_vectors = np.linalg.eigh(posterior)
+        prior = (
+            prior_vectors * np.maximum(prior_values, 1e-12)
+        ) @ prior_vectors.T
+        posterior = (
+            posterior_vectors * np.maximum(posterior_values, 1e-12)
+        ) @ posterior_vectors.T
+        information_gain = max(
+            0.5 * (
+                self._stable_logdet_psd(prior)
+                - self._stable_logdet_psd(posterior)
+            ),
+            0.0,
+        )
+        trace = max(float(np.trace(prior)), 1e-12)
+        effective_rank = float(
+            trace ** 2 / max(float(np.trace(prior @ prior)), 1e-12)
+        )
+        confidence_delta = float(delta)
+        if not np.isfinite(confidence_delta) or not 0.0 < confidence_delta < 0.5:
+            raise ValueError("source confidence delta must lie in (0, 0.5)")
+        self._source_conditioned_confidence = {
+            "prior_covariance": prior,
+            "posterior_covariance": posterior,
+            "residual_floor": max(float(residual_floor), 0.0),
+            "source_domain_count": max(int(source_domain_count), 1),
+            "target_count": max(int(target_count), 0),
+            "prior_df": max(float(prior_df), 1e-8),
+            "delta": confidence_delta,
+            "information_gain": float(information_gain),
+            "effective_rank": float(effective_rank),
+            "target_oracle_used": False,
+        }
+
+    def source_conditioned_certification_var_many(
+        self,
+        X: list[ArrayLike] | np.ndarray,
+        *,
+        beta_g: float,
+        mode: str,
+        delta: float | None = None,
+    ) -> tuple[np.ndarray, dict]:
+        """Equivalent variance for a source-conditioned mean confidence radius.
+
+        source_bayes uses the one-sided Gaussian hyperposterior quantile.
+        source_self_normalized additionally pays the determinant-ratio
+        information term required by the adaptive finite-feature confidence
+        sequence. Both add, rather than absorb, the source-target residual
+        guard. Returning an equivalent variance preserves the canonical
+        sqrt(beta_g * variance) certification API exactly.
+        """
+
+        state = getattr(self, "_source_conditioned_confidence", None)
+        if state is None:
+            raise RuntimeError("source-conditioned confidence is unavailable")
+        mode = str(mode or "source_self_normalized").strip().lower()
+        if mode not in {"source_bayes", "source_self_normalized"}:
+            raise ValueError(f"unknown source confidence mode {mode!r}")
+        if len(X) == 0:
+            return np.zeros(0, dtype=float), {
+                "mode": mode,
+                "status": "empty",
+                "target_oracle_used": False,
+            }
+        confidence_delta = float(
+            state["delta"] if delta is None else delta)
+        if not np.isfinite(confidence_delta) or not 0.0 < confidence_delta < 0.5:
+            raise ValueError("source confidence delta must lie in (0, 0.5)")
+        beta_g = max(float(beta_g), 1e-12)
+        phi = np.asarray(self.basis_matrix(X), dtype=float)
+        covariance = np.asarray(state["posterior_covariance"], dtype=float)
+        coefficient_var = np.maximum(
+            np.einsum("ij,jk,ik->i", phi, covariance, phi),
+            0.0,
+        )
+        gaussian_beta = float(norm.ppf(1.0 - confidence_delta) ** 2)
+        if mode == "source_bayes":
+            effective_beta = max(beta_g, gaussian_beta)
+        else:
+            effective_beta = max(
+                beta_g,
+                2.0 * (
+                    np.log(1.0 / confidence_delta)
+                    + float(state["information_gain"])
+                ),
+            )
+        transfer_df = max(
+            float(state["prior_df"])
+            + float(state["source_domain_count"])
+            + float(state["target_count"])
+            - 1.0,
+            1.0,
+        )
+        transfer_quantile = max(
+            float(t.ppf(1.0 - confidence_delta, transfer_df)),
+            0.0,
+        )
+        transfer_radius = (
+            transfer_quantile
+            * np.sqrt(max(float(state["residual_floor"]), 0.0))
+        )
+        coefficient_radius = np.sqrt(effective_beta * coefficient_var)
+        total_radius = coefficient_radius + transfer_radius
+        equivalent = np.maximum(total_radius ** 2 / beta_g, 1e-12)
+        model_var = np.maximum(self.posterior_var_many(X), 1e-12)
+        diagnostics = {
+            "mode": mode,
+            "status": "active",
+            "delta": float(confidence_delta),
+            "beta_g": float(beta_g),
+            "effective_beta": float(effective_beta),
+            "gaussian_beta": float(gaussian_beta),
+            "information_gain": float(state["information_gain"]),
+            "effective_rank": float(state["effective_rank"]),
+            "source_domain_count": int(state["source_domain_count"]),
+            "target_count": int(state["target_count"]),
+            "transfer_df": float(transfer_df),
+            "transfer_quantile": float(transfer_quantile),
+            "transfer_residual_floor": float(state["residual_floor"]),
+            "transfer_radius": float(transfer_radius),
+            "coefficient_radius_min": float(np.min(coefficient_radius)),
+            "coefficient_radius_median": float(np.median(coefficient_radius)),
+            "coefficient_radius_max": float(np.max(coefficient_radius)),
+            "total_radius_min": float(np.min(total_radius)),
+            "total_radius_median": float(np.median(total_radius)),
+            "total_radius_max": float(np.max(total_radius)),
+            "equivalent_to_model_variance_median_ratio": float(np.median(
+                equivalent / model_var)),
+            "solution_specific_deviation_double_counted": False,
+            "transfer_guard_can_only_increase_radius": True,
+            "target_oracle_used": False,
+        }
+        return equivalent, diagnostics
+
     def dimension_augment(self, x: ArrayLike) -> None:
         x_tuple = tuple(int(v) for v in np.asarray(x, dtype=int))
         if x_tuple in self.sol_to_idx:
@@ -486,6 +698,10 @@ class ParametricGPR:
         self._finite_mixture_misspecification_mode = (
             "hierarchical_predictive_scale")
         self._finite_mixture_misspecification_ridge = 1.0
+        self._finite_mixture_misspecification_delta = 0.05
+        self._decision_covariance = None
+        self._decision_lambda_i = None
+        self._source_conditioned_confidence = None
         self._covariance_projection_count = 0
         self._min_quadratic_variance_seen = float("inf")
         self._max_abs_posterior_mean_seen = 0.0
@@ -540,6 +756,143 @@ class ParametricGPR:
             except np.linalg.LinAlgError:
                 jitter *= 10.0
         return max(float(residual @ np.linalg.pinv(covariance) @ residual), 0.0)
+
+    @staticmethod
+    def _posterior_hc3_discrepancy_covariance(
+        phi,
+        residual,
+        effective_noise,
+        posterior_covariance,
+        *,
+        delta=0.05,
+        source_task_multiplier=1.0,
+    ):
+        """Build a PSD local misspecification covariance from charged data.
+
+        This is a Bayesian-ridge analogue of the HC3 sandwich covariance.  It
+        uses target residuals and design leverage only.  The caller adds the
+        result after ordinary posterior conditioning, so it cannot move the
+        posterior mean or reduce uncertainty in any predictive direction.
+        """
+
+        design = np.asarray(phi, dtype=float)
+        error = np.asarray(residual, dtype=float).reshape(-1)
+        noise = np.maximum(
+            np.asarray(effective_noise, dtype=float).reshape(-1), 1e-12)
+        covariance = np.asarray(posterior_covariance, dtype=float)
+        covariance = 0.5 * (covariance + covariance.T)
+        if (
+            design.ndim != 2
+            or len(design) != len(error)
+            or len(design) != len(noise)
+            or covariance.shape != (design.shape[1], design.shape[1])
+        ):
+            raise ValueError("HC3 discrepancy inputs must align")
+        if not len(design):
+            return np.zeros_like(covariance), {
+                "effective_rank": 0.0,
+                "residual_dof": 1.0,
+                "maximum_leverage": 0.0,
+                "median_leverage": 0.0,
+                "variance_upper_multiplier": 1.0,
+                "student_multiplier": 1.0,
+                "source_task_multiplier": 1.0,
+                "total_multiplier": 1.0,
+                "covariance_trace": 0.0,
+            }
+
+        leverage = np.einsum(
+            "ij,jk,ik->i", design, covariance, design) / noise
+        leverage = np.clip(leverage, 0.0, 1.0 - 1e-8)
+        correction = np.maximum(1.0 - leverage, 1e-8)
+        meat_weight = error ** 2 / (noise ** 2 * correction ** 2)
+        meat = design.T @ (meat_weight[:, None] * design)
+        robust = covariance @ meat @ covariance
+        robust = 0.5 * (robust + robust.T)
+        values, vectors = np.linalg.eigh(robust)
+        robust = (vectors * np.maximum(values, 0.0)) @ vectors.T
+
+        effective_rank = float(np.sum(leverage))
+        residual_dof = max(float(len(design)) - effective_rank, 1.0)
+        delta = float(np.clip(delta, 1e-8, 0.499999))
+        chi_square = float(chi2.ppf(delta, residual_dof))
+        if not np.isfinite(chi_square) or chi_square <= 0.0:
+            raise FloatingPointError("invalid HC3 inverse-chi-square quantile")
+        variance_upper = max(residual_dof / chi_square, 1.0)
+        gaussian_quantile = float(norm.ppf(1.0 - delta))
+        student_quantile = float(t.ppf(1.0 - delta, residual_dof))
+        student_multiplier = max(
+            (student_quantile / gaussian_quantile) ** 2, 1.0)
+        source_task_multiplier = max(float(source_task_multiplier), 1.0)
+        total_multiplier = (
+            variance_upper * student_multiplier * source_task_multiplier)
+        robust *= total_multiplier
+        robust = 0.5 * (robust + robust.T)
+        return robust, {
+            "effective_rank": float(effective_rank),
+            "residual_dof": float(residual_dof),
+            "maximum_leverage": float(np.max(leverage)),
+            "median_leverage": float(np.median(leverage)),
+            "variance_upper_multiplier": float(variance_upper),
+            "student_multiplier": float(student_multiplier),
+            "source_task_multiplier": float(source_task_multiplier),
+            "total_multiplier": float(total_multiplier),
+            "covariance_trace": float(np.trace(robust)),
+        }
+
+    @staticmethod
+    def _collapse_replicated_hc3_design(
+        rows,
+        design,
+        target,
+        observation_variance,
+    ):
+        """Collapse repeated policies into precision-weighted HC3 clusters.
+
+        Repeated simulator calls reduce observation noise at one policy but do
+        not create new design directions. Treating them as independent HC3
+        rows drives their leverage toward one and makes the correction diverge.
+        The unique-policy mean is the corresponding cluster score statistic.
+        """
+
+        design = np.asarray(design, dtype=float)
+        target = np.asarray(target, dtype=float).reshape(-1)
+        observation_variance = np.maximum(
+            np.asarray(observation_variance, dtype=float).reshape(-1),
+            1e-12,
+        )
+        if not (
+            len(rows) == len(design)
+            and len(rows) == len(target)
+            and len(rows) == len(observation_variance)
+        ):
+            raise ValueError("replicate HC3 inputs must align")
+        groups = {}
+        for index, row in enumerate(rows):
+            key = tuple(np.asarray(row, dtype=int).reshape(-1).tolist())
+            groups.setdefault(key, []).append(index)
+        collapsed_design = []
+        collapsed_target = []
+        collapsed_variance = []
+        counts = []
+        for indices in groups.values():
+            first = int(indices[0])
+            block = design[np.asarray(indices, dtype=int)]
+            if not np.allclose(block, design[first], rtol=0.0, atol=1e-12):
+                raise RuntimeError("one policy produced inconsistent HC3 features")
+            precision = 1.0 / observation_variance[indices]
+            total_precision = max(float(np.sum(precision)), 1e-12)
+            collapsed_design.append(design[first])
+            collapsed_target.append(float(
+                precision @ target[indices] / total_precision))
+            collapsed_variance.append(float(1.0 / total_precision))
+            counts.append(int(len(indices)))
+        return (
+            np.asarray(collapsed_design, dtype=float),
+            np.asarray(collapsed_target, dtype=float),
+            np.asarray(collapsed_variance, dtype=float),
+            np.asarray(counts, dtype=int),
+        )
 
     @staticmethod
     def _gaussian_loo_log_score(residual, covariance):
@@ -727,6 +1080,7 @@ class ParametricGPR:
         max_scale=100.0,
         misspecification_mode="hierarchical_predictive_scale",
         misspecification_ridge=1.0,
+        misspecification_delta=0.05,
         group_labels=None,
         group_masses=None,
     ) -> None:
@@ -814,15 +1168,34 @@ class ParametricGPR:
             "none",
             "predictive_scale",
             "predictive_scale_directional",
+            "predictive_scale_upper_target",
+            "predictive_scale_upper",
+            "predictive_sandwich_hc3",
+            "predictive_sandwich_hc3_task",
+            "predictive_scale_sandwich_hc3",
+            "predictive_scale_sandwich_hc3_task",
+            "predictive_scale_sandwich_hc3_confidence",
+            "predictive_scale_sandwich_hc3_task_confidence",
             "hierarchical_predictive_scale",
         }:
             raise ValueError(
                 "sequential misspecification mode must be none, "
-                "predictive_scale, predictive_scale_directional, or "
+                "predictive_scale, predictive_scale_directional, "
+                "predictive_scale_upper_target, predictive_scale_upper, "
+                "predictive_sandwich_hc3, "
+                "predictive_sandwich_hc3_task, "
+                "predictive_scale_sandwich_hc3, "
+                "predictive_scale_sandwich_hc3_task, "
+                "predictive_scale_sandwich_hc3_confidence, "
+                "predictive_scale_sandwich_hc3_task_confidence, or "
                 "hierarchical_predictive_scale")
         self._finite_mixture_misspecification_mode = mode
         self._finite_mixture_misspecification_ridge = max(
             float(misspecification_ridge), 1e-10)
+        delta = float(misspecification_delta)
+        if not np.isfinite(delta) or not 0.0 < delta < 0.5:
+            raise ValueError("misspecification delta must lie in (0, 0.5)")
+        self._finite_mixture_misspecification_delta = delta
         self.source_parametric_prior_diagnostics = dict(diagnostics or {})
         if preserve_group_masses:
             self.source_parametric_prior_diagnostics.update({
@@ -864,12 +1237,19 @@ class ParametricGPR:
         )).strip().lower()
         misspecification_ridge = max(float(getattr(
             self, "_finite_mixture_misspecification_ridge", 1.0)), 1e-10)
+        misspecification_delta = float(np.clip(getattr(
+            self, "_finite_mixture_misspecification_delta", 0.05),
+            1e-8, 0.499999))
         diagnostics = dict(getattr(
             self, "source_parametric_prior_diagnostics", {}) or {})
         temperature = max(
             float(diagnostics.get("evidence_temperature", 1.0)), 1e-6)
         component_diagnostics = []
         log_evidence = []
+        decision_component_covariances = []
+        decision_component_deviations = []
+        confidence_prior_means = []
+        confidence_prior_covariances = []
 
         for index, (component, prior) in enumerate(zip(components, priors)):
             mean = np.asarray(prior["mean"], dtype=float).reshape(-1)
@@ -894,18 +1274,78 @@ class ParametricGPR:
                 residual = np.zeros(0, dtype=float)
                 mahalanobis = 0.0
             scale = 1.0
+            target_scale_upper = 1.0
+            source_task_scale_upper = 1.0
+            posterior_only_scale = bool(
+                is_source
+                and misspecification_mode in {
+                    "predictive_scale_upper_target",
+                    "predictive_scale_upper",
+                    "predictive_sandwich_hc3",
+                    "predictive_sandwich_hc3_task",
+                })
+            if (
+                is_source
+                and rows
+                and misspecification_mode in {
+                    "predictive_scale_upper",
+                    "predictive_sandwich_hc3_task",
+                    "predictive_scale_sandwich_hc3_task",
+                    "predictive_scale_sandwich_hc3_task_confidence",
+                }
+            ):
+                source_task_count = max(int(diagnostics.get(
+                    "source_domain_count", 1)), 1)
+                source_task_df = max(
+                    prior_df + source_task_count - 1.0, 1e-8)
+                normal_quantile = float(norm.ppf(
+                    1.0 - misspecification_delta))
+                student_quantile = float(t.ppf(
+                    1.0 - misspecification_delta, source_task_df))
+                source_task_scale_upper = float(
+                    (1.0 + 1.0 / source_task_count)
+                    * (student_quantile / normal_quantile) ** 2
+                )
             if (
                 is_source
                 and rows
                 and misspecification_mode != "none"
             ):
-                scale = float(np.clip(
-                    (prior_df + mahalanobis) / (prior_df + len(rows)),
-                    1.0,
-                    max_scale,
-                ))
-            scaled_covariance = scale * covariance
-            scaled_deviation = scale * deviation
+                if posterior_only_scale:
+                    if misspecification_mode in {
+                        "predictive_scale_upper_target",
+                        "predictive_scale_upper",
+                    }:
+                        posterior_df = prior_df + len(rows)
+                        target_denominator = float(chi2.ppf(
+                            misspecification_delta, posterior_df))
+                        if not np.isfinite(target_denominator) or (
+                            target_denominator <= 0.0
+                        ):
+                            raise FloatingPointError(
+                                "invalid inverse-chi-square calibration quantile")
+                        target_scale_upper = float(
+                            (prior_df + mahalanobis) / target_denominator)
+                    if misspecification_mode in {
+                        "predictive_scale_upper_target",
+                        "predictive_scale_upper",
+                    }:
+                        scale = float(np.clip(max(
+                            1.0,
+                            target_scale_upper,
+                            source_task_scale_upper,
+                        ), 1.0, max_scale))
+                else:
+                    scale = float(np.clip(
+                        (prior_df + mahalanobis) / (prior_df + len(rows)),
+                        1.0,
+                        max_scale,
+                    ))
+            scaled_covariance = (
+                covariance.copy()
+                if posterior_only_scale else scale * covariance)
+            scaled_deviation = (
+                deviation if posterior_only_scale else scale * deviation)
             directional_mass = 0.0
             directional_energy = 0.0
             if (
@@ -966,6 +1406,94 @@ class ParametricGPR:
                     entry["y"],
                     entry["observation_variance"],
                 )
+            posterior_mean_before_calibration = np.asarray(
+                component.a, dtype=float).copy()
+            posterior_covariance_trace_before = float(np.trace(component.C))
+            posterior_deviation_before = float(component.lambda_i)
+            sandwich_diagnostics = {
+                "effective_rank": 0.0,
+                "residual_dof": 1.0,
+                "maximum_leverage": 0.0,
+                "median_leverage": 0.0,
+                "variance_upper_multiplier": 1.0,
+                "student_multiplier": 1.0,
+                "source_task_multiplier": 1.0,
+                "total_multiplier": 1.0,
+                "covariance_trace": 0.0,
+            }
+            sandwich_mode = misspecification_mode in {
+                "predictive_sandwich_hc3",
+                "predictive_sandwich_hc3_task",
+                "predictive_scale_sandwich_hc3",
+                "predictive_scale_sandwich_hc3_task",
+                "predictive_scale_sandwich_hc3_confidence",
+                "predictive_scale_sandwich_hc3_task_confidence",
+            }
+            decision_component_covariances.append(np.asarray(
+                component.C, dtype=float).copy())
+            decision_component_deviations.append(float(component.lambda_i))
+            confidence_prior_means.append(mean.copy())
+            confidence_prior_covariances.append(scaled_covariance.copy())
+            if sandwich_mode and is_source and rows:
+                parametric_dim = int(len(mean))
+                parametric_covariance = np.asarray(
+                    component.C[:parametric_dim, :parametric_dim],
+                    dtype=float,
+                )
+                (
+                    sandwich_phi,
+                    sandwich_target,
+                    sandwich_observation_variance,
+                    sandwich_cluster_counts,
+                ) = self._collapse_replicated_hc3_design(
+                    rows,
+                    phi,
+                    target,
+                    observation_variance,
+                )
+                posterior_residual = sandwich_target - sandwich_phi @ np.asarray(
+                    component.a[:parametric_dim], dtype=float)
+                effective_noise = np.maximum(
+                    scaled_deviation + sandwich_observation_variance, 1e-12)
+                discrepancy_covariance, sandwich_diagnostics = (
+                    self._posterior_hc3_discrepancy_covariance(
+                        sandwich_phi,
+                        posterior_residual,
+                        effective_noise,
+                        parametric_covariance,
+                        delta=misspecification_delta,
+                        source_task_multiplier=(
+                            source_task_scale_upper
+                            if misspecification_mode
+                            in {
+                                "predictive_sandwich_hc3_task",
+                                "predictive_scale_sandwich_hc3_task",
+                                "predictive_scale_sandwich_hc3_task_confidence",
+                            }
+                            else 1.0
+                        ),
+                    )
+                )
+                sandwich_diagnostics.update({
+                    "clustered_replicates": True,
+                    "cluster_count": int(len(sandwich_cluster_counts)),
+                    "replicated_cluster_count": int(np.sum(
+                        sandwich_cluster_counts > 1)),
+                    "maximum_cluster_size": int(np.max(
+                        sandwich_cluster_counts)),
+                })
+                component.C[:parametric_dim, :parametric_dim] += (
+                    discrepancy_covariance)
+                component.C = 0.5 * (component.C + component.C.T)
+                component._invalidate_backend_cache()
+            elif posterior_only_scale:
+                component.C = np.asarray(component.C, dtype=float) * scale
+                component.C = 0.5 * (component.C + component.C.T)
+                component.lambda_i = max(
+                    float(component.lambda_i) * scale, 1e-12)
+                component._invalidate_backend_cache()
+            posterior_covariance_trace_after = float(np.trace(component.C))
+            posterior_deviation_after = float(component.lambda_i)
             base_diagnostics = dict(prior.get("diagnostics", {}))
             base_diagnostics.update({
                 "name": name,
@@ -983,6 +1511,27 @@ class ParametricGPR:
                     directional_energy),
                 "source_mean_misspecification_ridge": float(
                     misspecification_ridge),
+                "source_mean_misspecification_delta": float(
+                    misspecification_delta),
+                "source_mean_misspecification_target_scale_upper": float(
+                    target_scale_upper),
+                "source_mean_misspecification_source_task_scale_upper": float(
+                    source_task_scale_upper),
+                "source_mean_misspecification_application": (
+                    (
+                        "source_prior_scale_then_posterior_sandwich"
+                        if misspecification_mode in {
+                            "predictive_scale_sandwich_hc3",
+                            "predictive_scale_sandwich_hc3_task",
+                            "predictive_scale_sandwich_hc3_confidence",
+                            "predictive_scale_sandwich_hc3_task_confidence",
+                        }
+                        else "posterior_sandwich_covariance_only"
+                    ) if sandwich_mode else (
+                        "posterior_covariance_only"
+                        if posterior_only_scale else "source_prior_refit"
+                    )
+                ),
                 "source_mean_misspecification_target_count": int(len(rows)),
                 "source_mean_prior_covariance_trace_before": float(
                     np.trace(covariance)),
@@ -990,6 +1539,62 @@ class ParametricGPR:
                     np.trace(scaled_covariance)),
                 "source_mean_residual_floor_before": float(deviation),
                 "source_mean_residual_floor_after": float(scaled_deviation),
+                "source_mean_posterior_covariance_trace_before": float(
+                    posterior_covariance_trace_before),
+                "source_mean_posterior_covariance_trace_after": float(
+                    posterior_covariance_trace_after),
+                "source_mean_posterior_deviation_before": float(
+                    posterior_deviation_before),
+                "source_mean_posterior_deviation_after": float(
+                    posterior_deviation_after),
+                "source_mean_posterior_mean_preserved": bool(np.allclose(
+                    posterior_mean_before_calibration,
+                    component.a,
+                    rtol=0.0,
+                    atol=1e-12,
+                )),
+                "source_mean_sandwich_applied": bool(
+                    sandwich_mode and is_source and bool(rows)),
+                "source_mean_sandwich_effective_rank": float(
+                    sandwich_diagnostics["effective_rank"]),
+                "source_mean_sandwich_residual_dof": float(
+                    sandwich_diagnostics["residual_dof"]),
+                "source_mean_sandwich_maximum_leverage": float(
+                    sandwich_diagnostics["maximum_leverage"]),
+                "source_mean_sandwich_median_leverage": float(
+                    sandwich_diagnostics["median_leverage"]),
+                "source_mean_sandwich_variance_upper_multiplier": float(
+                    sandwich_diagnostics["variance_upper_multiplier"]),
+                "source_mean_sandwich_student_multiplier": float(
+                    sandwich_diagnostics["student_multiplier"]),
+                "source_mean_sandwich_source_task_multiplier": float(
+                    sandwich_diagnostics["source_task_multiplier"]),
+                "source_mean_sandwich_total_multiplier": float(
+                    sandwich_diagnostics["total_multiplier"]),
+                "source_mean_sandwich_covariance_trace": float(
+                    sandwich_diagnostics["covariance_trace"]),
+                "source_mean_sandwich_clustered_replicates": bool(
+                    sandwich_diagnostics.get("clustered_replicates", False)),
+                "source_mean_sandwich_cluster_count": int(
+                    sandwich_diagnostics.get("cluster_count", len(rows))),
+                "source_mean_sandwich_replicated_cluster_count": int(
+                    sandwich_diagnostics.get("replicated_cluster_count", 0)),
+                "source_mean_sandwich_maximum_cluster_size": int(
+                    sandwich_diagnostics.get("maximum_cluster_size", 1)),
+                "source_mean_prior_scaled_before_conditioning": bool(
+                    is_source
+                    and misspecification_mode in {
+                        "predictive_scale_sandwich_hc3",
+                        "predictive_scale_sandwich_hc3_task",
+                        "predictive_scale_sandwich_hc3_confidence",
+                        "predictive_scale_sandwich_hc3_task_confidence",
+                    }
+                ),
+                "source_mean_sandwich_decision_authority": (
+                    "confidence_only"
+                    if misspecification_mode.endswith("_confidence")
+                    else "joint_predictive"
+                ),
                 "misspecification_uncertainty_can_only_increase": bool(
                     is_source),
                 "target_oracle_used_for_misspecification": False,
@@ -1059,6 +1664,8 @@ class ParametricGPR:
                 misspecification_mode),
             "source_mean_misspecification_online": bool(
                 misspecification_mode != "none"),
+            "source_mean_misspecification_delta": float(
+                misspecification_delta),
             "source_mean_misspecification_refit_from_frozen_law": True,
             "source_mean_misspecification_scale_trajectory": trajectory,
             "component_deviation_diagnostics": component_diagnostics,
@@ -1092,6 +1699,57 @@ class ParametricGPR:
                 "source_mean_misspecification_directional_mass": float(
                     aggregate_diagnostics[
                         "source_mean_misspecification_directional_mass"]),
+                "source_mean_misspecification_target_scale_upper": float(
+                    aggregate_diagnostics[
+                        "source_mean_misspecification_target_scale_upper"]),
+                "source_mean_misspecification_source_task_scale_upper": float(
+                    aggregate_diagnostics[
+                        "source_mean_misspecification_source_task_scale_upper"]),
+                "source_mean_misspecification_application": str(
+                    aggregate_diagnostics[
+                        "source_mean_misspecification_application"]),
+                "source_mean_posterior_covariance_trace_before": float(
+                    aggregate_diagnostics[
+                        "source_mean_posterior_covariance_trace_before"]),
+                "source_mean_posterior_covariance_trace_after": float(
+                    aggregate_diagnostics[
+                        "source_mean_posterior_covariance_trace_after"]),
+                "source_mean_posterior_mean_preserved": bool(
+                    aggregate_diagnostics[
+                        "source_mean_posterior_mean_preserved"]),
+                "source_mean_sandwich_applied": bool(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_applied"]),
+                "source_mean_sandwich_effective_rank": float(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_effective_rank"]),
+                "source_mean_sandwich_residual_dof": float(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_residual_dof"]),
+                "source_mean_sandwich_maximum_leverage": float(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_maximum_leverage"]),
+                "source_mean_sandwich_total_multiplier": float(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_total_multiplier"]),
+                "source_mean_sandwich_covariance_trace": float(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_covariance_trace"]),
+                "source_mean_sandwich_clustered_replicates": bool(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_clustered_replicates"]),
+                "source_mean_sandwich_cluster_count": int(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_cluster_count"]),
+                "source_mean_sandwich_replicated_cluster_count": int(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_replicated_cluster_count"]),
+                "source_mean_sandwich_maximum_cluster_size": int(
+                    aggregate_diagnostics[
+                        "source_mean_sandwich_maximum_cluster_size"]),
+                "source_mean_prior_scaled_before_conditioning": bool(
+                    aggregate_diagnostics[
+                        "source_mean_prior_scaled_before_conditioning"]),
                 "misspecification_uncertainty_can_only_increase": True,
                 "target_oracle_used_for_misspecification": False,
             })
@@ -1112,6 +1770,106 @@ class ParametricGPR:
             diagnostics=diagnostics,
             sequential_updates=True,
         )
+        if any(bool(item.get("source_mean_sandwich_applied", False))
+               for item in component_diagnostics):
+            central_mean = np.asarray(self.a, dtype=float)
+            central_covariance = np.zeros_like(self.C, dtype=float)
+            for mass, component, covariance in zip(
+                posterior_weight, components, decision_component_covariances
+            ):
+                delta = np.asarray(component.a, dtype=float) - central_mean
+                central_covariance += float(mass) * (
+                    covariance + np.outer(delta, delta))
+            central_covariance = 0.5 * (
+                central_covariance + central_covariance.T)
+            eigenvalues, eigenvectors = np.linalg.eigh(central_covariance)
+            self._decision_covariance = (
+                eigenvectors * np.maximum(eigenvalues, 1e-12)
+            ) @ eigenvectors.T
+            self._decision_lambda_i = max(float(np.sum(
+                np.asarray(posterior_weight, dtype=float)
+                * np.asarray(decision_component_deviations, dtype=float)
+            )), 1e-12)
+            self.source_parametric_prior_diagnostics.update({
+                "source_mean_sandwich_decision_authority": (
+                    "confidence_only"
+                    if misspecification_mode.endswith("_confidence")
+                    else "joint_predictive"
+                ),
+                "decision_covariance_available": True,
+                "decision_covariance_trace": float(np.trace(
+                    self._decision_covariance)),
+                "robust_covariance_trace": float(np.trace(self.C)),
+                "decision_covariance_no_larger_than_robust": bool(
+                    np.trace(self._decision_covariance)
+                    <= np.trace(self.C) + 1e-10),
+                "target_oracle_used_for_decision_covariance": False,
+            })
+
+        if confidence_prior_covariances:
+            confidence_weight = np.asarray(
+                posterior_weight, dtype=float).reshape(-1)
+            confidence_weight /= max(float(np.sum(confidence_weight)), 1e-12)
+            confidence_prior_mean = np.sum([
+                mass * mean
+                for mass, mean in zip(
+                    confidence_weight, confidence_prior_means)
+            ], axis=0)
+            confidence_prior_covariance = np.zeros(
+                (self.p, self.p), dtype=float)
+            for mass, mean, covariance in zip(
+                confidence_weight,
+                confidence_prior_means,
+                confidence_prior_covariances,
+            ):
+                offset = np.asarray(mean, dtype=float) - confidence_prior_mean
+                confidence_prior_covariance += float(mass) * (
+                    np.asarray(covariance, dtype=float)
+                    + np.outer(offset, offset)
+                )
+            confidence_posterior = (
+                self._decision_covariance
+                if self._decision_covariance is not None
+                else self.C
+            )
+            confidence_residual = (
+                self._decision_lambda_i
+                if self._decision_lambda_i is not None
+                else self.lambda_i
+            )
+            self.set_source_conditioned_confidence(
+                confidence_prior_covariance,
+                np.asarray(
+                    confidence_posterior[:self.p, :self.p],
+                    dtype=float,
+                ),
+                confidence_residual,
+                source_domain_count=max(
+                    int(diagnostics.get("source_domain_count", 1)), 1),
+                target_count=len(rows),
+                prior_df=prior_df,
+                delta=misspecification_delta,
+            )
+            confidence_state = self._source_conditioned_confidence
+            confidence_diagnostics = {
+                "available": True,
+                "confidence_coordinate": "source_conditioned_coefficients",
+                "information_gain": float(
+                    confidence_state["information_gain"]),
+                "effective_rank": float(
+                    confidence_state["effective_rank"]),
+                "residual_transfer_floor": float(
+                    confidence_state["residual_floor"]),
+                "source_domain_count": int(
+                    confidence_state["source_domain_count"]),
+                "target_count": int(confidence_state["target_count"]),
+                "source_prior_frozen_before_target": True,
+                "solution_specific_deviation_double_counted": False,
+                "target_oracle_used": False,
+            }
+            self.source_parametric_prior_diagnostics[
+                "source_conditioned_confidence"
+            ] = confidence_diagnostics
 
     def set_cross_validated_structure_posterior(
         self,
@@ -1344,6 +2102,9 @@ class ParametricGPR:
 
         self.a = np.asarray(mean, dtype=float)
         self.C = np.asarray(covariance, dtype=float)
+        self._decision_covariance = None
+        self._decision_lambda_i = None
+        self._source_conditioned_confidence = None
         self.lambda_i = max(float(np.sum([
             mass * float(component.lambda_i)
             for mass, component in zip(weight, components)
@@ -1732,6 +2493,18 @@ class ParametricGPR:
             self, "source_parametric_prior_diagnostics", None)
         if source_prior is not None:
             diagnostics["source_parametric_prior"] = dict(source_prior)
+        confidence = getattr(self, "_source_conditioned_confidence", None)
+        if confidence is not None:
+            diagnostics["source_conditioned_confidence"] = {
+                "available": True,
+                "information_gain": float(confidence["information_gain"]),
+                "effective_rank": float(confidence["effective_rank"]),
+                "residual_floor": float(confidence["residual_floor"]),
+                "source_domain_count": int(confidence["source_domain_count"]),
+                "target_count": int(confidence["target_count"]),
+                "delta": float(confidence["delta"]),
+                "target_oracle_used": False,
+            }
         if (
             self.basis_map is not None
             and hasattr(self.basis_map, "posterior_coefficient_diagnostics")

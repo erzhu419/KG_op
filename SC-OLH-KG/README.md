@@ -20,6 +20,20 @@ contains a minimal, testable implementation path:
 Generated outputs should go under `results/`, `profiles/`, or `checkpoints/`;
 those directories are ignored by git.
 
+## Promoted Baseline
+
+The current promoted baseline is V51 `balanced4`: posterior-central,
+posterior-nominal exact joint evaluate-or-replicate VOI with four candidate
+new actions and up to four eligible replications. Its machine-readable record
+is `performance/promoted_baseline.json`; the reproducible scheduler entrypoint
+is `scripts/submit_scolhkg_promoted_v51_scheduler.py`.
+
+Across FactorShock, Inventory, and Queue at `d=1000`, `N=20`, `n0=10`, and 20
+seeds per domain, V51 produced 60/60 truly feasible recommendations, zero
+adaptive losses, and 19 improvements over the source-informed initial design.
+The source archive uses 384 oracle-free source calls and no target label or
+target oracle enters the frozen proposal or online decision.
+
 ## Quick Commands
 
 ```bash

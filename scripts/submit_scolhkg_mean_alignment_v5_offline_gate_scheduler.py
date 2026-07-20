@@ -75,6 +75,28 @@ def _flags(profile, args):
         "--source-design-mode", "universal_mixture",
         "--source-universal-fraction", "1.0",
         "--source-consensus-template-count", "12",
+        "--source-records-per-domain",
+        str(profile.get(
+            "source_records_per_domain",
+            getattr(args, "source_records_per_domain", 96),
+        )),
+        "--initial-design-archive-match-mode",
+        str(profile.get(
+            "initial_design_archive_match_mode", "exact")),
+        "--meta-source-augments",
+        str(profile.get("source_augments", 1)),
+        "--meta-source-budget-mode",
+        str(profile.get("source_budget_mode", "per_episode")),
+        "--meta-source-geometry-shift-scale",
+        str(profile.get("source_geometry_shift_scale", 0.0)),
+        "--meta-source-geometry-log-radius-jitter",
+        str(profile.get("source_geometry_log_radius_jitter", 0.0)),
+        "--meta-source-sigma-jitter",
+        str(profile.get("source_sigma_jitter", 0.20)),
+        "--meta-source-alpha-jitter",
+        str(profile.get("source_alpha_jitter", 0.25)),
+        "--meta-source-weight-jitter",
+        str(profile.get("source_weight_jitter", 0.05)),
         "--observable-mean-coordinate",
         "--observable-mean-mode", "boundary_aligned",
         "--observable-mean-input-mode", "observable_state_exposure",
@@ -105,6 +127,8 @@ def _flags(profile, args):
         "--observable-mean-training-target", "chance_margin",
         "--observable-variance-input-mode", "observable_state_exposure",
         "--source-constraint-mean-coefficient-prior",
+        "--source-constraint-mean-hyperlaw-mode",
+        str(profile.get("hyperlaw_mode", "single_gaussian_draw")),
         "--source-constraint-mean-adaptation-mode",
         str(profile.get("adaptation", "sequential_evidence_mixture")),
         "--source-constraint-mean-deviation-mode", "latent_shared",
@@ -124,6 +148,18 @@ def _flags(profile, args):
         str(profile.get(
             "misspecification_max_scale",
             args.misspecification_max_scale,
+        )),
+        "--source-constraint-mean-misspecification-delta",
+        str(profile.get(
+            "misspecification_delta",
+            getattr(args, "misspecification_delta", 0.05),
+        )),
+        "--source-constraint-mean-confidence-mode",
+        str(profile.get("confidence_mode", "model")),
+        "--source-constraint-mean-confidence-delta",
+        str(profile.get(
+            "confidence_delta",
+            getattr(args, "confidence_delta", 0.05),
         )),
         "--source-constraint-mean-contrast-scale",
         str(getattr(args, "contrast_scale", 1.0)),
@@ -156,6 +192,11 @@ def _flags(profile, args):
         "--task-posterior-safe-pairwise-floor", "1e-06",
         "--task-posterior-mandatory-universal-count", "10",
         "--task-posterior-robust-certificate-mode", "joint_tangent",
+        "--certification-head-authority",
+        str(profile.get(
+            "certification_head_authority",
+            getattr(args, "certification_head_authority", "task_joint"),
+        )),
         "--task-latent-inference-mode", "shadow",
         "--task-latent-calibration-mode", "source_profiles",
         "--task-variance-posterior-mode",
@@ -166,14 +207,90 @@ def _flags(profile, args):
         str(profile.get("hvd_target_evidence", "prequential_upper")),
         "--hvd-singleton-evidence-mode",
         str(profile.get("hvd_singleton_evidence", "in_sample_residual")),
-        "--decision-backend", "sobol_new",
-        "--exact-terminal-mode", "bayes_risk",
-        "--replication-candidate-count", "0",
-        "--no-adaptive-replication-voi",
+        "--decision-backend",
+        str(profile.get("decision_backend", "sobol_new")),
+        "--decision-risk-penalty",
+        str(profile.get("decision_risk_penalty", 5.0)),
+        "--decision-aleatoric-mode",
+        str(profile.get(
+            "decision_aleatoric_mode", "certification_upper")),
+        "--decision-violation-loss-mode",
+        str(profile.get(
+            "decision_violation_loss_mode", "positive_part")),
+        "--decision-ambiguity-mode",
+        str(profile.get("decision_ambiguity_mode", "kl_robust")),
+        "--exact-terminal-mode",
+        str(profile.get("exact_terminal_mode", "bayes_risk")),
+        *(
+            ["--exact-mc-samples", str(profile["exact_mc_samples"])]
+            if "exact_mc_samples" in profile else []
+        ),
+        *(
+            ["--exact-sampling-mode", str(profile["exact_sampling_mode"])]
+            if "exact_sampling_mode" in profile else []
+        ),
+        *(
+            ["--exact-jobs", str(profile["exact_jobs"])]
+            if "exact_jobs" in profile else []
+        ),
+        *(
+            ["--parallel-backend", str(profile["parallel_backend"])]
+            if "parallel_backend" in profile else []
+        ),
+        (
+            "--exact-clip-negative"
+            if profile.get("exact_clip_negative", True)
+            else "--no-exact-clip-negative"
+        ),
+        *(
+            [
+                "--terminal-frontier-candidate-count",
+                str(profile["terminal_frontier_candidate_count"]),
+            ]
+            if "terminal_frontier_candidate_count" in profile
+            else []
+        ),
+        "--replication-candidate-count",
+        str(profile.get("replication_candidate_count", 0)),
+        "--replication-max-per-solution",
+        str(profile.get("replication_max_per_solution", 5)),
+        "--evaluate-or-replicate-new-action-count",
+        str(profile.get("evaluate_or_replicate_new_action_count", 1)),
+        "--evaluate-or-replicate-new-action-policy",
+        str(profile.get(
+            "evaluate_or_replicate_new_action_policy", "canonical_sobol")),
+        (
+            "--adaptive-replication-voi"
+            if profile.get("adaptive_replication_voi", False)
+            else "--no-adaptive-replication-voi"
+        ),
         "--finalist-replication-budget", "0",
         "--finalist-empirical-override", "off",
         "--certification-recheck-top-k", "0",
-        "--no-posterior-dominance-enabled",
+        (
+            "--posterior-dominance-enabled"
+            if profile.get("posterior_dominance_enabled", False)
+            else "--no-posterior-dominance-enabled"
+        ),
+        "--posterior-dominance-delta",
+        str(profile.get(
+            "posterior_dominance_delta",
+            getattr(args, "posterior_dominance_delta", 0.05),
+        )),
+        "--posterior-dominance-min-mean-gain",
+        str(profile.get(
+            "posterior_dominance_min_mean_gain",
+            getattr(args, "posterior_dominance_min_mean_gain", 0.0),
+        )),
+        "--posterior-dominance-initialization",
+        str(profile.get(
+            "posterior_dominance_initialization",
+            getattr(args, "posterior_dominance_initialization", "risk"),
+        )),
+        "--decision-contract-mode",
+        str(profile.get("decision_contract_mode", "legacy")),
+        "--finalist-terminal-value-mode",
+        str(profile.get("finalist_terminal_value_mode", "model_default")),
         "--decision-recommend-observed-only",
         "--boundary-coordinate-candidate-count", "0",
         "--boundary-coordinate-pool-size", str(args.pool_size),
@@ -267,6 +384,14 @@ def build_specs(args):
                     "--target-shared-shock-scale", str(shock_scale),
                     *_flags(profile, args),
                 ]
+                command_text = f"{shlex.join(command)} && echo DONE"
+                wait_for_files = [str(local_design)]
+                if bool(getattr(args, "remote_design_only", False)):
+                    command_text = (
+                        f"test -f {shlex.quote(str(remote_design))} && "
+                        f"{command_text}"
+                    )
+                    wait_for_files = []
                 specs.append({
                     "description": (
                         f"{gate_label} "
@@ -274,7 +399,7 @@ def build_specs(args):
                         f"{variant} {heldout} "
                         f"shock={shock_scale:g} seed={seed}"
                     ),
-                    "cmd": f"{shlex.join(command)} && echo DONE",
+                    "cmd": command_text,
                     "cwd": str(local_project),
                     "signature": (
                         f"KG_op/{stage}/{args.run_id}/{cell}/"
@@ -285,7 +410,7 @@ def build_specs(args):
                     "cpu": int(args.cpu),
                     "ram_mb": int(args.ram_mb),
                     "allowed_nodes": list(nodes),
-                    "wait_for_files": [str(local_design)],
+                    "wait_for_files": wait_for_files,
                     "result_dir": str(remote_result_dir),
                     "local_result_dir": str(local_result_dir),
                     "stage_excludes": ["checkpoints", "profiles", "results"],
@@ -303,6 +428,7 @@ def main():
         DEFAULT_DEPLOY
         / "SC-OLH-KG/performance/manifests/v18b_exactkg_mcdiag.json"))
     parser.add_argument("--source-run-id", default=DEFAULT_SOURCE_RUN_ID)
+    parser.add_argument("--remote-design-only", action="store_true")
     parser.add_argument("--rank", type=int, default=4)
     parser.add_argument("--run-id", default=(
         "scolh_mean_alignment_v5_offline_s5_"
@@ -317,10 +443,28 @@ def main():
     parser.add_argument("--n-seeds", type=int, default=5)
     parser.add_argument("--pool-size", type=int, default=512)
     parser.add_argument("--variance-audit-size", type=int, default=512)
+    parser.add_argument("--source-records-per-domain", type=int, default=96)
     parser.add_argument("--misspecification-prior-df", type=float, default=4.0)
     parser.add_argument("--misspecification-ridge", type=float, default=1.0)
     parser.add_argument("--misspecification-max-scale", type=float, default=100.0)
     parser.add_argument("--contrast-scale", type=float, default=1.0)
+    parser.add_argument(
+        "--certification-head-authority",
+        choices=(
+            "task_joint",
+            "split_gpr_task_hvd",
+            "split_gpr_cumulative_hvd",
+        ),
+        default="task_joint",
+    )
+    parser.add_argument("--posterior-dominance-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--posterior-dominance-min-mean-gain", type=float, default=0.0)
+    parser.add_argument(
+        "--posterior-dominance-initialization",
+        choices=("risk", "certificate_lexicographic", "certified_only"),
+        default="risk",
+    )
     parser.add_argument("--cpu", type=int, default=1)
     parser.add_argument("--ram-mb", type=int, default=4096)
     parser.add_argument("--no-sync", action="store_true")

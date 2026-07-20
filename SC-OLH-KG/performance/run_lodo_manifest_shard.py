@@ -51,9 +51,11 @@ def load_config(path):
     config.setdefault("hvd_singleton_evidence_mode", "in_sample_residual")
     config.setdefault(
         "task_posterior_robust_certificate_mode", "separable")
+    config.setdefault("certification_head_authority", "task_joint")
     config.setdefault("posterior_dominance_enabled", False)
     config.setdefault("posterior_dominance_delta", 0.05)
     config.setdefault("posterior_dominance_min_mean_gain", 0.0)
+    config.setdefault("posterior_dominance_initialization", "risk")
     config.setdefault("finalist_replication_budget", 0)
     config.setdefault("finalist_replication_count", 2)
     config.setdefault("finalist_observed_safety_count", 1)
@@ -116,6 +118,8 @@ def load_config(path):
     config.setdefault(
         "meta_observable_variance_input_mode", "legacy_policy_proxy")
     config.setdefault("source_constraint_mean_coefficient_prior", False)
+    config.setdefault(
+        "source_constraint_mean_hyperlaw_mode", "single_gaussian_draw")
     config.setdefault("source_constraint_mean_adaptation_mode", "frozen")
     config.setdefault(
         "source_constraint_mean_deviation_mode", "raw_independent")
@@ -127,6 +131,12 @@ def load_config(path):
         "source_constraint_mean_misspecification_ridge", 1.0)
     config.setdefault(
         "source_constraint_mean_misspecification_max_scale", 100.0)
+    config.setdefault(
+        "source_constraint_mean_misspecification_delta", 0.05)
+    config.setdefault(
+        "source_constraint_mean_confidence_mode", "model")
+    config.setdefault(
+        "source_constraint_mean_confidence_delta", 0.05)
     config.setdefault("source_constraint_mean_contrast_scale", 1.0)
     config.setdefault(
         "source_constraint_mean_role_epistemic_mode", "none")
@@ -154,11 +164,25 @@ def load_config(path):
     config.setdefault("meta_source_observation_replicates", 1)
     config.setdefault("meta_source_design_mode", "random")
     config.setdefault("meta_source_universal_fraction", 0.75)
+    config.setdefault("meta_source_augments", 1)
+    config.setdefault("meta_source_budget_mode", "per_episode")
+    config.setdefault("meta_source_geometry_shift_scale", 0.0)
+    config.setdefault(
+        "meta_source_geometry_log_radius_jitter", 0.0)
+    config.setdefault("meta_source_sigma_jitter", 0.20)
+    config.setdefault("meta_source_alpha_jitter", 0.25)
+    config.setdefault("meta_source_weight_jitter", 0.05)
+    config.setdefault("source_records_per_domain", 96)
     config.setdefault("initial_design", "auto")
+    config.setdefault(
+        "initial_design_archive_match_mode", "exact")
     config.setdefault("target_shared_shock_scale", 1.0)
     config.setdefault("variance_audit_size", 128)
     config.setdefault("decision_backend", "legacy")
     config.setdefault("decision_risk_penalty", 5.0)
+    config.setdefault("decision_aleatoric_mode", "certification_upper")
+    config.setdefault("decision_violation_loss_mode", "positive_part")
+    config.setdefault("decision_ambiguity_mode", "kl_robust")
     config.setdefault("decision_source_utility_weight", 1.0)
     config.setdefault("decision_backend_seed_offset", 470003)
     config.setdefault("decision_recommend_observed_only", True)
@@ -282,6 +306,15 @@ def main():
         default="separable",
     )
     parser.add_argument(
+        "--certification-head-authority",
+        choices=(
+            "task_joint",
+            "split_gpr_task_hvd",
+            "split_gpr_cumulative_hvd",
+        ),
+        default="task_joint",
+    )
+    parser.add_argument(
         "--task-latent-inference-mode",
         choices=("shadow", "authoritative"),
         default="shadow",
@@ -302,12 +335,28 @@ def main():
         choices=(
             "legacy", "additive", "exact_kg", "n0_best", "random",
             "sobol", "sobol_new", "sobol_hvd_voi", "sobol_joint_voi", "risk_ts",
+            "sobol_exact_joint_voi",
             "certificate_depth_new",
             "bayes_risk_ei", "constrained_ei", "transfer_utility",
         ),
         default="legacy",
     )
     parser.add_argument("--decision-risk-penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--decision-aleatoric-mode",
+        choices=("certification_upper", "posterior_central"),
+        default="certification_upper",
+    )
+    parser.add_argument(
+        "--decision-violation-loss-mode",
+        choices=("positive_part", "failure_probability"),
+        default="positive_part",
+    )
+    parser.add_argument(
+        "--decision-ambiguity-mode",
+        choices=("kl_robust", "posterior_nominal"),
+        default="kl_robust",
+    )
     parser.add_argument(
         "--decision-source-utility-weight", type=float, default=1.0)
     parser.add_argument(
@@ -320,6 +369,7 @@ def main():
         choices=(
             "hard_certified", "bayes_risk",
             "bayes_risk_dominance",
+            "certified_lexicographic",
             "tcb_certified_lexicographic",
         ),
         default="hard_certified",
@@ -334,6 +384,13 @@ def main():
     parser.add_argument(
         "--replication-max-per-solution", type=int, default=None)
     parser.add_argument(
+        "--evaluate-or-replicate-new-action-count", type=int, default=None)
+    parser.add_argument(
+        "--evaluate-or-replicate-new-action-policy",
+        choices=("canonical_sobol", "canonical_plus_posterior_risk"),
+        default=None,
+    )
+    parser.add_argument(
         "--safe-interior-candidate-count", type=int, default=None)
     parser.add_argument("--safe-interior-pool-size", type=int, default=None)
     parser.add_argument("--safe-interior-margin", type=float, default=None)
@@ -346,6 +403,11 @@ def main():
     parser.add_argument(
         "--posterior-dominance-min-mean-gain", type=float, default=0.0)
     parser.add_argument(
+        "--posterior-dominance-initialization",
+        choices=("risk", "certificate_lexicographic", "certified_only"),
+        default="risk",
+    )
+    parser.add_argument(
         "--decision-contract-mode",
         choices=("legacy", "certified_lexicographic"),
         default="legacy",
@@ -353,6 +415,11 @@ def main():
     parser.add_argument("--exact-mc-samples", type=int, default=2)
     parser.add_argument("--exact-jobs", type=int, default=32)
     parser.add_argument("--parallel-backend", default="process_fork")
+    parser.add_argument(
+        "--exact-clip-negative",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     parser.add_argument(
         "--tcb-v2-mode",
         choices=("off", "shadow", "frontier", "certified"),
@@ -408,6 +475,29 @@ def main():
     parser.add_argument("--source-universal-fraction", type=float, default=0.75)
     parser.add_argument(
         "--source-consensus-template-count", type=int, default=0)
+    parser.add_argument("--source-records-per-domain", type=int, default=None)
+    parser.add_argument("--meta-source-augments", type=int, default=None)
+    parser.add_argument(
+        "--meta-source-budget-mode",
+        choices=("per_episode", "per_base_domain"),
+        default=None,
+    )
+    parser.add_argument(
+        "--meta-source-geometry-shift-scale",
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
+        "--meta-source-geometry-log-radius-jitter",
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
+        "--meta-source-sigma-jitter", type=float, default=None)
+    parser.add_argument(
+        "--meta-source-alpha-jitter", type=float, default=None)
+    parser.add_argument(
+        "--meta-source-weight-jitter", type=float, default=None)
     parser.add_argument("--target-shared-shock-scale", type=float, default=1.0)
     parser.add_argument("--variance-audit-size", type=int, default=128)
     parser.add_argument(
@@ -422,6 +512,12 @@ def main():
         default="auto",
     )
     parser.add_argument("--initial-design-file", default="")
+    parser.add_argument(
+        "--initial-design-archive-match-mode",
+        choices=("exact", "paired_frozen_control"),
+        default="exact",
+        help="Require one archive or freeze the proposal for a paired intervention.",
+    )
     parser.add_argument(
         "--observable-mean-mode",
         choices=(
@@ -519,6 +615,19 @@ def main():
         default=False,
     )
     parser.add_argument(
+        "--source-constraint-mean-hyperlaw-mode",
+        choices=(
+            "single_gaussian_draw",
+            "shared_low_rank_discrepancy",
+            "shared_low_rank_predictive",
+            "grouped_task_discrepancy",
+            "grouped_task_predictive",
+            "grouped_task_deconvolved",
+            "grouped_task_deconvolved_predictive",
+        ),
+        default="single_gaussian_draw",
+    )
+    parser.add_argument(
         "--source-constraint-mean-adaptation-mode",
         choices=(
             "frozen", "evidence_mixture", "sequential_evidence_mixture",
@@ -540,6 +649,14 @@ def main():
             "none",
             "predictive_scale",
             "predictive_scale_directional",
+            "predictive_scale_upper_target",
+            "predictive_scale_upper",
+            "predictive_sandwich_hc3",
+            "predictive_sandwich_hc3_task",
+            "predictive_scale_sandwich_hc3",
+            "predictive_scale_sandwich_hc3_task",
+            "predictive_scale_sandwich_hc3_confidence",
+            "predictive_scale_sandwich_hc3_task_confidence",
             "hierarchical_predictive_scale",
             "source_contrast",
         ),
@@ -559,6 +676,21 @@ def main():
         "--source-constraint-mean-misspecification-max-scale",
         type=float,
         default=100.0,
+    )
+    parser.add_argument(
+        "--source-constraint-mean-misspecification-delta",
+        type=float,
+        default=0.05,
+    )
+    parser.add_argument(
+        "--source-constraint-mean-confidence-mode",
+        choices=("model", "source_bayes", "source_self_normalized"),
+        default="model",
+    )
+    parser.add_argument(
+        "--source-constraint-mean-confidence-delta",
+        type=float,
+        default=0.05,
     )
     parser.add_argument(
         "--source-constraint-mean-contrast-scale", type=float, default=1.0)
@@ -649,6 +781,15 @@ def main():
         choices=("model_default", "certified_lexicographic"),
         default="model_default",
     )
+    parser.add_argument(
+        "--terminal-frontier-candidate-count",
+        type=int,
+        default=None,
+        help=(
+            "Optional per-run override for the manifest's terminal frontier "
+            "budget."
+        ),
+    )
     parser.add_argument("--finalist-replication-budget", type=int, default=0)
     parser.add_argument("--finalist-replication-count", type=int, default=2)
     parser.add_argument(
@@ -719,6 +860,17 @@ def main():
         if args.replication_max_per_solution is None
         else args.replication_max_per_solution
     )
+    evaluate_or_replicate_new_action_count = int(
+        config.get("evaluate_or_replicate_new_action_count", 1)
+        if args.evaluate_or_replicate_new_action_count is None
+        else args.evaluate_or_replicate_new_action_count
+    )
+    evaluate_or_replicate_new_action_policy = str(
+        config.get(
+            "evaluate_or_replicate_new_action_policy", "canonical_sobol")
+        if args.evaluate_or_replicate_new_action_policy is None
+        else args.evaluate_or_replicate_new_action_policy
+    )
     safe_interior_candidate_count = int(
         config.get("safe_interior_candidate_count", 0)
         if args.safe_interior_candidate_count is None
@@ -774,6 +926,8 @@ def main():
             args.task_posterior_safe_pairwise_floor),
         "task_posterior_robust_certificate_mode": str(
             args.task_posterior_robust_certificate_mode),
+        "certification_head_authority": str(
+            args.certification_head_authority),
         "task_latent_inference_mode": str(
             args.task_latent_inference_mode),
         "task_variance_posterior_mode": str(
@@ -783,6 +937,10 @@ def main():
         "exact_kg_sampling_mode": str(args.exact_sampling_mode),
         "decision_backend": str(args.decision_backend),
         "decision_risk_penalty": float(args.decision_risk_penalty),
+        "decision_aleatoric_mode": str(args.decision_aleatoric_mode),
+        "decision_violation_loss_mode": str(
+            args.decision_violation_loss_mode),
+        "decision_ambiguity_mode": str(args.decision_ambiguity_mode),
         "decision_source_utility_weight": float(
             args.decision_source_utility_weight),
         "decision_recommend_observed_only": bool(
@@ -791,6 +949,10 @@ def main():
         "adaptive_replication_voi": bool(args.adaptive_replication_voi),
         "replication_candidate_count": replication_candidate_count,
         "replication_max_per_solution": replication_max_per_solution,
+        "evaluate_or_replicate_new_action_count": (
+            evaluate_or_replicate_new_action_count),
+        "evaluate_or_replicate_new_action_policy": (
+            evaluate_or_replicate_new_action_policy),
         "safe_interior_candidate_count": safe_interior_candidate_count,
         "safe_interior_pool_size": safe_interior_pool_size,
         "safe_interior_margin": safe_interior_margin,
@@ -800,10 +962,13 @@ def main():
             args.posterior_dominance_delta),
         "posterior_dominance_min_mean_gain": float(
             args.posterior_dominance_min_mean_gain),
+        "posterior_dominance_initialization": str(
+            args.posterior_dominance_initialization),
         "decision_contract_mode": str(args.decision_contract_mode),
         "exact_kg_mc_samples": int(args.exact_mc_samples),
         "exact_kg_jobs": int(args.exact_jobs),
         "exact_kg_parallel_backend": str(args.parallel_backend),
+        "exact_kg_clip_negative": bool(args.exact_clip_negative),
         "tcb_v2_enabled": bool(args.tcb_v2_mode != "off"),
         "tcb_v2_mode": str(args.tcb_v2_mode),
         "tcb_v2_frontier_count": int(args.tcb_v2_frontier_count),
@@ -862,6 +1027,8 @@ def main():
             args.observable_variance_input_mode),
         "source_constraint_mean_coefficient_prior": bool(
             args.source_constraint_mean_coefficient_prior),
+        "source_constraint_mean_hyperlaw_mode": str(
+            args.source_constraint_mean_hyperlaw_mode),
         "source_constraint_mean_adaptation_mode": str(
             args.source_constraint_mean_adaptation_mode),
         "source_constraint_mean_deviation_mode": str(
@@ -874,6 +1041,12 @@ def main():
             args.source_constraint_mean_misspecification_ridge),
         "source_constraint_mean_misspecification_max_scale": float(
             args.source_constraint_mean_misspecification_max_scale),
+        "source_constraint_mean_misspecification_delta": float(
+            args.source_constraint_mean_misspecification_delta),
+        "source_constraint_mean_confidence_mode": str(
+            args.source_constraint_mean_confidence_mode),
+        "source_constraint_mean_confidence_delta": float(
+            args.source_constraint_mean_confidence_delta),
         "source_constraint_mean_contrast_scale": float(
             args.source_constraint_mean_contrast_scale),
         "source_constraint_mean_role_epistemic_mode": str(
@@ -929,12 +1102,59 @@ def main():
             args.source_universal_fraction),
         "meta_source_consensus_template_count": int(
             args.source_consensus_template_count),
+        "source_records_per_domain": int(
+            config["source_records_per_domain"]
+            if args.source_records_per_domain is None
+            else args.source_records_per_domain
+        ),
+        "meta_source_augments": int(
+            config["meta_source_augments"]
+            if args.meta_source_augments is None
+            else args.meta_source_augments
+        ),
+        "meta_source_budget_mode": str(
+            config["meta_source_budget_mode"]
+            if args.meta_source_budget_mode is None
+            else args.meta_source_budget_mode
+        ),
+        "meta_source_geometry_shift_scale": float(
+            config["meta_source_geometry_shift_scale"]
+            if args.meta_source_geometry_shift_scale is None
+            else args.meta_source_geometry_shift_scale
+        ),
+        "meta_source_geometry_log_radius_jitter": float(
+            config["meta_source_geometry_log_radius_jitter"]
+            if args.meta_source_geometry_log_radius_jitter is None
+            else args.meta_source_geometry_log_radius_jitter
+        ),
+        "meta_source_sigma_jitter": float(
+            config["meta_source_sigma_jitter"]
+            if args.meta_source_sigma_jitter is None
+            else args.meta_source_sigma_jitter
+        ),
+        "meta_source_alpha_jitter": float(
+            config["meta_source_alpha_jitter"]
+            if args.meta_source_alpha_jitter is None
+            else args.meta_source_alpha_jitter
+        ),
+        "meta_source_weight_jitter": float(
+            config["meta_source_weight_jitter"]
+            if args.meta_source_weight_jitter is None
+            else args.meta_source_weight_jitter
+        ),
         "target_shared_shock_scale": float(
             args.target_shared_shock_scale),
         "variance_audit_size": int(args.variance_audit_size),
         "meta_source_dimension": int(
             config["d"] if args.meta_source_d is None else args.meta_source_d),
         "initial_design": str(args.initial_design),
+        "initial_design_archive_match_mode": str(
+            args.initial_design_archive_match_mode),
+        "terminal_frontier_candidate_count": int(
+            config.get("terminal_frontier_candidate_count", 0)
+            if args.terminal_frontier_candidate_count is None
+            else args.terminal_frontier_candidate_count
+        ),
         "finalist_terminal_value_mode": str(
             args.finalist_terminal_value_mode),
         "finalist_replication_budget": int(
@@ -1042,6 +1262,8 @@ def main():
             "hvd_ablation_profile": str(args.hvd_profile),
             "task_posterior_robust_certificate_mode": str(
                 args.task_posterior_robust_certificate_mode),
+            "certification_head_authority": str(
+                args.certification_head_authority),
             "meta_spectral_orthogonalization": str(
                 args.spectral_orthogonalization),
             "meta_ordered_exposure_max_frequency": int(
@@ -1094,6 +1316,10 @@ def main():
                 args.adaptive_replication_voi),
             "replication_candidate_count": replication_candidate_count,
             "replication_max_per_solution": replication_max_per_solution,
+            "evaluate_or_replicate_new_action_count": (
+                evaluate_or_replicate_new_action_count),
+            "evaluate_or_replicate_new_action_policy": (
+                evaluate_or_replicate_new_action_policy),
             "safe_interior_candidate_count": safe_interior_candidate_count,
             "safe_interior_pool_size": safe_interior_pool_size,
             "safe_interior_margin": safe_interior_margin,
@@ -1103,10 +1329,13 @@ def main():
                 args.posterior_dominance_delta),
             "posterior_dominance_min_mean_gain": float(
                 args.posterior_dominance_min_mean_gain),
+            "posterior_dominance_initialization": str(
+                args.posterior_dominance_initialization),
             "decision_contract_mode": str(args.decision_contract_mode),
             "exact_kg_mc_samples": int(args.exact_mc_samples),
             "exact_kg_jobs": int(args.exact_jobs),
             "exact_kg_parallel_backend": str(args.parallel_backend),
+            "exact_kg_clip_negative": bool(args.exact_clip_negative),
             "tcb_v2_enabled": bool(args.tcb_v2_mode != "off"),
             "tcb_v2_mode": str(args.tcb_v2_mode),
             "tcb_v2_frontier_count": int(args.tcb_v2_frontier_count),
@@ -1167,6 +1396,8 @@ def main():
                 args.observable_variance_input_mode),
             "source_constraint_mean_coefficient_prior": bool(
                 args.source_constraint_mean_coefficient_prior),
+            "source_constraint_mean_hyperlaw_mode": str(
+                args.source_constraint_mean_hyperlaw_mode),
             "source_constraint_mean_adaptation_mode": str(
                 args.source_constraint_mean_adaptation_mode),
             "source_constraint_mean_residual_rank_posterior": bool(
@@ -1185,6 +1416,12 @@ def main():
                 args.source_constraint_mean_misspecification_ridge),
             "source_constraint_mean_misspecification_max_scale": float(
                 args.source_constraint_mean_misspecification_max_scale),
+            "source_constraint_mean_misspecification_delta": float(
+                args.source_constraint_mean_misspecification_delta),
+            "source_constraint_mean_confidence_mode": str(
+                args.source_constraint_mean_confidence_mode),
+            "source_constraint_mean_confidence_delta": float(
+                args.source_constraint_mean_confidence_delta),
             "source_constraint_mean_contrast_scale": float(
                 args.source_constraint_mean_contrast_scale),
             "source_constraint_mean_role_epistemic_mode": str(
@@ -1225,6 +1462,8 @@ def main():
             "variance_audit_size": int(args.variance_audit_size),
             "initial_design": str(args.initial_design),
             "initial_design_file": str(args.initial_design_file),
+            "initial_design_archive_match_mode": str(
+                args.initial_design_archive_match_mode),
             "initial_design_fingerprint": (
                 None if source_design_contract is None
                 else source_design_contract["fingerprint"]

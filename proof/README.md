@@ -138,6 +138,24 @@ mathlib and its cache; later builds should be fast.
   growth of the charged target history. Runtime contracts check that every
   refit starts from the frozen hyperlaw, uses all target observations, retains
   no source selector or target-null atom, and leaves HVD independent.
+  V28 then makes head authority explicit: the aggregate target GPR alone owns
+  constraint mean and epistemic variance, while exactly one task-robust or
+  direct cumulative HVD owns aleatoric variance. Lean proves that changing the
+  discarded legacy task mean/epistemic heads cannot change either the theory
+  certificate or posterior Bayes-margin mean, and proves exact reduction of
+  both HVD authority choices. Python audits the same routing in recommendation,
+  truth-pool certification, and cloned terminal posterior updates.
+  V29 then maintains one posterior Bayes-risk incumbent and permits a switch
+  only under a covariance-free Cantelli dominance bound. V30--V31 calibrate
+  source-mean misspecification uncertainty with a scale clipped below at one
+  and a local HC3 sandwich covariance. Lean proves that both operations are
+  noncontractive in every scalar projection and that sandwich correction
+  preserves the conditioned mean. V32 proves only the valid nonempty-set
+  statement: an initializer selected from the canonical certified set is
+  certified; when that set is empty, no certified initializer exists. V34
+  composes source-hyperlaw scaling and HC3 correction in one robust
+  empirical-Bayes posterior, whose projected variance cannot be smaller than
+  its uncalibrated base variance.
   It does not claim that the learned scale
   is temporally monotone, nor does it assume that
   alignment succeeds on every held-out domain; that premise is tested by the
@@ -145,6 +163,34 @@ mathlib and its cache; later builds should be fast.
   `SourceAlignedBoundaryCoordinate` and
   `SourceAlignedVarianceRiskCoordinate`; the latter is supervised only by
   ordinary replicated source variance.
+- `SCOLHKG/Real/SharedLowRankSourceHyperlaw.lean`: V42 separates source-fit
+  uncertainty in the weighted shared coefficient from genuine target-domain
+  discrepancy. Lean proves nonnegative shared-estimation, between-domain, and
+  factor-projected variance; proves the weighted shared-estimation variance is
+  no larger than the legacy transfer when source weights lie in `[0,1]`; and
+  encodes the domain factor with at most `S-1` coordinates, including exact
+  zero discrepancy for one source. V43 additionally proves that the
+  finite-source predictive multiplier `(1+c)/(1-c)` is nonnegative and at
+  least one for `0 <= c < 1`, that its projected discrepancy is nonnegative
+  and no smaller than the population block, and that scaling keeps the same
+  `Fin (S-1)` factorization and one-source zero. Python additionally audits
+  the exact multiplier, rank, permutation, and oracle-exclusion contracts.
+  V45 proves that splitting a fixed per-base-domain source budget equally
+  over exchangeable task episodes preserves the exact simulator-call budget,
+  that the maximum `S-1` discrepancy-factor capacity is monotone in episode
+  count, and that the resulting finite factor projection remains
+  nonnegative. These are capacity and accounting theorems, not a claim that
+  the observed episode coefficient matrix attains the enlarged rank. V46
+  groups episodes by their frozen base-domain label. Lean proves nonnegativity
+  of the centered within-base projected variance, exact invariance of that
+  contrast under a common base-domain offset, exact separation of shared
+  estimation from role/between/within variation, and the grouped
+  `(B-1)+B(E-1)` capacity (seven for two bases and four episodes). V47 models
+  the scalar projection of PSD random-effects deconvolution as
+  `max(observed-fitNoise,0)`. Lean proves that the corrected variance is
+  nonnegative, cannot exceed a nonnegative observed variance when fit noise is
+  nonnegative, exactly recovers a nonnegative latent variance from
+  `observed=latent+fitNoise`, and removes a noise-dominated direction.
 - `SCOLHKG/Real/SourceConstraintMeanPosterior.lean`: hierarchical source
   coefficient uncertainty in `eta`, exact source-to-target conjugate mean
   conditioning, target-information variance contraction, nonnegative finite
@@ -604,6 +650,47 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 126. A normalized nonnegative interpolation of source percentile ranks remains
      in `[0,1]`; strictly increasing source-margin rescaling leaves its order
      unchanged, and the implemented consensus score is at most `3/2`.
+127. Constraint-head authority separation makes the aggregate target GPR the
+     sole source of constraint mean/epistemic uncertainty and exactly one HVD
+     head the sole source of aleatoric uncertainty; discarded legacy task
+     moments cannot affect certification or terminal Bayes risk.
+128. Without assuming posterior-loss independence, the variance of an
+     incumbent/challenger loss difference is bounded by the square of the sum
+     of their posterior standard deviations whenever covariance obeys the
+     Cauchy lower bound.
+129. Conditional on the one-sided Cantelli probability inequality, accepting
+     a switch only when its Cantelli improvement lower bound is at least
+     `1-delta` implies posterior false-switch probability at most `delta`.
+130. Multiplying a nonnegative posterior variance by a scale at least one
+     cannot reduce that variance.
+131. An HC3 projected correction written as a finite sum of nonnegative
+     weights times squared projected scores is nonnegative, so adding it
+     cannot reduce posterior variance.
+132. Post-conditioning sandwich covariance correction leaves the conditioned
+     posterior mean exactly unchanged.
+133. Scaling a nonnegative base variance by at least one and then adding a
+     nonnegative sandwich correction cannot reduce the base variance.
+134. Any initializer selected from a nonempty canonical certified set has
+     nonpositive theory upper margin.
+135. If the canonical certified set is empty, no initializer can satisfy that
+     certificate; a fallback ranking cannot inherit a certification claim.
+136. A nonnegative sandwich correction makes the robust confidence variance
+     no smaller than the central predictive variance.
+137. Treating sandwich covariance as confidence-only leaves the central
+     Bayes-ranking variance exactly unchanged; certification and Cantelli
+     switching may still use the dominating robust covariance.
+138. A certified-only optional initializer may return `some x` only with
+     certified-set membership; if the certified set is empty it must return
+     `none`, so no protected incumbent or safety claim is fabricated.
+139. Replacing the cumulative-HVD certification upper bound by its posterior
+     central value in a Bayes action cannot alter or relax the separately
+     computed theory certificate.
+140. If the central variance is no larger than the certification upper
+     variance, and the epistemic radius and chance quantile are nonnegative,
+     the central decision margin is no larger than the certificate margin.
+141. The posterior expected binary chance-failure loss
+     `objective + penalty * P(failure)` is monotone in failure probability and
+     adds a nonnegative excess whenever penalty and probability are nonnegative.
 
 Remaining work is empirical/binding and assumption validation:
 
@@ -673,3 +760,25 @@ uncertainty concerns transferable boundary validation, including the V26
 exchangeable target-linear gate; ordered cumulative-risk identification; the
 trajectory logger table; the exact/additive large-budget decision; and
 synchronization of the numeric feature cap with the final code path.
+
+V49 additionally formalizes the separation between posterior-central
+aleatoric variance used by a Bayes action and conservative upper variance used
+by certification. The certificate is independent of the decision-only
+variance, and the upper margin dominates the central margin under the stated
+nonnegativity and variance-order assumptions. The binary chance-failure
+terminal loss is monotone in posterior failure probability. These theorems do
+not assert empirical calibration or promotion; the paired V49 gate remains
+the required implementation and performance check.
+
+V50 further separates the posterior-nominal Bayes action from the KL-robust
+decision envelope. Lean proves the exact ambiguity-premium decomposition and
+its nonnegative ordering while leaving the certification upper margin
+unchanged. This is a conditional implementation bridge, not evidence that the
+nominal action is empirically calibrated; the paired three-domain gate decides
+that question.
+
+V51 formalizes the finite-action approximation used by adaptive
+evaluate-or-replicate VOI. Expanding the one-new-point action set with a nested
+posterior-only shortlist cannot reduce the maximum available exact VOI. The
+theorem does not claim that the expanded action improves regret; the paired
+three-domain gate and complete active-arm audit decide that question.
