@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "run_id": "scolh_statistical_closure_v2_audit_s5_20260721_01",
+  "purpose": "Behavior-preserving replay of promoted V51 with read-only finite-sample HVD diagnostics",
+  "contracts": {
+    "implementation_contract_id": "promoted_v51_observed_terminal_closure",
+    "theory_contract_id": "v51_statistical_closure_v2",
+    "declaration_timing": "before_target_evaluation"
+  },
+  "reference_run": "scolh_promoted_v51_closure_s20_20260721_01",
+  "profile": {
+    "exact_mc_samples": 2,
+    "exact_shortlist_size": 4,
+    "exact_sampling_mode": "antithetic",
+    "replication_cap": 5
+  },
+  "matrix": {
+    "dimension": 1000,
+    "budget": 20,
+    "initial_budget": 10,
+    "seeds": 5,
+    "domains": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "expected_runs": 15
+  }
+}

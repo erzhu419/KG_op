@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Submit the preregistered finite-sample theory-contract audit for V51."""
+"""Submit a behavior-preserving finite-sample theory audit for promoted V51."""
 
 from __future__ import annotations
 
@@ -21,23 +21,55 @@ def _load(name, path):
     return module
 
 
-paper = _load(
-    "statistical_closure_paper_matrix",
-    ROOT / "scripts/submit_scolhkg_paper_main_matrix_scheduler.py",
+closure = _load(
+    "statistical_closure_v51",
+    ROOT / "scripts/submit_scolhkg_promoted_v51_closure_gate_scheduler.py",
 )
-closure = paper.closure
 CPU_NODES = closure.CPU_NODES
 DEFAULT_SOURCE_RUN_ID = closure.DEFAULT_SOURCE_RUN_ID
-IMPLEMENTATION_CONTRACT_ID = paper.IMPLEMENTATION_CONTRACT_ID
-THEORY_CONTRACT_ID = paper.THEORY_CONTRACT_ID
+DEFAULT_REGISTRATION = (
+    ROOT
+    / "SC-OLH-KG/performance/manifests/statistical_closure_v2_audit_v1.json"
+)
+IMPLEMENTATION_CONTRACT_ID = "promoted_v51_observed_terminal_closure"
+THEORY_CONTRACT_ID = "v51_statistical_closure_v2"
 VARIANT = "statistical_closure_v2"
 DEFAULT_RUN_ID = "scolh_statistical_closure_v2_audit_s5_20260721_01"
 
 
+def load_registration(path):
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if int(payload.get("schema_version", 0)) != 1:
+        raise ValueError("statistical closure audit schema_version must be 1")
+    return payload
+
+
+def validate_registration(registration):
+    if registration.get("status") != "frozen":
+        raise RuntimeError("statistical closure audit is not frozen")
+    contracts = dict(registration.get("contracts") or {})
+    if contracts.get("implementation_contract_id") != IMPLEMENTATION_CONTRACT_ID:
+        raise ValueError("audit implementation contract is missing or changed")
+    if contracts.get("theory_contract_id") != THEORY_CONTRACT_ID:
+        raise ValueError("audit theory contract is missing or changed")
+    expected = dict(registration.get("profile") or {})
+    actual = {
+        "exact_mc_samples": int(closure.PROFILE["exact_mc_samples"]),
+        "exact_shortlist_size": int(
+            closure.PROFILE["evaluate_or_replicate_new_action_count"]),
+        "exact_sampling_mode": str(closure.PROFILE["exact_sampling_mode"]),
+        "replication_cap": int(closure.PROFILE["replication_max_per_solution"]),
+    }
+    if expected != actual:
+        raise ValueError("audit profile no longer matches promoted V51")
+    return expected
+
+
 def build_specs(args, registration):
-    freeze = paper.validate_freeze(registration)
+    frozen_profile = validate_registration(registration)
     profile = {
-        **paper._variant_profiles(registration)["promoted_joint_voi"],
+        **closure.PROFILE,
+        "source_records_per_domain": int(args.source_records_per_domain),
         "implementation_contract_id": IMPLEMENTATION_CONTRACT_ID,
         "theory_contract_id": THEORY_CONTRACT_ID,
     }
@@ -54,10 +86,7 @@ def build_specs(args, registration):
         spec["theory_audit_contract"] = {
             "implementation_contract_id": IMPLEMENTATION_CONTRACT_ID,
             "theory_contract_id": THEORY_CONTRACT_ID,
-            "exact_mc_samples": int(freeze["exact_mc_samples"]),
-            "exact_shortlist_size": int(freeze["exact_shortlist_size"]),
-            "exact_sampling_mode": str(freeze["exact_sampling_mode"]),
-            "replication_cap": int(freeze["replication_cap"]),
+            **frozen_profile,
         }
     return specs
 
@@ -69,7 +98,7 @@ def main():
     parser.add_argument("--deploy", type=Path, default=defaults.DEFAULT_DEPLOY)
     parser.add_argument("--python", type=Path, default=defaults.REMOTE_PYTHON)
     parser.add_argument("--registration", type=Path,
-                        default=paper.DEFAULT_REGISTRATION)
+                        default=DEFAULT_REGISTRATION)
     parser.add_argument("--manifest", type=Path, default=(
         defaults.DEFAULT_DEPLOY
         / "SC-OLH-KG/performance/manifests/v18b_exactkg_mcdiag.json"))
@@ -103,7 +132,7 @@ def main():
     parser.add_argument("--no-sync", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
-    registration = paper.load_registration(args.registration)
+    registration = load_registration(args.registration)
     specs = build_specs(args, registration)
     if args.dry_run:
         print(json.dumps(specs, indent=2))

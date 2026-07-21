@@ -80,9 +80,10 @@ becomes an `r^(-1/4)` standard-deviation rate, yielding a conservative
 `Delta^(-4)` replication threshold. This is deliberately exposed rather than
 hidden.
 
-Gate B remains the empirical nonvacuity test. Until it passes, the theorem is a
-sample-threshold result and the certificate must not be described as
-empirically useful.
+Gate B subsequently passed at `N=80` with replication cap 20: all three domains
+issued at least one true certificate, with three certified points and zero
+false certificates across 15 runs. Coverage remains low (3/339 evaluated
+points), so the evidence establishes nonvacuity, not broad certificate recall.
 
 ### 4. True finite-budget safe regret
 
@@ -141,7 +142,8 @@ the Gaussian generalized score.
 The mathematical gap is no longer “missing theorem statements.” The remaining
 obligations are empirical or assumption audits:
 
-- Gate B must show nonzero certificate coverage at a defensible budget.
+- Gate B passed only at `N=80, replication_cap=20`; lower-budget certificates
+  remain vacuous and the observed 3/339 coverage must be reported.
 - New v2 diagnostic runs must report positive active excitation where HVD is
   claimed identifiable.
 - The main matrix must estimate pool-coverage and sequential terms rather than

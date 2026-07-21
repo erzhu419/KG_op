@@ -82,10 +82,10 @@ def test_awaiting_registration_cannot_submit():
         MODULE.validate_freeze(_registration(status="awaiting_gate_b"))
 
 
-def test_inspection_counts_registered_matrix_without_unfreezing():
+def test_inspection_counts_frozen_registered_matrix():
     registration = json.loads(MODULE.DEFAULT_REGISTRATION.read_text())
     plan = MODULE.inspect_plan(registration)
-    assert plan["status"] == "awaiting_gate_b"
+    assert plan["status"] == "frozen"
     assert plan["design_tasks"] == 9
     assert plan["run_tasks"] == 2520
     assert plan["total_tasks"] == 2529

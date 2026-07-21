@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "scope": "paper_gate_b_certification_budget",
+  "run_id": "scolh_promoted_v51_certification_budget_s5_20260721_02",
+  "expected_runs": 180,
+  "parsed_runs": 180,
+  "errors": 0,
+  "primary_budget": 80,
+  "selected_configuration": "joint_cap20",
+  "selected": {
+    "replication_cap": 20,
+    "run_count": 15,
+    "true_feasible_recommendation_count": 15,
+    "adaptive_improvement_count": 6,
+    "adaptive_loss_count": 0,
+    "posterior_certified_count": 3,
+    "certified_true_feasible_count": 3,
+    "false_certificate_count": 0,
+    "certificate_coverage": 0.008849557522123894,
+    "certificate_precision": 1.0,
+    "vacuous_run_count": 12,
+    "median_feasible_regret": 0.00824999999999998
+  },
+  "domain_certified_true_feasible_count": {
+    "FactorShockStatePolicyRZDT1": 1,
+    "InventorySupplyChain": 1,
+    "QueueResourceControl": 1
+  },
+  "contracts": {
+    "complete_expected_matrix": true,
+    "source_only_archive": true,
+    "paired_initial_design": true,
+    "observed_terminal_closure": true,
+    "positive_useful_coverage_in_every_domain": true,
+    "zero_false_certificates": true,
+    "recommendation_feasibility_noninferior": true,
+    "adaptive_loss_noninferior": true,
+    "target_oracle_used_for_decision": false
+  }
+}

@@ -18,11 +18,11 @@ from performance.analyze_statistical_closure_v2_audit import (  # noqa: E402
 
 def _registration():
     return {
-        "freeze_evidence": {
+        "profile": {
             "replication_cap": 5,
-            "exact_mc_samples": 32,
-            "exact_shortlist_size": 32,
-            "exact_sampling_mode": "antithetic_nested",
+            "exact_mc_samples": 2,
+            "exact_shortlist_size": 4,
+            "exact_sampling_mode": "antithetic",
         },
     }
 
@@ -37,9 +37,9 @@ def _write(root, domain, seed, *, identifiable=True):
         "theory_contract_id": THEORY_CONTRACT_ID,
         "theory_contract_timing": "declared_before_target_evaluation",
         "online_action_trace_target_oracle_used": False,
-        "exact_kg_mc_samples": 32,
-        "exact_kg_sampling_mode": "antithetic_nested",
-        "evaluate_or_replicate_new_action_count": 32,
+        "exact_kg_mc_samples": 2,
+        "exact_kg_sampling_mode": "antithetic",
+        "evaluate_or_replicate_new_action_count": 4,
         "replication_max_per_solution": 5,
         "true_feasible": True,
         "feasible_simple_regret": 0.01,

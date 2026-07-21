@@ -68,16 +68,16 @@ def _contract_ok(row):
     )
 
 
-def _configuration_ok(row, freeze):
+def _configuration_ok(row, profile):
     return bool(
         int(row.get("exact_kg_mc_samples", -1))
-        == int(freeze["exact_mc_samples"])
+        == int(profile["exact_mc_samples"])
         and int(row.get("evaluate_or_replicate_new_action_count", -1))
-        == int(freeze["exact_shortlist_size"])
+        == int(profile["exact_shortlist_size"])
         and str(row.get("exact_kg_sampling_mode"))
-        == str(freeze["exact_sampling_mode"])
+        == str(profile["exact_sampling_mode"])
         and int(row.get("replication_max_per_solution", -1))
-        == int(freeze["replication_cap"])
+        == int(profile["replication_cap"])
     )
 
 
@@ -130,7 +130,7 @@ def _summarize(rows):
 
 def analyze(root, registration, expected_count=15):
     rows, errors = load_rows(root)
-    freeze = dict(registration["freeze_evidence"])
+    profile = dict(registration["profile"])
     selected = [row for row in rows if row.get("heldout") in DOMAINS]
     overall = _summarize(selected)
     by_domain = {
@@ -143,7 +143,7 @@ def analyze(root, registration, expected_count=15):
         len(selected) == int(expected_count)
         and not errors
         and all(_contract_ok(row) for row in selected)
-        and all(_configuration_ok(row, freeze) for row in selected)
+        and all(_configuration_ok(row, profile) for row in selected)
         and all(_design(row).get("theory_contract") == THEORY_CONTRACT_ID
                 for row in selected)
     )
@@ -159,7 +159,7 @@ def analyze(root, registration, expected_count=15):
         "parsed_count": len(selected),
         "errors": errors,
         "frozen_configuration": {
-            key: freeze[key] for key in (
+            key: profile[key] for key in (
                 "exact_mc_samples",
                 "exact_shortlist_size",
                 "exact_sampling_mode",

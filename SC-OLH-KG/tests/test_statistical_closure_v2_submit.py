@@ -20,15 +20,11 @@ def _registration():
             "implementation_contract_id": MODULE.IMPLEMENTATION_CONTRACT_ID,
             "theory_contract_id": MODULE.THEORY_CONTRACT_ID,
         },
-        "freeze_evidence": {
+        "profile": {
             "replication_cap": 5,
-            "exact_mc_samples": 32,
-            "exact_shortlist_size": 32,
-            "exact_sampling_mode": "antithetic_nested",
-        },
-        "source_contract": {
-            "source_dimension": 50,
-            "records_per_source_domain": 64,
+            "exact_mc_samples": 2,
+            "exact_shortlist_size": 4,
+            "exact_sampling_mode": "antithetic",
         },
     }
 
@@ -65,17 +61,17 @@ def _args(tmp_path):
     })()
 
 
-def test_v2_audit_is_separate_and_uses_the_frozen_paper_configuration(tmp_path):
+def test_v2_audit_is_separate_and_preserves_promoted_v51_behavior(tmp_path):
     specs = MODULE.build_specs(_args(tmp_path), _registration())
     assert len(specs) == 3 * 5
     assert all("/statistical_closure_v2_audit_sequential/" in spec["signature"]
                for spec in specs)
     assert all("/statistical_closure_v2/" in spec["signature"]
                for spec in specs)
-    assert all("--exact-mc-samples 32" in spec["cmd"] for spec in specs)
-    assert all("--exact-sampling-mode antithetic_nested" in spec["cmd"]
+    assert all("--exact-mc-samples 2" in spec["cmd"] for spec in specs)
+    assert all("--exact-sampling-mode antithetic" in spec["cmd"]
                for spec in specs)
-    assert all("--evaluate-or-replicate-new-action-count 32" in spec["cmd"]
+    assert all("--evaluate-or-replicate-new-action-count 4" in spec["cmd"]
                for spec in specs)
     assert all("--replication-max-per-solution 5" in spec["cmd"]
                for spec in specs)
@@ -86,7 +82,7 @@ def test_v2_audit_is_separate_and_uses_the_frozen_paper_configuration(tmp_path):
     )
     assert all("--theory-contract-id v51_statistical_closure_v2" in spec["cmd"]
                for spec in specs)
-    assert all(spec["theory_audit_contract"]["exact_mc_samples"] == 32
+    assert all(spec["theory_audit_contract"]["exact_mc_samples"] == 2
                for spec in specs)
     assert all(spec["allowed_nodes"] == list(MODULE.CPU_NODES)
                for spec in specs)
