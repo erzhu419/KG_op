@@ -84,6 +84,7 @@ def test_renders_compact_tables_and_audit_without_runtime_state(tmp_path):
 
     assert (out / "table_main.tex").exists()
     assert (out / "table_frontier.tex").exists()
+    assert (out / "table_adaptation.tex").exists()
     assert "SC-OLH (promoted)" in (out / "table_main.tex").read_text()
     statistics = json.loads((out / "paired_statistics.json").read_text())
     assert statistics[0]["paired_n"] == 2
@@ -109,3 +110,37 @@ def test_registered_paper_variants_have_stable_labels_and_colors():
     ):
         assert MODULE._label(method) != method.replace("_", " ")
         assert method in MODULE.METHOD_COLORS
+
+
+def test_renders_hvd_and_evaluate_or_replicate_diagnostics(tmp_path):
+    import matplotlib
+
+    matplotlib.use("Agg", force=True)
+    MODULE._plot_style()
+    hvd_rows = []
+    for method, base in (("pooled", 0.8), ("factor_cumulative", 0.3)):
+        for scale in (0.5, 2.0):
+            hvd_rows.append({
+                "track": "hvd_identifiability",
+                "method": method,
+                "shared_shock_scale": scale,
+                "replicates_per_policy": 4,
+                "log_variance_rmse": base + 0.1 * scale,
+                "variance_upper_coverage": 0.94,
+            })
+    action_rows = [{
+        "domain": "QueueResourceControl",
+        "method": "promoted_joint_voi",
+        "N": budget,
+        "adaptive_new_point_count": 6,
+        "adaptive_replication_count": budget - 6,
+    } for budget in (20, 40)]
+
+    hvd_stem = tmp_path / "hvd"
+    action_stem = tmp_path / "actions"
+    assert MODULE.plot_hvd_identifiability(hvd_rows, hvd_stem) is True
+    assert MODULE.plot_action_allocation(action_rows, action_stem) is True
+    assert hvd_stem.with_suffix(".pdf").exists()
+    assert hvd_stem.with_suffix(".svg").exists()
+    assert hvd_stem.with_suffix(".tiff").exists()
+    assert action_stem.with_suffix(".png").exists()

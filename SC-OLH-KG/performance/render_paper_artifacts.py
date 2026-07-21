@@ -28,6 +28,11 @@ METHOD_LABELS = {
     "new_point_only": "SC-OLH, new only",
     "pooled_variance": "Pooled variance",
     "frozen_source_discrepancy": "Frozen discrepancy",
+    "pooled": "Pooled variance",
+    "class": "Class HVD",
+    "orthogonal_pointwise": "Pointwise orthogonal HVD",
+    "factor_pointwise": "Pointwise factor HVD",
+    "factor_cumulative": "Cumulative factor HVD",
     "observed_terminal_closure": "SC-OLH (promoted)",
     "promoted": "SC-OLH (promoted)",
     "new_only": "SC-OLH, new only",
@@ -51,6 +56,10 @@ METHOD_COLORS = {
     "new_point_only": "#56B4E9",
     "pooled_variance": "#E69F00",
     "frozen_source_discrepancy": "#CC79A7",
+    "class": "#56B4E9",
+    "orthogonal_pointwise": "#009E73",
+    "factor_pointwise": "#E69F00",
+    "factor_cumulative": "#0072B2",
     "observed_terminal_closure": "#0072B2",
     "promoted": "#0072B2",
     "new_only": "#56B4E9",
@@ -259,6 +268,50 @@ def write_frontier_table(rows: list[dict], path: Path) -> None:
     Path(path).write_text("\n".join(lines), encoding="utf-8")
 
 
+def write_adaptation_table(rows: list[dict], path: Path) -> None:
+    groups = _group_rows([
+        row for row in rows
+        if _boolean(row.get("true_feasible")) is not None
+    ])
+    lines = [
+        "\\begin{tabular}{lllrrrr}",
+        "\\toprule",
+        "Domain & $d/N$ & Method & Initial feas. & Final feas. & Rescue/Loss & $\\Delta$ regret \\\\",
+        "\\midrule",
+    ]
+    for key in sorted(groups, key=lambda item: (
+            item[0], item[1] or -1, item[2] or -1, _label(item[4]))):
+        domain, dimension, budget, _initial, method = key
+        items = groups[key]
+        n = len(items)
+        initial = sum(
+            _boolean(row.get("initial_has_true_feasible")) is True
+            for row in items
+        )
+        final = sum(
+            _boolean(row.get("true_feasible")) is True for row in items
+        )
+        rescue = sum(
+            _boolean(row.get("adaptive_rescue")) is True for row in items
+        )
+        loss = sum(
+            _boolean(row.get("adaptive_loss")) is True for row in items
+        )
+        changes = [
+            value for value in (
+                _number(row.get("adaptive_regret_change")) for row in items
+            ) if value is not None
+        ]
+        delta = "--" if not changes else f"{statistics.median(changes):+.4f}"
+        ratio = "--" if dimension is None or not budget else f"{dimension / budget:.1f}"
+        lines.append(
+            f"{_latex(domain)} & {ratio} & {_latex(_label(method))} & "
+            f"{initial}/{n} & {final}/{n} & {rescue}/{loss} & {delta} \\\\"
+        )
+    lines.extend(["\\bottomrule", "\\end{tabular}", ""])
+    Path(path).write_text("\n".join(lines), encoding="utf-8")
+
+
 def _paired_comparisons(rows: list[dict], primary: str) -> list[dict]:
     by_cell = defaultdict(dict)
     for row in rows:
@@ -343,17 +396,23 @@ def _plot_style():
         "font.size": 10,
         "axes.labelsize": 11,
         "axes.titlesize": 11,
+        "axes.linewidth": 0.8,
         "legend.fontsize": 8,
         "axes.spines.top": False,
         "axes.spines.right": False,
-        "savefig.dpi": 300,
+        "legend.frameon": False,
+        "pdf.fonttype": 42,
+        "svg.fonttype": "none",
+        "savefig.dpi": 600,
     })
 
 
 def _save(fig, stem: Path):
     fig.tight_layout()
     fig.savefig(stem.with_suffix(".pdf"), bbox_inches="tight")
-    fig.savefig(stem.with_suffix(".png"), dpi=220, bbox_inches="tight")
+    fig.savefig(stem.with_suffix(".svg"), bbox_inches="tight")
+    fig.savefig(stem.with_suffix(".png"), dpi=300, bbox_inches="tight")
+    fig.savefig(stem.with_suffix(".tiff"), dpi=600, bbox_inches="tight")
 
 
 def plot_frontier(rows: list[dict], stem: Path) -> bool:
@@ -502,6 +561,113 @@ def plot_certification(rows: list[dict], stem: Path) -> bool:
     return True
 
 
+def plot_hvd_identifiability(rows: list[dict], stem: Path) -> bool:
+    import matplotlib.pyplot as plt
+
+    usable = [
+        row for row in rows
+        if str(row.get("track")) == "hvd_identifiability"
+        and _number(row.get("shared_shock_scale")) is not None
+    ]
+    if not usable:
+        return False
+    grouped = defaultdict(list)
+    for row in usable:
+        grouped[(_method(row), _integer(row.get("replicates_per_policy")))].append(row)
+    fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.3))
+    for (method, replicates), items in sorted(
+            grouped.items(), key=lambda item: (_label(item[0][0]), item[0][1] or -1)):
+        scales = sorted({
+            _number(row.get("shared_shock_scale")) for row in items
+        })
+        rmse = []
+        coverage = []
+        for scale in scales:
+            at_scale = [
+                row for row in items
+                if _number(row.get("shared_shock_scale")) == scale
+            ]
+            rmse_values = [
+                value for value in (
+                    _number(row.get("log_variance_rmse")) for row in at_scale
+                ) if value is not None
+            ]
+            coverage_values = [
+                value for value in (
+                    _number(row.get("variance_upper_coverage")) for row in at_scale
+                ) if value is not None
+            ]
+            rmse.append(statistics.median(rmse_values) if rmse_values else np.nan)
+            coverage.append(
+                statistics.median(coverage_values) if coverage_values else np.nan)
+        label = _label(method)
+        if replicates is not None:
+            label += f" ($R={replicates}$)"
+        color = METHOD_COLORS.get(method, "#444444")
+        axes[0].plot(scales, rmse, marker="o", lw=1.8, color=color, label=label)
+        axes[1].plot(scales, coverage, marker="o", lw=1.8, color=color, label=label)
+    axes[0].set_xlabel("Shared-shock scale")
+    axes[0].set_ylabel("Median log-variance RMSE")
+    axes[1].set_xlabel("Shared-shock scale")
+    axes[1].set_ylabel("Variance-upper coverage")
+    axes[1].axhline(0.95, color="#666666", ls="--", lw=1.0, label="95% target")
+    axes[1].set_ylim(-0.03, 1.03)
+    for ax in axes:
+        ax.grid(alpha=0.25)
+    axes[1].legend(loc="lower right", frameon=False)
+    _save(fig, stem)
+    plt.close(fig)
+    return True
+
+
+def plot_action_allocation(rows: list[dict], stem: Path) -> bool:
+    import matplotlib.pyplot as plt
+
+    usable = []
+    for row in rows:
+        new_count = _integer(row.get("adaptive_new_point_count"))
+        replicate_count = _integer(row.get("adaptive_replication_count"))
+        if new_count is None or replicate_count is None:
+            continue
+        if new_count + replicate_count <= 0 or _integer(row.get("N")) is None:
+            continue
+        usable.append((row, replicate_count / (new_count + replicate_count)))
+    if not usable:
+        return False
+    domains = sorted({str(row.get("domain")) for row, _ in usable})
+    fig, axes = plt.subplots(
+        1, len(domains), figsize=(4.1 * len(domains), 3.3),
+        squeeze=False, sharey=True,
+    )
+    for column, domain in enumerate(domains):
+        ax = axes[0, column]
+        domain_rows = [(row, value) for row, value in usable
+                       if str(row.get("domain")) == domain]
+        methods = sorted({_method(row) for row, _ in domain_rows}, key=_label)
+        for method in methods:
+            by_budget = defaultdict(list)
+            for row, value in domain_rows:
+                if _method(row) == method:
+                    by_budget[_integer(row.get("N"))].append(value)
+            budgets = sorted(by_budget)
+            ax.plot(
+                budgets,
+                [statistics.median(by_budget[budget]) for budget in budgets],
+                marker="o", lw=1.8,
+                color=METHOD_COLORS.get(method, "#444444"),
+                label=_label(method),
+            )
+        ax.set_title(domain.replace("StatePolicyRZDT1", ""))
+        ax.set_xlabel("Charged target calls")
+        ax.grid(alpha=0.25)
+    axes[0, 0].set_ylabel("Replication action fraction")
+    axes[0, 0].set_ylim(-0.03, 1.03)
+    axes[0, -1].legend(loc="upper right", frameon=False)
+    _save(fig, stem)
+    plt.close(fig)
+    return True
+
+
 def render(rows_path: Path, summary_path: Path, traces_path: Path,
            out_dir: Path, primary_method: str, no_plots: bool = False) -> dict:
     rows = read_csv(rows_path)
@@ -510,6 +676,7 @@ def render(rows_path: Path, summary_path: Path, traces_path: Path,
     out_dir.mkdir(parents=True, exist_ok=True)
     write_main_table(rows, out_dir / "table_main.tex")
     write_frontier_table(rows, out_dir / "table_frontier.tex")
+    write_adaptation_table(rows, out_dir / "table_adaptation.tex")
     comparisons = _paired_comparisons(rows, primary_method)
     (out_dir / "paired_statistics.json").write_text(
         json.dumps(comparisons, indent=2) + "\n", encoding="utf-8")
@@ -523,6 +690,10 @@ def render(rows_path: Path, summary_path: Path, traces_path: Path,
                 traces, out_dir / "fig_target_convergence"),
             "certification_budget": plot_certification(
                 rows, out_dir / "fig_certification_budget"),
+            "hvd_identifiability": plot_hvd_identifiability(
+                rows, out_dir / "fig_hvd_identifiability"),
+            "action_allocation": plot_action_allocation(
+                rows, out_dir / "fig_action_allocation"),
         }
     manifest = {
         "schema_version": 1,
