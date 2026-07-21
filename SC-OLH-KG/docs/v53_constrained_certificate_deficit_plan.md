@@ -41,13 +41,22 @@ under each fantasy. It does not read target truth or oracle feasibility.
 
 ## Numerical fidelity
 
-Both scores use `antithetic_nested` common random numbers. The MC8 stream is
-an exact prefix of MC32 at a fixed posterior state. Before a sequential V53
-sentinel, a disjoint calibration gate runs
+The first disjoint gate used `antithetic_nested` common random numbers with a
+sampled finite task expert. It completed all 30 pairs, but MC8 failed the
+pre-registered stability thresholds: risk/certificate pairwise agreement was
+`0.870/0.882`, and certificate top-1 agreement was `0.567`. It therefore did
+not authorize a V53 sentinel.
+
+The revised numerical path uses `stratified_expert_nested`. Finite expert
+identity is summed exactly with posterior mass, as formalized in
+`SCOLHKG.Real.StratifiedExpertKG`; only the conditional two-dimensional
+Gaussian innovation is approximated. Stage-keyed antithetic rows are reused by
+the risk and certificate heads, and MC8 is an exact prefix of MC32 at a fixed
+posterior state. The revised disjoint gate runs
 
 - `d=1000`, `N=11`, `n0=10`;
 - FactorShock, Inventory, and Queue;
-- seeds 100 through 109;
+- frozen-design seeds 0 through 9;
 - paired MC8 and MC32 estimators.
 
 Actions are matched by integer-design fingerprint. The analyzer reports

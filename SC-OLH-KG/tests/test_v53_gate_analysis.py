@@ -45,14 +45,16 @@ def _initial_design():
     }
 
 
-def _fidelity_row(domain, seed, mc, offset):
+def _fidelity_row(
+    domain, seed, mc, offset, sampling_mode="antithetic_nested",
+):
     return {
         "heldout": domain,
         "seed": seed,
         "implementation_contract_id": "v53_constrained_certificate_deficit",
         "theory_contract_id": "v53_constrained_certificate_deficit_v1",
         "exact_kg_mc_samples": mc,
-        "exact_kg_sampling_mode": "antithetic_nested",
+        "exact_kg_sampling_mode": sampling_mode,
         "task_initial_design": _initial_design(),
         "decision_backend_contract": {
             "policy_improvement_contract": (
@@ -89,6 +91,31 @@ def test_v53_fidelity_analyzer_matches_actions_and_calibrates_nonzero_eta(
     assert result["recommended_risk_eta"] > 0.0
     assert result["recommended_certificate_eta"] > 0.0
     assert result["bound_status"].startswith("empirical_")
+
+
+def test_v53_fidelity_analyzer_accepts_nested_expert_marginalization(
+    tmp_path,
+):
+    sampling_mode = "stratified_expert_nested"
+    for variant, mc, offset in (
+        (FIDELITY.LOW, 8, 0.01),
+        (FIDELITY.HIGH, 32, 0.0),
+    ):
+        rows = [
+            _fidelity_row(
+                domain, 0, mc, offset, sampling_mode=sampling_mode)
+            for domain in FIDELITY.DOMAINS
+        ]
+        _write_result(tmp_path, variant, rows)
+    result = FIDELITY.analyze(
+        tmp_path,
+        seeds=[0],
+        multiplier=1.25,
+        sampling_mode=sampling_mode,
+    )
+    assert result["fidelity_gate_complete"] is True
+    assert result["sampling_mode"] == sampling_mode
+    assert result["finite_expert_marginalization"] is True
 
 
 def _sentinel_contract(variant):

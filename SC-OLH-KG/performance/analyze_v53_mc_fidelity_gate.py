@@ -114,7 +114,7 @@ def _initial_design_matches(left, right):
     )
 
 
-def _contract(row, expected_mc):
+def _contract(row, expected_mc, expected_sampling_mode):
     contract = dict(row.get("decision_backend_contract") or {})
     return bool(
         str(row.get("implementation_contract_id"))
@@ -123,14 +123,19 @@ def _contract(row, expected_mc):
         == "v53_constrained_certificate_deficit_v1"
         and int(row.get("exact_kg_mc_samples", -1)) == int(expected_mc)
         and str(row.get("exact_kg_sampling_mode"))
-        == "antithetic_nested"
+        == str(expected_sampling_mode)
         and str(contract.get("policy_improvement_contract"))
         == "v53_constrained_certificate_deficit_v1"
         and not bool(row.get("online_action_trace_target_oracle_used", True))
     )
 
 
-def analyze(root, seeds=range(100, 110), multiplier=1.25):
+def analyze(
+    root,
+    seeds=range(0, 10),
+    multiplier=1.25,
+    sampling_mode="antithetic_nested",
+):
     rows, errors = load_rows(root)
     seeds = tuple(int(seed) for seed in seeds)
     expected = {(domain, seed) for domain in DOMAINS for seed in seeds}
@@ -157,7 +162,10 @@ def analyze(root, seeds=range(100, 110), multiplier=1.25):
     for key in sorted(paired):
         low = indexed[LOW][key]
         high = indexed[HIGH][key]
-        contracts_ok &= _contract(low, 8) and _contract(high, 32)
+        contracts_ok &= (
+            _contract(low, 8, sampling_mode)
+            and _contract(high, 32, sampling_mode)
+        )
         initial_designs_ok &= _initial_design_matches(low, high)
         low_trace = _trace(low)
         high_trace = _trace(high)
@@ -252,6 +260,14 @@ def analyze(root, seeds=range(100, 110), multiplier=1.25):
     return {
         "scope": "v53_nested_mc_fidelity",
         "reference": "MC32 nested extension of MC8",
+        "sampling_mode": str(sampling_mode),
+        "finite_expert_marginalization": bool(
+            str(sampling_mode) in {
+                "stratified_expert_nested",
+                "nested_stratified_expert",
+                "rao_blackwellized_nested",
+            }
+        ),
         "seeds": list(seeds),
         "expected_pair_count": len(expected),
         "paired_count": len(paired),
@@ -284,15 +300,18 @@ def analyze(root, seeds=range(100, 110), multiplier=1.25):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--seed-start", type=int, default=100)
+    parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=10)
     parser.add_argument("--multiplier", type=float, default=1.25)
+    parser.add_argument(
+        "--sampling-mode", default="antithetic_nested")
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     result = analyze(
         args.root,
         range(args.seed_start, args.seed_start + args.n_seeds),
         multiplier=args.multiplier,
+        sampling_mode=args.sampling_mode,
     )
     text = json.dumps(result, indent=2, sort_keys=True)
     print(text)

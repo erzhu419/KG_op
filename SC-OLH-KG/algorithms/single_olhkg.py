@@ -10531,6 +10531,32 @@ class SingleOLHKGAlgorithm:
         }
         return result if return_diagnostics else result["score"]
 
+    def _exact_kg_nested_antithetic_samples(self, mc):
+        """Return a stage-keyed antithetic prefix shared by all score heads."""
+
+        mc = max(0, int(mc))
+        z_rows = []
+        uniforms = []
+        stage = int(len(self.history))
+        for pair_index in range(mc // 2):
+            pair_rng = np.random.default_rng(np.random.SeedSequence([
+                int(self.config.seed),
+                stage,
+                int(EXACT_KG_STREAM_TAG),
+                int(pair_index),
+            ]))
+            z_vec = pair_rng.standard_normal(2)
+            expert_uniform = float(pair_rng.random())
+            z_rows.extend([z_vec, -z_vec])
+            uniforms.extend([expert_uniform, 1.0 - expert_uniform])
+        if mc % 2:
+            z_rows.append(np.zeros(2, dtype=float))
+            uniforms.append(0.5)
+        return (
+            np.asarray(z_rows, dtype=float).reshape(mc, 2),
+            np.asarray(uniforms, dtype=float),
+        )
+
     def _exact_kg_common_samples(self, mc):
         """Draw shared predictive innovations for every design candidate."""
         mc = max(0, int(mc))
@@ -10545,31 +10571,10 @@ class SingleOLHKGAlgorithm:
             "nested_antithetic",
             "paired_nested",
         ):
-            # Pair-indexed streams make the 2-sample plan an exact prefix of
-            # the 8- and 32-sample plans at the same charged posterior state.
-            # This mode is used by the numerical-fidelity gate so MC error is
-            # not confounded by unrelated random draws.
-            z_rows = []
-            uniforms = []
-            stage = int(len(self.history))
-            for pair_index in range(mc // 2):
-                pair_rng = np.random.default_rng(np.random.SeedSequence([
-                    int(self.config.seed),
-                    stage,
-                    int(EXACT_KG_STREAM_TAG),
-                    int(pair_index),
-                ]))
-                z_vec = pair_rng.standard_normal(2)
-                expert_uniform = float(pair_rng.random())
-                z_rows.extend([z_vec, -z_vec])
-                uniforms.extend([expert_uniform, 1.0 - expert_uniform])
-            if mc % 2:
-                z_rows.append(np.zeros(2, dtype=float))
-                uniforms.append(0.5)
-            return (
-                np.asarray(z_rows, dtype=float).reshape(mc, 2),
-                np.asarray(uniforms, dtype=float),
-            )
+            # Pair-indexed streams make every smaller plan an exact prefix at
+            # the same charged posterior state and are reused by both V53
+            # terminal heads.
+            return self._exact_kg_nested_antithetic_samples(mc)
         if mode in ("antithetic", "paired", "antithetic_pairs"):
             n_pairs = mc // 2
             base_z = self.rng.standard_normal((n_pairs, 2))
@@ -10601,10 +10606,16 @@ class SingleOLHKGAlgorithm:
 
         mc = max(0, int(mc))
         mode = str(self.config.exact_kg_sampling_mode or "iid").lower()
+        nested_stratified_modes = {
+            "stratified_expert_nested",
+            "nested_stratified_expert",
+            "rao_blackwellized_nested",
+        }
         stratified_modes = {
             "stratified_expert",
             "expert_stratified",
             "stratified_expert_antithetic",
+            *nested_stratified_modes,
         }
         if mode not in stratified_modes:
             z_rows, uniforms = self._exact_kg_common_samples(mc)
@@ -10620,14 +10631,18 @@ class SingleOLHKGAlgorithm:
                 np.empty(0, dtype=float),
             )
 
-        n_pairs = mc // 2
-        base = self.rng.standard_normal((n_pairs, 2))
-        gaussian_rows = []
-        for z_vec in base:
-            gaussian_rows.extend([z_vec, -z_vec])
-        if mc % 2:
-            gaussian_rows.append(np.zeros(2, dtype=float))
-        gaussian_rows = np.asarray(gaussian_rows, dtype=float).reshape(mc, 2)
+        if mode in nested_stratified_modes:
+            gaussian_rows, _ = self._exact_kg_nested_antithetic_samples(mc)
+        else:
+            n_pairs = mc // 2
+            base = self.rng.standard_normal((n_pairs, 2))
+            gaussian_rows = []
+            for z_vec in base:
+                gaussian_rows.extend([z_vec, -z_vec])
+            if mc % 2:
+                gaussian_rows.append(np.zeros(2, dtype=float))
+            gaussian_rows = np.asarray(
+                gaussian_rows, dtype=float).reshape(mc, 2)
 
         if hasattr(self.task_ensemble, "predictive_selector_weights"):
             selector_weights = (
@@ -11045,6 +11060,8 @@ class SingleOLHKGAlgorithm:
             self.config.exact_kg_sampling_mode or "").lower()
         if sampling_mode not in {
             "antithetic_nested", "nested_antithetic", "paired_nested",
+            "stratified_expert_nested", "nested_stratified_expert",
+            "rao_blackwellized_nested",
         }:
             raise ValueError(
                 "certificate-constrained policy improvement requires "

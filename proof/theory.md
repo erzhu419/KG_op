@@ -918,9 +918,14 @@ replace the V51 fallback only after separate Bayes-risk and certificate-score
 gaps exceed `2 eta_risk` and `2 eta_certificate`.
 `SCOLHKG/Real/ConstrainedCertificateDeficit.lean` proves strict exact
 improvement of both scores on their two uniform numerical-error events and
-joint noninferiority under fallback-or-switch. Nested MC8/MC32 calibration is
-an empirical implementation obligation; it is not silently promoted to an
-exact-integral theorem.
+joint noninferiority under fallback-or-switch. In the revised numerical
+contract, `stratified_expert_nested` exactly sums finite task-expert identity
+with posterior mass; `SCOLHKG/Real/StratifiedExpertKG.lean` proves that this
+categorical layer contributes no sampling error and inherits the largest
+conditional Gaussian approximation error. Stage-keyed nested antithetic rows
+remain an approximation to the two-dimensional within-expert expectation.
+Nested MC8/MC32 calibration is therefore still an empirical implementation
+obligation; it is not silently promoted to an exact-integral theorem.
 
 ## Current Empirical Closure Items
 
@@ -943,11 +948,15 @@ exact-integral theorem.
    finite PAC-Bayes certificate still assumes a source-task exponential-moment
    bound. Its slack must be upper-bounded from source-only held-out episodes and
    frozen before each target run.
-5. The traffic trajectory encoder and SUMO logger exist, but the final table
+5. The first 30-pair V53 numerical gate rejected sampled-expert MC8: risk and
+   certificate pairwise agreement were `0.870` and `0.882`, while certificate
+   top-1 agreement was `0.567`. V53 is not promoted. The next gate uses exact
+   finite-expert marginalization before spending Gaussian MC effort.
+6. The traffic trajectory encoder and SUMO logger exist, but the final table
    still requires real fresh-seed trajectory CSV and out-of-sample replication
    certification. Missing logs must remain `missing_data`, never synthetic
    evidence.
-6. The legacy TCB-V2--V5 gates are historical negative results: their formal
+7. The legacy TCB-V2--V5 gates are historical negative results: their formal
    envelopes were sound but empirically vacuous or inaccurate. They are not
    part of promoted V51 and should move to an appendix failure analysis rather
    than remain in the main algorithm narrative.

@@ -1170,6 +1170,47 @@ class ExactKGTests(unittest.TestCase):
             weights, [0.1, 0.1, 0.15, 0.15, 0.25, 0.25])
         self.assertAlmostEqual(float(np.sum(weights)), 1.0)
 
+    def test_nested_stratified_expert_plans_have_exact_prefixes(self):
+        class Posterior:
+            @staticmethod
+            def decision_weights():
+                return np.asarray([0.2, 0.3, 0.5], dtype=float)
+
+        class Ensemble:
+            posterior = Posterior()
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                exact_kg_sampling_mode="stratified_expert_nested",
+                seed=9,
+            ),
+        )
+        algorithm.task_ensemble = Ensemble()
+        z8, u8, w8 = algorithm._exact_kg_sample_plan(8)
+        z32, u32, w32 = algorithm._exact_kg_sample_plan(32)
+        self.assertEqual(z8.shape, (24, 2))
+        self.assertEqual(z32.shape, (96, 2))
+        for expert in range(3):
+            np.testing.assert_allclose(
+                z8[expert * 8:(expert + 1) * 8],
+                z32[expert * 32:expert * 32 + 8],
+            )
+        np.testing.assert_allclose(z8[0::2], -z8[1::2])
+        np.testing.assert_allclose(
+            [np.sum(w8[index * 8:(index + 1) * 8])
+             for index in range(3)],
+            [0.2, 0.3, 0.5],
+        )
+        np.testing.assert_allclose(
+            [np.sum(w32[index * 32:(index + 1) * 32])
+             for index in range(3)],
+            [0.2, 0.3, 0.5],
+        )
+        np.testing.assert_allclose(u8[:8], np.full(8, 0.1))
+        np.testing.assert_allclose(u32[:32], np.full(32, 0.1))
+
     def test_stratified_plan_integrates_mean_variance_product_posterior(self):
         class Ensemble:
             @staticmethod
