@@ -184,7 +184,11 @@ def _flags(profile, args):
         str(profile.get("residual_rank_prior", "0.70,0.20,0.10")),
         "--source-constraint-mean-residual-rank-inactive-variance",
         str(profile.get("residual_rank_inactive_variance", 1e-12)),
-        "--source-discrepancy-update",
+        (
+            "--source-discrepancy-update"
+            if profile.get("source_discrepancy_update", True)
+            else "--no-source-discrepancy-update"
+        ),
         "--task-posterior-safe-generalized",
         "--task-posterior-safe-boundary-weight", "1.0",
         "--task-posterior-safe-pairwise-weight", "1.0",
@@ -379,8 +383,10 @@ def build_specs(args):
                     "--n0", str(args.n0),
                     "--initial-design", "source_informed",
                     "--initial-design-file", str(remote_design),
-                    "--structural-prior-profile", "none",
-                    "--hvd-profile", "factor_hierarchical",
+                    "--structural-prior-profile",
+                    str(profile.get("structural_prior_profile", "none")),
+                    "--hvd-profile",
+                    str(profile.get("hvd_profile", "factor_hierarchical")),
                     "--target-shared-shock-scale", str(shock_scale),
                     *_flags(profile, args),
                 ]

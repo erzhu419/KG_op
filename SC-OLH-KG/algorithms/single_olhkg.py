@@ -13006,8 +13006,42 @@ class SingleOLHKGAlgorithm:
                 "mathematically_closed", False)),
             "target_oracle_used": False,
         }
+        # Join synthetic/oracle truth only after every charged decision is
+        # frozen.  These fields support paper convergence plots and cannot
+        # affect acquisition, posterior updates, or the terminal Bayes action.
+        post_run_truth_available = bool(self.config.truth_pool_diagnostics)
+        try:
+            _, trace_true_best_objective = self._true_best_feasible_cached()
+            trace_true_best_objective = float(trace_true_best_objective)
+        except Exception:
+            trace_true_best_objective = np.nan
+            post_run_truth_available = False
+        trace_incumbent_regret = None
+        trace_initial_points = unique_candidates([
+            x for x, _ in self.history[: int(self.config.n0)]
+        ])
+        if post_run_truth_available and np.isfinite(trace_true_best_objective):
+            for initial_point in trace_initial_points:
+                try:
+                    initial_margin = float(
+                        self._true_chance_margin(initial_point))
+                    if initial_margin <= 0.0:
+                        initial_regret = float(
+                            self.problem.true_objective(initial_point)
+                            - trace_true_best_objective
+                        )
+                        trace_incumbent_regret = (
+                            initial_regret
+                            if trace_incumbent_regret is None
+                            else min(trace_incumbent_regret, initial_regret)
+                        )
+                except Exception:
+                    post_run_truth_available = False
+                    trace_incumbent_regret = None
+                    break
+
         online_action_trace = []
-        for iteration_row in self.iteration_log:
+        for trace_index, iteration_row in enumerate(self.iteration_log):
             selected = iteration_row.get("x_selected")
             if selected is None:
                 continue
@@ -13015,8 +13049,36 @@ class SingleOLHKGAlgorithm:
             observed = iteration_row.get("Y_observed")
             expert_proposals = dict(
                 iteration_row.get("task_expert_proposals") or {})
+            true_objective = None
+            true_margin = None
+            true_feasible = None
+            feasible_regret = None
+            if post_run_truth_available:
+                try:
+                    true_objective = float(self.problem.true_objective(point))
+                    true_margin = float(self._true_chance_margin(point))
+                    true_feasible = bool(true_margin <= 0.0)
+                    if (
+                        true_feasible
+                        and np.isfinite(trace_true_best_objective)
+                    ):
+                        feasible_regret = float(
+                            true_objective - trace_true_best_objective)
+                        trace_incumbent_regret = (
+                            feasible_regret
+                            if trace_incumbent_regret is None
+                            else min(trace_incumbent_regret, feasible_regret)
+                        )
+                except Exception:
+                    post_run_truth_available = False
+                    true_objective = None
+                    true_margin = None
+                    true_feasible = None
+                    feasible_regret = None
+                    trace_incumbent_regret = None
             online_action_trace.append({
                 "iteration": int(iteration_row.get("iteration", -1)),
+                "target_call": int(self.config.n0) + trace_index + 1,
                 "x_fingerprint": integer_design_fingerprint([point]),
                 "x_first_coordinate": int(point[0]) if point else None,
                 "x_coordinate_mean": (
@@ -13064,6 +13126,18 @@ class SingleOLHKGAlgorithm:
                     if observed is None
                     else [float(value) for value in observed]
                 ),
+                "true_objective_post_run": true_objective,
+                "true_chance_margin_post_run": true_margin,
+                "true_feasible_post_run": true_feasible,
+                "feasible_regret_post_run": feasible_regret,
+                "incumbent_feasible_regret_post_run": (
+                    None
+                    if trace_incumbent_regret is None
+                    else float(trace_incumbent_regret)
+                ),
+                "truth_join_timing": "post_run_after_all_decisions_frozen",
+                "truth_admissible_decision_input": False,
+                "target_oracle_used_for_decision": False,
             })
         history_points = [tuple(int(value) for value in x) for x, _ in self.history]
         self.final_log = {
@@ -13079,6 +13153,11 @@ class SingleOLHKGAlgorithm:
                 if history_points else None
             ),
             "online_action_trace": online_action_trace,
+            "online_action_trace_truth_available": bool(
+                post_run_truth_available),
+            "online_action_trace_initial_best_feasible_regret": (
+                adaptive_outcome.get("initial_best_feasible_regret")
+            ),
             "online_action_sequence_fingerprint": (
                 integer_design_fingerprint([
                     tuple(int(value) for value in row["x_selected"])

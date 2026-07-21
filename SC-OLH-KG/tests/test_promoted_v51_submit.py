@@ -69,12 +69,22 @@ def test_promoted_v51_is_the_balanced_four_profile(tmp_path):
     assert all(spec["wait_for_files"] == [] for spec in specs)
 
 
-def test_promoted_baseline_record_matches_profile():
+def test_promoted_baseline_record_matches_observed_terminal_closure():
     record = json.loads((
         REPO / "SC-OLH-KG/performance/promoted_baseline.json"
     ).read_text())
-    assert record["name"] == "v51_balanced4"
-    assert record["profile_key"] == submit.v51.PROMOTED_VARIANT
+    assert record["name"] == "v51_observed_terminal_closure"
+    assert record["profile_key"] == "observed_terminal_closure"
+    assert record["submission_entrypoint"] == (
+        "scripts/submit_scolhkg_promoted_v51_closure_gate_scheduler.py"
+    )
     assert record["decision"]["new_action_count"] == 4
+    assert record["decision"]["terminal_action_universe"] == (
+        "charged_observed_policies"
+    )
+    assert record["decision"]["current_fantasy_final_contract_shared"] is True
     assert record["evidence"]["true_feasible"] == 60
     assert record["evidence"]["adaptive_losses"] == 0
+    assert record["evidence"]["contracts"][
+        "observed_terminal_closure"
+    ] is True

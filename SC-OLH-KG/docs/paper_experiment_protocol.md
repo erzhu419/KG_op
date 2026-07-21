@@ -2,8 +2,10 @@
 
 ## Claims to test
 
-1. A transferable structural prior compresses high-dimensional policy search
-   into low-dimensional observable mean and cumulative-risk coordinates.
+1. A source-only universal low-frequency support prior and source-ranked
+   low-frequency proposal compress high-dimensional policy search into
+   dimension-equivariant observable coordinates. Completed causal gates do
+   not support describing all four structural switches as coequal drivers.
 2. State-coupled cumulative HVD improves variance calibration and prevents
    false feasibility under shared shocks.
 3. Unified evaluate-or-replicate VOI improves the source-informed initial
@@ -14,6 +16,12 @@
 
 Manifold and Transformer encoders are representation-background ablations, not
 main contributions.
+
+Orthogonality, adaptive sparsity, and additive groups remain members of the
+unified structural hypothesis class and must appear in causal ablations. They
+are promoted to headline claims only if independently retrained source
+proposals/posteriors show incremental held-out value over the supported
+low-frequency front end.
 
 ## Freeze gates
 
@@ -59,6 +67,10 @@ main contributions.
   the original continuous policy space.
 
 ## Main matrix
+
+The matrix is submitted only after Gate B freezes the replication budget and
+Gate C freezes the MC/shortlist schedule. A machine-readable registration must
+record those values; a submitter must refuse an `awaiting_gates` registration.
 
 ### Domains
 

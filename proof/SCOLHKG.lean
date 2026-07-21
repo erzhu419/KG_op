@@ -59,6 +59,7 @@ import SCOLHKG.Real.OrderedCumulativeExposure
 import SCOLHKG.Real.OrthogonalSemiparametric
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.PromotedV51Closure
+import SCOLHKG.Real.PaperMainline
 import SCOLHKG.Real.RidgeHVD
 import SCOLHKG.Real.SourceShapeMixtureHVD
 import SCOLHKG.Real.SourceConstraintMeanPosterior

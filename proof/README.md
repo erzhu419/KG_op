@@ -707,6 +707,10 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 147. The promoted one-step VOI bound and conservative terminal chance
      certificate hold jointly without identifying Bayes-risk ranking variance
      with the separate certification upper variance.
+148. The revised-paper umbrella theorem composes source-label invariance,
+     the exact cumulative-risk decomposition, separated mean/risk coordinate
+     equivalence, the full finite-action `epsilon_shortlist + 2 eta_MC` VOI
+     gap, and conservative terminal chance feasibility in one statement.
 
 Remaining work is empirical/binding and assumption validation:
 

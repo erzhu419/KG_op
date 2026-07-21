@@ -58,7 +58,19 @@ ROW_FIELDS = (
     "false_certificate_count",
     "certificate_precision",
     "certificate_recall",
+    "certified_true_feasible_count",
+    "evaluated_point_count",
+    "minimum_posterior_margin",
+    "minimum_true_margin",
     "decision_backend",
+    "terminal_value_contract",
+    "decision_contract_coherent",
+    "terminal_recommendation_observed_only",
+    "audit_admissible_mainline",
+    "source_oracle_aided",
+    "target_oracle_used_for_adaptation",
+    "target_oracle_used_for_decision",
+    "online_updates_use_budgeted_target_only",
     "structural_prior_profile",
     "hvd_profile",
     "source_discrepancy_update",
@@ -68,6 +80,9 @@ ROW_FIELDS = (
     "adaptive_replication_voi",
     "adaptive_replication_count",
     "adaptive_new_point_count",
+    "exact_mc_samples",
+    "exact_sampling_mode",
+    "exact_shortlist_size",
     "posterior_dominance_enabled",
     "posterior_dominance_switch_count",
     "wall_time_sec",
@@ -86,6 +101,53 @@ ROW_FIELDS = (
     "missed_feasible_fraction_of_true",
     "median_predicted_true_ratio",
     "median_certified_true_ratio",
+    "candidate_gen_time_total",
+    "candidate_gen_time_share",
+    "kg_compute_time_total",
+    "kg_compute_time_share",
+    "posterior_solve_time_total",
+    "posterior_solve_time_share",
+    "update_time_total",
+    "update_time_share",
+    "simulate_time_total",
+    "simulate_time_share",
+    "result_path",
+)
+
+
+TRACE_FIELDS = (
+    "run_id",
+    "track",
+    "variant",
+    "method",
+    "implementation",
+    "initial_design",
+    "domain",
+    "seed",
+    "d",
+    "N",
+    "n0",
+    "target_call",
+    "iteration",
+    "action_kind",
+    "candidate_source",
+    "x_fingerprint",
+    "selected_score",
+    "posterior_bayes_risk",
+    "posterior_theory_margin",
+    "posterior_constraint_epistemic",
+    "observed_objective",
+    "observed_constraint",
+    "true_objective_post_run",
+    "true_chance_margin_post_run",
+    "true_feasible_post_run",
+    "feasible_regret_post_run",
+    "incumbent_feasible_regret_post_run",
+    "exact_kg_best_new_raw",
+    "exact_kg_best_replication_raw",
+    "exact_kg_new_minus_replication_raw",
+    "truth_join_timing",
+    "target_oracle_used_for_decision",
     "result_path",
 )
 
@@ -134,8 +196,16 @@ def _safe_ratio(numerator: Any, denominator: Any) -> float | None:
     return num / den
 
 
+def _stage_value(stage_times: dict, stage: str, field: str) -> float | None:
+    return _finite(_dict(stage_times.get(stage)).get(field))
+
+
 def _variant_parts(experiment_variant: str, run_id: str) -> tuple[str, str]:
     parts = [part for part in str(experiment_variant or "").split("/") if part]
+    if len(parts) >= 2 and parts[0].startswith("paper_main_v1"):
+        # Paper runs append the shock scenario after the registered method:
+        # paper_main_v1_sequential/<method>/shock<scale>.
+        return parts[0], parts[1]
     if len(parts) >= 3 and parts[0] == "structural_backend":
         return parts[-2], parts[-1]
     if len(parts) >= 2:
@@ -159,6 +229,8 @@ def _normalize_sc_result(
     certificate = _dict(row.get("certificate_outcome_audit"))
     adaptive = _dict(row.get("adaptive_outcome_audit"))
     dominance = _dict(row.get("posterior_dominance"))
+    decision_contract = _dict(row.get("decision_backend_contract"))
+    stage_times = _dict(row.get("stage_times"))
     experiment_variant = str(_first(
         row.get("experiment_variant"),
         payload.get("experiment_variant"),
@@ -309,7 +381,36 @@ def _normalize_sc_result(
             row.get("certificate_recall_on_evaluated_feasible"),
             certificate.get("certificate_recall_on_evaluated_feasible"),
         )),
+        "certified_true_feasible_count": _integer(
+            certificate.get("certified_true_feasible_count")),
+        "evaluated_point_count": _integer(
+            certificate.get("evaluated_point_count")),
+        "minimum_posterior_margin": _finite(
+            certificate.get("minimum_posterior_margin")),
+        "minimum_true_margin": _finite(
+            certificate.get("minimum_true_margin")),
         "decision_backend": row.get("decision_backend"),
+        "terminal_value_contract": decision_contract.get(
+            "terminal_value_contract"),
+        "decision_contract_coherent": _boolean(
+            decision_contract.get("coherent")),
+        "terminal_recommendation_observed_only": _boolean(
+            decision_contract.get("terminal_recommendation_observed_only")),
+        "audit_admissible_mainline": _boolean(_first(
+            row.get("audit_admissible_mainline"),
+            audit.get("admissible_mainline"),
+        )),
+        "source_oracle_aided": _boolean(
+            adaptation.get("source_oracle_aided")),
+        "target_oracle_used_for_adaptation": _boolean(
+            adaptation.get("target_oracle_used_for_adaptation")),
+        "target_oracle_used_for_decision": _boolean(_first(
+            decision_contract.get("target_oracle_used"),
+            certificate.get("target_oracle_used_for_decision"),
+        )),
+        "online_updates_use_budgeted_target_only": _boolean(
+            decision_contract.get(
+                "online_updates_use_budgeted_target_observations_only")),
         "structural_prior_profile": row.get("structural_prior_profile"),
         "hvd_profile": row.get("hvd_ablation_profile"),
         "source_discrepancy_update": _boolean(row.get("source_discrepancy_update")),
@@ -319,6 +420,14 @@ def _normalize_sc_result(
         "adaptive_replication_voi": _boolean(row.get("adaptive_replication_voi_enabled")),
         "adaptive_replication_count": _integer(row.get("adaptive_replication_selected_count")),
         "adaptive_new_point_count": _integer(row.get("adaptive_new_point_selected_count")),
+        "exact_mc_samples": _integer(_first(
+            config.get("exact_kg_mc_samples"), row.get("exact_kg_mc_samples"))),
+        "exact_sampling_mode": _first(
+            config.get("exact_kg_sampling_mode"),
+            row.get("exact_kg_sampling_mode"),
+        ),
+        "exact_shortlist_size": _integer(config.get(
+            "evaluate_or_replicate_new_action_count")),
         "posterior_dominance_enabled": _boolean(_first(
             row.get("posterior_dominance_enabled"), dominance.get("enabled"))),
         "posterior_dominance_switch_count": _integer(_first(
@@ -332,6 +441,27 @@ def _normalize_sc_result(
         "variance_upper_coverage": None,
         "false_feasible_rate": None,
         "missed_feasible_rate": None,
+        "candidate_gen_time_total": _stage_value(
+            stage_times, "t_candidate_gen", "total"),
+        "candidate_gen_time_share": _stage_value(
+            stage_times, "t_candidate_gen", "share"),
+        "kg_compute_time_total": _stage_value(
+            stage_times, "t_kg_compute", "total"),
+        "kg_compute_time_share": _stage_value(
+            stage_times, "t_kg_compute", "share"),
+        "posterior_solve_time_total": _stage_value(
+            stage_times, "t_posterior_solve", "total"),
+        "posterior_solve_time_share": _stage_value(
+            stage_times, "t_posterior_solve", "share"),
+        "update_time_total": _stage_value(
+            stage_times, "t_update", "total"),
+        "update_time_share": _stage_value(
+            stage_times, "t_update", "share"),
+        "simulate_time_total": _stage_value(
+            stage_times, "t_simulate", "total"),
+        "simulate_time_share": _stage_value(
+            stage_times, "t_simulate", "share"),
+        "_online_action_trace": row.get("online_action_trace"),
         "result_path": str(path),
     }
 
@@ -578,6 +708,113 @@ def _rate(values: Iterable[Any], *, denominator: int | None = None) -> tuple[int
     return positives, total, positives / total if total else None
 
 
+def _failure_aware_median_regret(items: list[dict]) -> tuple[float | None, str]:
+    """Median regret with every failed recommendation retained as +infinity."""
+
+    values = []
+    for row in items:
+        if row.get("true_feasible") is True:
+            regret = _finite(row.get("feasible_regret"))
+            values.append(math.inf if regret is None else regret)
+        else:
+            values.append(math.inf)
+    if not values:
+        return None, "missing"
+    median = statistics.median(values)
+    if not math.isfinite(median):
+        return None, "infinite_due_to_infeasible_recommendations"
+    return float(median), "finite"
+
+
+def extract_trace_rows(rows: list[dict]) -> list[dict]:
+    """Flatten compact online traces without exposing checkpoints or models."""
+
+    traces = []
+    shared = (
+        "run_id", "track", "variant", "method", "implementation",
+        "initial_design", "domain", "seed", "d", "N", "n0",
+    )
+    for row in rows:
+        raw_trace = row.get("_online_action_trace")
+        if not isinstance(raw_trace, list):
+            continue
+        base = {field: row.get(field) for field in shared}
+        initial_regret = _finite(row.get("initial_best_feasible_regret"))
+        traces.append({
+            **base,
+            "target_call": row.get("n0"),
+            "iteration": -1,
+            "action_kind": "initial_design_summary",
+            "candidate_source": "frozen_initial_design",
+            "x_fingerprint": None,
+            "selected_score": None,
+            "posterior_bayes_risk": None,
+            "posterior_theory_margin": None,
+            "posterior_constraint_epistemic": None,
+            "observed_objective": None,
+            "observed_constraint": None,
+            "true_objective_post_run": None,
+            "true_chance_margin_post_run": None,
+            "true_feasible_post_run": row.get("initial_has_true_feasible"),
+            "feasible_regret_post_run": initial_regret,
+            "incumbent_feasible_regret_post_run": initial_regret,
+            "exact_kg_best_new_raw": None,
+            "exact_kg_best_replication_raw": None,
+            "exact_kg_new_minus_replication_raw": None,
+            "truth_join_timing": "post_run_initial_design_audit",
+            "target_oracle_used_for_decision": False,
+            "result_path": row.get("result_path"),
+        })
+        for index, action in enumerate(raw_trace):
+            if not isinstance(action, dict):
+                continue
+            observed = action.get("observed_response")
+            observed = observed if isinstance(observed, list) else []
+            traces.append({
+                **base,
+                "target_call": _integer(_first(
+                    action.get("target_call"),
+                    None if row.get("n0") is None else row["n0"] + index + 1,
+                )),
+                "iteration": _integer(action.get("iteration")),
+                "action_kind": action.get("action_kind"),
+                "candidate_source": action.get("candidate_source"),
+                "x_fingerprint": action.get("x_fingerprint"),
+                "selected_score": _finite(action.get("selected_score")),
+                "posterior_bayes_risk": _finite(
+                    action.get("decision_bayes_risk")),
+                "posterior_theory_margin": _finite(
+                    action.get("decision_theory_margin")),
+                "posterior_constraint_epistemic": _finite(
+                    action.get("decision_constraint_epistemic")),
+                "observed_objective": _finite(
+                    observed[0] if len(observed) > 0 else None),
+                "observed_constraint": _finite(
+                    observed[1] if len(observed) > 1 else None),
+                "true_objective_post_run": _finite(
+                    action.get("true_objective_post_run")),
+                "true_chance_margin_post_run": _finite(
+                    action.get("true_chance_margin_post_run")),
+                "true_feasible_post_run": _boolean(
+                    action.get("true_feasible_post_run")),
+                "feasible_regret_post_run": _finite(
+                    action.get("feasible_regret_post_run")),
+                "incumbent_feasible_regret_post_run": _finite(
+                    action.get("incumbent_feasible_regret_post_run")),
+                "exact_kg_best_new_raw": _finite(
+                    action.get("exact_kg_best_new_raw")),
+                "exact_kg_best_replication_raw": _finite(
+                    action.get("exact_kg_best_replication_raw")),
+                "exact_kg_new_minus_replication_raw": _finite(
+                    action.get("exact_kg_new_minus_replication_raw")),
+                "truth_join_timing": action.get("truth_join_timing"),
+                "target_oracle_used_for_decision": _boolean(
+                    action.get("target_oracle_used_for_decision")),
+                "result_path": row.get("result_path"),
+            })
+    return traces
+
+
 def summarize_rows(rows: list[dict]) -> list[dict]:
     groups: dict[tuple, list[dict]] = defaultdict(list)
     group_fields = (
@@ -603,6 +840,8 @@ def summarize_rows(rows: list[dict]) -> list[dict]:
     summaries = []
     for key, items in groups.items():
         base = dict(zip(group_fields, key))
+        failure_aware_median, failure_aware_status = (
+            _failure_aware_median_regret(items))
         feasible_count, feasible_den, feasible_rate = _rate(
             row.get("true_feasible") for row in items)
         initial_count, initial_den, initial_rate = _rate(
@@ -637,6 +876,8 @@ def summarize_rows(rows: list[dict]) -> list[dict]:
                 row.get("feasible_regret") for row in items if row.get("true_feasible") is True),
             "mean_feasible_regret": _mean(
                 row.get("feasible_regret") for row in items if row.get("true_feasible") is True),
+            "failure_aware_median_feasible_regret": failure_aware_median,
+            "failure_aware_median_status": failure_aware_status,
             "initial_feasible_count": initial_count,
             "initial_feasible_denominator": initial_den,
             "initial_feasible_rate": initial_rate,
@@ -661,8 +902,39 @@ def summarize_rows(rows: list[dict]) -> list[dict]:
             "nonvacuous_certificate_rate": nonvacuous_rate,
             "false_certificate_count": sum(
                 _integer(row.get("false_certificate_count")) or 0 for row in items),
+            "certified_point_count": sum(
+                _integer(row.get("posterior_certified_count")) or 0
+                for row in items),
+            "certified_true_feasible_count": sum(
+                _integer(row.get("certified_true_feasible_count")) or 0
+                for row in items),
+            "evaluated_point_count": sum(
+                _integer(row.get("evaluated_point_count")) or 0
+                for row in items),
+            "certified_point_coverage": _safe_ratio(
+                sum(_integer(row.get("posterior_certified_count")) or 0
+                    for row in items),
+                sum(_integer(row.get("evaluated_point_count")) or 0
+                    for row in items),
+            ),
             "median_certificate_recall": _median(
                 row.get("certificate_recall") for row in items),
+            "median_minimum_posterior_margin": _median(
+                row.get("minimum_posterior_margin") for row in items),
+            "median_minimum_true_margin": _median(
+                row.get("minimum_true_margin") for row in items),
+            "decision_contract_coherent_rate": _mean(
+                row.get("decision_contract_coherent")
+                for row in items),
+            "target_oracle_decision_count": sum(
+                row.get("target_oracle_used_for_decision") is True
+                for row in items),
+            "adaptive_new_point_count": sum(
+                _integer(row.get("adaptive_new_point_count")) or 0
+                for row in items),
+            "adaptive_replication_count": sum(
+                _integer(row.get("adaptive_replication_count")) or 0
+                for row in items),
             "median_wall_time_sec": _median(row.get("wall_time_sec") for row in items),
             "median_d_over_target_calls": _median(
                 row.get("d_over_target_calls") for row in items),
@@ -694,6 +966,16 @@ def summarize_rows(rows: list[dict]) -> list[dict]:
                 row.get("median_predicted_true_ratio") for row in items),
             "median_certified_true_ratio": _median(
                 row.get("median_certified_true_ratio") for row in items),
+            "median_candidate_gen_time_share": _median(
+                row.get("candidate_gen_time_share") for row in items),
+            "median_kg_compute_time_share": _median(
+                row.get("kg_compute_time_share") for row in items),
+            "median_posterior_solve_time_share": _median(
+                row.get("posterior_solve_time_share") for row in items),
+            "median_update_time_share": _median(
+                row.get("update_time_share") for row in items),
+            "median_simulate_time_share": _median(
+                row.get("simulate_time_share") for row in items),
         })
     return sorted(
         summaries,
@@ -721,15 +1003,18 @@ def main() -> None:
 
     rows, errors = load_rows(args.roots)
     summaries = summarize_rows(rows)
+    traces = extract_trace_rows(rows)
     args.out_dir.mkdir(parents=True, exist_ok=True)
     _write_csv(args.out_dir / "rows.csv", rows, ROW_FIELDS)
     _write_csv(args.out_dir / "grouped_summary.csv", summaries)
+    _write_csv(args.out_dir / "traces.csv", traces, TRACE_FIELDS)
     audit = {
-        "schema_version": 1,
+        "schema_version": 2,
         "roots": [str(root.resolve()) for root in args.roots],
         "result_json_count": len(rows) + len(errors),
         "parsed_row_count": len(rows),
         "grouped_summary_count": len(summaries),
+        "trace_row_count": len(traces),
         "parse_errors": errors,
         "safety_contract": {
             "accepted_filename": "result.json",
@@ -744,6 +1029,7 @@ def main() -> None:
         "parsed_rows": len(rows),
         "parse_errors": len(errors),
         "summary_rows": len(summaries),
+        "trace_rows": len(traces),
         "out_dir": str(args.out_dir),
     }))
 

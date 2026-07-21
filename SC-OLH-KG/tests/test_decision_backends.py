@@ -669,6 +669,7 @@ def test_risk_ts_replaces_exact_kg_without_changing_target_budget():
             finalist_replication_budget=0,
             eval_pool_size=8,
             evaluate_interval=0,
+            truth_pool_diagnostics=True,
             seed=91,
         ),
     )
@@ -698,6 +699,14 @@ def test_risk_ts_replaces_exact_kg_without_changing_target_budget():
     assert isinstance(trace["task_expert_allocation"], dict)
     assert isinstance(trace["task_expert_proposal_weights"], dict)
     assert len(trace["observed_response"]) == 2
+    assert trace["target_call"] == 3
+    assert np.isfinite(trace["true_objective_post_run"])
+    assert np.isfinite(trace["true_chance_margin_post_run"])
+    assert isinstance(trace["true_feasible_post_run"], bool)
+    assert trace["truth_join_timing"] == (
+        "post_run_after_all_decisions_frozen")
+    assert trace["target_oracle_used_for_decision"] is False
+    assert result["online_action_trace_truth_available"] is True
     randomness = result["simulation_randomness_contract"]
     assert randomness["mode"] == "evaluation_indexed_seed_sequence"
     assert randomness["proposal_rng_independent"] is True
