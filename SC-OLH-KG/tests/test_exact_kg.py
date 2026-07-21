@@ -689,6 +689,88 @@ class ExactKGTests(unittest.TestCase):
             [objective, constraint], FakeVariance(), expanded_pool)
         self.assertAlmostEqual(base, expanded, places=12)
 
+    def test_promoted_exact_voi_and_final_decision_share_observed_action_pool(self):
+        class FakeGPR:
+            def __init__(self, means):
+                self.means = means
+
+            def posterior_mean_many(self, pool):
+                return np.asarray([
+                    self.means[int(np.asarray(x)[0])] for x in pool
+                ], dtype=float)
+
+            @staticmethod
+            def posterior_var_many(pool):
+                return np.full(len(pool), 0.01, dtype=float)
+
+        class FakeVariance:
+            @staticmethod
+            def predict_variance_many(output_index, pool, problem):
+                del output_index, problem
+                return np.full(len(pool), 0.01, dtype=float)
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                decision_backend="sobol_exact_joint_voi",
+                exact_kg_terminal_mode="bayes_risk",
+                decision_aleatoric_mode="posterior_central",
+                decision_ambiguity_mode="posterior_nominal",
+                decision_recommend_observed_only=True,
+                decision_risk_penalty=5.0,
+                terminal_bayes_violation_penalty=999.0,
+            ),
+        )
+        observed = (0, 0, 0)
+        new = (1, 0, 0)
+        pool = [observed, new]
+        current_observations = {
+            observed: [np.asarray([1.0, -10.0], dtype=float)],
+        }
+        future_observations = {
+            **current_observations,
+            new: [np.asarray([-10.0, -10.0], dtype=float)],
+        }
+        models = [
+            FakeGPR({0: 1.0, 1: -10.0}),
+            FakeGPR({0: -10.0, 1: -10.0}),
+        ]
+        current = algorithm._terminal_value_from_models(
+            models,
+            FakeVariance(),
+            pool,
+            observations=current_observations,
+        )
+        future = algorithm._terminal_value_from_models(
+            models,
+            FakeVariance(),
+            pool,
+            observations=future_observations,
+        )
+        observed_risk = algorithm._terminal_bayes_risk_components(
+            models,
+            FakeVariance(),
+            [observed],
+            risk_penalty=5.0,
+        )["risk"][0]
+        self.assertAlmostEqual(current, observed_risk, places=12)
+        self.assertLess(future, current)
+        self.assertEqual(
+            algorithm._terminal_action_pool(
+                pool, observations=current_observations),
+            [observed],
+        )
+        self.assertEqual(
+            algorithm._terminal_action_pool(
+                pool, observations=future_observations),
+            [observed, new],
+        )
+        self.assertIn(
+            "observed_actions",
+            algorithm._terminal_value_contract_id(),
+        )
+
     def test_authoritative_task_latent_defines_terminal_bayes_risk(self):
         class AuthoritativeEnsemble:
             task_latent_authoritative = True
@@ -1039,6 +1121,25 @@ class ExactKGTests(unittest.TestCase):
         self.assertAlmostEqual(uniforms[0] + uniforms[1], 1.0)
         self.assertAlmostEqual(uniforms[2] + uniforms[3], 1.0)
         self.assertAlmostEqual(uniforms[4], 0.5)
+
+    def test_nested_antithetic_plans_have_exact_prefixes(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                exact_kg_sampling_mode="antithetic_nested",
+                seed=9,
+            ),
+        )
+        z2, u2 = algorithm._exact_kg_common_samples(2)
+        z8, u8 = algorithm._exact_kg_common_samples(8)
+        z32, u32 = algorithm._exact_kg_common_samples(32)
+        np.testing.assert_allclose(z2, z8[:2])
+        np.testing.assert_allclose(z8, z32[:8])
+        np.testing.assert_allclose(u2, u8[:2])
+        np.testing.assert_allclose(u8, u32[:8])
+        np.testing.assert_allclose(z32[0::2], -z32[1::2])
+        np.testing.assert_allclose(u32[0::2] + u32[1::2], 1.0)
 
     def test_stratified_expert_plan_integrates_discrete_weights(self):
         class Posterior:

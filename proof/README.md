@@ -691,6 +691,22 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 141. The posterior expected binary chance-failure loss
      `objective + penalty * P(failure)` is monotone in failure probability and
      adds a nonnegative excess whenever penalty and probability are nonnegative.
+142. Evaluate and replicate are one disjoint action type with identical unit
+     target cost; every selected action's design belongs to the post-update
+     observed terminal universe.
+143. An admissible replication preserves the observed terminal universe, while
+     a new evaluation strictly expands it.
+144. If a posterior-only shortlist covers the full finite action pool within
+     `epsilon_shortlist` in exact VOI and MC error is uniformly at most
+     `eta_MC` on the shortlist, its MC maximizer is within
+     `epsilon_shortlist + 2 eta_MC` of every full-pool action.
+145. The preceding result applies directly to the explicit posterior-update
+     integral over the joint GPR/task/HVD state.
+146. Consistent one-step posterior value reductions telescope over a finite
+     target budget; shortlist and MC approximation errors enter additively.
+147. The promoted one-step VOI bound and conservative terminal chance
+     certificate hold jointly without identifying Bayes-risk ranking variance
+     with the separate certification upper variance.
 
 Remaining work is empirical/binding and assumption validation:
 
@@ -699,67 +715,50 @@ Remaining work is empirical/binding and assumption validation:
    constants are empirical/model assumptions, not free theorems.
 2. Generate and archive the real fresh-seed trajectory CSV logs with the SUMO
    logger now implemented in `sumo_sim.py`.
-3. The multi-family source-only TCB-V2 gate completed and failed: nested outer
-   Spearman was `0.3458`, but the predicted safe set was empty. The online
-   V33/TCB joint sentinel remains blocked. Broad TCB-V3 was also vacuous.
-   Atomic TCB-V3.1 improved nested Spearman to `0.7103` and concentrated the
-   family posterior, but its conservative certificate stayed empty and every
-   prediction released by narrower variants was false-safe. TCB-V3.2
-   orthogonal residuals produced 32 false-safe points among 33 certificates.
-   TCB-V4 continuous nonnegative family synthesis is the current source-only
-   challenger; its initial and `n0=20/40` scaling gates remained vacuous.
-   TCB-V5 added a source-frozen orthogonal local residual and passed every
-   implementation audit, but its complete gate obtained coverage `0.9486`,
-   Spearman `0.7010`, zero false-safe predictions, and nonvacuity `0.0333`.
-   It was not promoted, and online KG remains blocked.
-   The follow-up certifiability/coordinate audit completed as 50 independent
-   domain/seed tasks. Its target-oracle rows are diagnostic upper bounds and
-   mechanically ineligible for promotion. It motivated a separate observable
-   mean coordinate `eta`; oracle-free sequential KG promotion remains an
-   empirical gate, not a theorem-level claim.
-   V25 subsequently failed that gate because source channel/chance-margin roles
-   reversed across domains. V26's exchangeable target-linear coordinate removes
-   that transferred identity assumption; its paired `d=1000, N=20` sequential
-   gate remains an empirical promotion requirement.
-4. Validate the Stage-I exact-MC schedule and the three two-stage error terms
-   separately; do not use a Stage-I acquisition theorem as a claim about the
-   committed verification suffix.
-5. If the final manuscript chooses a less conservative traffic feature map
+3. Establish useful certificate nonvacuity. In both the pre-repair control and
+   the promoted observed-terminal closure, every one of 60 theory-certified
+   sets was empty despite truly feasible evaluated points. Larger
+   target/replication budgets and source-only calibration must report coverage
+   as well as false certification.
+4. Freeze the final feature-map numeric constants using source-only held-out
+   episodes before target evaluation.
+5. Validate the two-antithetic-sample exact-MC schedule and shortlist coverage
+   separately. The numerical path is an estimator with the proved
+   `epsilon_shortlist + 2 eta_MC` bound, not an exact integral evaluation.
+6. If the final manuscript chooses a less conservative traffic feature map
    than the current ingolstadt21 cap, add that sharper numeric cap.
+
+The observed-terminal behavior repair itself is now revalidated: all 60 paired
+runs completed, retained `60/60` true-feasible recommendations and zero
+adaptive losses, improved 17 runs while losing 7 and tying 36, and increased
+adaptive improvements from 19 to 26. It is the promoted V51 baseline.
 
 ## Current Math-Depth Assessment
 
-The current package is paper-grade for the previously fixed finite-model
-interface layer:
+The current package is paper-grade at the finite-model theorem/interface layer:
 cumulative variance decomposition, factor-HVD block aggregation, conservative
 theory certification, ridge/HVD oracle steps, exact/additive/MC KG bridges,
 posterior candidate envelopes, mathlib multivariate-Gaussian coefficient
 sampling, residual-square tails, line-envelope KG correctness,
 feature/kernel information-gain caps, traffic occupancy-risk decomposition,
 fresh-log schema semantics, exact-MC concentration, and safe-regret accounting
-all build in Lean without `sorry`. The two-stage budget, certified/fallback
-semantics, finite verification concentration, and search/proposal/verification
-safe-regret decomposition now also build as the main decision layer. The
-boundary-aligned representation layer
-now also has rotation-invariant projector, identifiable-rank whitening,
-simplex-expert, nested-LOO noninterference, and strong-heredity bridges.  The
-representation implementation remains conditional on empirical gates. The
-finite task-posterior layer closes the algebraic, PAC-Bayes, deterministic,
-and stratified finite-expert implementation bridges and has passed FactorShock
-Gate 1. The TCB-V2 three-layer certificate and lexicographic terminal contract
-are now also closed at the finite implementation layer, but their focused
-source-only empirical gate failed because every predicted safe set was empty.
-The coherent V33 frontier repair likewise failed its Inventory/Queue gate even
-though all implementation audits passed. This distinguishes formal
-correctness from empirical validity. TCB-V3 supplies a formally safe
-finite-family envelope but failed its nonvacuity gate; TCB-V4 supplies the
-separate nonnegative continuous-synthesis contract, while TCB-V5 closes the
-finite orthogonal-residual implementation bridge. All three failed their
-empirical promotion gates. The remaining
-uncertainty concerns transferable boundary validation, including the V26
-exchangeable target-linear gate; ordered cumulative-risk identification; the
-trajectory logger table; the exact/additive large-budget decision; and
-synchronization of the numeric feature cap with the final code path.
+all build in Lean without `sorry`. `PromotedV51Closure.lean` now adds the
+missing end-to-end decision theorem: one observed-action terminal Bayes risk,
+one joint posterior update, a unified evaluate-or-replicate action, the full
+finite-action error `epsilon_shortlist + 2 eta_MC`, and finite-budget
+telescoping. The Python implementation now uses the same terminal action
+universe and risk penalty for the current state, every fantasy, and the final
+recommendation. This removes the previous mathematical mismatch in which
+fantasies could optimize over an unobserved action that the final rule could
+not return.
+
+This is not yet an unconditional empirical certification result. Transfer
+concentration still depends on a source-task exponential-moment assumption,
+exact-MC and shortlist errors require numerical calibration, and the existing
+`N=20` theory certificate is vacuous in all 60 promoted-control runs. Those are
+explicit assumptions or empirical obligations, not missing Lean proofs. The
+historical TCB-V2--V5 failures remain useful negative evidence but are not part
+of the promoted algorithm.
 
 V49 additionally formalizes the separation between posterior-central
 aleatoric variance used by a Bayes action and conservative upper variance used
@@ -777,8 +776,9 @@ unchanged. This is a conditional implementation bridge, not evidence that the
 nominal action is empirically calibrated; the paired three-domain gate decides
 that question.
 
-V51 formalizes the finite-action approximation used by adaptive
-evaluate-or-replicate VOI. Expanding the one-new-point action set with a nested
-posterior-only shortlist cannot reduce the maximum available exact VOI. The
-theorem does not claim that the expanded action improves regret; the paired
-three-domain gate and complete active-arm audit decide that question.
+V51 now formalizes the complete finite promoted decision contract rather than
+only nested-set monotonicity. The theorem is deliberately conditional on an
+auditable shortlist coverage error and a uniform MC error; it does not claim
+that four new arms approximate an arbitrary continuous action space for free.
+The paired three-domain closure gate decides whether the implementation repair
+retains the promoted empirical advantage.

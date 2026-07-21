@@ -74,6 +74,7 @@ _FORK_TERMINAL_ROLLOUT_CONTEXT = None
 _FORK_TERMINAL_DEPTH3_CONTEXT = None
 SIMULATION_STREAM_TAG = 0x53434F4C
 PROPOSAL_STREAM_TAG = 0x50524F50
+EXACT_KG_STREAM_TAG = 0x45584B47
 
 
 def _fork_exact_kg_candidate(x):
@@ -9010,6 +9011,59 @@ class SingleOLHKGAlgorithm:
             self.config.exact_kg_terminal_mode or "hard_certified"
         ).lower()
 
+    def _decision_backend_observed_terminal_active(self):
+        """Whether online VOI and the final Bayes action share observed arms."""
+
+        backend = str(
+            self.config.decision_backend or "legacy"
+        ).strip().lower().replace("-", "_")
+        return bool(
+            self.config.decision_recommend_observed_only
+            and backend not in {"legacy", "legacy_kg", "exact_kg", "additive"}
+        )
+
+    def _terminal_action_pool(self, pool, observations=None):
+        """Return the action universe used by both fantasy and final decisions.
+
+        The promoted evaluate-or-replicate backend recommends only evaluated
+        policies. A fantasy evaluation makes its policy eligible immediately;
+        a replication leaves the eligible set unchanged. Keeping this logic in
+        one helper prevents acquisition from optimizing over unobserved terminal
+        actions that the final decision is forbidden to return.
+        """
+
+        pool = unique_candidates(pool)
+        if not self._decision_backend_observed_terminal_active():
+            return pool
+        effective = self.observations if observations is None else observations
+        if not effective:
+            # This branch is only useful for model-level unit calls before n0.
+            # Every sequential promoted run has a nonempty charged pilot.
+            return pool
+        observed = unique_candidates(effective.keys())
+        observed_set = set(observed)
+        ordered = [x for x in pool if x in observed_set]
+        ordered.extend(x for x in observed if x not in set(ordered))
+        return unique_candidates(ordered)
+
+    def _terminal_value_contract_id(self):
+        mode = self._effective_exact_terminal_mode().replace("-", "_")
+        aleatoric = str(
+            self.config.decision_aleatoric_mode or "certification_upper"
+        ).strip().lower().replace("-", "_")
+        ambiguity = str(
+            self.config.decision_ambiguity_mode or "kl_robust"
+        ).strip().lower().replace("-", "_")
+        violation = str(
+            self.config.decision_violation_loss_mode or "positive_part"
+        ).strip().lower().replace("-", "_")
+        universe = (
+            "observed_actions"
+            if self._decision_backend_observed_terminal_active()
+            else "fixed_terminal_pool"
+        )
+        return f"{mode}:{aleatoric}:{ambiguity}:{violation}:{universe}:v1"
+
     def _terminal_value_from_models(
         self,
         gpr_models,
@@ -9024,6 +9078,7 @@ class SingleOLHKGAlgorithm:
         point, use the same normalized infeasibility penalty shape as
         `_solve_posterior_recommendation` so the value remains comparable.
         """
+        pool = self._terminal_action_pool(pool, observations=observations)
         if len(pool) == 0:
             return 0.0
         terminal_mode = self._effective_exact_terminal_mode()
@@ -9085,6 +9140,11 @@ class SingleOLHKGAlgorithm:
                 variance_model,
                 pool,
                 task_ensemble=task_ensemble,
+                risk_penalty=(
+                    self.config.decision_risk_penalty
+                    if self._decision_backend_observed_terminal_active()
+                    else None
+                ),
             )
             return float(np.min(components["risk"]))
         if terminal_mode not in (
@@ -10135,6 +10195,36 @@ class SingleOLHKGAlgorithm:
                 self.rng.standard_normal((mc, 2)),
                 self.rng.random(mc),
             )
+        if mode in (
+            "antithetic_nested",
+            "nested_antithetic",
+            "paired_nested",
+        ):
+            # Pair-indexed streams make the 2-sample plan an exact prefix of
+            # the 8- and 32-sample plans at the same charged posterior state.
+            # This mode is used by the numerical-fidelity gate so MC error is
+            # not confounded by unrelated random draws.
+            z_rows = []
+            uniforms = []
+            stage = int(len(self.history))
+            for pair_index in range(mc // 2):
+                pair_rng = np.random.default_rng(np.random.SeedSequence([
+                    int(self.config.seed),
+                    stage,
+                    int(EXACT_KG_STREAM_TAG),
+                    int(pair_index),
+                ]))
+                z_vec = pair_rng.standard_normal(2)
+                expert_uniform = float(pair_rng.random())
+                z_rows.extend([z_vec, -z_vec])
+                uniforms.extend([expert_uniform, 1.0 - expert_uniform])
+            if mc % 2:
+                z_rows.append(np.zeros(2, dtype=float))
+                uniforms.append(0.5)
+            return (
+                np.asarray(z_rows, dtype=float).reshape(mc, 2),
+                np.asarray(uniforms, dtype=float),
+            )
         if mode in ("antithetic", "paired", "antithetic_pairs"):
             n_pairs = mc // 2
             base_z = self.rng.standard_normal((n_pairs, 2))
@@ -10252,6 +10342,11 @@ class SingleOLHKGAlgorithm:
             task_ensemble=self.task_ensemble,
             observations=self.observations,
         )
+        self._last_exact_kg_terminal_value_contract = (
+            self._terminal_value_contract_id())
+        self._last_exact_kg_current_terminal_action_pool_size = int(len(
+            self._terminal_action_pool(
+                terminal_pool, observations=self.observations)))
         self._last_exact_kg_current_value = (
             np.asarray(current_value, dtype=float).tolist()
             if np.asarray(current_value).ndim > 0
@@ -10611,8 +10706,9 @@ class SingleOLHKGAlgorithm:
         if backend in {"n0_best", "frozen_incumbent"}:
             action_pool = evaluated[: int(self.config.n0)]
             pool_source = "initial_design_only"
-        elif self.config.decision_recommend_observed_only:
-            action_pool = evaluated
+        elif self._decision_backend_observed_terminal_active():
+            action_pool = self._terminal_action_pool(
+                pool, observations=self.observations)
             pool_source = "all_budgeted_target_evaluations"
         else:
             action_pool = unique_candidates(list(pool) + evaluated)
@@ -10708,6 +10804,7 @@ class SingleOLHKGAlgorithm:
             "decision_backend_terminal_kl_radius": float(
                 components["kl_radius"]),
             "decision_backend_terminal_target_oracle_used": False,
+            "terminal_value_contract": self._terminal_value_contract_id(),
             "terminal_bayes_pool_audit": self._terminal_bayes_pool_audit(
                 action_pool, components, selected),
         })
@@ -11987,6 +12084,19 @@ class SingleOLHKGAlgorithm:
                     self.config.exact_kg_terminal_mode)
                 row["exact_kg_terminal_mode_effective"] = str(
                     self._effective_exact_terminal_mode())
+                row["exact_kg_terminal_value_contract"] = str(getattr(
+                    self,
+                    "_last_exact_kg_terminal_value_contract",
+                    self._terminal_value_contract_id(),
+                ))
+                row["exact_kg_current_terminal_action_pool_size"] = int(
+                    getattr(
+                        self,
+                        "_last_exact_kg_current_terminal_action_pool_size",
+                        0,
+                    ))
+                row["exact_kg_terminal_observed_only"] = bool(
+                    self._decision_backend_observed_terminal_active())
                 row["exact_kg_certification_head_authority"] = str(
                     self._last_exact_kg_certification_head_authority)
                 row["exact_kg_constraint_posterior_source"] = str(
@@ -12012,6 +12122,12 @@ class SingleOLHKGAlgorithm:
                         self._last_exact_kg_active_indices, dtype=int)
                     row["exact_kg_raw_scores_active"] = (
                         raw_exact_kg[exact_active_indices].tolist())
+                    row["exact_kg_active_action_fingerprints"] = [
+                        integer_design_fingerprint([
+                            tuple(int(value) for value in candidates[index])
+                        ])
+                        for index in exact_active_indices
+                    ]
                     action_is_replicate = np.asarray(
                         backend_score.get("hvd_action_is_replicate"),
                         dtype=bool,
@@ -12471,6 +12587,13 @@ class SingleOLHKGAlgorithm:
         ]
         exact_kg_summary = {
             "sampling_mode": str(self.config.exact_kg_sampling_mode),
+            "nested_common_random_numbers": bool(
+                str(self.config.exact_kg_sampling_mode).lower() in {
+                    "antithetic_nested",
+                    "nested_antithetic",
+                    "paired_nested",
+                }
+            ),
             "mc_samples": int(self._effective_exact_kg_mc_samples()),
             "clip_negative": bool(self.config.exact_kg_clip_negative),
             "ranking_uses_signed_values": bool(
@@ -12851,6 +12974,20 @@ class SingleOLHKGAlgorithm:
             ),
             "terminal_recommendation_observed_only": bool(
                 self.config.decision_recommend_observed_only),
+            "terminal_value_contract": self._terminal_value_contract_id(),
+            "acquisition_terminal_observed_only": bool(
+                self._decision_backend_observed_terminal_active()),
+            "acquisition_and_recommendation_share_terminal_action_universe": (
+                bool(self._decision_backend_observed_terminal_active())
+                == bool(self.config.decision_recommend_observed_only)
+            ),
+            "acquisition_and_recommendation_share_risk_penalty": bool(
+                self._decision_backend_observed_terminal_active()
+                or abs(
+                    float(self.config.terminal_bayes_violation_penalty)
+                    - float(self.config.decision_risk_penalty)
+                ) <= 1e-12
+            ),
             "forced_sampling_override_count": backend_forced_overrides,
             "coherent": bool(
                 (
@@ -12906,6 +13043,9 @@ class SingleOLHKGAlgorithm:
                     "decision_evaluate_or_replicate_new_action_policy"),
                 "exact_kg_raw_scores_active": copy.deepcopy(
                     iteration_row.get("exact_kg_raw_scores_active")),
+                "exact_kg_active_action_fingerprints": copy.deepcopy(
+                    iteration_row.get(
+                        "exact_kg_active_action_fingerprints")),
                 "exact_kg_active_action_is_replicate": copy.deepcopy(
                     iteration_row.get(
                         "exact_kg_active_action_is_replicate")),

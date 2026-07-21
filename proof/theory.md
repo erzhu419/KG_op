@@ -840,62 +840,76 @@ use the existing `2 eta` and concentration bridges.
 This theorem characterizes the search acquisition only. It is not used to
 rename committed terminal verification as exact KG.
 
+## Theorem 12: Promoted Evaluate-or-Replicate Bayes-Risk Closure
+
+Let `O_t` be the set of policies charged to the target budget and let
+
+```text
+R_t(x) = E[f(x) | D_t] + rho E[(G(x))_+ | D_t],   x in O_t,
+V_t(a) = min_{x in O_t} R_t(x)
+         - E[min_{x in O_{t+1}(a)} R_{t+1}(x) | D_t, a].
+```
+
+An evaluation action at an unobserved `x` changes the terminal universe to
+`O_t union {x}`. An admissible replication leaves `O_t` unchanged. Both have
+unit target-simulator cost, update the same objective, constraint, task, and
+cumulative-HVD posterior, and are compared by the same `V_t`. The final
+recommendation minimizes the same `R_N` on `O_N`; no empirical finalist or
+unobserved posterior action may override it.
+
+V51 evaluates exact-MC VOI only on a finite posterior shortlist. Suppose that
+the shortlist covers the full finite action pool within `epsilon_S` in exact
+VOI and that the MC estimate is uniformly within `eta_MC` on the shortlist.
+Then its selected action satisfies
+
+```text
+max_{a in A_t} V_t(a) - V_t(a_t) <= epsilon_S + 2 eta_MC.
+```
+
+Summing the same Bellman reductions over a target budget telescopes; the only
+decision approximation terms are the per-step shortlist and MC errors. This is
+not a module-weight argument: mean, cumulative HVD, replication, and source
+discrepancy are posterior state components inside one terminal Bayes risk.
+Separately, any final action whose conservative theory margin is nonpositive
+inherits the chance-feasibility theorem. The optimizer may still return an
+explicitly uncertified Bayes action when the certified set is empty.
+
+`SCOLHKG/Real/PromotedV51Closure.lean` proves the action semantics, the
+`epsilon_S + 2 eta_MC` bound, finite-budget telescoping, and the joint one-step
+optimization/certification statement. The Python bridge is
+`SingleOLHKGAlgorithm._terminal_action_pool`: current value, every fantasy, and
+the final recommendation now use the same observed terminal universe and the
+same decision-risk penalty.
+
 ## Current Empirical Closure Items
 
-1. Finite task-posterior Stage A-C passed the paired FactorShock N=20 Gate 1:
-   `4/7` true-feasible and `1/7` false-feasible versus `0/7` and `1/7` for the
-   baseline, with lower mean violation and median regret. Inventory/Queue Gate
-   2 and repair of the seed-0 false-feasible case remain mandatory before
-   continuous Stiefel/Grassmann inference.
-2. The code now has a factor-shock synthetic and factor-HVD cumulative feature
-   path that feeds `v_C^+` in theory certification.  Exact-MC/blend are
-   implemented and concentration-bridged, including an MC-schedule variance
-   theorem. Batched KL-dual evaluation plus process-parallel candidate updates
-   reduced the exact path to about 763 seconds per N=20 seed in Gate 1; the
-   large matrix must still decide between `exact_mc`, `blend`, and additive
-   plus the `2 eta` approximation theorem.
-3. The traffic trajectory encoder/log schema and SUMO trajectory logger are
-   implemented.  The remaining task is to generate the fresh-seed trajectory
-   CSV on the server and include its encoded table.
-4. The manuscript still needs a final choice between bounded,
-   sub-exponential, or Gaussian-derived residual-square tails.
-5. The full recursive `compute_h` sorted-stack fold/output theorem is now
-   Lean-proved for the sorted/collapsed active-line loop.
-6. The focused TCB-V2 source gate and coherent V33 frontier gate both failed
-   empirically despite passing their implementation audits. TCB-V2 produced
-   no safe certificate; coherent V33 obtained `7/7`, `1/7`, and `4/7` true
-   feasibility on FactorShock, Inventory, and Queue versus V32's `7/7`, `5/7`,
-   and `3/7`. These failures block promotion and show that the proved
-   conditional safety theorems do not establish nonvacuity or cross-domain
-   boundary identifiability.
-7. TCB-V3 replaces the rejected one-shape assumption by a finite source-frozen
-   boundary-family library. Target pilots update only generalized-Bayes family
-   mass; certification takes a credible-family envelope rather than a mixture
-   average. Broad and atomic gates did not produce a valid nonvacuous
-   certificate, so it is not used online.
-8. TCB-V4 replaces discrete family selection by a nonnegative continuous
-   synthesis of source-frozen canonical signed-distance atoms. Source domains
-   define the coefficient prior; target pilots update only the intercept and
-   atom coefficients. Coefficient covariance and residual uncertainty can
-   only increase the upper margin. Its source-only nested LODO gate must pass
-   before online KG use.
-9. TCB-V5 augments V4 by a bounded local kernel residual in the nullspace of
-   the source-family design cross matrix. This gives a finite-design direct
-   sum: transferable family coefficients and target-local curvature cannot
-   explain the same source-design direction. The residual dictionary is
-   source-frozen; target pilots update only its low-dimensional coefficients.
-   Its strict nested gate passed all implementation audits but failed coverage
-   and nonvacuity, so this theorem remains a conditional implementation result
-   rather than an empirical main-method claim.
-10. The oracle-certifiability audit treats the true chance margin `m`, true
-    constraint scale `sigma`, and one-sided confidence quantile `q` as known.
-    Its direct-replication upper margin is `m + q sigma / sqrt(R)`. This is an
-    optimistic lower bound on implementable uncertainty. The Lean bridge proves
-    the radius decreases with `R`, the squared budget condition
-    `(q sigma)^2 <= (-m)^2 R` suffices for certification when `m < 0`, and a
-    certificate persists at every larger replication budget. Target-oracle
-    coordinate regressors are empirical identifiability diagnostics, not
-    estimators covered by the main-method safety claim.
+1. The observed-terminal repair passed its paired 60-run closure gate at
+   `d=1000`, `N=20`, `n0=10`: `60/60` true-feasible recommendations, 26
+   adaptive improvements, zero adaptive losses, and zero false certificates.
+   Relative to the pre-repair V51 control it won 17 runs, lost 7, and tied 36.
+   The repaired decision contract is now the promoted baseline.
+2. Certification is sound but currently vacuous at this extreme budget. Both
+   60-run V51 matrices had empty certified sets; in the pre-repair control,
+   zero of 129 truly feasible evaluated points were certified. Therefore zero
+   false certificates is not evidence of useful coverage. Nonvacuity must be
+   reported and gated at larger target/replication budgets before the paper
+   may claim empirical certified optimization.
+3. Exact-MC currently uses two antithetic Gaussian samples. The theorem exposes
+   this honestly as `eta_MC`; it is not called an exact numerical integral.
+   Paper experiments must include MC-sample and shortlist-size sensitivity, or
+   estimate the resulting rank-stability/coverage error.
+4. The source archive and frozen proposal are target-oracle free, but the
+   finite PAC-Bayes certificate still assumes a source-task exponential-moment
+   bound. Its slack must be upper-bounded from source-only held-out episodes and
+   frozen before each target run.
+5. The traffic trajectory encoder and SUMO logger exist, but the final table
+   still requires real fresh-seed trajectory CSV and out-of-sample replication
+   certification. Missing logs must remain `missing_data`, never synthetic
+   evidence.
+6. The legacy TCB-V2--V5 gates are historical negative results: their formal
+   envelopes were sound but empirically vacuous or inaccurate. They are not
+   part of promoted V51 and should move to an appendix failure analysis rather
+   than remain in the main algorithm narrative.
 
 ## Lean4 Status
 

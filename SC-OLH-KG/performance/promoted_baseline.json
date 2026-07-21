@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
-  "name": "v51_balanced4",
-  "profile_module": "scripts/submit_scolhkg_mean_alignment_v51_action_set_gate_scheduler.py",
-  "profile_key": "balanced4",
-  "submission_entrypoint": "scripts/submit_scolhkg_promoted_v51_scheduler.py",
+  "schema_version": 2,
+  "name": "v51_observed_terminal_closure",
+  "profile_module": "scripts/submit_scolhkg_promoted_v51_closure_gate_scheduler.py",
+  "profile_key": "observed_terminal_closure",
+  "submission_entrypoint": "scripts/submit_scolhkg_promoted_v51_closure_gate_scheduler.py",
   "source_archive_calls": 384,
   "target_budget": 20,
   "initial_budget": 10,
@@ -26,27 +26,40 @@
     "new_action_count": 4,
     "new_action_policy": "canonical_plus_posterior_risk",
     "replication_candidate_count": 4,
-    "adaptive_evaluate_or_replicate": true
+    "adaptive_evaluate_or_replicate": true,
+    "terminal_action_universe": "charged_observed_policies",
+    "current_fantasy_final_contract_shared": true,
+    "risk_penalty": 5.0,
+    "numerical_voi_status": "pending_gate_c"
   },
   "evidence": {
-    "five_seed_run": "scolh_mean_alignment_v51_full_s5_20260721_01",
-    "twenty_seed_tail_run": "scolh_mean_alignment_v51_full_s20_tail_20260721_02",
+    "run": "scolh_promoted_v51_closure_s20_20260721_01",
+    "paired_control_runs": [
+      "scolh_mean_alignment_v51_full_s5_20260721_01",
+      "scolh_mean_alignment_v51_full_s20_tail_20260721_02"
+    ],
     "domains": 3,
     "seeds_per_domain": 20,
     "true_feasible": 60,
     "total_runs": 60,
     "false_certificates": 0,
-    "adaptive_improvements": 19,
+    "certified_points": 0,
+    "vacuous_certificate_runs": 60,
+    "adaptive_improvements": 26,
     "adaptive_losses": 0,
-    "paired_vs_promoted_v27": {
-      "wins": 26,
-      "losses": 1,
-      "ties": 33
+    "median_feasible_regret": 0.00824999999999998,
+    "selected_new_points": 311,
+    "selected_replications": 289,
+    "paired_vs_preclosure_v51": {
+      "wins": 17,
+      "losses": 7,
+      "ties": 36
     },
-    "paired_vs_exact_canonical": {
-      "wins": 20,
-      "losses": 2,
-      "ties": 38
+    "contracts": {
+      "source_oracle_free": true,
+      "initial_design_paired": true,
+      "observed_terminal_closure": true,
+      "domainwise_safety_noninferior": true
     }
   }
 }
