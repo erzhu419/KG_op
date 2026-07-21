@@ -75,13 +75,13 @@ def _args(tmp_path, **updates):
 
 def test_awaiting_registration_cannot_submit():
     with pytest.raises(RuntimeError, match="not frozen"):
-        MODULE.validate_freeze(_registration(status="awaiting_gate_b_c"))
+        MODULE.validate_freeze(_registration(status="awaiting_gate_b"))
 
 
 def test_inspection_counts_registered_matrix_without_unfreezing():
     registration = json.loads(MODULE.DEFAULT_REGISTRATION.read_text())
     plan = MODULE.inspect_plan(registration)
-    assert plan["status"] == "awaiting_gate_b_c"
+    assert plan["status"] == "awaiting_gate_b"
     assert plan["design_tasks"] == 9
     assert plan["run_tasks"] == 2520
     assert plan["total_tasks"] == 2529

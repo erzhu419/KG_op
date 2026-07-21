@@ -65,12 +65,20 @@ low-frequency front end.
   normalized empirical `epsilon_shortlist`/`eta_MC` proxies using anonymous
   action fingerprints. The finite audit does not claim exhaustive coverage of
   the original continuous policy space.
+- **Passed:** 180/180 runs complete with all source, pairing, and closure
+  contracts satisfied. Only `mc32/k32` survived every preregistered threshold:
+  selected-arm agreement and median rank correlation were both `1.0`, with
+  zero normalized proxy error relative to the declared finite audit universe.
+  `mc8/k32` retained `0.8` arm agreement but its median normalized MC-error
+  proxy was `0.567`, so the paper configuration is frozen at 32 nested
+  antithetic samples and a 32-action shortlist.
 
 ## Main matrix
 
-The matrix is submitted only after Gate B freezes the replication budget and
-Gate C freezes the MC/shortlist schedule. A machine-readable registration must
-record those values; a submitter must refuse an `awaiting_gates` registration.
+The matrix is submitted only after Gate B freezes the replication budget. Gate
+C has frozen the MC/shortlist schedule at `32/32`. A machine-readable
+registration records those values; the submitter refuses the current
+`awaiting_gate_b` registration.
 
 ### Domains
 

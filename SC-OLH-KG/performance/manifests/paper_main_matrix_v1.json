@@ -1,15 +1,17 @@
 {
   "schema_version": 1,
-  "status": "awaiting_gate_b_c",
+  "status": "awaiting_gate_b",
   "paper_method": "source-only low-frequency proposal + separated mean/cumulative-risk posterior + evaluate-or-replicate Bayes-risk VOI",
   "freeze_evidence": {
     "implementation_closure": "scolh_promoted_v51_closure_s20_20260721_01",
     "certification_budget_gate": "scolh_promoted_v51_certification_budget_s5_20260721_02",
     "voi_fidelity_gate": "scolh_promoted_v51_voi_fidelity_s5_20260721_01",
     "replication_cap": null,
-    "exact_mc_samples": null,
-    "exact_shortlist_size": null,
+    "exact_mc_samples": 32,
+    "exact_shortlist_size": 32,
     "exact_sampling_mode": "antithetic_nested",
+    "voi_fidelity_gate_passed": true,
+    "voi_fidelity_evidence": "paper_gate_c_voi_fidelity.json",
     "d1000_frontier_passed": null
   },
   "source_contract": {
