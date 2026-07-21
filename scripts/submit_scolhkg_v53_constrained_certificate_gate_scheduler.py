@@ -7,6 +7,7 @@ import argparse
 import importlib.util
 import json
 from pathlib import Path
+import shlex
 import subprocess
 import sys
 import time
@@ -33,6 +34,60 @@ V52 = "v52_action_superset"
 V53 = "v53_certificate_constrained"
 FIDELITY = ("v53_mc8", "v53_mc32")
 VARIANTS = (CONTROL, V52, V53, *FIDELITY)
+
+
+def _command_option(cmd, option):
+    tokens = shlex.split(str(cmd))
+    try:
+        index = tokens.index(str(option))
+    except ValueError as exc:
+        raise ValueError(f"V53 task is missing {option}") from exc
+    if index + 1 >= len(tokens):
+        raise ValueError(f"V53 task has no value for {option}")
+    return tokens[index + 1]
+
+
+def _local_deploy_path(args, remote_path):
+    marker = "/SC-OLH-KG/"
+    remote_path = str(remote_path)
+    if marker not in remote_path:
+        raise ValueError(
+            "V53 initial-design path is outside the SC-OLH-KG deploy tree: "
+            f"{remote_path}"
+        )
+    relative = remote_path.split(marker, 1)[1]
+    return Path(args.deploy) / "SC-OLH-KG" / relative
+
+
+def validate_frozen_design_seed_coverage(args, specs):
+    """Fail locally when a frozen proposal does not contain requested seeds."""
+    required = {}
+    for spec in specs:
+        remote_path = _command_option(spec["cmd"], "--initial-design-file")
+        seed = int(_command_option(spec["cmd"], "--seed"))
+        local_path = _local_deploy_path(args, remote_path)
+        required.setdefault(local_path, set()).add(seed)
+
+    coverage = {}
+    for path, seeds in required.items():
+        if not path.is_file():
+            raise FileNotFoundError(
+                "cannot validate V53 frozen-design seeds because the local "
+                f"deploy mirror is missing {path}"
+            )
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        available = {int(seed) for seed in payload.get("designs", {})}
+        missing = sorted(seeds - available)
+        if missing:
+            available_text = (
+                f"{min(available)}..{max(available)}" if available else "none"
+            )
+            raise ValueError(
+                f"frozen design {path} is missing requested seeds {missing}; "
+                f"available seeds: {available_text}"
+            )
+        coverage[str(path)] = sorted(seeds)
+    return coverage
 
 
 def _v53_profile(common, mc_samples):
@@ -161,6 +216,8 @@ def main():
     if args.dry_run:
         print(json.dumps(specs, indent=2))
         return
+    coverage = validate_frozen_design_seed_coverage(args, specs)
+    print(json.dumps({"validated_frozen_design_seeds": coverage}, indent=2))
     if not args.no_sync:
         subprocess.run([str(defaults.SYNC)], check=True, cwd=ROOT)
     payload = "\n".join(json.dumps(spec) for spec in specs) + "\n"

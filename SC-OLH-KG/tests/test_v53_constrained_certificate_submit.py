@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
+
+import pytest
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -109,3 +112,36 @@ def test_v53_sentinel_keeps_literal_v51_and_v52_controls(tmp_path):
         "--theory-contract-id v53_constrained_certificate_deficit_v1"
         in spec["cmd"] for spec in by_variant[MODULE.V53]
     )
+
+
+def _write_frozen_design(path, seeds):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({
+        "designs": {str(seed): [] for seed in seeds},
+    }), encoding="utf-8")
+
+
+def test_v53_preflight_rejects_missing_frozen_design_seed(tmp_path):
+    args = _args(tmp_path, ("v53_mc8",))
+    specs = MODULE.build_specs(args)
+    for spec in specs:
+        remote = MODULE._command_option(spec["cmd"], "--initial-design-file")
+        local = MODULE._local_deploy_path(args, remote)
+        _write_frozen_design(local, (0, 1))
+
+    with pytest.raises(ValueError, match="missing requested seeds.*100"):
+        MODULE.validate_frozen_design_seed_coverage(args, specs)
+
+
+def test_v53_preflight_accepts_covered_frozen_design_seeds(tmp_path):
+    args = _args(tmp_path, ("v53_mc8",))
+    args.seed_start = 0
+    specs = MODULE.build_specs(args)
+    for spec in specs:
+        remote = MODULE._command_option(spec["cmd"], "--initial-design-file")
+        local = MODULE._local_deploy_path(args, remote)
+        _write_frozen_design(local, (0, 1))
+
+    coverage = MODULE.validate_frozen_design_seed_coverage(args, specs)
+    assert len(coverage) == 3
+    assert all(seeds == [0, 1] for seeds in coverage.values())
