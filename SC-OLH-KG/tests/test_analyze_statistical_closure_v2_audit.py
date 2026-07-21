@@ -104,3 +104,29 @@ def test_v2_audit_does_not_treat_vacuous_certificates_as_publication_evidence(
     assert not result["certificate_nonvacuity_observed_in_this_audit"]
     assert not result["certificate_nonvacuity_observed_in_every_domain"]
     assert not result["publication_eligible"]
+
+
+def test_completed_audit_registration_and_summary_are_consistent():
+    manifest_root = ROOT / "performance/manifests"
+    registration = json.loads((
+        manifest_root / "statistical_closure_v2_audit_v1.json"
+    ).read_text(encoding="utf-8"))
+    summary = json.loads((
+        manifest_root / "statistical_closure_v2_audit_summary.json"
+    ).read_text(encoding="utf-8"))
+    assert registration["submission"]["status"] == "completed"
+    assert registration["submission"]["completed_task_count"] == 15
+    assert summary["configuration"]["parsed_runs"] == 15
+    assert summary["contracts"] == {
+        "implementation_contract_id": IMPLEMENTATION_CONTRACT_ID,
+        "theory_contract_id": THEORY_CONTRACT_ID,
+        "contract_complete": True,
+        "target_oracle_used_for_decision": False,
+    }
+    assert summary["overall"]["finite_sample_hvd_audit_passed"]
+    assert summary["overall"]["vacuous_run_count"] == 15
+    assert not summary["overall"]["certificate_nonvacuity_observed"]
+    assert not summary["overall"]["publication_eligible"]
+    assert registration["analysis"]["summary"] == (
+        "statistical_closure_v2_audit_summary.json"
+    )
