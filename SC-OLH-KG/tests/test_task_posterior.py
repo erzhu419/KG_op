@@ -2701,6 +2701,14 @@ class FiniteTaskPosteriorTests(unittest.TestCase):
         np.testing.assert_allclose(
             ensemble.variance_structure_weights(), [0.8, 0.2])
         self.assertEqual(len(ensemble.predictive_selector_weights()), 4)
+        mean_selector, variance_selector = (
+            ensemble.predictive_selector_factor_weights())
+        np.testing.assert_allclose(mean_selector, [0.01, 0.99])
+        np.testing.assert_allclose(variance_selector, [0.8, 0.2])
+        np.testing.assert_allclose(
+            ensemble.predictive_selector_weights(),
+            np.outer(mean_selector, variance_selector).reshape(-1),
+        )
 
         robust = ensemble.robust_moments_many(1, points)
         np.testing.assert_allclose(

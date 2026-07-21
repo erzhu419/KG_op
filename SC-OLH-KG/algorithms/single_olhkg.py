@@ -13,7 +13,7 @@ import time
 import zlib
 
 import numpy as np
-from scipy.stats import norm
+from scipy.stats import norm, qmc
 
 from acquisition.decision_backends import score_decision_backend
 from acquisition.olhkg import OLHKGAcquisition
@@ -10557,6 +10557,147 @@ class SingleOLHKGAlgorithm:
             np.asarray(uniforms, dtype=float),
         )
 
+    def _exact_kg_nested_rqmc_samples(self, mc):
+        """Return a scrambled Sobol prefix for Gaussian and expert draws."""
+
+        mc = max(0, int(mc))
+        if mc <= 0:
+            return (
+                np.empty((0, 2), dtype=float),
+                np.empty((0, 2), dtype=float),
+            )
+        stage = int(len(self.history))
+        seed = int(np.random.SeedSequence([
+            int(self.config.seed),
+            stage,
+            int(EXACT_KG_STREAM_TAG),
+            0x52514D43,
+        ]).generate_state(1, dtype=np.uint32)[0])
+        power = int(np.ceil(np.log2(max(mc, 1))))
+        unit = qmc.Sobol(
+            d=4, scramble=True, seed=seed).random_base2(power)
+        unit = np.asarray(unit[:mc], dtype=float)
+        gaussian = norm.ppf(np.clip(
+            unit[:, :2], 1e-12, 1.0 - 1e-12))
+        return gaussian, unit[:, 2:]
+
+    def _exact_kg_predictive_selector_weights(self):
+        if self.task_ensemble is None:
+            return None
+        if hasattr(self.task_ensemble, "predictive_selector_weights"):
+            selector_weights = (
+                self.task_ensemble.predictive_selector_weights())
+        elif bool(getattr(
+            self.task_ensemble, "task_latent_authoritative", False
+        )):
+            selector_weights = self.task_ensemble._task_latent(
+            ).posterior_weights(safe=True).reshape(-1)
+        elif hasattr(self.task_ensemble, "structure_weights"):
+            selector_weights = self.task_ensemble.structure_weights(
+                objective=False)
+        else:
+            selector_weights = (
+                self.task_ensemble.posterior.decision_weights())
+        expert_weights = np.asarray(selector_weights, dtype=float)
+        expert_weights = np.clip(expert_weights, 0.0, np.inf)
+        expert_weights /= max(float(np.sum(expert_weights)), 1e-15)
+        return expert_weights
+
+    def _exact_kg_rqmc_sample_plan(self, mc):
+        gaussian_rows, selector_points = (
+            self._exact_kg_nested_rqmc_samples(mc))
+        if mc <= 0:
+            self._last_exact_kg_selector_plan_diagnostics = {
+                "mode": "factorized_rqmc_nested",
+                "sample_count": 0,
+            }
+            return (
+                gaussian_rows,
+                np.empty(0, dtype=float),
+                np.empty(0, dtype=float),
+            )
+        expert_weights = self._exact_kg_predictive_selector_weights()
+        if expert_weights is None:
+            self._last_exact_kg_selector_plan_diagnostics = {
+                "mode": "factorized_rqmc_nested",
+                "sample_count": int(mc),
+                "finite_expert_count": 0,
+                "selected_expert_count": 0,
+                "factorized_selector": False,
+                "selector_l1_error": 0.0,
+            }
+            return (
+                gaussian_rows,
+                selector_points[:, 0],
+                np.full(mc, 1.0 / float(mc), dtype=float),
+            )
+
+        factorized = False
+        flat_indices = None
+        factor_method = getattr(
+            self.task_ensemble,
+            "predictive_selector_factor_weights",
+            None,
+        )
+        if callable(factor_method):
+            mean_weights, variance_weights = factor_method()
+            mean_weights = np.asarray(
+                mean_weights, dtype=float).reshape(-1)
+            if variance_weights is not None:
+                variance_weights = np.asarray(
+                    variance_weights, dtype=float).reshape(-1)
+                if len(mean_weights) * len(variance_weights) == len(
+                    expert_weights
+                ):
+                    mean_index = np.searchsorted(
+                        np.cumsum(mean_weights),
+                        np.clip(
+                            selector_points[:, 0], 0.0, 1.0 - 1e-15),
+                        side="right",
+                    )
+                    variance_index = np.searchsorted(
+                        np.cumsum(variance_weights),
+                        np.clip(
+                            selector_points[:, 1], 0.0, 1.0 - 1e-15),
+                        side="right",
+                    )
+                    flat_indices = (
+                        mean_index * len(variance_weights)
+                        + variance_index
+                    )
+                    factorized = True
+        edges = np.concatenate([[0.0], np.cumsum(expert_weights)])
+        if flat_indices is None:
+            flat_indices = np.searchsorted(
+                edges[1:],
+                np.clip(selector_points[:, 0], 0.0, 1.0 - 1e-15),
+                side="right",
+            )
+        flat_indices = np.minimum(
+            np.asarray(flat_indices, dtype=int),
+            len(expert_weights) - 1,
+        )
+        uniforms = 0.5 * (
+            edges[flat_indices] + edges[flat_indices + 1])
+        empirical = np.bincount(
+            flat_indices, minlength=len(expert_weights)).astype(float)
+        empirical /= float(mc)
+        self._last_exact_kg_selector_plan_diagnostics = {
+            "mode": "factorized_rqmc_nested",
+            "sample_count": int(mc),
+            "finite_expert_count": int(len(expert_weights)),
+            "selected_expert_count": int(np.count_nonzero(empirical)),
+            "factorized_selector": bool(factorized),
+            "selector_l1_error": float(np.sum(np.abs(
+                empirical - expert_weights))),
+            "maximum_expert_mass": float(np.max(expert_weights)),
+        }
+        return (
+            gaussian_rows,
+            uniforms,
+            np.full(mc, 1.0 / float(mc), dtype=float),
+        )
+
     def _exact_kg_common_samples(self, mc):
         """Draw shared predictive innovations for every design candidate."""
         mc = max(0, int(mc))
@@ -10598,14 +10739,21 @@ class SingleOLHKGAlgorithm:
         """Return predictive innovations, expert selectors, and quadrature weights.
 
         Ordinary IID and antithetic modes use equal Monte Carlo weights.  The
-        stratified-expert mode enumerates every finite task expert exactly and
-        uses common antithetic Gaussian innovations within each expert.  This
-        Rao-Blackwellizes the categorical task identity without changing the
-        posterior predictive distribution being integrated.
+        stratified-expert mode enumerates every finite task expert exactly.
+        The factorized-RQMC mode instead uses a nested scrambled Sobol prefix
+        over Gaussian, mean-expert, and HVD-expert coordinates and records its
+        finite-selector discrepancy.
         """
 
         mc = max(0, int(mc))
         mode = str(self.config.exact_kg_sampling_mode or "iid").lower()
+        rqmc_modes = {
+            "factorized_rqmc_nested",
+            "rqmc_expert_nested",
+            "nested_rqmc_expert",
+        }
+        if mode in rqmc_modes:
+            return self._exact_kg_rqmc_sample_plan(mc)
         nested_stratified_modes = {
             "stratified_expert_nested",
             "nested_stratified_expert",
@@ -10644,23 +10792,7 @@ class SingleOLHKGAlgorithm:
             gaussian_rows = np.asarray(
                 gaussian_rows, dtype=float).reshape(mc, 2)
 
-        if hasattr(self.task_ensemble, "predictive_selector_weights"):
-            selector_weights = (
-                self.task_ensemble.predictive_selector_weights())
-        elif bool(getattr(
-            self.task_ensemble, "task_latent_authoritative", False
-        )):
-            selector_weights = self.task_ensemble._task_latent(
-            ).posterior_weights(safe=True).reshape(-1)
-        elif hasattr(self.task_ensemble, "structure_weights"):
-            selector_weights = self.task_ensemble.structure_weights(
-                objective=False)
-        else:
-            selector_weights = (
-                self.task_ensemble.posterior.decision_weights())
-        expert_weights = np.asarray(selector_weights, dtype=float)
-        expert_weights = np.clip(expert_weights, 0.0, np.inf)
-        expert_weights /= max(float(np.sum(expert_weights)), 1e-15)
+        expert_weights = self._exact_kg_predictive_selector_weights()
         edges = np.concatenate([[0.0], np.cumsum(expert_weights)])
         z_blocks = []
         uniform_blocks = []
@@ -11062,6 +11194,8 @@ class SingleOLHKGAlgorithm:
             "antithetic_nested", "nested_antithetic", "paired_nested",
             "stratified_expert_nested", "nested_stratified_expert",
             "rao_blackwellized_nested",
+            "factorized_rqmc_nested", "rqmc_expert_nested",
+            "nested_rqmc_expert",
         }:
             raise ValueError(
                 "certificate-constrained policy improvement requires "
@@ -12511,6 +12645,11 @@ class SingleOLHKGAlgorithm:
                 row["acquisition_mode"] = acquisition_mode
                 row["exact_kg_sampling_mode"] = str(
                     self.config.exact_kg_sampling_mode)
+                row["exact_kg_selector_plan"] = copy.deepcopy(getattr(
+                    self,
+                    "_last_exact_kg_selector_plan_diagnostics",
+                    {},
+                ))
                 row["exact_kg_clip_negative"] = bool(
                     self.config.exact_kg_clip_negative)
                 row["exact_kg_terminal_mode"] = str(
@@ -13133,6 +13272,12 @@ class SingleOLHKGAlgorithm:
                     "antithetic_nested",
                     "nested_antithetic",
                     "paired_nested",
+                    "stratified_expert_nested",
+                    "nested_stratified_expert",
+                    "rao_blackwellized_nested",
+                    "factorized_rqmc_nested",
+                    "rqmc_expert_nested",
+                    "nested_rqmc_expert",
                 }
             ),
             "mc_samples": int(self._effective_exact_kg_mc_samples()),
@@ -13736,6 +13881,8 @@ class SingleOLHKGAlgorithm:
                     "decision_evaluate_or_replicate_new_action_policy"),
                 "exact_kg_raw_scores_active": copy.deepcopy(
                     iteration_row.get("exact_kg_raw_scores_active")),
+                "exact_kg_selector_plan": copy.deepcopy(
+                    iteration_row.get("exact_kg_selector_plan")),
                 "certificate_deficit_raw_scores_active": copy.deepcopy(
                     iteration_row.get(
                         "certificate_deficit_raw_scores_active")),

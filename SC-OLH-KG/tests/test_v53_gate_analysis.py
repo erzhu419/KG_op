@@ -63,6 +63,14 @@ def _fidelity_row(
         "online_action_trace_target_oracle_used": False,
         "online_action_trace": [{
             "exact_kg_active_action_fingerprints": ["a", "b", "c"],
+            "exact_kg_selector_plan": {
+                "mode": "factorized_rqmc_nested",
+                "sample_count": mc,
+                "finite_expert_count": 49,
+                "selected_expert_count": min(mc, 49),
+                "factorized_selector": True,
+                "selector_l1_error": 0.2 if mc == 8 else 0.05,
+            },
             "exact_kg_raw_scores_active": [
                 0.1 + offset, 0.4 + offset, 0.2 + offset],
             "certificate_deficit_raw_scores_active": [
@@ -116,6 +124,31 @@ def test_v53_fidelity_analyzer_accepts_nested_expert_marginalization(
     assert result["fidelity_gate_complete"] is True
     assert result["sampling_mode"] == sampling_mode
     assert result["finite_expert_marginalization"] is True
+
+
+def test_v53_fidelity_analyzer_accepts_nested_factorized_rqmc(
+    tmp_path,
+):
+    sampling_mode = "factorized_rqmc_nested"
+    for variant, mc, offset in (
+        (FIDELITY.LOW, 8, 0.01),
+        (FIDELITY.HIGH, 32, 0.0),
+    ):
+        rows = [
+            _fidelity_row(
+                domain, 0, mc, offset, sampling_mode=sampling_mode)
+            for domain in FIDELITY.DOMAINS
+        ]
+        _write_result(tmp_path, variant, rows)
+    result = FIDELITY.analyze(
+        tmp_path,
+        seeds=[0],
+        multiplier=1.25,
+        sampling_mode=sampling_mode,
+    )
+    assert result["fidelity_gate_complete"] is True
+    assert result["sampling_mode"] == sampling_mode
+    assert result["finite_expert_marginalization"] is False
 
 
 def _sentinel_contract(variant):

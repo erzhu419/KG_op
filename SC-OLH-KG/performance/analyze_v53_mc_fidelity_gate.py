@@ -18,6 +18,11 @@ DOMAINS = (
 LOW = "v53_mc8"
 HIGH = "v53_mc32"
 VARIANTS = (LOW, HIGH)
+RQMC_MODES = {
+    "factorized_rqmc_nested",
+    "rqmc_expert_nested",
+    "nested_rqmc_expert",
+}
 
 
 def _finite(value):
@@ -154,10 +159,13 @@ def analyze(
     certificate_top = []
     risk_pairwise = []
     certificate_pairwise = []
+    low_selector_l1 = []
+    high_selector_l1 = []
     pair_audits = []
     contracts_ok = True
     action_sets_ok = True
     initial_designs_ok = True
+    selector_plans_ok = True
     paired = expected & set(indexed[LOW]) & set(indexed[HIGH])
     for key in sorted(paired):
         low = indexed[LOW][key]
@@ -172,6 +180,28 @@ def analyze(
         if low_trace is None or high_trace is None:
             action_sets_ok = False
             continue
+        low_plan = dict(low_trace.get("exact_kg_selector_plan") or {})
+        high_plan = dict(high_trace.get("exact_kg_selector_plan") or {})
+        if str(sampling_mode) in RQMC_MODES:
+            low_l1 = _finite(low_plan.get("selector_l1_error"))
+            high_l1 = _finite(high_plan.get("selector_l1_error"))
+            valid_plans = bool(
+                low_plan.get("mode") == "factorized_rqmc_nested"
+                and high_plan.get("mode") == "factorized_rqmc_nested"
+                and int(low_plan.get("sample_count", -1)) == 8
+                and int(high_plan.get("sample_count", -1)) == 32
+                and bool(low_plan.get("factorized_selector"))
+                and bool(high_plan.get("factorized_selector"))
+                and int(low_plan.get("finite_expert_count", 0)) > 0
+                and int(high_plan.get("finite_expert_count", 0)) > 0
+                and low_l1 is not None
+                and high_l1 is not None
+            )
+            selector_plans_ok &= valid_plans
+            if not valid_plans:
+                continue
+            low_selector_l1.append(low_l1)
+            high_selector_l1.append(high_l1)
         low_risk = _score_map(low_trace, "exact_kg_raw_scores_active")
         high_risk = _score_map(high_trace, "exact_kg_raw_scores_active")
         low_certificate = _score_map(
@@ -216,6 +246,16 @@ def analyze(
             "certificate_top1_agrees": certificate_top[-1],
             "risk_pairwise_agreement": risk_pairwise[-1],
             "certificate_pairwise_agreement": certificate_pairwise[-1],
+            "mc8_selector_l1_error": (
+                None
+                if str(sampling_mode) not in RQMC_MODES
+                else low_selector_l1[-1]
+            ),
+            "mc32_selector_l1_error": (
+                None
+                if str(sampling_mode) not in RQMC_MODES
+                else high_selector_l1[-1]
+            ),
         })
 
     risk_max = max(risk_errors, default=None)
@@ -254,6 +294,7 @@ def analyze(
         and contracts_ok
         and action_sets_ok
         and initial_designs_ok
+        and selector_plans_ok
         and risk_eta is not None
         and certificate_eta is not None
     )
@@ -275,6 +316,21 @@ def analyze(
         "contracts_ok": contracts_ok,
         "paired_initial_designs_ok": initial_designs_ok,
         "identical_active_action_sets": action_sets_ok,
+        "selector_plans_ok": selector_plans_ok,
+        "mc8_selector_l1_mean": (
+            None if not low_selector_l1
+            else statistics.fmean(low_selector_l1)
+        ),
+        "mc8_selector_l1_max": (
+            None if not low_selector_l1 else max(low_selector_l1)
+        ),
+        "mc32_selector_l1_mean": (
+            None if not high_selector_l1
+            else statistics.fmean(high_selector_l1)
+        ),
+        "mc32_selector_l1_max": (
+            None if not high_selector_l1 else max(high_selector_l1)
+        ),
         "risk_max_abs_mc8_mc32": risk_max,
         "certificate_max_abs_mc8_mc32": certificate_max,
         "risk_top1_agreement": risk_top_rate,

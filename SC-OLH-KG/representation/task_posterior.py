@@ -2470,6 +2470,16 @@ class FiniteTaskModelEnsemble:
         sampling closed under the same product posterior without requiring a
         second random-number API.
         """
+        mean_weights, variance_weights = (
+            self.predictive_selector_factor_weights())
+        if variance_weights is None:
+            return mean_weights
+        product = np.outer(mean_weights, variance_weights).reshape(-1)
+        return product / max(float(np.sum(product)), 1e-300)
+
+    def predictive_selector_factor_weights(self):
+        """Return normalized mean and optional HVD selector factors."""
+
         if self.task_latent_authoritative:
             mean_weights = self._task_latent().posterior_weights(
                 safe=True).reshape(-1)
@@ -2479,12 +2489,11 @@ class FiniteTaskModelEnsemble:
         mean_weights = np.maximum(mean_weights, 0.0)
         mean_weights /= max(float(np.sum(mean_weights)), 1e-300)
         if not self.variance_structure_isolated:
-            return mean_weights
+            return mean_weights, None
         variance_weights = np.maximum(np.asarray(
             self.variance_structure_weights(), dtype=float).reshape(-1), 0.0)
         variance_weights /= max(float(np.sum(variance_weights)), 1e-300)
-        product = np.outer(mean_weights, variance_weights).reshape(-1)
-        return product / max(float(np.sum(product)), 1e-300)
+        return mean_weights, variance_weights
 
     def _predictive_selector_indices(self, expert_uniform):
         weights = self.predictive_selector_weights()

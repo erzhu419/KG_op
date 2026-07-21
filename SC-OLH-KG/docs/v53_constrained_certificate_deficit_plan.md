@@ -47,12 +47,21 @@ pre-registered stability thresholds: risk/certificate pairwise agreement was
 `0.870/0.882`, and certificate top-1 agreement was `0.567`. It therefore did
 not authorize a V53 sentinel.
 
-The revised numerical path uses `stratified_expert_nested`. Finite expert
-identity is summed exactly with posterior mass, as formalized in
-`SCOLHKG.Real.StratifiedExpertKG`; only the conditional two-dimensional
-Gaussian innovation is approximated. Stage-keyed antithetic rows are reused by
-the risk and certificate heads, and MC8 is an exact prefix of MC32 at a fixed
-posterior state. The revised disjoint gate runs
+Full finite-expert marginalization remains the exact reference estimator, but
+the deployment pilot exposed 49 mean/HVD product experts: MC8 and MC32 expanded
+to 392 and 1,568 posterior refits per action. That run was cancelled before it
+could consume multiple node-hours and is not fidelity evidence.
+
+The operational estimator is `factorized_rqmc_nested`. A stage-keyed scrambled
+Sobol net jointly samples the two Gaussian innovations, the mean expert, and
+the HVD expert. It preserves the product posterior without flattening it into a
+row-major categorical coordinate, uses exactly MC8 or MC32 refits per action,
+and gives MC8 as an exact prefix of MC32. The implementation records the
+empirical selector law's L1 distance from the exact finite posterior.
+`SCOLHKG.Real.StratifiedExpertKG.finite_rqmc_error_le_conditional_plus_selector_l1`
+bounds total integration error by the conditional numerical error plus this
+L1 discrepancy times a finite terminal-value bound. The revised disjoint gate
+runs
 
 - `d=1000`, `N=11`, `n0=10`;
 - FactorShock, Inventory, and Queue;

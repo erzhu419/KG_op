@@ -26,8 +26,20 @@ came from a posterior state whose ranking still agreed, showing that one
 cross-domain absolute error constant is scale-sensitive and would make the
 guard vacuous.
 
-No V53 promotion or sentinel result is claimed from this run. The next
-fidelity gate replaces sampled finite expert identity with exact posterior
-marginalization (`stratified_expert_nested`). This is the estimator already
-covered by `SCOLHKG.Real.StratifiedExpertKG`; only the conditional Gaussian
-expectation remains numerical.
+No V53 promotion or sentinel result is claimed from this run. Full exact
+finite-expert marginalization remains a reference estimator; the operational
+replacement is nested factorized RQMC with an explicit selector-discrepancy
+diagnostic and error term.
+
+## Exact-enumeration deployment audit
+
+Run `scolh_v53_stratified_mc_fidelity_s10_20260722_01` was launched only as a
+runtime pilot and then cancelled 60/60 without failures. The product posterior
+contained 49 mean/HVD expert pairs, so MC8 and MC32 required 392 and 1,568
+fantasy refits per action. Representative tasks remained healthy at full
+12-core utilization, but projected wall time was incompatible with a mainline
+gate. No score or fidelity claim is drawn from this cancelled run.
+
+The replacement run uses `factorized_rqmc_nested`, keeps the same target
+posterior and active action set, and reports selector L1 discrepancy alongside
+MC8/MC32 score agreement.

@@ -70,12 +70,12 @@
       "behavior_change": true,
       "diagnostic_change": true,
       "role": "challenger_contract",
-      "status": "random_expert_mc8_failed_pending_stratified_fidelity_gate",
+      "status": "random_expert_mc8_failed_pending_factorized_rqmc_fidelity_gate",
       "runs": [
         "scolh_v53_mc_fidelity_s10_20260722_02"
       ],
       "planned_runs": [
-        "scolh_v53_stratified_mc_fidelity_s10_20260722_01",
+        "scolh_v53_rqmc_mc_fidelity_s10_20260722_01",
         "scolh_v53_constrained_certificate_s5_20260722_01"
       ],
       "evidence": [
@@ -89,6 +89,9 @@
         "joint posterior noninferiority on both numerical-fidelity events",
         "nested common-random-number MC calibration",
         "no rollout and no target-oracle action"
+      ],
+      "cancelled_runs": [
+        "scolh_v53_stratified_mc_fidelity_s10_20260722_01"
       ]
     }
   ],

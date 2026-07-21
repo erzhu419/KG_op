@@ -1211,6 +1211,42 @@ class ExactKGTests(unittest.TestCase):
         np.testing.assert_allclose(u8[:8], np.full(8, 0.1))
         np.testing.assert_allclose(u32[:32], np.full(32, 0.1))
 
+    def test_factorized_rqmc_plan_is_nested_without_expert_expansion(self):
+        class Ensemble:
+            @staticmethod
+            def predictive_selector_factor_weights():
+                return (
+                    np.asarray([0.2, 0.8], dtype=float),
+                    np.asarray([0.6, 0.4], dtype=float),
+                )
+
+            @staticmethod
+            def predictive_selector_weights():
+                return np.asarray([0.12, 0.08, 0.48, 0.32], dtype=float)
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                exact_kg_sampling_mode="factorized_rqmc_nested",
+                seed=9,
+            ),
+        )
+        algorithm.task_ensemble = Ensemble()
+        z8, u8, w8 = algorithm._exact_kg_sample_plan(8)
+        z32, u32, w32 = algorithm._exact_kg_sample_plan(32)
+        self.assertEqual(z8.shape, (8, 2))
+        self.assertEqual(z32.shape, (32, 2))
+        np.testing.assert_allclose(z8, z32[:8])
+        np.testing.assert_allclose(u8, u32[:8])
+        np.testing.assert_allclose(w8, np.full(8, 1.0 / 8.0))
+        np.testing.assert_allclose(w32, np.full(32, 1.0 / 32.0))
+        self.assertTrue(np.all(np.isfinite(z32)))
+        diagnostics = algorithm._last_exact_kg_selector_plan_diagnostics
+        self.assertTrue(diagnostics["factorized_selector"])
+        self.assertEqual(diagnostics["finite_expert_count"], 4)
+        self.assertLessEqual(diagnostics["selected_expert_count"], 32)
+
     def test_stratified_plan_integrates_mean_variance_product_posterior(self):
         class Ensemble:
             @staticmethod

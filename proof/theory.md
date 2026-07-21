@@ -918,14 +918,17 @@ replace the V51 fallback only after separate Bayes-risk and certificate-score
 gaps exceed `2 eta_risk` and `2 eta_certificate`.
 `SCOLHKG/Real/ConstrainedCertificateDeficit.lean` proves strict exact
 improvement of both scores on their two uniform numerical-error events and
-joint noninferiority under fallback-or-switch. In the revised numerical
-contract, `stratified_expert_nested` exactly sums finite task-expert identity
-with posterior mass; `SCOLHKG/Real/StratifiedExpertKG.lean` proves that this
-categorical layer contributes no sampling error and inherits the largest
-conditional Gaussian approximation error. Stage-keyed nested antithetic rows
-remain an approximation to the two-dimensional within-expert expectation.
-Nested MC8/MC32 calibration is therefore still an empirical implementation
-obligation; it is not silently promoted to an exact-integral theorem.
+joint noninferiority under fallback-or-switch. Full
+`stratified_expert_nested` summation remains the exact finite-expert reference,
+but the mainline numerical contract uses `factorized_rqmc_nested`: one nested
+scrambled Sobol net samples Gaussian innovation and the separate mean/HVD
+expert factors. The implementation records its empirical selector law
+`qHat`. `SCOLHKG/Real/StratifiedExpertKG.lean` proves
+`|E_qHat fHat - E_q f| <= epsilon + ||qHat-q||_1 B` whenever the conditional
+quadrature error is at most `epsilon` and the exact finite-expert terminal
+value is bounded by `B`. Nested MC8/MC32 calibration and the reported selector
+L1 discrepancy remain empirical implementation obligations; neither is
+silently promoted to an exact-integral theorem.
 
 ## Current Empirical Closure Items
 
@@ -950,8 +953,10 @@ obligation; it is not silently promoted to an exact-integral theorem.
    frozen before each target run.
 5. The first 30-pair V53 numerical gate rejected sampled-expert MC8: risk and
    certificate pairwise agreement were `0.870` and `0.882`, while certificate
-   top-1 agreement was `0.567`. V53 is not promoted. The next gate uses exact
-   finite-expert marginalization before spending Gaussian MC effort.
+   top-1 agreement was `0.567`. V53 is not promoted. Exact enumeration then
+   exposed 49 mean/HVD product experts and was cancelled as a runtime reference,
+   not reported as evidence. The next gate uses nested factorized RQMC and
+   reports both score fidelity and selector L1 discrepancy.
 6. The traffic trajectory encoder and SUMO logger exist, but the final table
    still requires real fresh-seed trajectory CSV and out-of-sample replication
    certification. Missing logs must remain `missing_data`, never synthetic
