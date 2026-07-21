@@ -2472,6 +2472,128 @@ class OrthogonalHVD:
             novelty = min_dist / (1.0 + min_dist)
         return np.maximum(pred, self.floor) * (class_unc + novelty)
 
+    def _cumulative_statistical_design_diagnostics(self, i):
+        """Return the active HVD excitation audited by the Lean rate theorem.
+
+        Target data usually calibrate a frozen source shape or a small source
+        mixture, rather than refitting every raw cumulative coefficient.  The
+        active Gram matrix must therefore be computed after that projection.
+        This method is diagnostic only and never changes fitting or decisions.
+        """
+        i = int(i)
+        problem = self._last_problem
+        method = str(self.cumulative_fit_method.get(i, "inactive"))
+        replicated = set(self.replicated_keys.get(i, set()))
+        evidence = set(replicated)
+        if str(self.config.cumulative_target_evidence_mode) == "prequential_upper":
+            evidence.update(self.prequential_upper_records.get(i, {}))
+        points = sorted(evidence)
+
+        raw_dimension = 0
+        active_dimension = 0
+        projection = "inactive"
+        raw_design = np.empty((0, 0), dtype=float)
+        active_design = np.empty((0, 0), dtype=float)
+        if problem is not None and points:
+            try:
+                candidate_design = self._cumulative_feature_matrix(
+                    points,
+                    problem,
+                    output_index=i,
+                )
+                if candidate_design is not None:
+                    raw_design = np.asarray(candidate_design, dtype=float)
+            except (TypeError, ValueError, FloatingPointError):
+                raw_design = np.empty((0, 0), dtype=float)
+        if raw_design.ndim == 2 and raw_design.size:
+            raw_dimension = int(raw_design.shape[1])
+            components = self.cumulative_prior_components.get(i)
+            beta = self.cumulative_beta.get(i)
+            if (
+                components is not None
+                and "source_shape_mixture" in method
+            ):
+                component_matrix = np.asarray(components, dtype=float)
+                if (
+                    component_matrix.ndim == 2
+                    and component_matrix.shape[1] == raw_dimension
+                ):
+                    active_design = raw_design @ component_matrix.T
+                    projection = "source_shape_mixture"
+            if active_design.size == 0 and (
+                beta is not None
+                and self.cumulative_prior_used.get(i, False)
+            ):
+                beta_vector = np.asarray(beta, dtype=float).reshape(-1)
+                if len(beta_vector) == raw_dimension:
+                    active_design = (raw_design @ beta_vector)[:, None]
+                    projection = "frozen_source_shape_scalar"
+            if active_design.size == 0:
+                active_design = raw_design.copy()
+                projection = "full_cumulative_feature"
+            active_dimension = int(active_design.shape[1])
+
+        def geometry(matrix):
+            if matrix.ndim != 2 or matrix.shape[0] == 0 or matrix.shape[1] == 0:
+                return {
+                    "rank": 0,
+                    "minimum_eigenvalue": 0.0,
+                    "minimum_positive_eigenvalue": None,
+                    "maximum_eigenvalue": 0.0,
+                    "condition_number_positive_spectrum": None,
+                }
+            gram = (matrix.T @ matrix) / float(matrix.shape[0])
+            gram = 0.5 * (gram + gram.T)
+            eigenvalues = np.maximum(np.linalg.eigvalsh(gram), 0.0)
+            maximum = float(np.max(eigenvalues))
+            tolerance = max(
+                np.finfo(float).eps * max(matrix.shape) * max(maximum, 1.0),
+                1e-14,
+            )
+            positive = eigenvalues[eigenvalues > tolerance]
+            rank = int(len(positive))
+            minimum_positive = (
+                None if len(positive) == 0 else float(np.min(positive))
+            )
+            return {
+                "rank": rank,
+                "minimum_eigenvalue": float(np.min(eigenvalues)),
+                "minimum_positive_eigenvalue": minimum_positive,
+                "maximum_eigenvalue": maximum,
+                "condition_number_positive_spectrum": (
+                    None
+                    if minimum_positive is None or minimum_positive <= 0.0
+                    else float(maximum / minimum_positive)
+                ),
+            }
+
+        raw_geometry = geometry(raw_design)
+        active_geometry = geometry(active_design)
+        return {
+            "theory_contract": "v51_statistical_closure_v2",
+            "target_evidence_mode": str(
+                self.config.cumulative_target_evidence_mode),
+            "fit_method": method,
+            "projection": projection,
+            "replicated_solution_count": int(len(replicated)),
+            "target_evidence_solution_count": int(len(points)),
+            "effective_replication_dof": float(
+                self._effective_variance_dof(i)),
+            "raw_feature_dimension": int(raw_dimension),
+            "active_calibration_dimension": int(active_dimension),
+            "raw_geometry": raw_geometry,
+            "active_geometry": active_geometry,
+            "lean_excitation_kappa": float(
+                len(points) * active_geometry["minimum_eigenvalue"]),
+            "gram_normalization": "X_transpose_X_div_target_evidence_count",
+            "active_identifiable": bool(
+                active_dimension > 0
+                and len(points) >= active_dimension
+                and active_geometry["rank"] == active_dimension
+                and active_geometry["minimum_eigenvalue"] > 0.0
+            ),
+        }
+
     def diagnostics(self):
         tail_delta = float(self.config.residual_tail_delta)
         tail_radius = {}
@@ -2557,6 +2679,10 @@ class OrthogonalHVD:
                         for value in self.cumulative_fit_weight_range[i]
                     ]
                 )
+                for i in range(self.n_outputs)
+            },
+            "cumulative_statistical_design": {
+                str(i): self._cumulative_statistical_design_diagnostics(i)
                 for i in range(self.n_outputs)
             },
             "cumulative_prior_used": {

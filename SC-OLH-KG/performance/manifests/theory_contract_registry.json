@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "contracts": [
+    {
+      "id": "v51_conditional_v1",
+      "implementation_contract_id": "promoted_v51_observed_terminal_closure",
+      "decision_behavior": "promoted_v51",
+      "role": "launch_contract",
+      "runs": [
+        "scolh_promoted_v51_closure_s20_20260721_01",
+        "scolh_promoted_v51_certification_budget_s5_20260721_02",
+        "scolh_promoted_v51_voi_fidelity_s5_20260721_01"
+      ],
+      "formal_scope": [
+        "conditional shortlist plus Monte Carlo action gap",
+        "finite posterior-value accounting",
+        "conditional certificate soundness"
+      ]
+    },
+    {
+      "id": "v51_statistical_closure_v2",
+      "implementation_contract_id": "promoted_v51_observed_terminal_closure",
+      "decision_behavior": "identical_to_promoted_v51",
+      "behavior_change": false,
+      "diagnostic_change": true,
+      "role": "finite_sample_analysis_contract",
+      "runs": [],
+      "planned_runs": [
+        "scolh_statistical_closure_v2_audit_s5_20260721_01"
+      ],
+      "formal_scope": [
+        "active-subspace HVD identification and finite-sample estimation",
+        "HVD misspecification and over-conservatism bounds",
+        "explicit certificate nonvacuity budget",
+        "truth-relative end-to-end safe regret",
+        "source-to-target PAC-Bayes plus domain shift"
+      ]
+    }
+  ],
+  "non_mixing_rules": [
+    "A run keeps the theory_contract_id declared before target evaluation.",
+    "Later proofs may audit an older run but do not relabel its launch contract.",
+    "Results with different implementation_contract_id values are never pooled.",
+    "Checkpoint, model, and raw profile files are not publication evidence."
+  ]
+}

@@ -722,6 +722,10 @@ def run_one(task):
         state_candidate_count = int(args_dict["state_candidate_count"])
 
     config = SingleOLHKGConfig(
+        implementation_contract_id=str(args_dict.get(
+            "implementation_contract_id", "unversioned")),
+        theory_contract_id=str(args_dict.get(
+            "theory_contract_id", "unversioned")),
         N=args_dict["N"],
         n0=args_dict["n0"],
         initial_design=str(args_dict.get("initial_design", "auto")),
@@ -1090,6 +1094,14 @@ def run_one(task):
     started = time.time()
     alg = SingleOLHKGAlgorithm(problem, config)
     result = alg.run(verbose=False)
+    for field in ("implementation_contract_id", "theory_contract_id"):
+        expected = str(args_dict.get(field, "unversioned"))
+        actual = str(result.get(field, "unversioned"))
+        if actual != expected:
+            raise RuntimeError(
+                f"{field} changed across the target run: "
+                f"expected {expected!r}, observed {actual!r}"
+            )
     true_feasible = bool(result["true_feasible"])
     posterior_feasible = bool(result.get("posterior_feasible", False))
     initial_design = result.get("task_initial_design") or {}
@@ -1113,6 +1125,20 @@ def run_one(task):
         "line": line,
         "heldout": heldout,
         "seed": seed,
+        "implementation_contract_id": str(result.get(
+            "implementation_contract_id", "unversioned")),
+        "theory_contract_id": str(result.get(
+            "theory_contract_id", "unversioned")),
+        "theory_contract_timing": str(result.get(
+            "theory_contract_timing", "missing")),
+        "exact_kg_mc_samples": int(args_dict.get(
+            "exact_kg_mc_samples", 0)),
+        "exact_kg_sampling_mode": str(args_dict.get(
+            "exact_kg_sampling_mode", "missing")),
+        "evaluate_or_replicate_new_action_count": int(args_dict.get(
+            "evaluate_or_replicate_new_action_count", 0)),
+        "replication_max_per_solution": int(args_dict.get(
+            "replication_max_per_solution", 0)),
         "initial_design_archive_contract": initial_design_archive_contract,
         "source_target_adaptation_contract": {
             "source_prior_frozen_online": True,
@@ -2517,6 +2543,12 @@ def main():
         choices=("legacy", "certified_lexicographic"),
         default="legacy",
     )
+    parser.add_argument(
+        "--implementation-contract-id", "--implementation_contract_id",
+        dest="implementation_contract_id", default="unversioned")
+    parser.add_argument(
+        "--theory-contract-id", "--theory_contract_id",
+        dest="theory_contract_id", default="unversioned")
     parser.add_argument(
         "--terminal_bayes_violation_penalty", type=float, default=5.0)
     parser.add_argument(

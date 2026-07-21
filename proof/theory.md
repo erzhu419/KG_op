@@ -1,5 +1,24 @@
 # SC-OLH-KG Theory Skeleton
 
+## Statistical Closure V2 Status
+
+The promoted V51 behavior now has a separate finite-sample analysis contract.
+`FiniteSampleHVD.lean` proves active-subspace identification, ridge estimation,
+and coordinate-misspecification propagation;
+`FiniteSampleHVDConcentration.lean` turns a declared replication schedule into
+the uniform variance-target event used by that theorem;
+`CertificateNonvacuity.lean`
+turns positive safety depth into explicit mean/replication thresholds;
+`EndToEndSafeRegret.lean` compares the observed-terminal recommendation with a
+true safe optimum while retaining every representation, HVD, transfer, pool,
+shortlist, MC, and sequential error; and `StatisticalClosure.lean` supplies the
+joint high-probability wrapper. `TransferGeneralization.lean` instantiates the
+transfer term by a source-task PAC-Bayes radius plus explicit domain shift.
+
+This is a behavior-preserving theorem upgrade, not a retrospective relabeling
+of experiments. The exact version policy and unresolved empirical obligations
+are recorded in `SC-OLH-KG/docs/math_v1_gap_audit.md`.
+
 ## Setup
 
 Let `x in X` be a feasible integer design, `s(x)` a policy-state or occupancy

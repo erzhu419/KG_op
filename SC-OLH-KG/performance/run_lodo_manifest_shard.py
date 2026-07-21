@@ -218,6 +218,14 @@ def main():
     parser.add_argument("--N", type=int, default=None)
     parser.add_argument("--n0", type=int, default=None)
     parser.add_argument(
+        "--implementation-contract-id",
+        default="unversioned",
+    )
+    parser.add_argument(
+        "--theory-contract-id",
+        default="unversioned",
+    )
+    parser.add_argument(
         "--structural-prior-profile",
         choices=("inherit", *STRUCTURAL_PRIOR_PROFILES),
         default="inherit",
@@ -848,6 +856,9 @@ def main():
     for key, value in (("d", args.d), ("N", args.N), ("n0", args.n0)):
         if value is not None:
             config[key] = int(value)
+    config["implementation_contract_id"] = str(
+        args.implementation_contract_id)
+    config["theory_contract_id"] = str(args.theory_contract_id)
     if int(config["n0"]) > int(config["N"]):
         raise ValueError("LODO shard requires n0 <= N")
     replication_candidate_count = int(

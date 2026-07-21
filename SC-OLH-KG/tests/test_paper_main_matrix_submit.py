@@ -19,6 +19,10 @@ def _registration(status="frozen"):
     return {
         "schema_version": 1,
         "status": status,
+        "contracts": {
+            "implementation_contract_id": MODULE.IMPLEMENTATION_CONTRACT_ID,
+            "theory_contract_id": MODULE.THEORY_CONTRACT_ID,
+        },
         "freeze_evidence": {
             "replication_cap": 5,
             "exact_mc_samples": 8,
@@ -104,6 +108,14 @@ def test_frozen_matrix_builds_design_dependencies_and_exact_profiles(tmp_path):
     assert "--exact-sampling-mode antithetic_nested" in promoted["cmd"]
     assert "--evaluate-or-replicate-new-action-count 4" in promoted["cmd"]
     assert "--replication-max-per-solution 5" in promoted["cmd"]
+    assert (
+        "--implementation-contract-id "
+        "promoted_v51_observed_terminal_closure" in promoted["cmd"]
+    )
+    assert (
+        "--theory-contract-id v51_statistical_closure_v2"
+        in promoted["cmd"]
+    )
     assert "--hvd-profile pooled" in pooled["cmd"]
     assert "--no-source-discrepancy-update" in frozen["cmd"]
     assert promoted["wait_for_files"]

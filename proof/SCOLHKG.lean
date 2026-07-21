@@ -4,6 +4,7 @@ import SCOLHKG.Information
 import SCOLHKG.KG
 import SCOLHKG.Measure.GPKernelConfidence
 import SCOLHKG.Measure.ExactMCConcentration
+import SCOLHKG.Measure.FiniteSampleHVDConcentration
 import SCOLHKG.Measure.PosteriorUpdateKG
 import SCOLHKG.Measure.PosteriorCoefficientSampler
 import SCOLHKG.Measure.PosteriorMultivariateGaussian
@@ -16,6 +17,7 @@ import SCOLHKG.Measure.TwoStageDecision
 import SCOLHKG.Measure.PosteriorKG
 import SCOLHKG.Measure.ProbabilityEvents
 import SCOLHKG.Measure.SafeRegretEvent
+import SCOLHKG.Measure.StatisticalClosure
 import SCOLHKG.Measure.SharedTerminalPoolKG
 import SCOLHKG.Optimization
 import SCOLHKG.Real.AdditiveApproxKG
@@ -28,6 +30,7 @@ import SCOLHKG.Real.BoundaryCoordinateSufficiency
 import SCOLHKG.Real.SourceConsensusCommit
 import SCOLHKG.Real.Certification
 import SCOLHKG.Real.CertificationImplementation
+import SCOLHKG.Real.CertificateNonvacuity
 import SCOLHKG.Real.ConditionalVariance
 import SCOLHKG.Real.CumulativeRisk
 import SCOLHKG.Real.CumulativeRiskImplementation
@@ -35,6 +38,7 @@ import SCOLHKG.Real.ExactKGImplementation
 import SCOLHKG.Real.FeatureKernelDeterminantCap
 import SCOLHKG.Real.FiniteKernelInformationGain
 import SCOLHKG.Real.FinalistReplication
+import SCOLHKG.Real.FiniteSampleHVD
 import SCOLHKG.Real.GPRUpdate
 import SCOLHKG.Real.GroupSharedShrinkage
 import SCOLHKG.Real.GroupRidgeComplexity
@@ -70,9 +74,11 @@ import SCOLHKG.Real.SafeGeneralizedTaskPosterior
 import SCOLHKG.Real.JointTaskLatentPosterior
 import SCOLHKG.Real.JointKLChanceCertificate
 import SCOLHKG.Real.SafeRegret
+import SCOLHKG.Real.EndToEndSafeRegret
 import SCOLHKG.Real.TrafficTrajectoryModel
 import SCOLHKG.Real.TwoStageDecision
 import SCOLHKG.Real.TaskPosterior
+import SCOLHKG.Real.TransferGeneralization
 import SCOLHKG.Real.StratifiedExpertKG
 import SCOLHKG.Scalarization
 import SCOLHKG.Variance

@@ -2,6 +2,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+import pickle
 
 import numpy as np
 
@@ -64,6 +65,14 @@ class _SwitchingBasis:
 
 
 class CheckpointingTests(unittest.TestCase):
+    def test_pre_contract_config_pickle_is_not_relabelled(self):
+        config = SingleOLHKGConfig(N=5, n0=3)
+        del config.__dict__["implementation_contract_id"]
+        del config.__dict__["theory_contract_id"]
+        restored = pickle.loads(pickle.dumps(config))
+        self.assertEqual(restored.implementation_contract_id, "unversioned")
+        self.assertEqual(restored.theory_contract_id, "unversioned")
+
     def test_zero_checkpoint_interval_disables_all_checkpoint_writes(self):
         with tempfile.TemporaryDirectory() as tmp:
             checkpoint_dir = Path(tmp) / "disabled_ckpt"

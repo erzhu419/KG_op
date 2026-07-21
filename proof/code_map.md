@@ -1,5 +1,20 @@
 # Code-To-Theory Map
 
+## Statistical Closure V2
+
+The behavior-preserving theory contract `v51_statistical_closure_v2` is mapped
+to code and experiments in
+`SC-OLH-KG/docs/math_v1_gap_audit.md`. Runtime results declare both
+`implementation_contract_id` and `theory_contract_id`. The HVD diagnostic
+`cumulative_statistical_design` is the numerical witness for
+`ActiveHVDExcitation`; it reports the projected source-shape calibration
+dimension rather than treating all raw cumulative coefficients as target-
+identifiable.
+
+`Measure/FiniteSampleHVDConcentration.lean` maps target replication count and
+a per-replicate error proxy to the uniform variance-target event consumed by
+`Real/FiniteSampleHVD.lean`.
+
 ## Mathematical Objects
 
 | Theory object | Current code object | Status |

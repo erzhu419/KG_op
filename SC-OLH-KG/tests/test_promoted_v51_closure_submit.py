@@ -32,6 +32,7 @@ def _args(tmp_path):
         "rank": 4,
         "source_d": 50,
         "source_records_per_domain": 64,
+        "theory_contract_id": "v51_statistical_closure_v2",
         "d": 1000,
         "N": 20,
         "n0": 10,
@@ -65,6 +66,15 @@ def test_closure_gate_replays_the_promoted_profile_on_all_seeds(tmp_path):
                for spec in specs)
     assert all("--certification-recheck-top-k 0" in spec["cmd"]
                for spec in specs)
+    assert all(
+        "--implementation-contract-id "
+        "promoted_v51_observed_terminal_closure" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--theory-contract-id v51_statistical_closure_v2" in spec["cmd"]
+        for spec in specs
+    )
     assert all(spec["cpu"] == 12 and spec["vram"] == 0 for spec in specs)
     assert all(spec["allowed_nodes"] == list(submit.CPU_NODES)
                for spec in specs)

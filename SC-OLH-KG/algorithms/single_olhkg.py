@@ -187,8 +187,19 @@ def _fork_terminal_depth3_prefix(payload):
 
 @dataclass
 class SingleOLHKGConfig:
+    implementation_contract_id: str = "unversioned"
+    theory_contract_id: str = "unversioned"
     N: int = 30
     n0: int = 8
+
+    def __setstate__(self, state):
+        """Keep pre-contract checkpoints readable without relabeling them."""
+        self.__dict__.update(state)
+        if "implementation_contract_id" not in self.__dict__:
+            self.implementation_contract_id = "unversioned"
+        if "theory_contract_id" not in self.__dict__:
+            self.theory_contract_id = "unversioned"
+
     initial_design: str = "auto"
     initial_design_points: tuple[tuple[int, ...], ...] = ()
     initial_design_fingerprint: str = ""
@@ -13143,6 +13154,11 @@ class SingleOLHKGAlgorithm:
         self.final_log = {
             **final_post,
             **final_eval,
+            "implementation_contract_id": str(
+                getattr(self.config, "implementation_contract_id", "unversioned")),
+            "theory_contract_id": str(getattr(
+                self.config, "theory_contract_id", "unversioned")),
+            "theory_contract_timing": "declared_before_target_evaluation",
             "total_time_sec": float(time.time() - t_start),
             "n_simulations": int(len(self.history)),
             "n_distinct_solutions": int(len(self.gpr[0].sampled_set)),

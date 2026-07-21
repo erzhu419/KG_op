@@ -151,6 +151,10 @@ def command_for(args, heldout, seed, result_file, checkpoint_dir):
         str(int(getattr(args, "finalist_terminal_mc_samples", 2))),
         "--decision-contract-mode",
         str(getattr(args, "decision_contract_mode", "legacy")),
+        "--implementation-contract-id",
+        str(getattr(args, "implementation_contract_id", "unversioned")),
+        "--theory-contract-id",
+        str(getattr(args, "theory_contract_id", "unversioned")),
         "--task-posterior-safe-boundary-weight",
         str(float(getattr(
             args, "task_posterior_safe_boundary_weight", 1.0))),
@@ -391,6 +395,10 @@ def main():
         choices=("legacy", "certified_lexicographic"),
         default="legacy",
     )
+    parser.add_argument(
+        "--implementation-contract-id", default="unversioned")
+    parser.add_argument(
+        "--theory-contract-id", default="unversioned")
     parser.add_argument("--exact-mc-samples", type=int, default=2)
     parser.add_argument("--exact-jobs", type=int, default=32)
     parser.add_argument("--parallel-backend", default="process_fork")

@@ -46,6 +46,8 @@ VARIANTS = (
     "pooled_variance",
     "frozen_source_discrepancy",
 )
+IMPLEMENTATION_CONTRACT_ID = "promoted_v51_observed_terminal_closure"
+THEORY_CONTRACT_ID = "v51_statistical_closure_v2"
 
 
 def _parse_csv(value):
@@ -70,6 +72,11 @@ def validate_freeze(registration):
             raise ValueError(f"frozen registration requires positive {field}")
     if evidence.get("exact_sampling_mode") != "antithetic_nested":
         raise ValueError("paper exact sampling mode must be antithetic_nested")
+    contracts = dict(registration.get("contracts") or {})
+    if contracts.get("implementation_contract_id") != IMPLEMENTATION_CONTRACT_ID:
+        raise ValueError("paper implementation contract is missing or changed")
+    if contracts.get("theory_contract_id") != THEORY_CONTRACT_ID:
+        raise ValueError("paper theory contract is missing or changed")
     return evidence
 
 
@@ -230,6 +237,8 @@ def _run_specs(args, registration, frontier, selected_variants):
             child.n0 = int(args.n0)
             child.seed_start = 0
             child.n_seeds = int(row["seeds"])
+            child.implementation_contract_id = IMPLEMENTATION_CONTRACT_ID
+            child.theory_contract_id = THEORY_CONTRACT_ID
             child.variant_profiles = {
                 name: profiles[name] for name in selected_variants
             }

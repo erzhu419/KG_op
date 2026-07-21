@@ -293,6 +293,16 @@ def _flags(profile, args):
         )),
         "--decision-contract-mode",
         str(profile.get("decision_contract_mode", "legacy")),
+        "--implementation-contract-id",
+        str(profile.get(
+            "implementation_contract_id",
+            getattr(args, "implementation_contract_id", "unversioned"),
+        )),
+        "--theory-contract-id",
+        str(profile.get(
+            "theory_contract_id",
+            getattr(args, "theory_contract_id", "unversioned"),
+        )),
         "--finalist-terminal-value-mode",
         str(profile.get("finalist_terminal_value_mode", "model_default")),
         "--decision-recommend-observed-only",

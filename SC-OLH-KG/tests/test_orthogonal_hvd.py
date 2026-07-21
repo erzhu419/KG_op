@@ -966,6 +966,90 @@ class OrthogonalHVDTests(unittest.TestCase):
             1, [target], points, problem, action_reliability=[1.0])
         self.assertLess(after[0], before[0])
 
+    def test_cumulative_statistical_design_reports_active_excitation(self):
+        base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        model = OrthogonalHVD(
+            mode="factor",
+            n_outputs=2,
+            activation_min_records=2,
+        )
+        points = [
+            tuple([10] + [50] * 7),
+            tuple([35] + [70] * 7),
+            tuple([70] + [90] * 7),
+        ]
+        for point in points:
+            model.update(
+                1,
+                point,
+                0.0,
+                0.0,
+                problem=problem,
+                replicate_variance=problem.true_sigma(point)[1] ** 2,
+                replicate_count=4,
+            )
+        audit = model.diagnostics()["cumulative_statistical_design"]["1"]
+        self.assertEqual(audit["theory_contract"],
+                         "v51_statistical_closure_v2")
+        self.assertEqual(audit["replicated_solution_count"], 3)
+        self.assertEqual(audit["target_evidence_solution_count"], 3)
+        self.assertGreater(audit["raw_feature_dimension"], 0)
+        self.assertGreater(audit["active_calibration_dimension"], 0)
+        self.assertLessEqual(
+            audit["active_geometry"]["rank"],
+            audit["active_calibration_dimension"],
+        )
+        self.assertGreaterEqual(
+            audit["active_geometry"]["minimum_eigenvalue"], 0.0)
+        self.assertAlmostEqual(
+            audit["lean_excitation_kappa"],
+            audit["target_evidence_solution_count"]
+            * audit["active_geometry"]["minimum_eigenvalue"],
+        )
+
+    def test_statistical_design_diagnostics_are_read_only(self):
+        base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
+        problem = ScalarizedProblem(base)
+        first = OrthogonalHVD(mode="factor", n_outputs=2,
+                              activation_min_records=2)
+        second = OrthogonalHVD(mode="factor", n_outputs=2,
+                               activation_min_records=2)
+        points = [
+            tuple([10] + [50] * 7),
+            tuple([35] + [70] * 7),
+            tuple([70] + [90] * 7),
+        ]
+        for point in points[:2]:
+            kwargs = dict(
+                i=1,
+                x=point,
+                y=0.0,
+                mu=0.0,
+                problem=problem,
+                replicate_variance=problem.true_sigma(point)[1] ** 2,
+                replicate_count=4,
+            )
+            first.update(**kwargs)
+            second.update(**kwargs)
+        first.diagnostics()
+        point = points[2]
+        kwargs = dict(
+            i=1,
+            x=point,
+            y=0.0,
+            mu=0.0,
+            problem=problem,
+            replicate_variance=problem.true_sigma(point)[1] ** 2,
+            replicate_count=4,
+        )
+        first.update(**kwargs)
+        second.update(**kwargs)
+        np.testing.assert_allclose(
+            first.cumulative_beta[1], second.cumulative_beta[1])
+        self.assertEqual(first.cumulative_fit_method[1],
+                         second.cumulative_fit_method[1])
+
     def test_factor_hvd_accepts_manifold_cumulative_blocks(self):
         base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
         problem = ScalarizedProblem(base)

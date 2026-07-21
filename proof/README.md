@@ -53,6 +53,23 @@ mathlib and its cache; later builds should be fast.
   also proves the nonvacuity necessity that epistemic radius cannot exceed
   true safety depth, equivalently
   `beta * epistemicVariance <= safetyDepth^2` under oracle mean.
+- `SCOLHKG/Real/FiniteSampleHVD.lean`: identifies the active source-shape
+  calibration law under exposure excitation, derives a finite-sample ridge
+  parameter bound from replicated variance targets, and propagates active
+  parameter and coordinate misspecification errors to cumulative variance.
+- `SCOLHKG/Real/CertificateNonvacuity.lean`: gives an explicit finite mean and
+  replication budget under positive true safety depth that makes the
+  implementation certificate nonempty.
+- `SCOLHKG/Real/EndToEndSafeRegret.lean`: truth-relative finite-pool safe regret
+  with separate representation, HVD, transfer, pool, shortlist, MC, and
+  sequential terms.
+- `SCOLHKG/Measure/StatisticalClosure.lean`: combines the component bad events
+  into a high-probability end-to-end safe-regret statement.
+- `SCOLHKG/Measure/FiniteSampleHVDConcentration.lean`: converts a declared
+  target replication schedule and sub-Gaussian variance-target errors into the
+  uniform active-HVD event used by the finite-sample oracle inequality.
+- `SCOLHKG/Real/TransferGeneralization.lean`: source-task PAC-Bayes target-risk
+  bound with an explicit held-out-domain discrepancy term.
 - `SCOLHKG/Real/MeanRiskCoordinateSeparation.lean`: formal separation of the
   source-learned constraint-mean coordinate `eta` from cumulative-risk
   `psi=(A,N)`, plus joint-margin invariance and inherited certificate
