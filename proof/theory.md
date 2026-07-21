@@ -910,6 +910,18 @@ the exact posterior value. This removes a numerical route to regression but
 does not remove representation, transfer, pool-coverage, or sequential-model
 error from `StatisticalClosureErrors`.
 
+V53 narrows that policy to one constrained posterior improvement problem. It
+removes rollout and defines the second terminal functional
+`C(D)=max(min_{x in O_t} M_D(x),0)` on the same observed action universe as
+the promoted Bayes-risk decision. A supplemental evaluate/replicate action can
+replace the V51 fallback only after separate Bayes-risk and certificate-score
+gaps exceed `2 eta_risk` and `2 eta_certificate`.
+`SCOLHKG/Real/ConstrainedCertificateDeficit.lean` proves strict exact
+improvement of both scores on their two uniform numerical-error events and
+joint noninferiority under fallback-or-switch. Nested MC8/MC32 calibration is
+an empirical implementation obligation; it is not silently promoted to an
+exact-integral theorem.
+
 ## Current Empirical Closure Items
 
 1. The observed-terminal repair passed its paired 60-run closure gate at

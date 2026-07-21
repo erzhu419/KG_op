@@ -29,6 +29,7 @@ import SCOLHKG.Real.BoundaryExcitation
 import SCOLHKG.Real.BoundaryCoordinateSufficiency
 import SCOLHKG.Real.SourceConsensusCommit
 import SCOLHKG.Real.Certification
+import SCOLHKG.Real.ConstrainedCertificateDeficit
 import SCOLHKG.Real.CertificationImplementation
 import SCOLHKG.Real.CertificateNonvacuity
 import SCOLHKG.Real.ConditionalVariance

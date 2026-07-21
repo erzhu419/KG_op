@@ -409,11 +409,19 @@ def main():
     )
     parser.add_argument(
         "--policy-improvement-mode",
-        choices=("off", "action_superset", "guarded_rollout", "joint"),
+        choices=(
+            "off", "action_superset", "guarded_rollout", "joint",
+            "certificate_constrained",
+        ),
         default=None,
     )
     parser.add_argument(
         "--policy-improvement-mc-error-bound", type=float, default=None)
+    parser.add_argument(
+        "--policy-improvement-certificate-mc-error-bound",
+        type=float,
+        default=None,
+    )
     parser.add_argument(
         "--policy-improvement-rollout-depth", type=int, default=None)
     parser.add_argument(
@@ -924,6 +932,11 @@ def main():
         if args.policy_improvement_mc_error_bound is None
         else args.policy_improvement_mc_error_bound
     )
+    policy_improvement_certificate_mc_error_bound = float(
+        config.get("policy_improvement_certificate_mc_error_bound", 0.0)
+        if args.policy_improvement_certificate_mc_error_bound is None
+        else args.policy_improvement_certificate_mc_error_bound
+    )
     policy_improvement_rollout_depth = int(
         config.get("policy_improvement_rollout_depth", 1)
         if args.policy_improvement_rollout_depth is None
@@ -1031,6 +1044,8 @@ def main():
         "policy_improvement_mode": policy_improvement_mode,
         "policy_improvement_mc_error_bound": (
             policy_improvement_mc_error_bound),
+        "policy_improvement_certificate_mc_error_bound": (
+            policy_improvement_certificate_mc_error_bound),
         "policy_improvement_rollout_depth": (
             policy_improvement_rollout_depth),
         "policy_improvement_rollout_max_arms": (
@@ -1411,6 +1426,8 @@ def main():
             "policy_improvement_mode": policy_improvement_mode,
             "policy_improvement_mc_error_bound": (
                 policy_improvement_mc_error_bound),
+            "policy_improvement_certificate_mc_error_bound": (
+                policy_improvement_certificate_mc_error_bound),
             "policy_improvement_rollout_depth": (
                 policy_improvement_rollout_depth),
             "policy_improvement_rollout_max_arms": (

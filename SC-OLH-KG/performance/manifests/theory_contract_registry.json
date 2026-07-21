@@ -47,18 +47,44 @@
       "behavior_change": true,
       "diagnostic_change": true,
       "role": "challenger_contract",
-      "status": "implemented_pending_paired_gate",
-      "runs": [],
-      "planned_runs": [
-        "scolh_v52_safeguarded_closure_s5"
+      "status": "completed_no_promotion",
+      "runs": [
+        "scolh_v52_safeguarded_closure_s5_20260722_01"
       ],
-      "evidence": [],
+      "planned_runs": [],
+      "evidence": [
+        "SC-OLH-KG/results/v52_safeguarded_closure_s5_20260722_01/analysis.json"
+      ],
       "formal_scope": [
         "literal V51 action-subset fallback",
         "two-eta one-step posterior-value noninferiority",
         "two-eta rollout posterior-value noninferiority",
         "scale-invariant active-HVD excitation diagnostics",
         "observable cumulative-risk pool coverage"
+      ]
+    },
+    {
+      "id": "v53_constrained_certificate_deficit_v1",
+      "implementation_contract_id": "v53_constrained_certificate_deficit",
+      "decision_behavior": "v51_risk_fallback_with_certificate_deficit_improvement",
+      "behavior_change": true,
+      "diagnostic_change": true,
+      "role": "challenger_contract",
+      "status": "implemented_pending_numerical_fidelity_gate",
+      "runs": [],
+      "planned_runs": [
+        "scolh_v53_mc_fidelity_s10_20260722_01",
+        "scolh_v53_constrained_certificate_s5_20260722_01"
+      ],
+      "evidence": [],
+      "formal_scope": [
+        "literal V51 action-subset fallback",
+        "one observed-action Bayes-risk terminal functional",
+        "one canonical theory certificate-deficit terminal functional",
+        "separate two-eta uniform-error guards for both scores",
+        "joint posterior noninferiority on both numerical-fidelity events",
+        "nested common-random-number MC calibration",
+        "no rollout and no target-oracle action"
       ]
     }
   ],

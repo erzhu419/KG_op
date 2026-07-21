@@ -66,6 +66,10 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/SafeguardedPolicyImprovement.lean`: V52 posterior-value
   noninferiority for action-superset and rollout challengers that retain V51
   as a fallback and switch only beyond a `2 * eta` uniform-error guard.
+- `SCOLHKG/Real/ConstrainedCertificateDeficit.lean`: V53 keeps the V51
+  Bayes-risk fallback, removes rollout, and proves joint risk/certificate
+  noninferiority when separate estimated score gaps exceed their calibrated
+  `2 * eta` guards.
 - `SCOLHKG/Measure/StatisticalClosure.lean`: combines the component bad events
   into a high-probability end-to-end safe-regret statement.
 - `SCOLHKG/Measure/FiniteSampleHVDConcentration.lean`: converts a declared
@@ -731,6 +735,11 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
      the exact cumulative-risk decomposition, separated mean/risk coordinate
      equivalence, the full finite-action `epsilon_shortlist + 2 eta_MC` VOI
      gap, and conservative terminal chance feasibility in one statement.
+149. The V53 certificate deficit is nonnegative and vanishes exactly when the
+     observed terminal universe contains a theory-certified action. On
+     separate uniform MC-error events, both accepted two-eta score gaps imply
+     strict exact Bayes-risk-reduction and certificate-deficit-reduction
+     improvements; fallback or switch is jointly noninferior.
 
 Remaining work is empirical/binding and assumption validation:
 

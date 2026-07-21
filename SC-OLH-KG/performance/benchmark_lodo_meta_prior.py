@@ -2756,11 +2756,19 @@ def main():
     )
     parser.add_argument(
         "--policy_improvement_mode",
-        choices=("off", "action_superset", "guarded_rollout", "joint"),
+        choices=(
+            "off", "action_superset", "guarded_rollout", "joint",
+            "certificate_constrained",
+        ),
         default="off",
     )
     parser.add_argument(
         "--policy_improvement_mc_error_bound", type=float, default=0.0)
+    parser.add_argument(
+        "--policy_improvement_certificate_mc_error_bound",
+        type=float,
+        default=0.0,
+    )
     parser.add_argument(
         "--policy_improvement_rollout_depth", type=int, default=1)
     parser.add_argument(

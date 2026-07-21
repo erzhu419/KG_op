@@ -3,6 +3,7 @@ import sys
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -673,6 +674,96 @@ def test_v52_one_step_guard_falls_back_until_advantage_exceeds_two_eta():
     assert info["switched"] is True
 
 
+def test_v53_certificate_deficit_terminal_uses_minimum_theory_margin():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            exact_kg_terminal_mode="certificate_deficit",
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    margins = np.array([0.3, 0.7])
+    algorithm._terminal_certificate_components = (
+        lambda *args, **kwargs: {"margin": margins})
+    value = algorithm._terminal_value_from_models(
+        [], object(), [(0, 0, 0), (1, 1, 1)])
+    assert value == pytest.approx(0.3)
+
+    margins[:] = [-0.2, 0.7]
+    value = algorithm._terminal_value_from_models(
+        [], object(), [(0, 0, 0), (1, 1, 1)])
+    assert value == 0.0
+
+
+def test_v53_guard_requires_both_risk_and_certificate_two_eta_gains():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_mc_error_bound=0.1,
+            policy_improvement_certificate_mc_error_bound=0.05,
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    candidates = [(0, 0, 0), (1, 1, 1), (2, 2, 2)]
+    backend = {
+        "evaluate_or_replicate_active_indices": np.array([0, 1, 2]),
+        "evaluate_or_replicate_baseline_indices": np.array([0, 1]),
+    }
+
+    algorithm._last_exact_kg_raw_scores = np.array([1.0, 0.8, 1.19])
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        np.array([0.0, 0.2, 1.0]),
+        backend,
+    )
+    assert selected == 0
+    assert info["status"] == "no_risk_admissible_challenger"
+
+    algorithm._last_exact_kg_raw_scores = np.array([1.0, 0.8, 1.21])
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        np.array([0.0, 0.2, 0.09]),
+        backend,
+    )
+    assert selected == 0
+    assert info["status"] == "certificate_mc_guard"
+
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        np.array([0.0, 0.2, 0.11]),
+        backend,
+    )
+    assert selected == 2
+    assert info["status"] == "certificate_constrained_switched"
+    assert info["switched"] is True
+    assert info["conditional_noninferiority_contract"] == (
+        "uniform_risk_and_certificate_mc_errors_imply_joint_"
+        "posterior_improvement")
+
+
+def test_v53_certificate_pass_requires_nested_common_random_numbers():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            exact_kg_sampling_mode="iid",
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    with pytest.raises(ValueError, match="common random numbers"):
+        algorithm._exact_certificate_deficit_scores_for_actions(
+            [(0, 0, 0)], [(0, 0, 0)], [0])
+
+
 def test_v52_rollout_guard_uses_one_step_action_as_fallback():
     problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
     algorithm = SingleOLHKGAlgorithm(
@@ -819,6 +910,64 @@ def test_v52_superset_runs_end_to_end_without_changing_v51_terminal_rule():
         "policy_improvement_contract"] == (
             "v52_safeguarded_policy_improvement_v1")
     assert result["decision_backend_terminal_rule"] == "posterior_bayes_risk"
+
+
+def test_v53_runs_two_terminal_passes_and_disables_rollout():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            N=3,
+            n0=2,
+            K1=5,
+            K2=0,
+            decision_backend="sobol_exact_joint_voi",
+            decision_recommend_observed_only=True,
+            exact_kg_terminal_mode="bayes_risk",
+            exact_kg_sampling_mode="antithetic_nested",
+            adaptive_replication_voi=True,
+            replication_candidate_count=2,
+            exact_kg_mc_samples=2,
+            exact_kg_jobs=1,
+            evaluate_or_replicate_new_action_count=3,
+            evaluate_or_replicate_baseline_new_action_count=1,
+            evaluate_or_replicate_new_action_policy=(
+                "canonical_plus_posterior_risk_certificate_coverage"),
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_mc_error_bound=1e6,
+            policy_improvement_certificate_mc_error_bound=1e6,
+            use_state_coupling=False,
+            use_state_basis=False,
+            use_problem_initial_samples=False,
+            use_boundary_initial_samples=False,
+            use_recommendation_refinement=False,
+            recommendation_axis_oracle=False,
+            recommendation_calibration=False,
+            finalist_replication_budget=0,
+            eval_pool_size=8,
+            evaluate_interval=0,
+            seed=195,
+        ),
+    )
+    result = algorithm.run(verbose=False)
+    row = algorithm.iteration_log[0]
+    assert result["n_simulations"] == 3
+    assert row["selection_policy"] == "safeguarded_policy_improvement"
+    assert row["policy_improvement_rollout"]["status"] == (
+        "disabled_by_v53_contract")
+    assert row["policy_improvement_contract_id"] == (
+        "v53_constrained_certificate_deficit_v1")
+    assert row["exact_kg_terminal_value_contract"].startswith("bayes_risk:")
+    assert row["certificate_deficit_contract"].startswith(
+        "certificate_deficit:")
+    assert len(row["certificate_deficit_raw_scores_active"]) == (
+        row["exact_kg_active_action_count"])
+    assert result["decision_backend_contract"][
+        "policy_improvement_contract"] == (
+            "v53_constrained_certificate_deficit_v1")
+    assert result["decision_backend_contract"][
+        "policy_improvement_certificate_mc_error_bound"] == 1e6
+    assert algorithm.config.exact_kg_terminal_mode == "bayes_risk"
 
 
 def test_risk_ts_replaces_exact_kg_without_changing_target_budget():

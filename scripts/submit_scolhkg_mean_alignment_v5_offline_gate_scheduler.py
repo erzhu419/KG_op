@@ -270,6 +270,9 @@ def _flags(profile, args):
         str(profile.get("policy_improvement_mode", "off")),
         "--policy-improvement-mc-error-bound",
         str(profile.get("policy_improvement_mc_error_bound", 0.0)),
+        "--policy-improvement-certificate-mc-error-bound",
+        str(profile.get(
+            "policy_improvement_certificate_mc_error_bound", 0.0)),
         "--policy-improvement-rollout-depth",
         str(profile.get("policy_improvement_rollout_depth", 1)),
         "--policy-improvement-rollout-max-arms",

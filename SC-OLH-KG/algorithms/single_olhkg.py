@@ -350,6 +350,7 @@ class SingleOLHKGConfig:
     evaluate_or_replicate_baseline_new_action_count: int = 0
     policy_improvement_mode: str = "off"
     policy_improvement_mc_error_bound: float = 0.0
+    policy_improvement_certificate_mc_error_bound: float = 0.0
     policy_improvement_rollout_depth: int = 1
     policy_improvement_rollout_max_arms: int = 4
     policy_improvement_rollout_mc_samples: int = 2
@@ -9101,6 +9102,19 @@ class SingleOLHKGAlgorithm:
             return 0.0
         terminal_mode = self._effective_exact_terminal_mode()
         if terminal_mode in (
+            "certificate_deficit",
+            "certificate-deficit",
+        ):
+            certificate = self._terminal_certificate_components(
+                gpr_models,
+                variance_model,
+                pool,
+                task_ensemble=task_ensemble,
+                observations=observations,
+            )
+            return float(max(
+                float(np.min(certificate["margin"])), 0.0))
+        if terminal_mode in (
             "tcb_certified_lexicographic",
             "tcb-certified-lexicographic",
             "certified_lexicographic",
@@ -9377,13 +9391,23 @@ class SingleOLHKGAlgorithm:
             "superset": "action_superset",
             "rollout": "guarded_rollout",
             "both": "joint",
+            "certificate": "certificate_constrained",
         }
         mode = aliases.get(mode, mode)
         if mode not in {
             "off", "action_superset", "guarded_rollout", "joint",
+            "certificate_constrained",
         }:
             raise ValueError(f"unknown policy improvement mode {mode!r}")
         return mode
+
+    def _policy_improvement_contract_id(self):
+        mode = self._policy_improvement_mode()
+        if mode == "off":
+            return "disabled_v51_compatible"
+        if mode == "certificate_constrained":
+            return "v53_constrained_certificate_deficit_v1"
+        return "v52_safeguarded_policy_improvement_v1"
 
     def _guarded_one_step_policy_improvement(
         self,
@@ -9454,6 +9478,113 @@ class SingleOLHKGAlgorithm:
             "union_action_count": int(len(active)),
             "conditional_noninferiority_contract": (
                 "uniform_mc_error_implies_exact_one_step_noninferiority"
+            ),
+            "target_oracle_used": False,
+        }
+
+
+    def _guarded_certificate_deficit_policy_improvement(
+        self,
+        candidates,
+        exact_scores,
+        certificate_scores,
+        backend_score,
+    ):
+        """Improve certificate deficit only inside the V51 risk-safe set."""
+
+        scores = np.asarray(exact_scores, dtype=float).reshape(-1)
+        certificate_scores = np.asarray(
+            certificate_scores, dtype=float).reshape(-1)
+        if len(scores) != len(certificate_scores):
+            raise ValueError(
+                "risk and certificate score arrays must have equal length")
+        active = backend_score.get("evaluate_or_replicate_active_indices")
+        baseline = backend_score.get("evaluate_or_replicate_baseline_indices")
+        if active is None:
+            active = np.flatnonzero(np.isfinite(scores))
+        else:
+            active = np.asarray(active, dtype=int).reshape(-1)
+        if baseline is None:
+            baseline = active
+        else:
+            baseline = np.asarray(baseline, dtype=int).reshape(-1)
+        active_set = set(active.tolist())
+        baseline = np.asarray([
+            index for index in baseline if index in active_set
+        ], dtype=int)
+        if len(active) == 0 or len(baseline) == 0:
+            raise RuntimeError(
+                "certificate-constrained improvement requires nonempty "
+                "active and baseline sets")
+
+        risk_raw = np.asarray(getattr(
+            self, "_last_exact_kg_raw_scores", scores), dtype=float)
+        risk_raw = np.where(np.isfinite(risk_raw), risk_raw, -np.inf)
+        certificate_raw = np.where(
+            np.isfinite(certificate_scores), certificate_scores, -np.inf)
+        baseline_index = int(baseline[
+            int(np.argmax(risk_raw[baseline]))
+        ])
+        risk_eta = max(
+            float(self.config.policy_improvement_mc_error_bound), 0.0)
+        certificate_eta = max(float(
+            self.config.policy_improvement_certificate_mc_error_bound), 0.0)
+        risk_threshold = 2.0 * risk_eta
+        certificate_threshold = 2.0 * certificate_eta
+
+        risk_admissible = [baseline_index]
+        for raw_index in active:
+            index = int(raw_index)
+            if (
+                index != baseline_index
+                and risk_raw[index] - risk_raw[baseline_index]
+                > risk_threshold
+            ):
+                risk_admissible.append(index)
+        certificate_index = max(
+            risk_admissible,
+            key=lambda index: (float(certificate_raw[index]), -int(index)),
+        )
+        risk_advantage = float(
+            risk_raw[certificate_index] - risk_raw[baseline_index])
+        certificate_advantage = float(
+            certificate_raw[certificate_index]
+            - certificate_raw[baseline_index])
+        switched = bool(
+            certificate_index != baseline_index
+            and certificate_advantage > certificate_threshold
+        )
+        selected = certificate_index if switched else baseline_index
+        return selected, {
+            "status": (
+                "certificate_constrained_switched"
+                if switched else (
+                    "no_risk_admissible_challenger"
+                    if len(risk_admissible) == 1
+                    else "certificate_mc_guard"
+                )
+            ),
+            "mode": self._policy_improvement_mode(),
+            "baseline_index": baseline_index,
+            "certificate_index": int(certificate_index),
+            "selected_index": int(selected),
+            "baseline_action": list(map(int, candidates[baseline_index])),
+            "certificate_action": list(map(
+                int, candidates[certificate_index])),
+            "estimated_risk_advantage": risk_advantage,
+            "estimated_certificate_advantage": certificate_advantage,
+            "risk_mc_uniform_error_bound": risk_eta,
+            "certificate_mc_uniform_error_bound": certificate_eta,
+            "risk_switch_threshold": risk_threshold,
+            "certificate_switch_threshold": certificate_threshold,
+            "risk_admissible_indices": list(map(int, risk_admissible)),
+            "risk_admissible_count": int(len(risk_admissible)),
+            "switched": switched,
+            "baseline_action_count": int(len(baseline)),
+            "union_action_count": int(len(active)),
+            "conditional_noninferiority_contract": (
+                "uniform_risk_and_certificate_mc_errors_imply_joint_"
+                "posterior_improvement"
             ),
             "target_oracle_used": False,
         }
@@ -10900,6 +11031,68 @@ class SingleOLHKGAlgorithm:
         self._last_exact_kg_active_indices = np.asarray(active, dtype=int)
         self._last_exact_kg_active_mask = active_mask
         return full_scores
+
+
+    def _exact_certificate_deficit_scores_for_actions(
+        self,
+        candidates,
+        terminal_pool,
+        active_indices,
+    ):
+        """Evaluate C(D)=max(min_x M_D(x), 0) on the risk fantasies."""
+
+        sampling_mode = str(
+            self.config.exact_kg_sampling_mode or "").lower()
+        if sampling_mode not in {
+            "antithetic_nested", "nested_antithetic", "paired_nested",
+        }:
+            raise ValueError(
+                "certificate-constrained policy improvement requires "
+                "nested antithetic common random numbers")
+        previous_mode = self.config.exact_kg_terminal_mode
+        existing = {
+            name for name in vars(self)
+            if name.startswith("_last_exact_kg_")
+        }
+        snapshot = {
+            name: copy.deepcopy(getattr(self, name))
+            for name in existing
+        }
+        try:
+            self.config.exact_kg_terminal_mode = "certificate_deficit"
+            self._exact_posterior_update_scores_for_actions(
+                candidates,
+                terminal_pool,
+                active_indices,
+            )
+            certificate_scores = np.asarray(
+                self._last_exact_kg_raw_scores, dtype=float).copy()
+            certificate_expected = np.asarray(
+                self._last_exact_kg_expected_values, dtype=float).copy()
+            certificate_current = copy.deepcopy(
+                self._last_exact_kg_current_value)
+            certificate_contract = str(
+                self._last_exact_kg_terminal_value_contract)
+            if not certificate_contract.startswith(
+                "certificate_deficit:"
+            ):
+                raise RuntimeError(
+                    "certificate-deficit terminal mode was overridden")
+        finally:
+            self.config.exact_kg_terminal_mode = previous_mode
+            for name in list(vars(self)):
+                if (
+                    name.startswith("_last_exact_kg_")
+                    and name not in existing
+                ):
+                    delattr(self, name)
+            for name, value in snapshot.items():
+                setattr(self, name, value)
+        self._last_certificate_deficit_raw_scores = certificate_scores
+        self._last_certificate_deficit_expected_values = certificate_expected
+        self._last_certificate_deficit_current_value = certificate_current
+        self._last_certificate_deficit_contract = certificate_contract
+        return certificate_scores
 
     def _decision_backend_terminal_recommendation(self, pool):
         """Return the Bayes action paired with a non-legacy online backend.
@@ -12423,7 +12616,63 @@ class SingleOLHKGAlgorithm:
                     )
                 if (
                     decision_backend in exact_refit_backends
-                    and self._policy_improvement_mode() != "off"
+                    and self._policy_improvement_mode()
+                    == "certificate_constrained"
+                ):
+                    certificate_scores = (
+                        self._exact_certificate_deficit_scores_for_actions(
+                            candidates,
+                            terminal_pool,
+                            backend_score[
+                                "evaluate_or_replicate_active_indices"],
+                        )
+                    )
+                    one_step_index, one_step_info = (
+                        self._guarded_certificate_deficit_policy_improvement(
+                            candidates,
+                            exact_kg,
+                            certificate_scores,
+                            backend_score,
+                        )
+                    )
+                    policy_improvement_selected_idx = int(one_step_index)
+                    row["policy_improvement_one_step"] = one_step_info
+                    row["policy_improvement_rollout"] = {
+                        "status": "disabled_by_v53_contract",
+                        "mode": "certificate_constrained",
+                        "depth": 1,
+                        "switched": False,
+                        "target_oracle_used": False,
+                    }
+                    row["policy_improvement_selected_index"] = int(
+                        policy_improvement_selected_idx)
+                    row["policy_improvement_contract_id"] = (
+                        self._policy_improvement_contract_id())
+                    certificate_active = np.asarray(
+                        backend_score[
+                            "evaluate_or_replicate_active_indices"],
+                        dtype=int,
+                    )
+                    row["certificate_deficit_current_value"] = (
+                        copy.deepcopy(
+                            self._last_certificate_deficit_current_value))
+                    row["certificate_deficit_raw_scores_active"] = np.asarray(
+                        self._last_certificate_deficit_raw_scores,
+                        dtype=float,
+                    )[certificate_active].tolist()
+                    row[
+                        "certificate_deficit_expected_values_active"
+                    ] = np.asarray(
+                        self._last_certificate_deficit_expected_values,
+                        dtype=float,
+                    )[certificate_active].tolist()
+                    row["certificate_deficit_contract"] = str(
+                        self._last_certificate_deficit_contract)
+
+                if (
+                    decision_backend in exact_refit_backends
+                    and self._policy_improvement_mode()
+                    not in {"off", "certificate_constrained"}
                 ):
                     one_step_index, one_step_info = (
                         self._guarded_one_step_policy_improvement(
@@ -12449,8 +12698,7 @@ class SingleOLHKGAlgorithm:
                     row["policy_improvement_selected_index"] = int(
                         policy_improvement_selected_idx)
                     row["policy_improvement_contract_id"] = (
-                        "v52_safeguarded_policy_improvement_v1"
-                    )
+                        self._policy_improvement_contract_id())
             elif exact_mc_samples > 0:
                 row["exact_kg_skipped_reason"] = (
                     "forced_certification_recheck"
@@ -13017,16 +13265,15 @@ class SingleOLHKGAlgorithm:
         ]
         decision_backend_summary["policy_improvement"] = {
             "mode": self._policy_improvement_mode(),
-            "contract_id": (
-                "v52_safeguarded_policy_improvement_v1"
-                if self._policy_improvement_mode() != "off"
-                else "disabled_v51_compatible"
-            ),
+            "contract_id": self._policy_improvement_contract_id(),
             "iteration_count": int(len(policy_rows)),
             "one_step_switch_count": int(sum(bool(
                 row.get("switched", False)) for row in one_step_rows)),
             "one_step_guard_fallback_count": int(sum(
-                row.get("status") == "baseline_mc_guard"
+                row.get("status") in {
+                    "baseline_mc_guard", "no_risk_admissible_challenger",
+                    "certificate_mc_guard",
+                }
                 for row in one_step_rows
             )),
             "rollout_switch_count": int(sum(bool(
@@ -13042,6 +13289,26 @@ class SingleOLHKGAlgorithm:
                     if row.get("estimated_advantage") is not None
                 ]))
                 if any(row.get("estimated_advantage") is not None
+                       for row in one_step_rows)
+                else None
+            ),
+            "mean_estimated_risk_advantage": (
+                float(np.mean([
+                    float(row["estimated_risk_advantage"])
+                    for row in one_step_rows
+                    if row.get("estimated_risk_advantage") is not None
+                ]))
+                if any(row.get("estimated_risk_advantage") is not None
+                       for row in one_step_rows)
+                else None
+            ),
+            "mean_estimated_certificate_advantage": (
+                float(np.mean([
+                    float(row["estimated_certificate_advantage"])
+                    for row in one_step_rows
+                    if row.get("estimated_certificate_advantage") is not None
+                ]))
+                if any(row.get("estimated_certificate_advantage") is not None
                        for row in one_step_rows)
                 else None
             ),
@@ -13292,6 +13559,8 @@ class SingleOLHKGAlgorithm:
             "policy_improvement_mode": self._policy_improvement_mode(),
             "policy_improvement_mc_error_bound": float(
                 self.config.policy_improvement_mc_error_bound),
+            "policy_improvement_certificate_mc_error_bound": float(
+                self.config.policy_improvement_certificate_mc_error_bound),
             "policy_improvement_rollout_depth": int(
                 self.config.policy_improvement_rollout_depth),
             "policy_improvement_rollout_max_arms": int(
@@ -13300,11 +13569,7 @@ class SingleOLHKGAlgorithm:
                 self.config.policy_improvement_rollout_mc_samples),
             "policy_improvement_rollout_mc_error_bound": float(
                 self.config.policy_improvement_rollout_mc_error_bound),
-            "policy_improvement_contract": (
-                "v52_safeguarded_policy_improvement_v1"
-                if self._policy_improvement_mode() != "off"
-                else "disabled_v51_compatible"
-            ),
+            "policy_improvement_contract": self._policy_improvement_contract_id(),
             "source_proposal_frozen_before_target": bool(
                 self.config.initial_design == "source_informed"),
             "online_updates_use_budgeted_target_observations_only": True,
@@ -13454,6 +13719,14 @@ class SingleOLHKGAlgorithm:
                     "decision_evaluate_or_replicate_new_action_policy"),
                 "exact_kg_raw_scores_active": copy.deepcopy(
                     iteration_row.get("exact_kg_raw_scores_active")),
+                "certificate_deficit_raw_scores_active": copy.deepcopy(
+                    iteration_row.get(
+                        "certificate_deficit_raw_scores_active")),
+                "certificate_deficit_expected_values_active": copy.deepcopy(
+                    iteration_row.get(
+                        "certificate_deficit_expected_values_active")),
+                "certificate_deficit_current_value": copy.deepcopy(
+                    iteration_row.get("certificate_deficit_current_value")),
                 "exact_kg_active_action_fingerprints": copy.deepcopy(
                     iteration_row.get(
                         "exact_kg_active_action_fingerprints")),
