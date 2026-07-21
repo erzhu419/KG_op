@@ -347,6 +347,13 @@ class SingleOLHKGConfig:
     adaptive_replication_voi: bool = False
     evaluate_or_replicate_new_action_count: int = 1
     evaluate_or_replicate_new_action_policy: str = "canonical_sobol"
+    evaluate_or_replicate_baseline_new_action_count: int = 0
+    policy_improvement_mode: str = "off"
+    policy_improvement_mc_error_bound: float = 0.0
+    policy_improvement_rollout_depth: int = 1
+    policy_improvement_rollout_max_arms: int = 4
+    policy_improvement_rollout_mc_samples: int = 2
+    policy_improvement_rollout_mc_error_bound: float = 0.0
     posterior_dominance_enabled: bool = False
     posterior_dominance_delta: float = 0.05
     posterior_dominance_min_mean_gain: float = 0.0
@@ -9360,6 +9367,195 @@ class SingleOLHKGAlgorithm:
             return 8
         return int(self.config.exact_kg_mc_samples)
 
+    def _policy_improvement_mode(self):
+        mode = str(
+            self.config.policy_improvement_mode or "off"
+        ).strip().lower().replace("-", "_")
+        aliases = {
+            "none": "off",
+            "disabled": "off",
+            "superset": "action_superset",
+            "rollout": "guarded_rollout",
+            "both": "joint",
+        }
+        mode = aliases.get(mode, mode)
+        if mode not in {
+            "off", "action_superset", "guarded_rollout", "joint",
+        }:
+            raise ValueError(f"unknown policy improvement mode {mode!r}")
+        return mode
+
+    def _guarded_one_step_policy_improvement(
+        self,
+        candidates,
+        exact_scores,
+        backend_score,
+    ):
+        """Select an action-superset challenger with a V51 fallback."""
+
+        scores = np.asarray(exact_scores, dtype=float).reshape(-1)
+        active = backend_score.get("evaluate_or_replicate_active_indices")
+        baseline = backend_score.get("evaluate_or_replicate_baseline_indices")
+        if active is None:
+            active = np.flatnonzero(np.isfinite(scores))
+        else:
+            active = np.asarray(active, dtype=int).reshape(-1)
+        if baseline is None:
+            baseline = active
+        else:
+            baseline = np.asarray(baseline, dtype=int).reshape(-1)
+        baseline = np.asarray([
+            index for index in baseline if index in set(active.tolist())
+        ], dtype=int)
+        if len(active) == 0 or len(baseline) == 0:
+            raise RuntimeError(
+                "policy improvement requires nonempty active and baseline sets")
+
+        raw_scores = np.asarray(getattr(
+            self, "_last_exact_kg_raw_scores", scores), dtype=float)
+        finite_raw = np.where(np.isfinite(raw_scores), raw_scores, -np.inf)
+        baseline_index = int(baseline[
+            int(np.argmax(finite_raw[baseline]))
+        ])
+        union_index = int(active[int(np.argmax(finite_raw[active]))])
+        estimated_advantage = float(
+            finite_raw[union_index] - finite_raw[baseline_index])
+        eta = max(
+            float(self.config.policy_improvement_mc_error_bound), 0.0)
+        threshold = 2.0 * eta
+        mode = self._policy_improvement_mode()
+        superset_enabled = mode in {"action_superset", "joint"}
+        switched = bool(
+            superset_enabled
+            and union_index != baseline_index
+            and estimated_advantage > threshold
+        )
+        selected = union_index if switched else baseline_index
+        return selected, {
+            "status": (
+                "superset_switched" if switched
+                else (
+                    "baseline_best_in_union"
+                    if union_index == baseline_index
+                    else "baseline_mc_guard"
+                )
+            ),
+            "mode": mode,
+            "baseline_index": baseline_index,
+            "union_index": union_index,
+            "selected_index": int(selected),
+            "baseline_action": list(map(int, candidates[baseline_index])),
+            "union_action": list(map(int, candidates[union_index])),
+            "estimated_advantage": estimated_advantage,
+            "mc_uniform_error_bound": eta,
+            "switch_threshold": threshold,
+            "switched": switched,
+            "baseline_action_count": int(len(baseline)),
+            "union_action_count": int(len(active)),
+            "conditional_noninferiority_contract": (
+                "uniform_mc_error_implies_exact_one_step_noninferiority"
+            ),
+            "target_oracle_used": False,
+        }
+
+    def _guarded_rollout_policy_improvement(
+        self,
+        candidates,
+        terminal_pool,
+        exact_scores,
+        active_indices,
+        fallback_index,
+        *,
+        stage,
+    ):
+        """Apply finite-horizon rollout only beyond a uniform-error guard."""
+
+        mode = self._policy_improvement_mode()
+        depth = max(1, int(self.config.policy_improvement_rollout_depth))
+        if mode not in {"guarded_rollout", "joint"} or depth <= 1:
+            return int(fallback_index), {
+                "status": "disabled",
+                "mode": mode,
+                "depth": depth,
+                "switched": False,
+                "target_oracle_used": False,
+            }
+        active = np.asarray(active_indices, dtype=int).reshape(-1)
+        raw_scores = np.asarray(getattr(
+            self, "_last_exact_kg_raw_scores", exact_scores), dtype=float)
+        finite_raw = np.where(np.isfinite(raw_scores), raw_scores, -np.inf)
+        ordered = sorted(
+            (int(index) for index in active),
+            key=lambda index: (-float(finite_raw[index]), index),
+        )
+        max_arms = max(1, int(
+            self.config.policy_improvement_rollout_max_arms))
+        arm_indices = [int(fallback_index)]
+        arm_indices.extend(
+            index for index in ordered if index != int(fallback_index))
+        arm_indices = list(dict.fromkeys(arm_indices))[:max_arms]
+        if len(arm_indices) <= 1:
+            return int(fallback_index), {
+                "status": "single_arm",
+                "mode": mode,
+                "depth": depth,
+                "switched": False,
+                "target_oracle_used": False,
+            }
+        arms = [candidates[index] for index in arm_indices]
+        rollout_action, rollout = self._terminal_replication_kg_candidate(
+            arms,
+            terminal_pool,
+            depth=depth,
+            stage=stage,
+        )
+        expected = np.asarray(
+            rollout["terminal_kg_expected_values"], dtype=float)
+        if expected.ndim != 1:
+            return int(fallback_index), {
+                **rollout,
+                "status": "vector_terminal_fallback",
+                "mode": mode,
+                "switched": False,
+                "target_oracle_used": False,
+            }
+        rollout_local = int(rollout["terminal_kg_selected_index"])
+        fallback_local = 0
+        estimated_advantage = float(
+            expected[fallback_local] - expected[rollout_local])
+        eta = max(float(
+            self.config.policy_improvement_rollout_mc_error_bound), 0.0)
+        threshold = 2.0 * eta
+        switched = bool(
+            rollout_local != fallback_local
+            and estimated_advantage > threshold
+        )
+        selected_index = (
+            arm_indices[rollout_local] if switched else int(fallback_index))
+        return int(selected_index), {
+            **rollout,
+            "status": (
+                "rollout_switched" if switched
+                else (
+                    "fallback_best_in_rollout"
+                    if rollout_local == fallback_local
+                    else "fallback_mc_guard"
+                )
+            ),
+            "mode": mode,
+            "fallback_candidate_index": int(fallback_index),
+            "rollout_candidate_index": int(arm_indices[rollout_local]),
+            "selected_candidate_index": int(selected_index),
+            "estimated_advantage_over_fallback": estimated_advantage,
+            "mc_uniform_error_bound": eta,
+            "switch_threshold": threshold,
+            "switched": switched,
+            "conditional_noninferiority_contract": (
+                "uniform_rollout_error_implies_posterior_value_noninferiority"
+            ),
+            "target_oracle_used": False,
+        }
+
     def _terminal_rollout_root_state(self):
         observations = {
             tuple(int(v) for v in key): [
@@ -9407,7 +9603,14 @@ class SingleOLHKGAlgorithm:
         )
 
     def _terminal_rollout_samples(self, depth, node_code):
-        mc = int(self.config.finalist_terminal_mc_samples)
+        if (
+            self._policy_improvement_mode()
+            in {"guarded_rollout", "joint"}
+            and int(self.config.policy_improvement_rollout_depth) > 1
+        ):
+            mc = int(self.config.policy_improvement_rollout_mc_samples)
+        else:
+            mc = int(self.config.finalist_terminal_mc_samples)
         if mc <= 0:
             mc = max(1, self._effective_exact_kg_mc_samples())
         seed_sequence = np.random.SeedSequence([
@@ -12033,6 +12236,14 @@ class SingleOLHKGAlgorithm:
                         self.config.evaluate_or_replicate_new_action_count),
                     evaluate_or_replicate_new_action_policy=(
                         self.config.evaluate_or_replicate_new_action_policy),
+                    evaluate_or_replicate_baseline_new_action_count=(
+                        None
+                        if int(self.config.
+                            evaluate_or_replicate_baseline_new_action_count)
+                        <= 0
+                        else int(self.config.
+                            evaluate_or_replicate_baseline_new_action_count)
+                    ),
                 )
                 score["total"] = backend_score["total"]
             row["decision_backend"] = decision_backend
@@ -12048,6 +12259,7 @@ class SingleOLHKGAlgorithm:
             acquisition_mode = str(self.config.acquisition_mode or "additive").lower()
             forced_selection = (
                 recheck_x if recheck_x is not None else finalist_x)
+            policy_improvement_selected_idx = None
             if exact_mc_samples > 0 and forced_selection is None:
                 if decision_backend in exact_refit_backends:
                     active_indices = backend_score.get(
@@ -12209,6 +12421,36 @@ class SingleOLHKGAlgorithm:
                         (1.0 - blend) * score["total"]
                         + blend * exact_kg
                     )
+                if (
+                    decision_backend in exact_refit_backends
+                    and self._policy_improvement_mode() != "off"
+                ):
+                    one_step_index, one_step_info = (
+                        self._guarded_one_step_policy_improvement(
+                            candidates,
+                            exact_kg,
+                            backend_score,
+                        )
+                    )
+                    rollout_index, rollout_info = (
+                        self._guarded_rollout_policy_improvement(
+                            candidates,
+                            terminal_pool,
+                            exact_kg,
+                            backend_score[
+                                "evaluate_or_replicate_active_indices"],
+                            one_step_index,
+                            stage=n,
+                        )
+                    )
+                    policy_improvement_selected_idx = int(rollout_index)
+                    row["policy_improvement_one_step"] = one_step_info
+                    row["policy_improvement_rollout"] = rollout_info
+                    row["policy_improvement_selected_index"] = int(
+                        policy_improvement_selected_idx)
+                    row["policy_improvement_contract_id"] = (
+                        "v52_safeguarded_policy_improvement_v1"
+                    )
             elif exact_mc_samples > 0:
                 row["exact_kg_skipped_reason"] = (
                     "forced_certification_recheck"
@@ -12222,8 +12464,14 @@ class SingleOLHKGAlgorithm:
                 )
             if recheck_x is None:
                 if finalist_x is None:
-                    selected_idx = int(np.argmax(score["total"]))
-                    row["selection_policy"] = "acquisition"
+                    if policy_improvement_selected_idx is None:
+                        selected_idx = int(np.argmax(score["total"]))
+                        row["selection_policy"] = "acquisition"
+                    else:
+                        selected_idx = int(policy_improvement_selected_idx)
+                        row["selection_policy"] = (
+                            "safeguarded_policy_improvement"
+                        )
                 else:
                     selected_idx = candidates.index(finalist_x)
                     row["selection_policy"] = (
@@ -12270,6 +12518,7 @@ class SingleOLHKGAlgorithm:
                     "joint_information_reduction",
                     "hvd_action_reliability",
                     "hvd_action_is_replicate",
+                    "risk_coordinate_coverage",
                 )
                 for field in backend_fields:
                     values = backend_score.get(field)
@@ -12315,6 +12564,22 @@ class SingleOLHKGAlgorithm:
                         "evaluate_or_replicate_new_action_indices"
                     ], dtype=int).tolist()
                 )
+                for field in (
+                    "evaluate_or_replicate_baseline_indices",
+                    "evaluate_or_replicate_supplemental_indices",
+                ):
+                    values = backend_score.get(field)
+                    row[f"decision_{field}"] = (
+                        None
+                        if values is None
+                        else np.asarray(values, dtype=int).tolist()
+                    )
+                row[
+                    "decision_evaluate_or_replicate_supplemental_labels"
+                ] = list(backend_score.get(
+                    "evaluate_or_replicate_supplemental_labels", []))
+                row["decision_risk_coordinate_coverage_source"] = (
+                    backend_score.get("risk_coordinate_coverage_source"))
                 row["decision_evaluate_or_replicate_exact_refit_required"] = (
                     bool(backend_score.get(
                         "evaluate_or_replicate_exact_refit_required", False))
@@ -12738,6 +13003,61 @@ class SingleOLHKGAlgorithm:
             ),
             "target_oracle_used": False,
         }
+        policy_rows = [
+            row for row in decision_backend_rows
+            if row.get("policy_improvement_one_step") is not None
+        ]
+        one_step_rows = [
+            dict(row.get("policy_improvement_one_step") or {})
+            for row in policy_rows
+        ]
+        rollout_rows = [
+            dict(row.get("policy_improvement_rollout") or {})
+            for row in policy_rows
+        ]
+        decision_backend_summary["policy_improvement"] = {
+            "mode": self._policy_improvement_mode(),
+            "contract_id": (
+                "v52_safeguarded_policy_improvement_v1"
+                if self._policy_improvement_mode() != "off"
+                else "disabled_v51_compatible"
+            ),
+            "iteration_count": int(len(policy_rows)),
+            "one_step_switch_count": int(sum(bool(
+                row.get("switched", False)) for row in one_step_rows)),
+            "one_step_guard_fallback_count": int(sum(
+                row.get("status") == "baseline_mc_guard"
+                for row in one_step_rows
+            )),
+            "rollout_switch_count": int(sum(bool(
+                row.get("switched", False)) for row in rollout_rows)),
+            "rollout_guard_fallback_count": int(sum(
+                row.get("status") == "fallback_mc_guard"
+                for row in rollout_rows
+            )),
+            "mean_one_step_estimated_advantage": (
+                float(np.mean([
+                    float(row["estimated_advantage"])
+                    for row in one_step_rows
+                    if row.get("estimated_advantage") is not None
+                ]))
+                if any(row.get("estimated_advantage") is not None
+                       for row in one_step_rows)
+                else None
+            ),
+            "mean_rollout_estimated_advantage": (
+                float(np.mean([
+                    float(row["estimated_advantage_over_fallback"])
+                    for row in rollout_rows
+                    if row.get("estimated_advantage_over_fallback") is not None
+                ]))
+                if any(row.get("estimated_advantage_over_fallback") is not None
+                       for row in rollout_rows)
+                else None
+            ),
+            "conditional_posterior_noninferiority_only": True,
+            "target_oracle_used": False,
+        }
         adaptive_replication_summary = {
             "enabled": bool(self.config.adaptive_replication_voi),
             "candidate_budget": int(self._replication_candidate_budget()),
@@ -12967,6 +13287,24 @@ class SingleOLHKGAlgorithm:
                 self.config.evaluate_or_replicate_new_action_count),
             "evaluate_or_replicate_new_action_policy": str(
                 self.config.evaluate_or_replicate_new_action_policy),
+            "evaluate_or_replicate_baseline_new_action_count": int(
+                self.config.evaluate_or_replicate_baseline_new_action_count),
+            "policy_improvement_mode": self._policy_improvement_mode(),
+            "policy_improvement_mc_error_bound": float(
+                self.config.policy_improvement_mc_error_bound),
+            "policy_improvement_rollout_depth": int(
+                self.config.policy_improvement_rollout_depth),
+            "policy_improvement_rollout_max_arms": int(
+                self.config.policy_improvement_rollout_max_arms),
+            "policy_improvement_rollout_mc_samples": int(
+                self.config.policy_improvement_rollout_mc_samples),
+            "policy_improvement_rollout_mc_error_bound": float(
+                self.config.policy_improvement_rollout_mc_error_bound),
+            "policy_improvement_contract": (
+                "v52_safeguarded_policy_improvement_v1"
+                if self._policy_improvement_mode() != "off"
+                else "disabled_v51_compatible"
+            ),
             "source_proposal_frozen_before_target": bool(
                 self.config.initial_design == "source_informed"),
             "online_updates_use_budgeted_target_observations_only": True,

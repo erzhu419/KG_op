@@ -395,7 +395,34 @@ def main():
         "--evaluate-or-replicate-new-action-count", type=int, default=None)
     parser.add_argument(
         "--evaluate-or-replicate-new-action-policy",
-        choices=("canonical_sobol", "canonical_plus_posterior_risk"),
+        choices=(
+            "canonical_sobol",
+            "canonical_plus_posterior_risk",
+            "canonical_plus_posterior_risk_certificate_coverage",
+        ),
+        default=None,
+    )
+    parser.add_argument(
+        "--evaluate-or-replicate-baseline-new-action-count",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-mode",
+        choices=("off", "action_superset", "guarded_rollout", "joint"),
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-mc-error-bound", type=float, default=None)
+    parser.add_argument(
+        "--policy-improvement-rollout-depth", type=int, default=None)
+    parser.add_argument(
+        "--policy-improvement-rollout-max-arms", type=int, default=None)
+    parser.add_argument(
+        "--policy-improvement-rollout-mc-samples", type=int, default=None)
+    parser.add_argument(
+        "--policy-improvement-rollout-mc-error-bound",
+        type=float,
         default=None,
     )
     parser.add_argument(
@@ -882,6 +909,41 @@ def main():
         if args.evaluate_or_replicate_new_action_policy is None
         else args.evaluate_or_replicate_new_action_policy
     )
+    evaluate_or_replicate_baseline_new_action_count = int(
+        config.get("evaluate_or_replicate_baseline_new_action_count", 0)
+        if args.evaluate_or_replicate_baseline_new_action_count is None
+        else args.evaluate_or_replicate_baseline_new_action_count
+    )
+    policy_improvement_mode = str(
+        config.get("policy_improvement_mode", "off")
+        if args.policy_improvement_mode is None
+        else args.policy_improvement_mode
+    )
+    policy_improvement_mc_error_bound = float(
+        config.get("policy_improvement_mc_error_bound", 0.0)
+        if args.policy_improvement_mc_error_bound is None
+        else args.policy_improvement_mc_error_bound
+    )
+    policy_improvement_rollout_depth = int(
+        config.get("policy_improvement_rollout_depth", 1)
+        if args.policy_improvement_rollout_depth is None
+        else args.policy_improvement_rollout_depth
+    )
+    policy_improvement_rollout_max_arms = int(
+        config.get("policy_improvement_rollout_max_arms", 4)
+        if args.policy_improvement_rollout_max_arms is None
+        else args.policy_improvement_rollout_max_arms
+    )
+    policy_improvement_rollout_mc_samples = int(
+        config.get("policy_improvement_rollout_mc_samples", 2)
+        if args.policy_improvement_rollout_mc_samples is None
+        else args.policy_improvement_rollout_mc_samples
+    )
+    policy_improvement_rollout_mc_error_bound = float(
+        config.get("policy_improvement_rollout_mc_error_bound", 0.0)
+        if args.policy_improvement_rollout_mc_error_bound is None
+        else args.policy_improvement_rollout_mc_error_bound
+    )
     safe_interior_candidate_count = int(
         config.get("safe_interior_candidate_count", 0)
         if args.safe_interior_candidate_count is None
@@ -964,6 +1026,19 @@ def main():
             evaluate_or_replicate_new_action_count),
         "evaluate_or_replicate_new_action_policy": (
             evaluate_or_replicate_new_action_policy),
+        "evaluate_or_replicate_baseline_new_action_count": (
+            evaluate_or_replicate_baseline_new_action_count),
+        "policy_improvement_mode": policy_improvement_mode,
+        "policy_improvement_mc_error_bound": (
+            policy_improvement_mc_error_bound),
+        "policy_improvement_rollout_depth": (
+            policy_improvement_rollout_depth),
+        "policy_improvement_rollout_max_arms": (
+            policy_improvement_rollout_max_arms),
+        "policy_improvement_rollout_mc_samples": (
+            policy_improvement_rollout_mc_samples),
+        "policy_improvement_rollout_mc_error_bound": (
+            policy_improvement_rollout_mc_error_bound),
         "safe_interior_candidate_count": safe_interior_candidate_count,
         "safe_interior_pool_size": safe_interior_pool_size,
         "safe_interior_margin": safe_interior_margin,
@@ -1331,6 +1406,19 @@ def main():
                 evaluate_or_replicate_new_action_count),
             "evaluate_or_replicate_new_action_policy": (
                 evaluate_or_replicate_new_action_policy),
+            "evaluate_or_replicate_baseline_new_action_count": (
+                evaluate_or_replicate_baseline_new_action_count),
+            "policy_improvement_mode": policy_improvement_mode,
+            "policy_improvement_mc_error_bound": (
+                policy_improvement_mc_error_bound),
+            "policy_improvement_rollout_depth": (
+                policy_improvement_rollout_depth),
+            "policy_improvement_rollout_max_arms": (
+                policy_improvement_rollout_max_arms),
+            "policy_improvement_rollout_mc_samples": (
+                policy_improvement_rollout_mc_samples),
+            "policy_improvement_rollout_mc_error_bound": (
+                policy_improvement_rollout_mc_error_bound),
             "safe_interior_candidate_count": safe_interior_candidate_count,
             "safe_interior_pool_size": safe_interior_pool_size,
             "safe_interior_margin": safe_interior_margin,

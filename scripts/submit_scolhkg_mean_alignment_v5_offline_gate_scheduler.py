@@ -263,6 +263,22 @@ def _flags(profile, args):
         "--evaluate-or-replicate-new-action-policy",
         str(profile.get(
             "evaluate_or_replicate_new_action_policy", "canonical_sobol")),
+        "--evaluate-or-replicate-baseline-new-action-count",
+        str(profile.get(
+            "evaluate_or_replicate_baseline_new_action_count", 0)),
+        "--policy-improvement-mode",
+        str(profile.get("policy_improvement_mode", "off")),
+        "--policy-improvement-mc-error-bound",
+        str(profile.get("policy_improvement_mc_error_bound", 0.0)),
+        "--policy-improvement-rollout-depth",
+        str(profile.get("policy_improvement_rollout_depth", 1)),
+        "--policy-improvement-rollout-max-arms",
+        str(profile.get("policy_improvement_rollout_max_arms", 4)),
+        "--policy-improvement-rollout-mc-samples",
+        str(profile.get("policy_improvement_rollout_mc_samples", 2)),
+        "--policy-improvement-rollout-mc-error-bound",
+        str(profile.get(
+            "policy_improvement_rollout_mc_error_bound", 0.0)),
         (
             "--adaptive-replication-voi"
             if profile.get("adaptive_replication_voi", False)

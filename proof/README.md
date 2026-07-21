@@ -63,6 +63,9 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/EndToEndSafeRegret.lean`: truth-relative finite-pool safe regret
   with separate representation, HVD, transfer, pool, shortlist, MC, and
   sequential terms.
+- `SCOLHKG/Real/SafeguardedPolicyImprovement.lean`: V52 posterior-value
+  noninferiority for action-superset and rollout challengers that retain V51
+  as a fallback and switch only beyond a `2 * eta` uniform-error guard.
 - `SCOLHKG/Measure/StatisticalClosure.lean`: combines the component bad events
   into a high-probability end-to-end safe-regret statement.
 - `SCOLHKG/Measure/FiniteSampleHVDConcentration.lean`: converts a declared

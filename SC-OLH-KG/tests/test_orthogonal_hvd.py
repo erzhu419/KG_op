@@ -1007,6 +1007,16 @@ class OrthogonalHVDTests(unittest.TestCase):
             audit["target_evidence_solution_count"]
             * audit["active_geometry"]["minimum_eigenvalue"],
         )
+        self.assertAlmostEqual(
+            audit["lean_normalized_excitation_kappa"],
+            audit["target_evidence_solution_count"]
+            * audit["normalized_active_geometry"]["minimum_eigenvalue"],
+        )
+        self.assertGreaterEqual(audit["normalized_feature_radius"], 0.0)
+        self.assertEqual(
+            len(audit["active_column_rms"]),
+            audit["active_calibration_dimension"],
+        )
 
     def test_statistical_design_diagnostics_are_read_only(self):
         base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)

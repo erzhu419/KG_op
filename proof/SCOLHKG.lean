@@ -74,6 +74,7 @@ import SCOLHKG.Real.SafeGeneralizedTaskPosterior
 import SCOLHKG.Real.JointTaskLatentPosterior
 import SCOLHKG.Real.JointKLChanceCertificate
 import SCOLHKG.Real.SafeRegret
+import SCOLHKG.Real.SafeguardedPolicyImprovement
 import SCOLHKG.Real.EndToEndSafeRegret
 import SCOLHKG.Real.TrafficTrajectoryModel
 import SCOLHKG.Real.TwoStageDecision

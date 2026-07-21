@@ -2569,6 +2569,46 @@ class OrthogonalHVD:
 
         raw_geometry = geometry(raw_design)
         active_geometry = geometry(active_design)
+
+        active_column_rms = np.empty(0, dtype=float)
+        normalized_active_design = np.empty((0, 0), dtype=float)
+        normalized_feature_radius = 0.0
+        if (
+            active_design.ndim == 2
+            and active_design.shape[0] > 0
+            and active_design.shape[1] > 0
+        ):
+            active_column_rms = np.sqrt(np.mean(
+                np.asarray(active_design, dtype=float) ** 2,
+                axis=0,
+            ))
+            scale_tolerance = max(
+                np.finfo(float).eps
+                * max(active_design.shape)
+                * max(float(np.max(active_column_rms)), 1.0),
+                1e-14,
+            )
+            safe_scale = np.where(
+                active_column_rms > scale_tolerance,
+                active_column_rms,
+                1.0,
+            )
+            normalized_active_design = active_design / safe_scale[None, :]
+            normalized_feature_radius = float(np.max(np.linalg.norm(
+                normalized_active_design,
+                axis=1,
+            )))
+        normalized_active_geometry = geometry(normalized_active_design)
+        positive_column_rms = active_column_rms[
+            active_column_rms > 0.0]
+        column_scale_condition = (
+            None
+            if len(positive_column_rms) == 0
+            else float(
+                np.max(positive_column_rms)
+                / np.min(positive_column_rms)
+            )
+        )
         return {
             "theory_contract": "v51_statistical_closure_v2",
             "target_evidence_mode": str(
@@ -2583,14 +2623,30 @@ class OrthogonalHVD:
             "active_calibration_dimension": int(active_dimension),
             "raw_geometry": raw_geometry,
             "active_geometry": active_geometry,
+            "normalized_active_geometry": normalized_active_geometry,
+            "active_column_rms": active_column_rms.tolist(),
+            "active_column_scale_condition": column_scale_condition,
+            "normalized_feature_radius": normalized_feature_radius,
             "lean_excitation_kappa": float(
                 len(points) * active_geometry["minimum_eigenvalue"]),
+            "lean_normalized_excitation_kappa": float(
+                len(points)
+                * normalized_active_geometry["minimum_eigenvalue"]),
             "gram_normalization": "X_transpose_X_div_target_evidence_count",
+            "normalized_gram_contract": (
+                "active_columns_divided_by_target_evidence_rms"
+            ),
             "active_identifiable": bool(
                 active_dimension > 0
                 and len(points) >= active_dimension
                 and active_geometry["rank"] == active_dimension
                 and active_geometry["minimum_eigenvalue"] > 0.0
+            ),
+            "normalized_active_identifiable": bool(
+                active_dimension > 0
+                and len(points) >= active_dimension
+                and normalized_active_geometry["rank"] == active_dimension
+                and normalized_active_geometry["minimum_eigenvalue"] > 0.0
             ),
         }
 

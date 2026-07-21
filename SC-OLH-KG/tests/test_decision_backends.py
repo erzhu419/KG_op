@@ -71,6 +71,12 @@ class DummyProblem:
             return 0.1 + 0.3 * x[:, 0]
         return 0.2 + 0.2 * x[:, 1]
 
+    @staticmethod
+    def cumulative_risk_features(point, output_index=1):
+        del output_index
+        x = np.asarray(point, dtype=float) / 10.0
+        return np.asarray([1.0, x[0] ** 2, x[1] ** 2], dtype=float)
+
 
 def _score(name, seed=17):
     candidates = [(0, 0), (2, 8), (6, 3), (10, 10)]
@@ -590,6 +596,122 @@ def test_exact_joint_voi_expands_new_actions_by_posterior_risk():
         "canonical_plus_posterior_risk")
 
 
+def test_v52_action_set_is_literal_superset_of_v51_subset():
+    candidates = [
+        (0, 0), (1, 1), (2, 8), (3, 7), (4, 6),
+        (5, 5), (6, 4), (7, 3), (8, 2), (10, 10),
+    ]
+    observed = [candidates[0], candidates[-1]]
+    result = score_decision_backend(
+        "sobol_exact_joint_voi",
+        candidates,
+        DummyGPR(),
+        DummyGPR(),
+        DummyVariance(),
+        DummyProblem(),
+        observed=[(point, np.array([0.0, 0.0])) for point in observed],
+        iteration=5,
+        seed=232,
+        canonical_sobol_candidate=candidates[1],
+        allow_replication_actions=True,
+        evaluate_or_replicate_new_action_count=6,
+        evaluate_or_replicate_new_action_policy=(
+            "canonical_plus_posterior_risk_certificate_coverage"),
+        evaluate_or_replicate_baseline_new_action_count=4,
+    )
+    active = set(result["evaluate_or_replicate_active_indices"].tolist())
+    baseline = set(result[
+        "evaluate_or_replicate_baseline_indices"].tolist())
+    supplemental = result[
+        "evaluate_or_replicate_supplemental_indices"].tolist()
+    assert baseline < active
+    assert len(baseline) == 6
+    assert len(supplemental) == 2
+    assert set(supplemental).issubset(active - baseline)
+    assert result[
+        "evaluate_or_replicate_supplemental_labels"] == [
+            "certificate_depth", "psi_coverage",
+        ]
+    assert result["risk_coordinate_coverage_source"] == (
+        "observable_cumulative_risk")
+
+
+def test_v52_one_step_guard_falls_back_until_advantage_exceeds_two_eta():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            policy_improvement_mode="action_superset",
+            policy_improvement_mc_error_bound=0.1,
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    candidates = [(0, 0, 0), (1, 1, 1), (2, 2, 2)]
+    backend = {
+        "evaluate_or_replicate_active_indices": np.array([0, 1, 2]),
+        "evaluate_or_replicate_baseline_indices": np.array([0, 1]),
+    }
+    algorithm._last_exact_kg_raw_scores = np.array([1.0, 0.8, 1.19])
+    selected, info = algorithm._guarded_one_step_policy_improvement(
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        backend,
+    )
+    assert selected == 0
+    assert info["status"] == "baseline_mc_guard"
+    assert info["switched"] is False
+
+    algorithm._last_exact_kg_raw_scores = np.array([1.0, 0.8, 1.21])
+    selected, info = algorithm._guarded_one_step_policy_improvement(
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        backend,
+    )
+    assert selected == 2
+    assert info["status"] == "superset_switched"
+    assert info["switched"] is True
+
+
+def test_v52_rollout_guard_uses_one_step_action_as_fallback():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            policy_improvement_mode="guarded_rollout",
+            policy_improvement_rollout_depth=2,
+            policy_improvement_rollout_max_arms=2,
+            policy_improvement_rollout_mc_error_bound=0.1,
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    candidates = [(0, 0, 0), (1, 1, 1)]
+    algorithm._last_exact_kg_raw_scores = np.array([1.0, 1.1])
+
+    def rollout(_arms, _terminal_pool, *, depth, stage):
+        del depth, stage
+        return _arms[1], {
+            "terminal_kg_expected_values": [1.0, 0.7],
+            "terminal_kg_selected_index": 1,
+            "terminal_kg_raw_gains": [0.0, 0.3],
+            "terminal_kg_clipped_gains": [0.0, 0.3],
+        }
+
+    algorithm._terminal_replication_kg_candidate = rollout
+    selected, info = algorithm._guarded_rollout_policy_improvement(
+        candidates,
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        np.array([0, 1]),
+        0,
+        stage=3,
+    )
+    assert selected == 1
+    assert info["status"] == "rollout_switched"
+    assert info["switched"] is True
+
+
 def test_risk_aware_thompson_sampling_is_reproducible_for_fixed_seed():
     first = _score("risk_ts", seed=81)
     second = _score("risk_ts", seed=81)
@@ -646,6 +768,57 @@ def test_exact_joint_backend_runs_refit_voi_on_declared_action_set():
         "exact_refit_action_value"] is True
     assert result["adaptive_replication_voi"]["unified_exact_voi"] is True
     assert result["adaptive_replication_voi"]["target_oracle_used"] is False
+
+
+def test_v52_superset_runs_end_to_end_without_changing_v51_terminal_rule():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            N=3,
+            n0=2,
+            K1=5,
+            K2=0,
+            decision_backend="sobol_exact_joint_voi",
+            decision_recommend_observed_only=True,
+            exact_kg_terminal_mode="bayes_risk",
+            adaptive_replication_voi=True,
+            replication_candidate_count=2,
+            exact_kg_mc_samples=2,
+            exact_kg_jobs=1,
+            evaluate_or_replicate_new_action_count=3,
+            evaluate_or_replicate_baseline_new_action_count=1,
+            evaluate_or_replicate_new_action_policy=(
+                "canonical_plus_posterior_risk_certificate_coverage"),
+            policy_improvement_mode="action_superset",
+            policy_improvement_mc_error_bound=1e6,
+            use_state_coupling=False,
+            use_state_basis=False,
+            use_problem_initial_samples=False,
+            use_boundary_initial_samples=False,
+            use_recommendation_refinement=False,
+            recommendation_axis_oracle=False,
+            recommendation_calibration=False,
+            finalist_replication_budget=0,
+            eval_pool_size=8,
+            evaluate_interval=0,
+            seed=194,
+        ),
+    )
+    result = algorithm.run(verbose=False)
+    row = algorithm.iteration_log[0]
+    assert result["n_simulations"] == 3
+    assert row["selection_policy"] == "safeguarded_policy_improvement"
+    assert row["policy_improvement_one_step"]["switched"] is False
+    assert row["policy_improvement_rollout"]["status"] == "disabled"
+    labels = row["decision_evaluate_or_replicate_supplemental_labels"]
+    assert labels
+    assert labels[0] == "certificate_depth"
+    assert set(labels).issubset({"certificate_depth", "psi_coverage"})
+    assert result["decision_backend_contract"][
+        "policy_improvement_contract"] == (
+            "v52_safeguarded_policy_improvement_v1")
+    assert result["decision_backend_terminal_rule"] == "posterior_bayes_risk"
 
 
 def test_risk_ts_replaces_exact_kg_without_changing_target_budget():

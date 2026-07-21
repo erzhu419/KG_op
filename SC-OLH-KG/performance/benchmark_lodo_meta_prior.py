@@ -915,6 +915,20 @@ def run_one(task):
             "evaluate_or_replicate_new_action_count", 1)),
         evaluate_or_replicate_new_action_policy=str(args_dict.get(
             "evaluate_or_replicate_new_action_policy", "canonical_sobol")),
+        evaluate_or_replicate_baseline_new_action_count=int(args_dict.get(
+            "evaluate_or_replicate_baseline_new_action_count", 0)),
+        policy_improvement_mode=str(args_dict.get(
+            "policy_improvement_mode", "off")),
+        policy_improvement_mc_error_bound=float(args_dict.get(
+            "policy_improvement_mc_error_bound", 0.0)),
+        policy_improvement_rollout_depth=int(args_dict.get(
+            "policy_improvement_rollout_depth", 1)),
+        policy_improvement_rollout_max_arms=int(args_dict.get(
+            "policy_improvement_rollout_max_arms", 4)),
+        policy_improvement_rollout_mc_samples=int(args_dict.get(
+            "policy_improvement_rollout_mc_samples", 2)),
+        policy_improvement_rollout_mc_error_bound=float(args_dict.get(
+            "policy_improvement_rollout_mc_error_bound", 0.0)),
         replication_margin_softening=args_dict[
             "replication_margin_softening"],
         adaptive_replication_voi=bool(args_dict.get(
@@ -2728,8 +2742,34 @@ def main():
         "--evaluate_or_replicate_new_action_count", type=int, default=1)
     parser.add_argument(
         "--evaluate_or_replicate_new_action_policy",
-        choices=("canonical_sobol", "canonical_plus_posterior_risk"),
+        choices=(
+            "canonical_sobol",
+            "canonical_plus_posterior_risk",
+            "canonical_plus_posterior_risk_certificate_coverage",
+        ),
         default="canonical_sobol",
+    )
+    parser.add_argument(
+        "--evaluate_or_replicate_baseline_new_action_count",
+        type=int,
+        default=0,
+    )
+    parser.add_argument(
+        "--policy_improvement_mode",
+        choices=("off", "action_superset", "guarded_rollout", "joint"),
+        default="off",
+    )
+    parser.add_argument(
+        "--policy_improvement_mc_error_bound", type=float, default=0.0)
+    parser.add_argument(
+        "--policy_improvement_rollout_depth", type=int, default=1)
+    parser.add_argument(
+        "--policy_improvement_rollout_max_arms", type=int, default=4)
+    parser.add_argument(
+        "--policy_improvement_rollout_mc_samples", type=int, default=2)
+    parser.add_argument(
+        "--policy_improvement_rollout_mc_error_bound", type=float,
+        default=0.0,
     )
     parser.add_argument("--replication_margin_softening", type=float, default=3.0)
     parser.add_argument(

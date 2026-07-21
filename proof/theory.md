@@ -900,6 +900,16 @@ optimization/certification statement. The Python bridge is
 the final recommendation now use the same observed terminal universe and the
 same decision-risk penalty.
 
+V52 retains V51 as an explicit action fallback. It may append a
+certificate-depth policy, an observable cumulative-risk coverage policy, and
+a finite-horizon rollout challenger. A challenger is executed only when its
+estimated lower-is-better terminal value beats the fallback by at least
+`2 eta`. `SCOLHKG/Real/SafeguardedPolicyImprovement.lean` proves that, under a
+uniform `eta` numerical-error event, every accepted switch is noninferior in
+the exact posterior value. This removes a numerical route to regression but
+does not remove representation, transfer, pool-coverage, or sequential-model
+error from `StatisticalClosureErrors`.
+
 ## Current Empirical Closure Items
 
 1. The observed-terminal repair passed its paired 60-run closure gate at

@@ -39,6 +39,27 @@
         "truth-relative end-to-end safe regret",
         "source-to-target PAC-Bayes plus domain shift"
       ]
+    },
+    {
+      "id": "v52_safeguarded_closure_v1",
+      "implementation_contract_id": "v52_safeguarded_policy_improvement",
+      "decision_behavior": "v51_fallback_with_guarded_action_superset_and_rollout",
+      "behavior_change": true,
+      "diagnostic_change": true,
+      "role": "challenger_contract",
+      "status": "implemented_pending_paired_gate",
+      "runs": [],
+      "planned_runs": [
+        "scolh_v52_safeguarded_closure_s5"
+      ],
+      "evidence": [],
+      "formal_scope": [
+        "literal V51 action-subset fallback",
+        "two-eta one-step posterior-value noninferiority",
+        "two-eta rollout posterior-value noninferiority",
+        "scale-invariant active-HVD excitation diagnostics",
+        "observable cumulative-risk pool coverage"
+      ]
     }
   ],
   "non_mixing_rules": [

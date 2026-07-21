@@ -338,6 +338,61 @@ def _sobol_scores(problem, candidates, iteration, seed):
     return -np.sum((normalized - target) ** 2, axis=1)
 
 
+def _risk_coordinate_coverage_scores(problem, candidates, observed):
+    """Return standardized novelty in the observable cumulative-risk space.
+
+    The score uses only policy/state exposure features exposed by the problem
+    adapter. It never evaluates target objective or constraint truth. A zero
+    vector is returned when the provider is unavailable so the action-set
+    contract remains deterministic on legacy problems.
+    """
+
+    if not candidates or not hasattr(problem, "cumulative_risk_features"):
+        return np.zeros(len(candidates), dtype=float), "provider_unavailable"
+
+    def features(point):
+        try:
+            value = problem.cumulative_risk_features(
+                point, output_index=1)
+        except TypeError:
+            value = problem.cumulative_risk_features(point)
+        row = np.asarray(value, dtype=float).reshape(-1)
+        if len(row) == 0 or not np.all(np.isfinite(row)):
+            raise ValueError("invalid cumulative-risk coordinate")
+        return row
+
+    try:
+        candidate_features = np.vstack([
+            features(point) for point in candidates
+        ])
+    except (AttributeError, TypeError, ValueError, FloatingPointError):
+        return np.zeros(len(candidates), dtype=float), "provider_invalid"
+
+    observed_points = sorted(_observed_point_set(observed))
+    if not observed_points:
+        return np.ones(len(candidates), dtype=float), "no_observed_points"
+    try:
+        observed_features = np.vstack([
+            features(point) for point in observed_points
+        ])
+    except (AttributeError, TypeError, ValueError, FloatingPointError):
+        return np.zeros(len(candidates), dtype=float), "observed_invalid"
+    if observed_features.shape[1] != candidate_features.shape[1]:
+        return np.zeros(len(candidates), dtype=float), "dimension_mismatch"
+
+    combined = np.vstack([candidate_features, observed_features])
+    center = np.median(combined, axis=0)
+    scale = np.sqrt(np.mean((combined - center[None, :]) ** 2, axis=0))
+    scale = np.where(scale > 1e-12, scale, 1.0)
+    candidate_z = (candidate_features - center[None, :]) / scale[None, :]
+    observed_z = (observed_features - center[None, :]) / scale[None, :]
+    distance = np.linalg.norm(
+        candidate_z[:, None, :] - observed_z[None, :, :],
+        axis=2,
+    )
+    return np.min(distance, axis=1), "observable_cumulative_risk"
+
+
 def evaluate_or_replicate_action_set(
     candidates,
     observed,
@@ -351,6 +406,8 @@ def evaluate_or_replicate_action_set(
     new_action_count=1,
     new_action_policy="canonical_sobol",
     new_action_priority=None,
+    baseline_new_action_count=None,
+    supplemental_new_action_priorities=None,
 ):
     """Return a finite evaluate-or-replicate action set.
 
@@ -359,6 +416,9 @@ def evaluate_or_replicate_action_set(
     expands that discretization with the lowest-priority unobserved points;
     the caller supplies posterior Bayes risk as ``new_action_priority``.  The
     expensive fantasy refit still decides among the resulting actions.
+    A supplemental policy first reproduces an explicitly recorded baseline
+    subset, then appends at most one minimizer from each supplied priority.
+    This makes the challenger action set a literal superset of the baseline.
     """
 
     candidates = [tuple(int(v) for v in x) for x in candidates]
@@ -370,6 +430,9 @@ def evaluate_or_replicate_action_set(
             "sobol_new_index": None,
             "canonical_sobol_index": None,
             "new_action_indices": np.empty(0, dtype=int),
+            "baseline_new_action_indices": np.empty(0, dtype=int),
+            "supplemental_new_action_indices": np.empty(0, dtype=int),
+            "supplemental_new_action_labels": [],
             "new_action_policy": str(new_action_policy),
             "sobol_scores": np.empty(0, dtype=float),
         }
@@ -389,6 +452,9 @@ def evaluate_or_replicate_action_set(
     sobol_new_index = None
     canonical_sobol_index = None
     selected_new_indices = []
+    baseline_new_indices = []
+    supplemental_new_indices = []
+    supplemental_new_labels = []
     if len(new_indices):
         observed_points = _observed_point_set(observed)
         canonical = (
@@ -419,10 +485,13 @@ def evaluate_or_replicate_action_set(
         policy = str(new_action_policy or "canonical_sobol").strip().lower()
         policy = policy.replace("-", "_")
         requested_new = max(1, int(new_action_count))
-        if policy in {
+        posterior_policies = {
             "canonical_plus_posterior", "canonical_plus_posterior_risk",
             "posterior_risk",
-        }:
+            "canonical_plus_posterior_certificate_coverage",
+            "canonical_plus_posterior_risk_certificate_coverage",
+        }
+        if policy in posterior_policies:
             if new_action_priority is None:
                 raise ValueError(
                     "posterior-risk new action policy requires priorities")
@@ -436,19 +505,60 @@ def evaluate_or_replicate_action_set(
                 (int(index) for index in new_indices),
                 key=lambda index: (float(finite_priority[index]), index),
             )
+            baseline_requested = requested_new
+            supplements = list(supplemental_new_action_priorities or [])
+            if supplements:
+                baseline_requested = max(1, min(
+                    requested_new,
+                    int(
+                        baseline_new_action_count
+                        if baseline_new_action_count is not None
+                        else requested_new - len(supplements)
+                    ),
+                ))
             for index in ordered_new:
                 if index not in selected_new_indices:
                     selected_new_indices.append(index)
+                if len(selected_new_indices) >= baseline_requested:
+                    break
+            baseline_new_indices = list(selected_new_indices)
+            for label, values in supplements:
                 if len(selected_new_indices) >= requested_new:
                     break
+                priority_values = np.asarray(values, dtype=float).reshape(-1)
+                if len(priority_values) != len(candidates):
+                    raise ValueError(
+                        "supplemental priorities must match candidate count")
+                finite_values = np.where(
+                    np.isfinite(priority_values), priority_values, np.inf)
+                ordered_supplement = sorted(
+                    (int(index) for index in new_indices),
+                    key=lambda index: (float(finite_values[index]), index),
+                )
+                chosen = next((
+                    index for index in ordered_supplement
+                    if index not in selected_new_indices
+                ), None)
+                if chosen is not None:
+                    selected_new_indices.append(int(chosen))
+                    supplemental_new_indices.append(int(chosen))
+                    supplemental_new_labels.append(str(label))
+            for index in ordered_new:
+                if len(selected_new_indices) >= requested_new:
+                    break
+                if index not in selected_new_indices:
+                    selected_new_indices.append(index)
         elif policy not in {"canonical_sobol", "sobol"}:
             raise ValueError(f"unknown new action policy {new_action_policy!r}")
         selected_new_indices = selected_new_indices[:requested_new]
+        if not baseline_new_indices:
+            baseline_new_indices = list(selected_new_indices)
         active_indices = selected_new_indices + active_indices
     if not active_indices:
         active_indices = [int(np.argmax(sobol_score))]
         sobol_new_index = active_indices[0]
         selected_new_indices = [active_indices[0]]
+        baseline_new_indices = [active_indices[0]]
     active_indices = np.asarray(list(dict.fromkeys(active_indices)), dtype=int)
     active_mask = np.zeros(len(candidates), dtype=bool)
     active_mask[active_indices] = True
@@ -459,6 +569,11 @@ def evaluate_or_replicate_action_set(
         "sobol_new_index": sobol_new_index,
         "canonical_sobol_index": canonical_sobol_index,
         "new_action_indices": np.asarray(selected_new_indices, dtype=int),
+        "baseline_new_action_indices": np.asarray(
+            baseline_new_indices, dtype=int),
+        "supplemental_new_action_indices": np.asarray(
+            supplemental_new_indices, dtype=int),
+        "supplemental_new_action_labels": list(supplemental_new_labels),
         "new_action_policy": str(new_action_policy),
         "sobol_scores": sobol_score,
     }
@@ -813,6 +928,7 @@ def score_decision_backend(
     allow_replication_actions=True,
     evaluate_or_replicate_new_action_count=1,
     evaluate_or_replicate_new_action_policy="canonical_sobol",
+    evaluate_or_replicate_baseline_new_action_count=None,
 ):
     """Rank candidates under one named backend.
 
@@ -918,7 +1034,12 @@ def score_decision_backend(
     hvd_margin_information = None
     joint_information = None
     evaluate_or_replicate_active_indices = None
+    evaluate_or_replicate_baseline_indices = None
+    evaluate_or_replicate_supplemental_indices = None
+    evaluate_or_replicate_supplemental_labels = []
     exact_refit_required = False
+    risk_coordinate_coverage = None
+    risk_coordinate_coverage_source = None
 
     if name in {"random", "random_continuation"}:
         total = rng.random(len(candidates))
@@ -983,6 +1104,23 @@ def score_decision_backend(
         exact_refit_required = name in {
             "sobol_exact_joint_voi", "exact_joint_voi_sobol",
         }
+        action_policy = str(
+            evaluate_or_replicate_new_action_policy or ""
+        ).strip().lower().replace("-", "_")
+        supplemental_priorities = None
+        if action_policy in {
+            "canonical_plus_posterior_certificate_coverage",
+            "canonical_plus_posterior_risk_certificate_coverage",
+        }:
+            risk_coordinate_coverage, risk_coordinate_coverage_source = (
+                _risk_coordinate_coverage_scores(
+                    problem, candidates, observed)
+            )
+            supplemental_priorities = [
+                ("certificate_depth", np.asarray(theory_margin, dtype=float)),
+                ("psi_coverage", -np.asarray(
+                    risk_coordinate_coverage, dtype=float)),
+            ]
         action_set = evaluate_or_replicate_action_set(
             candidates,
             observed,
@@ -995,6 +1133,9 @@ def score_decision_backend(
             new_action_count=evaluate_or_replicate_new_action_count,
             new_action_policy=evaluate_or_replicate_new_action_policy,
             new_action_priority=components["bayes_risk"],
+            baseline_new_action_count=(
+                evaluate_or_replicate_baseline_new_action_count),
+            supplemental_new_action_priorities=supplemental_priorities,
         )
         active_indices = np.asarray(
             action_set["active_indices"], dtype=int)
@@ -1005,6 +1146,20 @@ def score_decision_backend(
         canonical_sobol_index = action_set["canonical_sobol_index"]
         evaluate_or_replicate_new_indices = np.asarray(
             action_set["new_action_indices"], dtype=int)
+        baseline_new_indices = np.asarray(
+            action_set["baseline_new_action_indices"], dtype=int)
+        replication_indices = np.flatnonzero(hvd_is_replicate)
+        evaluate_or_replicate_baseline_indices = np.asarray(
+            list(dict.fromkeys(
+                baseline_new_indices.tolist()
+                + replication_indices.tolist()
+            )),
+            dtype=int,
+        )
+        evaluate_or_replicate_supplemental_indices = np.asarray(
+            action_set["supplemental_new_action_indices"], dtype=int)
+        evaluate_or_replicate_supplemental_labels = list(
+            action_set["supplemental_new_action_labels"])
         evaluate_or_replicate_new_policy = str(
             action_set["new_action_policy"])
 
@@ -1160,6 +1315,8 @@ def score_decision_backend(
         ),
         "evaluate_or_replicate_exact_refit_required": bool(
             exact_refit_required),
+        "risk_coordinate_coverage": risk_coordinate_coverage,
+        "risk_coordinate_coverage_source": risk_coordinate_coverage_source,
     }
     if name in {"transfer_utility", "source_utility", "utility"}:
         out["transfer_utility_status"] = utility_status
@@ -1186,6 +1343,18 @@ def score_decision_backend(
             evaluate_or_replicate_new_indices.copy())
         out["evaluate_or_replicate_new_action_policy"] = (
             evaluate_or_replicate_new_policy)
+        out["evaluate_or_replicate_baseline_indices"] = (
+            None
+            if evaluate_or_replicate_baseline_indices is None
+            else evaluate_or_replicate_baseline_indices.copy()
+        )
+        out["evaluate_or_replicate_supplemental_indices"] = (
+            None
+            if evaluate_or_replicate_supplemental_indices is None
+            else evaluate_or_replicate_supplemental_indices.copy()
+        )
+        out["evaluate_or_replicate_supplemental_labels"] = list(
+            evaluate_or_replicate_supplemental_labels)
     if constraint_epistemic_information is not None:
         out["constraint_epistemic_information_reduction"] = (
             constraint_epistemic_information)
