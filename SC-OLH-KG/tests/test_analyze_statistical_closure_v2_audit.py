@@ -27,7 +27,7 @@ def _registration():
     }
 
 
-def _write(root, domain, seed, *, identifiable=True):
+def _write(root, domain, seed, *, identifiable=True, certified=1):
     path = root / domain / f"seed{seed}" / "result.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     row = {
@@ -44,7 +44,7 @@ def _write(root, domain, seed, *, identifiable=True):
         "true_feasible": True,
         "feasible_simple_regret": 0.01,
         "certificate_outcome_audit": {
-            "posterior_certified_count": 1,
+            "posterior_certified_count": certified,
             "false_certificate_count": 0,
         },
         "variance_diagnostics": {
@@ -76,8 +76,11 @@ def test_v2_audit_requires_contract_and_active_hvd_assumptions(tmp_path):
     result = analyze(tmp_path, _registration(), expected_count=3)
     assert result["contract_complete"]
     assert result["finite_sample_hvd_assumptions_hold_for_all_runs"]
+    assert result["finite_sample_hvd_audit_passed"]
+    assert result["certificate_nonvacuity_observed_in_every_domain"]
     assert result["publication_eligible"]
     assert result["overall"]["finite_sample_hvd_applicable_count"] == 3
+    assert result["overall"]["minimum_lean_excitation_kappa"] == 0.4
 
 
 def test_v2_audit_reports_nonidentifiability_instead_of_hiding_it(tmp_path):
@@ -88,3 +91,16 @@ def test_v2_audit_reports_nonidentifiability_instead_of_hiding_it(tmp_path):
     assert not result["finite_sample_hvd_assumptions_hold_for_all_runs"]
     assert not result["publication_eligible"]
     assert result["overall"]["active_identifiable_count"] == 2
+
+
+def test_v2_audit_does_not_treat_vacuous_certificates_as_publication_evidence(
+        tmp_path):
+    for domain in DOMAINS:
+        _write(tmp_path, domain, 0, certified=0)
+    result = analyze(tmp_path, _registration(), expected_count=3)
+    assert result["finite_sample_hvd_audit_passed"]
+    assert result["overall"]["false_certificate_count"] == 0
+    assert result["overall"]["vacuous_run_count"] == 3
+    assert not result["certificate_nonvacuity_observed_in_this_audit"]
+    assert not result["certificate_nonvacuity_observed_in_every_domain"]
+    assert not result["publication_eligible"]

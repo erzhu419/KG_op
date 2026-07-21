@@ -145,7 +145,10 @@ obligations are empirical or assumption audits:
 - Gate B passed only at `N=80, replication_cap=20`; lower-budget certificates
   remain vacuous and the observed 3/339 coverage must be reported.
 - New v2 diagnostic runs must report positive active excitation where HVD is
-  claimed identifiable.
+  claimed identifiable. The completed `N=20` audit satisfies this algebraic
+  condition in all 15 runs, but the median excitation is only
+  `3.77e-6` (`2.33e-6` in Inventory and `3.33e-6` in Queue), so the resulting
+  finite-sample constants are weak rather than practically sharp.
 - The main matrix must estimate pool-coverage and sequential terms rather than
   silently set them to zero.
 - A sharper `Delta^(-2)` certificate rate would require proving and validating
@@ -158,5 +161,7 @@ obligations are empirical or assumption audits:
 The GPT review correctly identified the missing statistical layer, but its MC
 assessment predates the explicit schedule and Gate C. Statistical closure v2
 raises the theory from conditional decision consistency to a finite-sample,
-truth-relative theorem family. It does not by itself make a vacuous empirical
-certificate useful; Gate B and the separate v2 diagnostic run decide that.
+truth-relative theorem family. The behavior-preserving `N=20` audit confirms
+active-HVD applicability and 15/15 truly feasible recommendations, but issues
+zero posterior certificates. Gate B supplies separate nonvacuity evidence only
+at `N=80, replication_cap=20`; these two experiment contracts are not pooled.

@@ -33,6 +33,18 @@ def _median(values):
     return None if not finite else float(statistics.median(finite))
 
 
+def _minimum(values):
+    finite = []
+    for value in values:
+        try:
+            value = float(value)
+        except (TypeError, ValueError):
+            continue
+        if math.isfinite(value):
+            finite.append(value)
+    return None if not finite else float(min(finite))
+
+
 def load_rows(root):
     rows = []
     errors = []
@@ -84,6 +96,10 @@ def _configuration_ok(row, profile):
 def _summarize(rows):
     designs = [_design(row) for row in rows]
     audits = [dict(row.get("certificate_outcome_audit") or {}) for row in rows]
+    certified_counts = [
+        int(audit.get("posterior_certified_count", 0) or 0)
+        for audit in audits
+    ]
     projections = Counter(str(item.get("projection", "missing"))
                           for item in designs)
     return {
@@ -111,13 +127,16 @@ def _summarize(rows):
             for item in designs),
         "median_lean_excitation_kappa": _median(
             item.get("lean_excitation_kappa") for item in designs),
+        "minimum_lean_excitation_kappa": _minimum(
+            item.get("lean_excitation_kappa") for item in designs),
         "median_target_evidence_count": _median(
             item.get("target_evidence_solution_count") for item in designs),
         "median_replicated_solution_count": _median(
             item.get("replicated_solution_count") for item in designs),
         "projection_counts": dict(sorted(projections.items())),
-        "posterior_certified_count": sum(int(audit.get(
-            "posterior_certified_count", 0) or 0) for audit in audits),
+        "posterior_certified_count": sum(certified_counts),
+        "nonvacuous_run_count": sum(value > 0 for value in certified_counts),
+        "vacuous_run_count": sum(value == 0 for value in certified_counts),
         "false_certificate_count": sum(int(audit.get(
             "false_certificate_count", 0) or 0) for audit in audits),
         "true_feasible_recommendation_count": sum(bool(row.get(
@@ -151,6 +170,12 @@ def analyze(root, registration, expected_count=15):
         selected
         and overall["finite_sample_hvd_applicable_count"] == len(selected)
     )
+    finite_sample_audit_passed = bool(contract_complete and assumption_complete)
+    nonvacuity_in_every_domain = bool(
+        selected
+        and all(by_domain[domain]["posterior_certified_count"] > 0
+                for domain in DOMAINS)
+    )
     return {
         "scope": "v51_statistical_closure_v2_audit",
         "implementation_contract_id": IMPLEMENTATION_CONTRACT_ID,
@@ -170,9 +195,16 @@ def analyze(root, registration, expected_count=15):
         "by_domain": by_domain,
         "contract_complete": contract_complete,
         "finite_sample_hvd_assumptions_hold_for_all_runs": assumption_complete,
+        "finite_sample_hvd_audit_passed": finite_sample_audit_passed,
+        "certificate_nonvacuity_observed_in_this_audit": bool(
+            overall["posterior_certified_count"] > 0
+        ),
+        "certificate_nonvacuity_observed_in_every_domain": (
+            nonvacuity_in_every_domain
+        ),
         "publication_eligible": bool(
-            contract_complete
-            and assumption_complete
+            finite_sample_audit_passed
+            and nonvacuity_in_every_domain
             and overall["false_certificate_count"] == 0
         ),
     }
