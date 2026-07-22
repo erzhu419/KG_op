@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, asdict
+from math import gcd
 import multiprocessing
 import os
 from pathlib import Path
@@ -88,6 +89,9 @@ def _fork_exact_kg_candidate(x):
         current_value,
         expert_uniform,
         sample_weights,
+        secondary_terminal_mode,
+        secondary_current_value,
+        prefix_sample_count,
     ) = _FORK_EXACT_KG_CONTEXT
     return algorithm._exact_posterior_update_score_one(
         x,
@@ -97,6 +101,9 @@ def _fork_exact_kg_candidate(x):
         expert_uniform,
         sample_weights,
         return_diagnostics=True,
+        secondary_terminal_mode=secondary_terminal_mode,
+        secondary_current_value=secondary_current_value,
+        prefix_sample_count=prefix_sample_count,
     )
 
 
@@ -113,10 +120,14 @@ def _fork_exact_kg_candidate_chunk(payload):
         current_value,
         expert_uniform,
         sample_weights,
+        secondary_terminal_mode,
+        secondary_current_value,
+        prefix_sample_count,
     ) = _FORK_EXACT_KG_CONTEXT
     indices = np.asarray(sample_indices, dtype=int)
     chunk_weights = np.asarray(sample_weights, dtype=float)[indices]
     mass = float(np.sum(chunk_weights))
+    local_prefix_count = int(np.sum(indices < int(prefix_sample_count)))
     result = algorithm._exact_posterior_update_score_one(
         candidate,
         np.asarray(common_z, dtype=float)[indices],
@@ -125,7 +136,13 @@ def _fork_exact_kg_candidate_chunk(payload):
         np.asarray(expert_uniform, dtype=float)[indices],
         chunk_weights,
         return_diagnostics=True,
+        secondary_terminal_mode=secondary_terminal_mode,
+        secondary_current_value=secondary_current_value,
+        prefix_sample_count=local_prefix_count,
     )
+    result["_prefix_mass"] = float(np.sum(
+        chunk_weights[:local_prefix_count]))
+    result["_sample_start"] = int(indices[0]) if len(indices) else -1
     return mass, result
 
 
@@ -297,6 +314,11 @@ class SingleOLHKGConfig:
     exact_kg_use_score: bool = False
     exact_kg_blend: float = 0.0
     exact_kg_terminal_mode: str = "hard_certified"
+    exact_kg_joint_terminal_reuse: bool = True
+    exact_kg_reuse_nested_prefix: bool = True
+    exact_kg_skip_redundant_primary_update: bool = True
+    exact_kg_chunk_schedule: str = "balanced_lcm"
+    exact_kg_max_chunks_per_candidate: int = 8
     decision_contract_mode: str = "legacy"
     terminal_bayes_violation_penalty: float = 5.0
     terminal_frontier_candidate_count: int = 0
@@ -350,8 +372,12 @@ class SingleOLHKGConfig:
     evaluate_or_replicate_baseline_new_action_count: int = 0
     policy_improvement_mode: str = "off"
     policy_improvement_score_normalization: str = "none"
+    policy_improvement_score_transform: str = "identity"
     policy_improvement_mc_error_bound: float = 0.0
     policy_improvement_certificate_mc_error_bound: float = 0.0
+    policy_improvement_guard_mode: str = "uniform_score"
+    policy_improvement_pairwise_prefix_samples: int = 32
+    policy_improvement_pairwise_error_multiplier: float = 1.25
     policy_improvement_rollout_depth: int = 1
     policy_improvement_rollout_max_arms: int = 4
     policy_improvement_rollout_mc_samples: int = 2
@@ -9066,8 +9092,12 @@ class SingleOLHKGAlgorithm:
         ordered.extend(x for x in observed if x not in set(ordered))
         return unique_candidates(ordered)
 
-    def _terminal_value_contract_id(self):
-        mode = self._effective_exact_terminal_mode().replace("-", "_")
+    def _terminal_value_contract_id(self, terminal_mode_override=None):
+        mode = (
+            self._effective_exact_terminal_mode()
+            if terminal_mode_override is None
+            else str(terminal_mode_override).lower()
+        ).replace("-", "_")
         aleatoric = str(
             self.config.decision_aleatoric_mode or "certification_upper"
         ).strip().lower().replace("-", "_")
@@ -9091,6 +9121,7 @@ class SingleOLHKGAlgorithm:
         pool,
         task_ensemble=None,
         observations=None,
+        terminal_mode_override=None,
     ):
         """Terminal certified value used by the optional exact-update KG.
 
@@ -9101,7 +9132,11 @@ class SingleOLHKGAlgorithm:
         pool = self._terminal_action_pool(pool, observations=observations)
         if len(pool) == 0:
             return 0.0
-        terminal_mode = self._effective_exact_terminal_mode()
+        terminal_mode = (
+            self._effective_exact_terminal_mode()
+            if terminal_mode_override is None
+            else str(terminal_mode_override).lower()
+        )
         if terminal_mode in (
             "certificate_deficit",
             "certificate-deficit",
@@ -9402,11 +9437,59 @@ class SingleOLHKGAlgorithm:
             raise ValueError(f"unknown policy improvement mode {mode!r}")
         return mode
 
+    def _policy_improvement_guard_mode(self):
+        mode = str(
+            self.config.policy_improvement_guard_mode or "uniform_score"
+        ).strip().lower().replace("-", "_")
+        aliases = {
+            "uniform": "uniform_score",
+            "two_eta": "uniform_score",
+            "paired": "paired_nested_difference",
+            "paired_difference": "paired_nested_difference",
+            "nested_difference": "paired_nested_difference",
+            "absolute": "paired_nested_absolute",
+            "current_relative": "paired_nested_absolute",
+            "paired_absolute": "paired_nested_absolute",
+        }
+        mode = aliases.get(mode, mode)
+        if mode not in {
+            "uniform_score",
+            "paired_nested_difference",
+            "paired_nested_absolute",
+        }:
+            raise ValueError(
+                f"unknown policy-improvement guard mode {mode!r}")
+        return mode
+
     def _policy_improvement_contract_id(self):
         mode = self._policy_improvement_mode()
         if mode == "off":
             return "disabled_v51_compatible"
         if mode == "certificate_constrained":
+            if self._policy_improvement_guard_mode() == (
+                "paired_nested_absolute"
+            ):
+                if self._policy_improvement_score_transform() != (
+                    "bounded_current_gain"
+                ):
+                    raise ValueError(
+                        "paired nested-absolute guard requires "
+                        "bounded_current_gain")
+                return "v55_current_relative_joint_improvement_v1"
+            if self._policy_improvement_guard_mode() == (
+                "paired_nested_difference"
+            ):
+                if self._policy_improvement_score_transform() != (
+                    "bounded_current_gain"
+                ):
+                    raise ValueError(
+                        "paired nested-difference guard requires "
+                        "bounded_current_gain")
+                return "v54_paired_difference_guard_v1"
+            if self._policy_improvement_score_transform() == (
+                "bounded_current_gain"
+            ):
+                return "v53_constrained_certificate_deficit_v3"
             if self._policy_improvement_score_normalization() == (
                 "current_terminal"
             ):
@@ -9431,6 +9514,24 @@ class SingleOLHKGAlgorithm:
                 f"{mode!r}")
         return mode
 
+    def _policy_improvement_score_transform(self):
+        mode = str(
+            self.config.policy_improvement_score_transform or "identity"
+        ).strip().lower().replace("-", "_")
+        aliases = {
+            "none": "identity",
+            "off": "identity",
+            "bounded": "bounded_current_gain",
+            "clipped": "bounded_current_gain",
+            "winsorized": "bounded_current_gain",
+        }
+        mode = aliases.get(mode, mode)
+        if mode not in {"identity", "bounded_current_gain"}:
+            raise ValueError(
+                "unknown policy-improvement score transform "
+                f"{mode!r}")
+        return mode
+
     @staticmethod
     def _positive_terminal_score_scale(value):
         flat = np.asarray(value, dtype=float).reshape(-1)
@@ -9438,7 +9539,14 @@ class SingleOLHKGAlgorithm:
         return max(1.0, float(np.max(finite)) if len(finite) else 1.0)
 
     def _policy_improvement_score_scales(self):
+        transform = self._policy_improvement_score_transform()
         mode = self._policy_improvement_score_normalization()
+        if transform == "bounded_current_gain":
+            if mode != "none":
+                raise ValueError(
+                    "bounded_current_gain already uses its frozen current-"
+                    "terminal scale and cannot be normalized twice")
+            return 1.0, 1.0
         if mode == "none":
             return 1.0, 1.0
         return (
@@ -9447,6 +9555,22 @@ class SingleOLHKGAlgorithm:
             self._positive_terminal_score_scale(getattr(
                 self, "_last_certificate_deficit_current_value", 1.0)),
         )
+
+    def _policy_improvement_sample_gain(self, current_value, future_value):
+        """Return the per-fantasy score used by the guarded V53 policy.
+
+        V53-v3 clips each normalized fantasy improvement before averaging.
+        This leaves the terminal recommendation functional untouched while
+        preventing a single extreme GP fantasy from dominating numerical VOI.
+        The clipping scale is frozen by the pre-update terminal value and is
+        therefore common to every action in the decision stage.
+        """
+
+        gain = self._terminal_diagnostic_gain(current_value, future_value)
+        if self._policy_improvement_score_transform() == "identity":
+            return float(gain)
+        scale = self._positive_terminal_score_scale(current_value)
+        return float(np.clip(float(gain) / scale, -1.0, 1.0))
 
     def _guarded_one_step_policy_improvement(
         self,
@@ -9522,6 +9646,219 @@ class SingleOLHKGAlgorithm:
         }
 
 
+    def _guarded_current_relative_joint_improvement(
+        self,
+        candidates,
+        exact_scores,
+        certificate_scores,
+        backend_score,
+    ):
+        """Select the action with the largest positive joint score LCB.
+
+        Both score heads are reductions from the unchanged current terminal
+        state. The literal V51 risk-best action remains the fallback when no
+        action has positive nested-CRN lower bounds for both reductions.
+        """
+
+        scores = np.asarray(exact_scores, dtype=float).reshape(-1)
+        certificate_scores = np.asarray(
+            certificate_scores, dtype=float).reshape(-1)
+        if len(scores) != len(certificate_scores):
+            raise ValueError(
+                "risk and certificate score arrays must have equal length")
+        active = backend_score.get("evaluate_or_replicate_active_indices")
+        baseline = backend_score.get("evaluate_or_replicate_baseline_indices")
+        active = (
+            np.flatnonzero(np.isfinite(scores))
+            if active is None
+            else np.asarray(active, dtype=int).reshape(-1)
+        )
+        baseline = (
+            active
+            if baseline is None
+            else np.asarray(baseline, dtype=int).reshape(-1)
+        )
+        active_set = set(active.tolist())
+        baseline = np.asarray([
+            index for index in baseline if index in active_set
+        ], dtype=int)
+        if len(active) == 0 or len(baseline) == 0:
+            raise RuntimeError(
+                "current-relative joint improvement requires nonempty "
+                "active and baseline sets")
+
+        risk_raw = np.asarray(getattr(
+            self, "_last_exact_kg_raw_scores", scores), dtype=float)
+        risk_raw = np.where(np.isfinite(risk_raw), risk_raw, -np.inf)
+        certificate_raw_source = np.asarray(getattr(
+            self,
+            "_last_certificate_deficit_raw_scores",
+            certificate_scores,
+        ), dtype=float)
+        certificate_raw = np.where(
+            np.isfinite(certificate_raw_source),
+            certificate_raw_source,
+            -np.inf,
+        )
+        risk_scale, certificate_scale = (
+            self._policy_improvement_score_scales())
+        risk_policy = np.asarray(getattr(
+            self, "_last_exact_kg_policy_scores", risk_raw), dtype=float)
+        certificate_policy = np.asarray(getattr(
+            self,
+            "_last_certificate_deficit_policy_scores",
+            certificate_scores,
+        ), dtype=float)
+        risk_policy = np.where(
+            np.isfinite(risk_policy), risk_policy / risk_scale, -np.inf)
+        certificate_policy = np.where(
+            np.isfinite(certificate_policy),
+            certificate_policy / certificate_scale,
+            -np.inf,
+        )
+        low_risk = np.asarray(getattr(
+            self,
+            "_last_pairwise_prefix_risk_policy_scores",
+            np.empty(0),
+        ), dtype=float).reshape(-1)
+        low_certificate = np.asarray(getattr(
+            self,
+            "_last_pairwise_prefix_certificate_policy_scores",
+            np.empty(0),
+        ), dtype=float).reshape(-1)
+        if len(low_risk) != len(scores) or len(low_certificate) != len(scores):
+            raise RuntimeError(
+                "paired nested-absolute scores are unavailable")
+        low_risk = low_risk / risk_scale
+        low_certificate = low_certificate / certificate_scale
+
+        multiplier = float(
+            self.config.policy_improvement_pairwise_error_multiplier)
+        prefix_samples = int(getattr(
+            self, "_last_pairwise_prefix_sample_count", 0))
+        high_samples = int(getattr(
+            self, "_last_pairwise_high_sample_count", 0))
+        risk_radius = np.full(len(scores), np.nan, dtype=float)
+        certificate_radius = np.full(len(scores), np.nan, dtype=float)
+        risk_lcb = np.full(len(scores), -np.inf, dtype=float)
+        certificate_lcb = np.full(len(scores), -np.inf, dtype=float)
+        joint_lcb = np.full(len(scores), -np.inf, dtype=float)
+        admissible = []
+        for raw_index in active:
+            index = int(raw_index)
+            risk_radius[index] = multiplier * abs(
+                float(risk_policy[index] - low_risk[index]))
+            certificate_radius[index] = multiplier * abs(
+                float(certificate_policy[index] - low_certificate[index]))
+            risk_lcb[index] = risk_policy[index] - risk_radius[index]
+            certificate_lcb[index] = (
+                certificate_policy[index] - certificate_radius[index])
+            joint_lcb[index] = min(
+                risk_lcb[index], certificate_lcb[index])
+            if joint_lcb[index] > 0.0:
+                admissible.append(index)
+
+        baseline_index = int(baseline[
+            int(np.argmax(risk_raw[baseline]))
+        ])
+        if admissible:
+            selected = max(
+                admissible,
+                key=lambda index: (
+                    float(joint_lcb[index]),
+                    float(risk_lcb[index] + certificate_lcb[index]),
+                    float(certificate_lcb[index]),
+                    -int(index),
+                ),
+            )
+            status = (
+                "current_relative_joint_baseline_selected"
+                if selected == baseline_index
+                else "current_relative_joint_switched"
+            )
+        else:
+            selected = baseline_index
+            status = "no_current_relative_joint_admissible_action"
+        switched = bool(selected != baseline_index)
+
+        return int(selected), {
+            "status": status,
+            "mode": self._policy_improvement_mode(),
+            "guard_mode": "paired_nested_absolute",
+            "baseline_index": int(baseline_index),
+            "certificate_index": int(selected),
+            "selected_index": int(selected),
+            "baseline_action": list(map(int, candidates[baseline_index])),
+            "certificate_action": list(map(int, candidates[selected])),
+            "estimated_risk_reduction": float(risk_policy[selected]),
+            "estimated_certificate_reduction": float(
+                certificate_policy[selected]),
+            "raw_estimated_risk_reduction": float(risk_raw[selected]),
+            "raw_estimated_certificate_reduction": float(
+                certificate_raw[selected]),
+            "estimated_risk_advantage": float(
+                risk_policy[selected] - risk_policy[baseline_index]),
+            "estimated_certificate_advantage": float(
+                certificate_policy[selected]
+                - certificate_policy[baseline_index]),
+            "raw_estimated_risk_advantage": float(
+                risk_raw[selected] - risk_raw[baseline_index]),
+            "raw_estimated_certificate_advantage": float(
+                certificate_raw[selected] - certificate_raw[baseline_index]),
+            "opportunity_risk_gap_to_v51": float(max(
+                risk_policy[baseline_index] - risk_policy[selected], 0.0)),
+            "score_normalization": (
+                self._policy_improvement_score_normalization()),
+            "score_transform": self._policy_improvement_score_transform(),
+            "risk_score_scale": float(risk_scale),
+            "certificate_score_scale": float(certificate_scale),
+            "pairwise_prefix_sample_count": prefix_samples,
+            "pairwise_high_sample_count": high_samples,
+            "pairwise_error_multiplier": multiplier,
+            "risk_pairwise_radius_by_index": {
+                str(int(index)): float(risk_radius[int(index)])
+                for index in active
+            },
+            "certificate_pairwise_radius_by_index": {
+                str(int(index)): float(certificate_radius[int(index)])
+                for index in active
+            },
+            "risk_lcb_by_index": {
+                str(int(index)): float(risk_lcb[int(index)])
+                for index in active
+            },
+            "certificate_lcb_by_index": {
+                str(int(index)): float(certificate_lcb[int(index)])
+                for index in active
+            },
+            "joint_lcb_by_index": {
+                str(int(index)): float(joint_lcb[int(index)])
+                for index in active
+            },
+            "risk_prefix_score_by_index": {
+                str(int(index)): float(low_risk[int(index)])
+                for index in active
+            },
+            "certificate_prefix_score_by_index": {
+                str(int(index)): float(low_certificate[int(index)])
+                for index in active
+            },
+            "current_relative_admissible_indices": list(map(int, admissible)),
+            "risk_admissible_indices": list(map(int, admissible)),
+            "risk_admissible_count": int(len(admissible)),
+            "risk_switch_threshold": float(risk_radius[selected]),
+            "certificate_switch_threshold": float(
+                certificate_radius[selected]),
+            "switched": switched,
+            "baseline_action_count": int(len(baseline)),
+            "union_action_count": int(len(active)),
+            "conditional_noninferiority_contract": (
+                "nested_absolute_error_bounds_imply_current_relative_"
+                "joint_improvement"),
+            "target_oracle_used": False,
+        }
+
+
     def _guarded_certificate_deficit_policy_improvement(
         self,
         candidates,
@@ -9529,7 +9866,15 @@ class SingleOLHKGAlgorithm:
         certificate_scores,
         backend_score,
     ):
-        """Improve certificate deficit only inside the V51 risk-safe set."""
+        """Improve certificate deficit under the configured joint guard."""
+
+        if self._policy_improvement_guard_mode() == "paired_nested_absolute":
+            return self._guarded_current_relative_joint_improvement(
+                candidates,
+                exact_scores,
+                certificate_scores,
+                backend_score,
+            )
 
         scores = np.asarray(exact_scores, dtype=float).reshape(-1)
         certificate_scores = np.asarray(
@@ -9559,31 +9904,104 @@ class SingleOLHKGAlgorithm:
         risk_raw = np.asarray(getattr(
             self, "_last_exact_kg_raw_scores", scores), dtype=float)
         risk_raw = np.where(np.isfinite(risk_raw), risk_raw, -np.inf)
+        certificate_raw_source = np.asarray(getattr(
+            self,
+            "_last_certificate_deficit_raw_scores",
+            certificate_scores,
+        ), dtype=float)
         certificate_raw = np.where(
-            np.isfinite(certificate_scores), certificate_scores, -np.inf)
+            np.isfinite(certificate_raw_source),
+            certificate_raw_source,
+            -np.inf,
+        )
         risk_scale, certificate_scale = (
             self._policy_improvement_score_scales())
-        risk_policy = risk_raw / risk_scale
-        certificate_policy = certificate_raw / certificate_scale
+        risk_policy = np.asarray(getattr(
+            self, "_last_exact_kg_policy_scores", risk_raw), dtype=float)
+        certificate_policy = np.asarray(getattr(
+            self,
+            "_last_certificate_deficit_policy_scores",
+            certificate_scores,
+        ), dtype=float)
+        risk_policy = np.where(
+            np.isfinite(risk_policy), risk_policy / risk_scale, -np.inf)
+        certificate_policy = np.where(
+            np.isfinite(certificate_policy),
+            certificate_policy / certificate_scale,
+            -np.inf,
+        )
+        # The fallback remains the literal V51 action, selected by the
+        # untransformed Bayes-risk score inside the V51 subset.
         baseline_index = int(baseline[
-            int(np.argmax(risk_policy[baseline]))
+            int(np.argmax(risk_raw[baseline]))
         ])
+        guard_mode = self._policy_improvement_guard_mode()
         risk_eta = max(
             float(self.config.policy_improvement_mc_error_bound), 0.0)
         certificate_eta = max(float(
             self.config.policy_improvement_certificate_mc_error_bound), 0.0)
         risk_threshold = 2.0 * risk_eta
         certificate_threshold = 2.0 * certificate_eta
+        pairwise_multiplier = None
+        pairwise_prefix_samples = None
+        pairwise_high_samples = None
+        risk_pairwise_radii = np.full(len(scores), np.nan, dtype=float)
+        certificate_pairwise_radii = np.full(
+            len(scores), np.nan, dtype=float)
+        risk_prefix_advantages = np.full(len(scores), np.nan, dtype=float)
+        certificate_prefix_advantages = np.full(
+            len(scores), np.nan, dtype=float)
+
+        if guard_mode == "paired_nested_difference":
+            pairwise_multiplier = float(
+                self.config.policy_improvement_pairwise_error_multiplier)
+            pairwise_prefix_samples = int(getattr(
+                self, "_last_pairwise_prefix_sample_count", 0))
+            pairwise_high_samples = int(getattr(
+                self, "_last_pairwise_high_sample_count", 0))
+            low_risk = np.asarray(getattr(
+                self,
+                "_last_pairwise_prefix_risk_policy_scores",
+                np.empty(0),
+            ), dtype=float).reshape(-1)
+            low_certificate = np.asarray(getattr(
+                self,
+                "_last_pairwise_prefix_certificate_policy_scores",
+                np.empty(0),
+            ), dtype=float).reshape(-1)
+            if (
+                len(low_risk) != len(scores)
+                or len(low_certificate) != len(scores)
+            ):
+                raise RuntimeError(
+                    "paired nested-difference scores are unavailable")
+            low_risk = low_risk / risk_scale
+            low_certificate = low_certificate / certificate_scale
+            risk_threshold = np.nan
+            certificate_threshold = np.nan
 
         risk_admissible = [baseline_index]
+        risk_pairwise_radii[baseline_index] = 0.0
+        risk_prefix_advantages[baseline_index] = 0.0
         for raw_index in active:
             index = int(raw_index)
-            if (
-                index != baseline_index
-                and risk_policy[index] - risk_policy[baseline_index]
-                > risk_threshold
-            ):
+            if index == baseline_index:
+                continue
+            high_advantage = float(
+                risk_policy[index] - risk_policy[baseline_index])
+            if guard_mode == "paired_nested_difference":
+                low_advantage = float(
+                    low_risk[index] - low_risk[baseline_index])
+                radius = float(pairwise_multiplier * abs(
+                    high_advantage - low_advantage))
+                risk_prefix_advantages[index] = low_advantage
+                risk_pairwise_radii[index] = radius
+                admissible = high_advantage > radius
+            else:
+                admissible = high_advantage > risk_threshold
+            if admissible:
                 risk_admissible.append(index)
+
         certificate_index = max(
             risk_admissible,
             key=lambda index: (float(certificate_policy[index]), -int(index)),
@@ -9598,6 +10016,21 @@ class SingleOLHKGAlgorithm:
         raw_certificate_advantage = float(
             certificate_raw[certificate_index]
             - certificate_raw[baseline_index])
+        if guard_mode == "paired_nested_difference":
+            low_certificate_advantage = float(
+                low_certificate[certificate_index]
+                - low_certificate[baseline_index])
+            certificate_radius = float(pairwise_multiplier * abs(
+                certificate_advantage - low_certificate_advantage))
+            certificate_prefix_advantages[baseline_index] = 0.0
+            certificate_prefix_advantages[
+                certificate_index] = low_certificate_advantage
+            certificate_pairwise_radii[baseline_index] = 0.0
+            certificate_pairwise_radii[
+                certificate_index] = certificate_radius
+            certificate_threshold = certificate_radius
+            risk_threshold = float(
+                risk_pairwise_radii[certificate_index])
         switched = bool(
             certificate_index != baseline_index
             and certificate_advantage > certificate_threshold
@@ -9626,6 +10059,8 @@ class SingleOLHKGAlgorithm:
                 raw_certificate_advantage),
             "score_normalization": (
                 self._policy_improvement_score_normalization()),
+            "score_transform": self._policy_improvement_score_transform(),
+            "guard_mode": guard_mode,
             "risk_score_scale": float(risk_scale),
             "certificate_score_scale": float(certificate_scale),
             "risk_mc_uniform_error_bound": risk_eta,
@@ -9634,16 +10069,46 @@ class SingleOLHKGAlgorithm:
                 risk_eta * risk_scale),
             "certificate_mc_uniform_error_bound_raw_equivalent": float(
                 certificate_eta * certificate_scale),
-            "risk_switch_threshold": risk_threshold,
-            "certificate_switch_threshold": certificate_threshold,
+            "risk_switch_threshold": float(risk_threshold),
+            "certificate_switch_threshold": float(certificate_threshold),
+            "pairwise_prefix_sample_count": pairwise_prefix_samples,
+            "pairwise_high_sample_count": pairwise_high_samples,
+            "pairwise_error_multiplier": pairwise_multiplier,
+            "risk_pairwise_radius_by_index": {
+                str(int(index)): float(risk_pairwise_radii[int(index)])
+                for index in active
+                if np.isfinite(risk_pairwise_radii[int(index)])
+            },
+            "certificate_pairwise_radius_by_index": {
+                str(int(index)): float(
+                    certificate_pairwise_radii[int(index)])
+                for index in active
+                if np.isfinite(certificate_pairwise_radii[int(index)])
+            },
+            "risk_prefix_advantage_by_index": {
+                str(int(index)): float(risk_prefix_advantages[int(index)])
+                for index in active
+                if np.isfinite(risk_prefix_advantages[int(index)])
+            },
+            "certificate_prefix_advantage_by_index": {
+                str(int(index)): float(
+                    certificate_prefix_advantages[int(index)])
+                for index in active
+                if np.isfinite(certificate_prefix_advantages[int(index)])
+            },
             "risk_admissible_indices": list(map(int, risk_admissible)),
             "risk_admissible_count": int(len(risk_admissible)),
             "switched": switched,
             "baseline_action_count": int(len(baseline)),
             "union_action_count": int(len(active)),
             "conditional_noninferiority_contract": (
-                "uniform_risk_and_certificate_mc_errors_imply_joint_"
-                "posterior_improvement"
+                "paired_difference_error_bounds_imply_joint_posterior_"
+                "improvement"
+                if guard_mode == "paired_nested_difference"
+                else (
+                    "uniform_risk_and_certificate_mc_errors_imply_joint_"
+                    "posterior_improvement"
+                )
             ),
             "target_oracle_used": False,
         }
@@ -10359,6 +10824,38 @@ class SingleOLHKGAlgorithm:
             )
         return gpr_clone, variance_clone
 
+    def _exact_primary_fantasy_update_required(
+        self, secondary_terminal_mode=None,
+    ):
+        """Whether either exact terminal head reads primary GPR/HVD models.
+
+        In the promoted task-joint contract, Bayes-risk and certificate-
+        deficit values are functions of the updated task ensemble alone. The
+        primary GPR/HVD update is then a shadow computation, not part of the
+        mathematical terminal functional. All other authorities and terminal
+        modes conservatively retain the historical update.
+        """
+
+        if not bool(self.config.exact_kg_skip_redundant_primary_update):
+            return True
+        if self.task_ensemble is None:
+            return True
+        if self._certification_head_authority() != "task_joint":
+            return True
+        modes = [self._effective_exact_terminal_mode()]
+        if secondary_terminal_mode is not None:
+            modes.append(str(secondary_terminal_mode))
+        ensemble_only_modes = {
+            "bayes_risk",
+            "posterior_bayes_risk",
+            "certificate_deficit",
+        }
+        normalized = {
+            str(mode).strip().lower().replace("-", "_")
+            for mode in modes
+        }
+        return not normalized.issubset(ensemble_only_modes)
+
     def _exact_posterior_update_score_one(
         self,
         x,
@@ -10368,6 +10865,9 @@ class SingleOLHKGAlgorithm:
         common_expert_uniform=None,
         common_sample_weights=None,
         return_diagnostics=False,
+        secondary_terminal_mode=None,
+        secondary_current_value=None,
+        prefix_sample_count=0,
     ):
         x_arr = np.asarray(x, dtype=int)
         sample_weights = (
@@ -10386,16 +10886,77 @@ class SingleOLHKGAlgorithm:
             raise ValueError(
                 "exact KG sample weights must be finite and nonnegative")
         sample_weights = sample_weights / weight_total
+
+        def terminal_summary(reference_value, future_values, weights=None):
+            summary_weights = (
+                sample_weights
+                if weights is None
+                else np.asarray(weights, dtype=float).reshape(-1)
+            )
+            if len(summary_weights) != len(future_values):
+                raise ValueError("terminal summary weights must match values")
+            summary_weight_total = float(np.sum(summary_weights))
+            if summary_weight_total <= 0.0:
+                raise ValueError("terminal summary weights have zero mass")
+            summary_weights = summary_weights / summary_weight_total
+            expected_value = np.tensordot(
+                summary_weights,
+                np.asarray(future_values, dtype=float),
+                axes=(0, 0),
+            )
+            component_gain = (
+                np.asarray(reference_value, dtype=float)
+                - np.asarray(expected_value, dtype=float)
+            )
+            raw_score = self._terminal_diagnostic_gain(
+                reference_value, expected_value)
+            gains = np.asarray([
+                self._policy_improvement_sample_gain(
+                    reference_value, future_value)
+                for future_value in future_values
+            ], dtype=float)
+            return {
+                "score": (
+                    max(raw_score, 0.0)
+                    if self.config.exact_kg_clip_negative
+                    else raw_score
+                ),
+                "raw_score": float(raw_score),
+                "policy_score": float(np.dot(summary_weights, gains)),
+                "expected_terminal_value": (
+                    np.asarray(expected_value, dtype=float).tolist()
+                    if np.asarray(expected_value).ndim > 0
+                    else float(expected_value)
+                ),
+                "component_gain": (
+                    np.asarray(component_gain, dtype=float).tolist()
+                    if np.asarray(component_gain).ndim > 0
+                    else float(component_gain)
+                ),
+            }
+
+        secondary_enabled = bool(secondary_terminal_mode is not None)
+        if secondary_enabled and secondary_current_value is None:
+            raise ValueError(
+                "secondary terminal mode requires its current value")
+
         existing_observations = list(self.observations.get(
             tuple(int(v) for v in x_arr), []))
-        mu_before = [self.gpr[i].posterior_mean(x_arr) for i in range(2)]
-        sigma2_before = [
-            self.variance_model.predict_variance(i, x_arr, self.problem)
-            for i in range(2)
-        ]
-        epistemic_before = [
-            self.gpr[i].posterior_var(x_arr) for i in range(2)
-        ]
+        primary_update_required = (
+            self._exact_primary_fantasy_update_required(
+                secondary_terminal_mode))
+        if primary_update_required:
+            mu_before = [
+                self.gpr[i].posterior_mean(x_arr) for i in range(2)]
+            sigma2_before = [
+                self.variance_model.predict_variance(i, x_arr, self.problem)
+                for i in range(2)
+            ]
+            epistemic_before = [
+                self.gpr[i].posterior_var(x_arr) for i in range(2)
+            ]
+        else:
+            mu_before = sigma2_before = epistemic_before = None
         if self.task_ensemble is not None:
             uniforms = (
                 np.asarray(common_expert_uniform, dtype=float)
@@ -10403,6 +10964,7 @@ class SingleOLHKGAlgorithm:
                 else np.full(len(common_z), 0.5, dtype=float)
             )
             future_values = []
+            secondary_future_values = [] if secondary_enabled else None
             entropy_gains = []
             weight_movements = []
             timing = {
@@ -10433,16 +10995,19 @@ class SingleOLHKGAlgorithm:
                     existing_observations=existing_observations,
                     tau=self.problem.tau,
                 )
-                gpr_clone, variance_clone = (
-                    self._exact_primary_fantasy_update(
-                        x_arr,
-                        y,
-                        existing_observations,
-                        mu_before,
-                        sigma2_before,
-                        epistemic_before,
+                if primary_update_required:
+                    gpr_clone, variance_clone = (
+                        self._exact_primary_fantasy_update(
+                            x_arr,
+                            y,
+                            existing_observations,
+                            mu_before,
+                            sigma2_before,
+                            epistemic_before,
+                        )
                     )
-                )
+                else:
+                    gpr_clone, variance_clone = self.gpr, self.variance_model
                 future_observations = {
                     tuple(int(v) for v in key): [
                         np.asarray(value, dtype=float).copy()
@@ -10462,42 +11027,28 @@ class SingleOLHKGAlgorithm:
                     task_ensemble=ensemble_clone,
                     observations=future_observations,
                 )
-                timing["robust_terminal"] += time.perf_counter() - started
                 future_values.append(future_value)
+                if secondary_future_values is not None:
+                    secondary_future_values.append(
+                        self._terminal_value_from_models(
+                            gpr_clone,
+                            variance_clone,
+                            terminal_pool,
+                            task_ensemble=ensemble_clone,
+                            observations=future_observations,
+                            terminal_mode_override=(
+                                secondary_terminal_mode),
+                        )
+                    )
+                timing["robust_terminal"] += time.perf_counter() - started
                 entropy_gains.append(
                     entropy_before - ensemble_clone.inference_entropy())
                 weight_movements.append(float(np.sum(np.abs(
                     ensemble_clone.inference_weights()
                     - weights_before
                 ))))
-            expected_value = np.tensordot(
-                sample_weights,
-                np.asarray(future_values, dtype=float),
-                axes=(0, 0),
-            )
-            component_gain = (
-                np.asarray(current_value, dtype=float)
-                - np.asarray(expected_value, dtype=float)
-            )
-            raw_score = self._terminal_diagnostic_gain(
-                current_value, expected_value)
             result = {
-                "score": (
-                    max(raw_score, 0.0)
-                    if self.config.exact_kg_clip_negative
-                    else raw_score
-                ),
-                "raw_score": raw_score,
-                "expected_terminal_value": (
-                    np.asarray(expected_value, dtype=float).tolist()
-                    if np.asarray(expected_value).ndim > 0
-                    else float(expected_value)
-                ),
-                "component_gain": (
-                    np.asarray(component_gain, dtype=float).tolist()
-                    if np.asarray(component_gain).ndim > 0
-                    else float(component_gain)
-                ),
+                **terminal_summary(current_value, future_values),
                 "task_entropy_gain": float(np.dot(
                     sample_weights, entropy_gains)),
                 "task_weight_movement": float(np.dot(
@@ -10507,6 +11058,24 @@ class SingleOLHKGAlgorithm:
                     for name, value in timing.items()
                 },
             }
+            if secondary_future_values is not None:
+                result["secondary"] = terminal_summary(
+                    secondary_current_value, secondary_future_values)
+            prefix_count = min(
+                max(0, int(prefix_sample_count)), len(future_values))
+            if prefix_count:
+                prefix_weights = sample_weights[:prefix_count]
+                result["prefix"] = terminal_summary(
+                    current_value,
+                    future_values[:prefix_count],
+                    prefix_weights,
+                )
+                if secondary_future_values is not None:
+                    result["prefix"]["secondary"] = terminal_summary(
+                        secondary_current_value,
+                        secondary_future_values[:prefix_count],
+                        prefix_weights,
+                    )
             return result if return_diagnostics else result["score"]
 
         pred_sd = [
@@ -10517,6 +11086,7 @@ class SingleOLHKGAlgorithm:
             for i in range(2)
         ]
         future_values = []
+        secondary_future_values = [] if secondary_enabled else None
         for z_vec in common_z:
             y = [
                 float(mu_before[i] + pred_sd[i] * z_vec[i])
@@ -10530,57 +11100,42 @@ class SingleOLHKGAlgorithm:
                 sigma2_before,
                 epistemic_before,
             )
+            future_observations = {
+                **{
+                    tuple(int(v) for v in key): [
+                        np.asarray(value, dtype=float).copy()
+                        for value in values
+                    ]
+                    for key, values in self.observations.items()
+                },
+                tuple(int(v) for v in x_arr): (
+                    [
+                        np.asarray(value, dtype=float).copy()
+                        for value in self.observations.get(
+                            tuple(int(v) for v in x_arr), [])
+                    ]
+                    + [np.asarray(y, dtype=float)]
+                ),
+            }
             future_value = self._terminal_value_from_models(
                 gpr_clone,
                 var_clone,
                 terminal_pool,
-                observations={
-                    **{
-                        tuple(int(v) for v in key): [
-                            np.asarray(value, dtype=float).copy()
-                            for value in values
-                        ]
-                        for key, values in self.observations.items()
-                    },
-                    tuple(int(v) for v in x_arr): (
-                        [
-                            np.asarray(value, dtype=float).copy()
-                            for value in self.observations.get(
-                                tuple(int(v) for v in x_arr), [])
-                        ]
-                        + [np.asarray(y, dtype=float)]
-                    ),
-                },
+                observations=future_observations,
             )
             future_values.append(future_value)
-        expected_value = np.tensordot(
-            sample_weights,
-            np.asarray(future_values, dtype=float),
-            axes=(0, 0),
-        )
-        component_gain = (
-            np.asarray(current_value, dtype=float)
-            - np.asarray(expected_value, dtype=float)
-        )
-        raw_score = self._terminal_diagnostic_gain(
-            current_value, expected_value)
+            if secondary_future_values is not None:
+                secondary_future_values.append(
+                    self._terminal_value_from_models(
+                        gpr_clone,
+                        var_clone,
+                        terminal_pool,
+                        observations=future_observations,
+                        terminal_mode_override=secondary_terminal_mode,
+                    )
+                )
         result = {
-            "score": (
-                max(raw_score, 0.0)
-                if self.config.exact_kg_clip_negative
-                else raw_score
-            ),
-            "raw_score": raw_score,
-            "expected_terminal_value": (
-                np.asarray(expected_value, dtype=float).tolist()
-                if np.asarray(expected_value).ndim > 0
-                else float(expected_value)
-            ),
-            "component_gain": (
-                np.asarray(component_gain, dtype=float).tolist()
-                if np.asarray(component_gain).ndim > 0
-                else float(component_gain)
-            ),
+            **terminal_summary(current_value, future_values),
             "task_entropy_gain": 0.0,
             "task_weight_movement": 0.0,
             "time_clone": 0.0,
@@ -10588,6 +11143,24 @@ class SingleOLHKGAlgorithm:
             "time_joint_update": 0.0,
             "time_robust_terminal": 0.0,
         }
+        if secondary_future_values is not None:
+            result["secondary"] = terminal_summary(
+                secondary_current_value, secondary_future_values)
+        prefix_count = min(
+            max(0, int(prefix_sample_count)), len(future_values))
+        if prefix_count:
+            prefix_weights = sample_weights[:prefix_count]
+            result["prefix"] = terminal_summary(
+                current_value,
+                future_values[:prefix_count],
+                prefix_weights,
+            )
+            if secondary_future_values is not None:
+                result["prefix"]["secondary"] = terminal_summary(
+                    secondary_current_value,
+                    secondary_future_values[:prefix_count],
+                    prefix_weights,
+                )
         return result if return_diagnostics else result["score"]
 
     def _exact_kg_nested_antithetic_samples(self, mc):
@@ -10870,7 +11443,36 @@ class SingleOLHKGAlgorithm:
             np.concatenate(weight_blocks),
         )
 
-    def _exact_posterior_update_scores(self, candidates, terminal_pool):
+    def _exact_kg_chunks_per_candidate(
+        self, jobs, candidate_count, sample_count,
+    ):
+        """Choose deterministic process chunks for balanced worker waves."""
+
+        jobs = max(1, int(jobs))
+        candidate_count = max(1, int(candidate_count))
+        sample_count = max(1, int(sample_count))
+        schedule = str(
+            self.config.exact_kg_chunk_schedule or "balanced_lcm"
+        ).strip().lower().replace("-", "_")
+        if schedule in {"legacy", "minimal", "ceil"}:
+            chunks = int(np.ceil(jobs / float(candidate_count)))
+        elif schedule in {"balanced", "balanced_lcm", "lcm"}:
+            # candidate_count * chunks is a multiple of jobs, so equal-cost
+            # chunks fill every process wave instead of leaving a short tail.
+            chunks = jobs // gcd(jobs, candidate_count)
+        else:
+            raise ValueError(
+                f"unknown exact KG chunk schedule {schedule!r}")
+        max_chunks = max(
+            1, int(self.config.exact_kg_max_chunks_per_candidate))
+        return min(sample_count, max_chunks, max(1, int(chunks)))
+
+    def _exact_posterior_update_scores(
+        self,
+        candidates,
+        terminal_pool,
+        secondary_terminal_mode=None,
+    ):
         """Monte Carlo exact posterior-update KG over a fixed terminal pool.
 
         This is intentionally optional and small-budget friendly.  It samples
@@ -10885,6 +11487,8 @@ class SingleOLHKGAlgorithm:
         if mc <= 0 or len(candidates) == 0:
             self._last_exact_kg_raw_scores = np.zeros(
                 len(candidates), dtype=float)
+            self._last_exact_kg_policy_scores = np.zeros(
+                len(candidates), dtype=float)
             return np.zeros(len(candidates), dtype=float)
         current_value = self._terminal_value_from_models(
             self.gpr,
@@ -10893,6 +11497,28 @@ class SingleOLHKGAlgorithm:
             task_ensemble=self.task_ensemble,
             observations=self.observations,
         )
+        secondary_enabled = bool(secondary_terminal_mode is not None)
+        secondary_current_value = (
+            self._terminal_value_from_models(
+                self.gpr,
+                self.variance_model,
+                terminal_pool,
+                task_ensemble=self.task_ensemble,
+                observations=self.observations,
+                terminal_mode_override=secondary_terminal_mode,
+            )
+            if secondary_enabled else None
+        )
+        self._last_exact_kg_secondary_terminal_mode = (
+            None if not secondary_enabled else str(secondary_terminal_mode))
+        self._last_exact_kg_secondary_terminal_value_contract = (
+            None
+            if not secondary_enabled
+            else self._terminal_value_contract_id(
+                terminal_mode_override=secondary_terminal_mode)
+        )
+        self._last_exact_kg_secondary_current_value = copy.deepcopy(
+            secondary_current_value)
         self._last_exact_kg_terminal_value_contract = (
             self._terminal_value_contract_id())
         self._last_exact_kg_current_terminal_action_pool_size = int(len(
@@ -10908,13 +11534,45 @@ class SingleOLHKGAlgorithm:
         self._last_exact_kg_constraint_posterior_source = (
             self._certification_source(
                 task_ensemble_active=self.task_ensemble is not None))
+        self._last_exact_kg_primary_fantasy_update_skipped = bool(
+            self.task_ensemble is not None
+            and not self._exact_primary_fantasy_update_required(
+                secondary_terminal_mode)
+        )
         (
             common_z,
             common_expert_uniform,
             common_sample_weights,
         ) = self._exact_kg_sample_plan(mc)
+        sampling_mode = str(
+            self.config.exact_kg_sampling_mode or "").lower()
+        requested_prefix_count = int(
+            self.config.policy_improvement_pairwise_prefix_samples)
+        prefix_sample_count = 0
+        if (
+            bool(self.config.exact_kg_reuse_nested_prefix)
+            and bool(self.config.exact_kg_joint_terminal_reuse)
+            and secondary_enabled
+            and str(secondary_terminal_mode).lower().replace("-", "_")
+            == "certificate_deficit"
+            and self._policy_improvement_guard_mode() in {
+                "paired_nested_difference", "paired_nested_absolute",
+            }
+            and sampling_mode in {
+                "antithetic_nested", "nested_antithetic", "paired_nested",
+                "factorized_rqmc_nested", "rqmc_expert_nested",
+                "nested_rqmc_expert",
+            }
+            and 0 < requested_prefix_count < int(mc)
+            and len(common_z) == int(mc)
+        ):
+            prefix_sample_count = requested_prefix_count
+        self._last_exact_kg_reused_prefix_sample_count = int(
+            prefix_sample_count)
+        self._last_exact_kg_reused_prefix_high_sample_count = int(mc)
         out = np.zeros(len(candidates), dtype=float)
         raw_out = np.zeros(len(candidates), dtype=float)
+        policy_out = np.zeros(len(candidates), dtype=float)
         vector_value = np.asarray(current_value).ndim > 0
         expected_values = np.empty(
             (len(candidates), len(np.asarray(current_value).reshape(-1)))
@@ -10922,6 +11580,31 @@ class SingleOLHKGAlgorithm:
             dtype=float,
         )
         component_gains = np.empty_like(expected_values)
+        secondary_raw_out = (
+            np.zeros(len(candidates), dtype=float)
+            if secondary_enabled else None)
+        secondary_policy_out = (
+            np.zeros(len(candidates), dtype=float)
+            if secondary_enabled else None)
+        secondary_vector_value = bool(
+            secondary_enabled
+            and np.asarray(secondary_current_value).ndim > 0)
+        secondary_expected_values = (
+            np.empty(
+                (
+                    len(candidates),
+                    len(np.asarray(
+                        secondary_current_value).reshape(-1)),
+                )
+                if secondary_vector_value else len(candidates),
+                dtype=float,
+            )
+            if secondary_enabled else None
+        )
+        secondary_component_gains = (
+            np.empty_like(secondary_expected_values)
+            if secondary_enabled else None
+        )
         entropy_gain = np.zeros(len(candidates), dtype=float)
         weight_movement = np.zeros(len(candidates), dtype=float)
         task_timing = {
@@ -10933,20 +11616,68 @@ class SingleOLHKGAlgorithm:
                 "robust_terminal",
             )
         }
+        prefix_raw_out = (
+            np.zeros(len(candidates), dtype=float)
+            if prefix_sample_count else None)
+        prefix_policy_out = (
+            np.zeros(len(candidates), dtype=float)
+            if prefix_sample_count else None)
+        prefix_secondary_raw_out = (
+            np.zeros(len(candidates), dtype=float)
+            if prefix_sample_count and secondary_enabled else None)
+        prefix_secondary_policy_out = (
+            np.zeros(len(candidates), dtype=float)
+            if prefix_sample_count and secondary_enabled else None)
 
         def record_result(index, result):
             out[index] = result["score"]
             raw_out[index] = result["raw_score"]
+            policy_out[index] = result["policy_score"]
             expected_values[index] = np.asarray(
                 result["expected_terminal_value"], dtype=float)
             component_gains[index] = np.asarray(
                 result["component_gain"], dtype=float)
+            if secondary_enabled:
+                secondary = dict(result["secondary"])
+                secondary_raw_out[index] = secondary["raw_score"]
+                secondary_policy_out[index] = secondary["policy_score"]
+                secondary_expected_values[index] = np.asarray(
+                    secondary["expected_terminal_value"], dtype=float)
+                secondary_component_gains[index] = np.asarray(
+                    secondary["component_gain"], dtype=float)
             entropy_gain[index] = result["task_entropy_gain"]
             weight_movement[index] = result["task_weight_movement"]
             for name, values in task_timing.items():
                 values[index] = result[f"time_{name}"]
+            if prefix_sample_count:
+                prefix = dict(result["prefix"])
+                prefix_raw_out[index] = prefix["raw_score"]
+                prefix_policy_out[index] = prefix["policy_score"]
+                if secondary_enabled:
+                    prefix_secondary = dict(prefix["secondary"])
+                    prefix_secondary_raw_out[index] = (
+                        prefix_secondary["raw_score"])
+                    prefix_secondary_policy_out[index] = (
+                        prefix_secondary["policy_score"])
+
+        def store_prefix_results():
+            if not prefix_sample_count:
+                return
+            self._last_exact_kg_reused_prefix_raw_scores = (
+                prefix_raw_out.copy())
+            self._last_exact_kg_reused_prefix_policy_scores = (
+                prefix_policy_out.copy())
+            if secondary_enabled:
+                self._last_exact_kg_reused_prefix_secondary_raw_scores = (
+                    prefix_secondary_raw_out.copy())
+                self._last_exact_kg_reused_prefix_secondary_policy_scores = (
+                    prefix_secondary_policy_out.copy())
 
         def combine_chunk_results(chunks):
+            chunks = sorted(
+                chunks,
+                key=lambda item: int(item[1].get("_sample_start", -1)),
+            )
             total_mass = float(sum(mass for mass, _ in chunks))
             if total_mass <= 0.0:
                 raise ValueError("exact KG chunk weights have zero mass")
@@ -10966,6 +11697,10 @@ class SingleOLHKGAlgorithm:
                     else raw_score
                 ),
                 "raw_score": float(raw_score),
+                "policy_score": float(sum(
+                    mass * float(result["policy_score"])
+                    for mass, result in chunks
+                ) / total_mass),
                 "expected_terminal_value": (
                     expected.tolist()
                     if np.asarray(expected).ndim > 0
@@ -10987,6 +11722,124 @@ class SingleOLHKGAlgorithm:
                     mass * float(result[f"time_{name}"])
                     for mass, result in chunks
                 ) / total_mass)
+            if secondary_enabled:
+                secondary_expected = sum(
+                    mass * np.asarray(
+                        result["secondary"]["expected_terminal_value"],
+                        dtype=float,
+                    )
+                    for mass, result in chunks
+                ) / total_mass
+                secondary_component = (
+                    np.asarray(secondary_current_value, dtype=float)
+                    - secondary_expected
+                )
+                secondary_raw = self._terminal_diagnostic_gain(
+                    secondary_current_value, secondary_expected)
+                combined["secondary"] = {
+                    "score": (
+                        max(secondary_raw, 0.0)
+                        if self.config.exact_kg_clip_negative
+                        else secondary_raw
+                    ),
+                    "raw_score": float(secondary_raw),
+                    "policy_score": float(sum(
+                        mass * float(result["secondary"]["policy_score"])
+                        for mass, result in chunks
+                    ) / total_mass),
+                    "expected_terminal_value": (
+                        secondary_expected.tolist()
+                        if np.asarray(secondary_expected).ndim > 0
+                        else float(secondary_expected)
+                    ),
+                    "component_gain": (
+                        secondary_component.tolist()
+                        if np.asarray(secondary_component).ndim > 0
+                        else float(secondary_component)
+                    ),
+                }
+            prefix_chunks = [
+                (float(result.get("_prefix_mass", 0.0)), result["prefix"])
+                for _, result in chunks
+                if float(result.get("_prefix_mass", 0.0)) > 0.0
+                and "prefix" in result
+            ]
+            if prefix_chunks:
+                prefix_mass = float(sum(
+                    mass for mass, _ in prefix_chunks))
+                prefix_expected = sum(
+                    mass * np.asarray(
+                        result["expected_terminal_value"], dtype=float)
+                    for mass, result in prefix_chunks
+                ) / prefix_mass
+                prefix_component = (
+                    np.asarray(current_value, dtype=float)
+                    - prefix_expected)
+                prefix_raw = self._terminal_diagnostic_gain(
+                    current_value, prefix_expected)
+                combined["prefix"] = {
+                    "score": (
+                        max(prefix_raw, 0.0)
+                        if self.config.exact_kg_clip_negative
+                        else prefix_raw
+                    ),
+                    "raw_score": float(prefix_raw),
+                    "policy_score": float(sum(
+                        mass * float(result["policy_score"])
+                        for mass, result in prefix_chunks
+                    ) / prefix_mass),
+                    "expected_terminal_value": (
+                        prefix_expected.tolist()
+                        if np.asarray(prefix_expected).ndim > 0
+                        else float(prefix_expected)
+                    ),
+                    "component_gain": (
+                        prefix_component.tolist()
+                        if np.asarray(prefix_component).ndim > 0
+                        else float(prefix_component)
+                    ),
+                }
+                if secondary_enabled:
+                    secondary_prefix_expected = sum(
+                        mass * np.asarray(
+                            result["secondary"][
+                                "expected_terminal_value"],
+                            dtype=float,
+                        )
+                        for mass, result in prefix_chunks
+                    ) / prefix_mass
+                    secondary_prefix_component = (
+                        np.asarray(secondary_current_value, dtype=float)
+                        - secondary_prefix_expected)
+                    secondary_prefix_raw = self._terminal_diagnostic_gain(
+                        secondary_current_value,
+                        secondary_prefix_expected,
+                    )
+                    combined["prefix"]["secondary"] = {
+                        "score": (
+                            max(secondary_prefix_raw, 0.0)
+                            if self.config.exact_kg_clip_negative
+                            else secondary_prefix_raw
+                        ),
+                        "raw_score": float(secondary_prefix_raw),
+                        "policy_score": float(sum(
+                            mass * float(
+                                result["secondary"]["policy_score"])
+                            for mass, result in prefix_chunks
+                        ) / prefix_mass),
+                        "expected_terminal_value": (
+                            secondary_prefix_expected.tolist()
+                            if np.asarray(
+                                secondary_prefix_expected).ndim > 0
+                            else float(secondary_prefix_expected)
+                        ),
+                        "component_gain": (
+                            secondary_prefix_component.tolist()
+                            if np.asarray(
+                                secondary_prefix_component).ndim > 0
+                            else float(secondary_prefix_component)
+                        ),
+                    }
             return combined
         parallel_backend = str(
             self.config.exact_kg_parallel_backend or "thread").lower()
@@ -11026,6 +11879,9 @@ class SingleOLHKGAlgorithm:
                     common_expert_uniform,
                     common_sample_weights,
                     return_diagnostics=True,
+                    secondary_terminal_mode=secondary_terminal_mode,
+                    secondary_current_value=secondary_current_value,
+                    prefix_sample_count=prefix_sample_count,
                 )
                 record_result(j, result)
                 done = j + 1
@@ -11053,6 +11909,16 @@ class SingleOLHKGAlgorithm:
             self._last_exact_kg_task_weight_movement = weight_movement
             self._last_exact_kg_task_timing = task_timing
             self._last_exact_kg_raw_scores = raw_out
+            self._last_exact_kg_policy_scores = policy_out
+            if secondary_enabled:
+                self._last_exact_kg_secondary_raw_scores = secondary_raw_out
+                self._last_exact_kg_secondary_policy_scores = (
+                    secondary_policy_out)
+                self._last_exact_kg_secondary_expected_values = (
+                    secondary_expected_values.copy())
+                self._last_exact_kg_secondary_component_gains = (
+                    secondary_component_gains.copy())
+            store_prefix_results()
             return out
         global _FORK_EXACT_KG_CONTEXT
         if parallel_backend in ("process_fork", "fork", "process"):
@@ -11065,14 +11931,18 @@ class SingleOLHKGAlgorithm:
                 current_value,
                 common_expert_uniform,
                 common_sample_weights,
+                secondary_terminal_mode,
+                secondary_current_value,
+                prefix_sample_count,
             )
             executor = ProcessPoolExecutor(
                 max_workers=jobs,
                 mp_context=multiprocessing.get_context("fork"),
             )
-            chunks_per_candidate = min(
-                max(len(common_z), 1),
-                max(1, int(np.ceil(jobs / float(len(candidates))))),
+            chunks_per_candidate = self._exact_kg_chunks_per_candidate(
+                jobs,
+                len(candidates),
+                len(common_z),
             )
             chunked_process = chunks_per_candidate > 1
             submit = lambda pool, x: pool.submit(
@@ -11088,6 +11958,9 @@ class SingleOLHKGAlgorithm:
                 common_expert_uniform,
                 common_sample_weights,
                 True,
+                secondary_terminal_mode,
+                secondary_current_value,
+                prefix_sample_count,
             )
             chunked_process = False
         else:
@@ -11185,6 +12058,15 @@ class SingleOLHKGAlgorithm:
         self._last_exact_kg_expected_values = expected_values.copy()
         self._last_exact_kg_component_gains = component_gains.copy()
         self._last_exact_kg_raw_scores = raw_out
+        self._last_exact_kg_policy_scores = policy_out
+        if secondary_enabled:
+            self._last_exact_kg_secondary_raw_scores = secondary_raw_out
+            self._last_exact_kg_secondary_policy_scores = secondary_policy_out
+            self._last_exact_kg_secondary_expected_values = (
+                secondary_expected_values.copy())
+            self._last_exact_kg_secondary_component_gains = (
+                secondary_component_gains.copy())
+        store_prefix_results()
         return out
 
     def _exact_posterior_update_scores_for_actions(
@@ -11192,6 +12074,7 @@ class SingleOLHKGAlgorithm:
         candidates,
         terminal_pool,
         active_indices,
+        secondary_terminal_mode=None,
     ):
         """Run exact fantasy refits only for the declared active actions."""
 
@@ -11206,7 +12089,10 @@ class SingleOLHKGAlgorithm:
             raise ValueError("exact VOI requires at least one active action")
         active_candidates = [candidates[index] for index in active]
         active_scores = self._exact_posterior_update_scores(
-            active_candidates, terminal_pool)
+            active_candidates,
+            terminal_pool,
+            secondary_terminal_mode=secondary_terminal_mode,
+        )
 
         def expand(values, fill=np.nan):
             values = np.asarray(values, dtype=float)
@@ -11220,6 +12106,8 @@ class SingleOLHKGAlgorithm:
             active_scores, dtype=float)
         self._last_exact_kg_raw_scores = expand(
             self._last_exact_kg_raw_scores)
+        self._last_exact_kg_policy_scores = expand(
+            self._last_exact_kg_policy_scores)
         self._last_exact_kg_expected_values = expand(
             self._last_exact_kg_expected_values)
         self._last_exact_kg_component_gains = expand(
@@ -11232,12 +12120,207 @@ class SingleOLHKGAlgorithm:
             name: expand(values)
             for name, values in self._last_exact_kg_task_timing.items()
         }
+        if secondary_terminal_mode is not None:
+            self._last_exact_kg_secondary_raw_scores = expand(
+                self._last_exact_kg_secondary_raw_scores)
+            self._last_exact_kg_secondary_policy_scores = expand(
+                self._last_exact_kg_secondary_policy_scores)
+            self._last_exact_kg_secondary_expected_values = expand(
+                self._last_exact_kg_secondary_expected_values)
+            self._last_exact_kg_secondary_component_gains = expand(
+                self._last_exact_kg_secondary_component_gains)
+        if int(getattr(
+            self, "_last_exact_kg_reused_prefix_sample_count", 0
+        )) > 0:
+            self._last_exact_kg_reused_prefix_raw_scores = expand(
+                self._last_exact_kg_reused_prefix_raw_scores)
+            self._last_exact_kg_reused_prefix_policy_scores = expand(
+                self._last_exact_kg_reused_prefix_policy_scores)
+            if secondary_terminal_mode is not None:
+                self._last_exact_kg_reused_prefix_secondary_raw_scores = (
+                    expand(
+                        self._last_exact_kg_reused_prefix_secondary_raw_scores)
+                )
+                self._last_exact_kg_reused_prefix_secondary_policy_scores = (
+                    expand(
+                        self._last_exact_kg_reused_prefix_secondary_policy_scores)
+                )
         active_mask = np.zeros(len(candidates), dtype=bool)
         active_mask[np.asarray(active, dtype=int)] = True
         self._last_exact_kg_active_indices = np.asarray(active, dtype=int)
         self._last_exact_kg_active_mask = active_mask
         return full_scores
 
+
+    def _paired_nested_prefix_scores_for_actions(
+        self,
+        candidates,
+        terminal_pool,
+        active_indices,
+    ):
+        """Re-evaluate the same posterior state on a nested low-MC prefix."""
+
+        if self._policy_improvement_guard_mode() not in {
+            "paired_nested_difference",
+            "paired_nested_absolute",
+        }:
+            return None
+        high_mc = int(self._effective_exact_kg_mc_samples())
+        low_mc = int(self.config.policy_improvement_pairwise_prefix_samples)
+        if low_mc <= 0 or low_mc >= high_mc:
+            raise ValueError(
+                "paired nested-difference guard requires "
+                "0 < prefix samples < exact KG samples")
+        multiplier = float(
+            self.config.policy_improvement_pairwise_error_multiplier)
+        if not np.isfinite(multiplier) or multiplier <= 0.0:
+            raise ValueError(
+                "paired nested-difference multiplier must be positive")
+        sampling_mode = str(
+            self.config.exact_kg_sampling_mode or "").lower()
+        if sampling_mode not in {
+            "antithetic_nested", "nested_antithetic", "paired_nested",
+            "factorized_rqmc_nested", "rqmc_expert_nested",
+            "nested_rqmc_expert",
+        }:
+            raise ValueError(
+                "paired nested-difference guard requires a nested common-"
+                "random-number sample plan")
+
+        cached_prefix_available = bool(
+            self.config.exact_kg_reuse_nested_prefix
+            and self.config.exact_kg_joint_terminal_reuse
+            and int(getattr(
+                self, "_last_exact_kg_reused_prefix_sample_count", 0
+            )) == low_mc
+            and int(getattr(
+                self, "_last_exact_kg_reused_prefix_high_sample_count", 0
+            )) == high_mc
+            and str(getattr(
+                self, "_last_exact_kg_secondary_terminal_mode", ""
+            )).lower().replace("-", "_") == "certificate_deficit"
+            and hasattr(self, "_last_exact_kg_reused_prefix_raw_scores")
+            and hasattr(
+                self,
+                "_last_exact_kg_reused_prefix_secondary_raw_scores",
+            )
+        )
+        if cached_prefix_available:
+            risk_policy = np.asarray(
+                self._last_exact_kg_reused_prefix_policy_scores,
+                dtype=float,
+            ).copy()
+            risk_raw = np.asarray(
+                self._last_exact_kg_reused_prefix_raw_scores,
+                dtype=float,
+            ).copy()
+            certificate_policy = np.asarray(
+                self._last_exact_kg_reused_prefix_secondary_policy_scores,
+                dtype=float,
+            ).copy()
+            certificate_raw = np.asarray(
+                self._last_exact_kg_reused_prefix_secondary_raw_scores,
+                dtype=float,
+            ).copy()
+            self._last_pairwise_prefix_risk_policy_scores = risk_policy
+            self._last_pairwise_prefix_risk_raw_scores = risk_raw
+            self._last_pairwise_prefix_certificate_policy_scores = (
+                certificate_policy)
+            self._last_pairwise_prefix_certificate_raw_scores = (
+                certificate_raw)
+            self._last_pairwise_prefix_sample_count = low_mc
+            self._last_pairwise_high_sample_count = high_mc
+            self._last_pairwise_prefix_reused_from_high_pass = True
+            return {
+                "risk_policy_scores": risk_policy,
+                "risk_raw_scores": risk_raw,
+                "certificate_policy_scores": certificate_policy,
+                "certificate_raw_scores": certificate_raw,
+                "prefix_sample_count": low_mc,
+                "high_sample_count": high_mc,
+                "error_multiplier": multiplier,
+                "reused_from_high_pass": True,
+                "target_oracle_used": False,
+            }
+
+        prefixes = (
+            "_last_exact_kg_",
+            "_last_certificate_deficit_",
+        )
+        existing = {
+            name for name in vars(self)
+            if any(name.startswith(prefix) for prefix in prefixes)
+        }
+        snapshot = {
+            name: copy.deepcopy(getattr(self, name))
+            for name in existing
+        }
+        previous_mc = int(self.config.exact_kg_mc_samples)
+        try:
+            self.config.exact_kg_mc_samples = low_mc
+            joint_reuse = bool(
+                self.config.exact_kg_joint_terminal_reuse)
+            self._exact_posterior_update_scores_for_actions(
+                candidates,
+                terminal_pool,
+                active_indices,
+                secondary_terminal_mode=(
+                    "certificate_deficit" if joint_reuse else None),
+            )
+            risk_policy = np.asarray(
+                self._last_exact_kg_policy_scores, dtype=float).copy()
+            risk_raw = np.asarray(
+                self._last_exact_kg_raw_scores, dtype=float).copy()
+            if joint_reuse:
+                certificate_policy = np.asarray(
+                    self._last_exact_kg_secondary_policy_scores,
+                    dtype=float,
+                ).copy()
+                certificate_raw = np.asarray(
+                    self._last_exact_kg_secondary_raw_scores,
+                    dtype=float,
+                ).copy()
+            else:
+                self._exact_certificate_deficit_scores_for_actions(
+                    candidates, terminal_pool, active_indices)
+                certificate_policy = np.asarray(
+                    self._last_certificate_deficit_policy_scores,
+                    dtype=float,
+                ).copy()
+                certificate_raw = np.asarray(
+                    self._last_certificate_deficit_raw_scores,
+                    dtype=float,
+                ).copy()
+        finally:
+            self.config.exact_kg_mc_samples = previous_mc
+            for name in list(vars(self)):
+                if (
+                    any(name.startswith(prefix) for prefix in prefixes)
+                    and name not in existing
+                ):
+                    delattr(self, name)
+            for name, value in snapshot.items():
+                setattr(self, name, value)
+
+        self._last_pairwise_prefix_risk_policy_scores = risk_policy
+        self._last_pairwise_prefix_risk_raw_scores = risk_raw
+        self._last_pairwise_prefix_certificate_policy_scores = (
+            certificate_policy)
+        self._last_pairwise_prefix_certificate_raw_scores = certificate_raw
+        self._last_pairwise_prefix_sample_count = low_mc
+        self._last_pairwise_high_sample_count = high_mc
+        self._last_pairwise_prefix_reused_from_high_pass = False
+        return {
+            "risk_policy_scores": risk_policy,
+            "risk_raw_scores": risk_raw,
+            "certificate_policy_scores": certificate_policy,
+            "certificate_raw_scores": certificate_raw,
+            "prefix_sample_count": low_mc,
+            "high_sample_count": high_mc,
+            "error_multiplier": multiplier,
+            "reused_from_high_pass": False,
+            "target_oracle_used": False,
+        }
 
     def _exact_certificate_deficit_scores_for_actions(
         self,
@@ -11246,6 +12329,39 @@ class SingleOLHKGAlgorithm:
         active_indices,
     ):
         """Evaluate C(D)=max(min_x M_D(x), 0) on the risk fantasies."""
+
+        cached_mode = str(getattr(
+            self, "_last_exact_kg_secondary_terminal_mode", "")
+        ).lower().replace("-", "_")
+        if (
+            bool(self.config.exact_kg_joint_terminal_reuse)
+            and cached_mode == "certificate_deficit"
+            and hasattr(self, "_last_exact_kg_secondary_raw_scores")
+        ):
+            self._last_certificate_deficit_raw_scores = np.asarray(
+                self._last_exact_kg_secondary_raw_scores,
+                dtype=float,
+            ).copy()
+            self._last_certificate_deficit_policy_scores = np.asarray(
+                self._last_exact_kg_secondary_policy_scores,
+                dtype=float,
+            ).copy()
+            self._last_certificate_deficit_expected_values = np.asarray(
+                self._last_exact_kg_secondary_expected_values,
+                dtype=float,
+            ).copy()
+            self._last_certificate_deficit_current_value = copy.deepcopy(
+                self._last_exact_kg_secondary_current_value)
+            self._last_certificate_deficit_contract = str(
+                self._last_exact_kg_secondary_terminal_value_contract)
+            self._last_certificate_deficit_joint_terminal_reuse = True
+            if not self._last_certificate_deficit_contract.startswith(
+                "certificate_deficit:"
+            ):
+                raise RuntimeError(
+                    "cached secondary terminal is not certificate deficit")
+            return self._last_certificate_deficit_raw_scores
+        self._last_certificate_deficit_joint_terminal_reuse = False
 
         sampling_mode = str(
             self.config.exact_kg_sampling_mode or "").lower()
@@ -11277,6 +12393,8 @@ class SingleOLHKGAlgorithm:
             )
             certificate_scores = np.asarray(
                 self._last_exact_kg_raw_scores, dtype=float).copy()
+            certificate_policy_scores = np.asarray(
+                self._last_exact_kg_policy_scores, dtype=float).copy()
             certificate_expected = np.asarray(
                 self._last_exact_kg_expected_values, dtype=float).copy()
             certificate_current = copy.deepcopy(
@@ -11299,6 +12417,8 @@ class SingleOLHKGAlgorithm:
             for name, value in snapshot.items():
                 setattr(self, name, value)
         self._last_certificate_deficit_raw_scores = certificate_scores
+        self._last_certificate_deficit_policy_scores = (
+            certificate_policy_scores)
         self._last_certificate_deficit_expected_values = certificate_expected
         self._last_certificate_deficit_current_value = certificate_current
         self._last_certificate_deficit_contract = certificate_contract
@@ -12450,7 +13570,9 @@ class SingleOLHKGAlgorithm:
     def run(self, verbose=False):
         t_start = time.time()
         t_progress_start = time.perf_counter()
+        initialization_started = time.time()
         start_n = self._initialize_or_resume(verbose=verbose)
+        initialization_time_sec = time.time() - initialization_started
         if self.final_log is not None and int(start_n) >= int(self.config.N):
             return self.final_log
 
@@ -12671,8 +13793,24 @@ class SingleOLHKGAlgorithm:
                         raise RuntimeError(
                             "exact evaluate-or-replicate backend did not "
                             "declare its active action set")
+                    joint_secondary_mode = (
+                        "certificate_deficit"
+                        if (
+                            self._policy_improvement_mode()
+                            == "certificate_constrained"
+                            and bool(
+                                self.config.exact_kg_joint_terminal_reuse)
+                        )
+                        else None
+                    )
                     exact_kg = self._exact_posterior_update_scores_for_actions(
-                        candidates, terminal_pool, active_indices)
+                        candidates,
+                        terminal_pool,
+                        active_indices,
+                        secondary_terminal_mode=joint_secondary_mode,
+                    )
+                    row["exact_kg_joint_terminal_head_reuse_requested"] = bool(
+                        joint_secondary_mode is not None)
                     row["exact_kg_action_scope"] = (
                         str(self.config.
                             evaluate_or_replicate_new_action_policy)
@@ -12701,6 +13839,13 @@ class SingleOLHKGAlgorithm:
                     self, "_last_exact_kg_parallel_workers", 1))
                 row["exact_kg_chunks_per_candidate"] = int(getattr(
                     self, "_last_exact_kg_chunks_per_candidate", 1))
+                row["exact_kg_primary_fantasy_update_skipped"] = bool(
+                    getattr(
+                        self,
+                        "_last_exact_kg_primary_fantasy_update_skipped",
+                        False,
+                    )
+                )
                 row["acquisition_mode"] = acquisition_mode
                 row["exact_kg_sampling_mode"] = str(
                     self.config.exact_kg_sampling_mode)
@@ -12753,6 +13898,10 @@ class SingleOLHKGAlgorithm:
                         self._last_exact_kg_active_indices, dtype=int)
                     row["exact_kg_raw_scores_active"] = (
                         raw_exact_kg[exact_active_indices].tolist())
+                    row["exact_kg_policy_scores_active"] = np.asarray(
+                        self._last_exact_kg_policy_scores,
+                        dtype=float,
+                    )[exact_active_indices].tolist()
                     row["exact_kg_active_action_fingerprints"] = [
                         integer_design_fingerprint([
                             tuple(int(value) for value in candidates[index])
@@ -12842,6 +13991,16 @@ class SingleOLHKGAlgorithm:
                                 "evaluate_or_replicate_active_indices"],
                         )
                     )
+                    if self._policy_improvement_guard_mode() in {
+                        "paired_nested_difference",
+                        "paired_nested_absolute",
+                    }:
+                        self._paired_nested_prefix_scores_for_actions(
+                            candidates,
+                            terminal_pool,
+                            backend_score[
+                                "evaluate_or_replicate_active_indices"],
+                        )
                     one_step_index, one_step_info = (
                         self._guarded_certificate_deficit_policy_improvement(
                             candidates,
@@ -12876,13 +14035,53 @@ class SingleOLHKGAlgorithm:
                         dtype=float,
                     )[certificate_active].tolist()
                     row[
+                        "certificate_deficit_policy_scores_active"
+                    ] = np.asarray(
+                        self._last_certificate_deficit_policy_scores,
+                        dtype=float,
+                    )[certificate_active].tolist()
+                    row[
                         "certificate_deficit_expected_values_active"
                     ] = np.asarray(
                         self._last_certificate_deficit_expected_values,
                         dtype=float,
                     )[certificate_active].tolist()
+                    if self._policy_improvement_guard_mode() in {
+                        "paired_nested_difference",
+                        "paired_nested_absolute",
+                    }:
+                        row[
+                            "pairwise_prefix_risk_policy_scores_active"
+                        ] = np.asarray(
+                            self._last_pairwise_prefix_risk_policy_scores,
+                            dtype=float,
+                        )[certificate_active].tolist()
+                        row[
+                            "pairwise_prefix_certificate_policy_scores_active"
+                        ] = np.asarray(
+                            self._last_pairwise_prefix_certificate_policy_scores,
+                            dtype=float,
+                        )[certificate_active].tolist()
+                        row["pairwise_prefix_sample_count"] = int(
+                            self._last_pairwise_prefix_sample_count)
+                        row["pairwise_high_sample_count"] = int(
+                            self._last_pairwise_high_sample_count)
+                        row["pairwise_prefix_reused_from_high_pass"] = bool(
+                            getattr(
+                                self,
+                                "_last_pairwise_prefix_reused_from_high_pass",
+                                False,
+                            )
+                        )
                     row["certificate_deficit_contract"] = str(
                         self._last_certificate_deficit_contract)
+                    row["exact_kg_joint_terminal_head_reuse"] = bool(
+                        getattr(
+                            self,
+                            "_last_certificate_deficit_joint_terminal_reuse",
+                            False,
+                        )
+                    )
 
                 if (
                     decision_backend in exact_refit_backends
@@ -13041,6 +14240,10 @@ class SingleOLHKGAlgorithm:
                     "decision_evaluate_or_replicate_supplemental_labels"
                 ] = list(backend_score.get(
                     "evaluate_or_replicate_supplemental_labels", []))
+                row[
+                    "decision_evaluate_or_replicate_active_labels"
+                ] = list(backend_score.get(
+                    "evaluate_or_replicate_active_labels", []))
                 row["decision_risk_coordinate_coverage_source"] = (
                     backend_score.get("risk_coordinate_coverage_source"))
                 row["decision_evaluate_or_replicate_exact_refit_required"] = (
@@ -13136,10 +14339,14 @@ class SingleOLHKGAlgorithm:
                     self, "_last_exact_kg_task_timing", None)
                 if task_timing is not None:
                     for name, values in task_timing.items():
+                        values_arr = np.asarray(values, dtype=float)
+                        finite_values = values_arr[np.isfinite(values_arr)]
                         row[f"exact_kg_time_{name}_selected"] = float(
-                            values[selected_idx])
+                            values_arr[selected_idx])
                         row[f"exact_kg_time_{name}_mean"] = float(
-                            np.mean(values))
+                            np.mean(finite_values)
+                            if len(finite_values) else np.nan
+                        )
 
             x_arr = np.asarray(x_selected, dtype=int)
             replicate_count_before = int(len(self.observations.get(
@@ -13722,6 +14929,7 @@ class SingleOLHKGAlgorithm:
             ),
         })
 
+        finalization_started = time.time()
         final_pool = (
             list(self._last_terminal_pool)
             if self._last_terminal_pool
@@ -13780,6 +14988,24 @@ class SingleOLHKGAlgorithm:
             "policy_improvement_mode": self._policy_improvement_mode(),
             "policy_improvement_score_normalization": (
                 self._policy_improvement_score_normalization()),
+            "policy_improvement_score_transform": (
+                self._policy_improvement_score_transform()),
+            "policy_improvement_guard_mode": (
+                self._policy_improvement_guard_mode()),
+            "exact_kg_joint_terminal_reuse": bool(
+                self.config.exact_kg_joint_terminal_reuse),
+            "exact_kg_reuse_nested_prefix": bool(
+                self.config.exact_kg_reuse_nested_prefix),
+            "exact_kg_skip_redundant_primary_update": bool(
+                self.config.exact_kg_skip_redundant_primary_update),
+            "exact_kg_chunk_schedule": str(
+                self.config.exact_kg_chunk_schedule),
+            "exact_kg_max_chunks_per_candidate": int(
+                self.config.exact_kg_max_chunks_per_candidate),
+            "policy_improvement_pairwise_prefix_samples": int(
+                self.config.policy_improvement_pairwise_prefix_samples),
+            "policy_improvement_pairwise_error_multiplier": float(
+                self.config.policy_improvement_pairwise_error_multiplier),
             "policy_improvement_mc_error_bound": float(
                 self.config.policy_improvement_mc_error_bound),
             "policy_improvement_certificate_mc_error_bound": float(
@@ -13940,15 +15166,48 @@ class SingleOLHKGAlgorithm:
                     "decision_evaluate_or_replicate_replication_action_count"),
                 "new_action_policy": iteration_row.get(
                     "decision_evaluate_or_replicate_new_action_policy"),
+                "exact_kg_active_action_labels": copy.deepcopy(
+                    iteration_row.get(
+                        "decision_evaluate_or_replicate_active_labels")),
                 "exact_kg_raw_scores_active": copy.deepcopy(
                     iteration_row.get("exact_kg_raw_scores_active")),
+                "exact_kg_policy_scores_active": copy.deepcopy(
+                    iteration_row.get("exact_kg_policy_scores_active")),
                 "exact_kg_current_terminal_value": copy.deepcopy(
                     iteration_row.get("certified_terminal_value_before")),
                 "exact_kg_selector_plan": copy.deepcopy(
                     iteration_row.get("exact_kg_selector_plan")),
+                "exact_kg_joint_terminal_head_reuse": copy.deepcopy(
+                    iteration_row.get(
+                        "exact_kg_joint_terminal_head_reuse")),
+                "exact_kg_prefix_reused_from_high_pass": copy.deepcopy(
+                    iteration_row.get(
+                        "pairwise_prefix_reused_from_high_pass")),
+                "exact_kg_primary_fantasy_update_skipped": copy.deepcopy(
+                    iteration_row.get(
+                        "exact_kg_primary_fantasy_update_skipped")),
+                "exact_kg_parallel_workers_effective": copy.deepcopy(
+                    iteration_row.get(
+                        "exact_kg_parallel_workers_effective")),
+                "exact_kg_chunks_per_candidate": copy.deepcopy(
+                    iteration_row.get("exact_kg_chunks_per_candidate")),
+                "exact_kg_time_clone_mean": copy.deepcopy(
+                    iteration_row.get("exact_kg_time_clone_mean")),
+                "exact_kg_time_predictive_sample_mean": copy.deepcopy(
+                    iteration_row.get(
+                        "exact_kg_time_predictive_sample_mean")),
+                "exact_kg_time_joint_update_mean": copy.deepcopy(
+                    iteration_row.get("exact_kg_time_joint_update_mean")),
+                "exact_kg_time_robust_terminal_mean": copy.deepcopy(
+                    iteration_row.get("exact_kg_time_robust_terminal_mean")),
+                "kg_compute_time_sec": copy.deepcopy(
+                    iteration_row.get("t_kg_compute")),
                 "certificate_deficit_raw_scores_active": copy.deepcopy(
                     iteration_row.get(
                         "certificate_deficit_raw_scores_active")),
+                "certificate_deficit_policy_scores_active": copy.deepcopy(
+                    iteration_row.get(
+                        "certificate_deficit_policy_scores_active")),
                 "certificate_deficit_expected_values_active": copy.deepcopy(
                     iteration_row.get(
                         "certificate_deficit_expected_values_active")),
@@ -13957,6 +15216,46 @@ class SingleOLHKGAlgorithm:
                 "policy_improvement_score_normalization": copy.deepcopy(
                     (iteration_row.get("policy_improvement_one_step") or {}).get(
                         "score_normalization")),
+                "policy_improvement_score_transform": copy.deepcopy(
+                    (iteration_row.get("policy_improvement_one_step") or {}).get(
+                        "score_transform")),
+                "policy_improvement_guard_mode": copy.deepcopy(
+                    (iteration_row.get("policy_improvement_one_step") or {}).get(
+                        "guard_mode")),
+                "policy_improvement_pairwise_audit": copy.deepcopy({
+                    key: (
+                        iteration_row.get("policy_improvement_one_step") or {}
+                    ).get(key)
+                    for key in (
+                        "baseline_index",
+                        "certificate_index",
+                        "selected_index",
+                        "pairwise_prefix_sample_count",
+                        "pairwise_high_sample_count",
+                        "pairwise_error_multiplier",
+                        "risk_pairwise_radius_by_index",
+                        "certificate_pairwise_radius_by_index",
+                        "risk_prefix_advantage_by_index",
+                        "certificate_prefix_advantage_by_index",
+                        "risk_admissible_indices",
+                        "current_relative_admissible_indices",
+                        "risk_lcb_by_index",
+                        "certificate_lcb_by_index",
+                        "joint_lcb_by_index",
+                        "estimated_risk_reduction",
+                        "estimated_certificate_reduction",
+                        "opportunity_risk_gap_to_v51",
+                        "switched",
+                        "conditional_noninferiority_contract",
+                    )
+                }),
+                "pairwise_prefix_risk_policy_scores_active": copy.deepcopy(
+                    iteration_row.get(
+                        "pairwise_prefix_risk_policy_scores_active")),
+                "pairwise_prefix_certificate_policy_scores_active": (
+                    copy.deepcopy(iteration_row.get(
+                        "pairwise_prefix_certificate_policy_scores_active"))
+                ),
                 "policy_improvement_risk_score_scale": copy.deepcopy(
                     (iteration_row.get("policy_improvement_one_step") or {}).get(
                         "risk_score_scale")),
@@ -14006,6 +15305,9 @@ class SingleOLHKGAlgorithm:
             "theory_contract_id": str(getattr(
                 self.config, "theory_contract_id", "unversioned")),
             "theory_contract_timing": "declared_before_target_evaluation",
+            "initialization_time_sec": float(initialization_time_sec),
+            "finalization_time_sec": float(
+                time.time() - finalization_started),
             "total_time_sec": float(time.time() - t_start),
             "n_simulations": int(len(self.history)),
             "n_distinct_solutions": int(len(self.gpr[0].sampled_set)),

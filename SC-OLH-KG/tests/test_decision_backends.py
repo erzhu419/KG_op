@@ -637,6 +637,53 @@ def test_v52_action_set_is_literal_superset_of_v51_subset():
         "observable_cumulative_risk")
 
 
+def test_v54_pareto_support_is_literal_superset_with_auditable_labels():
+    candidates = [
+        (0, 0), (1, 9), (2, 8), (3, 7), (4, 6), (5, 5),
+        (6, 4), (7, 3), (8, 2), (9, 1), (10, 10), (10, 0),
+    ]
+    observed = [candidates[0], candidates[10]]
+    result = score_decision_backend(
+        "sobol_exact_joint_voi",
+        candidates,
+        DummyGPR(),
+        DummyGPR(),
+        DummyVariance(),
+        DummyProblem(),
+        observed=[(point, np.array([0.0, 0.0])) for point in observed],
+        iteration=5,
+        seed=237,
+        canonical_sobol_candidate=candidates[1],
+        allow_replication_actions=True,
+        evaluate_or_replicate_new_action_count=10,
+        evaluate_or_replicate_new_action_policy=(
+            "canonical_plus_posterior_pareto_support"),
+        evaluate_or_replicate_baseline_new_action_count=4,
+    )
+    active = result["evaluate_or_replicate_active_indices"].tolist()
+    baseline = set(result[
+        "evaluate_or_replicate_baseline_indices"].tolist())
+    labels = result["evaluate_or_replicate_active_labels"]
+    assert baseline.issubset(set(active))
+    assert len(labels) == len(active)
+    assert labels.count("v51_baseline_new") == 4
+    assert labels.count("replicate") == 2
+    assert result["evaluate_or_replicate_supplemental_labels"]
+    assert set(result["evaluate_or_replicate_supplemental_labels"]).issubset({
+        "bayes_risk_ei",
+        "constrained_ei",
+        "chance_boundary",
+        "chance_boundary_information",
+        "certificate_depth",
+        "constraint_margin_information",
+        "hvd_margin_information",
+        "joint_margin_information",
+        "psi_coverage",
+    })
+    assert result["evaluate_or_replicate_new_action_policy"] == (
+        "canonical_plus_posterior_pareto_support")
+
+
 def test_v52_one_step_guard_falls_back_until_advantage_exceeds_two_eta():
     problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
     algorithm = SingleOLHKGAlgorithm(
@@ -1018,6 +1065,64 @@ def test_v53_runs_two_terminal_passes_and_disables_rollout():
     assert algorithm.config.exact_kg_terminal_mode == "bayes_risk"
 
 
+
+def test_joint_terminal_head_reuse_matches_legacy_two_pass_scores():
+    def run(reuse):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=3,
+                n0=2,
+                K1=5,
+                K2=0,
+                decision_backend="sobol_exact_joint_voi",
+                decision_recommend_observed_only=True,
+                exact_kg_terminal_mode="bayes_risk",
+                exact_kg_sampling_mode="antithetic_nested",
+                exact_kg_mc_samples=4,
+                exact_kg_jobs=1,
+                exact_kg_joint_terminal_reuse=reuse,
+                adaptive_replication_voi=True,
+                replication_candidate_count=2,
+                evaluate_or_replicate_new_action_count=3,
+                evaluate_or_replicate_baseline_new_action_count=1,
+                evaluate_or_replicate_new_action_policy=(
+                    "canonical_plus_posterior_risk_certificate_coverage"),
+                policy_improvement_mode="certificate_constrained",
+                policy_improvement_mc_error_bound=1e6,
+                policy_improvement_certificate_mc_error_bound=1e6,
+                use_state_coupling=False,
+                use_state_basis=False,
+                use_problem_initial_samples=False,
+                use_boundary_initial_samples=False,
+                use_recommendation_refinement=False,
+                recommendation_axis_oracle=False,
+                recommendation_calibration=False,
+                finalist_replication_budget=0,
+                eval_pool_size=8,
+                evaluate_interval=0,
+                seed=397,
+            ),
+        )
+        algorithm.run(verbose=False)
+        return algorithm.iteration_log[0]
+
+    legacy = run(False)
+    reused = run(True)
+    for field in (
+        "exact_kg_raw_scores_active",
+        "exact_kg_policy_scores_active",
+        "certificate_deficit_raw_scores_active",
+        "certificate_deficit_policy_scores_active",
+        "certificate_deficit_expected_values_active",
+    ):
+        np.testing.assert_allclose(reused[field], legacy[field], atol=1e-12)
+    assert reused["policy_improvement_selected_index"] == (
+        legacy["policy_improvement_selected_index"])
+    assert legacy["exact_kg_joint_terminal_head_reuse"] is False
+    assert reused["exact_kg_joint_terminal_head_reuse"] is True
+
 def test_risk_ts_replaces_exact_kg_without_changing_target_budget():
     problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
     algorithm = SingleOLHKGAlgorithm(
@@ -1180,3 +1285,347 @@ def test_proposal_component_streams_are_order_independent():
         reference,
         algorithm._proposal_rng(3, "task_expert:ordered").random(8),
     )
+
+
+def test_v54_paired_difference_guard_uses_action_specific_crn_radius():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_score_transform="bounded_current_gain",
+            policy_improvement_guard_mode="paired_nested_difference",
+            policy_improvement_pairwise_prefix_samples=32,
+            policy_improvement_pairwise_error_multiplier=1.25,
+            exact_kg_mc_samples=128,
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    candidates = [(0, 0, 0), (1, 1, 1), (2, 2, 2)]
+    backend = {
+        "evaluate_or_replicate_active_indices": np.array([0, 1, 2]),
+        "evaluate_or_replicate_baseline_indices": np.array([0, 1]),
+    }
+    algorithm._last_exact_kg_raw_scores = np.array([2.0, 1.0, 100.0])
+    algorithm._last_exact_kg_policy_scores = np.array([0.3, 0.3, 0.7])
+    algorithm._last_certificate_deficit_raw_scores = np.array([0.0, 0.0, 1.0])
+    algorithm._last_certificate_deficit_policy_scores = np.array([0.0, 0.0, 0.4])
+    algorithm._last_pairwise_prefix_risk_policy_scores = np.array(
+        [0.3, 0.3, 0.68])
+    algorithm._last_pairwise_prefix_certificate_policy_scores = np.array(
+        [0.0, 0.0, 0.38])
+    algorithm._last_pairwise_prefix_sample_count = 32
+    algorithm._last_pairwise_high_sample_count = 128
+
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        algorithm._last_certificate_deficit_raw_scores,
+        backend,
+    )
+    assert selected == 2
+    assert info["switched"] is True
+    assert info["guard_mode"] == "paired_nested_difference"
+    assert info["risk_switch_threshold"] == pytest.approx(0.025)
+    assert info["certificate_switch_threshold"] == pytest.approx(0.025)
+    assert info["conditional_noninferiority_contract"] == (
+        "paired_difference_error_bounds_imply_joint_posterior_improvement")
+    assert algorithm._policy_improvement_contract_id() == (
+        "v54_paired_difference_guard_v1")
+
+    algorithm._last_pairwise_prefix_risk_policy_scores[2] = 0.2
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        algorithm._last_certificate_deficit_raw_scores,
+        backend,
+    )
+    assert selected == 0
+    assert info["status"] == "no_risk_admissible_challenger"
+
+
+def test_v55_current_relative_guard_maximizes_positive_joint_lcb():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_score_transform="bounded_current_gain",
+            policy_improvement_guard_mode="paired_nested_absolute",
+            policy_improvement_pairwise_error_multiplier=1.0,
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    candidates = [(0, 0, 0), (1, 1, 1), (2, 2, 2)]
+    backend_score = {
+        "evaluate_or_replicate_active_indices": np.array([0, 1, 2]),
+        "evaluate_or_replicate_baseline_indices": np.array([0]),
+    }
+    risk = np.array([0.8, 0.3, 0.4])
+    certificate = np.array([-0.2, 0.4, 0.35])
+    algorithm._last_exact_kg_raw_scores = risk.copy()
+    algorithm._last_exact_kg_policy_scores = risk.copy()
+    algorithm._last_certificate_deficit_raw_scores = certificate.copy()
+    algorithm._last_certificate_deficit_policy_scores = certificate.copy()
+    algorithm._last_pairwise_prefix_risk_policy_scores = np.array([
+        0.8, 0.28, 0.39])
+    algorithm._last_pairwise_prefix_certificate_policy_scores = np.array([
+        -0.2, 0.38, 0.34])
+    algorithm._last_pairwise_prefix_sample_count = 32
+    algorithm._last_pairwise_high_sample_count = 128
+
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates, risk, certificate, backend_score)
+    assert selected == 2
+    assert info["status"] == "current_relative_joint_switched"
+    assert info["joint_lcb_by_index"]["2"] == pytest.approx(0.34)
+    assert info["current_relative_admissible_indices"] == [1, 2]
+    assert info["conditional_noninferiority_contract"] == (
+        "nested_absolute_error_bounds_imply_current_relative_joint_"
+        "improvement")
+    assert algorithm._policy_improvement_contract_id() == (
+        "v55_current_relative_joint_improvement_v1")
+
+    algorithm._last_pairwise_prefix_risk_policy_scores = np.array([
+        0.8, -0.2, -0.2])
+    algorithm._last_pairwise_prefix_certificate_policy_scores = np.array([
+        -0.2, -0.2, -0.2])
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates, risk, certificate, backend_score)
+    assert selected == 0
+    assert info["status"] == "no_current_relative_joint_admissible_action"
+    assert info["current_relative_admissible_indices"] == []
+
+
+def test_v55_current_relative_prefix_runs_end_to_end():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            N=3,
+            n0=2,
+            K1=5,
+            K2=0,
+            decision_backend="sobol_exact_joint_voi",
+            decision_recommend_observed_only=True,
+            exact_kg_terminal_mode="bayes_risk",
+            exact_kg_sampling_mode="antithetic_nested",
+            exact_kg_mc_samples=4,
+            exact_kg_jobs=1,
+            adaptive_replication_voi=True,
+            replication_candidate_count=2,
+            evaluate_or_replicate_new_action_count=3,
+            evaluate_or_replicate_baseline_new_action_count=1,
+            evaluate_or_replicate_new_action_policy=(
+                "canonical_plus_posterior_pareto_support"),
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_score_transform="bounded_current_gain",
+            policy_improvement_guard_mode="paired_nested_absolute",
+            policy_improvement_pairwise_prefix_samples=2,
+            policy_improvement_pairwise_error_multiplier=1.25,
+            use_state_coupling=False,
+            use_state_basis=False,
+            use_problem_initial_samples=False,
+            use_boundary_initial_samples=False,
+            use_recommendation_refinement=False,
+            recommendation_axis_oracle=False,
+            recommendation_calibration=False,
+            finalist_replication_budget=0,
+            eval_pool_size=8,
+            evaluate_interval=0,
+            seed=297,
+        ),
+    )
+    result = algorithm.run(verbose=False)
+    row = algorithm.iteration_log[0]
+    info = row["policy_improvement_one_step"]
+    assert result["n_simulations"] == 3
+    assert result["initialization_time_sec"] >= 0.0
+    assert result["finalization_time_sec"] >= 0.0
+    assert info["guard_mode"] == "paired_nested_absolute"
+    assert info["pairwise_prefix_sample_count"] == 2
+    assert info["pairwise_high_sample_count"] == 4
+    assert info["conditional_noninferiority_contract"] == (
+        "nested_absolute_error_bounds_imply_current_relative_joint_"
+        "improvement")
+    assert row["policy_improvement_contract_id"] == (
+        "v55_current_relative_joint_improvement_v1")
+    assert len(row["pairwise_prefix_risk_policy_scores_active"]) == (
+        row["exact_kg_active_action_count"])
+    for name in (
+        "clone", "predictive_sample", "joint_update", "robust_terminal",
+    ):
+        assert np.isfinite(row[f"exact_kg_time_{name}_mean"])
+    assert result["decision_backend_contract"][
+        "policy_improvement_guard_mode"] == "paired_nested_absolute"
+
+
+def test_v55_nested_prefix_reuse_matches_legacy_second_pass():
+    def run(reuse, jobs=1, backend="thread"):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=3,
+                n0=2,
+                K1=5,
+                K2=0,
+                decision_backend="sobol_exact_joint_voi",
+                decision_recommend_observed_only=True,
+                exact_kg_terminal_mode="bayes_risk",
+                exact_kg_sampling_mode="antithetic_nested",
+                exact_kg_mc_samples=4,
+                exact_kg_jobs=jobs,
+                exact_kg_parallel_backend=backend,
+                exact_kg_joint_terminal_reuse=True,
+                exact_kg_reuse_nested_prefix=reuse,
+                adaptive_replication_voi=True,
+                replication_candidate_count=2,
+                evaluate_or_replicate_new_action_count=3,
+                evaluate_or_replicate_baseline_new_action_count=1,
+                evaluate_or_replicate_new_action_policy=(
+                    "canonical_plus_posterior_pareto_support"),
+                policy_improvement_mode="certificate_constrained",
+                policy_improvement_score_transform="bounded_current_gain",
+                policy_improvement_guard_mode="paired_nested_absolute",
+                policy_improvement_pairwise_prefix_samples=2,
+                policy_improvement_pairwise_error_multiplier=1.25,
+                use_state_coupling=False,
+                use_state_basis=False,
+                use_problem_initial_samples=False,
+                use_boundary_initial_samples=False,
+                use_recommendation_refinement=False,
+                recommendation_axis_oracle=False,
+                recommendation_calibration=False,
+                finalist_replication_budget=0,
+                eval_pool_size=8,
+                evaluate_interval=0,
+                seed=1297,
+            ),
+        )
+        algorithm.run(verbose=False)
+        return algorithm.iteration_log[0]
+
+    legacy = run(False)
+    reused = run(True)
+    chunked = run(True, jobs=8, backend="process_fork")
+    fields = (
+        "exact_kg_raw_scores_active",
+        "exact_kg_policy_scores_active",
+        "certificate_deficit_raw_scores_active",
+        "certificate_deficit_policy_scores_active",
+        "pairwise_prefix_risk_policy_scores_active",
+        "pairwise_prefix_certificate_policy_scores_active",
+    )
+    for field in fields:
+        np.testing.assert_allclose(reused[field], legacy[field], atol=1e-12)
+        np.testing.assert_allclose(chunked[field], reused[field], atol=1e-12)
+    assert reused["policy_improvement_selected_index"] == (
+        legacy["policy_improvement_selected_index"])
+    assert chunked["policy_improvement_selected_index"] == (
+        reused["policy_improvement_selected_index"])
+    assert legacy["pairwise_prefix_reused_from_high_pass"] is False
+    assert reused["pairwise_prefix_reused_from_high_pass"] is True
+    assert chunked["pairwise_prefix_reused_from_high_pass"] is True
+    assert chunked["exact_kg_chunks_per_candidate"] > 1
+
+
+def test_v54_paired_prefix_runs_end_to_end():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            N=3,
+            n0=2,
+            K1=5,
+            K2=0,
+            decision_backend="sobol_exact_joint_voi",
+            decision_recommend_observed_only=True,
+            exact_kg_terminal_mode="bayes_risk",
+            exact_kg_sampling_mode="antithetic_nested",
+            exact_kg_mc_samples=4,
+            exact_kg_jobs=1,
+            adaptive_replication_voi=True,
+            replication_candidate_count=2,
+            evaluate_or_replicate_new_action_count=3,
+            evaluate_or_replicate_baseline_new_action_count=1,
+            evaluate_or_replicate_new_action_policy=(
+                "canonical_plus_posterior_risk_certificate_coverage"),
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_score_transform="bounded_current_gain",
+            policy_improvement_guard_mode="paired_nested_difference",
+            policy_improvement_pairwise_prefix_samples=2,
+            policy_improvement_pairwise_error_multiplier=1.25,
+            use_state_coupling=False,
+            use_state_basis=False,
+            use_problem_initial_samples=False,
+            use_boundary_initial_samples=False,
+            use_recommendation_refinement=False,
+            recommendation_axis_oracle=False,
+            recommendation_calibration=False,
+            finalist_replication_budget=0,
+            eval_pool_size=8,
+            evaluate_interval=0,
+            seed=296,
+        ),
+    )
+    result = algorithm.run(verbose=False)
+    row = algorithm.iteration_log[0]
+    info = row["policy_improvement_one_step"]
+    assert result["n_simulations"] == 3
+    assert info["guard_mode"] == "paired_nested_difference"
+    assert info["pairwise_prefix_sample_count"] == 2
+    assert info["pairwise_high_sample_count"] == 4
+    assert info["conditional_noninferiority_contract"] == (
+        "paired_difference_error_bounds_imply_joint_posterior_improvement")
+    assert row["policy_improvement_contract_id"] == (
+        "v54_paired_difference_guard_v1")
+    assert len(row["pairwise_prefix_risk_policy_scores_active"]) == (
+        row["exact_kg_active_action_count"])
+    assert result["decision_backend_contract"][
+        "policy_improvement_guard_mode"] == "paired_nested_difference"
+
+
+def test_v53_bounded_gain_clips_fantasies_and_keeps_literal_v51_fallback():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_score_transform="bounded_current_gain",
+            policy_improvement_mc_error_bound=0.1,
+            policy_improvement_certificate_mc_error_bound=0.05,
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    assert algorithm._policy_improvement_sample_gain(0.4, -1000.0) == 1.0
+    assert algorithm._policy_improvement_sample_gain(0.4, 1000.0) == -1.0
+    assert algorithm._policy_improvement_sample_gain(0.4, 0.15) == pytest.approx(0.25)
+
+    candidates = [(0, 0, 0), (1, 1, 1), (2, 2, 2)]
+    backend = {
+        "evaluate_or_replicate_active_indices": np.array([0, 1, 2]),
+        "evaluate_or_replicate_baseline_indices": np.array([0, 1]),
+    }
+    algorithm._last_exact_kg_raw_scores = np.array([2.0, 1.0, 100.0])
+    algorithm._last_exact_kg_policy_scores = np.array([0.3, 0.9, 0.7])
+    algorithm._last_certificate_deficit_raw_scores = np.array([0.0, 0.0, 100.0])
+    algorithm._last_certificate_deficit_policy_scores = np.array([0.0, 0.0, 0.4])
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        algorithm._last_certificate_deficit_raw_scores,
+        backend,
+    )
+    assert info["baseline_index"] == 0
+    assert selected == 2
+    assert info["score_transform"] == "bounded_current_gain"
+    assert algorithm._policy_improvement_contract_id() == (
+        "v53_constrained_certificate_deficit_v3")
+
+    algorithm.config.policy_improvement_score_normalization = "current_terminal"
+    with pytest.raises(ValueError, match="cannot be normalized twice"):
+        algorithm._policy_improvement_score_scales()

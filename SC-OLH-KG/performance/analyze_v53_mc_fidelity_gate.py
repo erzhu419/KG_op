@@ -125,21 +125,33 @@ def _contract(
     expected_mc,
     expected_sampling_mode,
     score_normalization,
+    score_transform,
 ):
     contract = dict(row.get("decision_backend_contract") or {})
+    bounded = str(score_transform) == "bounded_current_gain"
     normalized = str(score_normalization) == "current_terminal"
     expected_implementation = (
-        "v53_constrained_certificate_deficit_normalized"
-        if normalized
-        else "v53_constrained_certificate_deficit"
+        "v53_constrained_certificate_deficit_bounded_gain"
+        if bounded
+        else (
+            "v53_constrained_certificate_deficit_normalized"
+            if normalized
+            else "v53_constrained_certificate_deficit"
+        )
     )
     expected_theory = (
-        "v53_constrained_certificate_deficit_v2"
-        if normalized
-        else "v53_constrained_certificate_deficit_v1"
+        "v53_constrained_certificate_deficit_v3"
+        if bounded
+        else (
+            "v53_constrained_certificate_deficit_v2"
+            if normalized
+            else "v53_constrained_certificate_deficit_v1"
+        )
     )
     actual_normalization = str(
         contract.get("policy_improvement_score_normalization", "none"))
+    actual_transform = str(
+        contract.get("policy_improvement_score_transform", "identity"))
     return bool(
         str(row.get("implementation_contract_id"))
         == expected_implementation
@@ -150,6 +162,7 @@ def _contract(
         and str(contract.get("policy_improvement_contract"))
         == expected_theory
         and actual_normalization == str(score_normalization)
+        and actual_transform == str(score_transform)
         and not bool(row.get("online_action_trace_target_oracle_used", True))
     )
 
@@ -184,6 +197,7 @@ def analyze(
     multiplier=1.25,
     sampling_mode="antithetic_nested",
     score_normalization="none",
+    score_transform="identity",
     low_variant=LOW,
     high_variant=HIGH,
     low_mc=8,
@@ -218,6 +232,7 @@ def analyze(
     initial_designs_ok = True
     selector_plans_ok = True
     normalization_scales_ok = True
+    bounded_scores_ok = True
     risk_scales = []
     certificate_scales = []
     paired = (
@@ -229,8 +244,12 @@ def analyze(
         low = indexed[low_variant][key]
         high = indexed[high_variant][key]
         contracts_ok &= (
-            _contract(low, low_mc, sampling_mode, score_normalization)
-            and _contract(high, high_mc, sampling_mode, score_normalization)
+            _contract(
+                low, low_mc, sampling_mode,
+                score_normalization, score_transform)
+            and _contract(
+                high, high_mc, sampling_mode,
+                score_normalization, score_transform)
         )
         initial_designs_ok &= _initial_design_matches(low, high)
         low_trace = _trace(low)
@@ -260,16 +279,33 @@ def analyze(
                 continue
             low_selector_l1.append(low_l1)
             high_selector_l1.append(high_l1)
-        low_risk = _score_map(low_trace, "exact_kg_raw_scores_active")
-        high_risk = _score_map(high_trace, "exact_kg_raw_scores_active")
-        low_certificate = _score_map(
-            low_trace, "certificate_deficit_raw_scores_active")
-        high_certificate = _score_map(
-            high_trace, "certificate_deficit_raw_scores_active")
+        score_fields = (
+            (
+                "exact_kg_policy_scores_active",
+                "certificate_deficit_policy_scores_active",
+            )
+            if str(score_transform) == "bounded_current_gain"
+            else (
+                "exact_kg_raw_scores_active",
+                "certificate_deficit_raw_scores_active",
+            )
+        )
+        low_risk = _score_map(low_trace, score_fields[0])
+        high_risk = _score_map(high_trace, score_fields[0])
+        low_certificate = _score_map(low_trace, score_fields[1])
+        high_certificate = _score_map(high_trace, score_fields[1])
         maps = (low_risk, high_risk, low_certificate, high_certificate)
         if any(mapping is None for mapping in maps):
             action_sets_ok = False
             continue
+        if str(score_transform) == "bounded_current_gain":
+            pair_bounded = all(
+                -1.0 - 1e-12 <= value <= 1.0 + 1e-12
+                for mapping in maps for value in mapping.values()
+            )
+            bounded_scores_ok &= pair_bounded
+            if not pair_bounded:
+                continue
         if str(score_normalization) == "current_terminal":
             low_risk_scale = _terminal_scale(
                 low_trace, "exact_kg_current_terminal_value")
@@ -407,6 +443,7 @@ def analyze(
         and initial_designs_ok
         and selector_plans_ok
         and normalization_scales_ok
+        and bounded_scores_ok
         and risk_eta is not None
         and certificate_eta is not None
     )
@@ -420,7 +457,9 @@ def analyze(
         "high_mc_samples": int(high_mc),
         "sampling_mode": str(sampling_mode),
         "score_normalization": str(score_normalization),
+        "score_transform": str(score_transform),
         "normalization_scales_ok": normalization_scales_ok,
+        "bounded_scores_ok": bounded_scores_ok,
         "risk_score_scale_min": (
             None if not risk_scales else min(risk_scales)),
         "risk_score_scale_max": (
@@ -470,6 +509,8 @@ def analyze(
         "recommended_mc_samples": (
             int(low_mc) if complete and stable else int(high_mc)),
         "fidelity_gate_complete": complete,
+        "low_fidelity_stable_enough_for_sentinel": bool(
+            complete and stable),
         "mc8_stable_enough_for_sentinel": bool(complete and stable),
         "bound_status": (
             "empirical_nested_mc_calibration_not_an_exact_uniform_bound"
@@ -498,6 +539,11 @@ def main():
         choices=("none", "current_terminal"),
         default="none",
     )
+    parser.add_argument(
+        "--score-transform",
+        choices=("identity", "bounded_current_gain"),
+        default="identity",
+    )
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     result = analyze(
@@ -506,6 +552,7 @@ def main():
         multiplier=args.multiplier,
         sampling_mode=args.sampling_mode,
         score_normalization=args.score_normalization,
+        score_transform=args.score_transform,
         low_variant=args.low_variant,
         high_variant=args.high_variant,
         low_mc=args.low_mc,

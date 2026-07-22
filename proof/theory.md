@@ -931,16 +931,91 @@ L1 discrepancy remain empirical implementation obligations; neither is
 silently promoted to an exact-integral theorem.
 
 The completed V53-v1 RQMC audit showed that one raw-unit error radius is not
-portable across domains. V53-v2 therefore normalizes each posterior score by
-`max(1, ||current terminal value||_infinity)`. This scale is positive,
-pre-update, target-oracle free, and common to every action in the decision.
+portable across domains. V53-v2 normalized each posterior score by
+`max(1, ||current terminal value||_infinity)`. The scale is positive,
+pre-update, target-oracle free, and common to every action;
 `positive_score_normalize_lt_iff`,
 `uniform_score_approximation_normalize`,
 `two_eta_score_guard_normalize_iff`, and
-`constrained_guard_normalize_iff` prove that rankings, uniform-error events,
-and both guarded decisions are exactly the original mathematical objects in
-dimensionless coordinates. The next numerical obligation is nested MC32
-against MC128; V53-v2 remains unpromoted until that gate passes.
+`constrained_guard_normalize_iff` prove exact scale equivalence. The completed
+MC32/MC128 gate passed ranking stability, but every scale was one and the
+resulting `eta_risk=343.7621` admitted no supplemental action in 30 cells.
+Thus V53-v2 is a negative numerical result, not a promoted policy.
+
+V53-v3 keeps the raw-score V51 fallback and both terminal functionals, but
+changes the posterior numerical utility integrated by a supplemental policy.
+For each fantasy it uses
+`clip((L_current-L_after)/max(1,||L_current||_infinity),-1,1)` before posterior
+integration. `boundedCurrentGain_mem_Icc`,
+`boundedCurrentGain_abs_le_one`, and
+`boundedCurrentGain_pair_difference_le_two` make the finite score range
+explicit. The existing two-error theorems then apply to exact and estimated
+bounded expected utilities. The RQMC uniform-error event remains an empirical
+implementation obligation; boundedness does not silently turn dependent
+scrambled-net samples into IID observations.
+
+V54 addresses the resulting empty global guard without weakening the
+posterior objective. For each challenger `a` and literal V51 fallback `b`, it
+uses the paired difference `Delta_m(a,b)=S_m(a)-S_m(b)` computed from nested
+common-random-number prefixes and defines
+`r_a=kappa |Delta_high(a,b)-Delta_prefix(a,b)|`. Risk and certificate heads
+have separate radii and both must pass. `PairDifferenceApproximation` and
+`pair_difference_guard_implies_exact_improvement` show why this is sufficient:
+only the selected pair difference, not the worst action in the pool, must be
+controlled. `nested_pair_guard_implies_exact_improvement` and the paired
+fallback-or-switch theorem connect the recorded radius to joint posterior
+noninferiority.
+
+The mathematics deliberately does not claim that one observed prefix
+difference always bounds deterministic scrambled-net integration error.
+That coverage statement is a frozen numerical-fidelity condition. It must be
+audited with a third nested fidelity level before a V54 sentinel is authorized.
+The first MC128 action-support run is diagnostic only because it was launched
+from the V53-v3 core before the V54 selector was deployed.
+
+The first 15-cell MC128 action-support diagnostic failed before any selector
+gate: only Queue seed 4 contained a supplemental action that improved both
+posterior terminal heads. The replacement finite support uses oracle-free
+extreme points of one posterior action vector: risk EI, constrained EI,
+chance-boundary location/uncertainty, certificate depth, constraint-mean and
+cumulative-HVD information, their joint margin reduction, and observable
+`psi=(A,N)` coverage. `literal_action_superset_preserves_fallback` and
+`paired_action_superset_policy_joint_noninferiority` make the relevant
+monotonicity explicit: support expansion cannot remove the V51 fallback, and
+an accepted pair-guard switch retains the same conditional joint guarantee.
+The theorem does not assert that these finite directions contain a useful
+challenger; that remains the MC128 support obligation.
+
+The V54 implementation reuses each posterior clone/update across the two
+terminal heads. This is an execution-schedule change, not a third objective:
+`joint_terminal_head_reuse_eq_separate_passes` proves that accumulating both
+finite weighted gains after the same fantasy update equals two separate
+passes. A fixed-CRN Python regression requires all raw, transformed, expected
+terminal, and selected-action outputs to agree within `1e-12`. The small
+warm local probe improved median runtime by `1.25x`; a task-ensemble server
+profile remains the relevant performance obligation.
+
+
+The replacement V54 Pareto-support diagnostic completed all 15 cells. It
+found fallback-relative joint dominators in Inventory and Queue but none in
+FactorShock; even the convex hull of the finite action scores had negative
+max-min fallback-relative gain in all five FactorShock seeds. Thus V54's
+premise is infeasible on that posterior family and V54 is closed without
+weakening its theorem or launching MC512.
+
+V55 changes the comparison object, not either terminal functional. For an
+action `a`, let `S_R(a)` and `S_C(a)` be exact expected reductions from the
+unchanged current Bayes-risk and certificate-deficit terminal states. Nested
+prefix/high estimates give radii `r_R(a)` and `r_C(a)`. The action is admitted
+only when `S_hat_R(a)-r_R(a)>0` and `S_hat_C(a)-r_C(a)>0`.
+`AbsoluteScoreApproximation` and `score_lower_confidence_bound_le_exact` lift
+each lower bound to the exact score;
+`current_relative_joint_guard_improves_both_terminal_scores` and
+`current_relative_joint_guard_decreases_both_terminal_costs` then prove exact
+current-state Pareto improvement. The theorem does not assert that the action
+beats the distinct V51 risk maximizer in both heads. Empty admission retains
+that literal fallback. Radius coverage, nonvacuous activation, and final V51
+performance noninferiority remain separate preregistered empirical gates.
 
 ## Current Empirical Closure Items
 

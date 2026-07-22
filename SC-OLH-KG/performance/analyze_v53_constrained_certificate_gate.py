@@ -171,8 +171,13 @@ def _contract(
     variant,
     sampling_mode,
     score_normalization,
+    score_transform,
 ):
     contract = dict(row.get("decision_backend_contract") or {})
+    bounded_v53 = bool(
+        variant == V53
+        and str(score_transform) == "bounded_current_gain"
+    )
     normalized_v53 = bool(
         variant == V53
         and str(score_normalization) == "current_terminal"
@@ -190,19 +195,31 @@ def _contract(
         ),
         V53: (
             (
-                "v53_constrained_certificate_deficit_normalized"
-                if normalized_v53
-                else "v53_constrained_certificate_deficit"
+                "v53_constrained_certificate_deficit_bounded_gain"
+                if bounded_v53
+                else (
+                    "v53_constrained_certificate_deficit_normalized"
+                    if normalized_v53
+                    else "v53_constrained_certificate_deficit"
+                )
             ),
             (
-                "v53_constrained_certificate_deficit_v2"
-                if normalized_v53
-                else "v53_constrained_certificate_deficit_v1"
+                "v53_constrained_certificate_deficit_v3"
+                if bounded_v53
+                else (
+                    "v53_constrained_certificate_deficit_v2"
+                    if normalized_v53
+                    else "v53_constrained_certificate_deficit_v1"
+                )
             ),
             (
-                "v53_constrained_certificate_deficit_v2"
-                if normalized_v53
-                else "v53_constrained_certificate_deficit_v1"
+                "v53_constrained_certificate_deficit_v3"
+                if bounded_v53
+                else (
+                    "v53_constrained_certificate_deficit_v2"
+                    if normalized_v53
+                    else "v53_constrained_certificate_deficit_v1"
+                )
             ),
         ),
     }[variant]
@@ -218,6 +235,9 @@ def _contract(
             str(contract.get(
                 "policy_improvement_score_normalization", "none"))
             == str(score_normalization)
+            and str(contract.get(
+                "policy_improvement_score_transform", "identity"))
+            == str(score_transform)
         )
     return bool(
         str(row.get("implementation_contract_id")) == expected[0]
@@ -243,6 +263,7 @@ def analyze(
     seeds=range(5),
     sampling_mode="factorized_rqmc_nested",
     score_normalization="current_terminal",
+    score_transform="identity",
 ):
     rows, errors = load_rows(root)
     seeds = tuple(int(seed) for seed in seeds)
@@ -286,6 +307,7 @@ def analyze(
                 variant,
                 sampling_mode,
                 score_normalization,
+                score_transform,
             ) for row in indexed[variant].values())
         )
         comparisons[variant] = {
@@ -366,6 +388,7 @@ def analyze(
         "scope": "v53_constrained_certificate_deficit_sentinel",
         "sampling_mode": str(sampling_mode),
         "score_normalization": str(score_normalization),
+        "score_transform": str(score_transform),
         "seeds": list(seeds),
         "expected_per_variant": len(expected),
         "errors": errors,
@@ -394,6 +417,11 @@ def main():
         choices=("none", "current_terminal"),
         default="current_terminal",
     )
+    parser.add_argument(
+        "--score-transform",
+        choices=("identity", "bounded_current_gain"),
+        default="identity",
+    )
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     result = analyze(
@@ -401,6 +429,7 @@ def main():
         range(args.seed_start, args.seed_start + args.n_seeds),
         sampling_mode=args.sampling_mode,
         score_normalization=args.score_normalization,
+        score_transform=args.score_transform,
     )
     text = json.dumps(result, indent=2, sort_keys=True)
     print(text)

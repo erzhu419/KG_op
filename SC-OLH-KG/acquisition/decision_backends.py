@@ -393,6 +393,97 @@ def _risk_coordinate_coverage_scores(problem, candidates, observed):
     return np.min(distance, axis=1), "observable_cumulative_risk"
 
 
+
+def _posterior_pareto_support_priorities(
+    candidates,
+    observed,
+    obj_gpr,
+    con_gpr,
+    variance_model,
+    problem,
+    moments,
+    components,
+    theory_margin,
+    bayes_ei,
+    constrained_ei,
+    risk_coordinate_coverage,
+    *,
+    certification_beta_g,
+    task_ensemble=None,
+):
+    """Build oracle-free extremes of the posterior action-support vector.
+
+    These priorities only discretize the evaluate-or-replicate action space.
+    The fantasy refit remains the decision authority, and the literal V51
+    subset remains available as a fallback.
+    """
+
+    del obj_gpr  # Objective posterior information is represented by EI.
+    stochastic_margin = np.asarray(
+        components["stochastic_margin_mean"], dtype=float)
+    margin_sd = np.maximum(
+        np.asarray(components["margin_sd"], dtype=float), 1e-8)
+    boundary_distance = np.abs(stochastic_margin) / margin_sd
+    boundary_weight = 0.05 + np.exp(-0.5 * boundary_distance ** 2)
+    boundary_information = (boundary_weight - 0.05) * np.sqrt(np.maximum(
+        np.asarray(moments.constraint_epistemic, dtype=float)
+        + np.asarray(moments.constraint_between_expert, dtype=float),
+        0.0,
+    ))
+
+    observed_points = _observed_point_set(observed)
+    observed_mask = np.asarray([
+        tuple(int(v) for v in point) in observed_points
+        for point in candidates
+    ], dtype=bool)
+    action_reliability = np.ones(len(candidates), dtype=float)
+    fresh_reliability = (
+        np.asarray(moments.constraint_aleatoric, dtype=float)
+        / np.maximum(
+            np.asarray(moments.constraint_aleatoric, dtype=float)
+            + np.asarray(moments.constraint_epistemic, dtype=float)
+            + np.asarray(moments.constraint_between_expert, dtype=float),
+            _EPS,
+        )
+    )
+    action_reliability[~observed_mask] = np.clip(
+        fresh_reliability[~observed_mask], 0.0, 1.0)
+
+    constraint_margin_gain = _constraint_epistemic_margin_reduction(
+        candidates,
+        candidates,
+        con_gpr,
+        variance_model,
+        problem,
+        reference_weights=boundary_weight,
+        beta_g=certification_beta_g,
+        task_ensemble=task_ensemble,
+    )
+    hvd_margin_gain = _hvd_certification_margin_reduction(
+        candidates,
+        candidates,
+        variance_model,
+        problem,
+        action_reliability=action_reliability,
+        reference_weights=boundary_weight,
+        z_alpha=float(norm.ppf(1.0 - float(problem.alpha))),
+        task_ensemble=task_ensemble,
+    )
+    joint_margin_gain = constraint_margin_gain + hvd_margin_gain
+
+    return [
+        ("bayes_risk_ei", -np.asarray(bayes_ei, dtype=float)),
+        ("constrained_ei", -np.asarray(constrained_ei, dtype=float)),
+        ("chance_boundary", boundary_distance),
+        ("chance_boundary_information", -boundary_information),
+        ("certificate_depth", np.asarray(theory_margin, dtype=float)),
+        ("constraint_margin_information", -constraint_margin_gain),
+        ("hvd_margin_information", -hvd_margin_gain),
+        ("joint_margin_information", -joint_margin_gain),
+        ("psi_coverage", -np.asarray(
+            risk_coordinate_coverage, dtype=float)),
+    ]
+
 def evaluate_or_replicate_action_set(
     candidates,
     observed,
@@ -490,6 +581,7 @@ def evaluate_or_replicate_action_set(
             "posterior_risk",
             "canonical_plus_posterior_certificate_coverage",
             "canonical_plus_posterior_risk_certificate_coverage",
+            "canonical_plus_posterior_pareto_support",
         }
         if policy in posterior_policies:
             if new_action_priority is None:
@@ -562,6 +654,23 @@ def evaluate_or_replicate_action_set(
     active_indices = np.asarray(list(dict.fromkeys(active_indices)), dtype=int)
     active_mask = np.zeros(len(candidates), dtype=bool)
     active_mask[active_indices] = True
+    supplemental_label_by_index = {
+        int(index): str(label)
+        for index, label in zip(
+            supplemental_new_indices, supplemental_new_labels)
+    }
+    baseline_new_set = set(map(int, baseline_new_indices))
+    active_labels = []
+    for index in active_indices:
+        index = int(index)
+        if bool(replicate_mask[index]):
+            active_labels.append("replicate")
+        elif index in supplemental_label_by_index:
+            active_labels.append(supplemental_label_by_index[index])
+        elif index in baseline_new_set:
+            active_labels.append("v51_baseline_new")
+        else:
+            active_labels.append("posterior_risk_fill")
     return {
         "active_indices": active_indices,
         "active_mask": active_mask,
@@ -574,6 +683,7 @@ def evaluate_or_replicate_action_set(
         "supplemental_new_action_indices": np.asarray(
             supplemental_new_indices, dtype=int),
         "supplemental_new_action_labels": list(supplemental_new_labels),
+        "active_action_labels": list(active_labels),
         "new_action_policy": str(new_action_policy),
         "sobol_scores": sobol_score,
     }
@@ -1037,6 +1147,7 @@ def score_decision_backend(
     evaluate_or_replicate_baseline_indices = None
     evaluate_or_replicate_supplemental_indices = None
     evaluate_or_replicate_supplemental_labels = []
+    evaluate_or_replicate_active_labels = []
     exact_refit_required = False
     risk_coordinate_coverage = None
     risk_coordinate_coverage_source = None
@@ -1111,16 +1222,38 @@ def score_decision_backend(
         if action_policy in {
             "canonical_plus_posterior_certificate_coverage",
             "canonical_plus_posterior_risk_certificate_coverage",
+            "canonical_plus_posterior_pareto_support",
         }:
             risk_coordinate_coverage, risk_coordinate_coverage_source = (
                 _risk_coordinate_coverage_scores(
                     problem, candidates, observed)
             )
-            supplemental_priorities = [
-                ("certificate_depth", np.asarray(theory_margin, dtype=float)),
-                ("psi_coverage", -np.asarray(
-                    risk_coordinate_coverage, dtype=float)),
-            ]
+            if action_policy == "canonical_plus_posterior_pareto_support":
+                supplemental_priorities = (
+                    _posterior_pareto_support_priorities(
+                        candidates,
+                        observed,
+                        obj_gpr,
+                        con_gpr,
+                        variance_model,
+                        problem,
+                        moments,
+                        components,
+                        theory_margin,
+                        bayes_ei,
+                        constrained_ei,
+                        risk_coordinate_coverage,
+                        certification_beta_g=certification_beta_g,
+                        task_ensemble=task_ensemble,
+                    )
+                )
+            else:
+                supplemental_priorities = [
+                    ("certificate_depth", np.asarray(
+                        theory_margin, dtype=float)),
+                    ("psi_coverage", -np.asarray(
+                        risk_coordinate_coverage, dtype=float)),
+                ]
         action_set = evaluate_or_replicate_action_set(
             candidates,
             observed,
@@ -1160,6 +1293,8 @@ def score_decision_backend(
             action_set["supplemental_new_action_indices"], dtype=int)
         evaluate_or_replicate_supplemental_labels = list(
             action_set["supplemental_new_action_labels"])
+        evaluate_or_replicate_active_labels = list(
+            action_set["active_action_labels"])
         evaluate_or_replicate_new_policy = str(
             action_set["new_action_policy"])
 
@@ -1355,6 +1490,8 @@ def score_decision_backend(
         )
         out["evaluate_or_replicate_supplemental_labels"] = list(
             evaluate_or_replicate_supplemental_labels)
+        out["evaluate_or_replicate_active_labels"] = list(
+            evaluate_or_replicate_active_labels)
     if constraint_epistemic_information is not None:
         out["constraint_epistemic_information_reduction"] = (
             constraint_epistemic_information)

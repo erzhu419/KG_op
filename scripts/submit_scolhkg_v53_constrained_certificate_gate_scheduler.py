@@ -34,7 +34,13 @@ V52 = "v52_action_superset"
 V53 = "v53_certificate_constrained"
 FIDELITY = ("v53_mc8", "v53_mc32")
 HIGH_FIDELITY = "v53_mc128"
-VARIANTS = (CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY)
+V54_FIDELITY = ("v54_mc128", "v54_mc512")
+V55_FIDELITY = ("v55_mc128", "v55_mc512")
+VARIANTS = (
+    CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
+    *V54_FIDELITY, *V55_FIDELITY,
+)
+
 
 
 def _command_option(cmd, option):
@@ -91,26 +97,77 @@ def validate_frozen_design_seed_coverage(args, specs):
     return coverage
 
 
-def _v53_profile(common, mc_samples, score_normalization):
+def _v53_profile(
+    common,
+    mc_samples,
+    score_normalization,
+    score_transform="identity",
+    new_action_count=6,
+    guard_mode="uniform_score",
+    pairwise_prefix_samples=32,
+    pairwise_error_multiplier=1.25,
+    new_action_policy=(
+        "canonical_plus_posterior_risk_certificate_coverage"),
+):
+    bounded = str(score_transform) == "bounded_current_gain"
+    paired_difference = str(guard_mode) == "paired_nested_difference"
+    paired_absolute = str(guard_mode) == "paired_nested_absolute"
+    paired = paired_difference or paired_absolute
     normalized = str(score_normalization) == "current_terminal"
+    if bounded and normalized:
+        raise ValueError(
+            "bounded_current_gain must use score_normalization=none")
+    if paired and not bounded:
+        raise ValueError(
+            "paired_nested_difference requires bounded_current_gain")
     return {
         **common,
         "implementation_contract_id": (
-            "v53_constrained_certificate_deficit_normalized"
-            if normalized
-            else "v53_constrained_certificate_deficit"
+            "v55_current_relative_joint_guard"
+            if paired_absolute
+            else (
+                "v54_paired_nested_difference_guard"
+                if paired_difference
+                else (
+                "v53_constrained_certificate_deficit_bounded_gain"
+                if bounded
+                else (
+                    "v53_constrained_certificate_deficit_normalized"
+                    if normalized
+                    else "v53_constrained_certificate_deficit"
+                    )
+                )
+            )
         ),
         "theory_contract_id": (
-            "v53_constrained_certificate_deficit_v2"
-            if normalized
-            else "v53_constrained_certificate_deficit_v1"
+            "v55_current_relative_joint_improvement_v1"
+            if paired_absolute
+            else (
+                "v54_paired_difference_guard_v1"
+                if paired_difference
+                else (
+                "v53_constrained_certificate_deficit_v3"
+                if bounded
+                else (
+                    "v53_constrained_certificate_deficit_v2"
+                    if normalized
+                    else "v53_constrained_certificate_deficit_v1"
+                    )
+                )
+            )
         ),
         "exact_mc_samples": int(mc_samples),
-        "evaluate_or_replicate_new_action_count": 6,
-        "evaluate_or_replicate_new_action_policy": (
-            "canonical_plus_posterior_risk_certificate_coverage"),
+        "evaluate_or_replicate_new_action_count": int(new_action_count),
+        "evaluate_or_replicate_new_action_policy": str(
+            new_action_policy),
         "policy_improvement_mode": "certificate_constrained",
         "policy_improvement_score_normalization": str(score_normalization),
+        "policy_improvement_score_transform": str(score_transform),
+        "policy_improvement_guard_mode": str(guard_mode),
+        "policy_improvement_pairwise_prefix_samples": int(
+            pairwise_prefix_samples),
+        "policy_improvement_pairwise_error_multiplier": float(
+            pairwise_error_multiplier),
     }
 
 
@@ -120,6 +177,7 @@ def variant_profiles(args):
         "source_records_per_domain": int(args.source_records_per_domain),
         "exact_mc_samples": int(args.exact_mc_samples),
         "exact_sampling_mode": str(args.exact_sampling_mode),
+        "exact_jobs": int(args.exact_jobs),
         "evaluate_or_replicate_baseline_new_action_count": 4,
         "policy_improvement_mc_error_bound": float(args.risk_eta),
         "policy_improvement_certificate_mc_error_bound": float(
@@ -150,13 +208,51 @@ def variant_profiles(args):
             "policy_improvement_mode": "action_superset",
         },
         V53: _v53_profile(
-            common, args.exact_mc_samples, args.score_normalization),
+            common,
+            args.exact_mc_samples,
+            args.score_normalization,
+            args.score_transform,
+            args.challenger_new_action_count,
+            args.guard_mode,
+            args.pairwise_prefix_samples,
+            args.pairwise_error_multiplier,
+            args.challenger_new_action_policy,
+        ),
         "v53_mc8": _v53_profile(
-            common, 8, args.score_normalization),
+            common, 8, args.score_normalization, args.score_transform,
+            args.challenger_new_action_count, args.guard_mode,
+            args.pairwise_prefix_samples, args.pairwise_error_multiplier,
+            args.challenger_new_action_policy),
         "v53_mc32": _v53_profile(
-            common, 32, args.score_normalization),
+            common, 32, args.score_normalization, args.score_transform,
+            args.challenger_new_action_count, args.guard_mode,
+            args.pairwise_prefix_samples, args.pairwise_error_multiplier,
+            args.challenger_new_action_policy),
         HIGH_FIDELITY: _v53_profile(
-            common, 128, args.score_normalization),
+            common, 128, args.score_normalization, args.score_transform,
+            args.challenger_new_action_count, args.guard_mode,
+            args.pairwise_prefix_samples, args.pairwise_error_multiplier,
+            args.challenger_new_action_policy),
+        "v54_mc128": _v53_profile(
+            common, 128, args.score_normalization, args.score_transform,
+            args.challenger_new_action_count, args.guard_mode,
+            args.pairwise_prefix_samples, args.pairwise_error_multiplier,
+            args.challenger_new_action_policy),
+        "v54_mc512": _v53_profile(
+            common, 512, args.score_normalization, args.score_transform,
+            args.challenger_new_action_count, args.guard_mode,
+            args.pairwise_prefix_samples, args.pairwise_error_multiplier,
+            args.challenger_new_action_policy),
+        "v55_mc128": _v53_profile(
+            common, 128, args.score_normalization, args.score_transform,
+            args.challenger_new_action_count, args.guard_mode,
+            args.pairwise_prefix_samples, args.pairwise_error_multiplier,
+            args.challenger_new_action_policy),
+        "v55_mc512": _v53_profile(
+            common, 512, args.score_normalization, args.score_transform,
+            args.challenger_new_action_count, args.guard_mode,
+            args.pairwise_prefix_samples, args.pairwise_error_multiplier,
+            args.challenger_new_action_policy),
     }
 
 
@@ -169,6 +265,18 @@ def build_specs(args):
     unknown = sorted(set(requested) - set(profiles))
     if unknown:
         raise ValueError(f"unknown V53 variants: {unknown}")
+    if (
+        any(name in V54_FIDELITY for name in requested)
+        and str(args.guard_mode) != "paired_nested_difference"
+    ):
+        raise ValueError(
+            "v54_mc128/v54_mc512 require paired_nested_difference")
+    if (
+        any(name in V55_FIDELITY for name in requested)
+        and str(args.guard_mode) != "paired_nested_absolute"
+    ):
+        raise ValueError(
+            "v55_mc128/v55_mc512 require paired_nested_absolute")
     args.variant_profiles = {name: profiles[name] for name in requested}
     args.variants = ",".join(requested)
     args.scenarios = closure.promoted.v51.v50.v49.v27.MEAN_SCENARIOS
@@ -220,19 +328,51 @@ def main():
     )
     parser.add_argument("--exact-mc-samples", type=int, default=8)
     parser.add_argument(
+        "--challenger-new-action-count", type=int, default=6)
+    parser.add_argument(
+        "--challenger-new-action-policy",
+        choices=(
+            "canonical_plus_posterior_risk_certificate_coverage",
+            "canonical_plus_posterior_pareto_support",
+        ),
+        default="canonical_plus_posterior_risk_certificate_coverage",
+    )
+    parser.add_argument(
         "--exact-sampling-mode", default="factorized_rqmc_nested")
     parser.add_argument(
         "--score-normalization",
         choices=("none", "current_terminal"),
         default="current_terminal",
     )
+    parser.add_argument(
+        "--score-transform",
+        choices=("identity", "bounded_current_gain"),
+        default="identity",
+    )
+    parser.add_argument(
+        "--guard-mode",
+        choices=(
+            "uniform_score",
+            "paired_nested_difference",
+            "paired_nested_absolute",
+        ),
+        default="uniform_score",
+    )
+    parser.add_argument("--pairwise-prefix-samples", type=int, default=32)
+    parser.add_argument(
+        "--pairwise-error-multiplier", type=float, default=1.25)
     parser.add_argument("--risk-eta", type=float, default=0.0)
     parser.add_argument("--certificate-eta", type=float, default=0.0)
     parser.add_argument("--cpu", type=int, default=12)
+    parser.add_argument("--exact-jobs", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=8192)
     parser.add_argument("--no-sync", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    if int(args.exact_jobs) <= 0:
+        parser.error("--exact-jobs must be positive")
+    if int(args.exact_jobs) > int(args.cpu):
+        parser.error("--exact-jobs cannot exceed reserved --cpu")
     specs = build_specs(args)
     if args.dry_run:
         print(json.dumps(specs, indent=2))

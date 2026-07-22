@@ -71,7 +71,12 @@ mathlib and its cache; later builds should be fast.
   noninferiority when separate estimated score gaps exceed their calibrated
   `2 * eta` guards. V53-v2 additionally proves that positive current-terminal
   normalization preserves score order, uniform-error control, and both guard
-  decisions exactly.
+  decisions exactly. V53-v3 proves that clipping every normalized fantasy gain
+  before integration gives a score in `[-1,1]` with pairwise range at most two;
+  the literal V51 fallback and terminal recommendation functional are unchanged.
+  V54 replaces the global worst-action radius with a nested-common-random-number
+  radius for each challenger/fallback difference and proves guarded joint
+  improvement conditional on that action-specific radius covering exact error.
 - `SCOLHKG/Measure/StatisticalClosure.lean`: combines the component bad events
   into a high-probability end-to-end safe-regret statement.
 - `SCOLHKG/Measure/FiniteSampleHVDConcentration.lean`: converts a declared
@@ -742,6 +747,24 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
      separate uniform MC-error events, both accepted two-eta score gaps imply
      strict exact Bayes-risk-reduction and certificate-deficit-reduction
      improvements; fallback or switch is jointly noninferior.
+150. The V54 pair-difference guard needs only an error radius for the selected
+     challenger relative to the literal V51 fallback. If the nested-CRN
+     prefix/high discrepancy radius dominates that exact pair-difference error,
+     every accepted switch strictly improves both posterior risk reduction and
+     certificate-deficit reduction; fallback or switch is jointly noninferior.
+151. Joint terminal-head reuse is behavior preserving: applying the Bayes-risk
+     and certificate-deficit functionals to each identical fantasy update and
+     accumulating both scores in one pass equals two separate finite weighted
+     passes definitionally.
+152. Posterior Pareto action support is a literal V51 action superset.
+     Every failed guard can execute the retained fallback, while every accepted
+     action-specific pair guard inherits joint posterior noninferiority. The
+     finite support's empirical usefulness remains a separately reported gate.
+153. The V55 current-relative joint guard gives every action separate nested-CRN
+     lower confidence bounds for Bayes-risk and certificate-deficit reduction.
+     Positivity of both bounds implies strict decrease of both exact current
+     terminal costs on the declared approximation events; an empty admissible
+     set retains the literal V51 fallback without claiming two-head dominance.
 
 Remaining work is empirical/binding and assumption validation:
 

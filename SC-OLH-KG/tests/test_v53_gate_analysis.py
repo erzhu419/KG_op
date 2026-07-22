@@ -300,3 +300,46 @@ def test_v53_sentinel_analyzer_requires_all_preregistered_checks(tmp_path):
     assert result["sentinel_eligible"] == [SENTINEL.V53]
     assert all(result["v53_checks"].values())
     assert result["promotion_eligible"] == []
+
+
+def test_v53_fidelity_analyzer_uses_bounded_policy_scores(tmp_path):
+    sampling_mode = "factorized_rqmc_nested"
+    for variant, mc, offset in (
+        (FIDELITY.LOW, 8, 0.02),
+        (FIDELITY.HIGH, 32, 0.0),
+    ):
+        rows = []
+        for domain in FIDELITY.DOMAINS:
+            row = _fidelity_row(
+                domain, 0, mc, 1000.0, sampling_mode=sampling_mode)
+            row["implementation_contract_id"] = (
+                "v53_constrained_certificate_deficit_bounded_gain")
+            row["theory_contract_id"] = (
+                "v53_constrained_certificate_deficit_v3")
+            contract = row["decision_backend_contract"]
+            contract["policy_improvement_contract"] = (
+                "v53_constrained_certificate_deficit_v3")
+            contract["policy_improvement_score_normalization"] = "none"
+            contract["policy_improvement_score_transform"] = (
+                "bounded_current_gain")
+            trace = row["online_action_trace"][0]
+            trace["policy_improvement_score_transform"] = (
+                "bounded_current_gain")
+            trace["exact_kg_policy_scores_active"] = [
+                0.1 + offset, 0.4 + offset, 0.2 + offset]
+            trace["certificate_deficit_policy_scores_active"] = [
+                0.2 + offset, 0.5 + offset, 0.1 + offset]
+            rows.append(row)
+        _write_result(tmp_path, variant, rows)
+
+    result = FIDELITY.analyze(
+        tmp_path,
+        seeds=[0],
+        sampling_mode=sampling_mode,
+        score_normalization="none",
+        score_transform="bounded_current_gain",
+    )
+    assert result["fidelity_gate_complete"] is True
+    assert result["bounded_scores_ok"] is True
+    assert result["risk_max_abs_mc8_mc32"] == pytest.approx(0.02)
+    assert result["low_fidelity_stable_enough_for_sentinel"] is True

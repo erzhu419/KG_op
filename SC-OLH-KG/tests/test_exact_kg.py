@@ -811,6 +811,166 @@ class ExactKGTests(unittest.TestCase):
         )
         self.assertAlmostEqual(value, 0.3)
 
+    def test_task_joint_terminal_skips_only_redundant_primary_update(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                exact_kg_terminal_mode="bayes_risk",
+                certification_head_authority="task_joint",
+                exact_kg_skip_redundant_primary_update=True,
+            ),
+        )
+        algorithm.task_ensemble = object()
+        self.assertFalse(algorithm._exact_primary_fantasy_update_required(
+            "certificate_deficit"))
+        self.assertTrue(algorithm._exact_primary_fantasy_update_required(
+            "hard_certified"))
+
+        algorithm.config.certification_head_authority = (
+            "split_gpr_task_hvd")
+        self.assertTrue(algorithm._exact_primary_fantasy_update_required(
+            "certificate_deficit"))
+        algorithm.config.certification_head_authority = "task_joint"
+        algorithm.config.exact_kg_skip_redundant_primary_update = False
+        self.assertTrue(algorithm._exact_primary_fantasy_update_required(
+            "certificate_deficit"))
+        algorithm.config.exact_kg_skip_redundant_primary_update = True
+        algorithm.task_ensemble = None
+        self.assertTrue(algorithm._exact_primary_fantasy_update_required(
+            "certificate_deficit"))
+
+
+    def test_task_joint_exact_score_does_not_read_shadow_primary_update(self):
+        class Ensemble:
+            task_latent_authoritative = True
+
+            def __init__(self, offset=0.0):
+                self.offset = float(offset)
+
+            def clone(self, **kwargs):
+                del kwargs
+                return Ensemble(self.offset)
+
+            def predictive_sample(self, x, z_vec, expert_uniform):
+                del x, expert_uniform
+                return np.asarray(z_vec, dtype=float), 0
+
+            def update(self, x, y, *, existing_observations, tau):
+                del x, existing_observations, tau
+                self.offset += 0.01 * float(np.sum(y))
+
+            @staticmethod
+            def inference_entropy():
+                return 0.0
+
+            @staticmethod
+            def inference_weights():
+                return np.asarray([1.0], dtype=float)
+
+            def joint_terminal_risk_many(self, pool, *, tau, alpha):
+                del tau, alpha
+                n = len(pool)
+                risk = np.arange(n, dtype=float) + 0.2 + self.offset
+                return {
+                    "objective": risk.copy(),
+                    "expected_violation": np.zeros(n, dtype=float),
+                    "nominal_expected_violation": np.zeros(n, dtype=float),
+                    "risk": risk,
+                    "model_disagreement": np.zeros(n, dtype=float),
+                    "kl_radius": 0.0,
+                }
+
+            def mixture_moments_many(
+                self, output_index, pool, certification=False,
+            ):
+                del output_index, certification
+                return SimpleNamespace(
+                    mean=np.arange(len(pool), dtype=float) + self.offset)
+
+            def robust_moments_many(
+                self, output_index, pool, certification=True,
+            ):
+                del output_index, certification
+                n = len(pool)
+                return SimpleNamespace(
+                    mean_upper=np.full(n, -0.2 + self.offset),
+                    epistemic_upper=np.full(n, 0.01),
+                    aleatoric_upper=np.full(n, 0.01),
+                    nominal=SimpleNamespace(
+                        between_mean=np.zeros(n, dtype=float)),
+                )
+
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(
+                N=3,
+                n0=2,
+                exact_kg_terminal_mode="bayes_risk",
+                certification_head_authority="task_joint",
+                exact_kg_skip_redundant_primary_update=True,
+                use_state_coupling=False,
+                use_state_basis=False,
+                seed=1223,
+            ),
+        )
+        initial = algorithm._initial_samples()
+        algorithm._fit_initial_belief(initial)
+        algorithm.task_ensemble = Ensemble()
+        terminal_pool = algorithm._recommendation_pool()[:3]
+        current = algorithm._terminal_value_from_models(
+            algorithm.gpr,
+            algorithm.variance_model,
+            terminal_pool,
+            task_ensemble=algorithm.task_ensemble,
+        )
+        certificate_current = algorithm._terminal_value_from_models(
+            algorithm.gpr,
+            algorithm.variance_model,
+            terminal_pool,
+            task_ensemble=algorithm.task_ensemble,
+            terminal_mode_override="certificate_deficit",
+        )
+
+        def forbidden(*args, **kwargs):
+            del args, kwargs
+            raise AssertionError("redundant primary update was executed")
+
+        algorithm._exact_primary_fantasy_update = forbidden
+        result = algorithm._exact_posterior_update_score_one(
+            terminal_pool[0],
+            np.asarray([[0.2, -0.1], [-0.3, 0.4]], dtype=float),
+            terminal_pool,
+            current,
+            np.asarray([0.25, 0.75], dtype=float),
+            np.asarray([0.5, 0.5], dtype=float),
+            return_diagnostics=True,
+            secondary_terminal_mode="certificate_deficit",
+            secondary_current_value=certificate_current,
+            prefix_sample_count=1,
+        )
+        self.assertTrue(np.isfinite(result["raw_score"]))
+        self.assertTrue(np.isfinite(result["secondary"]["raw_score"]))
+        self.assertIn("prefix", result)
+
+        algorithm.config.exact_kg_skip_redundant_primary_update = False
+        with self.assertRaisesRegex(
+            AssertionError, "redundant primary update",
+        ):
+            algorithm._exact_posterior_update_score_one(
+                terminal_pool[0],
+                np.asarray([[0.2, -0.1]], dtype=float),
+                terminal_pool,
+                current,
+                np.asarray([0.25], dtype=float),
+                np.asarray([1.0], dtype=float),
+                return_diagnostics=True,
+                secondary_terminal_mode="certificate_deficit",
+                secondary_current_value=certificate_current,
+            )
+
+
     def test_bayes_risk_exact_runner_and_recommendation_share_terminal(self):
         problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
         config = SingleOLHKGConfig(
@@ -1273,6 +1433,35 @@ class ExactKGTests(unittest.TestCase):
             [0.04, 0.04, 0.16, 0.16, 0.06, 0.06, 0.24, 0.24],
         )
         self.assertAlmostEqual(float(np.sum(weights)), 1.0)
+
+    def test_balanced_chunk_schedule_fills_complete_worker_waves(self):
+        problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+        algorithm = SingleOLHKGAlgorithm(
+            problem,
+            SingleOLHKGConfig(exact_kg_chunk_schedule="balanced_lcm"),
+        )
+        expected = {12: 2, 24: 4, 36: 2, 48: 8, 72: 4}
+        for jobs, chunks in expected.items():
+            with self.subTest(jobs=jobs):
+                self.assertEqual(
+                    algorithm._exact_kg_chunks_per_candidate(
+                        jobs, candidate_count=18, sample_count=128),
+                    chunks,
+                )
+                self.assertEqual((18 * chunks) % jobs, 0)
+
+        algorithm.config.exact_kg_chunk_schedule = "legacy"
+        self.assertEqual(
+            algorithm._exact_kg_chunks_per_candidate(48, 18, 128), 3)
+        algorithm.config.exact_kg_chunk_schedule = "balanced_lcm"
+        self.assertEqual(
+            algorithm._exact_kg_chunks_per_candidate(48, 18, 4), 4)
+        self.assertEqual(
+            algorithm._exact_kg_chunks_per_candidate(48, 13, 128), 8)
+        algorithm.config.exact_kg_max_chunks_per_candidate = 4
+        self.assertEqual(
+            algorithm._exact_kg_chunks_per_candidate(48, 13, 128), 4)
+
 
     def test_parallel_exact_scores_match_serial_scores(self):
         problem_a = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))

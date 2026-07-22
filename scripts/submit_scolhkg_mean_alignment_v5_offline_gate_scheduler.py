@@ -271,6 +271,18 @@ def _flags(profile, args):
         "--policy-improvement-score-normalization",
         str(profile.get(
             "policy_improvement_score_normalization", "none")),
+        "--policy-improvement-score-transform",
+        str(profile.get(
+            "policy_improvement_score_transform", "identity")),
+        "--policy-improvement-guard-mode",
+        str(profile.get(
+            "policy_improvement_guard_mode", "uniform_score")),
+        "--policy-improvement-pairwise-prefix-samples",
+        str(profile.get(
+            "policy_improvement_pairwise_prefix_samples", 32)),
+        "--policy-improvement-pairwise-error-multiplier",
+        str(profile.get(
+            "policy_improvement_pairwise_error_multiplier", 1.25)),
         "--policy-improvement-mc-error-bound",
         str(profile.get("policy_improvement_mc_error_bound", 0.0)),
         "--policy-improvement-certificate-mc-error-bound",

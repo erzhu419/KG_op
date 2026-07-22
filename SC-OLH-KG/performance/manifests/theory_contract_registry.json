@@ -99,12 +99,11 @@
       "behavior_change": true,
       "diagnostic_change": true,
       "role": "challenger_contract",
-      "status": "normalized_mc32_vs_mc128_fidelity_pending",
-      "runs": [],
-      "planned_runs": [
-        "scolh_v53_normalized_rqmc_mc32_mc128_s10_20260722_01",
-        "scolh_v53_normalized_constrained_certificate_s5_20260722_01"
+      "status": "ranking_fidelity_passed_but_two_eta_guard_vacuous_rejected",
+      "runs": [
+        "scolh_v53_normalized_rqmc_mc32_mc128_s10_20260722_01"
       ],
+      "planned_runs": [],
       "evidence": [
         "SC-OLH-KG/docs/v53_mc_fidelity_20260722.md"
       ],
@@ -117,6 +116,101 @@
         "separate normalized uniform-error guards for both scores",
         "nested factorized-RQMC MC32/MC128 calibration",
         "no rollout and no target-oracle action"
+      ]
+    },
+    {
+      "id": "v53_constrained_certificate_deficit_v3",
+      "implementation_contract_id": "v53_constrained_certificate_deficit_bounded_gain",
+      "decision_behavior": "literal_v51_fallback_with_bounded_risk_and_certificate_utility_improvement",
+      "behavior_change": true,
+      "diagnostic_change": true,
+      "role": "challenger_contract",
+      "status": "bounded_fidelity_passed_but_two_eta_guard_vacuous_rejected",
+      "runs": [
+        "scolh_v53_bounded_rqmc_mc32_mc128_s10_20260722_01"
+      ],
+      "planned_runs": [],
+      "evidence": [
+        "SC-OLH-KG/docs/v53_mc_fidelity_20260722.md"
+      ],
+      "formal_scope": [
+        "literal raw-score V51 action-subset fallback",
+        "bounded per-fantasy current-terminal improvement in [-1,1]",
+        "clipping before posterior integration",
+        "one unchanged observed-action Bayes-risk terminal functional",
+        "one unchanged canonical certificate-deficit terminal functional",
+        "separate bounded-score two-eta guards",
+        "nested factorized-RQMC MC32/MC128 calibration",
+        "raw and bounded score audit trail",
+        "no rollout and no target-oracle action"
+      ]
+    },
+    {
+      "id": "v54_paired_difference_guard_v1",
+      "implementation_contract_id": "v54_paired_nested_difference_guard",
+      "decision_behavior": "literal_v51_fallback_with_action_specific_nested_pair_error_guard",
+      "behavior_change": true,
+      "diagnostic_change": true,
+      "role": "challenger_contract",
+      "status": "closed_action_support_conflict_not_promoted",
+      "runs": [],
+      "diagnostic_runs": [
+        "scolh_v54_action_support_mc128_a12_s5_20260722_01",
+        "scolh_v54_pareto_support_mc128_a13_s5_20260722_01",
+        "scolh_v54_pareto_support_mc128_a13_s5_20260722_02"
+      ],
+      "planned_runs": [],
+      "evidence": [
+        "SC-OLH-KG/docs/v53_constrained_certificate_deficit_plan.md"
+      ],
+      "formal_scope": [
+        "literal raw-score V51 action-subset fallback",
+        "bounded per-fantasy risk and certificate utility",
+        "nested common-random-number prefix and high estimates",
+        "challenger-specific fallback-relative numerical radius",
+        "joint risk/certificate terminal evaluation on one shared fantasy update",
+        "separate risk and certificate pair-difference guards",
+        "joint posterior noninferiority conditional on pairwise error coverage",
+        "MC32/MC128/MC512 radius-coverage audit required before sentinel",
+        "no rollout and no target-oracle action"
+      ]
+    },
+    {
+      "id": "v55_current_relative_joint_improvement_v1",
+      "implementation_contract_id": "v55_current_relative_joint_guard",
+      "decision_behavior": "current_relative_two_head_nested_lcb_with_literal_v51_fallback",
+      "behavior_change": true,
+      "diagnostic_change": true,
+      "role": "challenger_contract",
+      "status": "mc128_activation_passed_mc512_single_prefix_radius_failed_runtime_optimized",
+      "runs": [
+        "scolh_v55_current_relative_mc128_a13_s5_20260722_01",
+        "scolh_v55_current_relative_mc512_a13_s5_20260722_01",
+        "scolh_v55_prefix_reuse_core_scaling_mc128_c12_s1_20260722_01",
+        "scolh_v55_prefix_reuse_core_scaling_mc128_c24_s1_20260722_01",
+        "scolh_v55_prefix_reuse_core_scaling_mc128_c36_s1_20260722_01",
+        "scolh_v55_prefix_reuse_core_scaling_mc128_c48_s1_20260722_01",
+        "scolh_v55_runtime_opt_balanced_shadow_mc128_c48_s1_20260722_01",
+        "scolh_v55_runtime_opt_balanced_shadow_mc128_c72_s1_20260722_01",
+        "scolh_v55_runtime_opt_balanced_shadow_mc512_c72_s1_20260722_01"
+      ],
+      "planned_runs": [],
+      "evidence": [
+        "SC-OLH-KG/docs/v53_constrained_certificate_deficit_plan.md",
+        "SC-OLH-KG/docs/v53_mc_fidelity_20260722.md",
+        "SC-OLH-KG/docs/v55_exact_runtime_optimization_20260722.md"
+      ],
+      "formal_scope": [
+        "literal raw-score V51 fallback when no joint action is admissible",
+        "unchanged bounded Bayes-risk and certificate-deficit utilities",
+        "one shared posterior fantasy update for both terminal heads",
+        "per-action current-relative nested-CRN error radii",
+        "positive lower confidence bounds for both exact terminal reductions",
+        "conditional exact current-state Pareto improvement",
+        "MC128 activation and MC512 empirical radius-coverage gates",
+        "no rollout and no target-oracle action",
+        "MC128 activation passed 15/15; all selected MC128 actions remained positive at MC512, but the single-prefix radius covered only 10/15 selected actions and is not a valid confidence calibration",
+        "nested-prefix reuse, balanced process chunks, redundant shadow-update removal, and 72-worker execution preserve all six score arrays within 1e-10 while reducing median MC512 end-to-end time by 6.14x"
       ]
     }
   ],

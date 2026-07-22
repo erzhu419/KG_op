@@ -34,6 +34,10 @@ def load_config(path):
     config.setdefault("exact_kg_clip_negative", True)
     config.setdefault("exact_kg_sampling_mode", "iid")
     config.setdefault("policy_improvement_score_normalization", "none")
+    config.setdefault("policy_improvement_score_transform", "identity")
+    config.setdefault("policy_improvement_guard_mode", "uniform_score")
+    config.setdefault("policy_improvement_pairwise_prefix_samples", 32)
+    config.setdefault("policy_improvement_pairwise_error_multiplier", 1.25)
     config.setdefault("task_posterior_safe_generalized", False)
     config.setdefault("source_discrepancy_update", True)
     config.setdefault("task_posterior_safe_boundary_score_weight", 1.0)
@@ -400,6 +404,7 @@ def main():
             "canonical_sobol",
             "canonical_plus_posterior_risk",
             "canonical_plus_posterior_risk_certificate_coverage",
+            "canonical_plus_posterior_pareto_support",
         ),
         default=None,
     )
@@ -419,6 +424,30 @@ def main():
     parser.add_argument(
         "--policy-improvement-score-normalization",
         choices=("none", "current_terminal"),
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-score-transform",
+        choices=("identity", "bounded_current_gain"),
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-guard-mode",
+        choices=(
+            "uniform_score",
+            "paired_nested_difference",
+            "paired_nested_absolute",
+        ),
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-pairwise-prefix-samples",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-pairwise-error-multiplier",
+        type=float,
         default=None,
     )
     parser.add_argument(
@@ -469,6 +498,23 @@ def main():
         action=argparse.BooleanOptionalAction,
         default=True,
     )
+    parser.add_argument(
+        "--exact-reuse-nested-prefix",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument(
+        "--exact-skip-redundant-primary-update",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument(
+        "--exact-chunk-schedule",
+        choices=("legacy", "balanced_lcm"),
+        default="balanced_lcm",
+    )
+    parser.add_argument(
+        "--exact-max-chunks-per-candidate", type=int, default=8)
     parser.add_argument(
         "--tcb-v2-mode",
         choices=("off", "shadow", "frontier", "certified"),
@@ -938,6 +984,26 @@ def main():
         if args.policy_improvement_score_normalization is None
         else args.policy_improvement_score_normalization
     )
+    policy_improvement_score_transform = str(
+        config.get("policy_improvement_score_transform", "identity")
+        if args.policy_improvement_score_transform is None
+        else args.policy_improvement_score_transform
+    )
+    policy_improvement_guard_mode = str(
+        config.get("policy_improvement_guard_mode", "uniform_score")
+        if args.policy_improvement_guard_mode is None
+        else args.policy_improvement_guard_mode
+    )
+    policy_improvement_pairwise_prefix_samples = int(
+        config.get("policy_improvement_pairwise_prefix_samples", 32)
+        if args.policy_improvement_pairwise_prefix_samples is None
+        else args.policy_improvement_pairwise_prefix_samples
+    )
+    policy_improvement_pairwise_error_multiplier = float(
+        config.get("policy_improvement_pairwise_error_multiplier", 1.25)
+        if args.policy_improvement_pairwise_error_multiplier is None
+        else args.policy_improvement_pairwise_error_multiplier
+    )
     policy_improvement_mc_error_bound = float(
         config.get("policy_improvement_mc_error_bound", 0.0)
         if args.policy_improvement_mc_error_bound is None
@@ -1055,6 +1121,13 @@ def main():
         "policy_improvement_mode": policy_improvement_mode,
         "policy_improvement_score_normalization": (
             policy_improvement_score_normalization),
+        "policy_improvement_score_transform": (
+            policy_improvement_score_transform),
+        "policy_improvement_guard_mode": policy_improvement_guard_mode,
+        "policy_improvement_pairwise_prefix_samples": (
+            policy_improvement_pairwise_prefix_samples),
+        "policy_improvement_pairwise_error_multiplier": (
+            policy_improvement_pairwise_error_multiplier),
         "policy_improvement_mc_error_bound": (
             policy_improvement_mc_error_bound),
         "policy_improvement_certificate_mc_error_bound": (
@@ -1083,6 +1156,14 @@ def main():
         "exact_kg_jobs": int(args.exact_jobs),
         "exact_kg_parallel_backend": str(args.parallel_backend),
         "exact_kg_clip_negative": bool(args.exact_clip_negative),
+        "exact_kg_reuse_nested_prefix": bool(
+            args.exact_reuse_nested_prefix),
+        "exact_kg_skip_redundant_primary_update": bool(
+            args.exact_skip_redundant_primary_update),
+        "exact_kg_chunk_schedule": str(
+            args.exact_chunk_schedule),
+        "exact_kg_max_chunks_per_candidate": int(
+            args.exact_max_chunks_per_candidate),
         "tcb_v2_enabled": bool(args.tcb_v2_mode != "off"),
         "tcb_v2_mode": str(args.tcb_v2_mode),
         "tcb_v2_frontier_count": int(args.tcb_v2_frontier_count),
@@ -1439,6 +1520,13 @@ def main():
             "policy_improvement_mode": policy_improvement_mode,
             "policy_improvement_score_normalization": (
                 policy_improvement_score_normalization),
+            "policy_improvement_score_transform": (
+                policy_improvement_score_transform),
+            "policy_improvement_guard_mode": policy_improvement_guard_mode,
+            "policy_improvement_pairwise_prefix_samples": (
+                policy_improvement_pairwise_prefix_samples),
+            "policy_improvement_pairwise_error_multiplier": (
+                policy_improvement_pairwise_error_multiplier),
             "policy_improvement_mc_error_bound": (
                 policy_improvement_mc_error_bound),
             "policy_improvement_certificate_mc_error_bound": (
@@ -1467,6 +1555,14 @@ def main():
             "exact_kg_jobs": int(args.exact_jobs),
             "exact_kg_parallel_backend": str(args.parallel_backend),
             "exact_kg_clip_negative": bool(args.exact_clip_negative),
+            "exact_kg_reuse_nested_prefix": bool(
+                args.exact_reuse_nested_prefix),
+            "exact_kg_skip_redundant_primary_update": bool(
+                args.exact_skip_redundant_primary_update),
+            "exact_kg_chunk_schedule": str(
+                args.exact_chunk_schedule),
+            "exact_kg_max_chunks_per_candidate": int(
+                args.exact_max_chunks_per_candidate),
             "tcb_v2_enabled": bool(args.tcb_v2_mode != "off"),
             "tcb_v2_mode": str(args.tcb_v2_mode),
             "tcb_v2_frontier_count": int(args.tcb_v2_frontier_count),
