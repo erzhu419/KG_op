@@ -166,8 +166,17 @@ def _initial_design_matches(left, right):
     )
 
 
-def _contract(row, variant):
+def _contract(
+    row,
+    variant,
+    sampling_mode,
+    score_normalization,
+):
     contract = dict(row.get("decision_backend_contract") or {})
+    normalized_v53 = bool(
+        variant == V53
+        and str(score_normalization) == "current_terminal"
+    )
     expected = {
         CONTROL: (
             "promoted_v51_observed_terminal_closure",
@@ -180,27 +189,46 @@ def _contract(row, variant):
             "v52_safeguarded_policy_improvement_v1",
         ),
         V53: (
-            "v53_constrained_certificate_deficit",
-            "v53_constrained_certificate_deficit_v1",
-            "v53_constrained_certificate_deficit_v1",
+            (
+                "v53_constrained_certificate_deficit_normalized"
+                if normalized_v53
+                else "v53_constrained_certificate_deficit"
+            ),
+            (
+                "v53_constrained_certificate_deficit_v2"
+                if normalized_v53
+                else "v53_constrained_certificate_deficit_v1"
+            ),
+            (
+                "v53_constrained_certificate_deficit_v2"
+                if normalized_v53
+                else "v53_constrained_certificate_deficit_v1"
+            ),
         ),
     }[variant]
     eta_ok = True
+    normalization_ok = True
     if variant == V53:
         eta_ok = bool(
             float(contract.get("policy_improvement_mc_error_bound", 0.0)) > 0.0
             and float(contract.get(
                 "policy_improvement_certificate_mc_error_bound", 0.0)) > 0.0
         )
+        normalization_ok = bool(
+            str(contract.get(
+                "policy_improvement_score_normalization", "none"))
+            == str(score_normalization)
+        )
     return bool(
         str(row.get("implementation_contract_id")) == expected[0]
         and str(row.get("theory_contract_id")) == expected[1]
         and str(contract.get("policy_improvement_contract")) == expected[2]
         and row.get("decision_backend") == "sobol_exact_joint_voi"
-        and str(row.get("exact_kg_sampling_mode")) == "antithetic_nested"
+        and str(row.get("exact_kg_sampling_mode")) == str(sampling_mode)
         and int(contract.get("forced_sampling_override_count", -1)) == 0
         and not bool(row.get("online_action_trace_target_oracle_used", True))
         and eta_ok
+        and normalization_ok
     )
 
 
@@ -210,7 +238,12 @@ def _relative_noninferior(challenger, control, tolerance=0.05):
     return challenger <= control * (1.0 + tolerance) + 1e-12
 
 
-def analyze(root, seeds=range(5)):
+def analyze(
+    root,
+    seeds=range(5),
+    sampling_mode="factorized_rqmc_nested",
+    score_normalization="current_terminal",
+):
     rows, errors = load_rows(root)
     seeds = tuple(int(seed) for seed in seeds)
     expected = {(domain, seed) for domain in DOMAINS for seed in seeds}
@@ -248,8 +281,12 @@ def analyze(root, seeds=range(5)):
                 ties += 1
         contracts_ok = bool(
             len(indexed[variant]) == len(expected)
-            and all(_contract(row, variant)
-                    for row in indexed[variant].values())
+            and all(_contract(
+                row,
+                variant,
+                sampling_mode,
+                score_normalization,
+            ) for row in indexed[variant].values())
         )
         comparisons[variant] = {
             "paired_count": len(paired),
@@ -327,6 +364,8 @@ def analyze(root, seeds=range(5)):
     sentinel_pass = all(checks.values())
     return {
         "scope": "v53_constrained_certificate_deficit_sentinel",
+        "sampling_mode": str(sampling_mode),
+        "score_normalization": str(score_normalization),
         "seeds": list(seeds),
         "expected_per_variant": len(expected),
         "errors": errors,
@@ -348,11 +387,20 @@ def main():
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=5)
+    parser.add_argument(
+        "--sampling-mode", default="factorized_rqmc_nested")
+    parser.add_argument(
+        "--score-normalization",
+        choices=("none", "current_terminal"),
+        default="current_terminal",
+    )
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     result = analyze(
         args.root,
         range(args.seed_start, args.seed_start + args.n_seeds),
+        sampling_mode=args.sampling_mode,
+        score_normalization=args.score_normalization,
     )
     text = json.dumps(result, indent=2, sort_keys=True)
     print(text)

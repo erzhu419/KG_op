@@ -48,6 +48,7 @@ def _args(tmp_path, variants):
         "variants": ",".join(variants),
         "exact_mc_samples": 8,
         "exact_sampling_mode": "antithetic_nested",
+        "score_normalization": "current_terminal",
         "risk_eta": 0.01,
         "certificate_eta": 0.02,
         "cpu": 12,
@@ -74,6 +75,10 @@ def test_v53_fidelity_gate_is_paired_mc8_mc32(tmp_path):
                for spec in specs)
     assert all("--policy-improvement-mode certificate_constrained"
                in spec["cmd"] for spec in specs)
+    assert all(
+        "--policy-improvement-score-normalization current_terminal"
+        in spec["cmd"] for spec in specs
+    )
     assert all("--policy-improvement-certificate-mc-error-bound 0.02"
                in spec["cmd"] for spec in specs)
     assert all("--policy-improvement-rollout-max-arms 0"
@@ -83,6 +88,26 @@ def test_v53_fidelity_gate_is_paired_mc8_mc32(tmp_path):
     assert all(spec["allowed_nodes"] == list(MODULE.CPU_NODES)
                for spec in specs)
     assert all(spec["cpu"] == 12 and spec["vram"] == 0 for spec in specs)
+
+
+
+def test_v53_high_fidelity_gate_pairs_mc32_with_mc128(tmp_path):
+    variants = ("v53_mc32", MODULE.HIGH_FIDELITY)
+    args = _args(tmp_path, variants)
+    args.exact_sampling_mode = "factorized_rqmc_nested"
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 2 * 3 * 2
+    assert sum("--exact-mc-samples 32 " in spec["cmd"] for spec in specs) == 6
+    assert sum("--exact-mc-samples 128 " in spec["cmd"] for spec in specs) == 6
+    assert all(
+        "--exact-sampling-mode factorized_rqmc_nested" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--policy-improvement-score-normalization current_terminal"
+        in spec["cmd"] for spec in specs
+    )
+
 
 
 def test_v53_sentinel_keeps_literal_v51_and_v52_controls(tmp_path):
@@ -105,11 +130,12 @@ def test_v53_sentinel_keeps_literal_v51_and_v52_controls(tmp_path):
     assert all("--policy-improvement-mode certificate_constrained"
                in spec["cmd"] for spec in by_variant[MODULE.V53])
     assert all(
-        "--implementation-contract-id v53_constrained_certificate_deficit"
+        "--implementation-contract-id "
+        "v53_constrained_certificate_deficit_normalized"
         in spec["cmd"] for spec in by_variant[MODULE.V53]
     )
     assert all(
-        "--theory-contract-id v53_constrained_certificate_deficit_v1"
+        "--theory-contract-id v53_constrained_certificate_deficit_v2"
         in spec["cmd"] for spec in by_variant[MODULE.V53]
     )
 

@@ -17,6 +17,7 @@ DOMAINS = (
 )
 LOW = "v53_mc8"
 HIGH = "v53_mc32"
+MC_VARIANTS = ("v53_mc8", "v53_mc32", "v53_mc128")
 VARIANTS = (LOW, HIGH)
 RQMC_MODES = {
     "factorized_rqmc_nested",
@@ -36,7 +37,7 @@ def _finite(value):
 def _variant(experiment):
     marker = f"/{str(experiment).strip('/')}/"
     return next((
-        variant for variant in VARIANTS
+        variant for variant in MC_VARIANTS
         if f"/{variant}/" in marker
     ), None)
 
@@ -119,20 +120,62 @@ def _initial_design_matches(left, right):
     )
 
 
-def _contract(row, expected_mc, expected_sampling_mode):
+def _contract(
+    row,
+    expected_mc,
+    expected_sampling_mode,
+    score_normalization,
+):
     contract = dict(row.get("decision_backend_contract") or {})
+    normalized = str(score_normalization) == "current_terminal"
+    expected_implementation = (
+        "v53_constrained_certificate_deficit_normalized"
+        if normalized
+        else "v53_constrained_certificate_deficit"
+    )
+    expected_theory = (
+        "v53_constrained_certificate_deficit_v2"
+        if normalized
+        else "v53_constrained_certificate_deficit_v1"
+    )
+    actual_normalization = str(
+        contract.get("policy_improvement_score_normalization", "none"))
     return bool(
         str(row.get("implementation_contract_id"))
-        == "v53_constrained_certificate_deficit"
-        and str(row.get("theory_contract_id"))
-        == "v53_constrained_certificate_deficit_v1"
+        == expected_implementation
+        and str(row.get("theory_contract_id")) == expected_theory
         and int(row.get("exact_kg_mc_samples", -1)) == int(expected_mc)
         and str(row.get("exact_kg_sampling_mode"))
         == str(expected_sampling_mode)
         and str(contract.get("policy_improvement_contract"))
-        == "v53_constrained_certificate_deficit_v1"
+        == expected_theory
+        and actual_normalization == str(score_normalization)
         and not bool(row.get("online_action_trace_target_oracle_used", True))
     )
+
+
+def _terminal_scale(trace, field):
+    value = trace.get(field)
+    if value is None:
+        return None
+    pending = [value]
+    finite = []
+    while pending:
+        item = pending.pop()
+        if isinstance(item, (list, tuple)):
+            pending.extend(item)
+            continue
+        number = _finite(item)
+        if number is not None:
+            finite.append(abs(number))
+    return None if not finite else max(1.0, max(finite))
+
+
+def _scale_map(values, scale):
+    return {
+        key: float(value) / float(scale)
+        for key, value in values.items()
+    }
 
 
 def analyze(
@@ -140,17 +183,25 @@ def analyze(
     seeds=range(0, 10),
     multiplier=1.25,
     sampling_mode="antithetic_nested",
+    score_normalization="none",
+    low_variant=LOW,
+    high_variant=HIGH,
+    low_mc=8,
+    high_mc=32,
 ):
     rows, errors = load_rows(root)
     seeds = tuple(int(seed) for seed in seeds)
     expected = {(domain, seed) for domain in DOMAINS for seed in seeds}
+    variants = (str(low_variant), str(high_variant))
+    if len(set(variants)) != 2:
+        raise ValueError("low and high fidelity variants must differ")
     indexed = {
         variant: {
             _key(row): row for row in rows
             if row.get("gate_variant") == variant
             and _key(row) in expected
         }
-        for variant in VARIANTS
+        for variant in variants
     }
 
     risk_errors = []
@@ -166,13 +217,20 @@ def analyze(
     action_sets_ok = True
     initial_designs_ok = True
     selector_plans_ok = True
-    paired = expected & set(indexed[LOW]) & set(indexed[HIGH])
+    normalization_scales_ok = True
+    risk_scales = []
+    certificate_scales = []
+    paired = (
+        expected
+        & set(indexed[low_variant])
+        & set(indexed[high_variant])
+    )
     for key in sorted(paired):
-        low = indexed[LOW][key]
-        high = indexed[HIGH][key]
+        low = indexed[low_variant][key]
+        high = indexed[high_variant][key]
         contracts_ok &= (
-            _contract(low, 8, sampling_mode)
-            and _contract(high, 32, sampling_mode)
+            _contract(low, low_mc, sampling_mode, score_normalization)
+            and _contract(high, high_mc, sampling_mode, score_normalization)
         )
         initial_designs_ok &= _initial_design_matches(low, high)
         low_trace = _trace(low)
@@ -188,8 +246,8 @@ def analyze(
             valid_plans = bool(
                 low_plan.get("mode") == "factorized_rqmc_nested"
                 and high_plan.get("mode") == "factorized_rqmc_nested"
-                and int(low_plan.get("sample_count", -1)) == 8
-                and int(high_plan.get("sample_count", -1)) == 32
+                and int(low_plan.get("sample_count", -1)) == int(low_mc)
+                and int(high_plan.get("sample_count", -1)) == int(high_mc)
                 and bool(low_plan.get("factorized_selector"))
                 and bool(high_plan.get("factorized_selector"))
                 and int(low_plan.get("finite_expert_count", 0)) > 0
@@ -212,6 +270,51 @@ def analyze(
         if any(mapping is None for mapping in maps):
             action_sets_ok = False
             continue
+        if str(score_normalization) == "current_terminal":
+            low_risk_scale = _terminal_scale(
+                low_trace, "exact_kg_current_terminal_value")
+            high_risk_scale = _terminal_scale(
+                high_trace, "exact_kg_current_terminal_value")
+            low_certificate_scale = _terminal_scale(
+                low_trace, "certificate_deficit_current_value")
+            high_certificate_scale = _terminal_scale(
+                high_trace, "certificate_deficit_current_value")
+            scales = (
+                low_risk_scale,
+                high_risk_scale,
+                low_certificate_scale,
+                high_certificate_scale,
+            )
+            trace_modes = {
+                str(low_trace.get(
+                    "policy_improvement_score_normalization", "none")),
+                str(high_trace.get(
+                    "policy_improvement_score_normalization", "none")),
+            }
+            scale_pair_ok = bool(
+                all(scale is not None for scale in scales)
+                and math.isclose(
+                    low_risk_scale, high_risk_scale,
+                    rel_tol=1e-12, abs_tol=1e-12)
+                and math.isclose(
+                    low_certificate_scale, high_certificate_scale,
+                    rel_tol=1e-12, abs_tol=1e-12)
+                and trace_modes == {"current_terminal"}
+            )
+            normalization_scales_ok &= scale_pair_ok
+            if not scale_pair_ok:
+                continue
+            risk_scales.append(float(low_risk_scale))
+            certificate_scales.append(float(low_certificate_scale))
+            low_risk = _scale_map(low_risk, low_risk_scale)
+            high_risk = _scale_map(high_risk, high_risk_scale)
+            low_certificate = _scale_map(
+                low_certificate, low_certificate_scale)
+            high_certificate = _scale_map(
+                high_certificate, high_certificate_scale)
+        elif str(score_normalization) != "none":
+            raise ValueError(
+                f"unknown score normalization {score_normalization!r}")
         same = (
             set(low_risk) == set(high_risk)
             and set(low_certificate) == set(high_certificate)
@@ -246,6 +349,14 @@ def analyze(
             "certificate_top1_agrees": certificate_top[-1],
             "risk_pairwise_agreement": risk_pairwise[-1],
             "certificate_pairwise_agreement": certificate_pairwise[-1],
+            "risk_score_scale": (
+                None if str(score_normalization) == "none"
+                else risk_scales[-1]
+            ),
+            "certificate_score_scale": (
+                None if str(score_normalization) == "none"
+                else certificate_scales[-1]
+            ),
             "mc8_selector_l1_error": (
                 None
                 if str(sampling_mode) not in RQMC_MODES
@@ -295,13 +406,29 @@ def analyze(
         and action_sets_ok
         and initial_designs_ok
         and selector_plans_ok
+        and normalization_scales_ok
         and risk_eta is not None
         and certificate_eta is not None
     )
     return {
         "scope": "v53_nested_mc_fidelity",
-        "reference": "MC32 nested extension of MC8",
+        "reference": (
+            f"MC{int(high_mc)} nested extension of MC{int(low_mc)}"),
+        "low_variant": str(low_variant),
+        "high_variant": str(high_variant),
+        "low_mc_samples": int(low_mc),
+        "high_mc_samples": int(high_mc),
         "sampling_mode": str(sampling_mode),
+        "score_normalization": str(score_normalization),
+        "normalization_scales_ok": normalization_scales_ok,
+        "risk_score_scale_min": (
+            None if not risk_scales else min(risk_scales)),
+        "risk_score_scale_max": (
+            None if not risk_scales else max(risk_scales)),
+        "certificate_score_scale_min": (
+            None if not certificate_scales else min(certificate_scales)),
+        "certificate_score_scale_max": (
+            None if not certificate_scales else max(certificate_scales)),
         "finite_expert_marginalization": bool(
             str(sampling_mode) in {
                 "stratified_expert_nested",
@@ -340,7 +467,8 @@ def analyze(
         "safety_multiplier": float(multiplier),
         "recommended_risk_eta": risk_eta,
         "recommended_certificate_eta": certificate_eta,
-        "recommended_mc_samples": 8 if complete and stable else 32,
+        "recommended_mc_samples": (
+            int(low_mc) if complete and stable else int(high_mc)),
         "fidelity_gate_complete": complete,
         "mc8_stable_enough_for_sentinel": bool(complete and stable),
         "bound_status": (
@@ -359,8 +487,17 @@ def main():
     parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=10)
     parser.add_argument("--multiplier", type=float, default=1.25)
+    parser.add_argument("--low-variant", default=LOW)
+    parser.add_argument("--high-variant", default=HIGH)
+    parser.add_argument("--low-mc", type=int, default=8)
+    parser.add_argument("--high-mc", type=int, default=32)
     parser.add_argument(
         "--sampling-mode", default="antithetic_nested")
+    parser.add_argument(
+        "--score-normalization",
+        choices=("none", "current_terminal"),
+        default="none",
+    )
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
     result = analyze(
@@ -368,6 +505,11 @@ def main():
         range(args.seed_start, args.seed_start + args.n_seeds),
         multiplier=args.multiplier,
         sampling_mode=args.sampling_mode,
+        score_normalization=args.score_normalization,
+        low_variant=args.low_variant,
+        high_variant=args.high_variant,
+        low_mc=args.low_mc,
+        high_mc=args.high_mc,
     )
     text = json.dumps(result, indent=2, sort_keys=True)
     print(text)

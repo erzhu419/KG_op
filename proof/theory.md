@@ -930,6 +930,18 @@ value is bounded by `B`. Nested MC8/MC32 calibration and the reported selector
 L1 discrepancy remain empirical implementation obligations; neither is
 silently promoted to an exact-integral theorem.
 
+The completed V53-v1 RQMC audit showed that one raw-unit error radius is not
+portable across domains. V53-v2 therefore normalizes each posterior score by
+`max(1, ||current terminal value||_infinity)`. This scale is positive,
+pre-update, target-oracle free, and common to every action in the decision.
+`positive_score_normalize_lt_iff`,
+`uniform_score_approximation_normalize`,
+`two_eta_score_guard_normalize_iff`, and
+`constrained_guard_normalize_iff` prove that rankings, uniform-error events,
+and both guarded decisions are exactly the original mathematical objects in
+dimensionless coordinates. The next numerical obligation is nested MC32
+against MC128; V53-v2 remains unpromoted until that gate passes.
+
 ## Current Empirical Closure Items
 
 1. The observed-terminal repair passed its paired 60-run closure gate at

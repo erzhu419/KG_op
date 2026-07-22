@@ -4,6 +4,8 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
+
 
 REPO = Path(__file__).resolve().parents[2]
 FIDELITY_PATH = (
@@ -101,6 +103,65 @@ def test_v53_fidelity_analyzer_matches_actions_and_calibrates_nonzero_eta(
     assert result["bound_status"].startswith("empirical_")
 
 
+
+def test_v53_fidelity_analyzer_normalizes_by_current_terminal_scale(
+    tmp_path,
+):
+    sampling_mode = "factorized_rqmc_nested"
+    for variant, mc, raw_offset in (
+        (FIDELITY.LOW, 8, 1.0),
+        (FIDELITY.HIGH, 32, 0.0),
+    ):
+        rows = []
+        for domain in FIDELITY.DOMAINS:
+            row = _fidelity_row(
+                domain, 0, mc, 0.0, sampling_mode=sampling_mode)
+            row["implementation_contract_id"] = (
+                "v53_constrained_certificate_deficit_normalized")
+            row["theory_contract_id"] = (
+                "v53_constrained_certificate_deficit_v2")
+            contract = row["decision_backend_contract"]
+            contract["policy_improvement_contract"] = (
+                "v53_constrained_certificate_deficit_v2")
+            contract["policy_improvement_score_normalization"] = (
+                "current_terminal")
+            trace = row["online_action_trace"][0]
+            trace["policy_improvement_score_normalization"] = (
+                "current_terminal")
+            trace["exact_kg_current_terminal_value"] = [100.0, 40.0]
+            trace["certificate_deficit_current_value"] = 2.0
+            trace["exact_kg_raw_scores_active"] = [
+                10.0 + raw_offset,
+                40.0 + raw_offset,
+                20.0 + raw_offset,
+            ]
+            trace["certificate_deficit_raw_scores_active"] = [
+                0.4 + 0.02 * raw_offset,
+                1.0 + 0.02 * raw_offset,
+                0.2 + 0.02 * raw_offset,
+            ]
+            rows.append(row)
+        _write_result(tmp_path, variant, rows)
+
+    result = FIDELITY.analyze(
+        tmp_path,
+        seeds=[0],
+        multiplier=1.25,
+        sampling_mode=sampling_mode,
+        score_normalization="current_terminal",
+    )
+
+    assert result["fidelity_gate_complete"] is True
+    assert result["contracts_ok"] is True
+    assert result["normalization_scales_ok"] is True
+    assert result["risk_score_scale_min"] == 100.0
+    assert result["risk_score_scale_max"] == 100.0
+    assert result["certificate_score_scale_min"] == 2.0
+    assert result["certificate_score_scale_max"] == 2.0
+    assert result["recommended_risk_eta"] == pytest.approx(0.0125)
+    assert result["recommended_certificate_eta"] == pytest.approx(0.0125)
+
+
 def test_v53_fidelity_analyzer_accepts_nested_expert_marginalization(
     tmp_path,
 ):
@@ -164,9 +225,9 @@ def _sentinel_contract(variant):
             "v52_safeguarded_policy_improvement_v1",
         ),
         SENTINEL.V53: (
-            "v53_constrained_certificate_deficit",
-            "v53_constrained_certificate_deficit_v1",
-            "v53_constrained_certificate_deficit_v1",
+            "v53_constrained_certificate_deficit_normalized",
+            "v53_constrained_certificate_deficit_v2",
+            "v53_constrained_certificate_deficit_v2",
         ),
     }
     return values[variant]
@@ -182,11 +243,13 @@ def _sentinel_row(domain, seed, variant):
         "implementation_contract_id": implementation,
         "theory_contract_id": theory,
         "decision_backend": "sobol_exact_joint_voi",
-        "exact_kg_sampling_mode": "antithetic_nested",
+        "exact_kg_sampling_mode": "factorized_rqmc_nested",
         "task_initial_design": _initial_design(),
         "online_action_trace_target_oracle_used": False,
         "decision_backend_contract": {
             "policy_improvement_contract": policy,
+            "policy_improvement_score_normalization": (
+                "current_terminal" if v53 else "none"),
             "policy_improvement_mc_error_bound": 0.01 if v53 else 0.0,
             "policy_improvement_certificate_mc_error_bound": (
                 0.02 if v53 else 0.0),

@@ -103,6 +103,91 @@ theorem constrained_guard_improves_risk_and_certificate
       hCertificateUniform hGuard.2,
   ⟩
 
+noncomputable def positiveScoreNormalize (scale score : ℝ) : ℝ :=
+  score / scale
+
+theorem positive_score_normalize_lt_iff
+    {scale left right : ℝ}
+    (hScale : 0 < scale) :
+    positiveScoreNormalize scale left <
+        positiveScoreNormalize scale right ↔
+      left < right := by
+  simpa [positiveScoreNormalize] using
+    (div_lt_div_iff_of_pos_right hScale : left / scale < right / scale ↔
+      left < right)
+
+theorem uniform_score_approximation_normalize
+    {Action : Type*}
+    {exact estimate : Action → ℝ}
+    {eta scale : ℝ}
+    (hScale : 0 < scale)
+    (hUniform : UniformScoreApproximation exact estimate eta) :
+    UniformScoreApproximation
+      (fun action => positiveScoreNormalize scale (exact action))
+      (fun action => positiveScoreNormalize scale (estimate action))
+      (eta / scale) := by
+  intro action
+  unfold positiveScoreNormalize
+  rw [← sub_div, abs_div, abs_of_pos hScale]
+  exact (div_le_div_iff_of_pos_right hScale).2 (hUniform action)
+
+theorem two_eta_score_guard_normalize_iff
+    {Action : Type*}
+    {estimate : Action → ℝ}
+    {eta scale : ℝ}
+    {baseline challenger : Action}
+    (hScale : 0 < scale) :
+    PassesTwoEtaScoreGuard
+        (fun action => positiveScoreNormalize scale (estimate action))
+        (eta / scale) baseline challenger ↔
+      PassesTwoEtaScoreGuard
+        estimate eta baseline challenger := by
+  unfold PassesTwoEtaScoreGuard positiveScoreNormalize
+  constructor
+  · intro hGuard
+    have hScaled :
+        (estimate baseline + 2 * eta) / scale <
+          estimate challenger / scale := by
+      calc
+        (estimate baseline + 2 * eta) / scale =
+            estimate baseline / scale + 2 * (eta / scale) := by ring
+        _ < estimate challenger / scale := hGuard
+    exact (div_lt_div_iff_of_pos_right hScale).1 hScaled
+  · intro hGuard
+    have hScaled :
+        (estimate baseline + 2 * eta) / scale <
+          estimate challenger / scale :=
+      (div_lt_div_iff_of_pos_right hScale).2 hGuard
+    calc
+      estimate baseline / scale + 2 * (eta / scale) =
+          (estimate baseline + 2 * eta) / scale := by ring
+      _ < estimate challenger / scale := hScaled
+
+theorem constrained_guard_normalize_iff
+    {Action : Type*}
+    {riskEstimate certificateEstimate : Action → ℝ}
+    {riskEta certificateEta riskScale certificateScale : ℝ}
+    {baseline challenger : Action}
+    (hRiskScale : 0 < riskScale)
+    (hCertificateScale : 0 < certificateScale) :
+    PassesConstrainedCertificateGuard
+        (fun action =>
+          positiveScoreNormalize riskScale (riskEstimate action))
+        (fun action =>
+          positiveScoreNormalize certificateScale
+            (certificateEstimate action))
+        (riskEta / riskScale)
+        (certificateEta / certificateScale)
+        baseline challenger ↔
+      PassesConstrainedCertificateGuard
+        riskEstimate certificateEstimate
+        riskEta certificateEta baseline challenger := by
+  unfold PassesConstrainedCertificateGuard
+  rw [
+    two_eta_score_guard_normalize_iff hRiskScale,
+    two_eta_score_guard_normalize_iff hCertificateScale,
+  ]
+
 theorem constrained_fallback_or_switch_joint_noninferiority
     {Action : Type*}
     {exactRisk riskEstimate exactCertificate certificateEstimate :

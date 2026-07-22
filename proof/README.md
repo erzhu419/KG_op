@@ -69,7 +69,9 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/ConstrainedCertificateDeficit.lean`: V53 keeps the V51
   Bayes-risk fallback, removes rollout, and proves joint risk/certificate
   noninferiority when separate estimated score gaps exceed their calibrated
-  `2 * eta` guards.
+  `2 * eta` guards. V53-v2 additionally proves that positive current-terminal
+  normalization preserves score order, uniform-error control, and both guard
+  decisions exactly.
 - `SCOLHKG/Measure/StatisticalClosure.lean`: combines the component bad events
   into a high-probability end-to-end safe-regret statement.
 - `SCOLHKG/Measure/FiniteSampleHVDConcentration.lean`: converts a declared

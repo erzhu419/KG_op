@@ -33,6 +33,7 @@ def load_config(path):
     config = dict(payload["config"])
     config.setdefault("exact_kg_clip_negative", True)
     config.setdefault("exact_kg_sampling_mode", "iid")
+    config.setdefault("policy_improvement_score_normalization", "none")
     config.setdefault("task_posterior_safe_generalized", False)
     config.setdefault("source_discrepancy_update", True)
     config.setdefault("task_posterior_safe_boundary_score_weight", 1.0)
@@ -413,6 +414,11 @@ def main():
             "off", "action_superset", "guarded_rollout", "joint",
             "certificate_constrained",
         ),
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-score-normalization",
+        choices=("none", "current_terminal"),
         default=None,
     )
     parser.add_argument(
@@ -927,6 +933,11 @@ def main():
         if args.policy_improvement_mode is None
         else args.policy_improvement_mode
     )
+    policy_improvement_score_normalization = str(
+        config.get("policy_improvement_score_normalization", "none")
+        if args.policy_improvement_score_normalization is None
+        else args.policy_improvement_score_normalization
+    )
     policy_improvement_mc_error_bound = float(
         config.get("policy_improvement_mc_error_bound", 0.0)
         if args.policy_improvement_mc_error_bound is None
@@ -1042,6 +1053,8 @@ def main():
         "evaluate_or_replicate_baseline_new_action_count": (
             evaluate_or_replicate_baseline_new_action_count),
         "policy_improvement_mode": policy_improvement_mode,
+        "policy_improvement_score_normalization": (
+            policy_improvement_score_normalization),
         "policy_improvement_mc_error_bound": (
             policy_improvement_mc_error_bound),
         "policy_improvement_certificate_mc_error_bound": (
@@ -1424,6 +1437,8 @@ def main():
             "evaluate_or_replicate_baseline_new_action_count": (
                 evaluate_or_replicate_baseline_new_action_count),
             "policy_improvement_mode": policy_improvement_mode,
+            "policy_improvement_score_normalization": (
+                policy_improvement_score_normalization),
             "policy_improvement_mc_error_bound": (
                 policy_improvement_mc_error_bound),
             "policy_improvement_certificate_mc_error_bound": (

@@ -33,7 +33,8 @@ CONTROL = "v51_control"
 V52 = "v52_action_superset"
 V53 = "v53_certificate_constrained"
 FIDELITY = ("v53_mc8", "v53_mc32")
-VARIANTS = (CONTROL, V52, V53, *FIDELITY)
+HIGH_FIDELITY = "v53_mc128"
+VARIANTS = (CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY)
 
 
 def _command_option(cmd, option):
@@ -90,16 +91,26 @@ def validate_frozen_design_seed_coverage(args, specs):
     return coverage
 
 
-def _v53_profile(common, mc_samples):
+def _v53_profile(common, mc_samples, score_normalization):
+    normalized = str(score_normalization) == "current_terminal"
     return {
         **common,
-        "implementation_contract_id": "v53_constrained_certificate_deficit",
-        "theory_contract_id": "v53_constrained_certificate_deficit_v1",
+        "implementation_contract_id": (
+            "v53_constrained_certificate_deficit_normalized"
+            if normalized
+            else "v53_constrained_certificate_deficit"
+        ),
+        "theory_contract_id": (
+            "v53_constrained_certificate_deficit_v2"
+            if normalized
+            else "v53_constrained_certificate_deficit_v1"
+        ),
         "exact_mc_samples": int(mc_samples),
         "evaluate_or_replicate_new_action_count": 6,
         "evaluate_or_replicate_new_action_policy": (
             "canonical_plus_posterior_risk_certificate_coverage"),
         "policy_improvement_mode": "certificate_constrained",
+        "policy_improvement_score_normalization": str(score_normalization),
     }
 
 
@@ -138,9 +149,14 @@ def variant_profiles(args):
                 "canonical_plus_posterior_risk_certificate_coverage"),
             "policy_improvement_mode": "action_superset",
         },
-        V53: _v53_profile(common, args.exact_mc_samples),
-        "v53_mc8": _v53_profile(common, 8),
-        "v53_mc32": _v53_profile(common, 32),
+        V53: _v53_profile(
+            common, args.exact_mc_samples, args.score_normalization),
+        "v53_mc8": _v53_profile(
+            common, 8, args.score_normalization),
+        "v53_mc32": _v53_profile(
+            common, 32, args.score_normalization),
+        HIGH_FIDELITY: _v53_profile(
+            common, 128, args.score_normalization),
     }
 
 
@@ -204,7 +220,12 @@ def main():
     )
     parser.add_argument("--exact-mc-samples", type=int, default=8)
     parser.add_argument(
-        "--exact-sampling-mode", default="antithetic_nested")
+        "--exact-sampling-mode", default="factorized_rqmc_nested")
+    parser.add_argument(
+        "--score-normalization",
+        choices=("none", "current_terminal"),
+        default="current_terminal",
+    )
     parser.add_argument("--risk-eta", type=float, default=0.0)
     parser.add_argument("--certificate-eta", type=float, default=0.0)
     parser.add_argument("--cpu", type=int, default=12)

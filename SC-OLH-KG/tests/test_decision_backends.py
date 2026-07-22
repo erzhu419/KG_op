@@ -749,6 +749,54 @@ def test_v53_guard_requires_both_risk_and_certificate_two_eta_gains():
         "posterior_improvement")
 
 
+def test_v53_current_terminal_normalization_preserves_ranking_and_scales_eta():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_score_normalization="current_terminal",
+            policy_improvement_mc_error_bound=0.1,
+            policy_improvement_certificate_mc_error_bound=0.05,
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    candidates = [(0, 0, 0), (1, 1, 1), (2, 2, 2)]
+    backend = {
+        "evaluate_or_replicate_active_indices": np.array([0, 1, 2]),
+        "evaluate_or_replicate_baseline_indices": np.array([0, 1]),
+    }
+    algorithm._last_exact_kg_current_value = 100.0
+    algorithm._last_certificate_deficit_current_value = 2.0
+    algorithm._last_exact_kg_raw_scores = np.array([100.0, 80.0, 121.0])
+    certificate_scores = np.array([0.0, 0.4, 0.22])
+
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates,
+        algorithm._last_exact_kg_raw_scores,
+        certificate_scores,
+        backend,
+    )
+
+    assert selected == 2
+    assert info["status"] == "certificate_constrained_switched"
+    assert info["score_normalization"] == "current_terminal"
+    assert info["risk_score_scale"] == pytest.approx(100.0)
+    assert info["certificate_score_scale"] == pytest.approx(2.0)
+    assert info["estimated_risk_advantage"] == pytest.approx(0.21)
+    assert info["estimated_certificate_advantage"] == pytest.approx(0.11)
+    assert info["raw_estimated_risk_advantage"] == pytest.approx(21.0)
+    assert info["raw_estimated_certificate_advantage"] == pytest.approx(0.22)
+    assert info[
+        "risk_mc_uniform_error_bound_raw_equivalent"] == pytest.approx(10.0)
+    assert info[
+        "certificate_mc_uniform_error_bound_raw_equivalent"
+    ] == pytest.approx(0.1)
+    assert algorithm._policy_improvement_contract_id() == (
+        "v53_constrained_certificate_deficit_v2")
+
+
 def test_v53_certificate_pass_requires_nested_common_random_numbers():
     problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
     algorithm = SingleOLHKGAlgorithm(

@@ -349,6 +349,7 @@ class SingleOLHKGConfig:
     evaluate_or_replicate_new_action_policy: str = "canonical_sobol"
     evaluate_or_replicate_baseline_new_action_count: int = 0
     policy_improvement_mode: str = "off"
+    policy_improvement_score_normalization: str = "none"
     policy_improvement_mc_error_bound: float = 0.0
     policy_improvement_certificate_mc_error_bound: float = 0.0
     policy_improvement_rollout_depth: int = 1
@@ -9406,8 +9407,46 @@ class SingleOLHKGAlgorithm:
         if mode == "off":
             return "disabled_v51_compatible"
         if mode == "certificate_constrained":
+            if self._policy_improvement_score_normalization() == (
+                "current_terminal"
+            ):
+                return "v53_constrained_certificate_deficit_v2"
             return "v53_constrained_certificate_deficit_v1"
         return "v52_safeguarded_policy_improvement_v1"
+
+    def _policy_improvement_score_normalization(self):
+        mode = str(
+            self.config.policy_improvement_score_normalization or "none"
+        ).strip().lower().replace("-", "_")
+        aliases = {
+            "off": "none",
+            "disabled": "none",
+            "terminal": "current_terminal",
+            "current": "current_terminal",
+        }
+        mode = aliases.get(mode, mode)
+        if mode not in {"none", "current_terminal"}:
+            raise ValueError(
+                "unknown policy-improvement score normalization "
+                f"{mode!r}")
+        return mode
+
+    @staticmethod
+    def _positive_terminal_score_scale(value):
+        flat = np.asarray(value, dtype=float).reshape(-1)
+        finite = np.abs(flat[np.isfinite(flat)])
+        return max(1.0, float(np.max(finite)) if len(finite) else 1.0)
+
+    def _policy_improvement_score_scales(self):
+        mode = self._policy_improvement_score_normalization()
+        if mode == "none":
+            return 1.0, 1.0
+        return (
+            self._positive_terminal_score_scale(
+                getattr(self, "_last_exact_kg_current_value", 1.0)),
+            self._positive_terminal_score_scale(getattr(
+                self, "_last_certificate_deficit_current_value", 1.0)),
+        )
 
     def _guarded_one_step_policy_improvement(
         self,
@@ -9522,8 +9561,12 @@ class SingleOLHKGAlgorithm:
         risk_raw = np.where(np.isfinite(risk_raw), risk_raw, -np.inf)
         certificate_raw = np.where(
             np.isfinite(certificate_scores), certificate_scores, -np.inf)
+        risk_scale, certificate_scale = (
+            self._policy_improvement_score_scales())
+        risk_policy = risk_raw / risk_scale
+        certificate_policy = certificate_raw / certificate_scale
         baseline_index = int(baseline[
-            int(np.argmax(risk_raw[baseline]))
+            int(np.argmax(risk_policy[baseline]))
         ])
         risk_eta = max(
             float(self.config.policy_improvement_mc_error_bound), 0.0)
@@ -9537,17 +9580,22 @@ class SingleOLHKGAlgorithm:
             index = int(raw_index)
             if (
                 index != baseline_index
-                and risk_raw[index] - risk_raw[baseline_index]
+                and risk_policy[index] - risk_policy[baseline_index]
                 > risk_threshold
             ):
                 risk_admissible.append(index)
         certificate_index = max(
             risk_admissible,
-            key=lambda index: (float(certificate_raw[index]), -int(index)),
+            key=lambda index: (float(certificate_policy[index]), -int(index)),
         )
         risk_advantage = float(
-            risk_raw[certificate_index] - risk_raw[baseline_index])
+            risk_policy[certificate_index] - risk_policy[baseline_index])
         certificate_advantage = float(
+            certificate_policy[certificate_index]
+            - certificate_policy[baseline_index])
+        raw_risk_advantage = float(
+            risk_raw[certificate_index] - risk_raw[baseline_index])
+        raw_certificate_advantage = float(
             certificate_raw[certificate_index]
             - certificate_raw[baseline_index])
         switched = bool(
@@ -9573,8 +9621,19 @@ class SingleOLHKGAlgorithm:
                 int, candidates[certificate_index])),
             "estimated_risk_advantage": risk_advantage,
             "estimated_certificate_advantage": certificate_advantage,
+            "raw_estimated_risk_advantage": raw_risk_advantage,
+            "raw_estimated_certificate_advantage": (
+                raw_certificate_advantage),
+            "score_normalization": (
+                self._policy_improvement_score_normalization()),
+            "risk_score_scale": float(risk_scale),
+            "certificate_score_scale": float(certificate_scale),
             "risk_mc_uniform_error_bound": risk_eta,
             "certificate_mc_uniform_error_bound": certificate_eta,
+            "risk_mc_uniform_error_bound_raw_equivalent": float(
+                risk_eta * risk_scale),
+            "certificate_mc_uniform_error_bound_raw_equivalent": float(
+                certificate_eta * certificate_scale),
             "risk_switch_threshold": risk_threshold,
             "certificate_switch_threshold": certificate_threshold,
             "risk_admissible_indices": list(map(int, risk_admissible)),
@@ -13719,6 +13778,8 @@ class SingleOLHKGAlgorithm:
             "evaluate_or_replicate_baseline_new_action_count": int(
                 self.config.evaluate_or_replicate_baseline_new_action_count),
             "policy_improvement_mode": self._policy_improvement_mode(),
+            "policy_improvement_score_normalization": (
+                self._policy_improvement_score_normalization()),
             "policy_improvement_mc_error_bound": float(
                 self.config.policy_improvement_mc_error_bound),
             "policy_improvement_certificate_mc_error_bound": float(
@@ -13881,6 +13942,8 @@ class SingleOLHKGAlgorithm:
                     "decision_evaluate_or_replicate_new_action_policy"),
                 "exact_kg_raw_scores_active": copy.deepcopy(
                     iteration_row.get("exact_kg_raw_scores_active")),
+                "exact_kg_current_terminal_value": copy.deepcopy(
+                    iteration_row.get("certified_terminal_value_before")),
                 "exact_kg_selector_plan": copy.deepcopy(
                     iteration_row.get("exact_kg_selector_plan")),
                 "certificate_deficit_raw_scores_active": copy.deepcopy(
@@ -13891,6 +13954,15 @@ class SingleOLHKGAlgorithm:
                         "certificate_deficit_expected_values_active")),
                 "certificate_deficit_current_value": copy.deepcopy(
                     iteration_row.get("certificate_deficit_current_value")),
+                "policy_improvement_score_normalization": copy.deepcopy(
+                    (iteration_row.get("policy_improvement_one_step") or {}).get(
+                        "score_normalization")),
+                "policy_improvement_risk_score_scale": copy.deepcopy(
+                    (iteration_row.get("policy_improvement_one_step") or {}).get(
+                        "risk_score_scale")),
+                "policy_improvement_certificate_score_scale": copy.deepcopy(
+                    (iteration_row.get("policy_improvement_one_step") or {}).get(
+                        "certificate_score_scale")),
                 "exact_kg_active_action_fingerprints": copy.deepcopy(
                     iteration_row.get(
                         "exact_kg_active_action_fingerprints")),

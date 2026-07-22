@@ -268,6 +268,9 @@ def _flags(profile, args):
             "evaluate_or_replicate_baseline_new_action_count", 0)),
         "--policy-improvement-mode",
         str(profile.get("policy_improvement_mode", "off")),
+        "--policy-improvement-score-normalization",
+        str(profile.get(
+            "policy_improvement_score_normalization", "none")),
         "--policy-improvement-mc-error-bound",
         str(profile.get("policy_improvement_mc_error_bound", 0.0)),
         "--policy-improvement-certificate-mc-error-bound",

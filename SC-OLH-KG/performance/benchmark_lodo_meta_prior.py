@@ -919,8 +919,12 @@ def run_one(task):
             "evaluate_or_replicate_baseline_new_action_count", 0)),
         policy_improvement_mode=str(args_dict.get(
             "policy_improvement_mode", "off")),
+        policy_improvement_score_normalization=str(args_dict.get(
+            "policy_improvement_score_normalization", "none")),
         policy_improvement_mc_error_bound=float(args_dict.get(
             "policy_improvement_mc_error_bound", 0.0)),
+        policy_improvement_certificate_mc_error_bound=float(args_dict.get(
+            "policy_improvement_certificate_mc_error_bound", 0.0)),
         policy_improvement_rollout_depth=int(args_dict.get(
             "policy_improvement_rollout_depth", 1)),
         policy_improvement_rollout_max_arms=int(args_dict.get(
@@ -2761,6 +2765,11 @@ def main():
             "certificate_constrained",
         ),
         default="off",
+    )
+    parser.add_argument(
+        "--policy_improvement_score_normalization",
+        choices=("none", "current_terminal"),
+        default="none",
     )
     parser.add_argument(
         "--policy_improvement_mc_error_bound", type=float, default=0.0)
