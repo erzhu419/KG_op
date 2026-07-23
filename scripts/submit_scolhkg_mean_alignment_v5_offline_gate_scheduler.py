@@ -283,6 +283,21 @@ def _flags(profile, args):
         "--policy-improvement-pairwise-error-multiplier",
         str(profile.get(
             "policy_improvement_pairwise_error_multiplier", 1.25)),
+        "--policy-improvement-confirmation-samples",
+        str(profile.get("policy_improvement_confirmation_samples", 4096)),
+        "--policy-improvement-confirmation-batch-samples",
+        str(profile.get(
+            "policy_improvement_confirmation_batch_samples", 512)),
+        "--policy-improvement-confirmation-delta",
+        str(profile.get("policy_improvement_confirmation_delta", 0.05)),
+        "--policy-improvement-confirmation-jobs",
+        str(profile.get("policy_improvement_confirmation_jobs", 0)),
+        "--policy-improvement-confirmation-lambda-min",
+        str(profile.get(
+            "policy_improvement_confirmation_lambda_min", 0.001)),
+        "--policy-improvement-confirmation-lambda-count",
+        str(profile.get(
+            "policy_improvement_confirmation_lambda_count", 24)),
         "--policy-improvement-mc-error-bound",
         str(profile.get("policy_improvement_mc_error_bound", 0.0)),
         "--policy-improvement-certificate-mc-error-bound",

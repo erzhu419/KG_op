@@ -71,11 +71,13 @@ from variance.orthogonal_hvd import OrthogonalHVD
 
 
 _FORK_EXACT_KG_CONTEXT = None
+_FORK_EXACT_KG_CONFIRMATION_CONTEXT = None
 _FORK_TERMINAL_ROLLOUT_CONTEXT = None
 _FORK_TERMINAL_DEPTH3_CONTEXT = None
 SIMULATION_STREAM_TAG = 0x53434F4C
 PROPOSAL_STREAM_TAG = 0x50524F50
 EXACT_KG_STREAM_TAG = 0x45584B47
+EXACT_KG_CONFIRMATION_STREAM_TAG = 0x434F4E46
 
 
 def _fork_exact_kg_candidate(x):
@@ -144,6 +146,42 @@ def _fork_exact_kg_candidate_chunk(payload):
         chunk_weights[:local_prefix_count]))
     result["_sample_start"] = int(indices[0]) if len(indices) else -1
     return mass, result
+
+
+def _fork_exact_kg_confirmation_chunk(sample_indices):
+    """Evaluate one independent-confirmation sample chunk."""
+
+    if _FORK_EXACT_KG_CONFIRMATION_CONTEXT is None:
+        raise RuntimeError(
+            "fork exact-KG confirmation worker has no inherited context")
+    (
+        algorithm,
+        candidate,
+        common_z,
+        terminal_pool,
+        current_value,
+        expert_uniform,
+        secondary_terminal_mode,
+        secondary_current_value,
+    ) = _FORK_EXACT_KG_CONFIRMATION_CONTEXT
+    indices = np.asarray(sample_indices, dtype=int)
+    result = algorithm._exact_posterior_update_score_one(
+        candidate,
+        np.asarray(common_z, dtype=float)[indices],
+        terminal_pool,
+        current_value,
+        np.asarray(expert_uniform, dtype=float)[indices],
+        np.ones(len(indices), dtype=float),
+        return_diagnostics=True,
+        secondary_terminal_mode=secondary_terminal_mode,
+        secondary_current_value=secondary_current_value,
+        return_policy_samples=True,
+    )
+    return {
+        "sample_start": int(indices[0]) if len(indices) else -1,
+        "risk_gains": result["policy_gains"],
+        "certificate_gains": result["secondary"]["policy_gains"],
+    }
 
 
 def _fork_terminal_rollout_action(action_index):
@@ -378,6 +416,12 @@ class SingleOLHKGConfig:
     policy_improvement_guard_mode: str = "uniform_score"
     policy_improvement_pairwise_prefix_samples: int = 32
     policy_improvement_pairwise_error_multiplier: float = 1.25
+    policy_improvement_confirmation_samples: int = 4096
+    policy_improvement_confirmation_batch_samples: int = 512
+    policy_improvement_confirmation_delta: float = 0.05
+    policy_improvement_confirmation_jobs: int = 0
+    policy_improvement_confirmation_lambda_min: float = 0.001
+    policy_improvement_confirmation_lambda_count: int = 24
     policy_improvement_rollout_depth: int = 1
     policy_improvement_rollout_max_arms: int = 4
     policy_improvement_rollout_mc_samples: int = 2
@@ -1042,10 +1086,15 @@ class SingleOLHKGAlgorithm:
         return y
 
     def _fit_initial_belief(self, samples):
+        timing = {}
+        started = time.perf_counter()
         for x in samples:
             self._simulate_and_store(x)
+        timing["simulate_initial_design"] = float(
+            time.perf_counter() - started)
 
         for i in range(2):
+            started = time.perf_counter()
             basis_map = getattr(self.gpr[i], "basis_map", None)
             if basis_map is not None and hasattr(
                 basis_map, "fit_from_observations"
@@ -1055,13 +1104,25 @@ class SingleOLHKGAlgorithm:
                     output_index=i,
                 )
             self._rebuild_gpr_from_history(i, replay_sequential=False)
+            timing[f"fit_gpr_output_{i}"] = float(
+                time.perf_counter() - started)
 
+        started = time.perf_counter()
         self._configure_hvd_source_task_posterior(
             self.variance_model, self.gpr)
         self.variance_model.initialize(
             samples, self.observations, self.gpr, self.problem)
+        timing["initialize_hvd"] = float(time.perf_counter() - started)
+        started = time.perf_counter()
         self._initialize_task_ensemble(samples)
+        timing["initialize_task_ensemble"] = float(
+            time.perf_counter() - started)
+        started = time.perf_counter()
         self._initialize_certification_recheck_targets(samples)
+        timing["initialize_recheck_targets"] = float(
+            time.perf_counter() - started)
+        timing["total"] = float(sum(timing.values()))
+        self._last_initial_belief_timing = timing
 
     def _task_posterior_requested(self):
         mode = str(self.config.task_posterior_mode or "off").lower()
@@ -3676,21 +3737,37 @@ class SingleOLHKGAlgorithm:
         return next_stage_n
 
     def _initialize_or_resume(self, verbose=False):
+        initialization_started = time.perf_counter()
+        resume_started = time.perf_counter()
         resumed = self._try_resume_from_checkpoint(verbose=verbose)
         if resumed is not None:
+            self._last_initialization_timing = {
+                "resume_checkpoint": float(
+                    time.perf_counter() - resume_started),
+                "total": float(
+                    time.perf_counter() - initialization_started),
+            }
             return resumed
+        initial_design_started = time.perf_counter()
         samples = self._initial_samples()
+        initial_design_time = float(
+            time.perf_counter() - initial_design_started)
         t0 = time.time()
         self._fit_initial_belief(samples)
+        dominance_started = time.perf_counter()
         dominance_initial = self._initialize_posterior_dominance_incumbent(
             samples)
+        dominance_time = float(time.perf_counter() - dominance_started)
+        truth_started = time.perf_counter()
         initial_truth_audit = self._truth_pool_diagnostics(
             samples,
             prefix="initial_design",
         )
+        truth_time = float(time.perf_counter() - truth_started)
         if initial_truth_audit:
             self._task_initial_design_info["truth_audit"] = copy.deepcopy(
                 initial_truth_audit)
+        diagnostics_started = time.perf_counter()
         self.pre_sampling_log = {
             "n0": self.config.n0,
             "samples": [list(map(int, x)) for x in samples],
@@ -3714,7 +3791,28 @@ class SingleOLHKGAlgorithm:
             "initial_design_truth_audit": initial_truth_audit,
             "posterior_dominance": dominance_initial,
         }
+        diagnostics_time = float(
+            time.perf_counter() - diagnostics_started)
+        checkpoint_started = time.perf_counter()
         self._save_checkpoint(self.config.n0, reason="initial", force=True)
+        checkpoint_time = float(time.perf_counter() - checkpoint_started)
+        self._last_initialization_timing = {
+            "initial_design": initial_design_time,
+            **{
+                f"initial_belief_{name}": float(value)
+                for name, value in getattr(
+                    self, "_last_initial_belief_timing", {}).items()
+                if name != "total"
+            },
+            "posterior_dominance": dominance_time,
+            "initial_truth_audit": truth_time,
+            "pre_sampling_diagnostics": diagnostics_time,
+            "checkpoint": checkpoint_time,
+            "total": float(
+                time.perf_counter() - initialization_started),
+        }
+        self.pre_sampling_log["timing_sec"] = copy.deepcopy(
+            self._last_initialization_timing)
         return int(self.config.n0)
 
     def _refresh_sequential_basis(self):
@@ -9450,12 +9548,16 @@ class SingleOLHKGAlgorithm:
             "absolute": "paired_nested_absolute",
             "current_relative": "paired_nested_absolute",
             "paired_absolute": "paired_nested_absolute",
+            "confirmation": "independent_confirmation",
+            "independent": "independent_confirmation",
+            "pilot_confirmation": "independent_confirmation",
         }
         mode = aliases.get(mode, mode)
         if mode not in {
             "uniform_score",
             "paired_nested_difference",
             "paired_nested_absolute",
+            "independent_confirmation",
         }:
             raise ValueError(
                 f"unknown policy-improvement guard mode {mode!r}")
@@ -9466,6 +9568,16 @@ class SingleOLHKGAlgorithm:
         if mode == "off":
             return "disabled_v51_compatible"
         if mode == "certificate_constrained":
+            if self._policy_improvement_guard_mode() == (
+                "independent_confirmation"
+            ):
+                if self._policy_improvement_score_transform() != (
+                    "bounded_current_gain"
+                ):
+                    raise ValueError(
+                        "independent confirmation requires "
+                        "bounded_current_gain")
+                return "v56_independent_confirmation_finite_look_v1"
             if self._policy_improvement_guard_mode() == (
                 "paired_nested_absolute"
             ):
@@ -9859,14 +9971,164 @@ class SingleOLHKGAlgorithm:
         }
 
 
+    def _guarded_independent_confirmation_improvement(
+        self,
+        candidates,
+        exact_scores,
+        certificate_scores,
+        backend_score,
+        terminal_pool,
+    ):
+        """Pilot-select one action, then confirm it on an IID holdout stream."""
+
+        scores = np.asarray(exact_scores, dtype=float).reshape(-1)
+        certificate_scores = np.asarray(
+            certificate_scores, dtype=float).reshape(-1)
+        if len(scores) != len(certificate_scores):
+            raise ValueError(
+                "risk and certificate score arrays must have equal length")
+        active = backend_score.get("evaluate_or_replicate_active_indices")
+        baseline = backend_score.get(
+            "evaluate_or_replicate_baseline_indices")
+        active = (
+            np.flatnonzero(np.isfinite(scores))
+            if active is None
+            else np.asarray(active, dtype=int).reshape(-1)
+        )
+        baseline = (
+            active
+            if baseline is None
+            else np.asarray(baseline, dtype=int).reshape(-1)
+        )
+        active_set = set(active.tolist())
+        baseline = np.asarray([
+            index for index in baseline if index in active_set
+        ], dtype=int)
+        if len(active) == 0 or len(baseline) == 0:
+            raise RuntimeError(
+                "independent confirmation requires nonempty active and "
+                "baseline sets")
+
+        risk_raw = np.asarray(getattr(
+            self, "_last_exact_kg_raw_scores", scores), dtype=float)
+        risk_raw = np.where(np.isfinite(risk_raw), risk_raw, -np.inf)
+        certificate_raw = np.asarray(getattr(
+            self,
+            "_last_certificate_deficit_raw_scores",
+            certificate_scores,
+        ), dtype=float)
+        certificate_raw = np.where(
+            np.isfinite(certificate_raw), certificate_raw, -np.inf)
+        risk_scale, certificate_scale = (
+            self._policy_improvement_score_scales())
+        risk_policy = np.asarray(getattr(
+            self, "_last_exact_kg_policy_scores", risk_raw), dtype=float)
+        certificate_policy = np.asarray(getattr(
+            self,
+            "_last_certificate_deficit_policy_scores",
+            certificate_raw,
+        ), dtype=float)
+        risk_policy = np.where(
+            np.isfinite(risk_policy), risk_policy / risk_scale, -np.inf)
+        certificate_policy = np.where(
+            np.isfinite(certificate_policy),
+            certificate_policy / certificate_scale,
+            -np.inf,
+        )
+        baseline_index = int(baseline[
+            int(np.argmax(risk_raw[baseline]))
+        ])
+        pilot_index = max(
+            map(int, active),
+            key=lambda index: (
+                float(min(
+                    risk_policy[index], certificate_policy[index])),
+                float(risk_policy[index] + certificate_policy[index]),
+                float(certificate_policy[index]),
+                -int(index),
+            ),
+        )
+        pilot_joint_score = float(min(
+            risk_policy[pilot_index], certificate_policy[pilot_index]))
+        if pilot_joint_score <= 0.0:
+            confirmation = {
+                "status": "skipped_nonpositive_pilot_joint_score",
+                "passed": False,
+                "sample_count": 0,
+                "target_oracle_used": False,
+            }
+        else:
+            confirmation = self._independent_policy_improvement_confirmation(
+                candidates[pilot_index], terminal_pool)
+        confirmed = bool(confirmation.get("passed", False))
+        selected = pilot_index if confirmed else baseline_index
+        switched = bool(confirmed and selected != baseline_index)
+        return int(selected), {
+            "status": (
+                "independent_confirmation_switched"
+                if switched
+                else (
+                    "independent_confirmation_baseline_selected"
+                    if confirmed
+                    else "independent_confirmation_fallback"
+                )
+            ),
+            "mode": self._policy_improvement_mode(),
+            "guard_mode": "independent_confirmation",
+            "baseline_index": int(baseline_index),
+            "pilot_index": int(pilot_index),
+            "certificate_index": int(pilot_index),
+            "selected_index": int(selected),
+            "baseline_action": list(map(int, candidates[baseline_index])),
+            "pilot_action": list(map(int, candidates[pilot_index])),
+            "selected_action": list(map(int, candidates[selected])),
+            "pilot_risk_reduction": float(risk_policy[pilot_index]),
+            "pilot_certificate_reduction": float(
+                certificate_policy[pilot_index]),
+            "pilot_joint_reduction": pilot_joint_score,
+            "raw_pilot_risk_reduction": float(risk_raw[pilot_index]),
+            "raw_pilot_certificate_reduction": float(
+                certificate_raw[pilot_index]),
+            "score_normalization": (
+                self._policy_improvement_score_normalization()),
+            "score_transform": self._policy_improvement_score_transform(),
+            "risk_score_scale": float(risk_scale),
+            "certificate_score_scale": float(certificate_scale),
+            "confirmation": confirmation,
+            "switched": switched,
+            "baseline_action_count": int(len(baseline)),
+            "union_action_count": int(len(active)),
+            "conditional_noninferiority_contract": (
+                "independent_iid_bounded_gain_finite_look_evalues_confirm_"
+                "positive_risk_and_certificate_reductions_with_runwise_"
+                "error_spending"),
+            "target_oracle_used": False,
+        }
+
+
     def _guarded_certificate_deficit_policy_improvement(
         self,
         candidates,
         exact_scores,
         certificate_scores,
         backend_score,
+        terminal_pool=None,
     ):
         """Improve certificate deficit under the configured joint guard."""
+
+        if self._policy_improvement_guard_mode() == (
+            "independent_confirmation"
+        ):
+            if terminal_pool is None:
+                raise ValueError(
+                    "independent confirmation requires the terminal pool")
+            return self._guarded_independent_confirmation_improvement(
+                candidates,
+                exact_scores,
+                certificate_scores,
+                backend_score,
+                terminal_pool,
+            )
 
         if self._policy_improvement_guard_mode() == "paired_nested_absolute":
             return self._guarded_current_relative_joint_improvement(
@@ -10868,6 +11130,7 @@ class SingleOLHKGAlgorithm:
         secondary_terminal_mode=None,
         secondary_current_value=None,
         prefix_sample_count=0,
+        return_policy_samples=False,
     ):
         x_arr = np.asarray(x, dtype=int)
         sample_weights = (
@@ -10915,7 +11178,7 @@ class SingleOLHKGAlgorithm:
                     reference_value, future_value)
                 for future_value in future_values
             ], dtype=float)
-            return {
+            summary = {
                 "score": (
                     max(raw_score, 0.0)
                     if self.config.exact_kg_clip_negative
@@ -10934,6 +11197,9 @@ class SingleOLHKGAlgorithm:
                     else float(component_gain)
                 ),
             }
+            if return_policy_samples:
+                summary["policy_gains"] = gains.tolist()
+            return summary
 
         secondary_enabled = bool(secondary_terminal_mode is not None)
         if secondary_enabled and secondary_current_value is None:
@@ -11442,6 +11708,296 @@ class SingleOLHKGAlgorithm:
             np.concatenate(uniform_blocks),
             np.concatenate(weight_blocks),
         )
+
+    def _independent_confirmation_sample_plan(self, sample_count):
+        """Return an IID stream independent of pilot RQMC and simulator RNG."""
+
+        sample_count = max(0, int(sample_count))
+        stage = int(len(self.history))
+        seed_sequence = np.random.SeedSequence([
+            int(self.config.seed),
+            stage,
+            int(EXACT_KG_STREAM_TAG),
+            int(EXACT_KG_CONFIRMATION_STREAM_TAG),
+        ])
+        stream_seed = int(seed_sequence.generate_state(
+            1, dtype=np.uint64)[0])
+        rng = np.random.default_rng(seed_sequence)
+        return (
+            rng.standard_normal((sample_count, 2)),
+            rng.random(sample_count),
+            stream_seed,
+        )
+
+    def _policy_improvement_confirmation_lambdas(self):
+        lambda_min = float(
+            self.config.policy_improvement_confirmation_lambda_min)
+        lambda_count = int(
+            self.config.policy_improvement_confirmation_lambda_count)
+        if not (0.0 < lambda_min <= 1.0):
+            raise ValueError(
+                "confirmation lambda_min must lie in (0, 1]")
+        if lambda_count <= 0:
+            raise ValueError("confirmation lambda_count must be positive")
+        if lambda_count == 1:
+            return np.ones(1, dtype=float)
+        return np.geomspace(
+            lambda_min, 1.0, num=lambda_count, dtype=float)
+
+    @staticmethod
+    def _betting_mixture_log_evalue_path(gains, lambdas):
+        """Anytime-valid mixture e-process for H0: E[gain | past] <= 0."""
+
+        gains = np.asarray(gains, dtype=float).reshape(-1)
+        lambdas = np.asarray(lambdas, dtype=float).reshape(-1)
+        if len(lambdas) == 0:
+            raise ValueError("betting mixture requires at least one lambda")
+        if np.any(lambdas <= 0.0) or np.any(lambdas > 1.0):
+            raise ValueError("betting lambdas must lie in (0, 1]")
+        if np.any(~np.isfinite(gains)) or np.any(np.abs(gains) > 1.0 + 1e-12):
+            raise ValueError(
+                "bounded-current confirmation gains must lie in [-1, 1]")
+        gains = np.clip(gains, -1.0, 1.0)
+        if len(gains) == 0:
+            return np.empty(0, dtype=float)
+        factors = 1.0 + lambdas[:, None] * gains[None, :]
+        factors = np.maximum(factors, 0.0)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            log_wealth = np.cumsum(np.log(factors), axis=1)
+        maximum = np.max(log_wealth, axis=0)
+        finite = np.isfinite(maximum)
+        path = np.full(len(gains), -np.inf, dtype=float)
+        if np.any(finite):
+            centered = np.exp(
+                log_wealth[:, finite] - maximum[None, finite])
+            path[finite] = (
+                maximum[finite]
+                + np.log(np.mean(centered, axis=0))
+            )
+        return path
+
+    def _confirmation_policy_gain_batch(
+        self,
+        candidate,
+        terminal_pool,
+        common_z,
+        common_expert_uniform,
+        current_value,
+        secondary_current_value,
+    ):
+        """Evaluate one independent confirmation batch in parallel."""
+
+        sample_count = int(len(common_z))
+        if sample_count <= 0:
+            return np.empty(0, dtype=float), np.empty(0, dtype=float), 0
+        requested_jobs = int(
+            self.config.policy_improvement_confirmation_jobs)
+        if requested_jobs <= 0:
+            requested_jobs = int(self.config.exact_kg_jobs)
+        jobs = min(max(1, requested_jobs), sample_count)
+        backend = str(
+            self.config.exact_kg_parallel_backend or "thread"
+        ).strip().lower()
+        sample_indices = [
+            indices for indices in np.array_split(
+                np.arange(sample_count, dtype=int), jobs)
+            if len(indices)
+        ]
+
+        def evaluate(indices):
+            result = self._exact_posterior_update_score_one(
+                candidate,
+                np.asarray(common_z, dtype=float)[indices],
+                terminal_pool,
+                current_value,
+                np.asarray(common_expert_uniform, dtype=float)[indices],
+                np.ones(len(indices), dtype=float),
+                return_diagnostics=True,
+                secondary_terminal_mode="certificate_deficit",
+                secondary_current_value=secondary_current_value,
+                return_policy_samples=True,
+            )
+            return {
+                "sample_start": int(indices[0]),
+                "risk_gains": result["policy_gains"],
+                "certificate_gains": result["secondary"]["policy_gains"],
+            }
+
+        if jobs == 1:
+            rows = [evaluate(sample_indices[0])]
+        elif backend in {"process_fork", "fork", "process"}:
+            if "fork" not in multiprocessing.get_all_start_methods():
+                raise RuntimeError(
+                    "independent confirmation process backend requires fork")
+            global _FORK_EXACT_KG_CONFIRMATION_CONTEXT
+            _FORK_EXACT_KG_CONFIRMATION_CONTEXT = (
+                self,
+                tuple(int(value) for value in candidate),
+                np.asarray(common_z, dtype=float),
+                terminal_pool,
+                current_value,
+                np.asarray(common_expert_uniform, dtype=float),
+                "certificate_deficit",
+                secondary_current_value,
+            )
+            try:
+                with ProcessPoolExecutor(
+                    max_workers=jobs,
+                    mp_context=multiprocessing.get_context("fork"),
+                ) as pool:
+                    rows = list(pool.map(
+                        _fork_exact_kg_confirmation_chunk,
+                        sample_indices,
+                    ))
+            finally:
+                _FORK_EXACT_KG_CONFIRMATION_CONTEXT = None
+        elif backend in {"thread", "threads"}:
+            with ThreadPoolExecutor(max_workers=jobs) as pool:
+                rows = list(pool.map(evaluate, sample_indices))
+        else:
+            raise ValueError(
+                f"unknown exact KG parallel backend {backend!r}")
+        rows.sort(key=lambda row: int(row["sample_start"]))
+        risk = np.concatenate([
+            np.asarray(row["risk_gains"], dtype=float)
+            for row in rows
+        ])
+        certificate = np.concatenate([
+            np.asarray(row["certificate_gains"], dtype=float)
+            for row in rows
+        ])
+        return risk, certificate, jobs
+
+    def _independent_policy_improvement_confirmation(
+        self, candidate, terminal_pool,
+    ):
+        """Independently confirm positive risk and certificate reductions."""
+
+        maximum_samples = int(
+            self.config.policy_improvement_confirmation_samples)
+        batch_samples = int(
+            self.config.policy_improvement_confirmation_batch_samples)
+        overall_delta = float(
+            self.config.policy_improvement_confirmation_delta)
+        if maximum_samples <= 0 or batch_samples <= 0:
+            raise ValueError(
+                "independent confirmation sample counts must be positive")
+        if not (0.0 < overall_delta < 1.0):
+            raise ValueError("confirmation delta must lie in (0, 1)")
+        decision_slots = max(
+            int(self.config.N) - int(self.config.n0), 1)
+        head_alpha = overall_delta / (2.0 * float(decision_slots))
+        maximum_look_count = int(np.ceil(
+            maximum_samples / float(batch_samples)))
+        head_look_alpha = head_alpha / float(maximum_look_count)
+        log_threshold = float(np.log(1.0 / head_look_alpha))
+        lambdas = self._policy_improvement_confirmation_lambdas()
+        common_z, common_uniform, stream_seed = (
+            self._independent_confirmation_sample_plan(maximum_samples))
+        current_value = self._terminal_value_from_models(
+            self.gpr,
+            self.variance_model,
+            terminal_pool,
+            task_ensemble=self.task_ensemble,
+            observations=self.observations,
+        )
+        secondary_current_value = self._terminal_value_from_models(
+            self.gpr,
+            self.variance_model,
+            terminal_pool,
+            task_ensemble=self.task_ensemble,
+            observations=self.observations,
+            terminal_mode_override="certificate_deficit",
+        )
+        risk_parts = []
+        certificate_parts = []
+        risk_crossing = None
+        certificate_crossing = None
+        maximum_workers = 1
+        looks_used = 0
+        started = time.perf_counter()
+        for start in range(0, maximum_samples, batch_samples):
+            looks_used += 1
+            stop = min(start + batch_samples, maximum_samples)
+            risk_batch, certificate_batch, workers = (
+                self._confirmation_policy_gain_batch(
+                    candidate,
+                    terminal_pool,
+                    common_z[start:stop],
+                    common_uniform[start:stop],
+                    current_value,
+                    secondary_current_value,
+                )
+            )
+            maximum_workers = max(maximum_workers, int(workers))
+            risk_parts.append(risk_batch)
+            certificate_parts.append(certificate_batch)
+            risk = np.concatenate(risk_parts)
+            certificate = np.concatenate(certificate_parts)
+            risk_path = self._betting_mixture_log_evalue_path(
+                risk, lambdas)
+            certificate_path = self._betting_mixture_log_evalue_path(
+                certificate, lambdas)
+            if risk_crossing is None:
+                crossing = np.flatnonzero(risk_path >= log_threshold)
+                if len(crossing):
+                    risk_crossing = int(crossing[0]) + 1
+            if certificate_crossing is None:
+                crossing = np.flatnonzero(
+                    certificate_path >= log_threshold)
+                if len(crossing):
+                    certificate_crossing = int(crossing[0]) + 1
+            if risk_crossing is not None and certificate_crossing is not None:
+                break
+        used = int(len(risk))
+        risk_path = self._betting_mixture_log_evalue_path(risk, lambdas)
+        certificate_path = self._betting_mixture_log_evalue_path(
+            certificate, lambdas)
+        risk_passed = risk_crossing is not None
+        certificate_passed = certificate_crossing is not None
+        return {
+            "status": (
+                "joint_confirmation_passed"
+                if risk_passed and certificate_passed
+                else "joint_confirmation_failed"
+            ),
+            "passed": bool(risk_passed and certificate_passed),
+            "sample_count": used,
+            "maximum_sample_count": maximum_samples,
+            "batch_sample_count": batch_samples,
+            "risk_sample_mean": float(np.mean(risk)),
+            "certificate_sample_mean": float(np.mean(certificate)),
+            "risk_sample_variance": float(
+                np.var(risk, ddof=1) if used > 1 else 0.0),
+            "certificate_sample_variance": float(
+                np.var(certificate, ddof=1) if used > 1 else 0.0),
+            "risk_log_evalue": float(risk_path[-1]),
+            "certificate_log_evalue": float(certificate_path[-1]),
+            "risk_first_crossing_sample": risk_crossing,
+            "certificate_first_crossing_sample": certificate_crossing,
+            "log_evalue_threshold": log_threshold,
+            "overall_run_delta": overall_delta,
+            "decision_slot_count": decision_slots,
+            "head_stage_alpha": head_alpha,
+            "head_stage_look_alpha": head_look_alpha,
+            "maximum_look_count": maximum_look_count,
+            "looks_used": looks_used,
+            "error_spending": (
+                "bonferroni_two_heads_fixed_horizon_finite_looks"),
+            "lambda_min": float(lambdas[0]),
+            "lambda_max": float(lambdas[-1]),
+            "lambda_count": int(len(lambdas)),
+            "stream_mode": "stage_keyed_independent_iid",
+            "stream_seed": stream_seed,
+            "pilot_stream_independent": True,
+            "simulation_stream_independent": True,
+            "parallel_workers_effective": maximum_workers,
+            "time_sec": float(time.perf_counter() - started),
+            "conditional_contract": (
+                "iid_bounded_gain_finite_look_evalues_with_two_head_"
+                "horizon_look_error_spending"),
+            "target_oracle_used": False,
+        }
 
     def _exact_kg_chunks_per_candidate(
         self, jobs, candidate_count, sample_count,
@@ -14007,6 +14563,7 @@ class SingleOLHKGAlgorithm:
                             exact_kg,
                             certificate_scores,
                             backend_score,
+                            terminal_pool=terminal_pool,
                         )
                     )
                     policy_improvement_selected_idx = int(one_step_index)
@@ -14930,21 +15487,35 @@ class SingleOLHKGAlgorithm:
         })
 
         finalization_started = time.time()
+        finalization_timing = {}
+        finalization_stage_started = time.perf_counter()
         final_pool = (
             list(self._last_terminal_pool)
             if self._last_terminal_pool
             else self._recommendation_pool()
         )
+        finalization_timing["recommendation_pool"] = float(
+            time.perf_counter() - finalization_stage_started)
+        finalization_stage_started = time.perf_counter()
         final_x, final_post = self._solve_posterior_recommendation(
             pool=final_pool)
+        finalization_timing["posterior_recommendation"] = float(
+            time.perf_counter() - finalization_stage_started)
+        finalization_stage_started = time.perf_counter()
         backend_terminal = self._decision_backend_terminal_recommendation(
             final_pool)
         if backend_terminal is not None:
             final_x, final_post = backend_terminal
+        finalization_timing["backend_terminal"] = float(
+            time.perf_counter() - finalization_stage_started)
+        finalization_stage_started = time.perf_counter()
         dominance_terminal = (
             self._posterior_dominance_terminal_recommendation())
         if dominance_terminal is not None:
             final_x, final_post = dominance_terminal
+        finalization_timing["dominance_terminal"] = float(
+            time.perf_counter() - finalization_stage_started)
+        finalization_stage_started = time.perf_counter()
         task_meta_coherence = (
             None
             if self.task_ensemble is None
@@ -14958,14 +15529,19 @@ class SingleOLHKGAlgorithm:
                     self._task_robust_certificate_mode()),
             )
         )
+        finalization_timing["task_meta_coherence"] = float(
+            time.perf_counter() - finalization_stage_started)
         final_post["terminal_pool_shared"] = bool(
             self._last_terminal_pool)
         final_post["terminal_pool_size"] = int(len(final_pool))
         two_stage_decision = self._two_stage_decision_contract_summary(
             final_post, finalist_replication_summary)
+        finalization_stage_started = time.perf_counter()
         final_eval = self._evaluate_recommendation(final_x)
         adaptive_outcome = self._adaptive_outcome_audit(final_eval)
         certificate_outcome = self._certificate_outcome_audit()
+        finalization_timing["recommendation_and_outcome_audits"] = float(
+            time.perf_counter() - finalization_stage_started)
         backend_name = str(
             self.config.decision_backend or "legacy"
         ).strip().lower().replace("-", "_")
@@ -15006,6 +15582,18 @@ class SingleOLHKGAlgorithm:
                 self.config.policy_improvement_pairwise_prefix_samples),
             "policy_improvement_pairwise_error_multiplier": float(
                 self.config.policy_improvement_pairwise_error_multiplier),
+            "policy_improvement_confirmation_samples": int(
+                self.config.policy_improvement_confirmation_samples),
+            "policy_improvement_confirmation_batch_samples": int(
+                self.config.policy_improvement_confirmation_batch_samples),
+            "policy_improvement_confirmation_delta": float(
+                self.config.policy_improvement_confirmation_delta),
+            "policy_improvement_confirmation_jobs": int(
+                self.config.policy_improvement_confirmation_jobs),
+            "policy_improvement_confirmation_lambda_min": float(
+                self.config.policy_improvement_confirmation_lambda_min),
+            "policy_improvement_confirmation_lambda_count": int(
+                self.config.policy_improvement_confirmation_lambda_count),
             "policy_improvement_mc_error_bound": float(
                 self.config.policy_improvement_mc_error_bound),
             "policy_improvement_certificate_mc_error_bound": float(
@@ -15072,6 +15660,7 @@ class SingleOLHKGAlgorithm:
         # Join synthetic/oracle truth only after every charged decision is
         # frozen.  These fields support paper convergence plots and cannot
         # affect acquisition, posterior updates, or the terminal Bayes action.
+        post_truth_started = time.perf_counter()
         post_run_truth_available = bool(self.config.truth_pool_diagnostics)
         try:
             _, trace_true_best_objective = self._true_best_feasible_cached()
@@ -15103,6 +15692,9 @@ class SingleOLHKGAlgorithm:
                     trace_incumbent_regret = None
                     break
 
+        finalization_timing["post_run_truth_setup"] = float(
+            time.perf_counter() - post_truth_started)
+        trace_started = time.perf_counter()
         online_action_trace = []
         for trace_index, iteration_row in enumerate(self.iteration_log):
             selected = iteration_row.get("x_selected")
@@ -15249,6 +15841,10 @@ class SingleOLHKGAlgorithm:
                         "conditional_noninferiority_contract",
                     )
                 }),
+                "policy_improvement_confirmation": copy.deepcopy(
+                    (iteration_row.get("policy_improvement_one_step") or {}).get(
+                        "confirmation")
+                ),
                 "pairwise_prefix_risk_policy_scores_active": copy.deepcopy(
                     iteration_row.get(
                         "pairwise_prefix_risk_policy_scores_active")),
@@ -15296,6 +15892,9 @@ class SingleOLHKGAlgorithm:
                 "truth_admissible_decision_input": False,
                 "target_oracle_used_for_decision": False,
             })
+        finalization_timing["online_action_trace"] = float(
+            time.perf_counter() - trace_started)
+        final_log_started = time.perf_counter()
         history_points = [tuple(int(value) for value in x) for x, _ in self.history]
         self.final_log = {
             **final_post,
@@ -15306,9 +15905,11 @@ class SingleOLHKGAlgorithm:
                 self.config, "theory_contract_id", "unversioned")),
             "theory_contract_timing": "declared_before_target_evaluation",
             "initialization_time_sec": float(initialization_time_sec),
-            "finalization_time_sec": float(
-                time.time() - finalization_started),
-            "total_time_sec": float(time.time() - t_start),
+            "initialization_timing_sec": copy.deepcopy(getattr(
+                self, "_last_initialization_timing", {})),
+            "finalization_time_sec": None,
+            "finalization_timing_sec": None,
+            "total_time_sec": None,
             "n_simulations": int(len(self.history)),
             "n_distinct_solutions": int(len(self.gpr[0].sampled_set)),
             "stage_times": summarize_stage_times(self.iteration_log),
@@ -15442,5 +16043,16 @@ class SingleOLHKGAlgorithm:
             "numeric_backend": self.gpr[0].backend_status(),
             "config": asdict(self.config),
         }
+        finalization_timing["assemble_final_diagnostics"] = float(
+            time.perf_counter() - final_log_started)
+        checkpoint_started = time.perf_counter()
         self._save_checkpoint(self.config.N, reason="final", force=True)
+        finalization_timing["checkpoint"] = float(
+            time.perf_counter() - checkpoint_started)
+        finalization_timing["total"] = float(
+            time.time() - finalization_started)
+        self.final_log["finalization_timing_sec"] = finalization_timing
+        self.final_log["finalization_time_sec"] = float(
+            finalization_timing["total"])
+        self.final_log["total_time_sec"] = float(time.time() - t_start)
         return self.final_log

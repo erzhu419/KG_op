@@ -1399,6 +1399,157 @@ def test_v55_current_relative_guard_maximizes_positive_joint_lcb():
     assert info["current_relative_admissible_indices"] == []
 
 
+def test_v56_betting_eprocess_detects_small_stable_positive_gain():
+    lambdas = np.geomspace(0.001, 1.0, 24)
+    positive = SingleOLHKGAlgorithm._betting_mixture_log_evalue_path(
+        np.full(4096, 0.004, dtype=float), lambdas)
+    null = SingleOLHKGAlgorithm._betting_mixture_log_evalue_path(
+        np.zeros(4096, dtype=float), lambdas)
+    assert positive[-1] > np.log(400.0)
+    assert null[-1] == pytest.approx(0.0)
+
+
+def test_v56_confirmation_stream_is_reproducible_and_not_main_rng_driven():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            seed=991,
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    z_first, u_first, seed_first = (
+        algorithm._independent_confirmation_sample_plan(8))
+    algorithm.rng.random(1000)
+    z_second, u_second, seed_second = (
+        algorithm._independent_confirmation_sample_plan(8))
+    np.testing.assert_array_equal(z_first, z_second)
+    np.testing.assert_array_equal(u_first, u_second)
+    assert seed_first == seed_second
+
+
+def test_v56_guard_uses_independent_confirmation_or_literal_v51_fallback(
+    monkeypatch,
+):
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_score_transform="bounded_current_gain",
+            policy_improvement_guard_mode="independent_confirmation",
+            use_state_coupling=False,
+            use_state_basis=False,
+        ),
+    )
+    candidates = [(0, 0, 0), (1, 1, 1), (2, 2, 2)]
+    backend = {
+        "evaluate_or_replicate_active_indices": np.array([0, 1, 2]),
+        "evaluate_or_replicate_baseline_indices": np.array([0]),
+    }
+    risk = np.array([0.8, 0.3, 0.4])
+    certificate = np.array([-0.2, 0.4, 0.35])
+    algorithm._last_exact_kg_raw_scores = risk.copy()
+    algorithm._last_exact_kg_policy_scores = risk.copy()
+    algorithm._last_certificate_deficit_raw_scores = certificate.copy()
+    algorithm._last_certificate_deficit_policy_scores = certificate.copy()
+    monkeypatch.setattr(
+        algorithm,
+        "_independent_policy_improvement_confirmation",
+        lambda candidate, terminal_pool: {
+            "status": "joint_confirmation_passed",
+            "passed": True,
+            "sample_count": 32,
+            "target_oracle_used": False,
+        },
+    )
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates, risk, certificate, backend, terminal_pool=candidates)
+    assert selected == 2
+    assert info["pilot_index"] == 2
+    assert info["switched"] is True
+    assert algorithm._policy_improvement_contract_id() == (
+        "v56_independent_confirmation_finite_look_v1")
+
+    monkeypatch.setattr(
+        algorithm,
+        "_independent_policy_improvement_confirmation",
+        lambda candidate, terminal_pool: {
+            "status": "joint_confirmation_failed",
+            "passed": False,
+            "sample_count": 32,
+            "target_oracle_used": False,
+        },
+    )
+    selected, info = algorithm._guarded_certificate_deficit_policy_improvement(
+        candidates, risk, certificate, backend, terminal_pool=candidates)
+    assert selected == 0
+    assert info["status"] == "independent_confirmation_fallback"
+    assert info["selected_index"] == 0
+
+
+def test_v56_independent_confirmation_runs_end_to_end():
+    problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
+    algorithm = SingleOLHKGAlgorithm(
+        problem,
+        SingleOLHKGConfig(
+            N=3,
+            n0=2,
+            K1=5,
+            K2=0,
+            decision_backend="sobol_exact_joint_voi",
+            decision_recommend_observed_only=True,
+            exact_kg_terminal_mode="bayes_risk",
+            exact_kg_sampling_mode="antithetic_nested",
+            exact_kg_mc_samples=2,
+            exact_kg_jobs=2,
+            exact_kg_parallel_backend="process_fork",
+            adaptive_replication_voi=True,
+            replication_candidate_count=2,
+            evaluate_or_replicate_new_action_count=3,
+            evaluate_or_replicate_baseline_new_action_count=1,
+            evaluate_or_replicate_new_action_policy=(
+                "canonical_plus_posterior_pareto_support"),
+            policy_improvement_mode="certificate_constrained",
+            policy_improvement_score_transform="bounded_current_gain",
+            policy_improvement_guard_mode="independent_confirmation",
+            policy_improvement_confirmation_samples=4,
+            policy_improvement_confirmation_batch_samples=2,
+            policy_improvement_confirmation_delta=0.5,
+            policy_improvement_confirmation_jobs=2,
+            use_state_coupling=False,
+            use_state_basis=False,
+            use_problem_initial_samples=False,
+            use_boundary_initial_samples=False,
+            use_recommendation_refinement=False,
+            recommendation_axis_oracle=False,
+            recommendation_calibration=False,
+            finalist_replication_budget=0,
+            eval_pool_size=8,
+            evaluate_interval=0,
+            seed=359,
+        ),
+    )
+    result = algorithm.run(verbose=False)
+    info = algorithm.iteration_log[0]["policy_improvement_one_step"]
+    confirmation = info["confirmation"]
+    assert result["n_simulations"] == 3
+    assert info["guard_mode"] == "independent_confirmation"
+    assert confirmation["sample_count"] == 4
+    assert confirmation["stream_mode"] == "stage_keyed_independent_iid"
+    assert confirmation["pilot_stream_independent"] is True
+    assert confirmation["maximum_look_count"] == 2
+    assert confirmation["head_stage_look_alpha"] == pytest.approx(0.125)
+    assert confirmation["log_evalue_threshold"] == pytest.approx(np.log(8.0))
+    assert confirmation["error_spending"] == (
+        "bonferroni_two_heads_fixed_horizon_finite_looks")
+    assert np.isfinite(confirmation["risk_sample_mean"])
+    assert np.isfinite(confirmation["certificate_sample_mean"])
+    assert result["decision_backend_contract"][
+        "policy_improvement_guard_mode"] == "independent_confirmation"
+
+
 def test_v55_current_relative_prefix_runs_end_to_end():
     problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
     algorithm = SingleOLHKGAlgorithm(

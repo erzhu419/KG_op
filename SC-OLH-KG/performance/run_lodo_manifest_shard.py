@@ -38,6 +38,12 @@ def load_config(path):
     config.setdefault("policy_improvement_guard_mode", "uniform_score")
     config.setdefault("policy_improvement_pairwise_prefix_samples", 32)
     config.setdefault("policy_improvement_pairwise_error_multiplier", 1.25)
+    config.setdefault("policy_improvement_confirmation_samples", 4096)
+    config.setdefault("policy_improvement_confirmation_batch_samples", 512)
+    config.setdefault("policy_improvement_confirmation_delta", 0.05)
+    config.setdefault("policy_improvement_confirmation_jobs", 0)
+    config.setdefault("policy_improvement_confirmation_lambda_min", 0.001)
+    config.setdefault("policy_improvement_confirmation_lambda_count", 24)
     config.setdefault("task_posterior_safe_generalized", False)
     config.setdefault("source_discrepancy_update", True)
     config.setdefault("task_posterior_safe_boundary_score_weight", 1.0)
@@ -437,6 +443,7 @@ def main():
             "uniform_score",
             "paired_nested_difference",
             "paired_nested_absolute",
+            "independent_confirmation",
         ),
         default=None,
     )
@@ -448,6 +455,27 @@ def main():
     parser.add_argument(
         "--policy-improvement-pairwise-error-multiplier",
         type=float,
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-confirmation-samples", type=int, default=None)
+    parser.add_argument(
+        "--policy-improvement-confirmation-batch-samples",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-confirmation-delta", type=float, default=None)
+    parser.add_argument(
+        "--policy-improvement-confirmation-jobs", type=int, default=None)
+    parser.add_argument(
+        "--policy-improvement-confirmation-lambda-min",
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
+        "--policy-improvement-confirmation-lambda-count",
+        type=int,
         default=None,
     )
     parser.add_argument(
@@ -1004,6 +1032,36 @@ def main():
         if args.policy_improvement_pairwise_error_multiplier is None
         else args.policy_improvement_pairwise_error_multiplier
     )
+    policy_improvement_confirmation_samples = int(
+        config.get("policy_improvement_confirmation_samples", 4096)
+        if args.policy_improvement_confirmation_samples is None
+        else args.policy_improvement_confirmation_samples
+    )
+    policy_improvement_confirmation_batch_samples = int(
+        config.get("policy_improvement_confirmation_batch_samples", 512)
+        if args.policy_improvement_confirmation_batch_samples is None
+        else args.policy_improvement_confirmation_batch_samples
+    )
+    policy_improvement_confirmation_delta = float(
+        config.get("policy_improvement_confirmation_delta", 0.05)
+        if args.policy_improvement_confirmation_delta is None
+        else args.policy_improvement_confirmation_delta
+    )
+    policy_improvement_confirmation_jobs = int(
+        config.get("policy_improvement_confirmation_jobs", 0)
+        if args.policy_improvement_confirmation_jobs is None
+        else args.policy_improvement_confirmation_jobs
+    )
+    policy_improvement_confirmation_lambda_min = float(
+        config.get("policy_improvement_confirmation_lambda_min", 0.001)
+        if args.policy_improvement_confirmation_lambda_min is None
+        else args.policy_improvement_confirmation_lambda_min
+    )
+    policy_improvement_confirmation_lambda_count = int(
+        config.get("policy_improvement_confirmation_lambda_count", 24)
+        if args.policy_improvement_confirmation_lambda_count is None
+        else args.policy_improvement_confirmation_lambda_count
+    )
     policy_improvement_mc_error_bound = float(
         config.get("policy_improvement_mc_error_bound", 0.0)
         if args.policy_improvement_mc_error_bound is None
@@ -1128,6 +1186,18 @@ def main():
             policy_improvement_pairwise_prefix_samples),
         "policy_improvement_pairwise_error_multiplier": (
             policy_improvement_pairwise_error_multiplier),
+        "policy_improvement_confirmation_samples": (
+            policy_improvement_confirmation_samples),
+        "policy_improvement_confirmation_batch_samples": (
+            policy_improvement_confirmation_batch_samples),
+        "policy_improvement_confirmation_delta": (
+            policy_improvement_confirmation_delta),
+        "policy_improvement_confirmation_jobs": (
+            policy_improvement_confirmation_jobs),
+        "policy_improvement_confirmation_lambda_min": (
+            policy_improvement_confirmation_lambda_min),
+        "policy_improvement_confirmation_lambda_count": (
+            policy_improvement_confirmation_lambda_count),
         "policy_improvement_mc_error_bound": (
             policy_improvement_mc_error_bound),
         "policy_improvement_certificate_mc_error_bound": (
@@ -1527,6 +1597,18 @@ def main():
                 policy_improvement_pairwise_prefix_samples),
             "policy_improvement_pairwise_error_multiplier": (
                 policy_improvement_pairwise_error_multiplier),
+            "policy_improvement_confirmation_samples": (
+                policy_improvement_confirmation_samples),
+            "policy_improvement_confirmation_batch_samples": (
+                policy_improvement_confirmation_batch_samples),
+            "policy_improvement_confirmation_delta": (
+                policy_improvement_confirmation_delta),
+            "policy_improvement_confirmation_jobs": (
+                policy_improvement_confirmation_jobs),
+            "policy_improvement_confirmation_lambda_min": (
+                policy_improvement_confirmation_lambda_min),
+            "policy_improvement_confirmation_lambda_count": (
+                policy_improvement_confirmation_lambda_count),
             "policy_improvement_mc_error_bound": (
                 policy_improvement_mc_error_bound),
             "policy_improvement_certificate_mc_error_bound": (

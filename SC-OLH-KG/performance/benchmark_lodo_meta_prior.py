@@ -937,6 +937,18 @@ def run_one(task):
             "policy_improvement_pairwise_prefix_samples", 32)),
         policy_improvement_pairwise_error_multiplier=float(args_dict.get(
             "policy_improvement_pairwise_error_multiplier", 1.25)),
+        policy_improvement_confirmation_samples=int(args_dict.get(
+            "policy_improvement_confirmation_samples", 4096)),
+        policy_improvement_confirmation_batch_samples=int(args_dict.get(
+            "policy_improvement_confirmation_batch_samples", 512)),
+        policy_improvement_confirmation_delta=float(args_dict.get(
+            "policy_improvement_confirmation_delta", 0.05)),
+        policy_improvement_confirmation_jobs=int(args_dict.get(
+            "policy_improvement_confirmation_jobs", 0)),
+        policy_improvement_confirmation_lambda_min=float(args_dict.get(
+            "policy_improvement_confirmation_lambda_min", 0.001)),
+        policy_improvement_confirmation_lambda_count=int(args_dict.get(
+            "policy_improvement_confirmation_lambda_count", 24)),
         policy_improvement_mc_error_bound=float(args_dict.get(
             "policy_improvement_mc_error_bound", 0.0)),
         policy_improvement_certificate_mc_error_bound=float(args_dict.get(
@@ -2820,6 +2832,7 @@ def main():
             "uniform_score",
             "paired_nested_difference",
             "paired_nested_absolute",
+            "independent_confirmation",
         ),
         default="uniform_score",
     )
@@ -2832,6 +2845,27 @@ def main():
         "--policy_improvement_pairwise_error_multiplier",
         type=float,
         default=1.25,
+    )
+    parser.add_argument(
+        "--policy_improvement_confirmation_samples", type=int, default=4096)
+    parser.add_argument(
+        "--policy_improvement_confirmation_batch_samples",
+        type=int,
+        default=512,
+    )
+    parser.add_argument(
+        "--policy_improvement_confirmation_delta", type=float, default=0.05)
+    parser.add_argument(
+        "--policy_improvement_confirmation_jobs", type=int, default=0)
+    parser.add_argument(
+        "--policy_improvement_confirmation_lambda_min",
+        type=float,
+        default=0.001,
+    )
+    parser.add_argument(
+        "--policy_improvement_confirmation_lambda_count",
+        type=int,
+        default=24,
     )
     parser.add_argument(
         "--policy_improvement_mc_error_bound", type=float, default=0.0)

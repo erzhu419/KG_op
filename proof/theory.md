@@ -1017,6 +1017,23 @@ beats the distinct V51 risk maximizer in both heads. Empty admission retains
 that literal fallback. Radius coverage, nonvacuous activation, and final V51
 performance noninferiority remain separate preregistered empirical gates.
 
+The completed MC32/128/512 audit rejected V55's nested discrepancy as a
+confidence radius: all 15 MC512-selected actions had positive reference
+reductions in both heads, but selected-action radius coverage was only 10/15.
+V56 removes that unsupported calibration assumption. Pilot RQMC selects a
+single action, and a disjoint IID stream evaluates bounded gains
+`X_R,X_C in [-1,1]`. For every fixed `lambda in [0,1]`, the product
+`prod_i (1 + lambda X_i)` is a nonnegative e-value under `E[X_i] <= 0`.
+A frozen finite lambda mixture remains an e-value at every fixed batch look.
+If at most `L` looks are permitted, each head uses the Markov threshold for
+`delta/(2(N-n0)L)`. A finite union bound over stages, heads, and looks therefore
+limits the probability of any false run-level two-head admission by `delta`;
+the implementation may stop after a successful paid-for look without invoking
+an unproved anytime claim.
+Conditioning on the independent pilot fixes the selected action, so no union
+penalty over unselected actions is required. Failure of either confirmation
+head executes the literal V51 fallback.
+
 ## Current Empirical Closure Items
 
 1. The observed-terminal repair passed its paired 60-run closure gate at

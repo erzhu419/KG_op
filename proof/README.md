@@ -765,6 +765,14 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
      Positivity of both bounds implies strict decrease of both exact current
      terminal costs on the declared approximation events; an empty admissible
      set retains the literal V51 fallback without claiming two-head dominance.
+154. The V56 pilot/confirmation split freezes one pilot-selected action before
+     drawing an independent IID fantasy stream. For bounded gains, every
+     fixed betting factor is nonnegative under `lambda in [0,1]`; independence
+     makes its finite product an e-value under the nonpositive-mean null, and
+     a finite frozen lambda mixture preserves the expectation bound. Markov's
+     inequality controls each fixed batch look. Explicit two-head,
+     finite-horizon, finite-look error spending then controls any false
+     run-level admission; a failed confirmation retains V51.
 
 Remaining work is empirical/binding and assumption validation:
 

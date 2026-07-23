@@ -36,9 +36,10 @@ FIDELITY = ("v53_mc8", "v53_mc32")
 HIGH_FIDELITY = "v53_mc128"
 V54_FIDELITY = ("v54_mc128", "v54_mc512")
 V55_FIDELITY = ("v55_mc128", "v55_mc512")
+V56_FIDELITY = ("v56_confirm2048", "v56_confirm4096")
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
-    *V54_FIDELITY, *V55_FIDELITY,
+    *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY,
 )
 
 
@@ -112,6 +113,8 @@ def _v53_profile(
     bounded = str(score_transform) == "bounded_current_gain"
     paired_difference = str(guard_mode) == "paired_nested_difference"
     paired_absolute = str(guard_mode) == "paired_nested_absolute"
+    independent_confirmation = str(guard_mode) == (
+        "independent_confirmation")
     paired = paired_difference or paired_absolute
     normalized = str(score_normalization) == "current_terminal"
     if bounded and normalized:
@@ -120,38 +123,49 @@ def _v53_profile(
     if paired and not bounded:
         raise ValueError(
             "paired_nested_difference requires bounded_current_gain")
+    if independent_confirmation and not bounded:
+        raise ValueError(
+            "independent_confirmation requires bounded_current_gain")
     return {
         **common,
         "implementation_contract_id": (
-            "v55_current_relative_joint_guard"
-            if paired_absolute
+            "v56_independent_confirmation_guard"
+            if independent_confirmation
             else (
-                "v54_paired_nested_difference_guard"
-                if paired_difference
+                "v55_current_relative_joint_guard"
+                if paired_absolute
                 else (
-                "v53_constrained_certificate_deficit_bounded_gain"
-                if bounded
-                else (
-                    "v53_constrained_certificate_deficit_normalized"
-                    if normalized
-                    else "v53_constrained_certificate_deficit"
+                    "v54_paired_nested_difference_guard"
+                    if paired_difference
+                    else (
+                        "v53_constrained_certificate_deficit_bounded_gain"
+                        if bounded
+                        else (
+                        "v53_constrained_certificate_deficit_normalized"
+                        if normalized
+                        else "v53_constrained_certificate_deficit"
+                        )
                     )
                 )
             )
         ),
         "theory_contract_id": (
-            "v55_current_relative_joint_improvement_v1"
-            if paired_absolute
+            "v56_independent_confirmation_finite_look_v1"
+            if independent_confirmation
             else (
-                "v54_paired_difference_guard_v1"
-                if paired_difference
+                "v55_current_relative_joint_improvement_v1"
+                if paired_absolute
                 else (
-                "v53_constrained_certificate_deficit_v3"
-                if bounded
-                else (
-                    "v53_constrained_certificate_deficit_v2"
-                    if normalized
-                    else "v53_constrained_certificate_deficit_v1"
+                    "v54_paired_difference_guard_v1"
+                    if paired_difference
+                    else (
+                    "v53_constrained_certificate_deficit_v3"
+                    if bounded
+                    else (
+                        "v53_constrained_certificate_deficit_v2"
+                        if normalized
+                        else "v53_constrained_certificate_deficit_v1"
+                        )
                     )
                 )
             )
@@ -182,6 +196,18 @@ def variant_profiles(args):
         "policy_improvement_mc_error_bound": float(args.risk_eta),
         "policy_improvement_certificate_mc_error_bound": float(
             args.certificate_eta),
+        "policy_improvement_confirmation_samples": int(
+            args.confirmation_samples),
+        "policy_improvement_confirmation_batch_samples": int(
+            args.confirmation_batch_samples),
+        "policy_improvement_confirmation_delta": float(
+            args.confirmation_delta),
+        "policy_improvement_confirmation_jobs": int(
+            args.confirmation_jobs),
+        "policy_improvement_confirmation_lambda_min": float(
+            args.confirmation_lambda_min),
+        "policy_improvement_confirmation_lambda_count": int(
+            args.confirmation_lambda_count),
         "policy_improvement_rollout_depth": 1,
         "policy_improvement_rollout_max_arms": 0,
         "policy_improvement_rollout_mc_samples": 0,
@@ -253,6 +279,28 @@ def variant_profiles(args):
             args.challenger_new_action_count, args.guard_mode,
             args.pairwise_prefix_samples, args.pairwise_error_multiplier,
             args.challenger_new_action_policy),
+        "v56_confirm2048": {
+            **_v53_profile(
+                common, 512, "none", "bounded_current_gain",
+                args.challenger_new_action_count,
+                "independent_confirmation",
+                args.pairwise_prefix_samples,
+                args.pairwise_error_multiplier,
+                args.challenger_new_action_policy,
+            ),
+            "policy_improvement_confirmation_samples": 2048,
+        },
+        "v56_confirm4096": {
+            **_v53_profile(
+                common, 512, "none", "bounded_current_gain",
+                args.challenger_new_action_count,
+                "independent_confirmation",
+                args.pairwise_prefix_samples,
+                args.pairwise_error_multiplier,
+                args.challenger_new_action_policy,
+            ),
+            "policy_improvement_confirmation_samples": 4096,
+        },
     }
 
 
@@ -277,6 +325,12 @@ def build_specs(args):
     ):
         raise ValueError(
             "v55_mc128/v55_mc512 require paired_nested_absolute")
+    if (
+        any(name in V56_FIDELITY for name in requested)
+        and str(args.guard_mode) != "independent_confirmation"
+    ):
+        raise ValueError(
+            "v56 confirmation variants require independent_confirmation")
     args.variant_profiles = {name: profiles[name] for name in requested}
     args.variants = ",".join(requested)
     args.scenarios = closure.promoted.v51.v50.v49.v27.MEAN_SCENARIOS
@@ -355,12 +409,22 @@ def main():
             "uniform_score",
             "paired_nested_difference",
             "paired_nested_absolute",
+            "independent_confirmation",
         ),
         default="uniform_score",
     )
     parser.add_argument("--pairwise-prefix-samples", type=int, default=32)
     parser.add_argument(
         "--pairwise-error-multiplier", type=float, default=1.25)
+    parser.add_argument("--confirmation-samples", type=int, default=4096)
+    parser.add_argument(
+        "--confirmation-batch-samples", type=int, default=512)
+    parser.add_argument("--confirmation-delta", type=float, default=0.05)
+    parser.add_argument("--confirmation-jobs", type=int, default=0)
+    parser.add_argument(
+        "--confirmation-lambda-min", type=float, default=0.001)
+    parser.add_argument(
+        "--confirmation-lambda-count", type=int, default=24)
     parser.add_argument("--risk-eta", type=float, default=0.0)
     parser.add_argument("--certificate-eta", type=float, default=0.0)
     parser.add_argument("--cpu", type=int, default=12)
@@ -373,6 +437,13 @@ def main():
         parser.error("--exact-jobs must be positive")
     if int(args.exact_jobs) > int(args.cpu):
         parser.error("--exact-jobs cannot exceed reserved --cpu")
+    if int(args.confirmation_jobs) < 0:
+        parser.error("--confirmation-jobs cannot be negative")
+    if (
+        int(args.confirmation_jobs) > 0
+        and int(args.confirmation_jobs) > int(args.cpu)
+    ):
+        parser.error("--confirmation-jobs cannot exceed reserved --cpu")
     specs = build_specs(args)
     if args.dry_run:
         print(json.dumps(specs, indent=2))

@@ -212,6 +212,35 @@
         "MC128 activation passed 15/15; all selected MC128 actions remained positive at MC512, but the single-prefix radius covered only 10/15 selected actions and is not a valid confidence calibration",
         "nested-prefix reuse, balanced process chunks, redundant shadow-update removal, and 72-worker execution preserve all six score arrays within 1e-10 while reducing median MC512 end-to-end time by 6.14x"
       ]
+    },
+    {
+      "id": "v56_independent_confirmation_finite_look_v1",
+      "implementation_contract_id": "v56_independent_confirmation_guard",
+      "decision_behavior": "pilot_selected_independent_two_head_econfirmation_with_literal_v51_fallback",
+      "behavior_change": true,
+      "diagnostic_change": true,
+      "role": "challenger_contract",
+      "status": "implemented_formalized_sentinel_pending",
+      "runs": [],
+      "diagnostic_runs": [],
+      "planned_runs": [
+        "scolh_v56_independent_confirmation_mc512_c48_s5_20260723_01"
+      ],
+      "evidence": [
+        "SC-OLH-KG/docs/v56_independent_confirmation_plan_20260723.md"
+      ],
+      "formal_scope": [
+        "literal MC-matched V51 action-subset fallback",
+        "MC512 factorized-RQMC pilot selection over the oracle-free action superset",
+        "one pilot-selected action frozen before confirmation",
+        "stage-keyed IID confirmation stream disjoint from pilot, proposal, and simulator streams",
+        "bounded per-fantasy Bayes-risk and certificate-deficit gains in [-1,1]",
+        "finite source-frozen mixture of betting e-values at each fixed look",
+        "Bonferroni error spending over two heads, all N-n0 online stages, and every permitted confirmation look",
+        "both nonpositive-mean nulls rejected before switching",
+        "literal V51 fallback on either failed head",
+        "no rollout and no target-oracle action"
+      ]
     }
   ],
   "non_mixing_rules": [

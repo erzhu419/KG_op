@@ -56,6 +56,12 @@ def _args(tmp_path, variants):
         "guard_mode": "uniform_score",
         "pairwise_prefix_samples": 32,
         "pairwise_error_multiplier": 1.25,
+        "confirmation_samples": 4096,
+        "confirmation_batch_samples": 512,
+        "confirmation_delta": 0.05,
+        "confirmation_jobs": 12,
+        "confirmation_lambda_min": 0.001,
+        "confirmation_lambda_count": 24,
         "risk_eta": 0.01,
         "certificate_eta": 0.02,
         "cpu": 12,
@@ -251,6 +257,39 @@ def test_v55_current_relative_profiles_are_versioned(tmp_path):
     )
     assert all(
         "--theory-contract-id v55_current_relative_joint_improvement_v1"
+        in spec["cmd"] for spec in specs
+    )
+
+
+def test_v56_independent_confirmation_profiles_are_versioned(tmp_path):
+    args = _args(tmp_path, MODULE.V56_FIDELITY)
+    args.score_normalization = "none"
+    args.score_transform = "bounded_current_gain"
+    args.guard_mode = "independent_confirmation"
+    args.challenger_new_action_policy = (
+        "canonical_plus_posterior_pareto_support")
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 2 * 3 * 2
+    assert all("--exact-mc-samples 512 " in spec["cmd"] for spec in specs)
+    assert sum(
+        "--policy-improvement-confirmation-samples 2048" in spec["cmd"]
+        for spec in specs
+    ) == 6
+    assert sum(
+        "--policy-improvement-confirmation-samples 4096" in spec["cmd"]
+        for spec in specs
+    ) == 6
+    assert all(
+        "--policy-improvement-confirmation-jobs 12" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--implementation-contract-id v56_independent_confirmation_guard"
+        in spec["cmd"] for spec in specs
+    )
+    assert all(
+        "--theory-contract-id "
+        "v56_independent_confirmation_finite_look_v1"
         in spec["cmd"] for spec in specs
     )
 
