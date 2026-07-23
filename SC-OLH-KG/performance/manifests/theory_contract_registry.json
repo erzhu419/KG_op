@@ -220,14 +220,17 @@
       "behavior_change": true,
       "diagnostic_change": true,
       "role": "challenger_contract",
-      "status": "implemented_formalized_sentinel_pending",
-      "runs": [],
-      "diagnostic_runs": [],
-      "planned_runs": [
+      "status": "sentinel_formal_gate_passed_promotion_failed",
+      "runs": [
         "scolh_v56_independent_confirmation_mc512_c48_s5_20260723_01"
       ],
+      "diagnostic_runs": [],
+      "planned_runs": [
+        "scolh_v56_multistep_n13_mc512_c48_s5_20260723_01"
+      ],
       "evidence": [
-        "SC-OLH-KG/docs/v56_independent_confirmation_plan_20260723.md"
+        "SC-OLH-KG/docs/v56_independent_confirmation_plan_20260723.md",
+        "SC-OLH-KG/docs/v56_independent_confirmation_results_20260723.md"
       ],
       "formal_scope": [
         "literal MC-matched V51 action-subset fallback",
@@ -239,7 +242,10 @@
         "Bonferroni error spending over two heads, all N-n0 online stages, and every permitted confirmation look",
         "both nonpositive-mean nulls rejected before switching",
         "literal V51 fallback on either failed head",
-        "no rollout and no target-oracle action"
+        "no rollout and no target-oracle action",
+        "N=11 sentinel: 2048 confirmation passed 14/15 and 4096 passed 15/15",
+        "N=11 sentinel: both variants tied the V51 final recommendation in all 15 paired cells, so neither is promoted",
+        "N=11 sentinel: the separate chance-feasibility certificate remained vacuous in all 45 runs"
       ]
     }
   ],

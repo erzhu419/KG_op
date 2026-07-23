@@ -71,6 +71,68 @@ def _confirmations(row):
     return confirmations
 
 
+def _policy_audits(row):
+    return [
+        dict(trace.get("policy_improvement_pairwise_audit") or {})
+        for trace in list(row.get("online_action_trace") or [])
+    ]
+
+
+def _recommendation(row):
+    value = row.get("x_recommended")
+    if isinstance(value, list):
+        return tuple(value)
+    return value
+
+
+def _paired_performance(control_rows, challenger_rows):
+    control = {_key(row): row for row in control_rows}
+    challenger = {_key(row): row for row in challenger_rows}
+    keys = sorted(set(control) & set(challenger))
+    wins = losses = ties = 0
+    feasibility_rescues = feasibility_losses = 0
+    recommendation_changes = 0
+    for key in keys:
+        baseline = control[key]
+        trial = challenger[key]
+        baseline_feasible = bool(baseline.get("true_feasible", False))
+        trial_feasible = bool(trial.get("true_feasible", False))
+        if trial_feasible and not baseline_feasible:
+            feasibility_rescues += 1
+            wins += 1
+        elif baseline_feasible and not trial_feasible:
+            feasibility_losses += 1
+            losses += 1
+        elif not baseline_feasible and not trial_feasible:
+            ties += 1
+        else:
+            baseline_regret = _finite(baseline.get("feasible_simple_regret"))
+            trial_regret = _finite(trial.get("feasible_simple_regret"))
+            if baseline_regret is None or trial_regret is None:
+                ties += 1
+            elif trial_regret < baseline_regret - 1e-12:
+                wins += 1
+            elif trial_regret > baseline_regret + 1e-12:
+                losses += 1
+            else:
+                ties += 1
+        recommendation_changes += int(
+            _recommendation(baseline) != _recommendation(trial))
+    return {
+        "paired_count": len(keys),
+        "win_count": wins,
+        "loss_count": losses,
+        "tie_count": ties,
+        "feasibility_rescue_count": feasibility_rescues,
+        "feasibility_loss_count": feasibility_losses,
+        "recommendation_change_count": recommendation_changes,
+        "all_recommendations_identical": bool(
+            keys and recommendation_changes == 0),
+        "performance_noninferior": bool(keys and losses == 0),
+        "strict_gain_detected": bool(wins > 0),
+    }
+
+
 def _contract(row, variant):
     if variant == CONTROL:
         return bool(
@@ -104,6 +166,7 @@ def _contract(row, variant):
 
 def _summary(rows):
     confirmations = [item for row in rows for item in _confirmations(row)]
+    policy_audits = [item for row in rows for item in _policy_audits(row)]
     audits = [dict(row.get("certificate_outcome_audit") or {})
               for row in rows]
     feasible_regret = [
@@ -121,9 +184,17 @@ def _summary(rows):
                                    for row in rows),
         "false_certificate_count": sum(int(item.get(
             "false_certificate_count", 0) or 0) for item in audits),
+        "posterior_certified_count": sum(int(item.get(
+            "posterior_certified_count", 0) or 0) for item in audits),
+        "posterior_certificate_vacuous_count": sum(bool(item.get(
+            "posterior_certificate_vacuous", False)) for item in audits),
         "confirmation_decision_count": len(confirmations),
         "joint_confirmation_pass_count": sum(bool(item.get("passed", False))
                                              for item in confirmations),
+        "confirmation_switch_count": sum(bool(item.get("switched", False))
+                                         for item in policy_audits),
+        "confirmation_fallback_count": sum(
+            not bool(item.get("passed", False)) for item in confirmations),
         "median_confirmation_samples": _median(
             item.get("sample_count") for item in confirmations),
         "median_risk_first_crossing": _median(
@@ -141,18 +212,25 @@ def _summary(rows):
             row.get("initialization_time_sec") for row in rows),
         "median_finalization_time_sec": _median(
             row.get("finalization_time_sec") for row in rows),
+        "median_algorithm_time_sec": _median(
+            row.get("algorithm_time_sec") for row in rows),
     }
 
 
-def analyze(root):
+def analyze(root, challengers=V56):
+    challengers = tuple(challengers)
+    if not challengers or any(item not in V56 for item in challengers):
+        raise ValueError(f"challengers must be a nonempty subset of {V56}")
+    variants = (CONTROL, *challengers)
     rows, errors = load_rows(root)
+    rows = [row for row in rows if row["gate_variant"] in variants]
     grouped = {
         variant: {
             domain: [row for row in rows if row["gate_variant"] == variant
                      and str(row.get("heldout")) == domain]
             for domain in DOMAINS
         }
-        for variant in KNOWN
+        for variant in variants
     }
     summaries = {
         variant: {
@@ -173,22 +251,61 @@ def analyze(root):
         for variant, domains in grouped.items()
     }
     paired = all(expected_keys[variant] == expected_keys[CONTROL]
-                 for variant in V56)
+                 for variant in challengers)
     complete = all(len(grouped[variant][domain]) == 5
-                   for variant in KNOWN for domain in DOMAINS)
+                   for variant in variants for domain in DOMAINS)
     confirmation_nonvacuous = {
         variant: sum(
             summaries[variant][domain]["joint_confirmation_pass_count"]
             for domain in DOMAINS
         ) > 0
-        for variant in V56
+        for variant in challengers
     }
     no_false_certificates = all(
         summaries[variant][domain]["false_certificate_count"] == 0
-        for variant in KNOWN for domain in DOMAINS
+        for variant in variants for domain in DOMAINS
     )
+    chance_certificate_nonvacuous = {
+        variant: sum(
+            summaries[variant][domain]["posterior_certified_count"]
+            for domain in DOMAINS
+        ) > 0
+        for variant in variants
+    }
+    paired_performance = {
+        variant: _paired_performance(
+            [row for domain_rows in grouped[CONTROL].values()
+             for row in domain_rows],
+            [row for domain_rows in grouped[variant].values()
+             for row in domain_rows],
+        )
+        for variant in challengers
+    }
+    formal_gate_by_variant = {
+        variant: bool(
+            complete
+            and not errors
+            and paired
+            and contracts[CONTROL]
+            and contracts[variant]
+            and confirmation_nonvacuous[variant]
+            and no_false_certificates
+        )
+        for variant in challengers
+    }
+    promotion_gate_by_variant = {
+        variant: bool(
+            formal_gate_by_variant[variant]
+            and paired_performance[variant]["performance_noninferior"]
+            and paired_performance[variant]["strict_gain_detected"]
+        )
+        for variant in challengers
+    }
+    formal_gate_passed = all(formal_gate_by_variant.values())
+    promotion_gate_passed = any(promotion_gate_by_variant.values())
     return {
         "scope": "v56_independent_confirmation_sentinel",
+        "challengers": list(challengers),
         "root": str(Path(root)),
         "row_count": len(rows),
         "load_errors": errors,
@@ -197,15 +314,14 @@ def analyze(root):
         "paired_keys_match_control": paired,
         "complete_5_seed_matrix": complete,
         "confirmation_nonvacuous": confirmation_nonvacuous,
+        "chance_certificate_nonvacuous": chance_certificate_nonvacuous,
         "no_false_certificates": no_false_certificates,
-        "gate_passed": bool(
-            complete
-            and not errors
-            and paired
-            and all(contracts.values())
-            and all(confirmation_nonvacuous.values())
-            and no_false_certificates
-        ),
+        "paired_performance": paired_performance,
+        "formal_gate_by_variant": formal_gate_by_variant,
+        "formal_gate_passed": formal_gate_passed,
+        "promotion_gate_by_variant": promotion_gate_by_variant,
+        "promotion_gate_passed": promotion_gate_passed,
+        "gate_passed": promotion_gate_passed,
     }
 
 
@@ -213,8 +329,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument(
+        "--challengers",
+        default=",".join(V56),
+        help="Comma-separated subset of V56 variants expected in the matrix",
+    )
     args = parser.parse_args()
-    report = analyze(args.root)
+    challengers = tuple(
+        item.strip() for item in args.challengers.split(",") if item.strip())
+    report = analyze(args.root, challengers=challengers)
     text = json.dumps(report, indent=2, sort_keys=True)
     if args.output is not None:
         args.output.parent.mkdir(parents=True, exist_ok=True)

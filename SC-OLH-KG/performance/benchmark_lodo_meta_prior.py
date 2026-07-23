@@ -1870,8 +1870,12 @@ def run_one(task):
         "algorithm_time_sec": float(result["total_time_sec"]),
         "initialization_time_sec": float(
             result.get("initialization_time_sec", np.nan)),
+        "initialization_timing_sec": result.get(
+            "initialization_timing_sec", {}),
         "finalization_time_sec": float(
             result.get("finalization_time_sec", np.nan)),
+        "finalization_timing_sec": result.get(
+            "finalization_timing_sec", {}),
         "stage_times": result.get("stage_times", {}),
         "variance_diagnostics": result.get("variance", {}),
         "variance_calibration_audit": variance_calibration,

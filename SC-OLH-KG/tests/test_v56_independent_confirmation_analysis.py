@@ -41,15 +41,21 @@ def _row(variant, domain, seed):
         "online_action_trace_target_oracle_used": False,
         "online_action_trace": [],
         "true_feasible": True,
-        "feasible_simple_regret": 0.1,
+        "feasible_simple_regret": 0.1 if control else 0.05,
+        "x_recommended": [seed] if control else [seed + 10],
         "adaptive_improves_initial_best": True,
         "adaptive_loss": False,
-        "certificate_outcome_audit": {"false_certificate_count": 0},
+        "certificate_outcome_audit": {
+            "false_certificate_count": 0,
+            "posterior_certified_count": 1,
+            "posterior_certificate_vacuous": False,
+        },
         "initialization_time_sec": 2.0,
         "finalization_time_sec": 3.0,
     }
     if not control:
         row["online_action_trace"] = [{
+            "policy_improvement_pairwise_audit": {"switched": True},
             "policy_improvement_confirmation": {
                 "passed": True,
                 "sample_count": 512,
@@ -81,6 +87,27 @@ def test_v56_complete_paired_matrix_passes(tmp_path):
     assert report["contract_valid"] == {
         variant: True for variant in MODULE.KNOWN
     }
+    assert report["formal_gate_passed"] is True
+    assert report["promotion_gate_passed"] is True
     assert report["gate_passed"] is True
+    assert report["paired_performance"]["v56_confirm4096"] == {
+        "paired_count": 15,
+        "win_count": 15,
+        "loss_count": 0,
+        "tie_count": 0,
+        "feasibility_rescue_count": 0,
+        "feasibility_loss_count": 0,
+        "recommendation_change_count": 15,
+        "all_recommendations_identical": False,
+        "performance_noninferior": True,
+        "strict_gain_detected": True,
+    }
     assert report["summaries"]["v56_confirm4096"][
         "QueueResourceControl"]["joint_confirmation_pass_count"] == 5
+
+    subset = MODULE.analyze(
+        tmp_path, challengers=("v56_confirm4096",))
+    assert subset["challengers"] == ["v56_confirm4096"]
+    assert subset["row_count"] == 30
+    assert set(subset["summaries"]) == {
+        MODULE.CONTROL, "v56_confirm4096"}
