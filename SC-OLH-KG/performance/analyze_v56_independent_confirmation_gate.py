@@ -133,6 +133,21 @@ def _paired_performance(control_rows, challenger_rows):
     }
 
 
+def _confirmation_contract_valid(item):
+    status = str(item.get("status") or "")
+    if status == "skipped_nonpositive_pilot_joint_score":
+        return bool(
+            item.get("passed") is False
+            and int(item.get("sample_count", -1)) == 0
+            and not bool(item.get("target_oracle_used", True))
+        )
+    return bool(
+        item.get("pilot_stream_independent") is True
+        and item.get("simulation_stream_independent") is True
+        and not bool(item.get("target_oracle_used", True))
+    )
+
+
 def _contract(row, variant):
     if variant == CONTROL:
         return bool(
@@ -156,9 +171,7 @@ def _contract(row, variant):
         and int(contract.get(
             "policy_improvement_confirmation_samples", -1)) == expected
         and bool(confirmations)
-        and all(item.get("pilot_stream_independent") is True
-                for item in confirmations)
-        and all(item.get("simulation_stream_independent") is True
+        and all(_confirmation_contract_valid(item)
                 for item in confirmations)
         and not bool(row.get("online_action_trace_target_oracle_used", True))
     )

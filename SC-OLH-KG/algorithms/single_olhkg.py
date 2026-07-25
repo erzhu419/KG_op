@@ -11118,6 +11118,17 @@ class SingleOLHKGAlgorithm:
         }
         return not normalized.issubset(ensemble_only_modes)
 
+    @staticmethod
+    def _future_observations_with_fantasy(observations, x, y):
+        """Append one fantasy without copying unrelated observation arrays."""
+
+        key = tuple(int(v) for v in np.asarray(x, dtype=int))
+        future = dict(observations)
+        values = list(observations.get(key, ()))
+        values.append(np.asarray(y, dtype=float).copy())
+        future[key] = values
+        return future
+
     def _exact_posterior_update_score_one(
         self,
         x,
@@ -11274,16 +11285,9 @@ class SingleOLHKGAlgorithm:
                     )
                 else:
                     gpr_clone, variance_clone = self.gpr, self.variance_model
-                future_observations = {
-                    tuple(int(v) for v in key): [
-                        np.asarray(value, dtype=float).copy()
-                        for value in values
-                    ]
-                    for key, values in self.observations.items()
-                }
-                future_observations.setdefault(
-                    tuple(int(v) for v in x_arr), []).append(
-                        np.asarray(y, dtype=float))
+                future_observations = (
+                    self._future_observations_with_fantasy(
+                        self.observations, x_arr, y))
                 timing["joint_update"] += time.perf_counter() - started
                 started = time.perf_counter()
                 future_value = self._terminal_value_from_models(
@@ -11366,23 +11370,8 @@ class SingleOLHKGAlgorithm:
                 sigma2_before,
                 epistemic_before,
             )
-            future_observations = {
-                **{
-                    tuple(int(v) for v in key): [
-                        np.asarray(value, dtype=float).copy()
-                        for value in values
-                    ]
-                    for key, values in self.observations.items()
-                },
-                tuple(int(v) for v in x_arr): (
-                    [
-                        np.asarray(value, dtype=float).copy()
-                        for value in self.observations.get(
-                            tuple(int(v) for v in x_arr), [])
-                    ]
-                    + [np.asarray(y, dtype=float)]
-                ),
-            }
+            future_observations = self._future_observations_with_fantasy(
+                self.observations, x_arr, y)
             future_value = self._terminal_value_from_models(
                 gpr_clone,
                 var_clone,
@@ -15497,17 +15486,19 @@ class SingleOLHKGAlgorithm:
         finalization_timing["recommendation_pool"] = float(
             time.perf_counter() - finalization_stage_started)
         finalization_stage_started = time.perf_counter()
-        final_x, final_post = self._solve_posterior_recommendation(
-            pool=final_pool)
-        finalization_timing["posterior_recommendation"] = float(
-            time.perf_counter() - finalization_stage_started)
-        finalization_stage_started = time.perf_counter()
         backend_terminal = self._decision_backend_terminal_recommendation(
             final_pool)
-        if backend_terminal is not None:
-            final_x, final_post = backend_terminal
         finalization_timing["backend_terminal"] = float(
             time.perf_counter() - finalization_stage_started)
+        if backend_terminal is None:
+            finalization_stage_started = time.perf_counter()
+            final_x, final_post = self._solve_posterior_recommendation(
+                pool=final_pool)
+            finalization_timing["posterior_recommendation"] = float(
+                time.perf_counter() - finalization_stage_started)
+        else:
+            final_x, final_post = backend_terminal
+            finalization_timing["posterior_recommendation"] = 0.0
         finalization_stage_started = time.perf_counter()
         dominance_terminal = (
             self._posterior_dominance_terminal_recommendation())

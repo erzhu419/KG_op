@@ -773,6 +773,10 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
      inequality controls each fixed batch look. Explicit two-head,
      finite-horizon, finite-look error spending then controls any false
      run-level admission; a failed confirmation retains V51.
+155. A finite switch horizon spends a declared run-level terminal budget
+     across charged online stages.
+156. V56 confirmation failures and V57 terminal-switch failures compose by a
+     finite union bound without an independence assumption.
 
 Remaining work is empirical/binding and assumption validation:
 

@@ -37,9 +37,10 @@ HIGH_FIDELITY = "v53_mc128"
 V54_FIDELITY = ("v54_mc128", "v54_mc512")
 V55_FIDELITY = ("v55_mc128", "v55_mc512")
 V56_FIDELITY = ("v56_confirm2048", "v56_confirm4096")
+V57 = "v57_posterior_safe_terminal"
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
-    *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY,
+    *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY, V57,
 )
 
 
@@ -301,6 +302,27 @@ def variant_profiles(args):
             ),
             "policy_improvement_confirmation_samples": 4096,
         },
+        V57: {
+            **_v53_profile(
+                common, 512, "none", "bounded_current_gain",
+                args.challenger_new_action_count,
+                "independent_confirmation",
+                args.pairwise_prefix_samples,
+                args.pairwise_error_multiplier,
+                args.challenger_new_action_policy,
+            ),
+            "implementation_contract_id": (
+                "v57_posterior_safe_terminal_closure"),
+            "theory_contract_id": (
+                "v57_confirmation_dominance_composition_v1"),
+            "policy_improvement_confirmation_samples": 4096,
+            "posterior_dominance_enabled": True,
+            "posterior_dominance_delta": (
+                0.05 / max(int(args.N) - int(args.n0), 1)
+            ),
+            "posterior_dominance_min_mean_gain": 0.0,
+            "posterior_dominance_initialization": "risk",
+        },
     }
 
 
@@ -326,11 +348,11 @@ def build_specs(args):
         raise ValueError(
             "v55_mc128/v55_mc512 require paired_nested_absolute")
     if (
-        any(name in V56_FIDELITY for name in requested)
+        any(name in (*V56_FIDELITY, V57) for name in requested)
         and str(args.guard_mode) != "independent_confirmation"
     ):
         raise ValueError(
-            "v56 confirmation variants require independent_confirmation")
+            "v56/v57 confirmation variants require independent_confirmation")
     args.variant_profiles = {name: profiles[name] for name in requested}
     args.variants = ",".join(requested)
     args.scenarios = closure.promoted.v51.v50.v49.v27.MEAN_SCENARIOS

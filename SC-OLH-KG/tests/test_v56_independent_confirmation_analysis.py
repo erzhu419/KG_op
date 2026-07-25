@@ -66,6 +66,7 @@ def _row(variant, domain, seed):
                 "time_sec": 4.0,
                 "pilot_stream_independent": True,
                 "simulation_stream_independent": True,
+                "target_oracle_used": False,
             }
         }]
     return row
@@ -111,3 +112,28 @@ def test_v56_complete_paired_matrix_passes(tmp_path):
     assert subset["row_count"] == 30
     assert set(subset["summaries"]) == {
         MODULE.CONTROL, "v56_confirm4096"}
+
+
+def test_v56_contract_accepts_only_the_declared_zero_sample_skip():
+    row = _row(
+        "v56_confirm4096",
+        MODULE.DOMAINS[0],
+        0,
+    )
+    confirmation = row["online_action_trace"][0][
+        "policy_improvement_confirmation"]
+    confirmation.clear()
+    confirmation.update({
+        "passed": False,
+        "sample_count": 0,
+        "status": "skipped_nonpositive_pilot_joint_score",
+        "target_oracle_used": False,
+    })
+    assert MODULE._contract(row, "v56_confirm4096") is True
+
+    confirmation["status"] = "missing_independent_stream"
+    assert MODULE._contract(row, "v56_confirm4096") is False
+
+    confirmation["status"] = "skipped_nonpositive_pilot_joint_score"
+    confirmation["sample_count"] = 1
+    assert MODULE._contract(row, "v56_confirm4096") is False

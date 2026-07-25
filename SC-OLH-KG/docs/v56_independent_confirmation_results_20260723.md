@@ -36,3 +36,32 @@ compares V51 against confirm4096 at `N=13`, retaining five seeds and all three
 domains. It must separately report action-confirmation activation, posterior
 certificate coverage, recommendation changes, paired regret, rescue/loss, and
 runtime substage timings.
+
+## N=13 multistep result
+
+Run `scolh_v56_multistep_n13_mc512_c48_s5_20260723_01` completed all 30
+V51/confirm4096 cells. One action had a nonpositive pilot joint score and
+correctly skipped confirmation with zero samples. The original analyzer
+incorrectly required independent-stream fields on that declared no-stream
+state; the corrected contract accepts only
+`skipped_nonpositive_pilot_joint_score` with `passed=false`,
+`sample_count=0`, and no target-oracle use. The V56 formal contract therefore
+passes.
+
+V56 is not promoted. Relative to V51 it produced two wins, two losses, and
+eleven ties, with four changed recommendations, no feasibility rescue, and one
+Queue feasibility loss. Inventory seeds 1 and 4 improved from regret
+`0.0323070` to approximately `0.0109036`. Queue seed 2 changed to a slightly
+worse feasible recommendation even though the better point was evaluated, and
+Queue seed 3 lost the feasible incumbent.
+
+The chance-feasibility certificate remained empty in all 30 runs. V56's
+independent action certificate is therefore nonvacuous, but it did not solve
+chance-certificate coverage.
+
+Median V51 runtime was about 1.60 hours. Median V56 runtime was about 2.27
+hours and the maximum was about 2.44 hours. Exact posterior-fantasy KG occupied
+approximately 94 percent of V56 online stage time; independent confirmation
+used a median total of about 8.7 minutes per run and was not the main
+bottleneck. The follow-up V57 gate retains the confirmation theorem and adds a
+horizon-spent posterior-safe terminal incumbent.

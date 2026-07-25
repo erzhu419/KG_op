@@ -304,6 +304,29 @@ class ExactKGTests(unittest.TestCase):
             uncertain["posterior_dominance_lower_bound"], 0.95)
         self.assertEqual(no_gain["posterior_dominance_lower_bound"], 0.0)
 
+    def test_future_observations_copy_only_appended_list(self):
+        first = (0, 0)
+        second = (1, 1)
+        first_value = np.asarray([1.0, 2.0])
+        second_value = np.asarray([3.0, 4.0])
+        observations = {
+            first: [first_value],
+            second: [second_value],
+        }
+        future = (
+            SingleOLHKGAlgorithm._future_observations_with_fantasy(
+                observations,
+                first,
+                np.asarray([5.0, 6.0]),
+            )
+        )
+        self.assertIsNot(future, observations)
+        self.assertIsNot(future[first], observations[first])
+        self.assertIs(future[second], observations[second])
+        self.assertIs(future[first][0], first_value)
+        np.testing.assert_allclose(future[first][1], [5.0, 6.0])
+        self.assertEqual(len(observations[first]), 1)
+
     def test_posterior_dominance_retains_uncertain_and_accepts_certain(self):
         class FakeGPR:
             def __init__(self, means, variances):

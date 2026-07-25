@@ -131,6 +131,59 @@ def _task_geometry(shift=None, radius_scale=1.0):
     return values.copy(), float(np.clip(scale, 0.50, 2.0))
 
 
+def _constant_three_block_grid(problem, first, second, third):
+    """Return exact summaries induced by integer three-block policies."""
+
+    def quantized(values):
+        return np.asarray([
+            int(np.clip(round(float(value) * problem.L), 0, problem.L))
+            / float(problem.L)
+            for value in values
+        ], dtype=float)
+
+    grids = np.meshgrid(
+        quantized(first),
+        quantized(second),
+        quantized(third),
+        indexing="ij",
+    )
+    controls = [np.asarray(grid, dtype=float).reshape(-1) for grid in grids]
+    counts = np.asarray([
+        len(group)
+        for group in np.array_split(np.arange(problem.d), 3)
+    ], dtype=float)
+    weighted_mean = sum(
+        counts[index] * controls[index] for index in range(3)
+    ) / float(problem.d)
+    dispersion = np.sqrt(sum(
+        counts[index] * (controls[index] - weighted_mean) ** 2
+        for index in range(3)
+    ) / float(problem.d))
+    return (*controls, dispersion)
+
+
+def _batched_cumulative_variance(local, shared, params):
+    local = np.asarray(local, dtype=float)
+    shared = np.asarray(shared, dtype=float)
+    independent = np.sum(
+        np.asarray(params.Lambda, dtype=float)[:, None] * local ** 2,
+        axis=0,
+    )
+    common = np.einsum(
+        "in,ij,jn->n",
+        shared,
+        np.asarray(params.B, dtype=float),
+        shared,
+    )
+    linear = (
+        np.asarray(params.omega, dtype=float) @ shared
+    )
+    return np.maximum(
+        float(params.floor) + independent + common + linear,
+        0.0,
+    )
+
+
 class RZDT1(TestProblem):
     """Convex front with monotone heteroscedasticity."""
 
@@ -1117,25 +1170,120 @@ class InventorySupplyChainProblem(CumulativeRiskFeatureProvider, TestProblem):
             n=n,
         )
 
-    def scalarized_true_best_feasible(self, weights):
+    def _scalarized_true_best_feasible_on_grid(
+        self, weights, stock_axis, reorder_axis, safety_axis,
+    ):
         weights = np.asarray(weights, dtype=float)
         weights = weights / max(float(np.sum(weights)), 1e-12)
         z_alpha = norm.ppf(1 - self.alpha)
-        best = None
-        for stock in np.linspace(0.35, 0.80, 46):
-            for reorder in np.linspace(0.22, 0.60, 39):
-                for safety in np.linspace(0.28, 0.68, 41):
-                    x = self._constant_policy(stock, reorder, safety)
-                    f1, f2, f3 = self.true_objectives(x)
-                    sig = self.true_sigma(x)[2]
-                    if f3 + z_alpha * sig > self.tau:
-                        continue
-                    obj = float(weights[0] * f1 + weights[1] * f2)
-                    if best is None or obj < best[0]:
-                        best = (obj, x)
-        if best is None:
+        stock, reorder, safety, dispersion = _constant_three_block_grid(
+            self, stock_axis, reorder_axis, safety_axis)
+        holding = 0.7 * np.maximum(
+            stock - self.target_stock, 0.0) ** 2
+        backlog_loss = 1.8 * np.maximum(
+            self.target_stock - stock, 0.0) ** 2
+        reorder_loss = 1.4 * (reorder - self.target_reorder) ** 2
+        safety_loss = 1.1 * (safety - self.target_safety) ** 2
+        f1 = (
+            0.25 + holding + backlog_loss + reorder_loss
+            + 0.3 * dispersion ** 2
+        )
+        f2 = (
+            0.30 + safety_loss + 0.5 * reorder_loss
+            + 0.5 * backlog_loss
+        )
+        if self.task_geometry_is_nominal:
+            service_gap = (
+                ((stock - 0.56) / 0.20) ** 2
+                + ((reorder - 0.34) / 0.22) ** 2
+                + ((safety - 0.44) / 0.18) ** 2
+                + 0.4 * (dispersion / 0.25) ** 2
+            )
+            backlog = np.maximum(0.0, 0.62 - stock)
+            holding_exposure = np.maximum(0.0, stock - 0.58)
+            stockout = (
+                np.maximum(0.0, 0.48 - safety)
+                + 0.35 * np.maximum(0.0, 0.30 - reorder)
+            )
+            demand_level = (
+                0.20 + np.maximum(0.0, 0.55 - stock)
+                + 0.35 * np.abs(reorder - 0.35)
+            )
+            demand_volatility = (
+                0.15 + dispersion
+                + 0.5 * np.maximum(0.0, 0.50 - safety)
+            )
+        else:
+            radius = self.task_geometry_radius_scale
+            service_gap = (
+                (
+                    (stock - (self.target_stock - 0.02))
+                    / (0.20 * radius)
+                ) ** 2
+                + (
+                    (reorder - (self.target_reorder - 0.02))
+                    / (0.22 * radius)
+                ) ** 2
+                + (
+                    (safety - (self.target_safety + 0.02))
+                    / (0.18 * radius)
+                ) ** 2
+                + 0.4 * (dispersion / (0.25 * radius)) ** 2
+            )
+            backlog = np.maximum(
+                0.0, self.target_stock + 0.04 - stock)
+            holding_exposure = np.maximum(
+                0.0, stock - self.target_stock)
+            stockout = (
+                np.maximum(
+                    0.0, self.target_safety + 0.06 - safety)
+                + 0.35 * np.maximum(
+                    0.0, self.target_reorder - 0.06 - reorder)
+            )
+            demand_level = (
+                0.20
+                + np.maximum(
+                    0.0, self.target_stock - 0.03 - stock)
+                + 0.35 * np.abs(
+                    reorder - (self.target_reorder - 0.01))
+            )
+            demand_volatility = (
+                0.15 + dispersion
+                + 0.5 * np.maximum(
+                    0.0, self.target_safety + 0.08 - safety)
+            )
+        f3 = 0.10 * (service_gap - 1.0)
+        local = np.vstack([
+            0.20 + backlog,
+            0.15 + holding_exposure,
+            0.10 + stockout,
+        ])
+        shared = np.vstack([demand_level, demand_volatility])
+        variance = _batched_cumulative_variance(
+            local,
+            shared,
+            self.cumulative_risk_parameters(output_index=1),
+        )
+        objective = weights[0] * f1 + weights[1] * f2
+        feasible = f3 + z_alpha * np.sqrt(variance) <= self.tau
+        if not np.any(feasible):
             return None, float("inf")
-        return best[1], best[0]
+        ranked = np.where(feasible, objective, np.inf)
+        best_index = int(np.argmin(ranked))
+        best_x = self._constant_policy(
+            stock[best_index],
+            reorder[best_index],
+            safety[best_index],
+        )
+        return best_x, float(objective[best_index])
+
+    def scalarized_true_best_feasible(self, weights):
+        return self._scalarized_true_best_feasible_on_grid(
+            weights,
+            np.linspace(0.35, 0.80, 46),
+            np.linspace(0.22, 0.60, 39),
+            np.linspace(0.28, 0.68, 41),
+        )
 
     def recommendation_refinement_candidates(self):
         rows = []
@@ -1373,25 +1521,161 @@ class QueueResourceControlProblem(CumulativeRiskFeatureProvider, TestProblem):
             n=n,
         )
 
-    def scalarized_true_best_feasible(self, weights):
+    def _scalarized_true_best_feasible_on_grid(
+        self, weights, capacity_axis, priority_axis, smoothing_axis,
+    ):
         weights = np.asarray(weights, dtype=float)
         weights = weights / max(float(np.sum(weights)), 1e-12)
         z_alpha = norm.ppf(1 - self.alpha)
-        best = None
-        for capacity in np.linspace(0.45, 0.82, 38):
-            for priority in np.linspace(0.24, 0.58, 35):
-                for smoothing in np.linspace(0.34, 0.68, 35):
-                    x = self._constant_policy(capacity, priority, smoothing)
-                    f1, f2, f3 = self.true_objectives(x)
-                    sig = self.true_sigma(x)[2]
-                    if f3 + z_alpha * sig > self.tau:
-                        continue
-                    obj = float(weights[0] * f1 + weights[1] * f2)
-                    if best is None or obj < best[0]:
-                        best = (obj, x)
-        if best is None:
+        capacity, priority, smoothing, imbalance = (
+            _constant_three_block_grid(
+                self,
+                capacity_axis,
+                priority_axis,
+                smoothing_axis,
+            )
+        )
+        if self.task_geometry_is_nominal:
+            wait_loss = (
+                2.0 * np.maximum(0.0, 0.58 - capacity) ** 2
+                + 0.8 * (priority - 0.36) ** 2
+            )
+            resource_loss = (
+                0.7 * np.maximum(0.0, capacity - 0.72) ** 2
+                + 0.5 * (smoothing - 0.50) ** 2
+            )
+            pocket = (
+                ((capacity - 0.64) / 0.18) ** 2
+                + ((priority - 0.38) / 0.20) ** 2
+                + ((smoothing - 0.52) / 0.20) ** 2
+                + 0.45 * (imbalance / 0.28) ** 2
+            )
+            queue = (
+                np.maximum(0.0, 0.62 - capacity)
+                + 0.25 * imbalance
+            )
+            wait = (
+                np.maximum(0.0, 0.44 - priority)
+                + 0.15 * np.maximum(0.0, 0.45 - smoothing)
+            )
+            utilization = (
+                np.maximum(0.0, capacity - 0.70)
+                + 0.20 * imbalance
+            )
+            arrival_burst = (
+                0.15 + np.maximum(0.0, 0.60 - smoothing)
+                + 0.45 * imbalance
+            )
+            common_load = (
+                0.20 + np.abs(capacity - 0.64)
+                + 0.35 * np.abs(priority - 0.38)
+            )
+        else:
+            wait_loss = (
+                2.0 * np.maximum(
+                    0.0,
+                    self.target_capacity - 0.06 - capacity,
+                ) ** 2
+                + 0.8 * (
+                    priority - (self.target_priority - 0.02)
+                ) ** 2
+            )
+            resource_loss = (
+                0.7 * np.maximum(
+                    0.0,
+                    capacity - (self.target_capacity + 0.08),
+                ) ** 2
+                + 0.5 * (
+                    smoothing - (self.target_smoothing - 0.02)
+                ) ** 2
+            )
+            radius = self.task_geometry_radius_scale
+            pocket = (
+                (
+                    (capacity - self.target_capacity)
+                    / (0.18 * radius)
+                ) ** 2
+                + (
+                    (priority - self.target_priority)
+                    / (0.20 * radius)
+                ) ** 2
+                + (
+                    (smoothing - self.target_smoothing)
+                    / (0.20 * radius)
+                ) ** 2
+                + 0.45 * (imbalance / (0.28 * radius)) ** 2
+            )
+            queue = (
+                np.maximum(
+                    0.0,
+                    self.target_capacity - 0.02 - capacity,
+                )
+                + 0.25 * imbalance
+            )
+            wait = (
+                np.maximum(
+                    0.0,
+                    self.target_priority + 0.06 - priority,
+                )
+                + 0.15 * np.maximum(
+                    0.0,
+                    self.target_smoothing - 0.07 - smoothing,
+                )
+            )
+            utilization = (
+                np.maximum(
+                    0.0,
+                    capacity - (self.target_capacity + 0.06),
+                )
+                + 0.20 * imbalance
+            )
+            arrival_burst = (
+                0.15
+                + np.maximum(
+                    0.0,
+                    self.target_smoothing + 0.08 - smoothing,
+                )
+                + 0.45 * imbalance
+            )
+            common_load = (
+                0.20 + np.abs(capacity - self.target_capacity)
+                + 0.35 * np.abs(
+                    priority - self.target_priority)
+            )
+        f1 = 0.24 + wait_loss + 0.25 * imbalance ** 2
+        f2 = 0.30 + resource_loss + 0.35 * wait_loss
+        f3 = 0.095 * (pocket - 1.0)
+        local = np.vstack([
+            0.10 + queue,
+            0.12 + wait,
+            0.10 + utilization,
+        ])
+        shared = np.vstack([arrival_burst, common_load])
+        variance = _batched_cumulative_variance(
+            local,
+            shared,
+            self.cumulative_risk_parameters(output_index=1),
+        )
+        objective = weights[0] * f1 + weights[1] * f2
+        feasible = f3 + z_alpha * np.sqrt(variance) <= self.tau
+        if not np.any(feasible):
             return None, float("inf")
-        return best[1], best[0]
+        ranked = np.where(feasible, objective, np.inf)
+        best_index = int(np.argmin(ranked))
+        best_x = self._constant_policy(
+            capacity[best_index],
+            priority[best_index],
+            smoothing[best_index],
+        )
+        return best_x, float(objective[best_index])
+
+    def scalarized_true_best_feasible(self, weights):
+        return self._scalarized_true_best_feasible_on_grid(
+            weights,
+            np.linspace(0.45, 0.82, 38),
+            np.linspace(0.24, 0.58, 35),
+            np.linspace(0.34, 0.68, 35),
+        )
 
     def recommendation_refinement_candidates(self):
         rows = []

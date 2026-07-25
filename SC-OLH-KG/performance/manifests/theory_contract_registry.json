@@ -222,12 +222,11 @@
       "role": "challenger_contract",
       "status": "sentinel_formal_gate_passed_promotion_failed",
       "runs": [
-        "scolh_v56_independent_confirmation_mc512_c48_s5_20260723_01"
-      ],
-      "diagnostic_runs": [],
-      "planned_runs": [
+        "scolh_v56_independent_confirmation_mc512_c48_s5_20260723_01",
         "scolh_v56_multistep_n13_mc512_c48_s5_20260723_01"
       ],
+      "diagnostic_runs": [],
+      "planned_runs": [],
       "evidence": [
         "SC-OLH-KG/docs/v56_independent_confirmation_plan_20260723.md",
         "SC-OLH-KG/docs/v56_independent_confirmation_results_20260723.md"
@@ -245,7 +244,39 @@
         "no rollout and no target-oracle action",
         "N=11 sentinel: 2048 confirmation passed 14/15 and 4096 passed 15/15",
         "N=11 sentinel: both variants tied the V51 final recommendation in all 15 paired cells, so neither is promoted",
-        "N=11 sentinel: the separate chance-feasibility certificate remained vacuous in all 45 runs"
+        "N=11 sentinel: the separate chance-feasibility certificate remained vacuous in all 45 runs",
+        "N=13 sentinel: confirm4096 satisfied the formal contract after one declared zero-sample nonpositive-pilot skip",
+        "N=13 sentinel: paired performance was 2 wins, 2 losses, and 11 ties with one Queue feasibility loss, so promotion failed",
+        "N=13 sentinel: the separate chance-feasibility certificate remained vacuous in all 30 control/challenger runs"
+      ]
+    },
+    {
+      "id": "v57_confirmation_dominance_composition_v1",
+      "implementation_contract_id": "v57_posterior_safe_terminal_closure",
+      "decision_behavior": "independent_two_head_action_confirmation_with_horizon_spent_posterior_safe_terminal_incumbent",
+      "behavior_change": true,
+      "diagnostic_change": true,
+      "role": "challenger_contract",
+      "status": "implemented_pending_gate",
+      "runs": [],
+      "diagnostic_runs": [],
+      "planned_runs": [
+        "scolh_v57_terminal_preservation_n13_mc512_c72_s5_20260726_01"
+      ],
+      "evidence": [
+        "SC-OLH-KG/docs/v57_posterior_safe_terminal_plan_20260726.md",
+        "proof/SCOLHKG/Measure/ConfirmationDominanceComposition.lean"
+      ],
+      "formal_scope": [
+        "V56 stage-keyed independent two-head action confirmation is unchanged",
+        "one posterior Bayes-risk incumbent is initialized from the charged n0 observations without target truth",
+        "challengers replace the incumbent only under the covariance-free Cantelli posterior-dominance lower bound",
+        "the terminal recommendation is the sequentially maintained incumbent over budgeted target evaluations",
+        "the 0.05 switch-error budget is divided by the N-n0 charged online stages",
+        "finite confirmation and terminal-switch bad events compose by a union bound without an independence assumption",
+        "acquisition fantasies and final recommendation use the same posterior-dominance terminal functional",
+        "the claim is posterior switch preservation, not a nonvacuous chance-feasibility certificate",
+        "no rollout, empirical override, target oracle, or problem-specific terminal fallback"
       ]
     }
   ],

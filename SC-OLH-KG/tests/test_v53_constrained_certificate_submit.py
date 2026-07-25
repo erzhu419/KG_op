@@ -294,6 +294,45 @@ def test_v56_independent_confirmation_profiles_are_versioned(tmp_path):
     )
 
 
+def test_v57_composes_confirmation_with_posterior_safe_terminal(tmp_path):
+    args = _args(tmp_path, (MODULE.V57,))
+    args.score_normalization = "none"
+    args.score_transform = "bounded_current_gain"
+    args.guard_mode = "independent_confirmation"
+    args.challenger_new_action_policy = (
+        "canonical_plus_posterior_pareto_support")
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 3 * 2
+    assert all("--exact-mc-samples 512 " in spec["cmd"] for spec in specs)
+    assert all(
+        "--policy-improvement-confirmation-samples 4096" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--posterior-dominance-enabled" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--posterior-dominance-initialization risk" in spec["cmd"]
+        for spec in specs
+    )
+    expected_delta = 0.05 / (args.N - args.n0)
+    assert all(
+        f"--posterior-dominance-delta {expected_delta}" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v57_posterior_safe_terminal_closure" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--theory-contract-id "
+        "v57_confirmation_dominance_composition_v1" in spec["cmd"]
+        for spec in specs
+    )
+
+
 def test_v53_bounded_gain_profile_is_versioned_and_not_double_normalized(tmp_path):
     args = _args(tmp_path, (MODULE.V53,))
     args.score_normalization = "none"

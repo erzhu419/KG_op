@@ -92,6 +92,80 @@ class CumulativeRiskProviderTests(unittest.TestCase):
                 inv = problem.inverse_state_anchor(anchors[0], rng=np.random.default_rng(4), n=2)
                 self.assertTrue(inv)
 
+    def test_vectorized_high_dimensional_oracles_match_registered_results(self):
+        cases = (
+            (
+                InventorySupplyChainProblem(d=1000),
+                0.27629444426,
+                (58, 36, 42),
+            ),
+            (
+                QueueResourceControlProblem(d=1000),
+                0.2709903418875,
+                (58, 37, 50),
+            ),
+        )
+        for problem, expected_objective, expected_controls in cases:
+            with self.subTest(problem=problem.problem_name):
+                x, objective = problem.scalarized_true_best_feasible(
+                    np.asarray([0.5, 0.5]))
+                self.assertAlmostEqual(objective, expected_objective, places=12)
+                groups = np.array_split(np.asarray(x, dtype=int), 3)
+                controls = tuple(int(group[0]) for group in groups)
+                self.assertEqual(controls, expected_controls)
+                self.assertTrue(problem.is_truly_feasible(x))
+
+    def test_vectorized_oracle_grid_matches_scalar_evaluation(self):
+        weights = np.asarray([0.35, 0.65], dtype=float)
+        axes = (
+            np.asarray([0.45, 0.58, 0.72]),
+            np.asarray([0.28, 0.40]),
+            np.asarray([0.36, 0.52, 0.64]),
+        )
+        cases = (
+            InventorySupplyChainProblem(
+                d=11,
+                task_geometry_shift=(0.03, -0.02, 0.01),
+                task_geometry_radius_scale=1.1,
+            ),
+            QueueResourceControlProblem(
+                d=11,
+                task_geometry_shift=(-0.02, 0.03, -0.01),
+                task_geometry_radius_scale=0.9,
+            ),
+        )
+        for problem in cases:
+            with self.subTest(problem=problem.problem_name):
+                vector_x, vector_objective = (
+                    problem._scalarized_true_best_feasible_on_grid(
+                        weights, *axes))
+                scalar_best = None
+                normalized = weights / np.sum(weights)
+                for first in axes[0]:
+                    for second in axes[1]:
+                        for third in axes[2]:
+                            x = problem._constant_policy(
+                                first, second, third)
+                            if not problem.is_truly_feasible(x):
+                                continue
+                            f1, f2, _ = problem.true_objectives(x)
+                            objective = float(
+                                normalized[0] * f1
+                                + normalized[1] * f2
+                            )
+                            if (
+                                scalar_best is None
+                                or objective < scalar_best[0]
+                            ):
+                                scalar_best = (objective, x)
+                if scalar_best is None:
+                    self.assertIsNone(vector_x)
+                    self.assertTrue(np.isinf(vector_objective))
+                else:
+                    self.assertEqual(vector_x, scalar_best[1])
+                    self.assertAlmostEqual(
+                        vector_objective, scalar_best[0], places=14)
+
     def test_factor_hvd_uses_psd_provider_projection(self):
         base = FactorShockStatePolicyRZDT1(d=8, L=100, sigma=0.04)
         problem = ScalarizedProblem(base)
