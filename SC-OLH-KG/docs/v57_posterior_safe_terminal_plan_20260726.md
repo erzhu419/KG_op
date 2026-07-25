@@ -50,8 +50,10 @@ The vectorized `d=1000` oracle objectives exactly match the registered values:
 ## Gate
 
 The preregistered gate uses three domains, seeds 0--4, `d=1000`, `N=13`,
-`n0=10`, MC512, confirmation4096, and 72 exact workers. V56 remains the
-performance reference. V57 is promotable only if it has:
+`n0=10`, MC512, confirmation4096, and 48 exact workers. All 15 V57 cells can
+therefore run in one scheduler wave; the completed same-seed V56 N=13 matrix
+remains the behaviorally identical performance reference. V57 is promotable
+only if it has:
 
 - a valid no-oracle implementation/theory contract;
 - no feasibility loss relative to V56;
