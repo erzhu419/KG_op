@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "name": "v64_powered_safe_interior_verification",
+  "code_commit": "a772e0e",
+  "run_id": "scolh_v64_powered_safe_interior_n13_r80_96_s20fresh_20260726_01",
+  "source_design_run_id": "scolh_lowfreq_support_dimholdout_d1000_s80_20260726/proposals/risk_objective_atlas/low_frequency_only",
+  "domains": [
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl"
+  ],
+  "seed_start": 60,
+  "seeds_per_domain": 20,
+  "dimension": 1000,
+  "initial_budget": 10,
+  "search_budget": 13,
+  "verification": {
+    "method": "gaussian_noncentral_t_tolerance",
+    "shortlist_mode": "posterior_primary_safe_interior",
+    "primary_budget": 80,
+    "support_budget": 96,
+    "familywise_delta": 0.05,
+    "per_candidate_delta": 0.025,
+    "mean_realized_calls": 102.4,
+    "maximum_calls": 176,
+    "rank_1_certificates": 46,
+    "rank_2_certificates": 14,
+    "certified": 60,
+    "false_certificates": 0
+  },
+  "paired_against_v51": {
+    "paired_runs": 60,
+    "wins": 14,
+    "losses": 0,
+    "ties": 46,
+    "feasibility_rescues": 3,
+    "feasibility_losses": 0,
+    "recommendation_changes": 14
+  },
+  "domain_results": {
+    "FactorShockStatePolicyRZDT1": {
+      "certified": 20,
+      "rank_1": 20,
+      "rank_2": 0,
+      "true_feasible": 20,
+      "false_certificates": 0,
+      "mean_verification_calls": 80.0
+    },
+    "InventorySupplyChain": {
+      "certified": 20,
+      "rank_1": 9,
+      "rank_2": 11,
+      "true_feasible": 20,
+      "false_certificates": 0,
+      "mean_verification_calls": 132.8
+    },
+    "QueueResourceControl": {
+      "certified": 20,
+      "rank_1": 17,
+      "rank_2": 3,
+      "true_feasible": 20,
+      "false_certificates": 0,
+      "mean_verification_calls": 94.4
+    }
+  },
+  "contracts": {
+    "complete_matrix": true,
+    "paired_keys_match": true,
+    "search_trajectories_identical": true,
+    "primary_actions_identical": true,
+    "target_designs_identical": true,
+    "source_archive_oracle_aided": false,
+    "target_labels_used_by_proposal": false,
+    "target_oracle_used": false,
+    "verification_samples_reused_for_search": false,
+    "verification_updates_posterior": false,
+    "all_verification_calls_charged": true,
+    "formal_gate_passed": true
+  }
+}

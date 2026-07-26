@@ -49,3 +49,24 @@ Lean instantiates the generic asymmetric-budget theorem at `80/96`.
    and at least one strict paired gain.
 
 V64 is promoted only if the fresh matrix passes every condition.
+
+## Fresh Result And Promotion
+
+The untouched `60..79` matrix completed `120/120` runs with no load or
+contract error. V64 passed every registered condition:
+
+- `60/60` terminal certificates and `0` false certificates;
+- `14` paired wins, `0` losses, and `46` ties versus V51;
+- `3` feasibility rescues and no feasibility loss;
+- identical target designs, online action sequences, and primary
+  recommendations in all 60 pairs;
+- 46 rank-1 certificates and 14 safe-interior support certificates.
+
+By domain, FactorShock certified `20/20` at rank 1; Inventory certified `9/20`
+at rank 1 and `11/20` at rank 2; Queue certified `17/20` at rank 1 and `3/20`
+at rank 2. The mean verification suffix was 102.4 calls, with a fixed maximum
+of 176 calls. All suffix calls are charged and reported.
+
+V64 is therefore promoted as the certified-deployment baseline. V51 remains
+the equal-search-budget performance baseline because V64 deliberately spends
+additional independent simulation calls on terminal certification.

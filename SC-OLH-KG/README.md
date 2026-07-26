@@ -20,19 +20,33 @@ contains a minimal, testable implementation path:
 Generated outputs should go under `results/`, `profiles/`, or `checkpoints/`;
 those directories are ignored by git.
 
-## Promoted Baseline
+## Promoted Baselines
 
-The current promoted baseline is V51 `balanced4`: posterior-central,
-posterior-nominal exact joint evaluate-or-replicate VOI with four candidate
-new actions and up to four eligible replications. Its machine-readable record
-is `performance/promoted_baseline.json`; the reproducible scheduler entrypoint
-is `scripts/submit_scolhkg_promoted_v51_scheduler.py`.
+V51 `balanced4` remains the equal-search-budget performance baseline:
+posterior-central, posterior-nominal exact joint evaluate-or-replicate VOI
+with four candidate new actions and up to four eligible replications. Its
+machine-readable record is `performance/promoted_baseline.json`.
+
+V64 is the promoted certified-deployment baseline. It freezes V51's posterior
+primary plus one cumulative-risk safe-interior support, then applies
+independent noncentral-t Gaussian-quantile verification with precommitted
+80/96 replication budgets and familywise error 0.05. Its record is
+`performance/promoted_certificate_baseline.json`; its profile key is
+`v64_powered_safe_interior_verification` in
+`scripts/submit_scolhkg_v53_constrained_certificate_gate_scheduler.py`.
 
 Across FactorShock, Inventory, and Queue at `d=1000`, `N=20`, `n0=10`, and 20
 seeds per domain, V51 produced 60/60 truly feasible recommendations, zero
 adaptive losses, and 19 improvements over the source-informed initial design.
 The source archive uses 384 oracle-free source calls and no target label or
 target oracle enters the frozen proposal or online decision.
+
+On untouched seeds 60--79 at `d=1000`, `N_search=13`, and `n0=10`, V64
+certified 60/60 deployments with zero false certificates. Against its
+identical-search V51 control it produced 14 wins, 0 losses, 46 ties, and three
+feasibility rescues. Verification used 102.4 calls on average and at most 176;
+these calls are separate from the search budget and must be included in total
+simulation-cost reporting.
 
 ## Quick Commands
 

@@ -278,6 +278,37 @@
         "the claim is posterior switch preservation, not a nonvacuous chance-feasibility certificate",
         "no rollout, empirical override, target oracle, or problem-specific terminal fallback"
       ]
+    },
+    {
+      "id": "v64_frozen_selector_powered_familywise_quantile_certificate_v1",
+      "implementation_contract_id": "v64_powered_cumulative_risk_safe_interior_verification",
+      "decision_behavior": "v51_search_with_frozen_cumulative_risk_safe_interior_shortlist_and_independent_terminal_verification",
+      "behavior_change": true,
+      "diagnostic_change": true,
+      "role": "promoted_certified_deployment_contract",
+      "status": "fresh_gate_passed",
+      "runs": [
+        "scolh_v64_powered_safe_interior_n13_r80_96_s20fresh_20260726_01"
+      ],
+      "planned_runs": [],
+      "evidence": [
+        "SC-OLH-KG/docs/v64_powered_safe_interior_verification_plan_20260726.md",
+        "SC-OLH-KG/performance/baselines/v64_powered_safe_interior_evidence.json",
+        "SC-OLH-KG/performance/promoted_certificate_baseline.json",
+        "proof/SCOLHKG/Real/GaussianReplicationCertificate.lean",
+        "proof/SCOLHKG/Measure/GaussianReplicationCertificate.lean"
+      ],
+      "formal_scope": [
+        "the V51 search trajectory and posterior Bayes-risk primary are unchanged",
+        "one support policy is frozen from the charged initial atlas before verification labels",
+        "support selection uses a posterior violation sublevel and standardized cumulative-risk psi=(A,N) diversity",
+        "rank-1 and support policies use disjoint independent 80/96 replication streams",
+        "the per-policy error allocation is 0.025+0.025 and familywise false deployment is at most 0.05",
+        "the realized verification suffix is exactly 80 or 176 calls and every call is charged",
+        "verification samples neither update the posterior nor alter the frozen shortlist",
+        "fresh seeds 60..79 passed 60/60 certificates with zero false certificates and zero paired losses",
+        "V64 is a certified-deployment baseline; equal-search-budget performance claims continue to use V51"
+      ]
     }
   ],
   "non_mixing_rules": [
