@@ -9,6 +9,8 @@ from pathlib import Path
 import sys
 import time
 
+from scipy.stats import norm
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -22,6 +24,7 @@ from baselines.transfer_bo_adapters import (  # noqa: E402
 from core.designs import (  # noqa: E402
     load_frozen_source_informed_design,
 )
+from core.terminal_verification import verify_frozen_shortlist  # noqa: E402
 from performance.benchmark_lodo_meta_prior import build_scalarized_problem  # noqa: E402
 from performance.benchmark_quality import json_safe, parse_weights  # noqa: E402
 
@@ -65,7 +68,136 @@ def _atomic_json(path, payload):
     temporary.replace(path)
 
 
+def _true_metrics(problem, point):
+    point = tuple(int(value) for value in point)
+    objective = float(problem.true_objective(point))
+    constraint_mean = float(problem.true_constraint_mean(point))
+    constraint_sigma = float(problem.true_sigma(point)[1])
+    chance_margin = (
+        constraint_mean
+        + float(norm.ppf(1.0 - float(problem.alpha))) * constraint_sigma
+        - float(problem.tau)
+    )
+    _, optimum = problem.true_best_feasible()
+    feasible = bool(chance_margin <= 0.0)
+    return {
+        "x_recommended": list(point),
+        "true_objective": objective,
+        "true_constraint_mean": constraint_mean,
+        "true_constraint_sigma": constraint_sigma,
+        "true_chance_margin": float(chance_margin),
+        "true_feasible": feasible,
+        "feasible_regret": (
+            max(0.0, objective - float(optimum)) if feasible else None
+        ),
+        "constraint_violation": max(0.0, float(chance_margin)),
+    }
+
+
+def _apply_terminal_verification(problem, result, args):
+    shortlist = result.get("frozen_terminal_shortlist")
+    if not shortlist:
+        raise RuntimeError(
+            "terminal verification requires a pre-truth frozen shortlist")
+    search_calls = int(result["n_simulations"])
+    primary_metrics = {
+        key: result.get(key)
+        for key in (
+            "x_recommended",
+            "posterior",
+            "true_objective",
+            "true_constraint_mean",
+            "true_constraint_sigma",
+            "true_chance_margin",
+            "true_feasible",
+            "feasible_regret",
+            "constraint_violation",
+        )
+    }
+    deployed, verification = verify_frozen_shortlist(
+        problem,
+        shortlist,
+        seed=int(args.seed),
+        search_evaluation_count=search_calls,
+        candidate_budgets=(
+            int(args.terminal_verification_primary_budget),
+            int(args.terminal_verification_support_budget),
+        ),
+        familywise_delta=float(args.terminal_verification_delta),
+        method=str(args.terminal_verification_method),
+        mean_delta_fraction=float(
+            args.terminal_verification_mean_delta_fraction),
+        shortlist_mode="posterior_primary_safe_interior",
+    )
+    truth_rows = []
+    for record in shortlist:
+        metrics = _true_metrics(problem, record["point"])
+        truth_rows.append({
+            "shortlist_position": int(record["shortlist_position"]),
+            "shortlist_role": str(record["shortlist_role"]),
+            **metrics,
+        })
+    deployed_metrics = _true_metrics(problem, deployed)
+    verification_calls = int(verification["verification_budget"])
+    result.update(deployed_metrics)
+    result.update({
+        "search_recommendation": primary_metrics,
+        "terminal_verification": verification,
+        "terminal_verification_truth_audit": {
+            "computed_after_shortlist_freeze_and_verification": True,
+            "used_for_selection_or_certification": False,
+            "rows": truth_rows,
+        },
+        "n_search_simulations": search_calls,
+        "n_verification_simulations": verification_calls,
+        "n_target_simulations_total": search_calls + verification_calls,
+        "n_simulations": search_calls + verification_calls,
+    })
+    initial_audit = result.get("initial_truth_audit")
+    if isinstance(initial_audit, dict):
+        initial_audit["search_final_improves_initial_best"] = (
+            initial_audit.get("final_improves_initial_best"))
+        initial_regret = initial_audit.get("best_true_feasible_regret")
+        initial_audit["final_improves_initial_best"] = bool(
+            deployed_metrics["feasible_regret"] is not None
+            and initial_regret is not None
+            and float(deployed_metrics["feasible_regret"])
+            < float(initial_regret) - 1e-12
+        )
+    target_contract = result["target_information_contract"]
+    target_contract.update({
+        "target_search_calls": search_calls,
+        "target_verification_calls": verification_calls,
+        "target_total_calls": search_calls + verification_calls,
+        "terminal_verification_protocol": (
+            "ordered_frozen_shortlist_independent_noncentral_t"),
+        "terminal_verification_familywise_delta": float(
+            args.terminal_verification_delta),
+        "terminal_verification_primary_budget": int(
+            args.terminal_verification_primary_budget),
+        "terminal_verification_support_budget": int(
+            args.terminal_verification_support_budget),
+        "terminal_shortlist_frozen_before_truth_metrics": True,
+        "verification_observations_update_posterior": False,
+        "verification_samples_reused_from_search": False,
+    })
+    return result
+
+
 def run_one(args):
+    terminal_defaults = {
+        "terminal_verification": False,
+        "terminal_verification_primary_budget": 80,
+        "terminal_verification_support_budget": 96,
+        "terminal_verification_delta": 0.05,
+        "terminal_verification_mean_delta_fraction": 0.5,
+        "terminal_verification_method": "normal_quantile_tolerance",
+        "terminal_safe_interior_probability_slack": 0.05,
+        "terminal_safe_interior_require_provider": True,
+    }
+    for name, value in terminal_defaults.items():
+        if not hasattr(args, name):
+            setattr(args, name, value)
     archive = FrozenTransferArchive.load(args.archive)
     problem = build_scalarized_problem(
         args.heldout,
@@ -128,7 +260,7 @@ def run_one(args):
     )
     started = time.time()
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "running",
         "method": args.method,
         "implementation": args.implementation,
@@ -166,7 +298,16 @@ def run_one(args):
         },
     }
     try:
-        result = TransferConstrainedBO(problem, archive, config).run()
+        optimizer = TransferConstrainedBO(problem, archive, config)
+        result = optimizer.run(
+            freeze_terminal_shortlist=bool(args.terminal_verification),
+            terminal_probability_slack=float(
+                args.terminal_safe_interior_probability_slack),
+            terminal_require_provider=bool(
+                args.terminal_safe_interior_require_provider),
+        )
+        if args.terminal_verification:
+            result = _apply_terminal_verification(problem, result, args)
         payload["comparison_contract"][
             "target_initial_design_fingerprint"
         ] = result["target_information_contract"][
@@ -180,6 +321,25 @@ def run_one(args):
         ):
             raise RuntimeError(
                 "optimizer did not consume the frozen initial design exactly")
+        search_calls = int(result.get(
+            "n_search_simulations", result["n_simulations"]))
+        verification_calls = int(result.get(
+            "n_verification_simulations", 0))
+        target_total_calls = search_calls + verification_calls
+        payload["comparison_contract"].update({
+            "target_search_calls": search_calls,
+            "target_verification_calls": verification_calls,
+            "target_total_calls": target_total_calls,
+            "total_source_plus_target_search_calls": int(
+                archive.simulator_calls + search_calls),
+            "total_source_plus_target_verification_calls": int(
+                archive.simulator_calls + target_total_calls),
+            "terminal_verification_enabled": bool(
+                args.terminal_verification),
+            "terminal_verification_identical_across_methods": True,
+            "terminal_verification_updates_optimizer": False,
+            "terminal_verification_target_oracle_used": False,
+        })
         payload.update({
             "status": "ok",
             "result": result,
@@ -233,6 +393,37 @@ def main():
     parser.add_argument("--beta-risk", type=float, default=2.0)
     parser.add_argument("--source-train-steps", type=int, default=0)
     parser.add_argument("--target-finetune-steps", type=int, default=100)
+    parser.add_argument(
+        "--terminal-verification",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--terminal-verification-primary-budget", type=int, default=80)
+    parser.add_argument(
+        "--terminal-verification-support-budget", type=int, default=96)
+    parser.add_argument(
+        "--terminal-verification-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--terminal-verification-mean-delta-fraction",
+        type=float,
+        default=0.5,
+    )
+    parser.add_argument(
+        "--terminal-verification-method",
+        choices=("component_bonferroni", "normal_quantile_tolerance"),
+        default="normal_quantile_tolerance",
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-probability-slack",
+        type=float,
+        default=0.05,
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-require-provider",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     args = parser.parse_args()
     payload = run_one(args)
     _atomic_json(args.out, payload)

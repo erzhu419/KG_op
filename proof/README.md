@@ -827,11 +827,12 @@ Remaining work is empirical/binding and assumption validation:
    constants are empirical/model assumptions, not free theorems.
 2. Generate and archive the real fresh-seed trajectory CSV logs with the SUMO
    logger now implemented in `sumo_sim.py`.
-3. Establish useful certificate nonvacuity. In both the pre-repair control and
-   the promoted observed-terminal closure, every one of 60 theory-certified
-   sets was empty despite truly feasible evaluated points. Larger
-   target/replication budgets and source-only calibration must report coverage
-   as well as false certification.
+3. Separate model-based certificate nonvacuity from independent deployment
+   certification. The internal posterior theory certificate remained empty in
+   the earlier 60-run V51 audit, but V64's frozen independent 80/96
+   noncentral-t protocol certified all 60 fresh deployments with zero false
+   certificates. Paper tables must continue to report both quantities rather
+   than using terminal replication to conceal a vacuous model certificate.
 4. Freeze the final feature-map numeric constants using source-only held-out
    episodes before target evaluation.
 5. Validate the two-antithetic-sample exact-MC schedule and shortlist coverage
@@ -864,13 +865,15 @@ recommendation. This removes the previous mathematical mismatch in which
 fantasies could optimize over an unobserved action that the final rule could
 not return.
 
-This is not yet an unconditional empirical certification result. Transfer
+This is not an unconditional model-based certification result. Transfer
 concentration still depends on a source-task exponential-moment assumption,
-exact-MC and shortlist errors require numerical calibration, and the existing
-`N=20` theory certificate is vacuous in all 60 promoted-control runs. Those are
-explicit assumptions or empirical obligations, not missing Lean proofs. The
-historical TCB-V2--V5 failures remain useful negative evidence but are not part
-of the promoted algorithm.
+exact-MC and shortlist errors require numerical calibration, and the internal
+posterior certificate was vacuous in the earlier 60 promoted-control runs.
+V64 separately supplies a nonvacuous independently replicated deployment
+certificate: 60/60 fresh policies certified with zero false certificates under
+the precommitted 80/96 protocol. These two certificate notions remain separate
+in every table. The historical TCB-V2--V5 failures remain useful negative
+evidence but are not part of the promoted algorithm.
 
 V49 additionally formalizes the separation between posterior-central
 aleatoric variance used by a Bayes action and conservative upper variance used

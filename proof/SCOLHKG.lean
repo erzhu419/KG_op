@@ -62,6 +62,7 @@ import SCOLHKG.Real.LineEnvelopeIntersection
 import SCOLHKG.Real.LineEnvelopeKG
 import SCOLHKG.Real.LineEnvelopeStack
 import SCOLHKG.Real.MeanRiskCoordinateSeparation
+import SCOLHKG.Real.MethodIndependentTerminalVerification
 import SCOLHKG.Real.OccupancyDecomposition
 import SCOLHKG.Real.OracleCertifiability
 import SCOLHKG.Real.OrthogonalAdditiveGroups

@@ -90,6 +90,34 @@ replications, source calls, `n0`, target calls, total calls, archive
 fingerprint, adaptation kind, online parameters changed, implementation
 fidelity, failures, and post-run-only truth usage.
 
+### Independent terminal certification
+
+Paper deployment tables use one method-independent suffix after the optimizer
+has exhausted `N_search` calls:
+
+1. Each method freezes its own posterior primary and one support point from
+   the posterior violation-probability sublevel of its charged initial atlas.
+2. Support diversity is measured in the common observable cumulative-risk
+   coordinate `psi=(A,N)`. Target truth and verification labels are forbidden.
+3. The primary receives 80 independent Gaussian replications. The support
+   receives 96 only when the primary is not certified.
+4. Each candidate receives error probability `0.025`; the family-wise false
+   deployment probability is at most `0.05`.
+5. Verification observations do not update the optimizer or change the frozen
+   shortlist.
+
+Every certified table therefore exposes five costs separately:
+`source_calls`, `search_calls`, `verification_calls`,
+`source+search_calls`, and `source+search+verification_calls`. Search-only
+quality, rank-1 certification, fallback use, abstention, and false
+certification are separate columns.
+
+The optimizer-specific posterior is retained: transfer models use their
+delta-method chance-margin posterior, canonical BoTorch methods use their
+latent chance-margin GP posterior, and SC-OLH uses its cumulative-HVD
+posterior. The common certification layer does not substitute the SC posterior
+into any comparator.
+
 ## 5. Implementation fidelity
 
 `implementation=official` never silently falls back.  All eight rows now have

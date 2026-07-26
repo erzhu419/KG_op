@@ -73,12 +73,30 @@ low-frequency front end.
   proxy was `0.567`, so the paper configuration is frozen at 32 nested
   antithetic samples and a 32-action shortlist.
 
+### Gate D: independently certified deployment
+
+- Freeze the optimization recommendation and one posterior-safe,
+  cumulative-risk-diversified member of the charged `n0` atlas before reading
+  any verification response.
+- Search uses `d=1000`, `n0=10`, and `N_search=13`.
+- Rank 1 receives 80 independent replications. Rank 2 is tested only after
+  rank 1 fails and receives 96 replications.
+- Split one family-wise error budget as `0.025+0.025`; use the exact
+  noncentral-t Gaussian quantile-tolerance upper bound.
+- Report `source_calls`, `search_calls`, realized `verification_calls`,
+  `target_total_calls`, and `source+target_total_calls` separately.
+- **Passed on fresh seeds 60..79:** 60/60 deployments certified, 46 at rank 1
+  and 14 at rank 2, with zero false certificates. Relative to the frozen V51
+  optimization output, deployment produced 14 wins, zero losses, 46 ties,
+  three feasibility rescues, and zero feasibility losses. Mean verification
+  cost was 102.4 calls and the precommitted maximum was 176.
+
 ## Main matrix
 
-The matrix is submitted only after Gate B freezes the replication budget. Gate
-C has frozen the MC/shortlist schedule at `32/32`. A machine-readable
-registration records those values; the submitter refuses the current
-`awaiting_gate_b` registration.
+The certified-deployment matrix uses V64's frozen `80/96` verification suffix.
+Search-only results and certified-deployment results are both reported; the
+verification suffix is never folded silently into `N_search`. Gate C retains
+the `32/32` numerical audit schedule for experiments that exercise exact KG.
 
 ### Domains
 
@@ -93,9 +111,11 @@ registration records those values; the submitter refuses the current
 
 ### Dimension and target-budget frontier
 
+- Certified core matrix: `d=1000`, `N_search=13`, `n0=10`, 20 fresh seeds.
 - `d={200,1000}`, `N={20,40,80}`, at least 20 seeds.
 - `d=10000`, `N={20,40}`, at least 10 seeds after `d=1000` passes.
-- Report both target-only `d/N` and total-cost `d/(source calls + N)`.
+- Report `d/N_search`, `d/(N_search+N_verify)`, and
+  `d/(N_source+N_search+N_verify)`.
 - Source archive is fixed at 384 simulator calls unless a source-cost ablation
   explicitly changes it.
 
@@ -114,8 +134,11 @@ registration records those values; the submitter refuses the current
 - Safe F-PACOH, RGPE-CBO, hierarchical/transfer GP-CBO, FSBO/HyperBO-CBO,
   MetaBO/MALIBO-CBO.
 - Archive-fair transfer methods receive the identical 384-call frozen archive,
-  identical target `n0`, target seeds, bounds, and total `N`.
-- A total-cost table gives target-only SOTA `384+N` target calls as a separate
+  identical target `n0`, target seeds, bounds, and `N_search`.
+- Every method freezes its shortlist using its own posterior, then receives
+  the same independent `80/96`, family-wise `0.05` terminal protocol. No
+  comparator is filtered through the SC posterior.
+- A total-cost table gives target-only SOTA `384+N_search` search calls as a separate
   comparison; it is not mixed with the equal-target-budget transfer table.
 - Timeouts and failures remain in denominators.
 
@@ -165,6 +188,7 @@ The legacy manuscript's visual grammar is retained while changing the claims:
 8. SUMO trajectory exposure and out-of-sample certification panel.
 
 Every table states target calls, source calls, `n0`, replications, failures,
-and whether oracle information was used. Raw checkpoints, PKL files, and
+and whether oracle information was used. In certified tables, "target calls"
+is further split into search and verification calls. Raw checkpoints, PKL files, and
 profiles remain server-side; only compact aggregate JSON/CSV and publication
 figures are synchronized.

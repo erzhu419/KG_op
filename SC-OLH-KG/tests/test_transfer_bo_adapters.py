@@ -2,6 +2,7 @@ import json
 import tempfile
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -33,6 +34,9 @@ from core.designs import (  # noqa: E402
 )
 from problems.rzdt import FactorShockStatePolicyRZDT1  # noqa: E402
 from problems.single_objective import ScalarizedProblem  # noqa: E402
+from performance.benchmark_transfer_fairness import (  # noqa: E402
+    _apply_terminal_verification,
+)
 
 
 def _archive(d=4, n=7, seed=19):
@@ -181,6 +185,75 @@ def test_transfer_consumes_frozen_source_informed_design_exactly():
     assert contract["initial_design_fingerprint"] == (
         integer_design_fingerprint(points)
     )
+
+
+def test_transfer_freezes_method_specific_terminal_shortlist_before_truth():
+    archive = _archive()
+    runner = TransferConstrainedBO(
+        _problem(),
+        archive,
+        TransferBOConfig(
+            method="hyperbo_cbo",
+            N=4,
+            n0=3,
+            seed=29,
+            candidate_pool_size=16,
+        ),
+    )
+    result = runner.run(
+        freeze_terminal_shortlist=True,
+        terminal_probability_slack=0.05,
+        terminal_require_provider=True,
+    )
+    shortlist = result["frozen_terminal_shortlist"]
+    assert result["terminal_shortlist_frozen_before_truth_metrics"] is True
+    assert len(shortlist) == 2
+    assert shortlist[0]["point"] == result["x_recommended"]
+    assert shortlist[0]["selector_posterior"] == (
+        "transfer_method_specific_delta_chance_margin")
+    assert shortlist[1]["coordinate_source"] == (
+        "cumulative_risk_psi=(A,N)")
+    assert shortlist[1]["target_labels_used"] is False
+    assert shortlist[1]["target_oracle_used"] is False
+    assert shortlist[1]["verification_samples_used"] is False
+
+
+def test_transfer_terminal_runner_charges_search_and_verification_separately():
+    archive = _archive()
+    problem = _problem()
+    runner = TransferConstrainedBO(
+        problem,
+        archive,
+        TransferBOConfig(
+            method="hyperbo_cbo",
+            N=4,
+            n0=3,
+            seed=31,
+            candidate_pool_size=16,
+        ),
+    )
+    result = runner.run(freeze_terminal_shortlist=True)
+    args = SimpleNamespace(
+        seed=31,
+        terminal_verification_primary_budget=8,
+        terminal_verification_support_budget=12,
+        terminal_verification_delta=0.05,
+        terminal_verification_method="normal_quantile_tolerance",
+        terminal_verification_mean_delta_fraction=0.5,
+    )
+    result = _apply_terminal_verification(problem, result, args)
+    assert result["n_search_simulations"] == 4
+    assert result["n_verification_simulations"] in {8, 20}
+    assert result["n_simulations"] == (
+        result["n_search_simulations"]
+        + result["n_verification_simulations"]
+    )
+    assert result["terminal_verification_truth_audit"][
+        "used_for_selection_or_certification"
+    ] is False
+    assert result["target_information_contract"][
+        "verification_observations_update_posterior"
+    ] is False
 
 
 def test_source_informed_design_rejects_missing_or_duplicate_points():

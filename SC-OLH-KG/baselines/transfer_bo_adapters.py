@@ -17,6 +17,7 @@ from core.designs import (
     common_sobol_integer_design,
     integer_design_fingerprint,
 )
+from core.terminal_verification import select_posterior_safe_interior
 from baselines.transfer_learned_models import (
     PaperCoreFSBOSurrogate,
     PaperCoreMALIBOSurrogate,
@@ -389,6 +390,32 @@ class TransferConstrainedBO:
             * np.sqrt(np.maximum(constraint_variance, 0.0))
             + norm.ppf(1.0 - float(self.problem.alpha)) * np.sqrt(v_plus)
         )
+        z_alpha = float(norm.ppf(1.0 - float(self.problem.alpha)))
+        central_variance = np.exp(np.clip(
+            log_variance_mean,
+            -30.0,
+            20.0,
+        ))
+        nominal_chance_margin = (
+            constraint_mean + z_alpha * np.sqrt(central_variance)
+        )
+        # Delta-method posterior uncertainty of
+        # m_g + z_alpha * exp(log(v_C) / 2). The source mean and risk heads
+        # are fitted independently, so the covariance term is zero under the
+        # declared transfer-model contract.
+        log_variance_derivative = (
+            0.5 * z_alpha * np.sqrt(central_variance)
+        )
+        chance_margin_epistemic_variance = np.maximum(
+            constraint_variance
+            + log_variance_derivative ** 2
+            * np.maximum(log_variance_variance, 0.0),
+            1e-12,
+        )
+        probability_violation = norm.cdf(
+            nominal_chance_margin
+            / np.sqrt(chance_margin_epistemic_variance)
+        )
         return {
             "objective_mean": np.asarray(objective_mean),
             "objective_variance": np.asarray(objective_variance),
@@ -398,6 +425,10 @@ class TransferConstrainedBO:
             "log_variance_variance": np.asarray(log_variance_variance),
             "v_c_plus": np.asarray(v_plus),
             "chance_bound": np.asarray(chance_bound),
+            "nominal_chance_margin": np.asarray(nominal_chance_margin),
+            "chance_margin_epistemic_variance": np.asarray(
+                chance_margin_epistemic_variance),
+            "probability_violation": np.asarray(probability_violation),
         }
 
     def _available_pool(self, include_observed=False):
@@ -572,7 +603,73 @@ class TransferConstrainedBO:
             for key, value in posterior.items()
         } | {"recommendation_reason": reason}
 
-    def run(self):
+    def terminal_verification_shortlist(
+        self,
+        primary,
+        *,
+        probability_slack=0.05,
+        require_provider=True,
+    ):
+        """Freeze a method-specific posterior shortlist without target truth."""
+
+        initial = []
+        seen = set()
+        for row in self.history[: int(self.config.n0)]:
+            point = tuple(int(value) for value in row["x"])
+            if point not in seen:
+                seen.add(point)
+                initial.append(point)
+        profiles = np.vstack([
+            np.asarray(self.problem.normalize(point), dtype=float)
+            for point in initial
+        ])
+        posterior = self._posterior(profiles)
+        primary = tuple(int(value) for value in primary)
+        support = select_posterior_safe_interior(
+            self.problem,
+            primary,
+            initial,
+            posterior["probability_violation"],
+            probability_slack=probability_slack,
+            require_provider=require_provider,
+        )
+        return [
+            {
+                "shortlist_position": 1,
+                "shortlist_role": "posterior_bayes_primary",
+                "posterior_rank": 1,
+                "point": list(primary),
+                "point_fingerprint": integer_design_fingerprint([primary]),
+                "selector_posterior": (
+                    "transfer_method_specific_delta_chance_margin"),
+                "target_labels_used": False,
+                "target_oracle_used": False,
+                "verification_samples_used": False,
+            },
+            {
+                "shortlist_position": 2,
+                "shortlist_role": "posterior_safe_interior_diversified",
+                "posterior_rank": None,
+                "point": list(map(int, support["point"])),
+                "point_fingerprint": integer_design_fingerprint([
+                    support["point"]]),
+                "selector_posterior": (
+                    "transfer_method_specific_delta_chance_margin"),
+                **{
+                    key: value
+                    for key, value in support.items()
+                    if key != "point"
+                },
+            },
+        ]
+
+    def run(
+        self,
+        *,
+        freeze_terminal_shortlist=False,
+        terminal_probability_slack=0.05,
+        terminal_require_provider=True,
+    ):
         started = time.time()
         self._resume()
         self._progress_phase_started_at = time.time()
@@ -603,6 +700,13 @@ class TransferConstrainedBO:
             self._save_checkpoint()
             self._emit_progress("target_call_done")
         recommended, posterior = self._recommend()
+        frozen_terminal_shortlist = None
+        if freeze_terminal_shortlist:
+            frozen_terminal_shortlist = self.terminal_verification_shortlist(
+                recommended,
+                probability_slack=terminal_probability_slack,
+                require_provider=terminal_require_provider,
+            )
         true_objective = float(self.problem.true_objective(recommended))
         true_constraint_mean = float(
             self.problem.true_constraint_mean(recommended))
@@ -694,6 +798,9 @@ class TransferConstrainedBO:
             "model_diagnostics": diagnostics,
             "x_recommended": list(map(int, recommended)),
             "posterior": posterior,
+            "frozen_terminal_shortlist": frozen_terminal_shortlist,
+            "terminal_shortlist_frozen_before_truth_metrics": bool(
+                freeze_terminal_shortlist),
             "true_objective": true_objective,
             "true_constraint_mean": true_constraint_mean,
             "true_constraint_sigma": true_sigma,

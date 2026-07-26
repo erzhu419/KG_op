@@ -28,6 +28,8 @@ import numpy as np
 from scipy.stats import norm
 
 from core.candidates import boundary_solutions, unique_candidates
+from core.designs import integer_design_fingerprint
+from core.terminal_verification import select_posterior_safe_interior
 
 
 try:  # pragma: no cover - exercised only when the optional stack is installed.
@@ -1049,6 +1051,89 @@ class BoTorchBaseline:
             "recommendation_rule": rule,
         }
 
+    def _constraint_posterior_for_points(self, points):
+        """Return this baseline's latent chance-margin posterior."""
+
+        con_model = self._last_models[1]
+        if con_model is None:
+            raise RuntimeError(
+                "terminal shortlist requires a fitted constraint model")
+        X = torch.as_tensor(np.asarray([
+            self.problem.normalize(point) for point in points
+        ], dtype=float), dtype=torch.double, device=self._torch_device)
+        with torch.no_grad():
+            posterior = con_model.posterior(X)
+            mean = getattr(
+                posterior, "mixture_mean", posterior.mean
+            ).reshape(-1).detach().cpu().numpy()
+            variance = getattr(
+                posterior, "mixture_variance", posterior.variance
+            ).reshape(-1).detach().cpu().numpy()
+        variance = np.maximum(np.asarray(variance, dtype=float), 1e-14)
+        mean = np.asarray(mean, dtype=float)
+        return {
+            "chance_margin_mean": mean,
+            "chance_margin_epistemic_variance": variance,
+            "probability_violation": norm.cdf(
+                mean / np.sqrt(variance)),
+        }
+
+    def terminal_verification_shortlist(
+        self,
+        primary,
+        *,
+        probability_slack=0.05,
+        require_provider=True,
+    ):
+        """Freeze a BoTorch-posterior shortlist without target truth."""
+
+        initial = []
+        seen = set()
+        for point, _ in self.history[: int(self.config.n0)]:
+            point = tuple(int(value) for value in point)
+            if point not in seen:
+                seen.add(point)
+                initial.append(point)
+        posterior = self._constraint_posterior_for_points(initial)
+        primary = tuple(int(value) for value in primary)
+        support = select_posterior_safe_interior(
+            self.problem,
+            primary,
+            initial,
+            posterior["probability_violation"],
+            probability_slack=probability_slack,
+            require_provider=require_provider,
+        )
+        return [
+            {
+                "shortlist_position": 1,
+                "shortlist_role": "posterior_bayes_primary",
+                "posterior_rank": 1,
+                "point": list(primary),
+                "point_fingerprint": integer_design_fingerprint([primary]),
+                "selector_posterior": (
+                    "botorch_latent_chance_margin_posterior"),
+                "target_labels_used": False,
+                "target_oracle_used": False,
+                "verification_samples_used": False,
+            },
+            {
+                "shortlist_position": 2,
+                "shortlist_role": "posterior_safe_interior_diversified",
+                "posterior_rank": None,
+                "point": list(map(int, support["point"])),
+                "point_fingerprint": integer_design_fingerprint([
+                    support["point"]]),
+                "selector_posterior": (
+                    "botorch_latent_chance_margin_posterior"),
+                **{
+                    key: value
+                    for key, value in support.items()
+                    if key != "point"
+                },
+            },
+        ]
+
     def _evaluate_recommendation(self, x_best):
         true_obj = self.problem.true_objective(x_best)
         true_con = self.problem.true_constraint_mean(x_best)
@@ -1076,6 +1161,10 @@ class BoTorchBaseline:
                 None if true_best_x is None else list(map(int, true_best_x))),
             "true_best_objective": float(true_best_obj),
             "simple_regret": float(regret),
+            "feasible_regret": (
+                max(0.0, float(regret)) if true_margin <= 0.0 else None
+            ),
+            "constraint_violation": max(0.0, float(true_margin)),
         }
         if true_vector is not None:
             out["true_vector_objectives"] = true_vector
@@ -1156,7 +1245,13 @@ class BoTorchBaseline:
             flush=True,
         )
 
-    def run(self):
+    def run(
+        self,
+        *,
+        freeze_terminal_shortlist=False,
+        terminal_probability_slack=0.05,
+        terminal_require_provider=True,
+    ):
         t_start = time.time()
         self._progress_start_unit = len(self.history)
         self._progress_timing = []
@@ -1192,6 +1287,13 @@ class BoTorchBaseline:
                 self._save_checkpoint()
             self._emit_progress(t_start)
         x_best, posterior = self._posterior_recommendation()
+        frozen_terminal_shortlist = None
+        if freeze_terminal_shortlist:
+            frozen_terminal_shortlist = self.terminal_verification_shortlist(
+                x_best,
+                probability_slack=terminal_probability_slack,
+                require_provider=terminal_require_provider,
+            )
         result = self._evaluate_recommendation(x_best)
         runtime = botorch_runtime_fingerprint(self._torch_device)
         runtime["torch_device"] = str(
@@ -1201,6 +1303,9 @@ class BoTorchBaseline:
             "method": self.config.method,
             "backend": "botorch",
             **posterior,
+            "frozen_terminal_shortlist": frozen_terminal_shortlist,
+            "terminal_shortlist_frozen_before_truth_metrics": bool(
+                freeze_terminal_shortlist),
             "total_time_sec": float(time.time() - t_start),
             "n_simulations": int(len(self.history)),
             "n_distinct_solutions": int(len(set(x for x, _ in self.history))),

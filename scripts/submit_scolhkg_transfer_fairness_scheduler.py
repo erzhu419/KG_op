@@ -65,6 +65,17 @@ def design_relative_path(run_id, heldout):
 
 
 def build_specs(args):
+    terminal_defaults = {
+        "terminal_verification": True,
+        "terminal_verification_primary_budget": 80,
+        "terminal_verification_support_budget": 96,
+        "terminal_verification_delta": 0.05,
+        "terminal_verification_method": "normal_quantile_tolerance",
+        "terminal_safe_interior_probability_slack": 0.05,
+    }
+    for name, value in terminal_defaults.items():
+        if not hasattr(args, name):
+            setattr(args, name, value)
     nodes = parse_csv(args.nodes)
     if not nodes or any(node not in CPU_NODES for node in nodes):
         raise ValueError("nodes must be a nonempty subset of node001-node006")
@@ -216,6 +227,22 @@ def build_specs(args):
                     "--source-train-steps", str(args.source_train_steps),
                     "--target-finetune-steps", str(args.target_finetune_steps),
                 ]
+                if args.terminal_verification:
+                    command.extend([
+                        "--terminal-verification",
+                        "--terminal-verification-primary-budget",
+                        str(args.terminal_verification_primary_budget),
+                        "--terminal-verification-support-budget",
+                        str(args.terminal_verification_support_budget),
+                        "--terminal-verification-delta",
+                        str(args.terminal_verification_delta),
+                        "--terminal-verification-method",
+                        str(args.terminal_verification_method),
+                        "--terminal-safe-interior-probability-slack",
+                        str(args.terminal_safe_interior_probability_slack),
+                    ])
+                else:
+                    command.append("--no-terminal-verification")
                 if args.initial_design == "source_informed":
                     command.extend([
                         "--initial-design-file", str(remote_design),
@@ -295,6 +322,27 @@ def main():
     )
     parser.add_argument("--source-train-steps", type=int, default=0)
     parser.add_argument("--target-finetune-steps", type=int, default=100)
+    parser.add_argument(
+        "--terminal-verification",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument(
+        "--terminal-verification-primary-budget", type=int, default=80)
+    parser.add_argument(
+        "--terminal-verification-support-budget", type=int, default=96)
+    parser.add_argument(
+        "--terminal-verification-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--terminal-verification-method",
+        choices=("component_bonferroni", "normal_quantile_tolerance"),
+        default="normal_quantile_tolerance",
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-probability-slack",
+        type=float,
+        default=0.05,
+    )
     parser.add_argument("--nodes", default=",".join(CPU_NODES))
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=16384)

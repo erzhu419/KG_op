@@ -309,6 +309,35 @@
         "fresh seeds 60..79 passed 60/60 certificates with zero false certificates and zero paired losses",
         "V64 is a certified-deployment baseline; equal-search-budget performance claims continue to use V51"
       ]
+    },
+    {
+      "id": "paper_method_independent_terminal_verification_v1",
+      "implementation_contract_id": "shared_frozen_shortlist_noncentral_t_80_96",
+      "decision_behavior": "optimizer_specific_frozen_shortlist_with_common_independent_terminal_verification",
+      "behavior_change": false,
+      "diagnostic_change": true,
+      "role": "paper_comparison_contract",
+      "status": "implemented_pending_paper_matrix",
+      "runs": [],
+      "planned_runs": [
+        "paper_certified_transfer_d1000_n13_r80_96_s20",
+        "paper_certified_online_sota_d1000_n13_r80_96_s20"
+      ],
+      "evidence": [
+        "SC-OLH-KG/core/terminal_verification.py",
+        "SC-OLH-KG/docs/paper_experiment_protocol.md",
+        "SC-OLH-KG/docs/transfer_fairness_protocol.md",
+        "proof/SCOLHKG/Real/MethodIndependentTerminalVerification.lean"
+      ],
+      "formal_scope": [
+        "each optimizer freezes its own posterior primary before target truth or verification labels",
+        "one support policy is selected from the optimizer-specific posterior violation sublevel over the charged n0 atlas",
+        "support diversity uses the common observable cumulative-risk coordinate psi=(A,N)",
+        "all methods use identical independent noncentral-t verification code, deterministic streams, 80/96 budgets, and 0.025+0.025 error spending",
+        "verification samples never update an optimizer or alter a frozen shortlist",
+        "source, search, verification, target-total, and all-total simulator calls are reported separately",
+        "the family-wise false-deployment theorem is independent of optimizer identity"
+      ]
     }
   ],
   "non_mixing_rules": [

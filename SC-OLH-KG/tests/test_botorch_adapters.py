@@ -25,7 +25,10 @@ from baselines.botorch_adapters import (  # noqa: E402
     canonical_turbo_bounds,
     is_botorch_available,
 )
-from problems.rzdt import StatePolicyRZDT1  # noqa: E402
+from problems.rzdt import (  # noqa: E402
+    FactorShockStatePolicyRZDT1,
+    StatePolicyRZDT1,
+)
 from problems.single_objective import ScalarizedProblem  # noqa: E402
 
 
@@ -73,6 +76,41 @@ class BoTorchAdapterTests(unittest.TestCase):
             initial_designs.append([
                 row["x"] for row in result["history"][: config.n0]])
         self.assertEqual(initial_designs[0], initial_designs[1])
+
+    def test_botorch_freezes_own_posterior_terminal_shortlist_before_truth(self):
+        problem = ScalarizedProblem(
+            FactorShockStatePolicyRZDT1(d=5, L=100, sigma=0.04))
+        config = BoTorchBaselineConfig(
+            N=5,
+            n0=4,
+            seed=13,
+            method="botorch_scbo",
+            raw_samples=8,
+            num_restarts=2,
+            maxiter=10,
+            ts_candidates=32,
+        )
+        result = BoTorchBaseline(problem, config).run(
+            freeze_terminal_shortlist=True,
+            terminal_probability_slack=0.05,
+            terminal_require_provider=True,
+        )
+        shortlist = result["frozen_terminal_shortlist"]
+        self.assertTrue(
+            result["terminal_shortlist_frozen_before_truth_metrics"])
+        self.assertEqual(len(shortlist), 2)
+        self.assertEqual(shortlist[0]["point"], result["x_recommended"])
+        self.assertEqual(
+            shortlist[0]["selector_posterior"],
+            "botorch_latent_chance_margin_posterior",
+        )
+        self.assertEqual(
+            shortlist[1]["coordinate_source"],
+            "cumulative_risk_psi=(A,N)",
+        )
+        self.assertFalse(shortlist[1]["target_labels_used"])
+        self.assertFalse(shortlist[1]["target_oracle_used"])
+        self.assertFalse(shortlist[1]["verification_samples_used"])
 
     def test_saasbo_runs_with_tiny_nuts_budget(self):
         config = BoTorchBaselineConfig(

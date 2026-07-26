@@ -17,6 +17,7 @@ from baselines.botorch_adapters import (  # noqa: E402
     BoTorchBaseline,
     BoTorchBaselineConfig,
 )
+from core.terminal_verification import verify_frozen_shortlist  # noqa: E402
 from performance.benchmark_quality import json_safe, parse_weights  # noqa: E402
 from performance.benchmark_lodo_meta_prior import (  # noqa: E402
     build_scalarized_problem,
@@ -26,6 +27,21 @@ from performance.run_lodo_manifest_shard import load_config  # noqa: E402
 
 
 PROTOCOLS = {
+    "target_n13": {
+        "uses_archive": False,
+        "target_budget": 13,
+        "archive_access": "none",
+    },
+    "shared_archive_n13": {
+        "uses_archive": True,
+        "target_budget": 13,
+        "archive_access": "warm_start_only",
+    },
+    "target_cost_matched_n397": {
+        "uses_archive": False,
+        "target_budget": 397,
+        "archive_access": "none",
+    },
     "target_n20": {
         "uses_archive": False,
         "target_budget": 20,
@@ -104,7 +120,82 @@ def source_archive_cost(config, heldout):
     )
 
 
+def _apply_terminal_verification(optimizer, result, args):
+    shortlist = result.get("frozen_terminal_shortlist")
+    if not shortlist:
+        raise RuntimeError(
+            "terminal verification requires a pre-truth frozen shortlist")
+    search_calls = int(result["n_simulations"])
+    primary_metrics = {
+        key: result.get(key)
+        for key in (
+            "x_recommended",
+            "posterior_feasible",
+            "posterior_chance_margin",
+            "posterior_chance_margin_mean",
+            "posterior_chance_margin_std",
+            "true_objective",
+            "true_constraint_mean",
+            "true_constraint_sigma",
+            "true_chance_margin",
+            "true_feasible",
+            "simple_regret",
+            "feasible_regret",
+            "constraint_violation",
+        )
+    }
+    deployed, verification = verify_frozen_shortlist(
+        optimizer.problem,
+        shortlist,
+        seed=int(args.seed),
+        search_evaluation_count=search_calls,
+        candidate_budgets=(
+            int(args.terminal_verification_primary_budget),
+            int(args.terminal_verification_support_budget),
+        ),
+        familywise_delta=float(args.terminal_verification_delta),
+        method=str(args.terminal_verification_method),
+        shortlist_mode="posterior_primary_safe_interior",
+    )
+    truth_rows = []
+    for record in shortlist:
+        truth_rows.append({
+            "shortlist_position": int(record["shortlist_position"]),
+            "shortlist_role": str(record["shortlist_role"]),
+            **optimizer._evaluate_recommendation(record["point"]),
+        })
+    deployed_metrics = optimizer._evaluate_recommendation(deployed)
+    verification_calls = int(verification["verification_budget"])
+    result.update(deployed_metrics)
+    result.update({
+        "search_recommendation": primary_metrics,
+        "terminal_verification": verification,
+        "terminal_verification_truth_audit": {
+            "computed_after_shortlist_freeze_and_verification": True,
+            "used_for_selection_or_certification": False,
+            "rows": truth_rows,
+        },
+        "n_search_simulations": search_calls,
+        "n_verification_simulations": verification_calls,
+        "n_target_simulations_total": search_calls + verification_calls,
+        "n_simulations": search_calls + verification_calls,
+    })
+    return result
+
+
 def run_one(args):
+    terminal_defaults = {
+        "terminal_verification": False,
+        "terminal_verification_primary_budget": 80,
+        "terminal_verification_support_budget": 96,
+        "terminal_verification_delta": 0.05,
+        "terminal_verification_method": "normal_quantile_tolerance",
+        "terminal_safe_interior_probability_slack": 0.05,
+        "terminal_safe_interior_require_provider": True,
+    }
+    for name, value in terminal_defaults.items():
+        if not hasattr(args, name):
+            setattr(args, name, value)
     if args.protocol not in PROTOCOLS:
         raise ValueError(f"unknown fairness protocol {args.protocol!r}")
     protocol = PROTOCOLS[args.protocol]
@@ -187,7 +278,7 @@ def run_one(args):
     )
     started = time.time()
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "running",
         "protocol": args.protocol,
         "method": args.method,
@@ -205,6 +296,8 @@ def run_one(args):
             "source_true_sigma_used": False,
             "target_oracle_used_for_selection": False,
             "offline_source_calls": int(offline_calls),
+            "target_dimension": int(args.d),
+            "target_initial_calls_n0": int(args.n0),
             "target_calls": int(target_budget),
             "total_simulator_calls": int(offline_calls + target_budget),
             "initial_design_contract": (
@@ -223,7 +316,37 @@ def run_one(args):
         "source_archive_diagnostics": archive_diagnostics,
     }
     try:
-        result = BoTorchBaseline(problem, config).run()
+        optimizer = BoTorchBaseline(problem, config)
+        result = optimizer.run(
+            freeze_terminal_shortlist=bool(args.terminal_verification),
+            terminal_probability_slack=float(
+                args.terminal_safe_interior_probability_slack),
+            terminal_require_provider=bool(
+                args.terminal_safe_interior_require_provider),
+        )
+        if args.terminal_verification:
+            result = _apply_terminal_verification(optimizer, result, args)
+        search_calls = int(result.get(
+            "n_search_simulations", result["n_simulations"]))
+        verification_calls = int(result.get(
+            "n_verification_simulations", 0))
+        target_total_calls = search_calls + verification_calls
+        payload["information_contract"].update({
+            "target_search_calls": search_calls,
+            "target_verification_calls": verification_calls,
+            "target_total_calls": target_total_calls,
+            "total_source_plus_target_search_calls": int(
+                offline_calls + search_calls),
+            "total_source_plus_target_verification_calls": int(
+                offline_calls + target_total_calls),
+            "terminal_verification_enabled": bool(
+                args.terminal_verification),
+            "terminal_verification_identical_across_methods": True,
+            "terminal_verification_updates_optimizer": False,
+            "terminal_verification_target_oracle_used": False,
+            "terminal_verification_protocol": (
+                "ordered_frozen_shortlist_independent_noncentral_t"),
+        })
         payload.update({
             "status": "ok",
             "result": result,
@@ -278,6 +401,32 @@ def main():
     parser.add_argument(
         "--torch-device", default="cpu",
         help="BoTorch device: cpu, cuda, cuda:N, or auto",
+    )
+    parser.add_argument(
+        "--terminal-verification",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--terminal-verification-primary-budget", type=int, default=80)
+    parser.add_argument(
+        "--terminal-verification-support-budget", type=int, default=96)
+    parser.add_argument(
+        "--terminal-verification-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--terminal-verification-method",
+        choices=("component_bonferroni", "normal_quantile_tolerance"),
+        default="normal_quantile_tolerance",
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-probability-slack",
+        type=float,
+        default=0.05,
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-require-provider",
+        action=argparse.BooleanOptionalAction,
+        default=True,
     )
     args = parser.parse_args()
     payload = run_one(args)

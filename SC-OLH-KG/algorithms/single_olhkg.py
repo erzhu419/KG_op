@@ -22,10 +22,7 @@ from core.certification import (
     CertificationResult,
     conservative_chance_margin,
     decompose_chance_margin,
-    gaussian_quantile_tolerance_certificate,
-    gaussian_replication_chance_certificate,
 )
-from core.cumulative_risk import get_risk_exposure
 from core.candidates import (
     axis_candidates,
     axis_landmark_candidates,
@@ -49,6 +46,13 @@ from core.gpr import (
     posterior_mixture_weights,
 )
 from core.metrics import summarize_stage_times
+from core.terminal_verification import (
+    TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG,
+    TERMINAL_VERIFICATION_STREAM_TAG,
+    cumulative_risk_coordinate,
+    select_posterior_safe_interior,
+    verify_frozen_policy,
+)
 from encoders.policy_state_encoder import (
     ContrastivePolicyEncoder,
     GraphLaplacianEncoder,
@@ -85,8 +89,6 @@ SIMULATION_STREAM_TAG = 0x53434F4C
 PROPOSAL_STREAM_TAG = 0x50524F50
 EXACT_KG_STREAM_TAG = 0x45584B47
 EXACT_KG_CONFIRMATION_STREAM_TAG = 0x434F4E46
-TERMINAL_VERIFICATION_STREAM_TAG = 0x56455249
-TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG = 0x56534C54
 
 
 def _fork_exact_kg_candidate(x):
@@ -1131,123 +1133,18 @@ class SingleOLHKGAlgorithm:
             if verification_delta is None
             else float(verification_delta)
         )
-        method = str(
-            self.config.terminal_verification_method
-            or "component_bonferroni"
-        ).strip().lower().replace("-", "_")
-        method_aliases = {
-            "component_bonferroni": "component_bonferroni",
-            "student_t_chi_square": "component_bonferroni",
-            "normal_quantile_tolerance": "normal_quantile_tolerance",
-            "noncentral_t_tolerance": "normal_quantile_tolerance",
-        }
-        if method not in method_aliases:
-            raise ValueError(
-                "terminal_verification_method must be "
-                "'component_bonferroni' or "
-                "'normal_quantile_tolerance'")
-        method = method_aliases[method]
-        method_label = (
-            "gaussian_noncentral_t_tolerance"
-            if method == "normal_quantile_tolerance"
-            else "gaussian_student_t_chi_square"
-        )
-        point = tuple(int(value) for value in x)
-        stream_tag = (
-            TERMINAL_VERIFICATION_STREAM_TAG
-            if candidate_index == 0
-            else TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG
-        )
-        base = {
-            "enabled": bool(budget > 0),
-            "status": "disabled" if budget == 0 else "pending",
-            "method": method_label,
-            "method_mode": method,
-            "policy_frozen_before_verification": True,
-            "search_samples_reused": False,
-            "posterior_updated_from_verification": False,
-            "verification_budget": int(budget),
-            "search_evaluation_count": int(len(self.history)),
-            "total_evaluation_count": int(len(self.history) + budget),
-            "policy_fingerprint": integer_design_fingerprint([point]),
-            "delta": float(delta),
-            "alpha": float(self.problem.alpha),
-            "tau": float(self.problem.tau),
-            "mean_delta_fraction": float(
+        return verify_frozen_policy(
+            self.problem,
+            x,
+            seed=int(self.config.seed),
+            search_evaluation_count=len(self.history),
+            verification_budget=budget,
+            delta=delta,
+            candidate_index=candidate_index,
+            method=self.config.terminal_verification_method,
+            mean_delta_fraction=(
                 self.config.terminal_verification_mean_delta_fraction),
-            "candidate_index": int(candidate_index),
-            "target_oracle_used": False,
-        }
-        if budget == 0:
-            return base
-
-        noise_model = str(getattr(
-            self.problem, "simulation_noise_model", "unknown"))
-        if noise_model != "iid_gaussian":
-            raise RuntimeError(
-                "terminal Gaussian verification requires an "
-                "iid_gaussian simulation_noise_model")
-
-        values = []
-        for replication in range(budget):
-            if candidate_index == 0:
-                seed_components = [
-                    int(self.config.seed),
-                    int(replication),
-                    TERMINAL_VERIFICATION_STREAM_TAG,
-                ]
-            else:
-                seed_components = [
-                    int(self.config.seed),
-                    int(candidate_index),
-                    int(replication),
-                    TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG,
-                ]
-            verification_rng = np.random.default_rng(
-                np.random.SeedSequence(seed_components))
-            values.append(np.asarray(
-                self.problem.simulate(point, verification_rng),
-                dtype=float,
-            ))
-        samples = np.asarray(values, dtype=float)
-        if samples.ndim != 2 or samples.shape[1] < 2:
-            raise RuntimeError(
-                "terminal verification requires objective and constraint "
-                "simulation outputs")
-        if method == "normal_quantile_tolerance":
-            certificate = gaussian_quantile_tolerance_certificate(
-                samples[:, 1],
-                tau=float(self.problem.tau),
-                alpha=float(self.problem.alpha),
-                delta=float(delta),
-            )
-        else:
-            certificate = gaussian_replication_chance_certificate(
-                samples[:, 1],
-                tau=float(self.problem.tau),
-                alpha=float(self.problem.alpha),
-                delta=float(delta),
-                mean_delta_fraction=float(
-                    self.config.terminal_verification_mean_delta_fraction),
-            )
-        return {
-            **base,
-            **asdict(certificate),
-            "status": str(certificate.status),
-            "objective_sample_mean": float(np.mean(samples[:, 0])),
-            "objective_sample_std": (
-                None
-                if len(samples) < 2
-                else float(np.std(samples[:, 0], ddof=1))
-            ),
-            "noise_model": noise_model,
-            "verification_stream_tag": int(stream_tag),
-            "verification_samples_logged": False,
-            "certification_scope": (
-                "fixed_terminal_policy_independent_replications"),
-            "recommendation_changed": False,
-            "target_oracle_used": False,
-        }
+        )
 
     def _terminal_verification_protocol(self, primary):
         """Verify a frozen terminal policy or an ordered frozen shortlist."""
@@ -1466,32 +1363,12 @@ class SingleOLHKGAlgorithm:
     def _terminal_safe_interior_coordinate(self, point):
         """Return the source-frozen cumulative-risk coordinate for a policy."""
 
-        exposure = get_risk_exposure(
+        return cumulative_risk_coordinate(
             self.problem,
             point,
-            output_index=1,
+            require_provider=bool(
+                self.config.terminal_safe_interior_require_provider),
         )
-        if exposure is not None:
-            coordinate = np.concatenate([
-                np.asarray(exposure.A, dtype=float).reshape(-1),
-                np.asarray(exposure.N, dtype=float).reshape(-1),
-            ])
-            if (
-                coordinate.size > 0
-                and np.all(np.isfinite(coordinate))
-            ):
-                return coordinate, "cumulative_risk_psi=(A,N)"
-        if self.config.terminal_safe_interior_require_provider:
-            raise RuntimeError(
-                "terminal safe-interior selection requires a finite "
-                "cumulative-risk provider coordinate")
-        lo, hi = self.problem.int_bounds()
-        lo = np.asarray(lo, dtype=float)
-        scale = np.maximum(np.asarray(hi, dtype=float) - lo, 1.0)
-        coordinate = (
-            np.asarray(point, dtype=float).reshape(-1) - lo
-        ) / scale
-        return coordinate, "normalized_policy_fallback"
 
     def _terminal_safe_interior_candidate(self, primary):
         """Freeze one ambiguity-diversified safety representative.
@@ -1503,20 +1380,10 @@ class SingleOLHKGAlgorithm:
         HVD model. No verification sample or target truth enters this choice.
         """
 
-        slack = float(
-            self.config.terminal_safe_interior_probability_slack)
-        if not np.isfinite(slack) or slack < 0.0 or slack > 1.0:
-            raise ValueError(
-                "terminal safe-interior probability slack must lie in [0, 1]")
         initial = unique_candidates([
             point for point, _ in self.history[: int(self.config.n0)]
         ])
         primary = tuple(int(value) for value in primary)
-        alternatives = [point for point in initial if point != primary]
-        if not alternatives:
-            raise RuntimeError(
-                "terminal safe-interior selection requires a distinct "
-                "initial-atlas candidate")
         components = self._terminal_bayes_risk_components(
             self.gpr,
             self.variance_model,
@@ -1524,91 +1391,16 @@ class SingleOLHKGAlgorithm:
             task_ensemble=self.task_ensemble,
             risk_penalty=self.config.decision_risk_penalty,
         )
-        violation_probability = np.asarray(
-            components["probability_violation"], dtype=float).reshape(-1)
-        if (
-            len(violation_probability) != len(initial)
-            or not np.all(np.isfinite(violation_probability))
-        ):
-            raise RuntimeError(
-                "terminal safe-interior selection requires finite posterior "
-                "violation probabilities")
-        minimum = float(np.min(violation_probability))
-        eligible_indices = [
-            index for index, point in enumerate(initial)
-            if point != primary
-            and float(violation_probability[index]) <= minimum + slack
-        ]
-        if not eligible_indices:
-            eligible_indices = [
-                min(
-                    (
-                        index for index, point in enumerate(initial)
-                        if point != primary
-                    ),
-                    key=lambda index: (
-                        float(violation_probability[index]),
-                        int(index),
-                    ),
-                )
-            ]
-
-        points_for_scale = list(initial)
-        if primary not in points_for_scale:
-            points_for_scale.append(primary)
-        coordinates = []
-        coordinate_sources = []
-        for point in points_for_scale:
-            coordinate, source = self._terminal_safe_interior_coordinate(point)
-            coordinates.append(np.asarray(coordinate, dtype=float))
-            coordinate_sources.append(source)
-        dimensions = {len(value) for value in coordinates}
-        if len(dimensions) != 1:
-            raise RuntimeError(
-                "terminal safe-interior coordinates have inconsistent "
-                "dimensions")
-        matrix = np.vstack(coordinates)
-        center = np.mean(matrix, axis=0)
-        scale = np.std(matrix, axis=0)
-        scale = np.where(scale > 1e-12, scale, 1.0)
-        standardized = (matrix - center) / scale
-        primary_index = points_for_scale.index(primary)
-        distance = np.sqrt(np.mean(
-            (
-                standardized[: len(initial)]
-                - standardized[primary_index][None, :]
-            ) ** 2,
-            axis=1,
-        ))
-        selected_index = max(
-            eligible_indices,
-            key=lambda index: (
-                float(distance[index]),
-                -float(violation_probability[index]),
-                -int(index),
-            ),
+        return select_posterior_safe_interior(
+            self.problem,
+            primary,
+            initial,
+            components["probability_violation"],
+            probability_slack=float(
+                self.config.terminal_safe_interior_probability_slack),
+            require_provider=bool(
+                self.config.terminal_safe_interior_require_provider),
         )
-        selected = tuple(int(value) for value in initial[selected_index])
-        return {
-            "point": selected,
-            "selection_contract": (
-                "posterior_violation_sublevel_maximin_cumulative_risk"),
-            "candidate_universe": "frozen_initial_atlas",
-            "candidate_universe_size": int(len(initial)),
-            "eligible_count": int(len(eligible_indices)),
-            "probability_slack": float(slack),
-            "minimum_posterior_violation_probability": float(minimum),
-            "selected_posterior_violation_probability": float(
-                violation_probability[selected_index]),
-            "selected_standardized_coordinate_distance": float(
-                distance[selected_index]),
-            "coordinate_source": str(
-                coordinate_sources[selected_index]),
-            "coordinate_dimension": int(matrix.shape[1]),
-            "target_labels_used": False,
-            "target_oracle_used": False,
-            "verification_samples_used": False,
-        }
 
     def _fit_initial_belief(self, samples):
         timing = {}
@@ -16162,6 +15954,37 @@ class SingleOLHKGAlgorithm:
             final_post, finalist_replication_summary)
         finalization_stage_started = time.perf_counter()
         final_eval = self._evaluate_recommendation(final_x)
+        terminal_truth_rows = []
+        for record in terminal_verification.get("frozen_shortlist", []):
+            point = tuple(int(value) for value in record["point"])
+            terminal_truth_rows.append({
+                "shortlist_position": int(
+                    record.get(
+                        "shortlist_position",
+                        len(terminal_truth_rows) + 1,
+                    )
+                ),
+                "shortlist_role": str(record.get(
+                    "shortlist_role", "posterior_bayes_primary")),
+                **self._evaluate_recommendation(point),
+            })
+        optimization_eval = next(
+            (
+                copy.deepcopy(row)
+                for row in terminal_truth_rows
+                if tuple(int(value) for value in row["x_recommended"])
+                == optimization_final_x
+            ),
+            None,
+        )
+        if optimization_eval is None:
+            optimization_eval = self._evaluate_recommendation(
+                optimization_final_x)
+        terminal_verification_truth_audit = {
+            "computed_after_shortlist_freeze_and_verification": True,
+            "used_for_selection_or_certification": False,
+            "rows": terminal_truth_rows,
+        }
         adaptive_outcome = self._adaptive_outcome_audit(final_eval)
         certificate_outcome = self._certificate_outcome_audit()
         finalization_timing["recommendation_and_outcome_audits"] = float(
@@ -16641,6 +16464,9 @@ class SingleOLHKGAlgorithm:
             "terminal_verification": terminal_verification,
             "terminal_verification_certified": bool(
                 terminal_verification.get("certified", False)),
+            "optimization_recommendation_truth": optimization_eval,
+            "terminal_verification_truth_audit": (
+                terminal_verification_truth_audit),
             "exact_kg_diagnostics": exact_kg_summary,
             "finalist_replication": finalist_replication_summary,
             "two_stage_decision": two_stage_decision,

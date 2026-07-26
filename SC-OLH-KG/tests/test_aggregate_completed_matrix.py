@@ -262,3 +262,72 @@ def test_paper_variant_parser_keeps_method_separate_from_shock_scenario():
     assert MODULE._variant_parts(
         "paper_main_v1_sequential/promoted_joint_voi/shock1", "fallback"
     ) == ("paper_main_v1_sequential", "promoted_joint_voi")
+
+
+def test_certified_matrix_separates_search_verification_and_source_costs(
+    tmp_path,
+):
+    root = tmp_path / "certified_transfer"
+    _write(
+        root / "official" / "Domain" / "rgpe_cbo" / "seed0000"
+        / "result.json",
+        {
+            "schema_version": 2,
+            "status": "ok",
+            "method": "rgpe_cbo",
+            "implementation": "official",
+            "heldout_target_domain": "Domain",
+            "seed": 0,
+            "comparison_contract": {
+                "target_dimension": 1000,
+                "target_initial_calls_n0": 10,
+                "source_simulator_calls": 384,
+                "target_search_calls": 13,
+                "target_verification_calls": 176,
+                "target_total_calls": 189,
+                "total_source_plus_target_search_calls": 397,
+                "total_source_plus_target_verification_calls": 573,
+            },
+            "result": {
+                "n_search_simulations": 13,
+                "n_verification_simulations": 176,
+                "n_simulations": 189,
+                "true_feasible": True,
+                "feasible_regret": 0.04,
+                "optimization_recommendation_truth": {
+                    "true_feasible": False,
+                    "feasible_regret": None,
+                },
+                "terminal_verification": {
+                    "enabled": True,
+                    "certified": True,
+                    "selected_shortlist_rank": 2,
+                    "attempt_count": 2,
+                    "attempts": [
+                        {"certified": False},
+                        {"certified": True},
+                    ],
+                },
+            },
+        },
+    )
+
+    rows, errors = MODULE.load_rows([root])
+    summaries = MODULE.summarize_rows(rows)
+
+    assert errors == []
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["search_calls"] == 13
+    assert row["verification_calls"] == 176
+    assert row["target_total_calls"] == 189
+    assert row["source_plus_search_calls"] == 397
+    assert row["total_calls"] == 573
+    assert row["terminal_certified"] is True
+    assert row["terminal_rank1_certified"] is False
+    assert row["terminal_fallback_used"] is True
+    assert row["terminal_false_certificate"] is False
+    domain = next(item for item in summaries if item["domain"] == "Domain")
+    assert domain["terminal_certified_rate"] == 1.0
+    assert domain["terminal_rank1_certified_rate"] == 0.0
+    assert domain["median_verification_calls"] == 176

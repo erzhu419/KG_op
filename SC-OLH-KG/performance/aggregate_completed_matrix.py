@@ -37,7 +37,13 @@ ROW_FIELDS = (
     "N",
     "n0",
     "source_calls",
+    "search_calls",
+    "verification_calls",
+    "target_total_calls",
+    "source_plus_search_calls",
     "total_calls",
+    "d_over_search_calls",
+    "d_over_target_total_calls",
     "d_over_target_calls",
     "d_over_total_calls",
     "status",
@@ -53,6 +59,15 @@ ROW_FIELDS = (
     "adaptive_improves_initial_best",
     "adaptive_regret_change",
     "posterior_feasible",
+    "terminal_certified",
+    "terminal_rank1_certified",
+    "terminal_selected_rank",
+    "terminal_fallback_used",
+    "terminal_abstained",
+    "terminal_false_certificate",
+    "terminal_attempt_count",
+    "primary_true_feasible",
+    "primary_feasible_regret",
     "posterior_certificate_vacuous",
     "posterior_certified_count",
     "false_certificate_count",
@@ -200,6 +215,65 @@ def _stage_value(stage_times: dict, stage: str, field: str) -> float | None:
     return _finite(_dict(stage_times.get(stage)).get(field))
 
 
+def _terminal_fields(result: dict) -> dict:
+    verification = _dict(result.get("terminal_verification"))
+    attempts = [
+        attempt for attempt in verification.get("attempts", [])
+        if isinstance(attempt, dict)
+    ]
+    certified = _boolean(verification.get("certified"))
+    selected_rank = _integer(verification.get("selected_shortlist_rank"))
+    truth_audit = _dict(result.get("terminal_verification_truth_audit"))
+    truth_rows = [
+        row for row in truth_audit.get("rows", [])
+        if isinstance(row, dict)
+    ]
+    primary_truth = next(
+        (
+            row for row in truth_rows
+            if _integer(row.get("shortlist_position")) == 1
+        ),
+        _dict(_first(
+            result.get("optimization_recommendation_truth"),
+            result.get("search_recommendation"),
+        )),
+    )
+    primary_feasible = _boolean(primary_truth.get("true_feasible"))
+    primary_regret = (
+        _finite(_first(
+            primary_truth.get("feasible_regret"),
+            primary_truth.get("feasible_simple_regret"),
+            primary_truth.get("simple_regret"),
+        ))
+        if primary_feasible else None
+    )
+    deployed_feasible = _boolean(result.get("true_feasible"))
+    return {
+        "terminal_certified": certified,
+        "terminal_rank1_certified": (
+            _boolean(attempts[0].get("certified")) if attempts else None
+        ),
+        "terminal_selected_rank": selected_rank,
+        "terminal_fallback_used": (
+            None if selected_rank is None else selected_rank > 1
+        ),
+        "terminal_abstained": (
+            None if verification.get("enabled") is not True
+            else certified is not True
+        ),
+        "terminal_false_certificate": (
+            None if certified is None or deployed_feasible is None
+            else certified and not deployed_feasible
+        ),
+        "terminal_attempt_count": _integer(_first(
+            verification.get("attempt_count"),
+            len(attempts) if attempts else None,
+        )),
+        "primary_true_feasible": primary_feasible,
+        "primary_feasible_regret": primary_regret,
+    }
+
+
 def _variant_parts(experiment_variant: str, run_id: str) -> tuple[str, str]:
     parts = [part for part in str(experiment_variant or "").split("/") if part]
     if len(parts) >= 2 and parts[0].startswith("paper_main_v1"):
@@ -238,11 +312,21 @@ def _normalize_sc_result(
         "",
     ))
     track, method = _variant_parts(experiment_variant, root.name)
-    target_calls = _integer(_first(
-        row.get("n_simulations"),
+    search_calls = _integer(_first(
+        row.get("n_search_simulations"),
         adaptation.get("target_calls_used_for_adaptation"),
         row.get("N"),
         config.get("N"),
+    ))
+    verification_calls = _integer(_first(
+        row.get("n_verification_simulations"),
+        _dict(row.get("terminal_verification")).get("verification_budget"),
+        0,
+    ))
+    target_total_calls = _integer(_first(
+        row.get("n_simulations"),
+        None if search_calls is None or verification_calls is None
+        else search_calls + verification_calls,
     ))
     source_call_candidates = [
         _integer(audit.get("source_simulator_calls")),
@@ -291,11 +375,17 @@ def _normalize_sc_result(
         row.get("initial_best_feasible_regret"),
         adaptive.get("initial_best_feasible_regret"),
     ))
-    total_calls = (
-        source_calls + target_calls
-        if source_calls is not None and target_calls is not None
+    source_plus_search_calls = (
+        source_calls + search_calls
+        if source_calls is not None and search_calls is not None
         else None
     )
+    total_calls = (
+        source_calls + target_total_calls
+        if source_calls is not None and target_total_calls is not None
+        else None
+    )
+    terminal = _terminal_fields(row)
     return {
         "run_id": root.name,
         "track": track,
@@ -322,11 +412,18 @@ def _normalize_sc_result(
         "domain": row.get("heldout"),
         "seed": _integer(row.get("seed")),
         "d": dimension,
-        "N": target_calls,
+        "N": search_calls,
         "n0": _integer(_first(row.get("n0"), config.get("n0"))),
         "source_calls": source_calls,
+        "search_calls": search_calls,
+        "verification_calls": verification_calls,
+        "target_total_calls": target_total_calls,
+        "source_plus_search_calls": source_plus_search_calls,
         "total_calls": total_calls,
-        "d_over_target_calls": _safe_ratio(dimension, target_calls),
+        "d_over_search_calls": _safe_ratio(dimension, search_calls),
+        "d_over_target_total_calls": _safe_ratio(
+            dimension, target_total_calls),
+        "d_over_target_calls": _safe_ratio(dimension, search_calls),
         "d_over_total_calls": _safe_ratio(dimension, total_calls),
         "status": "ok",
         "true_feasible": true_feasible,
@@ -361,6 +458,7 @@ def _normalize_sc_result(
             None if regret is None or initial_regret is None else regret - initial_regret,
         )),
         "posterior_feasible": _boolean(row.get("posterior_feasible")),
+        **terminal,
         "posterior_certificate_vacuous": _boolean(_first(
             row.get("posterior_certificate_vacuous"),
             certificate.get("posterior_certificate_vacuous"),
@@ -469,24 +567,61 @@ def _normalize_sc_result(
 def _normalize_transfer_result(payload: dict, path: Path, root: Path) -> dict:
     result = _dict(payload.get("result"))
     contract = _dict(payload.get("comparison_contract"))
+    information = _dict(payload.get("information_contract"))
     target = _dict(result.get("target_information_contract"))
     source = _dict(result.get("source_information_contract"))
     initial = _dict(result.get("initial_truth_audit"))
     posterior = _dict(result.get("posterior"))
-    target_calls = _integer(_first(
+    is_online_sota = bool(payload.get("protocol"))
+    search_calls = _integer(_first(
+        result.get("n_search_simulations"),
+        target.get("target_search_calls"),
+        contract.get("target_search_calls"),
+        information.get("target_search_calls"),
         target.get("target_calls"),
         contract.get("target_total_calls_N"),
+        information.get("target_calls"),
         result.get("n_simulations"),
+    ))
+    verification_calls = _integer(_first(
+        result.get("n_verification_simulations"),
+        target.get("target_verification_calls"),
+        contract.get("target_verification_calls"),
+        information.get("target_verification_calls"),
+        0,
+    ))
+    target_total_calls = _integer(_first(
+        result.get("n_target_simulations_total"),
+        target.get("target_total_calls"),
+        contract.get("target_total_calls"),
+        information.get("target_total_calls"),
+        None if search_calls is None or verification_calls is None
+        else search_calls + verification_calls,
     ))
     source_calls = _integer(_first(
         source.get("source_simulator_calls"),
         contract.get("source_simulator_calls"),
+        information.get("offline_source_calls"),
     ))
     dimension = _integer(_first(
-        target.get("dimension"), contract.get("target_dimension")))
+        target.get("dimension"),
+        contract.get("target_dimension"),
+        information.get("target_dimension"),
+        len(result.get("x_recommended", [])) or None,
+    ))
+    source_plus_search_calls = _integer(_first(
+        contract.get("total_source_plus_target_search_calls"),
+        information.get("total_source_plus_target_search_calls"),
+        None if source_calls is None or search_calls is None
+        else source_calls + search_calls,
+    ))
     total_calls = _integer(_first(
+        contract.get("total_source_plus_target_verification_calls"),
+        information.get("total_source_plus_target_verification_calls"),
         contract.get("total_source_plus_target_calls"),
-        None if source_calls is None or target_calls is None else source_calls + target_calls,
+        information.get("total_simulator_calls"),
+        None if source_calls is None or target_total_calls is None
+        else source_calls + target_total_calls,
     ))
     initial_count = _integer(initial.get("true_feasible_count"))
     initial_has = None if initial_count is None else initial_count > 0
@@ -494,26 +629,67 @@ def _normalize_transfer_result(payload: dict, path: Path, root: Path) -> dict:
     regret = _finite(result.get("feasible_regret")) if true_feasible else None
     initial_regret = _finite(initial.get("best_true_feasible_regret"))
     final_improves = _boolean(initial.get("final_improves_initial_best"))
-    posterior_margin = _finite(posterior.get("chance_bound"))
+    posterior_margin = _finite(_first(
+        posterior.get("chance_bound"),
+        result.get("posterior_chance_margin"),
+    ))
+    terminal = _terminal_fields(result)
     return {
         "run_id": root.name,
-        "track": "transfer",
-        "variant": f"{payload.get('implementation')}/{payload.get('method')}",
+        "track": "online_sota" if is_online_sota else "transfer",
+        "variant": (
+            f"{payload.get('protocol')}/{payload.get('method')}"
+            if is_online_sota
+            else f"{payload.get('implementation')}/{payload.get('method')}"
+        ),
         "method": payload.get("method"),
-        "implementation": payload.get("implementation"),
-        "initial_design": _first(target.get("initial_design"), contract.get("target_initial_design")),
+        "implementation": _first(
+            payload.get("implementation"),
+            result.get("backend"),
+        ),
+        "initial_design": _first(
+            target.get("initial_design"),
+            contract.get("target_initial_design"),
+            information.get("initial_design_contract"),
+            result.get("initial_design"),
+        ),
+        "initial_design_fingerprint": _first(
+            target.get("initial_design_fingerprint"),
+            contract.get("target_initial_design_fingerprint"),
+            payload.get("initial_points_fingerprint"),
+        ),
+        "source_archive_fingerprint": _first(
+            result.get("source_archive_fingerprint"),
+            contract.get("source_archive_fingerprint"),
+            payload.get("source_archive_fingerprint"),
+        ),
         "proposal_mode": None,
         "proposal_structural_prior_profile": None,
         "proposal_source_dimension": None,
         "proposal_target_dimension": dimension,
-        "domain": _first(payload.get("heldout_target_domain"), result.get("heldout")),
+        "domain": _first(
+            payload.get("heldout_target_domain"),
+            payload.get("heldout"),
+            result.get("heldout"),
+        ),
         "seed": _integer(payload.get("seed")),
         "d": dimension,
-        "N": target_calls,
-        "n0": _integer(_first(target.get("n0"), contract.get("target_initial_calls_n0"))),
+        "N": search_calls,
+        "n0": _integer(_first(
+            target.get("n0"),
+            contract.get("target_initial_calls_n0"),
+            information.get("target_initial_calls_n0"),
+        )),
         "source_calls": source_calls,
+        "search_calls": search_calls,
+        "verification_calls": verification_calls,
+        "target_total_calls": target_total_calls,
+        "source_plus_search_calls": source_plus_search_calls,
         "total_calls": total_calls,
-        "d_over_target_calls": _safe_ratio(dimension, target_calls),
+        "d_over_search_calls": _safe_ratio(dimension, search_calls),
+        "d_over_target_total_calls": _safe_ratio(
+            dimension, target_total_calls),
+        "d_over_target_calls": _safe_ratio(dimension, search_calls),
         "d_over_total_calls": _safe_ratio(dimension, total_calls),
         "status": payload.get("status", "ok"),
         "true_feasible": true_feasible,
@@ -536,6 +712,7 @@ def _normalize_transfer_result(payload: dict, path: Path, root: Path) -> dict:
             None if regret is None or initial_regret is None else regret - initial_regret
         ),
         "posterior_feasible": None if posterior_margin is None else posterior_margin <= 0,
+        **terminal,
         "posterior_certificate_vacuous": None,
         "posterior_certified_count": None,
         "false_certificate_count": None,
@@ -866,6 +1043,16 @@ def summarize_rows(rows: list[dict]) -> list[dict]:
         )
         posterior_feasible_count, posterior_feasible_den, posterior_feasible_rate = _rate(
             row.get("posterior_feasible") for row in items)
+        terminal_count, terminal_den, terminal_rate = _rate(
+            row.get("terminal_certified") for row in items)
+        rank1_count, rank1_den, rank1_rate = _rate(
+            row.get("terminal_rank1_certified") for row in items)
+        fallback_count, fallback_den, fallback_rate = _rate(
+            row.get("terminal_fallback_used") for row in items)
+        abstain_count, abstain_den, abstain_rate = _rate(
+            row.get("terminal_abstained") for row in items)
+        false_terminal_count, false_terminal_den, false_terminal_rate = _rate(
+            row.get("terminal_false_certificate") for row in items)
         summaries.append({
             **base,
             "n": len(items),
@@ -897,6 +1084,36 @@ def summarize_rows(rows: list[dict]) -> list[dict]:
             "posterior_feasible_count": posterior_feasible_count,
             "posterior_feasible_denominator": posterior_feasible_den,
             "posterior_feasible_rate": posterior_feasible_rate,
+            "terminal_certified_count": terminal_count,
+            "terminal_certified_denominator": terminal_den,
+            "terminal_certified_rate": terminal_rate,
+            "terminal_rank1_certified_count": rank1_count,
+            "terminal_rank1_certified_denominator": rank1_den,
+            "terminal_rank1_certified_rate": rank1_rate,
+            "terminal_fallback_count": fallback_count,
+            "terminal_fallback_denominator": fallback_den,
+            "terminal_fallback_rate": fallback_rate,
+            "terminal_abstention_count": abstain_count,
+            "terminal_abstention_denominator": abstain_den,
+            "terminal_abstention_rate": abstain_rate,
+            "terminal_false_certificate_count": false_terminal_count,
+            "terminal_false_certificate_denominator": false_terminal_den,
+            "terminal_false_certificate_rate": false_terminal_rate,
+            "median_primary_feasible_regret": _median(
+                row.get("primary_feasible_regret")
+                for row in items
+                if row.get("primary_true_feasible") is True
+            ),
+            "median_search_calls": _median(
+                row.get("search_calls") for row in items),
+            "median_verification_calls": _median(
+                row.get("verification_calls") for row in items),
+            "median_target_total_calls": _median(
+                row.get("target_total_calls") for row in items),
+            "median_source_plus_search_calls": _median(
+                row.get("source_plus_search_calls") for row in items),
+            "median_total_calls": _median(
+                row.get("total_calls") for row in items),
             "nonvacuous_certificate_count": nonvacuous_count,
             "certificate_audit_denominator": nonvacuous_den,
             "nonvacuous_certificate_rate": nonvacuous_rate,

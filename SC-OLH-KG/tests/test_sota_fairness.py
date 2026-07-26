@@ -61,3 +61,32 @@ def test_target_only_and_archive_shared_protocols_have_auditable_designs(tmp_pat
     assert shared["source_archive_fingerprint"]
     assert shared["initial_points_fingerprint"]
     assert shared["result"]["initial_design"] == "shared_external"
+
+
+def test_online_sota_reports_search_verification_and_total_budgets(tmp_path):
+    args = _args(tmp_path, "target_n20")
+    args.terminal_verification = True
+    args.terminal_verification_primary_budget = 8
+    args.terminal_verification_support_budget = 12
+    args.terminal_verification_delta = 0.05
+    args.terminal_verification_method = "normal_quantile_tolerance"
+    args.terminal_safe_interior_probability_slack = 0.05
+    args.terminal_safe_interior_require_provider = True
+    payload = run_one(args)
+    assert payload["status"] == "ok"
+    result = payload["result"]
+    contract = payload["information_contract"]
+    assert result["n_search_simulations"] == 5
+    assert result["n_verification_simulations"] in {8, 20}
+    assert result["n_simulations"] == (
+        result["n_search_simulations"]
+        + result["n_verification_simulations"]
+    )
+    assert contract["target_search_calls"] == 5
+    assert contract["target_verification_calls"] == (
+        result["n_verification_simulations"])
+    assert contract["target_total_calls"] == result["n_simulations"]
+    assert result["terminal_shortlist_frozen_before_truth_metrics"] is True
+    assert result["terminal_verification"][
+        "posterior_updated_from_verification"
+    ] is False
