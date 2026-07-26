@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "status": "launched",
+  "launched_on": "2026-07-26",
+  "base_code_commit": "1f254a5",
+  "compatibility_patch_commits": {
+    "official_safe_fpacoh_adaptive_functional_kl_jitter": "8a32bcb"
+  },
+  "branch": "codex/sc-olh-kg-performance-validation",
+  "domains": [
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl"
+  ],
+  "target_contract": {
+    "dimension": 1000,
+    "seed_start": 80,
+    "n_seeds": 20,
+    "n0": 10,
+    "search_calls": 13,
+    "terminal_verification": {
+      "shortlist_size": 2,
+      "candidate_budgets": [
+        80,
+        96
+      ],
+      "familywise_delta": 0.05,
+      "method": "gaussian_noncentral_t_tolerance",
+      "shortlist_frozen_before_verification": true,
+      "verification_updates_optimizer": false,
+      "target_oracle_used": false
+    }
+  },
+  "same_dimension_source_contract": {
+    "source_dimension": 1000,
+    "source_calls": 384,
+    "records_per_source_domain": 64,
+    "replicates": 3,
+    "oracle_aided": false,
+    "proposal_profile": "low_frequency_only",
+    "proposal_mode": "risk_objective_atlas",
+    "source_design_mode": "universal_mixture",
+    "frozen_n0_shared_byte_identically": true,
+    "archive_fingerprints": {
+      "FactorShockStatePolicyRZDT1": "69705de909e15109d817b6f93bb12315ff191d5feb5bb589404b82413e642a8a",
+      "InventorySupplyChain": "04af229d7d1cb36e39e584868b4be368a61ed4d82b67684ed7bbb899859eb6d9",
+      "QueueResourceControl": "890c48c72baf5a5d00b2a9d4259f7e69bb3b4ddecffd9e0d34da622be4af11a8"
+    }
+  },
+  "cross_dimension_source_contract": {
+    "source_dimension": 50,
+    "target_dimension": 1000,
+    "source_calls": 384,
+    "dimension_holdout": true,
+    "comparison_role": "SC-only cross-dimension stress test",
+    "not_labelled_byte_identical_transfer_fairness": true,
+    "archive_fingerprints": {
+      "FactorShockStatePolicyRZDT1": "40a2813576c8efe392f84b1250c53f37f85b55207836d888d5116d6718551e08",
+      "InventorySupplyChain": "710ab75022cd67c45c2523e14d70b324e311751f1f6595b22e6224509afcf145",
+      "QueueResourceControl": "5222c52f779d343ec92d5886627a9969ceadf4c8d0255d887c7846fb0d9b503c"
+    }
+  },
+  "runs": [
+    {
+      "run_id": "paper_certified_transfer_source_d1000_n13_s80_99_v1",
+      "role": "same-dimension archive-fair transfer methods with shared frozen n0",
+      "implementation": "official",
+      "initial_design": "source_informed",
+      "methods": 8,
+      "experiment_tasks": 480,
+      "prerequisite_tasks": 6
+    },
+    {
+      "run_id": "paper_certified_transfer_sobol_d1000_n13_s80_99_v1",
+      "role": "common-Sobol transfer control",
+      "implementation": "official",
+      "initial_design": "common_sobol",
+      "methods": 8,
+      "experiment_tasks": 480,
+      "prerequisite_tasks": 3
+    },
+    {
+      "run_id": "paper_certified_sota_d1000_n13_s80_99_v1",
+      "role": "official target-only and warm-start BoTorch baselines",
+      "methods": [
+        "botorch_turbo",
+        "botorch_scbo",
+        "botorch_saasbo"
+      ],
+      "protocols": [
+        "target_n13",
+        "shared_archive_n13",
+        "target_cost_matched_n397"
+      ],
+      "experiment_tasks": 540,
+      "cuda_required": true
+    },
+    {
+      "run_id": "paper_certified_scolh_v64_same_d1000_n13_s80_99_v1",
+      "role": "V64 same-dimension archive-fair main method",
+      "experiment_tasks": 60
+    },
+    {
+      "run_id": "paper_certified_crossdim_designs_s80_99_v1",
+      "role": "cross-dimension frozen proposal prerequisites",
+      "prerequisite_tasks": 3
+    },
+    {
+      "run_id": "paper_certified_scolh_v64_cross_d50_d1000_n13_s80_99_v1",
+      "role": "V64 cross-dimension transfer stress test",
+      "experiment_tasks": 60
+    }
+  ],
+  "task_accounting": {
+    "submitted_tasks_at_launch": 1632,
+    "logical_signatures": 1632,
+    "experiment_tasks": 1620,
+    "prerequisite_tasks": 12,
+    "all_signatures_unique_at_launch": true,
+    "scheduler_retry_tasks_excluded": true
+  },
+  "comparison_strata": {
+    "equal_search_same_archive": [
+      "paper_certified_scolh_v64_same_d1000_n13_s80_99_v1",
+      "paper_certified_transfer_source_d1000_n13_s80_99_v1",
+      "paper_certified_sota_d1000_n13_s80_99_v1:shared_archive_n13"
+    ],
+    "equal_search_target_only": [
+      "paper_certified_sota_d1000_n13_s80_99_v1:target_n13",
+      "paper_certified_transfer_sobol_d1000_n13_s80_99_v1"
+    ],
+    "total_source_cost_matched": [
+      "source_archive_384_plus_target_search_13",
+      "paper_certified_sota_d1000_n13_s80_99_v1:target_cost_matched_n397"
+    ],
+    "cross_dimension_stress": [
+      "paper_certified_scolh_v64_cross_d50_d1000_n13_s80_99_v1"
+    ]
+  },
+  "deployment": {
+    "sc_and_transfer_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "botorch_gpu_nodes": [
+      "jtl110gpu",
+      "jtl110gpu2",
+      "jtl311linux"
+    ],
+    "botorch_versions": {
+      "torch": "2.5.1+cu121",
+      "botorch": "0.16.1",
+      "gpytorch": "1.15.2",
+      "pyro": "1.9.1"
+    },
+    "raw_checkpoints_synced_locally": false,
+    "compact_json_only": true
+  }
+}
