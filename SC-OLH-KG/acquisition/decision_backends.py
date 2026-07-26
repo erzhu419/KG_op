@@ -393,6 +393,116 @@ def _risk_coordinate_coverage_scores(problem, candidates, observed):
     return np.min(distance, axis=1), "observable_cumulative_risk"
 
 
+def _guard_anchor_distance_scores(problem, candidates, anchor):
+    """Distance to the certificate anchor in observable risk coordinates."""
+
+    if anchor is None:
+        return np.ones(len(candidates), dtype=float), "anchor_unavailable"
+
+    def features(point):
+        if hasattr(problem, "cumulative_risk_features"):
+            try:
+                value = problem.cumulative_risk_features(
+                    point, output_index=1)
+            except TypeError:
+                value = problem.cumulative_risk_features(point)
+            row = np.asarray(value, dtype=float).reshape(-1)
+        else:
+            bounds_lo, bounds_hi = problem.int_bounds()
+            lo = np.asarray(bounds_lo, dtype=float)
+            hi = np.asarray(bounds_hi, dtype=float)
+            row = (
+                np.asarray(point, dtype=float) - lo
+            ) / np.maximum(hi - lo, 1.0)
+        if len(row) == 0 or not np.all(np.isfinite(row)):
+            raise ValueError("invalid guard coordinate")
+        return row
+
+    try:
+        rows = np.vstack([features(point) for point in candidates])
+        anchor_row = features(anchor)
+    except (AttributeError, TypeError, ValueError, FloatingPointError):
+        return np.ones(len(candidates), dtype=float), "coordinate_invalid"
+    if rows.shape[1] != len(anchor_row):
+        return np.ones(len(candidates), dtype=float), "dimension_mismatch"
+    center = np.median(np.vstack([rows, anchor_row[None, :]]), axis=0)
+    scale = np.sqrt(np.mean(
+        (np.vstack([rows, anchor_row[None, :]]) - center[None, :]) ** 2,
+        axis=0,
+    ))
+    scale = np.where(scale > 1e-12, scale, 1.0)
+    distance = np.linalg.norm(
+        (rows - anchor_row[None, :]) / scale[None, :],
+        axis=1,
+    )
+    source = (
+        "observable_cumulative_risk"
+        if hasattr(problem, "cumulative_risk_features")
+        else "normalized_policy_fallback"
+    )
+    return distance, source
+
+
+def _guard_decomposition_support_priorities(
+    problem,
+    candidates,
+    moments,
+    components,
+    theory_margin,
+    guard_decomposition,
+):
+    """Return two oracle-free action supports for the dominant guard."""
+
+    guard = dict(guard_decomposition or {})
+    mode = str(guard.get("dominant_mode", "interior"))
+    anchor = guard.get("anchor")
+    distance, coordinate_source = _guard_anchor_distance_scores(
+        problem, candidates, anchor)
+    constraint_information = np.sqrt(np.maximum(
+        np.asarray(moments.constraint_epistemic, dtype=float)
+        + np.asarray(moments.constraint_between_expert, dtype=float),
+        _EPS,
+    ))
+    local_information = distance / np.maximum(
+        constraint_information, np.sqrt(_EPS))
+    stochastic_margin = np.asarray(
+        components["stochastic_margin_mean"], dtype=float)
+    margin_sd = np.maximum(
+        np.asarray(components["margin_sd"], dtype=float), np.sqrt(_EPS))
+    boundary_distance = np.abs(stochastic_margin) / margin_sd
+
+    if mode == "epistemic":
+        priorities = [
+            ("guard_epistemic_neighbor", distance),
+            ("guard_epistemic_local_information", local_information),
+        ]
+    elif mode == "aleatoric":
+        # The anchor replication is already an active action. These two fresh
+        # supports let the exact fantasy comparison reject replication only
+        # when a nearby boundary/depth action has greater joint value.
+        priorities = [
+            ("guard_aleatoric_neighbor", distance),
+            ("guard_aleatoric_boundary", boundary_distance),
+        ]
+    else:
+        positive_margin = np.maximum(
+            np.asarray(theory_margin, dtype=float), 0.0)
+        priorities = [
+            ("guard_safe_interior_depth", np.asarray(
+                theory_margin, dtype=float)),
+            ("guard_safe_interior_risk", np.asarray(
+                components["bayes_risk"], dtype=float) + positive_margin),
+        ]
+    return priorities, {
+        "status": "ok",
+        "dominant_mode": mode,
+        "anchor": anchor,
+        "coordinate_source": coordinate_source,
+        "support_labels": [label for label, _ in priorities],
+        "target_oracle_used": False,
+    }
+
+
 
 def _posterior_pareto_support_priorities(
     candidates,
@@ -582,6 +692,7 @@ def evaluate_or_replicate_action_set(
             "canonical_plus_posterior_certificate_coverage",
             "canonical_plus_posterior_risk_certificate_coverage",
             "canonical_plus_posterior_pareto_support",
+            "canonical_plus_posterior_guard_decomposition",
         }
         if policy in posterior_policies:
             if new_action_priority is None:
@@ -1039,6 +1150,7 @@ def score_decision_backend(
     evaluate_or_replicate_new_action_count=1,
     evaluate_or_replicate_new_action_policy="canonical_sobol",
     evaluate_or_replicate_baseline_new_action_count=None,
+    guard_decomposition=None,
 ):
     """Rank candidates under one named backend.
 
@@ -1151,6 +1263,7 @@ def score_decision_backend(
     exact_refit_required = False
     risk_coordinate_coverage = None
     risk_coordinate_coverage_source = None
+    guard_decomposition_support = None
 
     if name in {"random", "random_continuation"}:
         total = rng.random(len(candidates))
@@ -1223,12 +1336,27 @@ def score_decision_backend(
             "canonical_plus_posterior_certificate_coverage",
             "canonical_plus_posterior_risk_certificate_coverage",
             "canonical_plus_posterior_pareto_support",
+            "canonical_plus_posterior_guard_decomposition",
         }:
             risk_coordinate_coverage, risk_coordinate_coverage_source = (
                 _risk_coordinate_coverage_scores(
                     problem, candidates, observed)
             )
-            if action_policy == "canonical_plus_posterior_pareto_support":
+            if action_policy == (
+                "canonical_plus_posterior_guard_decomposition"
+            ):
+                (
+                    supplemental_priorities,
+                    guard_decomposition_support,
+                ) = _guard_decomposition_support_priorities(
+                    problem,
+                    candidates,
+                    moments,
+                    components,
+                    theory_margin,
+                    guard_decomposition,
+                )
+            elif action_policy == "canonical_plus_posterior_pareto_support":
                 supplemental_priorities = (
                     _posterior_pareto_support_priorities(
                         candidates,
@@ -1295,6 +1423,21 @@ def score_decision_backend(
             action_set["supplemental_new_action_labels"])
         evaluate_or_replicate_active_labels = list(
             action_set["active_action_labels"])
+        if (
+            action_policy == "canonical_plus_posterior_guard_decomposition"
+            and guard_decomposition_support is not None
+            and guard_decomposition_support.get("dominant_mode")
+            == "aleatoric"
+        ):
+            anchor = tuple(int(value) for value in (
+                guard_decomposition_support.get("anchor") or ()))
+            for position, index in enumerate(active_indices):
+                if (
+                    bool(hvd_is_replicate[int(index)])
+                    and tuple(candidates[int(index)]) == anchor
+                ):
+                    evaluate_or_replicate_active_labels[position] = (
+                        "guard_aleatoric_anchor_replicate")
         evaluate_or_replicate_new_policy = str(
             action_set["new_action_policy"])
 
@@ -1452,6 +1595,7 @@ def score_decision_backend(
             exact_refit_required),
         "risk_coordinate_coverage": risk_coordinate_coverage,
         "risk_coordinate_coverage_source": risk_coordinate_coverage_source,
+        "guard_decomposition_support": guard_decomposition_support,
     }
     if name in {"transfer_utility", "source_utility", "utility"}:
         out["transfer_utility_status"] = utility_status

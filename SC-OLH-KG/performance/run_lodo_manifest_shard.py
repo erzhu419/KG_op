@@ -411,6 +411,7 @@ def main():
             "canonical_plus_posterior_risk",
             "canonical_plus_posterior_risk_certificate_coverage",
             "canonical_plus_posterior_pareto_support",
+            "canonical_plus_posterior_guard_decomposition",
         ),
         default=None,
     )

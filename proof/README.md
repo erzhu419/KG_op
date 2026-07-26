@@ -77,6 +77,11 @@ mathlib and its cache; later builds should be fast.
   V54 replaces the global worst-action radius with a nested-common-random-number
   radius for each challenger/fallback difference and proves guarded joint
   improvement conditional on that action-specific radius covering exact error.
+- `SCOLHKG/Real/GuardDecompositionPolicy.lean`: V58 exactly decomposes the
+  robust chance margin into mean, epistemic, joint-epistemic, cumulative
+  aleatoric, and favorable-coupling terms; proves that the dynamic action
+  support retains every V51 action; and proves joint posterior Bayes-risk and
+  certificate-deficit noninferiority for fallback-or-confirmed selection.
 - `SCOLHKG/Measure/StatisticalClosure.lean`: combines the component bad events
   into a high-probability end-to-end safe-regret statement.
 - `SCOLHKG/Measure/FiniteSampleHVDConcentration.lean`: converts a declared
@@ -777,6 +782,17 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
      across charged online stages.
 156. V56 confirmation failures and V57 terminal-switch failures compose by a
      finite union bound without an independence assumption.
+157. The V58 signed guard decomposition reconstructs the exact robust chance
+     margin; positive joint source/task correction is assigned to epistemic
+     uncertainty and favorable negative coupling remains explicit.
+158. The largest positive mean, epistemic, or aleatoric obstruction selects a
+     finite action-support family without target truth.
+159. Every guard-decomposed support retains the complete promoted V51
+     evaluate-or-replicate action set, so its best posterior value cannot be
+     below the retained fallback value.
+160. Conditional on independent two-head confirmation, the selected V58 action
+     cannot increase either posterior Bayes risk or certificate deficit
+     relative to the literal V51 fallback.
 
 Remaining work is empirical/binding and assumption validation:
 

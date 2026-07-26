@@ -684,6 +684,78 @@ def test_v54_pareto_support_is_literal_superset_with_auditable_labels():
         "canonical_plus_posterior_pareto_support")
 
 
+@pytest.mark.parametrize(
+    ("mode", "expected_labels"),
+    [
+        (
+            "epistemic",
+            {
+                "guard_epistemic_neighbor",
+                "guard_epistemic_local_information",
+            },
+        ),
+        (
+            "aleatoric",
+            {
+                "guard_aleatoric_neighbor",
+                "guard_aleatoric_boundary",
+            },
+        ),
+        (
+            "interior",
+            {
+                "guard_safe_interior_depth",
+                "guard_safe_interior_risk",
+            },
+        ),
+    ],
+)
+def test_v58_guard_support_is_a_literal_v51_action_superset(
+    mode, expected_labels,
+):
+    candidates = [
+        (0, 0), (1, 9), (2, 8), (3, 7), (4, 6), (5, 5),
+        (6, 4), (7, 3), (8, 2), (9, 1), (10, 10), (10, 0),
+    ]
+    observed = [candidates[0], candidates[10]]
+    result = score_decision_backend(
+        "sobol_exact_joint_voi",
+        candidates,
+        DummyGPR(),
+        DummyGPR(),
+        DummyVariance(),
+        DummyProblem(),
+        observed=[(point, np.array([0.0, 0.0])) for point in observed],
+        iteration=5,
+        seed=239,
+        canonical_sobol_candidate=candidates[1],
+        allow_replication_actions=True,
+        evaluate_or_replicate_new_action_count=6,
+        evaluate_or_replicate_new_action_policy=(
+            "canonical_plus_posterior_guard_decomposition"),
+        evaluate_or_replicate_baseline_new_action_count=4,
+        guard_decomposition={
+            "status": "ok",
+            "dominant_mode": mode,
+            "anchor": list(candidates[0]),
+            "target_oracle_used": False,
+        },
+    )
+    active = set(result["evaluate_or_replicate_active_indices"].tolist())
+    baseline = set(result[
+        "evaluate_or_replicate_baseline_indices"].tolist())
+    assert baseline < active
+    assert len(baseline) == 6
+    assert set(result[
+        "evaluate_or_replicate_supplemental_labels"]) == expected_labels
+    support = result["guard_decomposition_support"]
+    assert support["dominant_mode"] == mode
+    assert support["target_oracle_used"] is False
+    if mode == "aleatoric":
+        labels = result["evaluate_or_replicate_active_labels"]
+        assert "guard_aleatoric_anchor_replicate" in labels
+
+
 def test_v52_one_step_guard_falls_back_until_advantage_exceeds_two_eta():
     problem = ScalarizedProblem(RZDT1(d=3, L=20, sigma=0.03))
     algorithm = SingleOLHKGAlgorithm(

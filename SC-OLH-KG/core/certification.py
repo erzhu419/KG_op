@@ -22,6 +22,74 @@ class CertificationResult:
     mode: str
 
 
+@dataclass(frozen=True)
+class GuardDecompositionResult:
+    """Auditable decomposition of a conservative chance margin.
+
+    A joint robust certificate can contain an extra source/task ambiguity
+    correction beyond the nominal epistemic and aleatoric guards. Positive
+    correction is epistemic uncertainty; negative correction is retained as
+    favorable coupling so the decomposition reconstructs the exact margin.
+    """
+
+    mean_excess: np.ndarray
+    epistemic_guard: np.ndarray
+    joint_epistemic_guard: np.ndarray
+    aleatoric_guard: np.ndarray
+    favorable_coupling: np.ndarray
+    reconstructed_margin: np.ndarray
+    dominant_mode: np.ndarray
+
+
+def decompose_chance_margin(result: CertificationResult) -> GuardDecompositionResult:
+    """Split a chance margin into mean, epistemic, and aleatoric guards."""
+
+    mean_excess = np.asarray(result.mu, dtype=float) - float(result.tau)
+    epistemic_guard = np.sqrt(max(float(result.beta_g), 0.0)) * np.sqrt(
+        np.maximum(np.asarray(result.epistemic_var, dtype=float), 0.0)
+    )
+    aleatoric_guard = float(result.z_alpha) * np.sqrt(
+        np.maximum(np.asarray(result.aleatoric_var, dtype=float), 0.0)
+    )
+    nominal = mean_excess + epistemic_guard + aleatoric_guard
+    correction = np.asarray(result.margin, dtype=float) - nominal
+    joint_epistemic_guard = np.maximum(correction, 0.0)
+    favorable_coupling = np.minimum(correction, 0.0)
+    reconstructed = (
+        mean_excess
+        + epistemic_guard
+        + joint_epistemic_guard
+        + aleatoric_guard
+        + favorable_coupling
+    )
+
+    epistemic_total = epistemic_guard + joint_epistemic_guard
+    mean_guard = np.maximum(mean_excess, 0.0)
+    modes = np.full(np.shape(mean_excess), "interior", dtype=object)
+    positive = np.asarray(result.margin, dtype=float) > 0.0
+    epistemic_dominant = (
+        positive
+        & (epistemic_total >= aleatoric_guard)
+        & (epistemic_total >= mean_guard)
+    )
+    aleatoric_dominant = (
+        positive
+        & ~epistemic_dominant
+        & (aleatoric_guard >= mean_guard)
+    )
+    modes[epistemic_dominant] = "epistemic"
+    modes[aleatoric_dominant] = "aleatoric"
+    return GuardDecompositionResult(
+        mean_excess=mean_excess,
+        epistemic_guard=epistemic_guard,
+        joint_epistemic_guard=joint_epistemic_guard,
+        aleatoric_guard=aleatoric_guard,
+        favorable_coupling=favorable_coupling,
+        reconstructed_margin=reconstructed,
+        dominant_mode=modes,
+    )
+
+
 def conservative_chance_margin(
     mu_g,
     epistemic_var_g,

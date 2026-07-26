@@ -10,7 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from acquisition.olhkg import OLHKGAcquisition  # noqa: E402
-from core.certification import conservative_chance_margin  # noqa: E402
+from core.certification import (  # noqa: E402
+    CertificationResult,
+    conservative_chance_margin,
+    decompose_chance_margin,
+)
 
 
 class DummyConstraintGPR:
@@ -56,6 +60,35 @@ class CertificationTests(unittest.TestCase):
             beta_g=4.0, mode="legacy")
         self.assertGreater(float(theory.margin[0]), float(legacy.margin[0]))
         self.assertEqual(legacy.beta_g, 0.0)
+
+    def test_guard_decomposition_reconstructs_joint_robust_margin(self):
+        nominal = conservative_chance_margin(
+            [0.1, -0.4],
+            [0.25, 0.01],
+            [0.04, 0.01],
+            tau=1.0,
+            alpha=0.05,
+            beta_g=4.0,
+        )
+        joint = CertificationResult(
+            margin=np.asarray(nominal.margin) + np.array([0.3, -0.05]),
+            mu=nominal.mu,
+            epistemic_var=nominal.epistemic_var,
+            aleatoric_var=nominal.aleatoric_var,
+            beta_g=nominal.beta_g,
+            z_alpha=nominal.z_alpha,
+            tau=nominal.tau,
+            mode=nominal.mode,
+        )
+        decomposition = decompose_chance_margin(joint)
+        np.testing.assert_allclose(
+            decomposition.reconstructed_margin, joint.margin)
+        np.testing.assert_allclose(
+            decomposition.joint_epistemic_guard, [0.3, 0.0])
+        np.testing.assert_allclose(
+            decomposition.favorable_coupling, [0.0, -0.05])
+        self.assertEqual(decomposition.dominant_mode[0], "epistemic")
+        self.assertEqual(decomposition.dominant_mode[1], "interior")
 
     def test_acquisition_feasibility_details_expose_theory_bound(self):
         candidates = [(0,), (1,)]

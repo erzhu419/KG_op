@@ -43,6 +43,7 @@ import SCOLHKG.Real.FiniteKernelInformationGain
 import SCOLHKG.Real.FinalistReplication
 import SCOLHKG.Real.FiniteSampleHVD
 import SCOLHKG.Real.GPRUpdate
+import SCOLHKG.Real.GuardDecompositionPolicy
 import SCOLHKG.Real.GroupSharedShrinkage
 import SCOLHKG.Real.GroupRidgeComplexity
 import SCOLHKG.Real.HierarchicalBoundaryCertificate

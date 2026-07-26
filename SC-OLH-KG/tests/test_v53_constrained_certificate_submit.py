@@ -333,6 +333,35 @@ def test_v57_composes_confirmation_with_posterior_safe_terminal(tmp_path):
     )
 
 
+def test_v58_restores_v51_terminal_with_guard_decomposed_support(tmp_path):
+    args = _args(tmp_path, (MODULE.V58,))
+    args.score_normalization = "none"
+    args.score_transform = "bounded_current_gain"
+    args.guard_mode = "independent_confirmation"
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 3 * 2
+    assert all("--exact-mc-samples 512 " in spec["cmd"] for spec in specs)
+    assert all(
+        "--evaluate-or-replicate-new-action-policy "
+        "canonical_plus_posterior_guard_decomposition" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--no-posterior-dominance-enabled" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v58_guard_decomposed_action_support" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--theory-contract-id "
+        "v58_guard_decomposed_policy_improvement_v1" in spec["cmd"]
+        for spec in specs
+    )
+
+
 def test_v53_bounded_gain_profile_is_versioned_and_not_double_normalized(tmp_path):
     args = _args(tmp_path, (MODULE.V53,))
     args.score_normalization = "none"

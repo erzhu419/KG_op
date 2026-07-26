@@ -18,7 +18,11 @@ from scipy.stats import norm, qmc
 
 from acquisition.decision_backends import score_decision_backend
 from acquisition.olhkg import OLHKGAcquisition
-from core.certification import CertificationResult, conservative_chance_margin
+from core.certification import (
+    CertificationResult,
+    conservative_chance_margin,
+    decompose_chance_margin,
+)
 from core.candidates import (
     axis_candidates,
     axis_landmark_candidates,
@@ -4106,6 +4110,66 @@ class SingleOLHKGAlgorithm:
             tau=cert.tau,
             mode=cert.mode,
         )
+
+    def _current_guard_decomposition(self):
+        """Decompose the least-vacuous observed certificate without truth."""
+
+        points = sorted(
+            tuple(int(value) for value in point)
+            for point in self.observations
+        )
+        if not points:
+            return {
+                "status": "no_observations",
+                "dominant_mode": "interior",
+                "anchor": None,
+                "target_oracle_used": False,
+            }
+        mu_con = self.gpr[1].posterior_mean_many(points)
+        cert = self._certification_result(mu_con, points)
+        decomposition = decompose_chance_margin(cert)
+        margins = np.asarray(cert.margin, dtype=float)
+        finite = np.flatnonzero(np.isfinite(margins))
+        if len(finite) == 0:
+            return {
+                "status": "nonfinite_certificate",
+                "dominant_mode": "interior",
+                "anchor": list(map(int, points[0])),
+                "target_oracle_used": False,
+            }
+        anchor_index = int(finite[int(np.argmin(margins[finite]))])
+        epistemic_total = float(
+            decomposition.epistemic_guard[anchor_index]
+            + decomposition.joint_epistemic_guard[anchor_index]
+        )
+        return {
+            "status": "ok",
+            "anchor": list(map(int, points[anchor_index])),
+            "anchor_index": anchor_index,
+            "dominant_mode": str(
+                decomposition.dominant_mode[anchor_index]),
+            "margin": float(margins[anchor_index]),
+            "mean_excess": float(
+                decomposition.mean_excess[anchor_index]),
+            "mean_guard": float(max(
+                decomposition.mean_excess[anchor_index], 0.0)),
+            "epistemic_guard": float(
+                decomposition.epistemic_guard[anchor_index]),
+            "joint_epistemic_guard": float(
+                decomposition.joint_epistemic_guard[anchor_index]),
+            "epistemic_guard_total": epistemic_total,
+            "aleatoric_guard": float(
+                decomposition.aleatoric_guard[anchor_index]),
+            "favorable_coupling": float(
+                decomposition.favorable_coupling[anchor_index]),
+            "reconstructed_margin": float(
+                decomposition.reconstructed_margin[anchor_index]),
+            "anchor_replicates": int(len(
+                self.observations[points[anchor_index]])),
+            "coordinate": "observable_state_coupled_cumulative_risk",
+            "selection": "minimum_observed_posterior_chance_margin",
+            "target_oracle_used": False,
+        }
 
     def _tcb_v2_mode(self):
         mode = str(self.config.tcb_v2_mode or "off").lower()
@@ -14141,6 +14205,21 @@ class SingleOLHKGAlgorithm:
             t0 = time.time()
             recheck_x, recheck_info = self._certification_recheck_candidate()
             candidates, candidate_sources = self._generate_candidates(iteration)
+            guard_decomposition = self._current_guard_decomposition()
+            if (
+                str(
+                    self.config.evaluate_or_replicate_new_action_policy
+                    or ""
+                ).strip().lower().replace("-", "_")
+                == "canonical_plus_posterior_guard_decomposition"
+                and guard_decomposition.get("anchor") is not None
+            ):
+                guard_anchor = tuple(map(
+                    int, guard_decomposition["anchor"]))
+                if guard_anchor not in candidates:
+                    candidates.append(guard_anchor)
+                candidate_sources.setdefault(
+                    guard_anchor, "guard_certificate_anchor")
             if recheck_x is not None:
                 recheck_x = tuple(int(v) for v in recheck_x)
                 if recheck_x not in candidates:
@@ -14251,6 +14330,8 @@ class SingleOLHKGAlgorithm:
                 self._last_task_proposal_info)
             row["boundary_coordinate_proposal"] = copy.deepcopy(
                 self._last_boundary_coordinate_proposal_info)
+            row["guard_decomposition"] = copy.deepcopy(
+                guard_decomposition)
 
             t0 = time.time()
             score = self.acquisition.score(
@@ -14314,6 +14395,7 @@ class SingleOLHKGAlgorithm:
                         else int(self.config.
                             evaluate_or_replicate_baseline_new_action_count)
                     ),
+                    guard_decomposition=guard_decomposition,
                 )
                 score["total"] = backend_score["total"]
             row["decision_backend"] = decision_backend
@@ -14792,6 +14874,8 @@ class SingleOLHKGAlgorithm:
                     "evaluate_or_replicate_active_labels", []))
                 row["decision_risk_coordinate_coverage_source"] = (
                     backend_score.get("risk_coordinate_coverage_source"))
+                row["decision_guard_decomposition_support"] = copy.deepcopy(
+                    backend_score.get("guard_decomposition_support"))
                 row["decision_evaluate_or_replicate_exact_refit_required"] = (
                     bool(backend_score.get(
                         "evaluate_or_replicate_exact_refit_required", False))
@@ -15749,6 +15833,11 @@ class SingleOLHKGAlgorithm:
                     "decision_evaluate_or_replicate_replication_action_count"),
                 "new_action_policy": iteration_row.get(
                     "decision_evaluate_or_replicate_new_action_policy"),
+                "guard_decomposition": copy.deepcopy(
+                    iteration_row.get("guard_decomposition")),
+                "guard_decomposition_support": copy.deepcopy(
+                    iteration_row.get(
+                        "decision_guard_decomposition_support")),
                 "exact_kg_active_action_labels": copy.deepcopy(
                     iteration_row.get(
                         "decision_evaluate_or_replicate_active_labels")),

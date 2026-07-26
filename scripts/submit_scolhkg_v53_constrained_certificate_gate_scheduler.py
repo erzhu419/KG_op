@@ -38,9 +38,10 @@ V54_FIDELITY = ("v54_mc128", "v54_mc512")
 V55_FIDELITY = ("v55_mc128", "v55_mc512")
 V56_FIDELITY = ("v56_confirm2048", "v56_confirm4096")
 V57 = "v57_posterior_safe_terminal"
+V58 = "v58_guard_decomposed_support"
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
-    *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY, V57,
+    *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY, V57, V58,
 )
 
 
@@ -323,6 +324,22 @@ def variant_profiles(args):
             "posterior_dominance_min_mean_gain": 0.0,
             "posterior_dominance_initialization": "risk",
         },
+        V58: {
+            **_v53_profile(
+                common, 512, "none", "bounded_current_gain",
+                args.challenger_new_action_count,
+                "independent_confirmation",
+                args.pairwise_prefix_samples,
+                args.pairwise_error_multiplier,
+                "canonical_plus_posterior_guard_decomposition",
+            ),
+            "implementation_contract_id": (
+                "v58_guard_decomposed_action_support"),
+            "theory_contract_id": (
+                "v58_guard_decomposed_policy_improvement_v1"),
+            "policy_improvement_confirmation_samples": 4096,
+            "posterior_dominance_enabled": False,
+        },
     }
 
 
@@ -348,11 +365,12 @@ def build_specs(args):
         raise ValueError(
             "v55_mc128/v55_mc512 require paired_nested_absolute")
     if (
-        any(name in (*V56_FIDELITY, V57) for name in requested)
+        any(name in (*V56_FIDELITY, V57, V58) for name in requested)
         and str(args.guard_mode) != "independent_confirmation"
     ):
         raise ValueError(
-            "v56/v57 confirmation variants require independent_confirmation")
+            "v56/v57/v58 confirmation variants require "
+            "independent_confirmation")
     args.variant_profiles = {name: profiles[name] for name in requested}
     args.variants = ",".join(requested)
     args.scenarios = closure.promoted.v51.v50.v49.v27.MEAN_SCENARIOS
@@ -410,6 +428,7 @@ def main():
         choices=(
             "canonical_plus_posterior_risk_certificate_coverage",
             "canonical_plus_posterior_pareto_support",
+            "canonical_plus_posterior_guard_decomposition",
         ),
         default="canonical_plus_posterior_risk_certificate_coverage",
     )
