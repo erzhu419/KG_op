@@ -1023,6 +1023,12 @@ def run_one(task):
             "terminal_verification_shortlist_size", 1)),
         terminal_verification_fallback_budget=int(args_dict.get(
             "terminal_verification_fallback_budget", 0)),
+        terminal_verification_shortlist_mode=str(args_dict.get(
+            "terminal_verification_shortlist_mode", "posterior_ranked")),
+        terminal_safe_interior_probability_slack=float(args_dict.get(
+            "terminal_safe_interior_probability_slack", 0.05)),
+        terminal_safe_interior_require_provider=bool(args_dict.get(
+            "terminal_safe_interior_require_provider", False)),
         observed_incumbent_use_replicate_variance=bool(args_dict[
             "observed_incumbent_use_replicate_variance"]),
         safe_interior_candidate_count=args_dict["safe_interior_candidate_count"],
@@ -1584,6 +1590,12 @@ def run_one(task):
             "terminal_verification_shortlist_size", 1)),
         "terminal_verification_fallback_budget": int(args_dict.get(
             "terminal_verification_fallback_budget", 0)),
+        "terminal_verification_shortlist_mode": str(args_dict.get(
+            "terminal_verification_shortlist_mode", "posterior_ranked")),
+        "terminal_safe_interior_probability_slack": float(args_dict.get(
+            "terminal_safe_interior_probability_slack", 0.05)),
+        "terminal_safe_interior_require_provider": bool(args_dict.get(
+            "terminal_safe_interior_require_provider", False)),
         "terminal_verification": result.get("terminal_verification"),
         "terminal_verification_certified": bool(
             result.get("terminal_verification_certified", False)),
@@ -3018,6 +3030,23 @@ def main():
         "--terminal_verification_shortlist_size", type=int, default=1)
     parser.add_argument(
         "--terminal_verification_fallback_budget", type=int, default=0)
+    parser.add_argument(
+        "--terminal_verification_shortlist_mode",
+        choices=(
+            "posterior_ranked",
+            "posterior_primary_safe_interior",
+        ),
+        default="posterior_ranked",
+    )
+    parser.add_argument(
+        "--terminal_safe_interior_probability_slack",
+        type=float,
+        default=0.05,
+    )
+    parser.add_argument(
+        "--terminal_safe_interior_require_provider",
+        action="store_true",
+    )
     parser.add_argument(
         "--finalist_frontier_policy",
         choices=("legacy", "coverage_reserved", "observed_safety_reserved"),

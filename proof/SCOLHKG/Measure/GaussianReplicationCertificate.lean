@@ -248,4 +248,36 @@ theorem false_ordered_two_policy_quantile_deployment_probability_le
       deltaFirst deltaSecond familywiseDelta
       hFirst hSecond hSpend
 
+theorem false_frozen_safe_interior_deployment_probability_le
+    {Design : Type*}
+    (shortlist : SCOLHKG.Real.FrozenSafeInteriorShortlist Design)
+    (isUnsafe : Design → Prop)
+    (certifiedFirst certifiedSecond : Ω → Prop)
+    (deltaFirst deltaSecond familywiseDelta : ℝ)
+    [IsFiniteMeasure μ]
+    (hFirst :
+      μ.real (
+        CandidateFalseCertificate
+          (isUnsafe shortlist.primary) certifiedFirst)
+        ≤ deltaFirst)
+    (hSecond :
+      μ.real (
+        CandidateFalseCertificate
+          (isUnsafe shortlist.support) certifiedSecond)
+        ≤ deltaSecond)
+    (hSpend : deltaFirst + deltaSecond ≤ familywiseDelta) :
+    μ.real (
+      FalseOrderedTwoPolicyDeployment
+        (isUnsafe shortlist.primary)
+        (isUnsafe shortlist.support)
+        certifiedFirst certifiedSecond)
+      ≤ familywiseDelta := by
+  exact
+    false_ordered_two_policy_deployment_probability_le_familywise_delta
+      (isUnsafe shortlist.primary)
+      (isUnsafe shortlist.support)
+      certifiedFirst certifiedSecond
+      deltaFirst deltaSecond familywiseDelta
+      hFirst hSecond hSpend
+
 end SCOLHKG.Measure

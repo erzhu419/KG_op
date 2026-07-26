@@ -43,10 +43,11 @@ V59 = "v59_terminal_gaussian_verification"
 V60 = "v60_ordered_shortlist_verification"
 V61 = "v61_power_ordered_shortlist_verification"
 V62 = "v62_exact_tolerance_shortlist_verification"
+V63 = "v63_safe_interior_shortlist_verification"
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
     *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY,
-    V57, V58, V59, V60, V61, V62,
+    V57, V58, V59, V60, V61, V62, V63,
 )
 
 
@@ -439,6 +440,40 @@ def variant_profiles(args):
             "terminal_verification_fallback_budget": int(
                 args.terminal_verification_fallback_budget),
         },
+        V63: {
+            **common,
+            "implementation_contract_id": (
+                "v63_cumulative_risk_safe_interior_shortlist_verification"),
+            "theory_contract_id": (
+                "v63_frozen_selector_familywise_quantile_certificate_v1"),
+            "evaluate_or_replicate_new_action_count": 4,
+            "evaluate_or_replicate_new_action_policy": (
+                "canonical_plus_posterior_risk"),
+            "policy_improvement_mode": "off",
+            "posterior_dominance_enabled": False,
+            "terminal_verification_budget": int(
+                args.terminal_verification_budget),
+            "terminal_verification_delta": float(
+                args.terminal_verification_delta),
+            "terminal_verification_mean_delta_fraction": float(
+                args.terminal_verification_mean_delta_fraction),
+            "terminal_verification_method": (
+                "normal_quantile_tolerance"),
+            "terminal_verification_policy": (
+                "ordered_frozen_shortlist"),
+            "terminal_verification_shortlist_size": 2,
+            "terminal_verification_fallback_budget": int(
+                args.terminal_verification_fallback_budget),
+            "terminal_verification_shortlist_mode": (
+                "posterior_primary_safe_interior"),
+            "terminal_safe_interior_probability_slack": float(
+                getattr(
+                    args,
+                    "terminal_safe_interior_probability_slack",
+                    0.05,
+                )),
+            "terminal_safe_interior_require_provider": True,
+        },
     }
 
 
@@ -470,7 +505,7 @@ def build_specs(args):
         raise ValueError(
             "v56/v57/v58 confirmation variants require "
             "independent_confirmation")
-    if any(name in {V59, V60, V61, V62} for name in requested):
+    if any(name in {V59, V60, V61, V62, V63} for name in requested):
         if int(args.terminal_verification_budget) < 2:
             raise ValueError(
                 "terminal verification requires at least two calls")
@@ -482,12 +517,12 @@ def build_specs(args):
             raise ValueError(
                 "verification mean-delta fraction must lie in (0, 1)")
     if (
-        any(name in {V60, V61, V62} for name in requested)
+        any(name in {V60, V61, V62, V63} for name in requested)
         and int(args.terminal_verification_shortlist_size) < 2
     ):
         raise ValueError("V60 requires a shortlist of at least two policies")
     if (
-        any(name in {V61, V62} for name in requested)
+        any(name in {V61, V62, V63} for name in requested)
         and int(args.terminal_verification_fallback_budget) < 2
     ):
         raise ValueError(
@@ -520,6 +555,16 @@ def build_specs(args):
             "v62_exact_tolerance_shortlist_verification_paired")
         args.gate_label = (
             "V51 versus V62 exact tolerance shortlist verification")
+    elif requested == [V63]:
+        args.stage_family = (
+            "v63_safe_interior_shortlist_verification")
+        args.gate_label = (
+            "V63 cumulative-risk safe-interior verification")
+    elif set(requested) == {CONTROL, V63}:
+        args.stage_family = (
+            "v63_safe_interior_shortlist_verification_paired")
+        args.gate_label = (
+            "V51 versus V63 safe-interior shortlist verification")
     else:
         args.stage_family = "v53_constrained_certificate_deficit"
         args.gate_label = "V53 constrained certificate-deficit policy"
@@ -628,6 +673,11 @@ def main():
         "--terminal-verification-shortlist-size", type=int, default=2)
     parser.add_argument(
         "--terminal-verification-fallback-budget", type=int, default=96)
+    parser.add_argument(
+        "--terminal-safe-interior-probability-slack",
+        type=float,
+        default=0.05,
+    )
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--exact-jobs", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=8192)

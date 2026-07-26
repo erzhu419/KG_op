@@ -391,7 +391,9 @@ mathlib and its cache; later builds should be fast.
   first-certified selection soundness, and the sequential verification budget
   upper bound, including V61's unequal rank-1/rank-2 fixed budgets. V62 adds
   the direct Gaussian quantile-tolerance margin, its deterministic safety
-  implication, and the registered 64/96 budget bound.
+  implication, and the exact 64/96 budget cap. V63 adds a frozen
+  cumulative-risk safe-interior shortlist contract and proves that
+  verification cannot alter its primary/support pair.
 - `SCOLHKG/Measure/GaussianReplicationCertificate.lean`: false terminal
   certification is contained in the union of mean- and scale-coverage
   failures, yielding the declared per-policy error bound by a finite-measure
@@ -401,6 +403,10 @@ mathlib and its cache; later builds should be fast.
   false-deployment probability at most the sum of its two preallocated errors;
   this family-wise result does not assume independence between certification
   events. The V62 direct-quantile variant instead contains every false
+  certificate in one quantile-coverage failure. V63 specializes the
+  two-policy family-wise theorem to any frozen safe-interior selector, so its
+  data-dependent posterior choice does not consume the independent
+  verification error budget.
   certificate in its single quantile-coverage failure and composes the two
   frozen policies with the same family-wise theorem.
 - `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean`: TCB-V2 positive

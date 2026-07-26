@@ -276,6 +276,19 @@ def _flags(profile, args):
                 "--terminal-verification-fallback-budget",
                 str(profile.get(
                     "terminal_verification_fallback_budget", 0)),
+                "--terminal-verification-shortlist-mode",
+                str(profile.get(
+                    "terminal_verification_shortlist_mode",
+                    "posterior_ranked")),
+                "--terminal-safe-interior-probability-slack",
+                str(profile.get(
+                    "terminal_safe_interior_probability_slack", 0.05)),
+                *(
+                    ["--terminal-safe-interior-require-provider"]
+                    if profile.get(
+                        "terminal_safe_interior_require_provider", False)
+                    else []
+                ),
             ]
             if "terminal_verification_budget" in profile
             else []

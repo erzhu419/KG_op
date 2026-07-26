@@ -25,6 +25,7 @@ from core.certification import (
     gaussian_quantile_tolerance_certificate,
     gaussian_replication_chance_certificate,
 )
+from core.cumulative_risk import get_risk_exposure
 from core.candidates import (
     axis_candidates,
     axis_landmark_candidates,
@@ -463,6 +464,9 @@ class SingleOLHKGConfig:
     terminal_verification_policy: str = "fixed_policy"
     terminal_verification_shortlist_size: int = 1
     terminal_verification_fallback_budget: int = 0
+    terminal_verification_shortlist_mode: str = "posterior_ranked"
+    terminal_safe_interior_probability_slack: float = 0.05
+    terminal_safe_interior_require_provider: bool = False
     observed_incumbent_use_replicate_variance: bool = False
     safe_interior_candidate_count: int = 0
     safe_interior_pool_size: int = 300
@@ -1300,13 +1304,35 @@ class SingleOLHKGAlgorithm:
                 "two candidates")
         ranked = list(getattr(
             self, "_last_terminal_bayes_ranked_points", []))
+        shortlist_mode = str(
+            self.config.terminal_verification_shortlist_mode
+            or "posterior_ranked"
+        ).strip().lower().replace("-", "_")
+        allowed_shortlist_modes = {
+            "posterior_ranked",
+            "posterior_primary_safe_interior",
+        }
+        if shortlist_mode not in allowed_shortlist_modes:
+            raise ValueError(
+                "terminal verification shortlist mode must be "
+                "posterior_ranked or posterior_primary_safe_interior")
         shortlist = [primary]
+        safe_interior = None
+        if shortlist_mode == "posterior_primary_safe_interior":
+            if requested_size != 2:
+                raise ValueError(
+                    "posterior-primary safe-interior verification requires "
+                    "a two-candidate shortlist")
+            safe_interior = self._terminal_safe_interior_candidate(primary)
+            point = tuple(int(value) for value in safe_interior["point"])
+            if point not in shortlist:
+                shortlist.append(point)
         for candidate in ranked:
+            if len(shortlist) >= requested_size:
+                break
             point = tuple(int(value) for value in candidate)
             if point not in shortlist:
                 shortlist.append(point)
-            if len(shortlist) >= requested_size:
-                break
         if len(shortlist) < requested_size:
             raise RuntimeError(
                 "ordered terminal verification requested "
@@ -1321,11 +1347,33 @@ class SingleOLHKGAlgorithm:
             budget,
             *([effective_fallback_budget] * (len(shortlist) - 1)),
         ]
-        frozen_shortlist = [{
-            "posterior_rank": int(rank),
-            "point": list(map(int, point)),
-            "point_fingerprint": integer_design_fingerprint([point]),
-        } for rank, point in enumerate(shortlist, start=1)]
+        posterior_rank = {
+            tuple(int(value) for value in point): int(rank)
+            for rank, point in enumerate(ranked, start=1)
+        }
+        frozen_shortlist = []
+        for index, point in enumerate(shortlist):
+            role = (
+                "posterior_bayes_primary"
+                if index == 0 else
+                "posterior_safe_interior_diversified"
+                if shortlist_mode == "posterior_primary_safe_interior"
+                else "posterior_bayes_fallback"
+            )
+            record = {
+                "shortlist_position": int(index + 1),
+                "shortlist_role": role,
+                "posterior_rank": posterior_rank.get(point),
+                "point": list(map(int, point)),
+                "point_fingerprint": integer_design_fingerprint([point]),
+            }
+            if index == 1 and safe_interior is not None:
+                record.update({
+                    key: copy.deepcopy(value)
+                    for key, value in safe_interior.items()
+                    if key != "point"
+                })
+            frozen_shortlist.append(record)
         attempts = []
         deployed = primary
         selected_rank = None
@@ -1377,6 +1425,7 @@ class SingleOLHKGAlgorithm:
             "method": (
                 f"ordered_frozen_shortlist_{attempt_method}"),
             "protocol": "ordered_frozen_shortlist",
+            "shortlist_mode": shortlist_mode,
             "policy_frozen_before_verification": True,
             "shortlist_frozen_before_verification": True,
             "search_samples_reused": False,
@@ -1412,6 +1461,153 @@ class SingleOLHKGAlgorithm:
             "certification_scope": (
                 "familywise_frozen_ordered_terminal_shortlist"),
             "verification_samples_logged": False,
+        }
+
+    def _terminal_safe_interior_coordinate(self, point):
+        """Return the source-frozen cumulative-risk coordinate for a policy."""
+
+        exposure = get_risk_exposure(
+            self.problem,
+            point,
+            output_index=1,
+        )
+        if exposure is not None:
+            coordinate = np.concatenate([
+                np.asarray(exposure.A, dtype=float).reshape(-1),
+                np.asarray(exposure.N, dtype=float).reshape(-1),
+            ])
+            if (
+                coordinate.size > 0
+                and np.all(np.isfinite(coordinate))
+            ):
+                return coordinate, "cumulative_risk_psi=(A,N)"
+        if self.config.terminal_safe_interior_require_provider:
+            raise RuntimeError(
+                "terminal safe-interior selection requires a finite "
+                "cumulative-risk provider coordinate")
+        lo, hi = self.problem.int_bounds()
+        lo = np.asarray(lo, dtype=float)
+        scale = np.maximum(np.asarray(hi, dtype=float) - lo, 1.0)
+        coordinate = (
+            np.asarray(point, dtype=float).reshape(-1) - lo
+        ) / scale
+        return coordinate, "normalized_policy_fallback"
+
+    def _terminal_safe_interior_candidate(self, primary):
+        """Freeze one ambiguity-diversified safety representative.
+
+        The eligible set contains initial-atlas policies whose posterior
+        violation probability is within a fixed slack of the safest atlas
+        policy. The representative maximizes standardized distance from the
+        Bayes-risk primary in the same cumulative-risk coordinate used by the
+        HVD model. No verification sample or target truth enters this choice.
+        """
+
+        slack = float(
+            self.config.terminal_safe_interior_probability_slack)
+        if not np.isfinite(slack) or slack < 0.0 or slack > 1.0:
+            raise ValueError(
+                "terminal safe-interior probability slack must lie in [0, 1]")
+        initial = unique_candidates([
+            point for point, _ in self.history[: int(self.config.n0)]
+        ])
+        primary = tuple(int(value) for value in primary)
+        alternatives = [point for point in initial if point != primary]
+        if not alternatives:
+            raise RuntimeError(
+                "terminal safe-interior selection requires a distinct "
+                "initial-atlas candidate")
+        components = self._terminal_bayes_risk_components(
+            self.gpr,
+            self.variance_model,
+            initial,
+            task_ensemble=self.task_ensemble,
+            risk_penalty=self.config.decision_risk_penalty,
+        )
+        violation_probability = np.asarray(
+            components["probability_violation"], dtype=float).reshape(-1)
+        if (
+            len(violation_probability) != len(initial)
+            or not np.all(np.isfinite(violation_probability))
+        ):
+            raise RuntimeError(
+                "terminal safe-interior selection requires finite posterior "
+                "violation probabilities")
+        minimum = float(np.min(violation_probability))
+        eligible_indices = [
+            index for index, point in enumerate(initial)
+            if point != primary
+            and float(violation_probability[index]) <= minimum + slack
+        ]
+        if not eligible_indices:
+            eligible_indices = [
+                min(
+                    (
+                        index for index, point in enumerate(initial)
+                        if point != primary
+                    ),
+                    key=lambda index: (
+                        float(violation_probability[index]),
+                        int(index),
+                    ),
+                )
+            ]
+
+        points_for_scale = list(initial)
+        if primary not in points_for_scale:
+            points_for_scale.append(primary)
+        coordinates = []
+        coordinate_sources = []
+        for point in points_for_scale:
+            coordinate, source = self._terminal_safe_interior_coordinate(point)
+            coordinates.append(np.asarray(coordinate, dtype=float))
+            coordinate_sources.append(source)
+        dimensions = {len(value) for value in coordinates}
+        if len(dimensions) != 1:
+            raise RuntimeError(
+                "terminal safe-interior coordinates have inconsistent "
+                "dimensions")
+        matrix = np.vstack(coordinates)
+        center = np.mean(matrix, axis=0)
+        scale = np.std(matrix, axis=0)
+        scale = np.where(scale > 1e-12, scale, 1.0)
+        standardized = (matrix - center) / scale
+        primary_index = points_for_scale.index(primary)
+        distance = np.sqrt(np.mean(
+            (
+                standardized[: len(initial)]
+                - standardized[primary_index][None, :]
+            ) ** 2,
+            axis=1,
+        ))
+        selected_index = max(
+            eligible_indices,
+            key=lambda index: (
+                float(distance[index]),
+                -float(violation_probability[index]),
+                -int(index),
+            ),
+        )
+        selected = tuple(int(value) for value in initial[selected_index])
+        return {
+            "point": selected,
+            "selection_contract": (
+                "posterior_violation_sublevel_maximin_cumulative_risk"),
+            "candidate_universe": "frozen_initial_atlas",
+            "candidate_universe_size": int(len(initial)),
+            "eligible_count": int(len(eligible_indices)),
+            "probability_slack": float(slack),
+            "minimum_posterior_violation_probability": float(minimum),
+            "selected_posterior_violation_probability": float(
+                violation_probability[selected_index]),
+            "selected_standardized_coordinate_distance": float(
+                distance[selected_index]),
+            "coordinate_source": str(
+                coordinate_sources[selected_index]),
+            "coordinate_dimension": int(matrix.shape[1]),
+            "target_labels_used": False,
+            "target_oracle_used": False,
+            "verification_samples_used": False,
         }
 
     def _fit_initial_belief(self, samples):

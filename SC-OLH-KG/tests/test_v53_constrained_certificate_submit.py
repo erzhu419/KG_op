@@ -520,6 +520,44 @@ def test_v62_paired_control_uses_dedicated_stage_family(tmp_path):
     )
 
 
+def test_v63_freezes_cumulative_risk_safe_interior_support(tmp_path):
+    args = _args(tmp_path, (MODULE.CONTROL, MODULE.V63))
+    args.terminal_verification_budget = 64
+    args.terminal_safe_interior_probability_slack = 0.05
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 2 * 3 * 2
+    challenger = [
+        spec for spec in specs
+        if f"/{MODULE.V63}/" in spec["signature"]
+    ]
+    assert challenger
+    assert all(
+        "--terminal-verification-shortlist-mode "
+        "posterior_primary_safe_interior" in spec["cmd"]
+        for spec in challenger
+    )
+    assert all(
+        "--terminal-safe-interior-probability-slack 0.05"
+        in spec["cmd"] for spec in challenger
+    )
+    assert all(
+        "--terminal-safe-interior-require-provider" in spec["cmd"]
+        for spec in challenger
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v63_cumulative_risk_safe_interior_shortlist_verification"
+        in spec["cmd"] for spec in challenger
+    )
+    assert all(
+        "--theory-contract-id "
+        "v63_frozen_selector_familywise_quantile_certificate_v1"
+        in spec["cmd"] for spec in challenger
+    )
+    assert args.stage_family == (
+        "v63_safe_interior_shortlist_verification_paired")
+
+
 def test_v53_bounded_gain_profile_is_versioned_and_not_double_normalized(tmp_path):
     args = _args(tmp_path, (MODULE.V53,))
     args.score_normalization = "none"

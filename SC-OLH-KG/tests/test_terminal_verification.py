@@ -2,6 +2,8 @@ import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -256,6 +258,82 @@ class TerminalVerificationTests(unittest.TestCase):
             RuntimeError, "posterior-ranked candidates"
         ):
             algorithm._terminal_verification_protocol((0,) * 5)
+
+    def test_safe_interior_shortlist_uses_posterior_sublevel_maximin(self):
+        algorithm = self._algorithm(seed=47, budget=8)
+        algorithm.config.terminal_verification_policy = (
+            "ordered_frozen_shortlist")
+        algorithm.config.terminal_verification_shortlist_size = 2
+        algorithm.config.terminal_verification_shortlist_mode = (
+            "posterior_primary_safe_interior")
+        algorithm.config.terminal_safe_interior_probability_slack = 0.05
+        primary = (2, 2, 2, 2, 2)
+        near_primary = (1, 1, 1, 1, 1)
+        diverse_safe = (10, 10, 10, 10, 10)
+        unsafe = (20, 20, 20, 20, 20)
+        algorithm.history = [
+            (near_primary, np.zeros(2)),
+            (diverse_safe, np.zeros(2)),
+            (unsafe, np.zeros(2)),
+        ]
+        algorithm.config.n0 = 3
+        algorithm._last_terminal_bayes_ranked_points = [
+            primary, near_primary, diverse_safe, unsafe]
+
+        def fake_components(*args, **kwargs):
+            del args, kwargs
+            return {
+                "probability_violation": np.asarray([0.10, 0.12, 0.80]),
+            }
+
+        calls = []
+
+        def fake_verification(
+            point,
+            *,
+            verification_delta=None,
+            candidate_index=0,
+            verification_budget=None,
+        ):
+            calls.append(tuple(point))
+            return {
+                "enabled": True,
+                "status": (
+                    "certified" if candidate_index == 1
+                    else "not_certified"),
+                "method": "gaussian_noncentral_t_tolerance",
+                "verification_budget": int(verification_budget),
+                "sample_count": int(verification_budget),
+                "certified": candidate_index == 1,
+                "candidate_index": candidate_index,
+                "delta": verification_delta,
+                "target_oracle_used": False,
+            }
+
+        algorithm._terminal_bayes_risk_components = fake_components
+        algorithm._terminal_fixed_policy_verification = fake_verification
+        deployed, result = algorithm._terminal_verification_protocol(primary)
+
+        self.assertEqual(deployed, diverse_safe)
+        self.assertEqual(calls, [primary, diverse_safe])
+        self.assertEqual(
+            result["shortlist_mode"],
+            "posterior_primary_safe_interior",
+        )
+        support = result["frozen_shortlist"][1]
+        self.assertEqual(
+            support["shortlist_role"],
+            "posterior_safe_interior_diversified",
+        )
+        self.assertEqual(
+            support["selection_contract"],
+            "posterior_violation_sublevel_maximin_cumulative_risk",
+        )
+        self.assertEqual(support["candidate_universe"], "frozen_initial_atlas")
+        self.assertEqual(support["eligible_count"], 2)
+        self.assertFalse(support["target_labels_used"])
+        self.assertFalse(support["target_oracle_used"])
+        self.assertFalse(support["verification_samples_used"])
 
 
 if __name__ == "__main__":

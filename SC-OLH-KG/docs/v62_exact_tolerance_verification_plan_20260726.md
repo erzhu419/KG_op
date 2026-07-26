@@ -66,3 +66,19 @@ calls after a rank-2 attempt.
 - 0 feasibility losses and 0 feasible-regret losses against V51.
 - At least one strict paired improvement.
 - Every verification call is included in the reported target budget.
+
+## Fresh Result
+
+The registered seeds `20..39` completed all `120/120` paired tasks:
+
+- search identity and all implementation contracts passed;
+- performance was `10 win / 0 loss / 50 tie`;
+- there were no feasibility losses and no false certificates;
+- `57/60` terminal policies were certified.
+
+The formal gate therefore failed only its `60/60` coverage requirement. The
+three abstentions were Inventory seeds 21 and 32 and Queue seed 37. Post-rank
+truth audit showed that the Inventory pools contained a deeper safe point at
+posterior rank 3, while Queue contained one at rank 4. V62 is retained as the
+exact verification method; V63 changes only the pre-verification shortlist
+selector.

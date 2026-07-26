@@ -228,4 +228,63 @@ theorem ordered_shortlist_freeze_is_verification_invariant
       = policies := by
   rfl
 
+structure FrozenSafeInteriorShortlist (Design : Type*) where
+  primary : Design
+  support : Design
+  supportFromInitialAtlas : Prop
+  supportInPosteriorViolationSublevel : Prop
+  searchBudget : ℕ
+
+def freezeSafeInteriorShortlist
+    {Design : Type*}
+    (primary support : Design)
+    (supportFromInitialAtlas : Prop)
+    (supportInPosteriorViolationSublevel : Prop)
+    (searchBudget : ℕ) :
+    FrozenSafeInteriorShortlist Design where
+  primary := primary
+  support := support
+  supportFromInitialAtlas := supportFromInitialAtlas
+  supportInPosteriorViolationSublevel :=
+    supportInPosteriorViolationSublevel
+  searchBudget := searchBudget
+
+def safeInteriorPolicies
+    {Design : Type*}
+    (shortlist : FrozenSafeInteriorShortlist Design) : List Design :=
+  [shortlist.primary, shortlist.support]
+
+theorem safe_interior_shortlist_contains_primary_and_support
+    {Design : Type*}
+    (shortlist : FrozenSafeInteriorShortlist Design) :
+    safeInteriorPolicies shortlist =
+      [shortlist.primary, shortlist.support] := by
+  rfl
+
+theorem safe_interior_selector_contract
+    {Design : Type*}
+    (primary support : Design)
+    (supportFromInitialAtlas : Prop)
+    (supportInPosteriorViolationSublevel : Prop)
+    (searchBudget : ℕ)
+    (hAtlas : supportFromInitialAtlas)
+    (hSublevel : supportInPosteriorViolationSublevel) :
+    let shortlist :=
+      freezeSafeInteriorShortlist
+        primary support
+        supportFromInitialAtlas
+        supportInPosteriorViolationSublevel
+        searchBudget
+    shortlist.supportFromInitialAtlas
+      ∧ shortlist.supportInPosteriorViolationSublevel := by
+  exact ⟨hAtlas, hSublevel⟩
+
+theorem safe_interior_shortlist_freeze_is_verification_invariant
+    {Design Sample : Type*}
+    (shortlist : FrozenSafeInteriorShortlist Design)
+    (_verification : List Sample) :
+    safeInteriorPolicies shortlist =
+      [shortlist.primary, shortlist.support] := by
+  rfl
+
 end SCOLHKG.Real

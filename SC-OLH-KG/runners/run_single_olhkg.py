@@ -74,6 +74,23 @@ def main():
         "--terminal_verification_shortlist_size", type=int, default=1)
     parser.add_argument(
         "--terminal_verification_fallback_budget", type=int, default=0)
+    parser.add_argument(
+        "--terminal_verification_shortlist_mode",
+        choices=(
+            "posterior_ranked",
+            "posterior_primary_safe_interior",
+        ),
+        default="posterior_ranked",
+    )
+    parser.add_argument(
+        "--terminal_safe_interior_probability_slack",
+        type=float,
+        default=0.05,
+    )
+    parser.add_argument(
+        "--terminal_safe_interior_require_provider",
+        action="store_true",
+    )
     parser.add_argument("--checkpoint_dir", default="")
     parser.add_argument("--checkpoint_resume", action="store_true")
     parser.add_argument("--checkpoint_interval", type=int, default=1)
@@ -125,6 +142,12 @@ def main():
             args.terminal_verification_shortlist_size),
         terminal_verification_fallback_budget=(
             args.terminal_verification_fallback_budget),
+        terminal_verification_shortlist_mode=(
+            args.terminal_verification_shortlist_mode),
+        terminal_safe_interior_probability_slack=(
+            args.terminal_safe_interior_probability_slack),
+        terminal_safe_interior_require_provider=(
+            args.terminal_safe_interior_require_provider),
         checkpoint_dir=args.checkpoint_dir,
         checkpoint_resume=args.checkpoint_resume,
         checkpoint_interval=args.checkpoint_interval,
