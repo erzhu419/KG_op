@@ -104,6 +104,53 @@ theorem false_gaussian_replication_certificate_probability_le_delta
       meanDelta sigmaDelta hZ hMean hSigma
   ) hSplit
 
+def GaussianQuantileCoverageFailure
+    (trueQuantile : ℝ)
+    (quantileUpper : Ω → ℝ) : Set Ω :=
+  {ω | quantileUpper ω < trueQuantile}
+
+def FalseGaussianQuantileToleranceCertificate
+    (trueQuantile tau : ℝ)
+    (quantileUpper : Ω → ℝ) : Set Ω :=
+  {ω |
+    SCOLHKG.Real.gaussianQuantileToleranceMargin
+        (quantileUpper ω) tau ≤ 0
+      ∧ tau < trueQuantile}
+
+theorem false_gaussian_quantile_tolerance_certificate_subset
+    (trueQuantile tau : ℝ)
+    (quantileUpper : Ω → ℝ) :
+    FalseGaussianQuantileToleranceCertificate
+        trueQuantile tau quantileUpper
+      ⊆ GaussianQuantileCoverageFailure
+        trueQuantile quantileUpper := by
+  intro ω hFalse
+  change
+    SCOLHKG.Real.gaussianQuantileToleranceMargin
+        (quantileUpper ω) tau ≤ 0
+      ∧ tau < trueQuantile at hFalse
+  have hUpper : quantileUpper ω ≤ tau := by
+    unfold SCOLHKG.Real.gaussianQuantileToleranceMargin at hFalse
+    linarith [hFalse.1]
+  change quantileUpper ω < trueQuantile
+  exact lt_of_le_of_lt hUpper hFalse.2
+
+theorem false_gaussian_quantile_tolerance_certificate_probability_le
+    (trueQuantile tau : ℝ)
+    (quantileUpper : Ω → ℝ)
+    (delta : ℝ)
+    [IsFiniteMeasure μ]
+    (hCoverage :
+      μ.real (GaussianQuantileCoverageFailure
+        trueQuantile quantileUpper) ≤ delta) :
+    μ.real (FalseGaussianQuantileToleranceCertificate
+      trueQuantile tau quantileUpper) ≤ delta := by
+  exact le_trans (
+    measureReal_mono (
+      false_gaussian_quantile_tolerance_certificate_subset
+        trueQuantile tau quantileUpper)
+  ) hCoverage
+
 def CandidateFalseCertificate
     (isUnsafe : Prop)
     (certified : Ω → Prop) : Set Ω :=
@@ -179,5 +226,26 @@ theorem false_ordered_two_policy_deployment_probability_le_familywise_delta
       unsafeFirst unsafeSecond certifiedFirst certifiedSecond
       deltaFirst deltaSecond hFirst hSecond
   ) hSpend
+
+theorem false_ordered_two_policy_quantile_deployment_probability_le
+    (unsafeFirst unsafeSecond : Prop)
+    (certifiedFirst certifiedSecond : Ω → Prop)
+    (deltaFirst deltaSecond familywiseDelta : ℝ)
+    [IsFiniteMeasure μ]
+    (hFirst :
+      μ.real (CandidateFalseCertificate unsafeFirst certifiedFirst)
+        ≤ deltaFirst)
+    (hSecond :
+      μ.real (CandidateFalseCertificate unsafeSecond certifiedSecond)
+        ≤ deltaSecond)
+    (hSpend : deltaFirst + deltaSecond ≤ familywiseDelta) :
+    μ.real (FalseOrderedTwoPolicyDeployment
+      unsafeFirst unsafeSecond certifiedFirst certifiedSecond)
+      ≤ familywiseDelta := by
+  exact
+    false_ordered_two_policy_deployment_probability_le_familywise_delta
+      unsafeFirst unsafeSecond certifiedFirst certifiedSecond
+      deltaFirst deltaSecond familywiseDelta
+      hFirst hSecond hSpend
 
 end SCOLHKG.Measure

@@ -84,6 +84,8 @@ def load_config(path):
     config.setdefault("terminal_verification_budget", 0)
     config.setdefault("terminal_verification_delta", 0.05)
     config.setdefault("terminal_verification_mean_delta_fraction", 0.5)
+    config.setdefault(
+        "terminal_verification_method", "component_bonferroni")
     config.setdefault("terminal_verification_policy", "fixed_policy")
     config.setdefault("terminal_verification_shortlist_size", 1)
     config.setdefault("terminal_verification_fallback_budget", 0)
@@ -977,6 +979,11 @@ def main():
         default=None,
     )
     parser.add_argument(
+        "--terminal-verification-method",
+        choices=("component_bonferroni", "normal_quantile_tolerance"),
+        default=None,
+    )
+    parser.add_argument(
         "--terminal-verification-policy",
         choices=("fixed_policy", "ordered_frozen_shortlist"),
         default=None,
@@ -1015,6 +1022,11 @@ def main():
         config["terminal_verification_mean_delta_fraction"]
         if args.terminal_verification_mean_delta_fraction is None
         else args.terminal_verification_mean_delta_fraction
+    )
+    terminal_verification_method = str(
+        config["terminal_verification_method"]
+        if args.terminal_verification_method is None
+        else args.terminal_verification_method
     )
     terminal_verification_policy = str(
         config["terminal_verification_policy"]
@@ -1511,6 +1523,8 @@ def main():
             terminal_verification_delta),
         "terminal_verification_mean_delta_fraction": float(
             terminal_verification_mean_delta_fraction),
+        "terminal_verification_method": str(
+            terminal_verification_method),
         "terminal_verification_policy": str(
             terminal_verification_policy),
         "terminal_verification_shortlist_size": int(
@@ -1884,6 +1898,8 @@ def main():
                 terminal_verification_delta),
             "terminal_verification_mean_delta_fraction": float(
                 terminal_verification_mean_delta_fraction),
+            "terminal_verification_method": str(
+                terminal_verification_method),
             "terminal_verification_policy": str(
                 terminal_verification_policy),
             "terminal_verification_shortlist_size": int(

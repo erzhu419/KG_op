@@ -391,6 +391,10 @@ def test_v59_keeps_v51_search_and_adds_fixed_policy_verification(tmp_path):
         for spec in specs
     )
     assert all(
+        "--terminal-verification-method component_bonferroni"
+        in spec["cmd"] for spec in specs
+    )
+    assert all(
         "--implementation-contract-id "
         "v59_frozen_policy_gaussian_verification" in spec["cmd"]
         for spec in specs
@@ -469,6 +473,49 @@ def test_v61_paired_control_uses_dedicated_stage_family(tmp_path):
     assert all(
         "/v51_control/" in spec["signature"]
         or f"/{MODULE.V61}/" in spec["signature"]
+        for spec in specs
+    )
+
+
+def test_v62_uses_exact_tolerance_bound_and_asymmetric_budget(tmp_path):
+    args = _args(tmp_path, (MODULE.V62,))
+    args.terminal_verification_budget = 64
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 3 * 2
+    assert all(
+        "--terminal-verification-budget 64" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-fallback-budget 96" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-method normal_quantile_tolerance"
+        in spec["cmd"] for spec in specs
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v62_exact_gaussian_quantile_shortlist_verification"
+        in spec["cmd"] for spec in specs
+    )
+    assert all(
+        "--theory-contract-id "
+        "v62_noncentral_t_familywise_quantile_certificate_v1"
+        in spec["cmd"] for spec in specs
+    )
+
+
+def test_v62_paired_control_uses_dedicated_stage_family(tmp_path):
+    args = _args(tmp_path, (MODULE.CONTROL, MODULE.V62))
+    args.terminal_verification_budget = 64
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 2 * 3 * 2
+    assert args.stage_family == (
+        "v62_exact_tolerance_shortlist_verification_paired")
+    assert all(
+        "/v51_control/" in spec["signature"]
+        or f"/{MODULE.V62}/" in spec["signature"]
         for spec in specs
     )
 

@@ -263,6 +263,10 @@ def _flags(profile, args):
                 "--terminal-verification-mean-delta-fraction",
                 str(profile.get(
                     "terminal_verification_mean_delta_fraction", 0.5)),
+                "--terminal-verification-method",
+                str(profile.get(
+                    "terminal_verification_method",
+                    "component_bonferroni")),
                 "--terminal-verification-policy",
                 str(profile.get(
                     "terminal_verification_policy", "fixed_policy")),

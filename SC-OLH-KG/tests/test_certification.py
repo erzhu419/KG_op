@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 import numpy as np
-from scipy.stats import chi2, norm, t
+from scipy.stats import chi2, nct, norm, t
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,6 +14,7 @@ from core.certification import (  # noqa: E402
     CertificationResult,
     conservative_chance_margin,
     decompose_chance_margin,
+    gaussian_quantile_tolerance_certificate,
     gaussian_replication_chance_certificate,
 )
 
@@ -136,6 +137,45 @@ class CertificationTests(unittest.TestCase):
                 tau=0.0,
                 alpha=0.75,
             )
+
+    def test_gaussian_quantile_tolerance_certificate_matches_nct_bound(self):
+        values = np.array([-0.20, -0.18, -0.19, -0.21, -0.17])
+        result = gaussian_quantile_tolerance_certificate(
+            values,
+            tau=0.0,
+            alpha=0.05,
+            delta=0.10,
+        )
+        n = len(values)
+        z_alpha = float(norm.ppf(0.95))
+        noncentrality = z_alpha * np.sqrt(n)
+        expected_nct = float(nct.ppf(
+            0.90, n - 1, noncentrality))
+        expected_factor = expected_nct / np.sqrt(n)
+        expected_upper = float(
+            np.mean(values)
+            + expected_factor * np.std(values, ddof=1)
+        )
+        self.assertAlmostEqual(
+            result.noncentral_t_quantile, expected_nct)
+        self.assertAlmostEqual(
+            result.tolerance_factor, expected_factor)
+        self.assertAlmostEqual(result.quantile_upper, expected_upper)
+        self.assertAlmostEqual(result.upper_margin, expected_upper)
+        self.assertEqual(
+            result.method, "gaussian_noncentral_t_tolerance")
+        self.assertTrue(result.certified)
+
+    def test_gaussian_quantile_tolerance_certificate_requires_two_samples(self):
+        result = gaussian_quantile_tolerance_certificate(
+            [-0.5],
+            tau=0.0,
+            alpha=0.05,
+            delta=0.05,
+        )
+        self.assertEqual(result.status, "insufficient_replications")
+        self.assertFalse(result.certified)
+        self.assertTrue(np.isinf(result.upper_margin))
 
     def test_acquisition_feasibility_details_expose_theory_bound(self):
         candidates = [(0,), (1,)]

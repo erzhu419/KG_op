@@ -61,6 +61,11 @@ def main():
         default=0.5,
     )
     parser.add_argument(
+        "--terminal_verification_method",
+        choices=("component_bonferroni", "normal_quantile_tolerance"),
+        default="component_bonferroni",
+    )
+    parser.add_argument(
         "--terminal_verification_policy",
         choices=("fixed_policy", "ordered_frozen_shortlist"),
         default="fixed_policy",
@@ -114,6 +119,7 @@ def main():
         terminal_verification_delta=args.terminal_verification_delta,
         terminal_verification_mean_delta_fraction=(
             args.terminal_verification_mean_delta_fraction),
+        terminal_verification_method=args.terminal_verification_method,
         terminal_verification_policy=args.terminal_verification_policy,
         terminal_verification_shortlist_size=(
             args.terminal_verification_shortlist_size),

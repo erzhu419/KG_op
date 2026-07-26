@@ -22,6 +22,7 @@ from core.certification import (
     CertificationResult,
     conservative_chance_margin,
     decompose_chance_margin,
+    gaussian_quantile_tolerance_certificate,
     gaussian_replication_chance_certificate,
 )
 from core.candidates import (
@@ -458,6 +459,7 @@ class SingleOLHKGConfig:
     terminal_verification_budget: int = 0
     terminal_verification_delta: float = 0.05
     terminal_verification_mean_delta_fraction: float = 0.5
+    terminal_verification_method: str = "component_bonferroni"
     terminal_verification_policy: str = "fixed_policy"
     terminal_verification_shortlist_size: int = 1
     terminal_verification_fallback_budget: int = 0
@@ -1125,6 +1127,27 @@ class SingleOLHKGAlgorithm:
             if verification_delta is None
             else float(verification_delta)
         )
+        method = str(
+            self.config.terminal_verification_method
+            or "component_bonferroni"
+        ).strip().lower().replace("-", "_")
+        method_aliases = {
+            "component_bonferroni": "component_bonferroni",
+            "student_t_chi_square": "component_bonferroni",
+            "normal_quantile_tolerance": "normal_quantile_tolerance",
+            "noncentral_t_tolerance": "normal_quantile_tolerance",
+        }
+        if method not in method_aliases:
+            raise ValueError(
+                "terminal_verification_method must be "
+                "'component_bonferroni' or "
+                "'normal_quantile_tolerance'")
+        method = method_aliases[method]
+        method_label = (
+            "gaussian_noncentral_t_tolerance"
+            if method == "normal_quantile_tolerance"
+            else "gaussian_student_t_chi_square"
+        )
         point = tuple(int(value) for value in x)
         stream_tag = (
             TERMINAL_VERIFICATION_STREAM_TAG
@@ -1134,7 +1157,8 @@ class SingleOLHKGAlgorithm:
         base = {
             "enabled": bool(budget > 0),
             "status": "disabled" if budget == 0 else "pending",
-            "method": "gaussian_student_t_chi_square",
+            "method": method_label,
+            "method_mode": method,
             "policy_frozen_before_verification": True,
             "search_samples_reused": False,
             "posterior_updated_from_verification": False,
@@ -1143,6 +1167,8 @@ class SingleOLHKGAlgorithm:
             "total_evaluation_count": int(len(self.history) + budget),
             "policy_fingerprint": integer_design_fingerprint([point]),
             "delta": float(delta),
+            "alpha": float(self.problem.alpha),
+            "tau": float(self.problem.tau),
             "mean_delta_fraction": float(
                 self.config.terminal_verification_mean_delta_fraction),
             "candidate_index": int(candidate_index),
@@ -1184,14 +1210,22 @@ class SingleOLHKGAlgorithm:
             raise RuntimeError(
                 "terminal verification requires objective and constraint "
                 "simulation outputs")
-        certificate = gaussian_replication_chance_certificate(
-            samples[:, 1],
-            tau=float(self.problem.tau),
-            alpha=float(self.problem.alpha),
-            delta=float(delta),
-            mean_delta_fraction=float(
-                self.config.terminal_verification_mean_delta_fraction),
-        )
+        if method == "normal_quantile_tolerance":
+            certificate = gaussian_quantile_tolerance_certificate(
+                samples[:, 1],
+                tau=float(self.problem.tau),
+                alpha=float(self.problem.alpha),
+                delta=float(delta),
+            )
+        else:
+            certificate = gaussian_replication_chance_certificate(
+                samples[:, 1],
+                tau=float(self.problem.tau),
+                alpha=float(self.problem.alpha),
+                delta=float(delta),
+                mean_delta_fraction=float(
+                    self.config.terminal_verification_mean_delta_fraction),
+            )
         return {
             **base,
             **asdict(certificate),
@@ -1317,6 +1351,21 @@ class SingleOLHKGAlgorithm:
         ))
         certified = selected_rank is not None
         recommendation_changed = bool(deployed != primary)
+        attempt_method = (
+            str(attempts[0].get("method"))
+            if attempts else (
+                "gaussian_noncentral_t_tolerance"
+                if str(
+                    self.config.terminal_verification_method
+                    or ""
+                ).strip().lower().replace("-", "_")
+                in {
+                    "normal_quantile_tolerance",
+                    "noncentral_t_tolerance",
+                }
+                else "gaussian_student_t_chi_square"
+            )
+        )
         return deployed, {
             "enabled": bool(budget > 0),
             "status": (
@@ -1326,8 +1375,7 @@ class SingleOLHKGAlgorithm:
                 )
             ),
             "method": (
-                "ordered_frozen_shortlist_"
-                "gaussian_student_t_chi_square"),
+                f"ordered_frozen_shortlist_{attempt_method}"),
             "protocol": "ordered_frozen_shortlist",
             "policy_frozen_before_verification": True,
             "shortlist_frozen_before_verification": True,

@@ -454,6 +454,21 @@ currently supply Student-t or chi-square distributions, so their classical
 Gaussian finite-sample coverage is exposed as the two measure-level premises
 rather than hidden as an implementation axiom.
 
+V62 uses a sharper equivalent pivot. For iid Gaussian replications,
+
+```text
+sqrt(n) (mu + z_(1-alpha) sigma - Ybar) / S
+```
+
+has a noncentral Student-t law with `n-1` degrees of freedom and
+noncentrality `z_(1-alpha)sqrt(n)`. Python therefore constructs one direct
+upper bound `q_U = Ybar + kS` for the chance quantile instead of separately
+bounding `mu` and `sigma`. Lean proves `q <= q_U <= tau -> q <= tau`, false
+certification containment in the quantile-coverage failure, and family-wise
+composition over the frozen shortlist. Current mathlib has no noncentral
+Student-t distribution, so SciPy's numerical quantile and its classical
+coverage law remain an explicit implementation/distribution bridge.
+
 ## Assumption A3: Transferable Task-Structure Family
 
 The held-out task has a latent structure
@@ -1137,6 +1152,7 @@ versions needed by the manuscript:
 | V57 confirmation/terminal composition | `SCOLHKG/Measure/ConfirmationDominanceComposition.lean` | Lean combines V56's finite two-head, finite-look confirmation event with the finite horizon of posterior-dominance switch events by explicit error spending and a union bound. Python allocates the run-level switch budget uniformly over `N-n0` charged stages. This controls posterior switch error conditionally on the declared posterior model; it does not turn an uncertified incumbent into a chance-feasibility certificate. |
 | V58 guard-decomposed action support | `SCOLHKG/Real/GuardDecompositionPolicy.lean` | Lean reconstructs the exact signed robust chance margin, proves that each dynamic support retains the complete V51 shortlist, and proves simultaneous posterior Bayes-risk and certificate-deficit nonincrease whenever independent confirmation accepts a challenger. Python selects epistemic-neighbor, aleatoric-replication, or safe-interior support from posterior components and observable cumulative-risk coordinates only. The theorem is conditional on the posterior/confirmation event; sound nonempty certificates and simulator performance remain paired empirical gates. |
 | V59--V61 independent terminal verification | `SCOLHKG/Real/GaussianReplicationCertificate.lean`, `SCOLHKG/Measure/GaussianReplicationCertificate.lean` | V59 freezes one posterior policy and uses an independent iid Gaussian replication batch with Student-t mean and chi-square scale upper bounds. V60 freezes an ordered two-policy posterior shortlist before any verification label, tests rank 2 only after rank 1 fails, and splits one family-wise error budget across both policies. V61 precommits unequal 48/96 replication budgets without changing the error split. Lean proves deterministic chance safety on coverage, nonvacuity when safety depth dominates bound excess, first-certified shortlist soundness, uniform and asymmetric variable-budget accounting, and a family-wise false-deployment bound by union bound without requiring independence between the two certificate events. Classical Student-t/chi-square coverage remains an explicit distributional premise rather than a theorem supplied by current mathlib. |
+| V62 exact Gaussian-quantile verification | `SCOLHKG/Real/GaussianReplicationCertificate.lean`, `SCOLHKG/Measure/GaussianReplicationCertificate.lean` | V62 directly upper-bounds `mu+z sigma` with a noncentral-t normal-tolerance factor, retains the frozen two-policy order and `0.025+0.025` error allocation, and precommits 64/96 calls. Lean proves direct-bound safety, false-certificate containment in the single quantile-coverage failure, family-wise composition without independence, and the exact budget cap. SciPy's noncentral-t quantile and its classical pivotal coverage remain an explicit numerical/distribution bridge because current mathlib has no noncentral-t distribution. |
 | Finite-sample robust source-mean posterior | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V30--V31 Lean-prove that a scale clipped below at one and a finite nonnegative HC3 projected correction cannot reduce posterior uncertainty, and that the post-conditioning covariance correction leaves the conditioned mean unchanged. V34 proves the composed two-layer projected variance is nonshrinking. Python binds these scalar facts to PSD coefficient covariance updates, full charged-history refits from one frozen source hyperlaw, finite-target/source multipliers, and exact-KG clone state. Held-out calibration and certificate coverage remain empirical criteria. |
 | Canonical-certificate incumbent initialization | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V32 Lean-proves the exact limited claim: selecting an index from the canonical certified set yields nonpositive upper margin, while an empty certified set admits no certified initializer. V48 adds an option-valued runtime contract: `some x` must carry certified-set membership, while `none` is valid exactly for an empty set; no protected incumbent may be fabricated in that case. The ordinary posterior Bayes fallback remains an optimization action, not a safety claim. |
 | Central-HVD Bayes action and binary chance-failure loss | `SCOLHKG/Real/BoundaryCoordinateSufficiency.lean` | V49 formally separates the posterior-central aleatoric margin used for Bayes ranking from the upper aleatoric margin used for certification. Changing the decision variance cannot alter the certificate, and an upper variance plus nonnegative epistemic radius dominates the central margin. The binary chance-failure Bayes risk is monotone in posterior failure probability and adds a nonnegative penalty. Empirical calibration and the evaluate-or-replicate action mix remain gate conditions. |

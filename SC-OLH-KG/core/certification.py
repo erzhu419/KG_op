@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import numpy as np
-from scipy.stats import chi2, norm, t
+from scipy.stats import chi2, nct, norm, t
 
 
 @dataclass(frozen=True)
@@ -67,6 +67,31 @@ class GaussianReplicationCertificate:
     variance_delta: float
     certified: bool
     status: str
+
+
+@dataclass(frozen=True)
+class GaussianQuantileToleranceCertificate:
+    """Exact one-sided Gaussian quantile tolerance certificate.
+
+    For iid Gaussian replications, ``sample_mean + k * sample_std`` is an
+    upper confidence bound for ``mu + z_(1-alpha) sigma`` when ``k`` is the
+    corresponding noncentral-Student-t tolerance factor.
+    """
+
+    upper_margin: float
+    sample_mean: float
+    sample_std: float
+    quantile_upper: float
+    tolerance_factor: float
+    z_alpha: float
+    noncentral_t_quantile: float
+    noncentrality: float
+    degrees_of_freedom: int
+    sample_count: int
+    delta: float
+    certified: bool
+    status: str
+    method: str
 
 
 def decompose_chance_margin(result: CertificationResult) -> GuardDecompositionResult:
@@ -284,4 +309,95 @@ def gaussian_replication_chance_certificate(
         variance_delta=delta_sigma,
         certified=bool(upper_margin <= 0.0),
         status="certified" if upper_margin <= 0.0 else "not_certified",
+    )
+
+
+def gaussian_quantile_tolerance_certificate(
+    constraint_samples,
+    *,
+    tau: float,
+    alpha: float,
+    delta: float = 0.05,
+) -> GaussianQuantileToleranceCertificate:
+    """Directly bound a frozen policy's Gaussian chance quantile.
+
+    If ``Y_i`` are iid ``Normal(mu, sigma^2)``, ``n >= 2``, and ``S`` is the
+    unbiased sample standard deviation, then
+
+    ``T = sqrt(n) * (mu + z sigma - sample_mean) / S``
+
+    has a noncentral Student-t law with ``n - 1`` degrees of freedom and
+    noncentrality ``z * sqrt(n)``. Hence
+
+    ``sample_mean + nct.ppf(1-delta, n-1, z*sqrt(n)) * S / sqrt(n)``
+
+    covers ``mu + z sigma`` with probability ``1-delta``. This avoids the
+    extra Bonferroni split needed by separate mean and variance bounds.
+    Search samples must not be reused for this fixed-policy certificate.
+    """
+
+    values = np.asarray(constraint_samples, dtype=float).reshape(-1)
+    if np.any(~np.isfinite(values)):
+        raise ValueError("constraint samples must be finite")
+    if not 0.0 < float(alpha) <= 0.5:
+        raise ValueError(
+            "alpha must lie in (0, 0.5] so the Gaussian safety "
+            "quantile is nonnegative")
+    if not 0.0 < float(delta) < 1.0:
+        raise ValueError("delta must lie strictly between zero and one")
+
+    n = int(len(values))
+    z_alpha = float(norm.ppf(1.0 - float(alpha)))
+    if n < 2:
+        sample_mean = (
+            float(np.mean(values)) if n else float("nan"))
+        return GaussianQuantileToleranceCertificate(
+            upper_margin=float("inf"),
+            sample_mean=sample_mean,
+            sample_std=float("nan"),
+            quantile_upper=float("inf"),
+            tolerance_factor=float("inf"),
+            z_alpha=z_alpha,
+            noncentral_t_quantile=float("inf"),
+            noncentrality=float("inf"),
+            degrees_of_freedom=max(n - 1, 0),
+            sample_count=n,
+            delta=float(delta),
+            certified=False,
+            status="insufficient_replications",
+            method="gaussian_noncentral_t_tolerance",
+        )
+
+    degrees_of_freedom = n - 1
+    sample_mean = float(np.mean(values))
+    sample_std = float(np.std(values, ddof=1))
+    noncentrality = float(z_alpha * np.sqrt(float(n)))
+    noncentral_t_quantile = float(nct.ppf(
+        1.0 - float(delta),
+        degrees_of_freedom,
+        noncentrality,
+    ))
+    if not np.isfinite(noncentral_t_quantile):
+        raise FloatingPointError(
+            "nonfinite noncentral Student-t tolerance quantile")
+    tolerance_factor = float(
+        noncentral_t_quantile / np.sqrt(float(n)))
+    quantile_upper = float(
+        sample_mean + tolerance_factor * sample_std)
+    upper_margin = float(quantile_upper - float(tau))
+    return GaussianQuantileToleranceCertificate(
+        upper_margin=upper_margin,
+        sample_mean=sample_mean,
+        sample_std=sample_std,
+        quantile_upper=quantile_upper,
+        tolerance_factor=tolerance_factor,
+        z_alpha=z_alpha,
+        noncentral_t_quantile=noncentral_t_quantile,
+        noncentrality=noncentrality,
+        degrees_of_freedom=degrees_of_freedom,
+        sample_count=n,
+        delta=float(delta),
+        certified=bool(upper_margin <= 0.0),
+        status="certified" if upper_margin <= 0.0 else "not_certified",
+        method="gaussian_noncentral_t_tolerance",
     )

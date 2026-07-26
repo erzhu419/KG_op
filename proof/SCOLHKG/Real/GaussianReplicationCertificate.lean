@@ -63,6 +63,46 @@ theorem gaussian_replication_certificate_nonvacuous_of_excess_le_depth
   ]
   linarith
 
+def gaussianQuantileToleranceUpper
+    (sampleMean sampleStd toleranceFactor : ℝ) : ℝ :=
+  sampleMean + toleranceFactor * sampleStd
+
+def gaussianQuantileToleranceMargin
+    (quantileUpper tau : ℝ) : ℝ :=
+  quantileUpper - tau
+
+theorem gaussian_quantile_tolerance_margin_sound
+    {trueQuantile quantileUpper tau : ℝ}
+    (hCoverage : trueQuantile ≤ quantileUpper)
+    (hCertificate :
+      gaussianQuantileToleranceMargin quantileUpper tau ≤ 0) :
+    trueQuantile ≤ tau := by
+  unfold gaussianQuantileToleranceMargin at hCertificate
+  linarith
+
+theorem gaussian_quantile_tolerance_upper_sound
+    {trueMean trueSigma zAlpha sampleMean sampleStd toleranceFactor tau : ℝ}
+    (hCoverage :
+      trueMean + zAlpha * trueSigma
+        ≤ gaussianQuantileToleranceUpper
+            sampleMean sampleStd toleranceFactor)
+    (hCertificate :
+      gaussianQuantileToleranceMargin
+          (gaussianQuantileToleranceUpper
+            sampleMean sampleStd toleranceFactor)
+          tau
+        ≤ 0) :
+    trueMean + zAlpha * trueSigma ≤ tau := by
+  exact gaussian_quantile_tolerance_margin_sound
+    hCoverage hCertificate
+
+theorem gaussian_quantile_tolerance_nonvacuous_of_upper_le
+    {quantileUpper tau : ℝ}
+    (hUpper : quantileUpper ≤ tau) :
+    gaussianQuantileToleranceMargin quantileUpper tau ≤ 0 := by
+  unfold gaussianQuantileToleranceMargin
+  linarith
+
 structure FrozenTerminalPolicy (Design : Type*) where
   policy : Design
   searchBudget : ℕ
@@ -168,6 +208,15 @@ theorem ordered_two_policy_asymmetric_verification_budget_le
            else firstBudget + secondBudget)
       ≤ searchBudget + firstBudget + secondBudget := by
   cases firstCertified <;> simp [Nat.add_assoc]
+
+theorem ordered_two_policy_exact_tolerance_budget_le
+    (searchBudget : ℕ)
+    (firstCertified : Bool) :
+    searchBudget
+        + (if firstCertified then 64 else 64 + 96)
+      ≤ searchBudget + 64 + 96 := by
+  exact ordered_two_policy_asymmetric_verification_budget_le
+    searchBudget 64 96 firstCertified
 
 theorem ordered_shortlist_freeze_is_verification_invariant
     {Design Sample : Type*}

@@ -389,7 +389,9 @@ mathlib and its cache; later builds should be fast.
   bound-excess nonvacuity condition, policy immutability, exact
   search-plus-verification budget accounting, frozen finite shortlists,
   first-certified selection soundness, and the sequential verification budget
-  upper bound, including V61's unequal rank-1/rank-2 fixed budgets.
+  upper bound, including V61's unequal rank-1/rank-2 fixed budgets. V62 adds
+  the direct Gaussian quantile-tolerance margin, its deterministic safety
+  implication, and the registered 64/96 budget bound.
 - `SCOLHKG/Measure/GaussianReplicationCertificate.lean`: false terminal
   certification is contained in the union of mean- and scale-coverage
   failures, yielding the declared per-policy error bound by a finite-measure
@@ -398,7 +400,9 @@ mathlib and its cache; later builds should be fast.
   replications. The same module proves that ordered two-policy fallback has
   false-deployment probability at most the sum of its two preallocated errors;
   this family-wise result does not assume independence between certification
-  events.
+  events. The V62 direct-quantile variant instead contains every false
+  certificate in its single quantile-coverage failure and composes the two
+  frozen policies with the same family-wise theorem.
 - `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean`: TCB-V2 positive
   location/log-scale adaptation, planar-rotation norm preservation,
   nonnegative Cholesky/rotation/orthogonal-residual predictive variance,

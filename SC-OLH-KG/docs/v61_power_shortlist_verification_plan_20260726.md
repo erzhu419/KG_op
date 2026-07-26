@@ -44,3 +44,25 @@ Seeds `0..4` are the development stratum exposed to V59/V60 analysis. Seeds
 - The same four conditions also hold on fresh seeds `5..19` alone.
 - Actual verification calls and maximum budgets are reported separately.
 - No target oracle enters any charged decision.
+
+## Completed Result
+
+The paired matrix completed all 120 runs with no failures or retries. Search
+identity and both implementation contracts passed.
+
+- Terminal certificates: `55/60`, with `0` false certificates.
+- Fresh seeds `5..19`: `40/45`, with `0` false certificates.
+- Paired performance: `16 win / 3 loss / 41 tie`.
+- Fresh performance: `12 win / 3 loss / 30 tie`.
+- Feasibility rescues: 3 overall and 2 on fresh seeds.
+- Feasibility losses: 0.
+
+The three regret losses occurred when a truly safe rank-1 policy missed the
+componentwise Student-t/chi-square certificate by a small positive margin and
+the protocol deployed a slightly worse certified rank-2 policy. The five
+abstentions also retained truly feasible V51 policies. Thus V61 rejected no
+unsafe deployment; its registered gate failed because the componentwise
+Bonferroni construction remained underpowered.
+
+All seeds `0..19` are development data after this analysis. They cannot be
+used as confirmatory evidence for a successor certificate.

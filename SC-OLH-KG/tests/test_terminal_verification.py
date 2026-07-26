@@ -16,7 +16,11 @@ from problems.single_objective import ScalarizedProblem  # noqa: E402
 
 class TerminalVerificationTests(unittest.TestCase):
     @staticmethod
-    def _algorithm(seed=17, budget=8):
+    def _algorithm(
+        seed=17,
+        budget=8,
+        verification_method="component_bonferroni",
+    ):
         problem = ScalarizedProblem(
             RZDT1(d=5, L=20, sigma=0.01, heteroscedastic=True))
         config = SingleOLHKGConfig(
@@ -27,6 +31,7 @@ class TerminalVerificationTests(unittest.TestCase):
             seed=seed,
             terminal_verification_budget=budget,
             terminal_verification_delta=0.05,
+            terminal_verification_method=verification_method,
         )
         return SingleOLHKGAlgorithm(problem, config)
 
@@ -54,6 +59,21 @@ class TerminalVerificationTests(unittest.TestCase):
         self.assertEqual(result["status"], "disabled")
         self.assertEqual(result["verification_budget"], 0)
         self.assertEqual(result["total_evaluation_count"], 0)
+
+    def test_exact_quantile_tolerance_method_is_auditable(self):
+        result = self._algorithm(
+            seed=19,
+            budget=8,
+            verification_method="normal_quantile_tolerance",
+        )._terminal_fixed_policy_verification((0,) * 5)
+        self.assertEqual(
+            result["method"], "gaussian_noncentral_t_tolerance")
+        self.assertEqual(
+            result["method_mode"], "normal_quantile_tolerance")
+        self.assertIn("noncentral_t_quantile", result)
+        self.assertIn("tolerance_factor", result)
+        self.assertNotIn("mean_upper", result)
+        self.assertEqual(result["sample_count"], 8)
 
     def test_negative_verification_budget_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "nonnegative"):

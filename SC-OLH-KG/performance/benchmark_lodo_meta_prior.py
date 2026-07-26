@@ -1015,6 +1015,8 @@ def run_one(task):
             "terminal_verification_delta", 0.05)),
         terminal_verification_mean_delta_fraction=float(args_dict.get(
             "terminal_verification_mean_delta_fraction", 0.5)),
+        terminal_verification_method=str(args_dict.get(
+            "terminal_verification_method", "component_bonferroni")),
         terminal_verification_policy=str(args_dict.get(
             "terminal_verification_policy", "fixed_policy")),
         terminal_verification_shortlist_size=int(args_dict.get(
@@ -1574,6 +1576,8 @@ def run_one(task):
             "terminal_verification_budget", 0)),
         "terminal_verification_delta": float(args_dict.get(
             "terminal_verification_delta", 0.05)),
+        "terminal_verification_method": str(args_dict.get(
+            "terminal_verification_method", "component_bonferroni")),
         "terminal_verification_policy": str(args_dict.get(
             "terminal_verification_policy", "fixed_policy")),
         "terminal_verification_shortlist_size": int(args_dict.get(
@@ -2999,6 +3003,11 @@ def main():
         "--terminal_verification_mean_delta_fraction",
         type=float,
         default=0.5,
+    )
+    parser.add_argument(
+        "--terminal_verification_method",
+        choices=("component_bonferroni", "normal_quantile_tolerance"),
+        default="component_bonferroni",
     )
     parser.add_argument(
         "--terminal_verification_policy",
