@@ -78,6 +78,112 @@ class TerminalVerificationTests(unittest.TestCase):
         self.assertFalse(
             verified["terminal_verification"]["recommendation_changed"])
 
+    def test_ordered_shortlist_spends_familywise_delta_and_uses_fallback(self):
+        algorithm = self._algorithm(seed=31, budget=8)
+        algorithm.config.terminal_verification_policy = (
+            "ordered_frozen_shortlist")
+        algorithm.config.terminal_verification_shortlist_size = 2
+        primary = (0, 0, 0, 0, 0)
+        fallback = (1, 1, 1, 1, 1)
+        algorithm._last_terminal_bayes_ranked_points = [
+            primary, fallback]
+        calls = []
+
+        def fake_verification(
+            point,
+            *,
+            verification_delta=None,
+            candidate_index=0,
+        ):
+            calls.append((
+                tuple(point), verification_delta, candidate_index))
+            return {
+                "enabled": True,
+                "status": (
+                    "certified" if candidate_index == 1
+                    else "not_certified"),
+                "method": "gaussian_student_t_chi_square",
+                "policy_frozen_before_verification": True,
+                "search_samples_reused": False,
+                "posterior_updated_from_verification": False,
+                "verification_budget": 8,
+                "sample_count": 8,
+                "certified": candidate_index == 1,
+                "candidate_index": candidate_index,
+                "delta": verification_delta,
+                "target_oracle_used": False,
+            }
+
+        algorithm._terminal_fixed_policy_verification = fake_verification
+        deployed, result = algorithm._terminal_verification_protocol(
+            primary)
+
+        self.assertEqual(deployed, fallback)
+        self.assertEqual(
+            calls,
+            [(primary, 0.025, 0), (fallback, 0.025, 1)],
+        )
+        self.assertTrue(result["certified"])
+        self.assertTrue(result["recommendation_changed"])
+        self.assertEqual(result["selected_shortlist_rank"], 2)
+        self.assertEqual(result["verification_budget"], 16)
+        self.assertEqual(result["max_verification_budget"], 16)
+        self.assertEqual(result["familywise_delta"], 0.05)
+        self.assertEqual(result["per_candidate_delta"], 0.025)
+
+    def test_ordered_shortlist_stops_after_primary_certificate(self):
+        algorithm = self._algorithm(seed=37, budget=8)
+        algorithm.config.terminal_verification_policy = (
+            "ordered_frozen_shortlist")
+        algorithm.config.terminal_verification_shortlist_size = 2
+        primary = (0, 0, 0, 0, 0)
+        fallback = (1, 1, 1, 1, 1)
+        algorithm._last_terminal_bayes_ranked_points = [
+            primary, fallback]
+        calls = []
+
+        def fake_verification(
+            point,
+            *,
+            verification_delta=None,
+            candidate_index=0,
+        ):
+            calls.append(tuple(point))
+            return {
+                "enabled": True,
+                "status": "certified",
+                "method": "gaussian_student_t_chi_square",
+                "policy_frozen_before_verification": True,
+                "search_samples_reused": False,
+                "posterior_updated_from_verification": False,
+                "verification_budget": 8,
+                "sample_count": 8,
+                "certified": True,
+                "candidate_index": candidate_index,
+                "delta": verification_delta,
+                "target_oracle_used": False,
+            }
+
+        algorithm._terminal_fixed_policy_verification = fake_verification
+        deployed, result = algorithm._terminal_verification_protocol(
+            primary)
+
+        self.assertEqual(deployed, primary)
+        self.assertEqual(calls, [primary])
+        self.assertEqual(result["selected_shortlist_rank"], 1)
+        self.assertEqual(result["verification_budget"], 8)
+        self.assertFalse(result["recommendation_changed"])
+
+    def test_ordered_shortlist_requires_frozen_ranked_candidates(self):
+        algorithm = self._algorithm(seed=41, budget=8)
+        algorithm.config.terminal_verification_policy = (
+            "ordered_frozen_shortlist")
+        algorithm.config.terminal_verification_shortlist_size = 2
+        with self.assertRaisesRegex(
+            RuntimeError, "posterior-ranked candidates"
+        ):
+            algorithm._terminal_verification_protocol((0,) * 5)
+
 
 if __name__ == "__main__":
     unittest.main()

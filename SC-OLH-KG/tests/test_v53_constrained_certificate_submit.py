@@ -67,6 +67,7 @@ def _args(tmp_path, variants):
         "terminal_verification_budget": 48,
         "terminal_verification_delta": 0.05,
         "terminal_verification_mean_delta_fraction": 0.5,
+        "terminal_verification_shortlist_size": 2,
         "cpu": 12,
         "exact_jobs": 12,
         "ram_mb": 8192,
@@ -397,6 +398,32 @@ def test_v59_keeps_v51_search_and_adds_fixed_policy_verification(tmp_path):
         "--theory-contract-id "
         "v59_gaussian_replication_certificate_v1" in spec["cmd"]
         for spec in specs
+    )
+
+
+def test_v60_freezes_ranked_shortlist_and_splits_familywise_delta(tmp_path):
+    args = _args(tmp_path, (MODULE.V60,))
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 3 * 2
+    assert all("--policy-improvement-mode off" in spec["cmd"]
+               for spec in specs)
+    assert all(
+        "--terminal-verification-policy ordered_frozen_shortlist"
+        in spec["cmd"] for spec in specs
+    )
+    assert all(
+        "--terminal-verification-shortlist-size 2" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v60_frozen_ordered_shortlist_verification" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--theory-contract-id "
+        "v60_familywise_gaussian_shortlist_certificate_v1"
+        in spec["cmd"] for spec in specs
     )
 
 

@@ -1015,6 +1015,10 @@ def run_one(task):
             "terminal_verification_delta", 0.05)),
         terminal_verification_mean_delta_fraction=float(args_dict.get(
             "terminal_verification_mean_delta_fraction", 0.5)),
+        terminal_verification_policy=str(args_dict.get(
+            "terminal_verification_policy", "fixed_policy")),
+        terminal_verification_shortlist_size=int(args_dict.get(
+            "terminal_verification_shortlist_size", 1)),
         observed_incumbent_use_replicate_variance=bool(args_dict[
             "observed_incumbent_use_replicate_variance"]),
         safe_interior_candidate_count=args_dict["safe_interior_candidate_count"],
@@ -1568,6 +1572,10 @@ def run_one(task):
             "terminal_verification_budget", 0)),
         "terminal_verification_delta": float(args_dict.get(
             "terminal_verification_delta", 0.05)),
+        "terminal_verification_policy": str(args_dict.get(
+            "terminal_verification_policy", "fixed_policy")),
+        "terminal_verification_shortlist_size": int(args_dict.get(
+            "terminal_verification_shortlist_size", 1)),
         "terminal_verification": result.get("terminal_verification"),
         "terminal_verification_certified": bool(
             result.get("terminal_verification_certified", False)),
@@ -2984,6 +2992,13 @@ def main():
         type=float,
         default=0.5,
     )
+    parser.add_argument(
+        "--terminal_verification_policy",
+        choices=("fixed_policy", "ordered_frozen_shortlist"),
+        default="fixed_policy",
+    )
+    parser.add_argument(
+        "--terminal_verification_shortlist_size", type=int, default=1)
     parser.add_argument(
         "--finalist_frontier_policy",
         choices=("legacy", "coverage_reserved", "observed_safety_reserved"),

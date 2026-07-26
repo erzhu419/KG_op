@@ -60,6 +60,13 @@ def main():
         type=float,
         default=0.5,
     )
+    parser.add_argument(
+        "--terminal_verification_policy",
+        choices=("fixed_policy", "ordered_frozen_shortlist"),
+        default="fixed_policy",
+    )
+    parser.add_argument(
+        "--terminal_verification_shortlist_size", type=int, default=1)
     parser.add_argument("--checkpoint_dir", default="")
     parser.add_argument("--checkpoint_resume", action="store_true")
     parser.add_argument("--checkpoint_interval", type=int, default=1)
@@ -105,6 +112,9 @@ def main():
         terminal_verification_delta=args.terminal_verification_delta,
         terminal_verification_mean_delta_fraction=(
             args.terminal_verification_mean_delta_fraction),
+        terminal_verification_policy=args.terminal_verification_policy,
+        terminal_verification_shortlist_size=(
+            args.terminal_verification_shortlist_size),
         checkpoint_dir=args.checkpoint_dir,
         checkpoint_resume=args.checkpoint_resume,
         checkpoint_interval=args.checkpoint_interval,

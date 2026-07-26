@@ -84,6 +84,8 @@ def load_config(path):
     config.setdefault("terminal_verification_budget", 0)
     config.setdefault("terminal_verification_delta", 0.05)
     config.setdefault("terminal_verification_mean_delta_fraction", 0.5)
+    config.setdefault("terminal_verification_policy", "fixed_policy")
+    config.setdefault("terminal_verification_shortlist_size", 1)
     config.setdefault("decision_contract_mode", "legacy")
     config.setdefault("tcb_v2_enabled", False)
     config.setdefault("tcb_v2_mode", "off")
@@ -973,6 +975,13 @@ def main():
         type=float,
         default=None,
     )
+    parser.add_argument(
+        "--terminal-verification-policy",
+        choices=("fixed_policy", "ordered_frozen_shortlist"),
+        default=None,
+    )
+    parser.add_argument(
+        "--terminal-verification-shortlist-size", type=int, default=None)
     parser.add_argument("--certification-recheck-top-k", type=int, default=0)
     parser.add_argument(
         "--certification-recheck-min-replicates", type=int, default=3)
@@ -1003,6 +1012,16 @@ def main():
         config["terminal_verification_mean_delta_fraction"]
         if args.terminal_verification_mean_delta_fraction is None
         else args.terminal_verification_mean_delta_fraction
+    )
+    terminal_verification_policy = str(
+        config["terminal_verification_policy"]
+        if args.terminal_verification_policy is None
+        else args.terminal_verification_policy
+    )
+    terminal_verification_shortlist_size = int(
+        config["terminal_verification_shortlist_size"]
+        if args.terminal_verification_shortlist_size is None
+        else args.terminal_verification_shortlist_size
     )
     replication_candidate_count = int(
         config.get("replication_candidate_count", 0)
@@ -1484,6 +1503,10 @@ def main():
             terminal_verification_delta),
         "terminal_verification_mean_delta_fraction": float(
             terminal_verification_mean_delta_fraction),
+        "terminal_verification_policy": str(
+            terminal_verification_policy),
+        "terminal_verification_shortlist_size": int(
+            terminal_verification_shortlist_size),
         "certification_recheck_top_k": int(
             args.certification_recheck_top_k),
         "certification_recheck_min_replicates": int(
@@ -1851,6 +1874,10 @@ def main():
                 terminal_verification_delta),
             "terminal_verification_mean_delta_fraction": float(
                 terminal_verification_mean_delta_fraction),
+            "terminal_verification_policy": str(
+                terminal_verification_policy),
+            "terminal_verification_shortlist_size": int(
+                terminal_verification_shortlist_size),
             "certification_recheck_top_k": int(
                 args.certification_recheck_top_k),
             "certification_recheck_min_replicates": int(

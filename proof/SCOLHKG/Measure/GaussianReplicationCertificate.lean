@@ -104,4 +104,80 @@ theorem false_gaussian_replication_certificate_probability_le_delta
       meanDelta sigmaDelta hZ hMean hSigma
   ) hSplit
 
+def CandidateFalseCertificate
+    (isUnsafe : Prop)
+    (certified : Ω → Prop) : Set Ω :=
+  {ω | certified ω ∧ isUnsafe}
+
+def FalseOrderedTwoPolicyDeployment
+    (unsafeFirst unsafeSecond : Prop)
+    (certifiedFirst certifiedSecond : Ω → Prop) : Set Ω :=
+  {ω |
+    (certifiedFirst ω ∧ unsafeFirst)
+      ∨
+    (¬ certifiedFirst ω ∧ certifiedSecond ω ∧ unsafeSecond)}
+
+theorem false_ordered_two_policy_deployment_subset
+    (unsafeFirst unsafeSecond : Prop)
+    (certifiedFirst certifiedSecond : Ω → Prop) :
+    FalseOrderedTwoPolicyDeployment
+        unsafeFirst unsafeSecond certifiedFirst certifiedSecond
+      ⊆ CandidateFalseCertificate unsafeFirst certifiedFirst
+        ∪ CandidateFalseCertificate unsafeSecond certifiedSecond := by
+  intro ω hFalse
+  rcases hFalse with hFirst | hSecond
+  · exact Set.mem_union_left _ hFirst
+  · exact Set.mem_union_right _ ⟨hSecond.2.1, hSecond.2.2⟩
+
+theorem false_ordered_two_policy_deployment_probability_le
+    (unsafeFirst unsafeSecond : Prop)
+    (certifiedFirst certifiedSecond : Ω → Prop)
+    (deltaFirst deltaSecond : ℝ)
+    [IsFiniteMeasure μ]
+    (hFirst :
+      μ.real (CandidateFalseCertificate unsafeFirst certifiedFirst)
+        ≤ deltaFirst)
+    (hSecond :
+      μ.real (CandidateFalseCertificate unsafeSecond certifiedSecond)
+        ≤ deltaSecond) :
+    μ.real (FalseOrderedTwoPolicyDeployment
+      unsafeFirst unsafeSecond certifiedFirst certifiedSecond)
+      ≤ deltaFirst + deltaSecond := by
+  calc
+    μ.real (FalseOrderedTwoPolicyDeployment
+        unsafeFirst unsafeSecond certifiedFirst certifiedSecond)
+      ≤ μ.real (
+          CandidateFalseCertificate unsafeFirst certifiedFirst
+            ∪ CandidateFalseCertificate unsafeSecond certifiedSecond) :=
+        measureReal_mono (
+          false_ordered_two_policy_deployment_subset
+            unsafeFirst unsafeSecond certifiedFirst certifiedSecond)
+    _ ≤ μ.real (CandidateFalseCertificate unsafeFirst certifiedFirst)
+          + μ.real (
+              CandidateFalseCertificate unsafeSecond certifiedSecond) :=
+        measureReal_union_le _ _
+    _ ≤ deltaFirst + deltaSecond := by
+      linarith
+
+theorem false_ordered_two_policy_deployment_probability_le_familywise_delta
+    (unsafeFirst unsafeSecond : Prop)
+    (certifiedFirst certifiedSecond : Ω → Prop)
+    (deltaFirst deltaSecond familywiseDelta : ℝ)
+    [IsFiniteMeasure μ]
+    (hFirst :
+      μ.real (CandidateFalseCertificate unsafeFirst certifiedFirst)
+        ≤ deltaFirst)
+    (hSecond :
+      μ.real (CandidateFalseCertificate unsafeSecond certifiedSecond)
+        ≤ deltaSecond)
+    (hSpend : deltaFirst + deltaSecond ≤ familywiseDelta) :
+    μ.real (FalseOrderedTwoPolicyDeployment
+      unsafeFirst unsafeSecond certifiedFirst certifiedSecond)
+      ≤ familywiseDelta := by
+  exact le_trans (
+    false_ordered_two_policy_deployment_probability_le
+      unsafeFirst unsafeSecond certifiedFirst certifiedSecond
+      deltaFirst deltaSecond hFirst hSecond
+  ) hSpend
+
 end SCOLHKG.Measure

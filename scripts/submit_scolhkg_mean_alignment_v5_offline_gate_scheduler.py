@@ -263,6 +263,12 @@ def _flags(profile, args):
                 "--terminal-verification-mean-delta-fraction",
                 str(profile.get(
                     "terminal_verification_mean_delta_fraction", 0.5)),
+                "--terminal-verification-policy",
+                str(profile.get(
+                    "terminal_verification_policy", "fixed_policy")),
+                "--terminal-verification-shortlist-size",
+                str(profile.get(
+                    "terminal_verification_shortlist_size", 1)),
             ]
             if "terminal_verification_budget" in profile
             else []

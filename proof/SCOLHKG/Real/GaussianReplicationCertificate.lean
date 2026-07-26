@@ -89,4 +89,85 @@ theorem search_plus_verification_budget_accounting
         + verificationBudget := by
   rfl
 
+structure FrozenTerminalShortlist (Design : Type*) where
+  policies : List Design
+  searchBudget : ℕ
+  verificationBudgetPerPolicy : ℕ
+
+def freezeTerminalShortlist
+    {Design : Type*}
+    (policies : List Design)
+    (searchBudget verificationBudgetPerPolicy : ℕ) :
+    FrozenTerminalShortlist Design where
+  policies := policies
+  searchBudget := searchBudget
+  verificationBudgetPerPolicy := verificationBudgetPerPolicy
+
+def firstCertified?
+    {Design : Type*}
+    (certified : Design → Bool) :
+    List Design → Option Design
+  | [] => none
+  | policy :: remaining =>
+      if certified policy then
+        some policy
+      else
+        firstCertified? certified remaining
+
+theorem firstCertified_mem_and_certified
+    {Design : Type*}
+    (certified : Design → Bool)
+    (policies : List Design)
+    (selected : Design)
+    (hSelected : firstCertified? certified policies = some selected) :
+    selected ∈ policies ∧ certified selected = true := by
+  induction policies with
+  | nil =>
+      simp [firstCertified?] at hSelected
+  | cons policy remaining inductionHypothesis =>
+      by_cases hPolicy : certified policy = true
+      · simp [firstCertified?, hPolicy] at hSelected
+        subst selected
+        simp [hPolicy]
+      · have hPolicyFalse : certified policy = false := by
+          exact Bool.eq_false_of_not_eq_true hPolicy
+        simp [firstCertified?, hPolicyFalse] at hSelected
+        have hRemaining :=
+          inductionHypothesis hSelected
+        exact ⟨by simp [hRemaining.1], hRemaining.2⟩
+
+theorem firstCertified_safe
+    {Design : Type*}
+    (certified : Design → Bool)
+    (safe : Design → Prop)
+    (policies : List Design)
+    (selected : Design)
+    (hSelected : firstCertified? certified policies = some selected)
+    (hCertificateSound :
+      ∀ policy, certified policy = true → safe policy) :
+    safe selected := by
+  exact hCertificateSound selected (
+    firstCertified_mem_and_certified
+      certified policies selected hSelected
+  ).2
+
+theorem ordered_shortlist_verification_budget_le
+    (searchBudget verificationBudgetPerPolicy tested shortlistSize : ℕ)
+    (hTested : tested ≤ shortlistSize) :
+    searchBudget + tested * verificationBudgetPerPolicy
+      ≤ searchBudget + shortlistSize * verificationBudgetPerPolicy := by
+  exact Nat.add_le_add_left
+    (Nat.mul_le_mul_right verificationBudgetPerPolicy hTested)
+    searchBudget
+
+theorem ordered_shortlist_freeze_is_verification_invariant
+    {Design Sample : Type*}
+    (policies : List Design)
+    (searchBudget verificationBudgetPerPolicy : ℕ)
+    (_verification : List Sample) :
+    (freezeTerminalShortlist
+      policies searchBudget verificationBudgetPerPolicy).policies
+      = policies := by
+  rfl
+
 end SCOLHKG.Real

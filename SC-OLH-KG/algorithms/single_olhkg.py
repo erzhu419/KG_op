@@ -84,6 +84,7 @@ PROPOSAL_STREAM_TAG = 0x50524F50
 EXACT_KG_STREAM_TAG = 0x45584B47
 EXACT_KG_CONFIRMATION_STREAM_TAG = 0x434F4E46
 TERMINAL_VERIFICATION_STREAM_TAG = 0x56455249
+TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG = 0x56534C54
 
 
 def _fork_exact_kg_candidate(x):
@@ -457,6 +458,8 @@ class SingleOLHKGConfig:
     terminal_verification_budget: int = 0
     terminal_verification_delta: float = 0.05
     terminal_verification_mean_delta_fraction: float = 0.5
+    terminal_verification_policy: str = "fixed_policy"
+    terminal_verification_shortlist_size: int = 1
     observed_incumbent_use_replicate_variance: bool = False
     safe_interior_candidate_count: int = 0
     safe_interior_pool_size: int = 300
@@ -1094,14 +1097,34 @@ class SingleOLHKGAlgorithm:
         self.history.append((x_tuple, y))
         return y
 
-    def _terminal_fixed_policy_verification(self, x):
+    def _terminal_fixed_policy_verification(
+        self,
+        x,
+        *,
+        verification_delta=None,
+        candidate_index=0,
+    ):
         """Verify a frozen terminal policy on an independent sample stream."""
 
         budget = int(self.config.terminal_verification_budget)
         if budget < 0:
             raise ValueError(
                 "terminal verification budget must be nonnegative")
+        candidate_index = int(candidate_index)
+        if candidate_index < 0:
+            raise ValueError(
+                "terminal verification candidate index must be nonnegative")
+        delta = (
+            float(self.config.terminal_verification_delta)
+            if verification_delta is None
+            else float(verification_delta)
+        )
         point = tuple(int(value) for value in x)
+        stream_tag = (
+            TERMINAL_VERIFICATION_STREAM_TAG
+            if candidate_index == 0
+            else TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG
+        )
         base = {
             "enabled": bool(budget > 0),
             "status": "disabled" if budget == 0 else "pending",
@@ -1113,9 +1136,10 @@ class SingleOLHKGAlgorithm:
             "search_evaluation_count": int(len(self.history)),
             "total_evaluation_count": int(len(self.history) + budget),
             "policy_fingerprint": integer_design_fingerprint([point]),
-            "delta": float(self.config.terminal_verification_delta),
+            "delta": float(delta),
             "mean_delta_fraction": float(
                 self.config.terminal_verification_mean_delta_fraction),
+            "candidate_index": int(candidate_index),
             "target_oracle_used": False,
         }
         if budget == 0:
@@ -1130,11 +1154,21 @@ class SingleOLHKGAlgorithm:
 
         values = []
         for replication in range(budget):
-            verification_rng = np.random.default_rng(np.random.SeedSequence([
-                int(self.config.seed),
-                int(replication),
-                TERMINAL_VERIFICATION_STREAM_TAG,
-            ]))
+            if candidate_index == 0:
+                seed_components = [
+                    int(self.config.seed),
+                    int(replication),
+                    TERMINAL_VERIFICATION_STREAM_TAG,
+                ]
+            else:
+                seed_components = [
+                    int(self.config.seed),
+                    int(candidate_index),
+                    int(replication),
+                    TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG,
+                ]
+            verification_rng = np.random.default_rng(
+                np.random.SeedSequence(seed_components))
             values.append(np.asarray(
                 self.problem.simulate(point, verification_rng),
                 dtype=float,
@@ -1148,7 +1182,7 @@ class SingleOLHKGAlgorithm:
             samples[:, 1],
             tau=float(self.problem.tau),
             alpha=float(self.problem.alpha),
-            delta=float(self.config.terminal_verification_delta),
+            delta=float(delta),
             mean_delta_fraction=float(
                 self.config.terminal_verification_mean_delta_fraction),
         )
@@ -1163,13 +1197,147 @@ class SingleOLHKGAlgorithm:
                 else float(np.std(samples[:, 0], ddof=1))
             ),
             "noise_model": noise_model,
-            "verification_stream_tag": int(
-                TERMINAL_VERIFICATION_STREAM_TAG),
+            "verification_stream_tag": int(stream_tag),
             "verification_samples_logged": False,
             "certification_scope": (
                 "fixed_terminal_policy_independent_replications"),
             "recommendation_changed": False,
             "target_oracle_used": False,
+        }
+
+    def _terminal_verification_protocol(self, primary):
+        """Verify a frozen terminal policy or an ordered frozen shortlist."""
+
+        budget = int(self.config.terminal_verification_budget)
+        if budget < 0:
+            raise ValueError(
+                "terminal verification budget must be nonnegative")
+        policy = str(
+            self.config.terminal_verification_policy or "fixed_policy"
+        ).strip().lower().replace("-", "_")
+        if policy not in {"fixed_policy", "ordered_frozen_shortlist"}:
+            raise ValueError(
+                "terminal_verification_policy must be 'fixed_policy' or "
+                "'ordered_frozen_shortlist'")
+        primary = tuple(int(value) for value in primary)
+        if policy == "fixed_policy":
+            result = self._terminal_fixed_policy_verification(primary)
+            return primary, {
+                **result,
+                "protocol": "fixed_policy",
+                "familywise_delta": float(
+                    self.config.terminal_verification_delta),
+                "per_candidate_delta": float(
+                    self.config.terminal_verification_delta),
+                "frozen_shortlist_size": 1,
+                "frozen_shortlist": [{
+                    "posterior_rank": 1,
+                    "point": list(map(int, primary)),
+                    "point_fingerprint": integer_design_fingerprint([
+                        primary]),
+                }],
+                "attempts": [copy.deepcopy(result)] if result["enabled"] else [],
+                "selected_shortlist_rank": 1,
+                "primary_policy_fingerprint": integer_design_fingerprint([
+                    primary]),
+                "deployed_policy_fingerprint": integer_design_fingerprint([
+                    primary]),
+                "max_verification_budget": int(
+                    self.config.terminal_verification_budget),
+            }
+
+        requested_size = int(
+            self.config.terminal_verification_shortlist_size)
+        if requested_size < 2:
+            raise ValueError(
+                "ordered frozen shortlist verification requires at least "
+                "two candidates")
+        ranked = list(getattr(
+            self, "_last_terminal_bayes_ranked_points", []))
+        shortlist = [primary]
+        for candidate in ranked:
+            point = tuple(int(value) for value in candidate)
+            if point not in shortlist:
+                shortlist.append(point)
+            if len(shortlist) >= requested_size:
+                break
+        if len(shortlist) < requested_size:
+            raise RuntimeError(
+                "ordered terminal verification requested "
+                f"{requested_size} candidates but only {len(shortlist)} "
+                "posterior-ranked candidates were frozen")
+
+        familywise_delta = float(self.config.terminal_verification_delta)
+        per_candidate_delta = familywise_delta / float(len(shortlist))
+        frozen_shortlist = [{
+            "posterior_rank": int(rank),
+            "point": list(map(int, point)),
+            "point_fingerprint": integer_design_fingerprint([point]),
+        } for rank, point in enumerate(shortlist, start=1)]
+        attempts = []
+        deployed = primary
+        selected_rank = None
+        if budget > 0:
+            for candidate_index, point in enumerate(shortlist):
+                verification = self._terminal_fixed_policy_verification(
+                    point,
+                    verification_delta=per_candidate_delta,
+                    candidate_index=candidate_index,
+                )
+                attempts.append(verification)
+                if bool(verification.get("certified", False)):
+                    deployed = point
+                    selected_rank = candidate_index + 1
+                    break
+
+        actual_budget = int(sum(
+            int(attempt.get("verification_budget", 0))
+            for attempt in attempts
+        ))
+        certified = selected_rank is not None
+        recommendation_changed = bool(deployed != primary)
+        return deployed, {
+            "enabled": bool(budget > 0),
+            "status": (
+                "certified"
+                if certified else (
+                    "disabled" if budget == 0 else "abstained_uncertified"
+                )
+            ),
+            "method": (
+                "ordered_frozen_shortlist_"
+                "gaussian_student_t_chi_square"),
+            "protocol": "ordered_frozen_shortlist",
+            "policy_frozen_before_verification": True,
+            "shortlist_frozen_before_verification": True,
+            "search_samples_reused": False,
+            "posterior_updated_from_verification": False,
+            "verification_budget": int(actual_budget),
+            "verification_budget_per_candidate": int(budget),
+            "max_verification_budget": int(budget * len(shortlist)),
+            "search_evaluation_count": int(len(self.history)),
+            "total_evaluation_count": int(
+                len(self.history) + actual_budget),
+            "familywise_delta": float(familywise_delta),
+            "per_candidate_delta": float(per_candidate_delta),
+            "mean_delta_fraction": float(
+                self.config.terminal_verification_mean_delta_fraction),
+            "frozen_shortlist_size": int(len(shortlist)),
+            "frozen_shortlist": frozen_shortlist,
+            "attempts": attempts,
+            "attempt_count": int(len(attempts)),
+            "certified": bool(certified),
+            "selected_shortlist_rank": (
+                None if selected_rank is None else int(selected_rank)),
+            "primary_policy_fingerprint": integer_design_fingerprint([
+                primary]),
+            "deployed_policy_fingerprint": integer_design_fingerprint([
+                deployed]),
+            "recommendation_changed": recommendation_changed,
+            "target_oracle_used": False,
+            "certification_scope": (
+                "familywise_frozen_ordered_terminal_shortlist"),
+            "verification_samples_logged": False,
         }
 
     def _fit_initial_belief(self, samples):
@@ -13126,6 +13294,7 @@ class SingleOLHKGAlgorithm:
         consulting target truth or adding an empirical fallback.
         """
 
+        self._last_terminal_bayes_ranked_points = []
         backend = str(
             self.config.decision_backend or "legacy"
         ).strip().lower().replace("-", "_")
@@ -13193,6 +13362,14 @@ class SingleOLHKGAlgorithm:
             task_ensemble=self.task_ensemble,
             risk_penalty=self.config.decision_risk_penalty,
         )
+        order = np.argsort(
+            np.asarray(components["risk"], dtype=float),
+            kind="stable",
+        )
+        self._last_terminal_bayes_ranked_points = [
+            tuple(int(v) for v in action_pool[int(index)])
+            for index in order
+        ]
         local = int(np.argmin(components["risk"]))
         selected = tuple(int(v) for v in action_pool[local])
         _, details = self._solve_posterior_recommendation(pool=[selected])
@@ -13374,6 +13551,14 @@ class SingleOLHKGAlgorithm:
             action_pool,
             task_ensemble=self.task_ensemble,
         )
+        order = np.argsort(
+            np.asarray(components["risk"], dtype=float),
+            kind="stable",
+        )
+        self._last_terminal_bayes_ranked_points = [
+            tuple(int(v) for v in action_pool[int(index)])
+            for index in order
+        ]
         selected_index = action_pool.index(selected)
         _, details = self._solve_posterior_recommendation(pool=[selected])
         last_update = (
@@ -15673,11 +15858,17 @@ class SingleOLHKGAlgorithm:
             final_x, final_post = dominance_terminal
         finalization_timing["dominance_terminal"] = float(
             time.perf_counter() - finalization_stage_started)
+        optimization_final_x = tuple(int(value) for value in final_x)
         finalization_stage_started = time.perf_counter()
-        terminal_verification = (
-            self._terminal_fixed_policy_verification(final_x))
+        final_x, terminal_verification = (
+            self._terminal_verification_protocol(optimization_final_x))
         finalization_timing["terminal_fixed_policy_verification"] = float(
             time.perf_counter() - finalization_stage_started)
+        final_post["optimization_x_recommended"] = list(map(
+            int, optimization_final_x))
+        final_post["terminal_deployment_x"] = list(map(int, final_x))
+        final_post["terminal_deployment_changed"] = bool(
+            final_x != optimization_final_x)
         finalization_stage_started = time.perf_counter()
         task_meta_coherence = (
             None
@@ -16126,6 +16317,11 @@ class SingleOLHKGAlgorithm:
                 "evaluation_count": int(len(self.history)),
                 "verification_stream_tag": int(
                     TERMINAL_VERIFICATION_STREAM_TAG),
+                "shortlist_verification_stream_tag": int(
+                    TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG),
+                "verification_protocol": str(
+                    terminal_verification.get(
+                        "protocol", "fixed_policy")),
                 "verification_evaluation_count": int(
                     terminal_verification.get(
                         "verification_budget", 0)),

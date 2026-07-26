@@ -53,3 +53,23 @@ the problem contract.
 Passing this gate promotes the two-stage certification protocol only. It does
 not replace V51 as the search-performance baseline, because V59 spends a
 larger total target budget.
+
+## Completed Result
+
+Run `scolh_v59_terminal_gaussian_verify_n13_r48_s5_20260726_01` completed all
+15 tasks without failure or retry.
+
+- Search trajectories and recommendations matched V51 in all 15 pairs.
+- Independent terminal certificates were obtained in 11/15 runs:
+  FactorShock 5/5, Inventory 2/5, and Queue 4/5.
+- There were zero false terminal certificates.
+- The transferred posterior certificate remained empty in all 15 runs.
+- Verification simulation cost was fully charged: 48 extra target calls per
+  run, for 61 total calls.
+
+The four failures were audited only after the posterior ranking was frozen.
+In all four, posterior rank 2 was substantially deeper in the true safe
+interior than rank 1. The three Inventory rank-1 policies were feasible but
+too close to the boundary for 48 replications; the Queue rank-1 policy was
+truly infeasible. This motivates V60's registered frozen-shortlist protocol,
+not a relaxation of the V59 confidence threshold.
