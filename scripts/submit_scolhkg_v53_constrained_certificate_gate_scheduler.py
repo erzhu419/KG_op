@@ -39,9 +39,10 @@ V55_FIDELITY = ("v55_mc128", "v55_mc512")
 V56_FIDELITY = ("v56_confirm2048", "v56_confirm4096")
 V57 = "v57_posterior_safe_terminal"
 V58 = "v58_guard_decomposed_support"
+V59 = "v59_terminal_gaussian_verification"
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
-    *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY, V57, V58,
+    *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY, V57, V58, V59,
 )
 
 
@@ -340,6 +341,24 @@ def variant_profiles(args):
             "policy_improvement_confirmation_samples": 4096,
             "posterior_dominance_enabled": False,
         },
+        V59: {
+            **common,
+            "implementation_contract_id": (
+                "v59_frozen_policy_gaussian_verification"),
+            "theory_contract_id": (
+                "v59_gaussian_replication_certificate_v1"),
+            "evaluate_or_replicate_new_action_count": 4,
+            "evaluate_or_replicate_new_action_policy": (
+                "canonical_plus_posterior_risk"),
+            "policy_improvement_mode": "off",
+            "posterior_dominance_enabled": False,
+            "terminal_verification_budget": int(
+                args.terminal_verification_budget),
+            "terminal_verification_delta": float(
+                args.terminal_verification_delta),
+            "terminal_verification_mean_delta_fraction": float(
+                args.terminal_verification_mean_delta_fraction),
+        },
     }
 
 
@@ -371,11 +390,24 @@ def build_specs(args):
         raise ValueError(
             "v56/v57/v58 confirmation variants require "
             "independent_confirmation")
+    if V59 in requested:
+        if int(args.terminal_verification_budget) < 2:
+            raise ValueError("V59 requires at least two verification calls")
+        if not 0.0 < float(args.terminal_verification_delta) < 1.0:
+            raise ValueError("V59 verification delta must lie in (0, 1)")
+        fraction = float(args.terminal_verification_mean_delta_fraction)
+        if not 0.0 < fraction < 1.0:
+            raise ValueError(
+                "V59 verification mean-delta fraction must lie in (0, 1)")
     args.variant_profiles = {name: profiles[name] for name in requested}
     args.variants = ",".join(requested)
     args.scenarios = closure.promoted.v51.v50.v49.v27.MEAN_SCENARIOS
-    args.stage_family = "v53_constrained_certificate_deficit"
-    args.gate_label = "V53 constrained certificate-deficit policy"
+    if requested == [V59]:
+        args.stage_family = "v59_terminal_gaussian_verification"
+        args.gate_label = "V59 frozen-policy Gaussian verification"
+    else:
+        args.stage_family = "v53_constrained_certificate_deficit"
+        args.gate_label = "V53 constrained certificate-deficit policy"
     args.sequential = bool(int(args.N) > int(args.n0))
     return closure._root_module().build_specs(args)
 
@@ -468,6 +500,15 @@ def main():
         "--confirmation-lambda-count", type=int, default=24)
     parser.add_argument("--risk-eta", type=float, default=0.0)
     parser.add_argument("--certificate-eta", type=float, default=0.0)
+    parser.add_argument(
+        "--terminal-verification-budget", type=int, default=48)
+    parser.add_argument(
+        "--terminal-verification-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--terminal-verification-mean-delta-fraction",
+        type=float,
+        default=0.5,
+    )
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--exact-jobs", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=8192)

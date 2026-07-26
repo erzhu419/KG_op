@@ -33,6 +33,7 @@ class TestProblem:
     """Base vector-output test problem `(f1, f2, f3)`."""
 
     problem_name = "base"
+    simulation_noise_model = "iid_gaussian"
     variance_features = (0,)
     recommended_partition_features = (0,)
 

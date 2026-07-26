@@ -22,6 +22,7 @@ from core.certification import (
     CertificationResult,
     conservative_chance_margin,
     decompose_chance_margin,
+    gaussian_replication_chance_certificate,
 )
 from core.candidates import (
     axis_candidates,
@@ -82,6 +83,7 @@ SIMULATION_STREAM_TAG = 0x53434F4C
 PROPOSAL_STREAM_TAG = 0x50524F50
 EXACT_KG_STREAM_TAG = 0x45584B47
 EXACT_KG_CONFIRMATION_STREAM_TAG = 0x434F4E46
+TERMINAL_VERIFICATION_STREAM_TAG = 0x56455249
 
 
 def _fork_exact_kg_candidate(x):
@@ -452,6 +454,9 @@ class SingleOLHKGConfig:
     finalist_frontier_policy: str = "legacy"
     finalist_terminal_max_arms: int = 4
     finalist_terminal_mc_samples: int = 2
+    terminal_verification_budget: int = 0
+    terminal_verification_delta: float = 0.05
+    terminal_verification_mean_delta_fraction: float = 0.5
     observed_incumbent_use_replicate_variance: bool = False
     safe_interior_candidate_count: int = 0
     safe_interior_pool_size: int = 300
@@ -1088,6 +1093,84 @@ class SingleOLHKGAlgorithm:
         self.observations.setdefault(x_tuple, []).append(y)
         self.history.append((x_tuple, y))
         return y
+
+    def _terminal_fixed_policy_verification(self, x):
+        """Verify a frozen terminal policy on an independent sample stream."""
+
+        budget = int(self.config.terminal_verification_budget)
+        if budget < 0:
+            raise ValueError(
+                "terminal verification budget must be nonnegative")
+        point = tuple(int(value) for value in x)
+        base = {
+            "enabled": bool(budget > 0),
+            "status": "disabled" if budget == 0 else "pending",
+            "method": "gaussian_student_t_chi_square",
+            "policy_frozen_before_verification": True,
+            "search_samples_reused": False,
+            "posterior_updated_from_verification": False,
+            "verification_budget": int(budget),
+            "search_evaluation_count": int(len(self.history)),
+            "total_evaluation_count": int(len(self.history) + budget),
+            "policy_fingerprint": integer_design_fingerprint([point]),
+            "delta": float(self.config.terminal_verification_delta),
+            "mean_delta_fraction": float(
+                self.config.terminal_verification_mean_delta_fraction),
+            "target_oracle_used": False,
+        }
+        if budget == 0:
+            return base
+
+        noise_model = str(getattr(
+            self.problem, "simulation_noise_model", "unknown"))
+        if noise_model != "iid_gaussian":
+            raise RuntimeError(
+                "terminal Gaussian verification requires an "
+                "iid_gaussian simulation_noise_model")
+
+        values = []
+        for replication in range(budget):
+            verification_rng = np.random.default_rng(np.random.SeedSequence([
+                int(self.config.seed),
+                int(replication),
+                TERMINAL_VERIFICATION_STREAM_TAG,
+            ]))
+            values.append(np.asarray(
+                self.problem.simulate(point, verification_rng),
+                dtype=float,
+            ))
+        samples = np.asarray(values, dtype=float)
+        if samples.ndim != 2 or samples.shape[1] < 2:
+            raise RuntimeError(
+                "terminal verification requires objective and constraint "
+                "simulation outputs")
+        certificate = gaussian_replication_chance_certificate(
+            samples[:, 1],
+            tau=float(self.problem.tau),
+            alpha=float(self.problem.alpha),
+            delta=float(self.config.terminal_verification_delta),
+            mean_delta_fraction=float(
+                self.config.terminal_verification_mean_delta_fraction),
+        )
+        return {
+            **base,
+            **asdict(certificate),
+            "status": str(certificate.status),
+            "objective_sample_mean": float(np.mean(samples[:, 0])),
+            "objective_sample_std": (
+                None
+                if len(samples) < 2
+                else float(np.std(samples[:, 0], ddof=1))
+            ),
+            "noise_model": noise_model,
+            "verification_stream_tag": int(
+                TERMINAL_VERIFICATION_STREAM_TAG),
+            "verification_samples_logged": False,
+            "certification_scope": (
+                "fixed_terminal_policy_independent_replications"),
+            "recommendation_changed": False,
+            "target_oracle_used": False,
+        }
 
     def _fit_initial_belief(self, samples):
         timing = {}
@@ -15591,6 +15674,11 @@ class SingleOLHKGAlgorithm:
         finalization_timing["dominance_terminal"] = float(
             time.perf_counter() - finalization_stage_started)
         finalization_stage_started = time.perf_counter()
+        terminal_verification = (
+            self._terminal_fixed_policy_verification(final_x))
+        finalization_timing["terminal_fixed_policy_verification"] = float(
+            time.perf_counter() - finalization_stage_started)
+        finalization_stage_started = time.perf_counter()
         task_meta_coherence = (
             None
             if self.task_ensemble is None
@@ -15715,6 +15803,17 @@ class SingleOLHKGAlgorithm:
                 ) <= 1e-12
             ),
             "forced_sampling_override_count": backend_forced_overrides,
+            "terminal_verification_method": str(
+                terminal_verification.get("method", "disabled")),
+            "terminal_verification_policy_frozen": bool(
+                terminal_verification.get(
+                    "policy_frozen_before_verification", False)),
+            "terminal_verification_reuses_search_samples": bool(
+                terminal_verification.get(
+                    "search_samples_reused", False)),
+            "terminal_verification_changes_recommendation": bool(
+                terminal_verification.get(
+                    "recommendation_changed", False)),
             "coherent": bool(
                 (
                     final_post.get(
@@ -15990,7 +16089,14 @@ class SingleOLHKGAlgorithm:
             "finalization_time_sec": None,
             "finalization_timing_sec": None,
             "total_time_sec": None,
-            "n_simulations": int(len(self.history)),
+            "n_search_simulations": int(len(self.history)),
+            "n_verification_simulations": int(
+                terminal_verification.get("verification_budget", 0)),
+            "n_simulations": int(
+                len(self.history)
+                + int(terminal_verification.get(
+                    "verification_budget", 0))
+            ),
             "n_distinct_solutions": int(len(self.gpr[0].sampled_set)),
             "stage_times": summarize_stage_times(self.iteration_log),
             "candidate_source_counts": candidate_source_counts,
@@ -16018,6 +16124,17 @@ class SingleOLHKGAlgorithm:
                 "base_seed": int(self.config.seed),
                 "stream_tag": int(SIMULATION_STREAM_TAG),
                 "evaluation_count": int(len(self.history)),
+                "verification_stream_tag": int(
+                    TERMINAL_VERIFICATION_STREAM_TAG),
+                "verification_evaluation_count": int(
+                    terminal_verification.get(
+                        "verification_budget", 0)),
+                "total_evaluation_count": int(
+                    len(self.history)
+                    + int(terminal_verification.get(
+                        "verification_budget", 0))
+                ),
+                "verification_stream_independent": True,
                 "proposal_rng_independent": True,
                 "common_random_numbers_by_evaluation_index": True,
                 "target_oracle_used": False,
@@ -16055,6 +16172,9 @@ class SingleOLHKGAlgorithm:
             },
             "adaptive_outcome_audit": adaptive_outcome,
             "certificate_outcome_audit": certificate_outcome,
+            "terminal_verification": terminal_verification,
+            "terminal_verification_certified": bool(
+                terminal_verification.get("certified", False)),
             "exact_kg_diagnostics": exact_kg_summary,
             "finalist_replication": finalist_replication_summary,
             "two_stage_decision": two_stage_decision,

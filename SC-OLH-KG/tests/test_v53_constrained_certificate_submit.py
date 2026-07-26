@@ -64,6 +64,9 @@ def _args(tmp_path, variants):
         "confirmation_lambda_count": 24,
         "risk_eta": 0.01,
         "certificate_eta": 0.02,
+        "terminal_verification_budget": 48,
+        "terminal_verification_delta": 0.05,
+        "terminal_verification_mean_delta_fraction": 0.5,
         "cpu": 12,
         "exact_jobs": 12,
         "ram_mb": 8192,
@@ -358,6 +361,41 @@ def test_v58_restores_v51_terminal_with_guard_decomposed_support(tmp_path):
     assert all(
         "--theory-contract-id "
         "v58_guard_decomposed_policy_improvement_v1" in spec["cmd"]
+        for spec in specs
+    )
+
+
+def test_v59_keeps_v51_search_and_adds_fixed_policy_verification(tmp_path):
+    args = _args(tmp_path, (MODULE.V59,))
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 3 * 2
+    assert all("--policy-improvement-mode off" in spec["cmd"]
+               for spec in specs)
+    assert all(
+        "--evaluate-or-replicate-new-action-policy "
+        "canonical_plus_posterior_risk" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-budget 48" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-delta 0.05" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-mean-delta-fraction 0.5" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v59_frozen_policy_gaussian_verification" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--theory-contract-id "
+        "v59_gaussian_replication_certificate_v1" in spec["cmd"]
         for spec in specs
     )
 

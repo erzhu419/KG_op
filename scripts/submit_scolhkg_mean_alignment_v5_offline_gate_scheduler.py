@@ -254,6 +254,19 @@ def _flags(profile, args):
             if "terminal_frontier_candidate_count" in profile
             else []
         ),
+        *(
+            [
+                "--terminal-verification-budget",
+                str(profile["terminal_verification_budget"]),
+                "--terminal-verification-delta",
+                str(profile.get("terminal_verification_delta", 0.05)),
+                "--terminal-verification-mean-delta-fraction",
+                str(profile.get(
+                    "terminal_verification_mean_delta_fraction", 0.5)),
+            ]
+            if "terminal_verification_budget" in profile
+            else []
+        ),
         "--replication-candidate-count",
         str(profile.get("replication_candidate_count", 0)),
         "--replication-max-per-solution",

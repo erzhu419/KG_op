@@ -51,6 +51,15 @@ def main():
     parser.add_argument("--exact_kg_jobs", type=int, default=1)
     parser.add_argument("--exact_kg_use_score", action="store_true")
     parser.add_argument("--exact_kg_blend", type=float, default=0.0)
+    parser.add_argument(
+        "--terminal_verification_budget", type=int, default=0)
+    parser.add_argument(
+        "--terminal_verification_delta", type=float, default=0.05)
+    parser.add_argument(
+        "--terminal_verification_mean_delta_fraction",
+        type=float,
+        default=0.5,
+    )
     parser.add_argument("--checkpoint_dir", default="")
     parser.add_argument("--checkpoint_resume", action="store_true")
     parser.add_argument("--checkpoint_interval", type=int, default=1)
@@ -92,6 +101,10 @@ def main():
         exact_kg_jobs=args.exact_kg_jobs,
         exact_kg_use_score=args.exact_kg_use_score,
         exact_kg_blend=args.exact_kg_blend,
+        terminal_verification_budget=args.terminal_verification_budget,
+        terminal_verification_delta=args.terminal_verification_delta,
+        terminal_verification_mean_delta_fraction=(
+            args.terminal_verification_mean_delta_fraction),
         checkpoint_dir=args.checkpoint_dir,
         checkpoint_resume=args.checkpoint_resume,
         checkpoint_interval=args.checkpoint_interval,

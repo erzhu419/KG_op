@@ -13,6 +13,7 @@ class ScalarizedProblem:
     """
 
     problem_name = "Scalarized"
+    simulation_noise_model = "iid_gaussian"
 
     def __init__(self, base_problem, weights=(0.5, 0.5)):
         self.base = base_problem

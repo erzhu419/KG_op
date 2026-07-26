@@ -423,6 +423,37 @@ three-event probability union are proved in
 `SCOLHKG/Measure/TwoStageDecision.lean`. A complete derivation is in
 `proof/two_stage_theory.md`.
 
+### Corollary 8.1: Frozen-Policy Gaussian Verification
+
+After the search stage has irrevocably selected `x_N`, draw a disjoint batch
+of `R >= 2` iid Gaussian constraint observations at that fixed policy. Let
+`mu_U` be the one-sided Student-t upper confidence bound for its unknown mean
+and let `sigma_U` be the one-sided chi-square upper confidence bound for its
+unknown standard deviation. Split `delta = delta_mu + delta_sigma`. For
+`alpha <= 1/2`,
+
+```text
+mu_U + z_(1-alpha) sigma_U <= tau
+```
+
+implies the true chance constraint
+
+```text
+mu(x_N) + z_(1-alpha) sigma(x_N) <= tau
+```
+
+except on the union of the two coverage failures, whose probability is at
+most `delta`. The replication batch cannot change `x_N`, does not update the
+search posterior, and is charged explicitly, so the total target cost is
+`N_search + R`. The deterministic implication, nonvacuity condition, policy
+immutability, and budget identity are proved in
+`SCOLHKG/Real/GaussianReplicationCertificate.lean`; the false-certificate
+event containment and probability bound are proved in
+`SCOLHKG/Measure/GaussianReplicationCertificate.lean`. Mathlib does not
+currently supply Student-t or chi-square distributions, so their classical
+Gaussian finite-sample coverage is exposed as the two measure-level premises
+rather than hidden as an implementation axiom.
+
 ## Assumption A3: Transferable Task-Structure Family
 
 The held-out task has a latent structure

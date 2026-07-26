@@ -384,6 +384,16 @@ mathlib and its cache; later builds should be fast.
   and objective concentration, uniform-error extraction, search/proposal/
   verification bad-event composition, and high-probability safe-regret
   transfer without an independence assumption.
+- `SCOLHKG/Real/GaussianReplicationCertificate.lean`: frozen-policy terminal
+  verification margin, deterministic safety implication, safety-depth versus
+  bound-excess nonvacuity condition, policy immutability, and exact
+  search-plus-verification budget accounting.
+- `SCOLHKG/Measure/GaussianReplicationCertificate.lean`: false terminal
+  certification is contained in the union of mean- and scale-coverage
+  failures, yielding the declared per-policy error bound by a finite-measure
+  union bound. The deployed Student-t and chi-square quantiles instantiate
+  those two classical one-sided coverage events under iid Gaussian
+  replications.
 - `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean`: TCB-V2 positive
   location/log-scale adaptation, planar-rotation norm preservation,
   nonnegative Cholesky/rotation/orthogonal-residual predictive variance,

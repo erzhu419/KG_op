@@ -81,6 +81,9 @@ def load_config(path):
     config.setdefault("finalist_frontier_policy", "legacy")
     config.setdefault("finalist_terminal_max_arms", 4)
     config.setdefault("finalist_terminal_mc_samples", 2)
+    config.setdefault("terminal_verification_budget", 0)
+    config.setdefault("terminal_verification_delta", 0.05)
+    config.setdefault("terminal_verification_mean_delta_fraction", 0.5)
     config.setdefault("decision_contract_mode", "legacy")
     config.setdefault("tcb_v2_enabled", False)
     config.setdefault("tcb_v2_mode", "off")
@@ -961,6 +964,15 @@ def main():
     )
     parser.add_argument("--finalist-terminal-max-arms", type=int, default=4)
     parser.add_argument("--finalist-terminal-mc-samples", type=int, default=2)
+    parser.add_argument(
+        "--terminal-verification-budget", type=int, default=None)
+    parser.add_argument(
+        "--terminal-verification-delta", type=float, default=None)
+    parser.add_argument(
+        "--terminal-verification-mean-delta-fraction",
+        type=float,
+        default=None,
+    )
     parser.add_argument("--certification-recheck-top-k", type=int, default=0)
     parser.add_argument(
         "--certification-recheck-min-replicates", type=int, default=3)
@@ -977,6 +989,21 @@ def main():
     config["theory_contract_id"] = str(args.theory_contract_id)
     if int(config["n0"]) > int(config["N"]):
         raise ValueError("LODO shard requires n0 <= N")
+    terminal_verification_budget = int(
+        config["terminal_verification_budget"]
+        if args.terminal_verification_budget is None
+        else args.terminal_verification_budget
+    )
+    terminal_verification_delta = float(
+        config["terminal_verification_delta"]
+        if args.terminal_verification_delta is None
+        else args.terminal_verification_delta
+    )
+    terminal_verification_mean_delta_fraction = float(
+        config["terminal_verification_mean_delta_fraction"]
+        if args.terminal_verification_mean_delta_fraction is None
+        else args.terminal_verification_mean_delta_fraction
+    )
     replication_candidate_count = int(
         config.get("replication_candidate_count", 0)
         if args.replication_candidate_count is None
@@ -1451,6 +1478,12 @@ def main():
             args.finalist_terminal_max_arms),
         "finalist_terminal_mc_samples": int(
             args.finalist_terminal_mc_samples),
+        "terminal_verification_budget": int(
+            terminal_verification_budget),
+        "terminal_verification_delta": float(
+            terminal_verification_delta),
+        "terminal_verification_mean_delta_fraction": float(
+            terminal_verification_mean_delta_fraction),
         "certification_recheck_top_k": int(
             args.certification_recheck_top_k),
         "certification_recheck_min_replicates": int(
@@ -1812,6 +1845,12 @@ def main():
                 args.finalist_terminal_max_arms),
             "finalist_terminal_mc_samples": int(
                 args.finalist_terminal_mc_samples),
+            "terminal_verification_budget": int(
+                terminal_verification_budget),
+            "terminal_verification_delta": float(
+                terminal_verification_delta),
+            "terminal_verification_mean_delta_fraction": float(
+                terminal_verification_mean_delta_fraction),
             "certification_recheck_top_k": int(
                 args.certification_recheck_top_k),
             "certification_recheck_min_replicates": int(

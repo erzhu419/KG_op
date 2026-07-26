@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 import numpy as np
-from scipy.stats import norm
+from scipy.stats import chi2, norm, t
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,6 +14,7 @@ from core.certification import (  # noqa: E402
     CertificationResult,
     conservative_chance_margin,
     decompose_chance_margin,
+    gaussian_replication_chance_certificate,
 )
 
 
@@ -89,6 +90,52 @@ class CertificationTests(unittest.TestCase):
             decomposition.favorable_coupling, [0.0, -0.05])
         self.assertEqual(decomposition.dominant_mode[0], "epistemic")
         self.assertEqual(decomposition.dominant_mode[1], "interior")
+
+    def test_gaussian_replication_certificate_matches_t_chi_square_bound(self):
+        values = np.array([-0.20, -0.18, -0.19, -0.21, -0.17])
+        result = gaussian_replication_chance_certificate(
+            values,
+            tau=0.0,
+            alpha=0.05,
+            delta=0.10,
+        )
+        n = len(values)
+        sample_std = float(np.std(values, ddof=1))
+        expected_t = float(t.ppf(0.95, n - 1))
+        expected_chi2 = float(chi2.ppf(0.05, n - 1))
+        expected_mean_upper = float(
+            np.mean(values) + expected_t * sample_std / np.sqrt(n))
+        expected_sigma_upper = float(
+            sample_std * np.sqrt((n - 1) / expected_chi2))
+        expected_margin = (
+            expected_mean_upper
+            + norm.ppf(0.95) * expected_sigma_upper
+        )
+        self.assertAlmostEqual(result.mean_upper, expected_mean_upper)
+        self.assertAlmostEqual(result.sigma_upper, expected_sigma_upper)
+        self.assertAlmostEqual(result.upper_margin, expected_margin)
+        self.assertEqual(result.sample_count, n)
+        self.assertEqual(result.status, "certified")
+        self.assertTrue(result.certified)
+
+    def test_gaussian_replication_certificate_requires_two_new_samples(self):
+        result = gaussian_replication_chance_certificate(
+            [-0.5],
+            tau=0.0,
+            alpha=0.05,
+            delta=0.05,
+        )
+        self.assertEqual(result.status, "insufficient_replications")
+        self.assertFalse(result.certified)
+        self.assertTrue(np.isinf(result.upper_margin))
+
+    def test_gaussian_replication_certificate_requires_nonnegative_z(self):
+        with self.assertRaisesRegex(ValueError, "nonnegative"):
+            gaussian_replication_chance_certificate(
+                [-1.0, -0.9],
+                tau=0.0,
+                alpha=0.75,
+            )
 
     def test_acquisition_feasibility_details_expose_theory_bound(self):
         candidates = [(0,), (1,)]

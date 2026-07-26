@@ -3,6 +3,7 @@ import SCOLHKG.HVD
 import SCOLHKG.Information
 import SCOLHKG.KG
 import SCOLHKG.Measure.GPKernelConfidence
+import SCOLHKG.Measure.GaussianReplicationCertificate
 import SCOLHKG.Measure.IndependentConfirmation
 import SCOLHKG.Measure.ConfirmationDominanceComposition
 import SCOLHKG.Measure.ExactMCConcentration
@@ -43,6 +44,7 @@ import SCOLHKG.Real.FiniteKernelInformationGain
 import SCOLHKG.Real.FinalistReplication
 import SCOLHKG.Real.FiniteSampleHVD
 import SCOLHKG.Real.GPRUpdate
+import SCOLHKG.Real.GaussianReplicationCertificate
 import SCOLHKG.Real.GuardDecompositionPolicy
 import SCOLHKG.Real.GroupSharedShrinkage
 import SCOLHKG.Real.GroupRidgeComplexity
