@@ -558,6 +558,40 @@ def test_v63_freezes_cumulative_risk_safe_interior_support(tmp_path):
         "v63_safe_interior_shortlist_verification_paired")
 
 
+def test_v64_fixes_powered_safe_interior_verification_budget(tmp_path):
+    args = _args(tmp_path, (MODULE.CONTROL, MODULE.V64))
+    args.terminal_verification_budget = 7
+    args.terminal_verification_fallback_budget = 11
+    args.terminal_safe_interior_probability_slack = 0.05
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 2 * 3 * 2
+    challenger = [
+        spec for spec in specs
+        if f"/{MODULE.V64}/" in spec["signature"]
+    ]
+    assert challenger
+    assert all(
+        "--terminal-verification-budget 80" in spec["cmd"]
+        for spec in challenger
+    )
+    assert all(
+        "--terminal-verification-fallback-budget 96" in spec["cmd"]
+        for spec in challenger
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v64_powered_cumulative_risk_safe_interior_verification"
+        in spec["cmd"] for spec in challenger
+    )
+    assert all(
+        "--theory-contract-id "
+        "v64_frozen_selector_powered_familywise_quantile_certificate_v1"
+        in spec["cmd"] for spec in challenger
+    )
+    assert args.stage_family == (
+        "v64_powered_safe_interior_verification_paired")
+
+
 def test_v53_bounded_gain_profile_is_versioned_and_not_double_normalized(tmp_path):
     args = _args(tmp_path, (MODULE.V53,))
     args.score_normalization = "none"

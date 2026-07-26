@@ -29,12 +29,12 @@ def _row(variant, domain, seed):
         "implementation_contract_id": (
             "promoted_v51_observed_terminal_closure"
             if control else
-            "v63_cumulative_risk_safe_interior_shortlist_verification"
+            MODULE.IMPLEMENTATION_CONTRACT_ID
         ),
         "theory_contract_id": (
             "v51_statistical_closure_v2"
             if control else
-            "v63_frozen_selector_familywise_quantile_certificate_v1"
+            MODULE.THEORY_CONTRACT_ID
         ),
         "terminal_verification_method": (
             "component_bonferroni"

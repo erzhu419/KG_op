@@ -218,6 +218,15 @@ theorem ordered_two_policy_exact_tolerance_budget_le
   exact ordered_two_policy_asymmetric_verification_budget_le
     searchBudget 64 96 firstCertified
 
+theorem ordered_two_policy_powered_safe_interior_budget_le
+    (searchBudget : ℕ)
+    (firstCertified : Bool) :
+    searchBudget
+        + (if firstCertified then 80 else 80 + 96)
+      ≤ searchBudget + 80 + 96 := by
+  exact ordered_two_policy_asymmetric_verification_budget_le
+    searchBudget 80 96 firstCertified
+
 theorem ordered_shortlist_freeze_is_verification_invariant
     {Design Sample : Type*}
     (policies : List Design)

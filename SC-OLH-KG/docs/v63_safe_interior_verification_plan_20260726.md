@@ -55,3 +55,16 @@ verification.
 - Zero feasibility losses and zero feasible-regret losses versus V51.
 - At least one strict paired gain.
 - Identical V51/V63 search trajectories and primary actions.
+
+## Fresh Result
+
+The registered `40..59` matrix completed `120/120` runs. V63 preserved every
+search trajectory and produced `12` wins, `0` losses, and `48` ties against
+V51, with zero false certificates. It certified `59/60` policies. The sole
+failure was Inventory seed 43: the selected primary was truly feasible with
+chance margin `-0.02048`, but its 64-sample upper margin was `+0.00269`.
+The safe-interior support was a near-boundary point and correctly failed.
+
+V63 therefore did not pass its preregistered `60/60` promotion gate. It did,
+however, close the shortlist-coverage defect. V64 changes only the precommitted
+rank-1 verification budget and is evaluated on new target seeds.

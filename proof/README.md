@@ -393,7 +393,8 @@ mathlib and its cache; later builds should be fast.
   the direct Gaussian quantile-tolerance margin, its deterministic safety
   implication, and the exact 64/96 budget cap. V63 adds a frozen
   cumulative-risk safe-interior shortlist contract and proves that
-  verification cannot alter its primary/support pair.
+  verification cannot alter its primary/support pair. V64 retains that
+  selector and instantiates the asymmetric budget theorem at 80/96 calls.
 - `SCOLHKG/Measure/GaussianReplicationCertificate.lean`: false terminal
   certification is contained in the union of mean- and scale-coverage
   failures, yielding the declared per-policy error bound by a finite-measure

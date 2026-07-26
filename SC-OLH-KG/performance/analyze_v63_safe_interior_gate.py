@@ -39,6 +39,11 @@ V62 = _load(
 
 CONTROL = "v51_control"
 CHALLENGER = "v63_safe_interior_shortlist_verification"
+IMPLEMENTATION_CONTRACT_ID = (
+    "v63_cumulative_risk_safe_interior_shortlist_verification")
+THEORY_CONTRACT_ID = (
+    "v63_frozen_selector_familywise_quantile_certificate_v1")
+REPORT_SCOPE = "v63_cumulative_risk_safe_interior_gate"
 SEARCH_BUDGET = 13
 PRIMARY_BUDGET = 64
 FALLBACK_BUDGET = 96
@@ -129,9 +134,9 @@ def _verification_contract(row):
     )
     return bool(
         str(row.get("implementation_contract_id"))
-        == "v63_cumulative_risk_safe_interior_shortlist_verification"
+        == IMPLEMENTATION_CONTRACT_ID
         and str(row.get("theory_contract_id"))
-        == "v63_frozen_selector_familywise_quantile_certificate_v1"
+        == THEORY_CONTRACT_ID
         and str(row.get("terminal_verification_method"))
         == "normal_quantile_tolerance"
         and str(row.get("terminal_verification_shortlist_mode"))
@@ -274,7 +279,7 @@ def analyze(
         and false_certificates == 0
     )
     return {
-        "scope": "v63_cumulative_risk_safe_interior_gate",
+        "scope": REPORT_SCOPE,
         "control_root": str(Path(control_root)),
         "challenger_root": str(Path(challenger_root)),
         "seed_range": [

@@ -44,10 +44,11 @@ V60 = "v60_ordered_shortlist_verification"
 V61 = "v61_power_ordered_shortlist_verification"
 V62 = "v62_exact_tolerance_shortlist_verification"
 V63 = "v63_safe_interior_shortlist_verification"
+V64 = "v64_powered_safe_interior_verification"
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
     *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY,
-    V57, V58, V59, V60, V61, V62, V63,
+    V57, V58, V59, V60, V61, V62, V63, V64,
 )
 
 
@@ -474,6 +475,39 @@ def variant_profiles(args):
                 )),
             "terminal_safe_interior_require_provider": True,
         },
+        V64: {
+            **common,
+            "implementation_contract_id": (
+                "v64_powered_cumulative_risk_safe_interior_verification"),
+            "theory_contract_id": (
+                "v64_frozen_selector_powered_familywise_quantile_"
+                "certificate_v1"),
+            "evaluate_or_replicate_new_action_count": 4,
+            "evaluate_or_replicate_new_action_policy": (
+                "canonical_plus_posterior_risk"),
+            "policy_improvement_mode": "off",
+            "posterior_dominance_enabled": False,
+            "terminal_verification_budget": 80,
+            "terminal_verification_delta": float(
+                args.terminal_verification_delta),
+            "terminal_verification_mean_delta_fraction": float(
+                args.terminal_verification_mean_delta_fraction),
+            "terminal_verification_method": (
+                "normal_quantile_tolerance"),
+            "terminal_verification_policy": (
+                "ordered_frozen_shortlist"),
+            "terminal_verification_shortlist_size": 2,
+            "terminal_verification_fallback_budget": 96,
+            "terminal_verification_shortlist_mode": (
+                "posterior_primary_safe_interior"),
+            "terminal_safe_interior_probability_slack": float(
+                getattr(
+                    args,
+                    "terminal_safe_interior_probability_slack",
+                    0.05,
+                )),
+            "terminal_safe_interior_require_provider": True,
+        },
     }
 
 
@@ -565,6 +599,16 @@ def build_specs(args):
             "v63_safe_interior_shortlist_verification_paired")
         args.gate_label = (
             "V51 versus V63 safe-interior shortlist verification")
+    elif requested == [V64]:
+        args.stage_family = (
+            "v64_powered_safe_interior_verification")
+        args.gate_label = (
+            "V64 powered cumulative-risk safe-interior verification")
+    elif set(requested) == {CONTROL, V64}:
+        args.stage_family = (
+            "v64_powered_safe_interior_verification_paired")
+        args.gate_label = (
+            "V51 versus V64 powered safe-interior verification")
     else:
         args.stage_family = "v53_constrained_certificate_deficit"
         args.gate_label = "V53 constrained certificate-deficit policy"
