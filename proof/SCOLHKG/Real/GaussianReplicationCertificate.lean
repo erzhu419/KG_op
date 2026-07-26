@@ -160,6 +160,15 @@ theorem ordered_shortlist_verification_budget_le
     (Nat.mul_le_mul_right verificationBudgetPerPolicy hTested)
     searchBudget
 
+theorem ordered_two_policy_asymmetric_verification_budget_le
+    (searchBudget firstBudget secondBudget : ℕ)
+    (firstCertified : Bool) :
+    searchBudget
+        + (if firstCertified then firstBudget
+           else firstBudget + secondBudget)
+      ≤ searchBudget + firstBudget + secondBudget := by
+  cases firstCertified <;> simp [Nat.add_assoc]
+
 theorem ordered_shortlist_freeze_is_verification_invariant
     {Design Sample : Type*}
     (policies : List Design)

@@ -41,10 +41,11 @@ V57 = "v57_posterior_safe_terminal"
 V58 = "v58_guard_decomposed_support"
 V59 = "v59_terminal_gaussian_verification"
 V60 = "v60_ordered_shortlist_verification"
+V61 = "v61_power_ordered_shortlist_verification"
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
     *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY,
-    V57, V58, V59, V60,
+    V57, V58, V59, V60, V61,
 )
 
 
@@ -382,6 +383,31 @@ def variant_profiles(args):
                 "ordered_frozen_shortlist"),
             "terminal_verification_shortlist_size": int(
                 args.terminal_verification_shortlist_size),
+            "terminal_verification_fallback_budget": 0,
+        },
+        V61: {
+            **common,
+            "implementation_contract_id": (
+                "v61_power_ordered_shortlist_verification"),
+            "theory_contract_id": (
+                "v61_familywise_asymmetric_shortlist_certificate_v1"),
+            "evaluate_or_replicate_new_action_count": 4,
+            "evaluate_or_replicate_new_action_policy": (
+                "canonical_plus_posterior_risk"),
+            "policy_improvement_mode": "off",
+            "posterior_dominance_enabled": False,
+            "terminal_verification_budget": int(
+                args.terminal_verification_budget),
+            "terminal_verification_delta": float(
+                args.terminal_verification_delta),
+            "terminal_verification_mean_delta_fraction": float(
+                args.terminal_verification_mean_delta_fraction),
+            "terminal_verification_policy": (
+                "ordered_frozen_shortlist"),
+            "terminal_verification_shortlist_size": int(
+                args.terminal_verification_shortlist_size),
+            "terminal_verification_fallback_budget": int(
+                args.terminal_verification_fallback_budget),
         },
     }
 
@@ -414,7 +440,7 @@ def build_specs(args):
         raise ValueError(
             "v56/v57/v58 confirmation variants require "
             "independent_confirmation")
-    if any(name in {V59, V60} for name in requested):
+    if any(name in {V59, V60, V61} for name in requested):
         if int(args.terminal_verification_budget) < 2:
             raise ValueError(
                 "terminal verification requires at least two calls")
@@ -426,10 +452,16 @@ def build_specs(args):
             raise ValueError(
                 "verification mean-delta fraction must lie in (0, 1)")
     if (
-        V60 in requested
+        any(name in {V60, V61} for name in requested)
         and int(args.terminal_verification_shortlist_size) < 2
     ):
         raise ValueError("V60 requires a shortlist of at least two policies")
+    if (
+        V61 in requested
+        and int(args.terminal_verification_fallback_budget) < 2
+    ):
+        raise ValueError(
+            "V61 requires at least two fallback verification calls")
     args.variant_profiles = {name: profiles[name] for name in requested}
     args.variants = ",".join(requested)
     args.scenarios = closure.promoted.v51.v50.v49.v27.MEAN_SCENARIOS
@@ -439,6 +471,10 @@ def build_specs(args):
     elif requested == [V60]:
         args.stage_family = "v60_ordered_shortlist_verification"
         args.gate_label = "V60 frozen ordered-shortlist verification"
+    elif requested == [V61]:
+        args.stage_family = "v61_power_ordered_shortlist_verification"
+        args.gate_label = (
+            "V61 powered frozen ordered-shortlist verification")
     else:
         args.stage_family = "v53_constrained_certificate_deficit"
         args.gate_label = "V53 constrained certificate-deficit policy"
@@ -545,6 +581,8 @@ def main():
     )
     parser.add_argument(
         "--terminal-verification-shortlist-size", type=int, default=2)
+    parser.add_argument(
+        "--terminal-verification-fallback-budget", type=int, default=96)
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--exact-jobs", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=8192)

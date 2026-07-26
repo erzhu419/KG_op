@@ -86,6 +86,7 @@ def load_config(path):
     config.setdefault("terminal_verification_mean_delta_fraction", 0.5)
     config.setdefault("terminal_verification_policy", "fixed_policy")
     config.setdefault("terminal_verification_shortlist_size", 1)
+    config.setdefault("terminal_verification_fallback_budget", 0)
     config.setdefault("decision_contract_mode", "legacy")
     config.setdefault("tcb_v2_enabled", False)
     config.setdefault("tcb_v2_mode", "off")
@@ -982,6 +983,8 @@ def main():
     )
     parser.add_argument(
         "--terminal-verification-shortlist-size", type=int, default=None)
+    parser.add_argument(
+        "--terminal-verification-fallback-budget", type=int, default=None)
     parser.add_argument("--certification-recheck-top-k", type=int, default=0)
     parser.add_argument(
         "--certification-recheck-min-replicates", type=int, default=3)
@@ -1022,6 +1025,11 @@ def main():
         config["terminal_verification_shortlist_size"]
         if args.terminal_verification_shortlist_size is None
         else args.terminal_verification_shortlist_size
+    )
+    terminal_verification_fallback_budget = int(
+        config["terminal_verification_fallback_budget"]
+        if args.terminal_verification_fallback_budget is None
+        else args.terminal_verification_fallback_budget
     )
     replication_candidate_count = int(
         config.get("replication_candidate_count", 0)
@@ -1507,6 +1515,8 @@ def main():
             terminal_verification_policy),
         "terminal_verification_shortlist_size": int(
             terminal_verification_shortlist_size),
+        "terminal_verification_fallback_budget": int(
+            terminal_verification_fallback_budget),
         "certification_recheck_top_k": int(
             args.certification_recheck_top_k),
         "certification_recheck_min_replicates": int(
@@ -1878,6 +1888,8 @@ def main():
                 terminal_verification_policy),
             "terminal_verification_shortlist_size": int(
                 terminal_verification_shortlist_size),
+            "terminal_verification_fallback_budget": int(
+                terminal_verification_fallback_budget),
             "certification_recheck_top_k": int(
                 args.certification_recheck_top_k),
             "certification_recheck_min_replicates": int(

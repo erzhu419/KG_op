@@ -269,6 +269,9 @@ def _flags(profile, args):
                 "--terminal-verification-shortlist-size",
                 str(profile.get(
                     "terminal_verification_shortlist_size", 1)),
+                "--terminal-verification-fallback-budget",
+                str(profile.get(
+                    "terminal_verification_fallback_budget", 0)),
             ]
             if "terminal_verification_budget" in profile
             else []

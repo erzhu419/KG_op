@@ -460,6 +460,7 @@ class SingleOLHKGConfig:
     terminal_verification_mean_delta_fraction: float = 0.5
     terminal_verification_policy: str = "fixed_policy"
     terminal_verification_shortlist_size: int = 1
+    terminal_verification_fallback_budget: int = 0
     observed_incumbent_use_replicate_variance: bool = False
     safe_interior_candidate_count: int = 0
     safe_interior_pool_size: int = 300
@@ -1103,10 +1104,15 @@ class SingleOLHKGAlgorithm:
         *,
         verification_delta=None,
         candidate_index=0,
+        verification_budget=None,
     ):
         """Verify a frozen terminal policy on an independent sample stream."""
 
-        budget = int(self.config.terminal_verification_budget)
+        budget = (
+            int(self.config.terminal_verification_budget)
+            if verification_budget is None
+            else int(verification_budget)
+        )
         if budget < 0:
             raise ValueError(
                 "terminal verification budget must be nonnegative")
@@ -1212,6 +1218,11 @@ class SingleOLHKGAlgorithm:
         if budget < 0:
             raise ValueError(
                 "terminal verification budget must be nonnegative")
+        fallback_budget = int(
+            self.config.terminal_verification_fallback_budget)
+        if fallback_budget < 0:
+            raise ValueError(
+                "terminal fallback verification budget must be nonnegative")
         policy = str(
             self.config.terminal_verification_policy or "fixed_policy"
         ).strip().lower().replace("-", "_")
@@ -1244,6 +1255,7 @@ class SingleOLHKGAlgorithm:
                     primary]),
                 "max_verification_budget": int(
                     self.config.terminal_verification_budget),
+                "candidate_verification_budgets": [int(budget)],
             }
 
         requested_size = int(
@@ -1269,6 +1281,12 @@ class SingleOLHKGAlgorithm:
 
         familywise_delta = float(self.config.terminal_verification_delta)
         per_candidate_delta = familywise_delta / float(len(shortlist))
+        effective_fallback_budget = (
+            fallback_budget if fallback_budget > 0 else budget)
+        candidate_budgets = [
+            budget,
+            *([effective_fallback_budget] * (len(shortlist) - 1)),
+        ]
         frozen_shortlist = [{
             "posterior_rank": int(rank),
             "point": list(map(int, point)),
@@ -1278,11 +1296,14 @@ class SingleOLHKGAlgorithm:
         deployed = primary
         selected_rank = None
         if budget > 0:
-            for candidate_index, point in enumerate(shortlist):
+            for candidate_index, (point, candidate_budget) in enumerate(
+                zip(shortlist, candidate_budgets)
+            ):
                 verification = self._terminal_fixed_policy_verification(
                     point,
                     verification_delta=per_candidate_delta,
                     candidate_index=candidate_index,
+                    verification_budget=candidate_budget,
                 )
                 attempts.append(verification)
                 if bool(verification.get("certified", False)):
@@ -1314,7 +1335,12 @@ class SingleOLHKGAlgorithm:
             "posterior_updated_from_verification": False,
             "verification_budget": int(actual_budget),
             "verification_budget_per_candidate": int(budget),
-            "max_verification_budget": int(budget * len(shortlist)),
+            "fallback_verification_budget": int(
+                effective_fallback_budget),
+            "candidate_verification_budgets": [
+                int(value) for value in candidate_budgets
+            ],
+            "max_verification_budget": int(sum(candidate_budgets)),
             "search_evaluation_count": int(len(self.history)),
             "total_evaluation_count": int(
                 len(self.history) + actual_budget),

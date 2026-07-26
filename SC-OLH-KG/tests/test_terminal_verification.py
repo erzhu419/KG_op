@@ -94,9 +94,14 @@ class TerminalVerificationTests(unittest.TestCase):
             *,
             verification_delta=None,
             candidate_index=0,
+            verification_budget=None,
         ):
             calls.append((
-                tuple(point), verification_delta, candidate_index))
+                tuple(point),
+                verification_delta,
+                candidate_index,
+                verification_budget,
+            ))
             return {
                 "enabled": True,
                 "status": (
@@ -121,7 +126,10 @@ class TerminalVerificationTests(unittest.TestCase):
         self.assertEqual(deployed, fallback)
         self.assertEqual(
             calls,
-            [(primary, 0.025, 0), (fallback, 0.025, 1)],
+            [
+                (primary, 0.025, 0, 8),
+                (fallback, 0.025, 1, 8),
+            ],
         )
         self.assertTrue(result["certified"])
         self.assertTrue(result["recommendation_changed"])
@@ -147,6 +155,7 @@ class TerminalVerificationTests(unittest.TestCase):
             *,
             verification_delta=None,
             candidate_index=0,
+            verification_budget=None,
         ):
             calls.append(tuple(point))
             return {
@@ -173,6 +182,50 @@ class TerminalVerificationTests(unittest.TestCase):
         self.assertEqual(result["selected_shortlist_rank"], 1)
         self.assertEqual(result["verification_budget"], 8)
         self.assertFalse(result["recommendation_changed"])
+
+    def test_ordered_shortlist_uses_precommitted_fallback_budget(self):
+        algorithm = self._algorithm(seed=43, budget=8)
+        algorithm.config.terminal_verification_policy = (
+            "ordered_frozen_shortlist")
+        algorithm.config.terminal_verification_shortlist_size = 2
+        algorithm.config.terminal_verification_fallback_budget = 12
+        primary = (0, 0, 0, 0, 0)
+        fallback = (1, 1, 1, 1, 1)
+        algorithm._last_terminal_bayes_ranked_points = [
+            primary, fallback]
+        budgets = []
+
+        def fake_verification(
+            point,
+            *,
+            verification_delta=None,
+            candidate_index=0,
+            verification_budget=None,
+        ):
+            budgets.append(verification_budget)
+            return {
+                "enabled": True,
+                "status": (
+                    "certified" if candidate_index == 1
+                    else "not_certified"),
+                "verification_budget": int(verification_budget),
+                "sample_count": int(verification_budget),
+                "certified": candidate_index == 1,
+                "candidate_index": candidate_index,
+                "delta": verification_delta,
+                "target_oracle_used": False,
+            }
+
+        algorithm._terminal_fixed_policy_verification = fake_verification
+        deployed, result = algorithm._terminal_verification_protocol(
+            primary)
+
+        self.assertEqual(deployed, fallback)
+        self.assertEqual(budgets, [8, 12])
+        self.assertEqual(
+            result["candidate_verification_budgets"], [8, 12])
+        self.assertEqual(result["verification_budget"], 20)
+        self.assertEqual(result["max_verification_budget"], 20)
 
     def test_ordered_shortlist_requires_frozen_ranked_candidates(self):
         algorithm = self._algorithm(seed=41, budget=8)

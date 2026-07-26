@@ -68,6 +68,7 @@ def _args(tmp_path, variants):
         "terminal_verification_delta": 0.05,
         "terminal_verification_mean_delta_fraction": 0.5,
         "terminal_verification_shortlist_size": 2,
+        "terminal_verification_fallback_budget": 96,
         "cpu": 12,
         "exact_jobs": 12,
         "ram_mb": 8192,
@@ -416,6 +417,10 @@ def test_v60_freezes_ranked_shortlist_and_splits_familywise_delta(tmp_path):
         for spec in specs
     )
     assert all(
+        "--terminal-verification-fallback-budget 0" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
         "--implementation-contract-id "
         "v60_frozen_ordered_shortlist_verification" in spec["cmd"]
         for spec in specs
@@ -423,6 +428,34 @@ def test_v60_freezes_ranked_shortlist_and_splits_familywise_delta(tmp_path):
     assert all(
         "--theory-contract-id "
         "v60_familywise_gaussian_shortlist_certificate_v1"
+        in spec["cmd"] for spec in specs
+    )
+
+
+def test_v61_precommits_larger_fallback_verification_budget(tmp_path):
+    args = _args(tmp_path, (MODULE.V61,))
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 3 * 2
+    assert all(
+        "--terminal-verification-budget 48" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-fallback-budget 96" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-policy ordered_frozen_shortlist"
+        in spec["cmd"] for spec in specs
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v61_power_ordered_shortlist_verification" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--theory-contract-id "
+        "v61_familywise_asymmetric_shortlist_certificate_v1"
         in spec["cmd"] for spec in specs
     )
 

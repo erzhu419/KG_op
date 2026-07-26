@@ -44,3 +44,25 @@ two certification events is not required for this guarantee.
 V60 may promote the terminal deployment protocol, but it does not replace
 V51 as an equal-total-budget optimization baseline because the verification
 suffix has a variable additional cost.
+
+## Completed Result
+
+Run `scolh_v60_ordered_shortlist_n13_r48_s5_20260726_01` completed all 15
+tasks without retry.
+
+- Search design and online action fingerprints matched V51 in all 15 pairs.
+- 14/15 deployed policies received a terminal certificate, with zero false
+  certificates.
+- Three rank-2 switches produced three wins, zero losses, and one Queue
+  feasibility rescue.
+- FactorShock certified 5/5 at rank 1.
+- Inventory certified 4/5: two at rank 1 and two at rank 2.
+- Queue certified 5/5: four at rank 1 and one at rank 2.
+- The only uncertified run was Inventory seed 4. Its rank-2 policy was truly
+  feasible, but its 48-replication upper margin remained `+0.00613`.
+
+A post-gate development-only power audit, using the same precommitted
+candidate-specific stream, put that margin at `-0.00281` with 96
+replications. V61 therefore pre-registers 48 calls for rank 1 and 96 calls
+for rank 2, then evaluates that schedule on fresh seeds; it does not relax
+`delta`, change the shortlist, or reuse verification labels.

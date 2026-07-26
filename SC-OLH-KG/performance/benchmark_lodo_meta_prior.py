@@ -1019,6 +1019,8 @@ def run_one(task):
             "terminal_verification_policy", "fixed_policy")),
         terminal_verification_shortlist_size=int(args_dict.get(
             "terminal_verification_shortlist_size", 1)),
+        terminal_verification_fallback_budget=int(args_dict.get(
+            "terminal_verification_fallback_budget", 0)),
         observed_incumbent_use_replicate_variance=bool(args_dict[
             "observed_incumbent_use_replicate_variance"]),
         safe_interior_candidate_count=args_dict["safe_interior_candidate_count"],
@@ -1576,9 +1578,15 @@ def run_one(task):
             "terminal_verification_policy", "fixed_policy")),
         "terminal_verification_shortlist_size": int(args_dict.get(
             "terminal_verification_shortlist_size", 1)),
+        "terminal_verification_fallback_budget": int(args_dict.get(
+            "terminal_verification_fallback_budget", 0)),
         "terminal_verification": result.get("terminal_verification"),
         "terminal_verification_certified": bool(
             result.get("terminal_verification_certified", False)),
+        "optimization_x_recommended": result.get(
+            "optimization_x_recommended"),
+        "terminal_deployment_changed": bool(
+            result.get("terminal_deployment_changed", False)),
         "n_search_simulations": int(result.get(
             "n_search_simulations", result["n_simulations"])),
         "n_verification_simulations": int(result.get(
@@ -2999,6 +3007,8 @@ def main():
     )
     parser.add_argument(
         "--terminal_verification_shortlist_size", type=int, default=1)
+    parser.add_argument(
+        "--terminal_verification_fallback_budget", type=int, default=0)
     parser.add_argument(
         "--finalist_frontier_policy",
         choices=("legacy", "coverage_reserved", "observed_safety_reserved"),

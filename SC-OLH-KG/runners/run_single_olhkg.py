@@ -67,6 +67,8 @@ def main():
     )
     parser.add_argument(
         "--terminal_verification_shortlist_size", type=int, default=1)
+    parser.add_argument(
+        "--terminal_verification_fallback_budget", type=int, default=0)
     parser.add_argument("--checkpoint_dir", default="")
     parser.add_argument("--checkpoint_resume", action="store_true")
     parser.add_argument("--checkpoint_interval", type=int, default=1)
@@ -115,6 +117,8 @@ def main():
         terminal_verification_policy=args.terminal_verification_policy,
         terminal_verification_shortlist_size=(
             args.terminal_verification_shortlist_size),
+        terminal_verification_fallback_budget=(
+            args.terminal_verification_fallback_budget),
         checkpoint_dir=args.checkpoint_dir,
         checkpoint_resume=args.checkpoint_resume,
         checkpoint_interval=args.checkpoint_interval,

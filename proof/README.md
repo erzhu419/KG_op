@@ -389,7 +389,7 @@ mathlib and its cache; later builds should be fast.
   bound-excess nonvacuity condition, policy immutability, exact
   search-plus-verification budget accounting, frozen finite shortlists,
   first-certified selection soundness, and the sequential verification budget
-  upper bound.
+  upper bound, including V61's unequal rank-1/rank-2 fixed budgets.
 - `SCOLHKG/Measure/GaussianReplicationCertificate.lean`: false terminal
   certification is contained in the union of mean- and scale-coverage
   failures, yielding the declared per-policy error bound by a finite-measure
