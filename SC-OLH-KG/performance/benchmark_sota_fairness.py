@@ -18,6 +18,7 @@ from baselines.botorch_adapters import (  # noqa: E402
     BoTorchBaselineConfig,
 )
 from core.terminal_verification import verify_frozen_shortlist  # noqa: E402
+from core.designs import load_frozen_source_informed_design  # noqa: E402
 from performance.benchmark_quality import json_safe, parse_weights  # noqa: E402
 from performance.benchmark_lodo_meta_prior import (  # noqa: E402
     build_scalarized_problem,
@@ -192,6 +193,7 @@ def run_one(args):
         "terminal_verification_method": "normal_quantile_tolerance",
         "terminal_safe_interior_probability_slack": 0.05,
         "terminal_safe_interior_require_provider": True,
+        "initial_design_file": "",
     }
     for name, value in terminal_defaults.items():
         if not hasattr(args, name):
@@ -213,14 +215,30 @@ def run_one(args):
     archive_fingerprint = None
     offline_calls = 0
     if protocol["uses_archive"]:
-        prior = train_meta_prior(
-            lodo_config, args.heldout, args.seed, teacher=False)
-        initial_points = prior.initial_universal_candidates(
-            problem,
-            n=args.n0,
-        )
-        archive_diagnostics = prior.diagnostics()
-        archive_fingerprint = _fingerprint(archive_diagnostics)
+        if args.initial_design_file:
+            initial_points, design_contract = (
+                load_frozen_source_informed_design(
+                    args.initial_design_file,
+                    heldout=args.heldout,
+                    seed=args.seed,
+                    n0=args.n0,
+                    dimension=args.d,
+                )
+            )
+            archive_diagnostics = {
+                "frozen_initial_design_contract": design_contract,
+            }
+            archive_fingerprint = str(
+                design_contract["source_archive_fingerprint"])
+        else:
+            prior = train_meta_prior(
+                lodo_config, args.heldout, args.seed, teacher=False)
+            initial_points = prior.initial_universal_candidates(
+                problem,
+                n=args.n0,
+            )
+            archive_diagnostics = prior.diagnostics()
+            archive_fingerprint = _fingerprint(archive_diagnostics)
         offline_calls = source_archive_cost(lodo_config, args.heldout)
     target_budget = int(protocol["target_budget"])
     if args.target_budget > 0:
@@ -301,8 +319,12 @@ def run_one(args):
             "target_calls": int(target_budget),
             "total_simulator_calls": int(offline_calls + target_budget),
             "initial_design_contract": (
-                "frozen_source_consensus_n0"
-                if protocol["uses_archive"] else "target_sobol_n0"
+                "byte_identical_frozen_source_informed_n0"
+                if protocol["uses_archive"] and args.initial_design_file
+                else (
+                    "frozen_source_consensus_n0"
+                    if protocol["uses_archive"] else "target_sobol_n0"
+                )
             ),
         },
         "source_archive_fingerprint": archive_fingerprint,
@@ -373,6 +395,15 @@ def main():
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--checkpoint-dir", required=True)
+    parser.add_argument(
+        "--initial-design-file",
+        default="",
+        help=(
+            "Optional frozen source-informed design. Required by the "
+            "paper-grade shared-archive submitter so every method receives "
+            "byte-identical n0 points."
+        ),
+    )
     parser.add_argument("--target-budget", type=int, default=0)
     parser.add_argument("--d", type=int, default=50)
     parser.add_argument("--L", type=int, default=100)

@@ -68,6 +68,41 @@ def test_fairness_scheduler_can_route_explicit_cpu_ablation():
     assert "--torch-device cpu" in spec["cmd"]
 
 
+def test_shared_archive_uses_exact_frozen_design_when_run_id_is_set():
+    parser_args = type("Args", (), {
+        "nodes": "node001,node002",
+        "gpu_nodes": "node007",
+        "gpu_methods": "",
+        "protocols": "shared_archive_n13",
+        "methods": "botorch_turbo",
+        "heldouts": "InventorySupplyChain",
+        "deploy": Path("/deploy"),
+        "source_run_id": "paper_archive",
+        "run_id": "shared_design_audit",
+        "seed_start": 80,
+        "n_seeds": 1,
+        "python": "/python",
+        "manifest": Path("/deploy/SC-OLH-KG/base.json"),
+        "candidate_timeout_sec": 3600.0,
+        "cpu": 12,
+        "ram_mb": 8192,
+    })()
+
+    [spec] = submit.build_specs(parser_args)
+
+    expected = (
+        "/deploy/SC-OLH-KG/archives/paper_archive/"
+        "InventorySupplyChain/source_initial_designs.json"
+    )
+    assert spec["wait_for_files"] == [expected]
+    assert (
+        "--initial-design-file "
+        "/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy/"
+        "SC-OLH-KG/archives/paper_archive/InventorySupplyChain/"
+        "source_initial_designs.json"
+    ) in spec["cmd"]
+
+
 def test_fairness_scheduler_dispatches_only_newly_submitted_tasks():
     command = submit.build_dispatch_command(
         Path("/scheduler.py"), ["t100", "t101"])

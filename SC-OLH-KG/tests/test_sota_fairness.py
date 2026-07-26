@@ -1,6 +1,8 @@
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
+from core.designs import integer_design_fingerprint
 from performance.benchmark_sota_fairness import (
     oracle_free_lodo_config,
     run_one,
@@ -90,3 +92,45 @@ def test_online_sota_reports_search_verification_and_total_budgets(tmp_path):
     assert result["terminal_verification"][
         "posterior_updated_from_verification"
     ] is False
+
+
+def test_shared_archive_loads_the_exact_frozen_initial_design(tmp_path):
+    points = [
+        tuple([value] * 8)
+        for value in (5, 25, 50, 75)
+    ]
+    design_path = tmp_path / "source_initial_designs.json"
+    design_path.write_text(json.dumps({
+        "schema_version": 1,
+        "design_kind": "frozen_source_informed_risk_objective_atlas",
+        "proposal_mode": "risk_objective_atlas",
+        "structural_prior_profile": "low_frequency_only",
+        "heldout_target_domain": "QueueResourceControl",
+        "dimension": 8,
+        "source_dimension": 8,
+        "n0": 4,
+        "source_archive_fingerprint": "shared-archive-fingerprint",
+        "source_archive_oracle_aided": False,
+        "target_labels_used": False,
+        "target_oracle_used": False,
+        "designs": {
+            "3": {
+                "points": [list(point) for point in points],
+                "fingerprint": integer_design_fingerprint(points),
+            },
+        },
+    }), encoding="utf-8")
+    args = _args(tmp_path, "shared_archive_n20")
+    args.initial_design_file = str(design_path)
+
+    payload = run_one(args)
+
+    assert payload["status"] == "ok"
+    assert payload["initial_points"] == [list(point) for point in points]
+    assert (
+        payload["source_archive_fingerprint"]
+        == "shared-archive-fingerprint"
+    )
+    assert payload["information_contract"]["initial_design_contract"] == (
+        "byte_identical_frozen_source_informed_n0"
+    )

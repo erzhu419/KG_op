@@ -22,6 +22,8 @@ DEFAULT_PYTHON = (
 BOTORCH_OVERLAY = (
     "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310"
 )
+REMOTE_ROOT = Path(
+    "/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
 GPU_NODES = ("jtl110gpu", "jtl110gpu2", "jtl311linux", "node007")
 CUDA_METHODS = (
@@ -51,6 +53,7 @@ def build_specs(args):
         "gpu_cpu": 12,
         "gpu_ram_mb": 32768,
         "gpu_vram_mb": 8192,
+        "source_run_id": "",
     }
     for name, value in defaults.items():
         if not hasattr(args, name):
@@ -73,6 +76,7 @@ def build_specs(args):
             f"methods without an audited CUDA adapter: {unknown_gpu_methods}")
     heldouts = parse_csv(args.heldouts)
     deploy_project = Path(args.deploy) / "SC-OLH-KG"
+    remote_project = REMOTE_ROOT / "SC-OLH-KG"
     profile_root = deploy_project / "profiles" / args.run_id
     checkpoint_root = deploy_project / "checkpoints" / args.run_id
     specs = []
@@ -98,6 +102,19 @@ def build_specs(args):
                     checkpoint_dir = (
                         checkpoint_root / protocol / heldout / method
                         / f"seed{seed:04d}"
+                    )
+                    local_initial_design = (
+                        deploy_project / "archives" / args.source_run_id
+                        / heldout / "source_initial_designs.json"
+                        if protocol.startswith("shared_archive")
+                        and args.source_run_id
+                        else None
+                    )
+                    remote_initial_design = (
+                        remote_project / "archives" / args.source_run_id
+                        / heldout / "source_initial_designs.json"
+                        if local_initial_design is not None
+                        else None
                     )
                     command = [
                         "env",
@@ -126,6 +143,11 @@ def build_specs(args):
                         str(args.candidate_timeout_sec),
                         "--torch-device", torch_device,
                     ]
+                    if remote_initial_design is not None:
+                        command.extend([
+                            "--initial-design-file",
+                            str(remote_initial_design),
+                        ])
                     if args.terminal_verification:
                         command.extend([
                             "--terminal-verification",
@@ -168,6 +190,10 @@ def build_specs(args):
                         "ram_mb": task_ram_mb,
                         "require_node": node,
                         "allowed_nodes": allowed_nodes,
+                        "wait_for_files": (
+                            [str(local_initial_design)]
+                            if local_initial_design is not None else []
+                        ),
                         "ckpt_dir": str(checkpoint_dir),
                         "ckpt_glob": "**/*.pkl",
                         "allow_initial_resume_scan_error": True,
@@ -221,6 +247,14 @@ def main():
     parser.add_argument("--target-budget", type=int, default=0)
     parser.add_argument("--d", type=int, default=50)
     parser.add_argument("--n0", type=int, default=10)
+    parser.add_argument(
+        "--source-run-id",
+        default="",
+        help=(
+            "Archive/design run id shared with transfer and SC methods. "
+            "When set, shared_archive protocols load its exact frozen n0."
+        ),
+    )
     parser.add_argument("--nodes", default=",".join(CPU_NODES))
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=8192)

@@ -123,7 +123,7 @@ the `32/32` numerical audit schedule for experiments that exercise exact KG.
 
 - Frozen source proposal only (`n0-best`).
 - Frozen proposal plus neutral Sobol continuation.
-- Promoted SC-OLH V51 closure method.
+- V64 SC-OLH search policy with independently certified deployment.
 - Same model with new-point-only actions.
 - Same model with pooled variance instead of cumulative HVD.
 - Same model without source-discrepancy adaptation.
@@ -134,12 +134,19 @@ the `32/32` numerical audit schedule for experiments that exercise exact KG.
 - Safe F-PACOH, RGPE-CBO, hierarchical/transfer GP-CBO, FSBO/HyperBO-CBO,
   MetaBO/MALIBO-CBO.
 - Archive-fair transfer methods receive the identical 384-call frozen archive,
-  identical target `n0`, target seeds, bounds, and `N_search`.
+  byte-identical frozen `n0`, target seeds, bounds, and `N_search`. The main
+  archive-fair stratum uses `d_source=d_target=1000` and freezes the
+  `low_frequency_only + risk_objective_atlas` proposal before any target
+  response.
 - Every method freezes its shortlist using its own posterior, then receives
   the same independent `80/96`, family-wise `0.05` terminal protocol. No
   comparator is filtered through the SC posterior.
 - A total-cost table gives target-only SOTA `384+N_search` search calls as a separate
   comparison; it is not mixed with the equal-target-budget transfer table.
+- The separate `d_source=50 -> d_target=1000` SC experiment is a
+  cross-dimension transfer stress test. It is never labelled as
+  byte-identical archive fairness against methods whose input layer requires
+  equal source and target dimensions.
 - Timeouts and failures remain in denominators.
 
 ## Causal ablations

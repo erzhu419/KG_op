@@ -72,6 +72,9 @@ def build_specs(args):
         "terminal_verification_delta": 0.05,
         "terminal_verification_method": "normal_quantile_tolerance",
         "terminal_safe_interior_probability_slack": 0.05,
+        "structural_prior_profile": "low_frequency_only",
+        "proposal_mode": "risk_objective_atlas",
+        "source_design_mode": "universal_mixture",
     }
     for name, value in terminal_defaults.items():
         if not hasattr(args, name):
@@ -153,9 +156,14 @@ def build_specs(args):
                 "--archive", str(remote_archive),
                 "--out", str(remote_design),
                 "--d", str(args.d),
+                "--source-d", str(args.d),
                 "--n0", str(args.n0),
                 "--seed-start", str(args.seed_start),
                 "--n-seeds", str(args.n_seeds),
+                "--structural-prior-profile",
+                str(args.structural_prior_profile),
+                "--proposal-mode", str(args.proposal_mode),
+                "--source-design-mode", str(args.source_design_mode),
             ]
             specs.append({
                 "description": f"materialize source initial designs {heldout}",
@@ -319,6 +327,24 @@ def main():
         "--initial-design",
         choices=("common_sobol", "source_informed"),
         default="common_sobol",
+    )
+    parser.add_argument(
+        "--structural-prior-profile",
+        default="low_frequency_only",
+    )
+    parser.add_argument(
+        "--proposal-mode",
+        choices=(
+            "rank_spanning",
+            "risk_coordinate_atlas",
+            "risk_objective_atlas",
+        ),
+        default="risk_objective_atlas",
+    )
+    parser.add_argument(
+        "--source-design-mode",
+        choices=("random", "universal_mixture", "shared_uniform"),
+        default="universal_mixture",
     )
     parser.add_argument("--source-train-steps", type=int, default=0)
     parser.add_argument("--target-finetune-steps", type=int, default=100)
