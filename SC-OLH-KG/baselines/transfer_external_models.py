@@ -51,6 +51,38 @@ def _task_fingerprint(tasks):
     ).encode("utf-8")).hexdigest()
 
 
+def _adaptive_positive_definite_jitter(
+    covariance,
+    *,
+    initial_jitter,
+    max_attempts=16,
+):
+    """Return the minimally jittered covariance accepted by Cholesky."""
+
+    import torch
+
+    covariance = 0.5 * (covariance + covariance.transpose(-1, -2))
+    identity = torch.eye(
+        covariance.shape[-1],
+        dtype=covariance.dtype,
+        device=covariance.device,
+    )
+    jitter = max(float(initial_jitter), 1e-12)
+    last_error = None
+    for retry in range(int(max_attempts)):
+        candidate = covariance + jitter * identity
+        try:
+            torch.linalg.cholesky(candidate)
+            return candidate, float(jitter), int(retry)
+        except (RuntimeError, ValueError) as exc:
+            last_error = exc
+            jitter *= 2.0
+    raise RuntimeError(
+        "unable to stabilize F-PACOH functional-prior covariance after "
+        f"{int(max_attempts)} jitter attempts"
+    ) from last_error
+
+
 class OfficialFPACOHSurrogate:
     adaptation_kind = "posterior_conditioning"
     implementation_family = "safe_fpacoh"
@@ -79,6 +111,7 @@ class OfficialFPACOHSurrogate:
             )
         from meta_bo.domain import ContinuousDomain
         from meta_bo.models.f_pacoh_map import FPACOH_MAP_GP
+        from torch.distributions import MultivariateNormal, kl_divergence
 
         dimension = int(tasks[0].X.shape[1])
         self.model = FPACOH_MAP_GP(
@@ -97,6 +130,43 @@ class OfficialFPACOHSurrogate:
         # F-PACOH objective while restoring current-library semantics.
         self.model.prior_covar_module = gpytorch.kernels.ScaleKernel(
             gpytorch.kernels.RBFKernel(ard_num_dims=dimension))
+
+        # The official recovery loop catches RuntimeError, while current
+        # torch.distributions raises ValueError for the same non-PD matrix.
+        # Preserve the functional KL and its adaptive diagonal-jitter intent.
+        def stable_functional_kl(model, task_dict):
+            with gpytorch.settings.debug(False):
+                x_kl = model._sample_measurement_set(task_dict["x_train"])
+                posterior = task_dict["model"](x_kl)
+                prior_covariance = torch.reshape(
+                    model.prior_covar_module(x_kl).evaluate(),
+                    (x_kl.shape[0], x_kl.shape[0]),
+                )
+                covariance, jitter, retries = (
+                    _adaptive_positive_definite_jitter(
+                        prior_covariance,
+                        initial_jitter=model.prior_kernel_noise,
+                    )
+                )
+                model._scolhkg_fkl_max_jitter = max(
+                    float(getattr(
+                        model, "_scolhkg_fkl_max_jitter", 0.0)),
+                    float(jitter),
+                )
+                model._scolhkg_fkl_retry_count = int(getattr(
+                    model, "_scolhkg_fkl_retry_count", 0)) + int(retries)
+                prior = MultivariateNormal(
+                    torch.zeros(
+                        x_kl.shape[0],
+                        dtype=covariance.dtype,
+                        device=covariance.device,
+                    ),
+                    covariance_matrix=covariance,
+                )
+                return kl_divergence(posterior, prior)
+
+        self.model._f_kl = types.MethodType(
+            stable_functional_kl, self.model)
         train = [
             (np.asarray(task.X).copy(), np.asarray(task.y).copy())
             for task in tasks
@@ -132,11 +202,16 @@ class OfficialFPACOHSurrogate:
             "compatibility_shims": [
                 "gpytorch_removed_mul_broadcast_shape",
                 "current_gpytorch_rbf_functional_prior",
+                "torch_valueerror_adaptive_functional_kl_jitter",
             ],
             "source_prior_frozen_online": True,
             "online_parameters_changed": ["target_gp_posterior"],
             "source_steps": int(self.source_steps),
             "n_target": int(self.n_target),
+            "functional_kl_max_jitter": float(getattr(
+                self.model, "_scolhkg_fkl_max_jitter", 0.0)),
+            "functional_kl_jitter_retries": int(getattr(
+                self.model, "_scolhkg_fkl_retry_count", 0)),
         }
 
 
