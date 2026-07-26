@@ -475,6 +475,11 @@ def build_specs(args):
         args.stage_family = "v61_power_ordered_shortlist_verification"
         args.gate_label = (
             "V61 powered frozen ordered-shortlist verification")
+    elif set(requested) == {CONTROL, V61}:
+        args.stage_family = (
+            "v61_power_ordered_shortlist_verification_paired")
+        args.gate_label = (
+            "V51 versus V61 powered shortlist verification")
     else:
         args.stage_family = "v53_constrained_certificate_deficit"
         args.gate_label = "V53 constrained certificate-deficit policy"

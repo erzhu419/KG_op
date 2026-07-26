@@ -460,6 +460,19 @@ def test_v61_precommits_larger_fallback_verification_budget(tmp_path):
     )
 
 
+def test_v61_paired_control_uses_dedicated_stage_family(tmp_path):
+    args = _args(tmp_path, (MODULE.CONTROL, MODULE.V61))
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 2 * 3 * 2
+    assert args.stage_family == (
+        "v61_power_ordered_shortlist_verification_paired")
+    assert all(
+        "/v51_control/" in spec["signature"]
+        or f"/{MODULE.V61}/" in spec["signature"]
+        for spec in specs
+    )
+
+
 def test_v53_bounded_gain_profile_is_versioned_and_not_double_normalized(tmp_path):
     args = _args(tmp_path, (MODULE.V53,))
     args.score_normalization = "none"
