@@ -17,6 +17,7 @@ from core.cumulative_risk import (
 )
 from core.metrics import pareto_filter
 from representation.observable_exposure import grouped_policy_state_exposure
+from problems.controlled_heteroscedastic import CONTROLLED_PROBLEM_REGISTRY
 
 
 @dataclass
@@ -1724,6 +1725,7 @@ PROBLEM_REGISTRY = {
     "InventorySupplyChainProblem": InventorySupplyChainProblem,
     "QueueResourceControl": QueueResourceControlProblem,
     "QueueResourceControlProblem": QueueResourceControlProblem,
+    **CONTROLLED_PROBLEM_REGISTRY,
 }
 
 

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "status": "registered_before_execution",
+  "registered_on": "2026-07-27",
+  "purpose": "Separate optimization-primary quality, posterior-certificate validity, and independent terminal-certificate effects under controlled heteroscedastic geometry.",
+  "problem_contract": {
+    "raw_dimension": 1000,
+    "observable_latent_dimension": 3,
+    "objective_and_constraint_mean_shared_across_scenarios": true,
+    "scenarios": [
+      "homoscedastic",
+      "smooth_boundary",
+      "optimum_hotspot",
+      "safe_interior_hotspot",
+      "regime_step",
+      "sparse_axis",
+      "shared_factor",
+      "hidden_periodic"
+    ],
+    "hidden_periodic_is_registered_misspecification": true,
+    "oracle_truth_timing": "post_run_only"
+  },
+  "optimization_contract": {
+    "initial_design": "common_sobol",
+    "source_archive_used": false,
+    "source_proposal_used": false,
+    "problem_specific_initial_samples": false,
+    "problem_specific_recommendation_refinement": false,
+    "n0": 10,
+    "search_budget": 20,
+    "target_seeds": 5,
+    "backends": [
+      "sobol",
+      "risk_ts",
+      "joint_voi"
+    ],
+    "variance_modes": [
+      "pooled",
+      "orthogonal",
+      "factor",
+      "oracle"
+    ],
+    "joint_voi_variance_modes": [
+      "factor"
+    ],
+    "oracle_variance_rows_are_diagnostic_upper_bounds": true
+  },
+  "verification_contract": {
+    "primary_calls": 80,
+    "support_calls": 96,
+    "familywise_delta": 0.05,
+    "method": "gaussian_noncentral_t_tolerance",
+    "shortlist": "posterior_primary_safe_interior",
+    "verification_updates_optimizer": false,
+    "search_primary_frozen_before_verification": true
+  },
+  "task_contract": {
+    "scenario_count": 8,
+    "variants_per_scenario": 9,
+    "seeds_per_variant": 5,
+    "planned_tasks": 360,
+    "allowed_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "checkpoints_synced_locally": false
+  },
+  "headline_metrics": [
+    "best_evaluated_feasible_regret",
+    "search_primary_true_feasible",
+    "verified_deployment_true_feasible",
+    "posterior_certificate_coverage",
+    "posterior_false_certificates",
+    "independent_terminal_certificate_coverage",
+    "independent_terminal_false_certificates",
+    "paired_deployment_rescue_loss",
+    "log_variance_rmse",
+    "variance_upper_coverage",
+    "search_verification_total_calls"
+  ],
+  "expansion_gate": {
+    "next_seed_count": 20,
+    "requirements": [
+      "zero independent terminal false certificates",
+      "report every certificate-induced deployment loss",
+      "at least one non-oracle backend finds feasible near-optimal points in each representable scenario",
+      "factor HVD is compared causally against pooled variance on identical seeds",
+      "hidden-periodic failure is reported as registered misspecification rather than silently pooled"
+    ]
+  }
+}
