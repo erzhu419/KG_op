@@ -1,6 +1,9 @@
 {
   "schema_version": 1,
-  "status": "ready_to_submit",
+  "status": "submitted",
+  "code_commit": "e5b6d04",
+  "run_id": "paper_certified_crossdim_backend_matrix_d50_d1000_n13_s80_99_v1",
+  "submitted_at": "2026-07-27T18:49:42+0800",
   "comparison_question": "With one byte-identical frozen cross-dimension n0 proposal, what is the incremental value of each online/posterior backend?",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -71,6 +74,11 @@
     "new_saasbo_tasks": 60,
     "new_tasks_total": 180,
     "matrix_cells_total": 240,
+    "new_task_id_range": [
+      "t54665",
+      "t54844"
+    ],
+    "new_task_signatures_unique": true,
     "raw_checkpoints_sync_locally": false
   },
   "interpretation_guard": "The four rows share proposal bytes, target seeds, target dimension, and terminal verification. They do not all consume the full source archive in the backend; that difference is part of the backend contract and must remain explicit."
