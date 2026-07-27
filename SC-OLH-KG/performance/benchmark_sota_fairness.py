@@ -243,6 +243,18 @@ def run_one(args):
     target_budget = int(protocol["target_budget"])
     if args.target_budget > 0:
         target_budget = int(args.target_budget)
+    saas_refit_schedule = str(getattr(
+        args, "saas_refit_schedule", "every_iteration"))
+    if saas_refit_schedule == "auto":
+        saas_refit_schedule = (
+            "doubling"
+            if (
+                args.method == "botorch_saasbo"
+                and target_budget >= int(getattr(
+                    args, "saas_periodic_min_budget", 100))
+            )
+            else "every_iteration"
+        )
     checkpoint_path = (
         Path(args.checkpoint_dir)
         / args.protocol
@@ -293,6 +305,13 @@ def run_one(args):
             args, "saas_parallel_min_total_steps", 64)),
         saas_parallel_threads_per_model=int(getattr(
             args, "saas_parallel_threads_per_model", 0)),
+        saas_refit_schedule=saas_refit_schedule,
+        saas_refit_interval=int(getattr(
+            args, "saas_refit_interval", 16)),
+        saas_refit_growth_factor=float(getattr(
+            args, "saas_refit_growth_factor", 2.0)),
+        saas_refit_max_history=int(getattr(
+            args, "saas_refit_max_history", 0)),
     )
     started = time.time()
     payload = {
@@ -430,6 +449,15 @@ def main():
     parser.add_argument("--saas-parallel-min-total-steps", type=int, default=64)
     parser.add_argument("--saas-parallel-threads-per-model", type=int, default=0)
     parser.add_argument(
+        "--saas-refit-schedule",
+        choices=("auto", "every_iteration", "interval", "doubling"),
+        default="every_iteration",
+    )
+    parser.add_argument("--saas-refit-interval", type=int, default=16)
+    parser.add_argument("--saas-refit-growth-factor", type=float, default=2.0)
+    parser.add_argument("--saas-refit-max-history", type=int, default=0)
+    parser.add_argument("--saas-periodic-min-budget", type=int, default=100)
+    parser.add_argument(
         "--torch-device", default="cpu",
         help="BoTorch device: cpu, cuda, cuda:N, or auto",
     )
@@ -470,7 +498,8 @@ def main():
         "seed": args.seed,
         "out": args.out,
     }), indent=2))
+    return 0 if payload["status"] == "ok" else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

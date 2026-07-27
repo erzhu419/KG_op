@@ -138,6 +138,178 @@ class BoTorchAdapterTests(unittest.TestCase):
             "saas_fully_bayesian_nuts_constrained_qlogei",
         )
 
+    def test_saas_doubling_refit_conditions_on_each_new_observation(self):
+        config = BoTorchBaselineConfig(
+            N=5,
+            n0=4,
+            seed=19,
+            method="botorch_saasbo",
+            raw_samples=8,
+            num_restarts=2,
+            maxiter=10,
+            saas_warmup_steps=4,
+            saas_num_samples=4,
+            saas_thinning=1,
+            saas_max_tree_depth=2,
+            saas_mc_samples=16,
+            saas_refit_schedule="doubling",
+        )
+
+        result = BoTorchBaseline(self._problem(), config).run()
+
+        self.assertEqual(result["saas_refit_schedule"], "doubling")
+        self.assertEqual(result["saas_full_refit_count"], 1)
+        self.assertEqual(result["saas_condition_count"], 1)
+        self.assertEqual(result["saas_condition_failures"], 0)
+        self.assertTrue(
+            result["saas_nuts_schedule"][
+                "posterior_conditions_on_every_observation"
+            ]
+        )
+        self.assertEqual(
+            result["algorithm_fidelity"],
+            "saas_fully_bayesian_periodic_hyperposterior_constrained_qlogei",
+        )
+
+    def test_saas_conditioning_does_not_retain_autograd_graphs(self):
+        baseline = BoTorchBaseline(
+            self._problem(),
+            BoTorchBaselineConfig(
+                N=5,
+                n0=4,
+                method="botorch_saasbo",
+                saas_refit_schedule="doubling",
+            ),
+        )
+
+        class RecordingModel:
+            def __init__(self):
+                self.calls = []
+
+            def condition_on_observations(self, *, X, Y):
+                self.calls.append((
+                    torch.is_grad_enabled(),
+                    bool(X.requires_grad),
+                    bool(Y.requires_grad),
+                ))
+                return self
+
+            def eval(self):
+                return self
+
+        objective_model = RecordingModel()
+        constraint_model = RecordingModel()
+        baseline.history = [(("x0",), np.zeros(3)), (("x1",), np.ones(3))]
+        baseline._saas_cached_models = (objective_model, constraint_model)
+        baseline._saas_cached_history_size = 1
+        tensors = (
+            torch.randn(2, 5, requires_grad=True),
+            torch.randn(2, 1, requires_grad=True),
+            torch.randn(2, 1, requires_grad=True),
+        )
+
+        with patch.object(
+            baseline, "_training_tensors", return_value=tensors
+        ):
+            baseline._condition_saas_models_to_history()
+
+        self.assertEqual(objective_model.calls, [(False, False, False)])
+        self.assertEqual(constraint_model.calls, [(False, False, False)])
+        self.assertEqual(baseline._saas_condition_count, 1)
+
+    def test_saas_doubling_refit_thresholds_are_geometric(self):
+        baseline = BoTorchBaseline(
+            self._problem(),
+            BoTorchBaselineConfig(
+                N=40,
+                n0=10,
+                method="botorch_saasbo",
+                saas_refit_schedule="doubling",
+            ),
+        )
+        baseline._saas_cached_models = (object(), object())
+        baseline._saas_last_refit_history_size = 10
+
+        self.assertFalse(baseline._saas_should_refit(19))
+        self.assertTrue(baseline._saas_should_refit(20))
+
+    def test_saas_doubling_refit_can_stop_at_audited_history_cap(self):
+        baseline = BoTorchBaseline(
+            self._problem(),
+            BoTorchBaselineConfig(
+                N=397,
+                n0=10,
+                method="botorch_saasbo",
+                saas_refit_schedule="doubling",
+                saas_refit_max_history=80,
+            ),
+        )
+        baseline._saas_cached_models = (object(), object())
+        baseline._saas_last_refit_history_size = 40
+
+        self.assertFalse(baseline._saas_should_refit(79))
+        self.assertTrue(baseline._saas_should_refit(80))
+        baseline._saas_last_refit_history_size = 80
+        self.assertFalse(baseline._saas_should_refit(160))
+        self.assertFalse(baseline._saas_should_refit(397))
+
+    def test_saas_resume_rebuilds_capped_refit_then_conditions_suffix(self):
+        baseline = BoTorchBaseline(
+            self._problem(),
+            BoTorchBaselineConfig(
+                N=397,
+                n0=10,
+                method="botorch_saasbo",
+                saas_refit_schedule="doubling",
+                saas_refit_max_history=80,
+            ),
+        )
+
+        class RecordingModel:
+            def __init__(self):
+                self.condition_sizes = []
+                self.prediction_strategy = None
+                self.posterior_sizes = []
+
+            def posterior(self, X):
+                self.posterior_sizes.append(len(X))
+                self.prediction_strategy = object()
+
+            def condition_on_observations(self, *, X, Y):
+                self.condition_sizes.append((len(X), len(Y)))
+                return self
+
+            def eval(self):
+                return self
+
+        models = (RecordingModel(), RecordingModel())
+        baseline.history = [
+            ((index,), np.zeros(3)) for index in range(159)
+        ]
+        tensors = (
+            torch.randn(159, 5),
+            torch.randn(159, 1),
+            torch.randn(159, 1),
+        )
+
+        with patch.object(
+            baseline, "_training_tensors", return_value=tensors
+        ), patch.object(
+            baseline, "_fit_saas_models", return_value=models
+        ) as fit_models:
+            baseline._saas_models_for_history()
+
+        fit_args = fit_models.call_args.args
+        self.assertEqual([len(tensor) for tensor in fit_args], [80, 80, 80])
+        self.assertEqual(models[0].condition_sizes, [(79, 79)])
+        self.assertEqual(models[1].condition_sizes, [(79, 79)])
+        self.assertEqual(models[0].posterior_sizes, [1])
+        self.assertEqual(models[1].posterior_sizes, [1])
+        self.assertEqual(baseline._saas_last_refit_history_size, 80)
+        self.assertEqual(baseline._saas_cached_history_size, 159)
+        self.assertEqual(baseline._saas_resume_rebuild_history_size, 80)
+        self.assertEqual(baseline._saas_condition_count, 79)
+
     def test_saas_progress_eta_models_growing_fit_cost(self):
         config = BoTorchBaselineConfig(
             N=404,
@@ -168,6 +340,36 @@ class BoTorchAdapterTests(unittest.TestCase):
         naive_eta = elapsed / 240.0 * (404 - 240)
         self.assertIn("eta_model=growing_iter_cost", line)
         self.assertGreater(projected_eta, 1.5 * naive_eta)
+
+    def test_resumed_capped_saas_eta_excludes_one_off_rebuild(self):
+        config = BoTorchBaselineConfig(
+            N=397,
+            n0=10,
+            seed=9,
+            method="botorch_saasbo",
+            progress_logging=True,
+            saas_refit_schedule="doubling",
+            saas_refit_max_history=80,
+        )
+        baseline = BoTorchBaseline(self._problem(), config)
+        baseline._progress_start_unit = 159
+        baseline._progress_timing = []
+        baseline.history = [None] * 160
+        stream = io.StringIO()
+        with patch(
+            "baselines.botorch_adapters.time.time",
+            side_effect=[446.0, 453.0],
+        ):
+            with redirect_stdout(stream):
+                baseline._emit_progress(0.0)
+                baseline.history.append(None)
+                baseline._emit_progress(0.0)
+
+        lines = stream.getvalue().splitlines()
+        self.assertEqual(len(lines), 1)
+        self.assertIn("Iter 161/397", lines[0])
+        self.assertIn("ETA 1652.0s", lines[0])
+        self.assertIn("eta_model=rolling_condition_cost", lines[0])
 
     def test_canonical_tutorial_constants_and_trust_regions(self):
         self.assertEqual(canonical_failure_tolerance(3), 4)

@@ -30,7 +30,7 @@ def test_fairness_scheduler_builds_three_contracts_by_twenty_seeds():
     })()
     specs = submit.build_specs(parser_args)
     assert len(specs) == 3 * 3 * 3 * 20
-    assert all(spec["require_node"] in submit.GPU_NODES for spec in specs)
+    assert all(spec["require_node"] is None for spec in specs)
     assert all(spec["cpu"] == 12 for spec in specs)
     assert all(spec["vram"] == 8192 for spec in specs)
     assert all("--torch-device cuda" in spec["cmd"] for spec in specs)
@@ -62,10 +62,49 @@ def test_fairness_scheduler_can_route_explicit_cpu_ablation():
 
     [spec] = submit.build_specs(parser_args)
 
-    assert spec["require_node"] == "node001"
+    assert spec["require_node"] is None
     assert spec["allowed_nodes"] == ["node001", "node002"]
     assert spec["vram"] == 0
     assert "--torch-device cpu" in spec["cmd"]
+
+
+def test_long_saas_periodic_run_is_explicitly_labelled():
+    parser_args = type("Args", (), {
+        "nodes": "node001,node002",
+        "gpu_nodes": "jtl110gpu,jtl110gpu2,node007",
+        "gpu_methods": "botorch_saasbo",
+        "protocols": "target_cost_matched_n397",
+        "methods": "botorch_saasbo",
+        "heldouts": "InventorySupplyChain",
+        "deploy": Path("/deploy"),
+        "run_id": "periodic_saas_v2",
+        "seed_start": 80,
+        "n_seeds": 1,
+        "python": "/python",
+        "manifest": Path("/deploy/SC-OLH-KG/base.json"),
+        "candidate_timeout_sec": 3600.0,
+        "cpu": 12,
+        "ram_mb": 8192,
+        "saas_refit_schedule": "doubling",
+        "saas_refit_interval": 16,
+        "saas_refit_growth_factor": 2.0,
+        "saas_refit_max_history": 80,
+    })()
+
+    [spec] = submit.build_specs(parser_args)
+
+    assert spec["allowed_nodes"] == [
+        "jtl110gpu", "jtl110gpu2", "node007"]
+    assert "periodic-hyperposterior" in spec["description"]
+    assert "--saas-refit-schedule doubling" in spec["cmd"]
+    assert "--saas-refit-growth-factor 2.0" in spec["cmd"]
+    assert "--saas-refit-max-history 80" in spec["cmd"]
+    assert "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True" in spec["cmd"]
+    assert spec["vram_resource_family"] == (
+        "KG-SYNTH/sota-fairness/periodic_saas_v2/botorch_saasbo/"
+        "InventorySupplyChain/seed0080"
+    )
+    assert "jtl311linux" not in spec["allowed_nodes"]
 
 
 def test_shared_archive_uses_exact_frozen_design_when_run_id_is_set():

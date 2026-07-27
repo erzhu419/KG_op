@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import dataclass
+import gc
 import hashlib
 from importlib import metadata
 import math
@@ -265,6 +266,10 @@ class BoTorchBaselineConfig:
     saas_parallel_threads_per_model: int = 0
     saas_parallel_start_method: str = "spawn"
     saas_parallel_fallback: bool = True
+    saas_refit_schedule: str = "every_iteration"
+    saas_refit_interval: int = 16
+    saas_refit_growth_factor: float = 2.0
+    saas_refit_max_history: int = 0
 
 
 @dataclass
@@ -356,6 +361,14 @@ class BoTorchBaseline:
         self._saas_parallel_fit_count = 0
         self._saas_parallel_failures = 0
         self._saas_parallel_last_error = ""
+        self._saas_cached_models = (None, None)
+        self._saas_cached_history_size = 0
+        self._saas_last_refit_history_size = 0
+        self._saas_full_refit_count = 0
+        self._saas_condition_count = 0
+        self._saas_condition_failures = 0
+        self._saas_condition_last_error = ""
+        self._saas_resume_rebuild_history_size = 0
         self._timeout_fallback_active = False
         self._restart_count = 0
         self._restart_design_sizes: list[int] = []
@@ -364,6 +377,7 @@ class BoTorchBaseline:
         self._tr = self._new_tr_state(constrained=method == "botorch_scbo")
         self._tr_initialized = False
         self._resumed_from_checkpoint = False
+        self._normalized_saas_refit_schedule()
         if self.config.checkpoint_resume and self._checkpoint_path() is not None:
             self._load_checkpoint()
 
@@ -757,6 +771,136 @@ class BoTorchBaseline:
         self._last_models = (obj_model, con_model)
         return obj_model, con_model
 
+    def _normalized_saas_refit_schedule(self):
+        schedule = str(
+            getattr(self.config, "saas_refit_schedule", "every_iteration")
+            or "every_iteration"
+        ).strip().lower()
+        aliases = {
+            "canonical": "every_iteration",
+            "every": "every_iteration",
+            "periodic": "interval",
+            "geometric": "doubling",
+        }
+        schedule = aliases.get(schedule, schedule)
+        if schedule not in {"every_iteration", "interval", "doubling"}:
+            raise ValueError(
+                "saas_refit_schedule must be every_iteration, interval, or "
+                f"doubling, got {schedule!r}"
+            )
+        return schedule
+
+    def _saas_should_refit(self, history_size):
+        if self._saas_cached_models[0] is None:
+            return True
+        schedule = self._normalized_saas_refit_schedule()
+        if schedule == "every_iteration":
+            return True
+        last = int(self._saas_last_refit_history_size)
+        max_history = max(
+            0, int(getattr(self.config, "saas_refit_max_history", 0)))
+        effective_history = int(history_size)
+        if max_history > 0:
+            effective_history = min(effective_history, max_history)
+            if last >= max_history:
+                return False
+        if schedule == "interval":
+            interval = max(1, int(self.config.saas_refit_interval))
+            threshold = last + interval
+            if max_history > 0:
+                threshold = min(threshold, max_history)
+            return effective_history >= threshold
+        growth = max(1.01, float(self.config.saas_refit_growth_factor))
+        threshold = max(last + 1, int(math.ceil(last * growth)))
+        if max_history > 0:
+            threshold = min(threshold, max_history)
+        return effective_history >= threshold
+
+    def _condition_saas_models_to_history(self):
+        history_size = len(self.history)
+        start = int(self._saas_cached_history_size)
+        if start >= history_size:
+            return self._saas_cached_models
+        train_X, train_obj, train_con = self._training_tensors(
+            active_only=False)
+        X_new = train_X[start:history_size].detach()
+        obj_new = train_obj[start:history_size].detach()
+        con_new = train_con[start:history_size].detach()
+        obj_model, con_model = self._saas_cached_models
+        # Conditioning is an exact posterior update, not a differentiable
+        # training step. Retaining its fantasy graph across hundreds of
+        # sequential updates otherwise grows CUDA memory linearly.
+        with torch.no_grad():
+            for model in (obj_model, con_model):
+                if (
+                    hasattr(model, "prediction_strategy")
+                    and model.prediction_strategy is None
+                ):
+                    model.posterior(X_new[:1])
+            obj_model = obj_model.condition_on_observations(
+                X=X_new,
+                Y=obj_new,
+            )
+            con_model = con_model.condition_on_observations(
+                X=X_new,
+                Y=con_new,
+            )
+        obj_model.eval()
+        con_model.eval()
+        self._saas_cached_models = (obj_model, con_model)
+        self._saas_cached_history_size = int(history_size)
+        self._saas_condition_count += int(history_size - start)
+        self._last_models = self._saas_cached_models
+        return self._saas_cached_models
+
+    def _saas_models_for_history(self):
+        history_size = len(self.history)
+        schedule = self._normalized_saas_refit_schedule()
+        max_history = max(
+            0, int(getattr(self.config, "saas_refit_max_history", 0)))
+        if (
+            self._saas_cached_models[0] is None
+            and schedule != "every_iteration"
+            and max_history > 0
+            and history_size > max_history
+        ):
+            train_X, train_obj, train_con = self._training_tensors(
+                active_only=False)
+            models = self._fit_saas_models(
+                train_X[:max_history],
+                train_obj[:max_history],
+                train_con[:max_history],
+            )
+            self._saas_cached_models = models
+            self._saas_cached_history_size = int(max_history)
+            self._saas_last_refit_history_size = int(max_history)
+            self._saas_resume_rebuild_history_size = int(max_history)
+            self._saas_full_refit_count += 1
+            return self._condition_saas_models_to_history()
+        if self._saas_should_refit(history_size):
+            train_X, train_obj, train_con = self._training_tensors(
+                active_only=False)
+            models = self._fit_saas_models(train_X, train_obj, train_con)
+            self._saas_cached_models = models
+            self._saas_cached_history_size = int(history_size)
+            self._saas_last_refit_history_size = int(history_size)
+            self._saas_full_refit_count += 1
+            return models
+        try:
+            return self._condition_saas_models_to_history()
+        except Exception as exc:
+            self._saas_condition_failures += 1
+            self._saas_condition_last_error = (
+                f"{type(exc).__name__}: {exc}")[:300]
+            train_X, train_obj, train_con = self._training_tensors(
+                active_only=False)
+            models = self._fit_saas_models(train_X, train_obj, train_con)
+            self._saas_cached_models = models
+            self._saas_cached_history_size = int(history_size)
+            self._saas_last_refit_history_size = int(history_size)
+            self._saas_full_refit_count += 1
+            return models
+
     @staticmethod
     def _model_lengthscales(model):
         kernel = model.covar_module
@@ -911,9 +1055,9 @@ class BoTorchBaseline:
 
     def _saas_candidate(self):
         with _wall_time_limit(self.config.timeout_sec):
-            train_X, train_obj, train_con = self._training_tensors(active_only=False)
-            obj_model, con_model = self._fit_saas_models(
-                train_X, train_obj, train_con)
+            train_X, train_obj, train_con = self._training_tensors(
+                active_only=False)
+            obj_model, con_model = self._saas_models_for_history()
             sampler = SobolQMCNormalSampler(
                 sample_shape=torch.Size([
                     max(8, int(self.config.saas_mc_samples))]),
@@ -946,7 +1090,17 @@ class BoTorchBaseline:
                     best_f=train_obj.max(),
                     sampler=sampler,
                 )
-            return self._optimize_saas_acquisition(acqf)
+            candidate = self._optimize_saas_acquisition(acqf)
+            del acqf, sampler
+            if self.config.saas_constrained:
+                del model
+            if (
+                self._torch_device.type == "cuda"
+                and (len(self.history) + 1) % 16 == 0
+            ):
+                gc.collect()
+                torch.cuda.empty_cache()
+            return candidate
 
     def _handle_candidate_error(self, exc):
         if self.config.strict_failures:
@@ -998,8 +1152,7 @@ class BoTorchBaseline:
     def _posterior_recommendation(self):
         train_X, train_obj, train_con = self._training_tensors(active_only=False)
         if self.config.method == "botorch_saasbo":
-            obj_model, con_model = self._fit_saas_models(
-                train_X, train_obj, train_con)
+            obj_model, con_model = self._saas_models_for_history()
         else:
             obj_model, con_model = self._fit_standard_models(
                 train_X, train_obj, train_con)
@@ -1196,7 +1349,42 @@ class BoTorchBaseline:
         eta_sec = (elapsed / float(completed_here)) * float(
             max(0, total - current))
         eta_model = "current_run_average"
-        if self.config.method == "botorch_saasbo" and len(self._progress_timing) >= 12:
+        saas_schedule = self._normalized_saas_refit_schedule()
+        saas_cap = max(
+            0, int(getattr(self.config, "saas_refit_max_history", 0)))
+        capped_conditioning_phase = (
+            self.config.method == "botorch_saasbo"
+            and saas_schedule != "every_iteration"
+            and saas_cap > 0
+            and current >= saas_cap
+        )
+        if (
+            capped_conditioning_phase
+            and int(self._progress_start_unit) >= saas_cap
+            and len(self._progress_timing) < 2
+        ):
+            # A resumed run first rebuilds the capped hyperposterior. That
+            # one-off cost is not a per-iteration rate and must not be
+            # multiplied by every remaining conditioned update.
+            return
+        if capped_conditioning_phase and len(self._progress_timing) >= 2:
+            recent_points = self._progress_timing[-13:]
+            rates = []
+            for left, right in zip(recent_points, recent_points[1:]):
+                delta_units = int(right[0]) - int(left[0])
+                delta_sec = float(right[1]) - float(left[1])
+                if delta_units > 0 and delta_sec > 0:
+                    rates.append(delta_sec / float(delta_units))
+            if rates:
+                ordered_rates = sorted(rates)
+                rolling_rate = ordered_rates[len(ordered_rates) // 2]
+                eta_sec = rolling_rate * float(max(0, total - current))
+                eta_model = "rolling_condition_cost"
+        if (
+            self.config.method == "botorch_saasbo"
+            and saas_schedule == "every_iteration"
+            and len(self._progress_timing) >= 12
+        ):
             points = [
                 point for point in self._progress_timing
                 if point[0] >= 0.25 * current
@@ -1238,8 +1426,17 @@ class BoTorchBaseline:
                         + 0.5 * slope * remaining * remaining
                     )
                     eta_model = "growing_iter_cost"
+        fidelity_label = (
+            "botorch-canonical"
+            if (
+                self.config.method != "botorch_saasbo"
+                or self._normalized_saas_refit_schedule()
+                == "every_iteration"
+            )
+            else "botorch-periodic-hyperposterior"
+        )
         print(
-            f"Iter {current}/{total} [botorch-canonical] "
+            f"Iter {current}/{total} [{fidelity_label}] "
             f"label={self._progress_label()} Time: {elapsed:.1f}s "
             f"ETA {eta_sec:.1f}s eta_model={eta_model}",
             flush=True,
@@ -1334,6 +1531,19 @@ class BoTorchBaseline:
             "saas_parallel_last_error": str(self._saas_parallel_last_error),
             "saas_parallel_threads_per_model": int(
                 self._saas_parallel_threads()),
+            "saas_refit_schedule": self._normalized_saas_refit_schedule(),
+            "saas_refit_interval": int(self.config.saas_refit_interval),
+            "saas_refit_growth_factor": float(
+                self.config.saas_refit_growth_factor),
+            "saas_refit_max_history": int(
+                getattr(self.config, "saas_refit_max_history", 0)),
+            "saas_full_refit_count": int(self._saas_full_refit_count),
+            "saas_condition_count": int(self._saas_condition_count),
+            "saas_condition_failures": int(self._saas_condition_failures),
+            "saas_condition_last_error": str(
+                self._saas_condition_last_error),
+            "saas_resume_rebuild_history_size": int(
+                self._saas_resume_rebuild_history_size),
             "initial_design": str(self._initial_design_source),
             "ts_candidates": int(
                 self.config.ts_candidates
@@ -1346,7 +1556,24 @@ class BoTorchBaseline:
                 else (
                     "canonical_scbo_constrained_ts"
                     if self.config.method == "botorch_scbo"
-                    else "saas_fully_bayesian_nuts_constrained_qlogei"
+                    else (
+                        "saas_fully_bayesian_nuts_constrained_qlogei"
+                        if self._normalized_saas_refit_schedule()
+                        == "every_iteration"
+                        else (
+                            "saas_fully_bayesian_periodic_capped_"
+                            "hyperposterior_constrained_qlogei"
+                            if int(getattr(
+                                self.config,
+                                "saas_refit_max_history",
+                                0,
+                            )) > 0
+                            else (
+                                "saas_fully_bayesian_periodic_"
+                                "hyperposterior_constrained_qlogei"
+                            )
+                        )
+                    )
                 )
             ),
             "saas_nuts_schedule": {
@@ -1359,6 +1586,15 @@ class BoTorchBaseline:
                     int(self.config.saas_warmup_steps) >= 256
                     and int(self.config.saas_num_samples) >= 128
                 ),
+                "hyperposterior_refit_schedule": (
+                    self._normalized_saas_refit_schedule()),
+                "hyperposterior_refit_interval": int(
+                    self.config.saas_refit_interval),
+                "hyperposterior_refit_growth_factor": float(
+                    self.config.saas_refit_growth_factor),
+                "hyperposterior_refit_max_history": int(
+                    getattr(self.config, "saas_refit_max_history", 0)),
+                "posterior_conditions_on_every_observation": True,
             },
             "runtime_fingerprint": runtime,
             "history": [

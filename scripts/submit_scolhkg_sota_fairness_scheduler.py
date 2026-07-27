@@ -17,7 +17,7 @@ SYNC = ROOT / "scripts/sync_scolhkg_scheduler_deploy.sh"
 DEFAULT_SCHEDULER = Path.home() / "mine_code/scheduleurm/skill/scheduler.py"
 DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
 DEFAULT_PYTHON = (
-    "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python"
+    "/home/erzhu419/.venvs/scheduleurm-torch-bench/bin/python"
 )
 BOTORCH_OVERLAY = (
     "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310"
@@ -25,7 +25,7 @@ BOTORCH_OVERLAY = (
 REMOTE_ROOT = Path(
     "/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
-GPU_NODES = ("jtl110gpu", "jtl110gpu2", "jtl311linux", "node007")
+GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
 CUDA_METHODS = (
     "botorch_turbo",
     "botorch_scbo",
@@ -48,12 +48,18 @@ def build_specs(args):
         "terminal_verification_delta": 0.05,
         "terminal_verification_method": "normal_quantile_tolerance",
         "terminal_safe_interior_probability_slack": 0.05,
-        "gpu_nodes": "node007",
+        "gpu_nodes": ",".join(GPU_NODES),
         "gpu_methods": ",".join(CUDA_METHODS),
         "gpu_cpu": 12,
         "gpu_ram_mb": 32768,
         "gpu_vram_mb": 8192,
+        "gpu_vram_resource_family": "",
         "source_run_id": "",
+        "saas_refit_schedule": "every_iteration",
+        "saas_refit_interval": 16,
+        "saas_refit_growth_factor": 2.0,
+        "saas_refit_max_history": 0,
+        "hard_pin_nodes": False,
     }
     for name, value in defaults.items():
         if not hasattr(args, name):
@@ -126,6 +132,11 @@ def build_specs(args):
                         f"OMP_NUM_THREADS={task_cpu}",
                         f"MKL_NUM_THREADS={task_cpu}",
                         f"OPENBLAS_NUM_THREADS={task_cpu}",
+                    ]
+                    if use_gpu:
+                        command.append(
+                            "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True")
+                    command.extend([
                         f"PYTHONPATH={BOTORCH_OVERLAY}",
                         str(args.python),
                         "performance/benchmark_sota_fairness.py",
@@ -142,7 +153,18 @@ def build_specs(args):
                         "--candidate-timeout-sec",
                         str(args.candidate_timeout_sec),
                         "--torch-device", torch_device,
-                    ]
+                    ])
+                    if method == "botorch_saasbo":
+                        command.extend([
+                            "--saas-refit-schedule",
+                            str(args.saas_refit_schedule),
+                            "--saas-refit-interval",
+                            str(args.saas_refit_interval),
+                            "--saas-refit-growth-factor",
+                            str(args.saas_refit_growth_factor),
+                            "--saas-refit-max-history",
+                            str(args.saas_refit_max_history),
+                        ])
                     if remote_initial_design is not None:
                         command.extend([
                             "--initial-design-file",
@@ -172,9 +194,28 @@ def build_specs(args):
                         node = nodes[cpu_index % len(nodes)]
                         allowed_nodes = list(nodes)
                         cpu_index += 1
+                    periodic_saas = (
+                        method == "botorch_saasbo"
+                        and str(args.saas_refit_schedule)
+                        not in ("every_iteration", "canonical")
+                    )
+                    vram_resource_family = ""
+                    if use_gpu and args.gpu_vram_resource_family:
+                        vram_resource_family = str(
+                            args.gpu_vram_resource_family)
+                    elif periodic_saas:
+                        vram_resource_family = (
+                            f"KG-SYNTH/sota-fairness/{args.run_id}/"
+                            f"botorch_saasbo/{heldout}/seed{seed:04d}"
+                        )
+                    experiment_label = (
+                        "periodic-hyperposterior SOTA fairness"
+                        if periodic_saas
+                        else "canonical SOTA fairness"
+                    )
                     specs.append({
                         "description": (
-                            f"canonical SOTA fairness {protocol} {heldout} "
+                            f"{experiment_label} {protocol} {heldout} "
                             f"{method} seed={seed}"
                         ),
                         "cmd": f"{shlex.join(command)} && echo DONE",
@@ -186,9 +227,12 @@ def build_specs(args):
                         "project": "KG-SYNTH",
                         "vram": (
                             int(args.gpu_vram_mb) if use_gpu else 0),
+                        "vram_resource_family": (
+                            vram_resource_family or None),
                         "cpu": task_cpu,
                         "ram_mb": task_ram_mb,
-                        "require_node": node,
+                        "require_node": (
+                            node if bool(args.hard_pin_nodes) else None),
                         "allowed_nodes": allowed_nodes,
                         "wait_for_files": (
                             [str(local_initial_design)]
@@ -258,7 +302,7 @@ def main():
     parser.add_argument("--nodes", default=",".join(CPU_NODES))
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=8192)
-    parser.add_argument("--gpu-nodes", default="node007")
+    parser.add_argument("--gpu-nodes", default=",".join(GPU_NODES))
     parser.add_argument(
         "--gpu-methods",
         default=",".join(CUDA_METHODS),
@@ -270,7 +314,34 @@ def main():
     parser.add_argument("--gpu-cpu", type=int, default=12)
     parser.add_argument("--gpu-ram-mb", type=int, default=32768)
     parser.add_argument("--gpu-vram-mb", type=int, default=8192)
+    parser.add_argument(
+        "--gpu-vram-resource-family",
+        default="",
+        help=(
+            "Optional explicit scheduler VRAM family. Periodic SAAS runs "
+            "otherwise receive a run-specific family automatically so stale "
+            "canonical SAAS history cannot lower their reservation."
+        ),
+    )
+    parser.add_argument(
+        "--hard-pin-nodes",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Pin each task to its round-robin node. By default only the "
+            "allowed-node pool is set so live resource placement can use any "
+            "healthy node."
+        ),
+    )
     parser.add_argument("--candidate-timeout-sec", type=float, default=3600.0)
+    parser.add_argument(
+        "--saas-refit-schedule",
+        choices=("every_iteration", "interval", "doubling"),
+        default="every_iteration",
+    )
+    parser.add_argument("--saas-refit-interval", type=int, default=16)
+    parser.add_argument("--saas-refit-growth-factor", type=float, default=2.0)
+    parser.add_argument("--saas-refit-max-history", type=int, default=0)
     parser.add_argument(
         "--terminal-verification",
         action=argparse.BooleanOptionalAction,
