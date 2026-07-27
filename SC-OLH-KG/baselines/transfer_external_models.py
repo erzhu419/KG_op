@@ -83,6 +83,27 @@ def _adaptive_positive_definite_jitter(
     ) from last_error
 
 
+def _stable_torch_multivariate_normal(
+    mean,
+    covariance,
+    *,
+    initial_jitter,
+):
+    """Build a torch MVN after minimally stabilizing its covariance."""
+
+    import torch
+
+    stabilized, jitter, retries = _adaptive_positive_definite_jitter(
+        covariance,
+        initial_jitter=initial_jitter,
+    )
+    distribution = torch.distributions.MultivariateNormal(
+        mean.reshape(-1),
+        covariance_matrix=stabilized,
+    )
+    return distribution, float(jitter), int(retries)
+
+
 class OfficialFPACOHSurrogate:
     adaptation_kind = "posterior_conditioning"
     implementation_family = "safe_fpacoh"
@@ -111,7 +132,7 @@ class OfficialFPACOHSurrogate:
             )
         from meta_bo.domain import ContinuousDomain
         from meta_bo.models.f_pacoh_map import FPACOH_MAP_GP
-        from torch.distributions import MultivariateNormal, kl_divergence
+        from torch.distributions import kl_divergence
 
         dimension = int(tasks[0].X.shape[1])
         self.model = FPACOH_MAP_GP(
@@ -137,13 +158,25 @@ class OfficialFPACOHSurrogate:
         def stable_functional_kl(model, task_dict):
             with gpytorch.settings.debug(False):
                 x_kl = model._sample_measurement_set(task_dict["x_train"])
-                posterior = task_dict["model"](x_kl)
+                raw_posterior = task_dict["model"](x_kl)
+                posterior, posterior_jitter, posterior_retries = (
+                    _stable_torch_multivariate_normal(
+                        raw_posterior.mean,
+                        raw_posterior.covariance_matrix,
+                        initial_jitter=1e-6,
+                    )
+                )
                 prior_covariance = torch.reshape(
                     model.prior_covar_module(x_kl).evaluate(),
                     (x_kl.shape[0], x_kl.shape[0]),
                 )
-                covariance, jitter, retries = (
-                    _adaptive_positive_definite_jitter(
+                prior, prior_jitter, prior_retries = (
+                    _stable_torch_multivariate_normal(
+                        torch.zeros(
+                            x_kl.shape[0],
+                            dtype=prior_covariance.dtype,
+                            device=prior_covariance.device,
+                        ),
                         prior_covariance,
                         initial_jitter=model.prior_kernel_noise,
                     )
@@ -151,17 +184,16 @@ class OfficialFPACOHSurrogate:
                 model._scolhkg_fkl_max_jitter = max(
                     float(getattr(
                         model, "_scolhkg_fkl_max_jitter", 0.0)),
-                    float(jitter),
+                    float(prior_jitter),
+                    float(posterior_jitter),
                 )
                 model._scolhkg_fkl_retry_count = int(getattr(
-                    model, "_scolhkg_fkl_retry_count", 0)) + int(retries)
-                prior = MultivariateNormal(
-                    torch.zeros(
-                        x_kl.shape[0],
-                        dtype=covariance.dtype,
-                        device=covariance.device,
-                    ),
-                    covariance_matrix=covariance,
+                    model, "_scolhkg_fkl_retry_count", 0
+                )) + int(prior_retries) + int(posterior_retries)
+                model._scolhkg_fkl_posterior_max_jitter = max(
+                    float(getattr(
+                        model, "_scolhkg_fkl_posterior_max_jitter", 0.0)),
+                    float(posterior_jitter),
                 )
                 return kl_divergence(posterior, prior)
 
@@ -202,7 +234,7 @@ class OfficialFPACOHSurrogate:
             "compatibility_shims": [
                 "gpytorch_removed_mul_broadcast_shape",
                 "current_gpytorch_rbf_functional_prior",
-                "torch_valueerror_adaptive_functional_kl_jitter",
+                "torch_valueerror_adaptive_functional_kl_prior_posterior_jitter",
             ],
             "source_prior_frozen_online": True,
             "online_parameters_changed": ["target_gp_posterior"],
@@ -212,6 +244,8 @@ class OfficialFPACOHSurrogate:
                 self.model, "_scolhkg_fkl_max_jitter", 0.0)),
             "functional_kl_jitter_retries": int(getattr(
                 self.model, "_scolhkg_fkl_retry_count", 0)),
+            "functional_kl_posterior_max_jitter": float(getattr(
+                self.model, "_scolhkg_fkl_posterior_max_jitter", 0.0)),
         }
 
 

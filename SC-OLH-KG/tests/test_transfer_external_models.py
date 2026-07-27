@@ -5,6 +5,7 @@ torch = pytest.importorskip("torch")
 
 from baselines.transfer_external_models import (  # noqa: E402
     _adaptive_positive_definite_jitter,
+    _stable_torch_multivariate_normal,
 )
 
 
@@ -39,3 +40,21 @@ def test_adaptive_jitter_is_deterministic():
 
     assert torch.equal(first[0], second[0])
     assert first[1:] == second[1:]
+
+
+def test_stable_torch_mvn_repairs_posterior_covariance():
+    mean = torch.zeros(2, dtype=torch.double)
+    covariance = torch.tensor(
+        [[1.0, 1.0005], [1.0005, 1.0]],
+        dtype=torch.double,
+    )
+
+    distribution, jitter, retries = _stable_torch_multivariate_normal(
+        mean,
+        covariance,
+        initial_jitter=1e-6,
+    )
+
+    assert jitter >= 0.0005
+    assert retries > 0
+    assert torch.isfinite(distribution.log_prob(mean))
