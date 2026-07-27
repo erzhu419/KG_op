@@ -1,25 +1,12 @@
 {
   "schema_version": 1,
-  "status": "completed_support_gate_failure",
+  "status": "registered",
   "registered_on": "2026-07-27",
-  "execution": {
-    "run_id": "controlled_hetero_optimum_gate_d1000_n20_s5_20260727_01",
-    "submitted_at": "2026-07-27T19:20:10+0800",
-    "task_id_first": "t54852",
-    "task_id_last": "t55211",
-    "submitted_tasks": 360,
-    "code_commit": "d858d6f",
-    "completed_tasks": 360,
-    "failed_tasks": 0,
-    "compact_results": "SC-OLH-KG/results/controlled_hetero_optimum_gate_d1000_n20_s5_20260727_01"
+  "purpose": "Repeat the V1 controlled heteroscedastic gate after replacing random-raw state inversion with scenario-invariant, label-free coverage of the observable latent-control cube.",
+  "parent_run": {
+    "manifest": "controlled_hetero_optimum_gate_v1.json",
+    "diagnosis": "candidate_support_failure_before_hvd_or_certification"
   },
-  "outcome": {
-    "search_primary_true_feasible": 0,
-    "verified_deployment_true_feasible": 0,
-    "independent_terminal_certificates": 0,
-    "diagnosis": "Raw d=1000 Sobol and random-raw state inversion concentrate the observable three-block controls near 0.5; the evaluated support contained no true-feasible points. This is a candidate-support failure before HVD or certification and is retained as a negative-control run."
-  },
-  "purpose": "Separate optimization-primary quality, posterior-certificate validity, and independent terminal-certificate effects under controlled heteroscedastic geometry.",
   "problem_contract": {
     "raw_dimension": 1000,
     "observable_latent_dimension": 3,
@@ -36,6 +23,17 @@
     ],
     "hidden_periodic_is_registered_misspecification": true,
     "oracle_truth_timing": "post_run_only"
+  },
+  "candidate_support_contract": {
+    "coordinate": "observable_latent_control=(z0,z1,z2)",
+    "construction": "scenario_invariant_label_free_box_maximin",
+    "same_design_across_all_scenarios": true,
+    "objective_labels_used": false,
+    "constraint_labels_used": false,
+    "variance_labels_used": false,
+    "source_archive_used": false,
+    "target_oracle_used": false,
+    "raw_inversion": "block_constant_policy"
   },
   "optimization_contract": {
     "initial_design": "common_sobol",
@@ -86,18 +84,11 @@
     ],
     "checkpoints_synced_locally": false
   },
-  "headline_metrics": [
-    "best_evaluated_feasible_regret",
-    "search_primary_true_feasible",
-    "verified_deployment_true_feasible",
-    "posterior_certificate_coverage",
-    "posterior_false_certificates",
-    "independent_terminal_certificate_coverage",
-    "independent_terminal_false_certificates",
-    "paired_deployment_rescue_loss",
-    "log_variance_rmse",
-    "variance_upper_coverage",
-    "search_verification_total_calls"
+  "causal_questions": [
+    "Does label-free latent support make true-feasible candidates available?",
+    "Does independent certification preserve, rescue, or degrade the frozen search recommendation?",
+    "Does factor HVD improve variance calibration or optimum recovery relative to pooled variance?",
+    "Does registered hidden-periodic misspecification produce detectable calibration or certification failure?"
   ],
   "expansion_gate": {
     "next_seed_count": 20,

@@ -420,6 +420,126 @@ class ControlledHeteroscedasticProblem(CumulativeRiskFeatureProvider):
     def all_axis_solutions(self):
         return []
 
+    @staticmethod
+    def _latent_control_anchor_design(n):
+        """Return a deterministic, label-free design on the control cube.
+
+        The first eight rows are antipodally paired corners.  They avoid the
+        concentration of raw high-dimensional random policies around 0.5
+        without encoding which side of the cube is safe or has low objective.
+        Additional rows are selected by deterministic maximin coverage from a
+        fixed lattice.
+        """
+        n = max(0, int(n))
+        if n == 0:
+            return np.empty((0, 3), dtype=float)
+        low, high = 0.10, 0.90
+        corners = np.asarray([
+            [low, low, low],
+            [high, high, high],
+            [low, low, high],
+            [high, high, low],
+            [low, high, low],
+            [high, low, high],
+            [low, high, high],
+            [high, low, low],
+        ], dtype=float)
+        if n <= len(corners):
+            return corners[:n].copy()
+
+        levels = np.linspace(low, high, 5)
+        lattice = np.asarray([
+            [z0, z1, z2]
+            for z0 in levels
+            for z1 in levels
+            for z2 in levels
+        ], dtype=float)
+        chosen = [row.copy() for row in corners]
+        selected = {
+            tuple(np.round(row, 12))
+            for row in chosen
+        }
+        while len(chosen) < min(n, len(lattice)):
+            available = np.asarray([
+                row for row in lattice
+                if tuple(np.round(row, 12)) not in selected
+            ])
+            current = np.vstack(chosen)
+            distance = np.min(
+                np.linalg.norm(
+                    available[:, None, :] - current[None, :, :],
+                    axis=2,
+                ),
+                axis=1,
+            )
+            row = available[int(np.argmax(distance))]
+            chosen.append(row.copy())
+            selected.add(tuple(np.round(row, 12)))
+        return np.vstack(chosen[:n])
+
+    def state_anchor_contract(self):
+        return {
+            "coordinate": "observable_latent_control=(z0,z1,z2)",
+            "construction": "scenario_invariant_label_free_box_maximin",
+            "scenario_specific": False,
+            "objective_labels_used": False,
+            "constraint_labels_used": False,
+            "variance_labels_used": False,
+            "target_oracle_used": False,
+        }
+
+    def state_anchor_points(self, n=10, rng=None):
+        """Cover the observable latent control cube before raw inversion."""
+        del rng
+        anchors = []
+        contract = self.state_anchor_contract()
+        for latent in self._latent_control_anchor_design(n):
+            candidate = self._constant_policy(*latent)
+            anchors.append({
+                "latent_control": latent.tolist(),
+                "candidate": list(candidate),
+                "coordinate": contract["coordinate"],
+                "construction": contract["construction"],
+                "truth_labels_used": False,
+                "target_oracle_used": False,
+            })
+        return anchors
+
+    def inverse_state_anchor(self, anchor, rng=None, n=1):
+        """Invert a latent-control anchor as block-constant raw policies."""
+        rng = rng or np.random.default_rng()
+        n = max(1, int(n))
+        if isinstance(anchor, dict):
+            latent = anchor.get("latent_control")
+            candidate = anchor.get("candidate")
+        else:
+            latent = anchor
+            candidate = None
+        rows = []
+        if candidate is not None:
+            rows.append(tuple(int(value) for value in candidate))
+        if latent is None:
+            return rows[:n]
+        latent = np.clip(
+            np.asarray(latent, dtype=float).reshape(-1)[:3],
+            0.0,
+            1.0,
+        )
+        if len(latent) != 3:
+            raise ValueError("latent control anchor must have three coordinates")
+        if not rows:
+            rows.append(self._constant_policy(*latent))
+        while len(rows) < n:
+            perturbed = np.clip(
+                latent + rng.normal(0.0, 0.025, size=3),
+                0.0,
+                1.0,
+            )
+            candidate = self._constant_policy(*perturbed)
+            if candidate not in rows:
+                rows.append(candidate)
+        return rows[:n]
+
     def _constant_policy(self, z0, z1, z2):
         values = (z0, z1, z2)
         out = np.empty(self.d, dtype=int)

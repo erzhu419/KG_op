@@ -56,6 +56,49 @@ def test_registry_exposes_controlled_problem_names():
     assert problem.cumulative_risk_provider_status()["provider_exact"] is True
 
 
+def test_latent_control_anchors_are_scenario_invariant_and_space_filling():
+    rows = []
+    for scenario in CONTROLLED_HETERO_SCENARIOS:
+        problem = ControlledHeteroscedasticProblem(
+            d=1000, scenario=scenario)
+        anchors = problem.state_anchor_points(
+            n=8, rng=np.random.default_rng(123))
+        latent = np.asarray([
+            anchor["latent_control"] for anchor in anchors
+        ])
+        rows.append(latent)
+        assert latent.shape == (8, 3)
+        assert np.allclose(np.min(latent, axis=0), 0.10)
+        assert np.allclose(np.max(latent, axis=0), 0.90)
+        assert len({
+            tuple(int(value) for value in anchor["candidate"])
+            for anchor in anchors
+        }) == 8
+        contract = problem.state_anchor_contract()
+        assert contract["scenario_specific"] is False
+        assert contract["target_oracle_used"] is False
+    assert all(np.array_equal(rows[0], row) for row in rows[1:])
+
+
+def test_latent_control_anchor_generation_does_not_query_hidden_truth():
+    problem = ControlledHeteroscedasticProblem(
+        d=30, scenario="shared_factor")
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("hidden truth was queried")
+
+    problem.true_objectives = forbidden
+    problem.true_sigma = forbidden
+    problem.is_truly_feasible = forbidden
+    anchors = problem.state_anchor_points(n=8)
+    rows = [
+        problem.inverse_state_anchor(anchor, n=1)[0]
+        for anchor in anchors
+    ]
+    assert len(rows) == 8
+    assert all(len(row) == problem.d for row in rows)
+
+
 def test_compact_benchmark_separates_primary_and_terminal_certificate():
     args = SimpleNamespace(
         scenario="smooth_boundary",
@@ -86,6 +129,9 @@ def test_compact_benchmark_separates_primary_and_terminal_certificate():
     assert result["n_search_simulations"] == 4
     assert result["n_verification_simulations"] in (8, 16)
     assert result["information_contract"]["source_archive_used"] is False
+    anchor_contract = result["information_contract"]["state_anchor_contract"]
+    assert anchor_contract["scenario_specific"] is False
+    assert anchor_contract["target_oracle_used"] is False
     assert (
         result["posterior_certificate"]["posterior_certificate_vacuous"]
         in (True, False)

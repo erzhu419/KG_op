@@ -181,7 +181,7 @@ def run_cell(args):
     exact = args.backend == "joint_voi"
     config = SingleOLHKGConfig(
         implementation_contract_id=(
-            "controlled_hetero_v51_search_v64_terminal_v1"),
+            "controlled_hetero_v51_search_v64_terminal_v2"),
         theory_contract_id=(
             "controlled_hetero_paired_search_verification_v1"),
         N=args.N,
@@ -341,6 +341,8 @@ def run_cell(args):
             "initial_design": "common_sobol",
             "problem_specific_initial_hook_used": False,
             "problem_specific_refinement_used": False,
+            "state_candidate_provider_used": True,
+            "state_anchor_contract": base.state_anchor_contract(),
             "target_oracle_used_for_search": bool(
                 args.variance_mode == "oracle"),
             "oracle_variance_row_is_diagnostic_upper_bound": bool(
