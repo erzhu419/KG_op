@@ -15,6 +15,8 @@ from baselines.transfer_archive import (  # noqa: E402
     FrozenTransferArchive,
     TransferTaskArchive,
     _archive_fingerprint,
+    dimension_equivariant_profile_features,
+    resample_normalized_profiles,
 )
 from baselines.transfer_bo_adapters import (  # noqa: E402
     METHOD_CONTRACTS,
@@ -117,6 +119,58 @@ def test_archive_scalar_views_use_observations_not_oracle_sigma():
         risk[0].y,
         np.log(archive.tasks[0].constraint_sigma ** 2),
     )
+
+
+def test_dimension_equivariant_coordinate_matches_across_raw_dimensions():
+    source_positions = (np.arange(50, dtype=float) + 0.5) / 50.0
+    target_positions = (np.arange(1000, dtype=float) + 0.5) / 1000.0
+    source = 0.45 + 0.20 * np.cos(np.pi * source_positions)
+    target = 0.45 + 0.20 * np.cos(np.pi * target_positions)
+    source_features = dimension_equivariant_profile_features(source)
+    target_features = dimension_equivariant_profile_features(target)
+    assert source_features.shape == target_features.shape == (1, 65)
+    np.testing.assert_allclose(
+        source_features, target_features, atol=2e-4, rtol=2e-4)
+    assert np.all(np.isfinite(source_features))
+
+
+def test_cross_dimension_stacked_requires_declared_label_free_adapter():
+    archive = _archive(d=4)
+    problem = _problem(d=8)
+    with pytest.raises(ValueError, match="dimension"):
+        TransferConstrainedBO(
+            problem,
+            archive,
+            TransferBOConfig(
+                method="stacked_transfer_gp_cbo",
+                N=3,
+                n0=3,
+                seed=13,
+                candidate_pool_size=16,
+            ),
+        )
+    runner = TransferConstrainedBO(
+        problem,
+        archive,
+        TransferBOConfig(
+            method="stacked_transfer_gp_cbo",
+            N=3,
+            n0=3,
+            seed=13,
+            candidate_pool_size=16,
+            source_dimension_adapter="ordered_dct_quadratic",
+        ),
+    )
+    result = runner.run()
+    source_contract = result["source_information_contract"]
+    assert source_contract["source_policy_dimension"] == 4
+    assert source_contract["target_policy_dimension"] == 8
+    assert source_contract["model_input_dimension"] == 65
+    assert source_contract["dimension_adapter_uses_target_labels"] is False
+    assert source_contract["dimension_adapter_uses_target_oracle"] is False
+    assert all(len(row["x"]) == 8 for row in result["history"])
+    lifted = resample_normalized_profiles(archive.tasks[0].X[:1], 8)
+    assert lifted.shape == (1, 8)
 
 
 def test_promoted_and_transfer_paths_use_byte_identical_common_sobol_n0():

@@ -1,0 +1,483 @@
+#!/usr/bin/env python3
+"""Submit the frozen cross-dimension proposal backend-causality matrix."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+import shlex
+import subprocess
+import sys
+import time
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SYNC = ROOT / "scripts/sync_scolhkg_scheduler_deploy.sh"
+DEFAULT_SCHEDULER = Path.home() / "mine_code/scheduleurm/skill/scheduler.py"
+DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
+REMOTE_ROOT = Path(
+    "/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
+REMOTE_PYTHON = Path(
+    "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python")
+SAAS_PYTHON = Path(
+    "/home/erzhu419/.venvs/scheduleurm-torch-bench/bin/python")
+BOTORCH_OVERLAY = Path(
+    "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310")
+TRANSFER_TORCH_OVERLAY = Path(
+    "/home/zhengliang01/scheduleurm_work/python_pkgs/transfer_torch_py310")
+TRANSFERGPBO_OVERLAY = Path(
+    "/home/zhengliang01/scheduleurm_work/python_pkgs/transfergpbo_py310")
+EXTERNAL_REPOS = REMOTE_ROOT / "external_repos"
+CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
+GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
+DOMAINS = (
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl",
+)
+BACKENDS = ("proposal_only", "stacked_gp", "saasbo")
+
+
+def _parse_csv(value):
+    return tuple(
+        item.strip() for item in str(value).split(",") if item.strip())
+
+
+def _read_json(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def validate_contract(args):
+    """Audit frozen bytes and the 60 V64 rows before adding challengers."""
+
+    deploy_project = Path(args.deploy) / "SC-OLH-KG"
+    domains = _parse_csv(args.heldouts)
+    required_seeds = set(range(
+        int(args.seed_start),
+        int(args.seed_start) + int(args.n_seeds),
+    ))
+    audit = {
+        "domains": {},
+        "v64_reused_result_count": 0,
+        "all_initial_designs_byte_identical_by_seed": True,
+    }
+    for heldout in domains:
+        archive_path = (
+            deploy_project / "archives" / args.archive_run_id / heldout
+            / f"heldout_{heldout}.json"
+        )
+        design_path = (
+            deploy_project / "archives" / args.design_run_id / heldout
+            / "source_initial_designs.json"
+        )
+        if not archive_path.is_file() or not design_path.is_file():
+            raise FileNotFoundError(
+                f"missing frozen cross-dimension input for {heldout}")
+        archive = _read_json(archive_path)
+        design = _read_json(design_path)
+        archive_dimensions = {
+            len(task["X"][0]) for task in archive["tasks"]
+        }
+        if archive_dimensions != {int(args.source_d)}:
+            raise ValueError(f"{heldout} archive is not source-dimension data")
+        if archive["fingerprint"] != design["source_archive_fingerprint"]:
+            raise ValueError(f"{heldout} archive/design fingerprint mismatch")
+        if int(design["source_dimension"]) != int(args.source_d):
+            raise ValueError(f"{heldout} design source dimension mismatch")
+        if int(design["dimension"]) != int(args.d):
+            raise ValueError(f"{heldout} design target dimension mismatch")
+        if int(design["n0"]) != int(args.n0):
+            raise ValueError(f"{heldout} design n0 mismatch")
+        available = {int(seed) for seed in design["designs"]}
+        if not required_seeds.issubset(available):
+            raise ValueError(f"{heldout} frozen design is missing seeds")
+
+        v64_root = (
+            deploy_project / "profiles" / args.v64_run_id
+            / "v64_powered_safe_interior_verification"
+        )
+        v64_paths = list(v64_root.rglob(f"{heldout}/seed*/result.json"))
+        rows_by_seed = {}
+        for path in v64_paths:
+            payload = _read_json(path)
+            if len(payload.get("rows", ())) != 1:
+                continue
+            row = payload["rows"][0]
+            seed = int(row["seed"])
+            if seed in required_seeds:
+                rows_by_seed[seed] = row
+        if set(rows_by_seed) != required_seeds:
+            missing = sorted(required_seeds - set(rows_by_seed))
+            raise ValueError(
+                f"{heldout} V64 reuse set is incomplete: {missing}")
+        for seed, row in rows_by_seed.items():
+            expected = design["designs"][str(seed)]["fingerprint"]
+            consumed = row["task_initial_design"]["fingerprint"]
+            if consumed != expected:
+                raise ValueError(
+                    f"{heldout} seed {seed} V64 consumed another n0")
+            if int(row["n0"]) != int(args.n0):
+                raise ValueError(f"{heldout} seed {seed} V64 n0 changed")
+            if int(row["n_search_simulations"]) != int(args.N):
+                raise ValueError(
+                    f"{heldout} seed {seed} V64 search budget changed")
+            if row["initial_design_archive_contract"]["matches"] is not True:
+                raise ValueError(
+                    f"{heldout} seed {seed} V64 archive contract failed")
+        audit["domains"][heldout] = {
+            "archive_fingerprint": archive["fingerprint"],
+            "source_dimension": int(args.source_d),
+            "target_dimension": int(args.d),
+            "n0": int(args.n0),
+            "seed_count": int(len(required_seeds)),
+            "v64_rows_reused": int(len(rows_by_seed)),
+        }
+        audit["v64_reused_result_count"] += len(rows_by_seed)
+    return audit
+
+
+def _base_spec(args, *, backend, heldout, seed, command, cpu, ram_mb,
+               vram, allowed_nodes):
+    deploy_project = Path(args.deploy) / "SC-OLH-KG"
+    remote_project = REMOTE_ROOT / "SC-OLH-KG"
+    remote_result = (
+        remote_project / "profiles" / args.run_id / backend / heldout
+        / f"seed{seed:04d}"
+    )
+    local_result = (
+        deploy_project / "profiles" / args.run_id / backend / heldout
+        / f"seed{seed:04d}"
+    )
+    return {
+        "description": (
+            f"crossdim frozen proposal backend {backend} {heldout} "
+            f"seed={seed}"
+        ),
+        "cmd": f"{shlex.join(command)} && echo DONE",
+        "cwd": str(deploy_project),
+        "signature": (
+            f"KG_op/crossdim_backend_matrix/{args.run_id}/{backend}/"
+            f"{heldout}/seed{seed:04d}"
+        ),
+        "project": "KG-SYNTH",
+        "vram": int(vram),
+        "cpu": int(cpu),
+        "ram_mb": int(ram_mb),
+        "allowed_nodes": list(allowed_nodes),
+        "result_dir": str(remote_result),
+        "local_result_dir": str(local_result),
+        "stage_excludes": ["checkpoints", "profiles", "results"],
+        "allow_duplicate": True,
+    }
+
+
+def build_specs(args):
+    deploy_project = Path(args.deploy) / "SC-OLH-KG"
+    remote_project = REMOTE_ROOT / "SC-OLH-KG"
+    manifest = remote_project / "performance/manifests/v18b_exactkg_mcdiag.json"
+    domains = _parse_csv(args.heldouts)
+    backends = _parse_csv(args.backends)
+    unknown = sorted(set(backends) - set(BACKENDS))
+    if unknown:
+        raise ValueError(f"unknown backend rows: {unknown}")
+    specs = []
+    for heldout in domains:
+        local_archive = (
+            deploy_project / "archives" / args.archive_run_id / heldout
+            / f"heldout_{heldout}.json"
+        )
+        remote_archive = (
+            remote_project / "archives" / args.archive_run_id / heldout
+            / f"heldout_{heldout}.json"
+        )
+        local_design = (
+            deploy_project / "archives" / args.design_run_id / heldout
+            / "source_initial_designs.json"
+        )
+        remote_design = (
+            remote_project / "archives" / args.design_run_id / heldout
+            / "source_initial_designs.json"
+        )
+        for seed in range(
+            int(args.seed_start),
+            int(args.seed_start) + int(args.n_seeds),
+        ):
+            if "proposal_only" in backends:
+                remote_result = (
+                    remote_project / "profiles" / args.run_id
+                    / "proposal_only" / heldout / f"seed{seed:04d}"
+                    / "result.json"
+                )
+                command = [
+                    "env", "LC_ALL=C", "LANG=C", "SCOLHKG_OFFLINE=1",
+                    "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
+                    "OMP_NUM_THREADS=1", "MKL_NUM_THREADS=1",
+                    "OPENBLAS_NUM_THREADS=1",
+                    str(REMOTE_PYTHON),
+                    "performance/benchmark_frozen_proposal_only.py",
+                    "--heldout", heldout,
+                    "--seed", str(seed),
+                    "--initial-design-file", str(remote_design),
+                    "--out", str(remote_result),
+                    "--source-d", str(args.source_d),
+                    "--d", str(args.d),
+                    "--n0", str(args.n0),
+                    "--offline-source-calls", str(args.offline_source_calls),
+                    "--terminal-verification-primary-budget", "80",
+                    "--terminal-verification-support-budget", "96",
+                    "--terminal-verification-delta", "0.05",
+                    "--terminal-verification-method",
+                    "normal_quantile_tolerance",
+                ]
+                spec = _base_spec(
+                    args,
+                    backend="proposal_only",
+                    heldout=heldout,
+                    seed=seed,
+                    command=command,
+                    cpu=1,
+                    ram_mb=4096,
+                    vram=0,
+                    allowed_nodes=CPU_NODES,
+                )
+                spec["wait_for_files"] = [str(local_design)]
+                specs.append(spec)
+
+            if "stacked_gp" in backends:
+                remote_result = (
+                    remote_project / "profiles" / args.run_id
+                    / "stacked_gp" / heldout / f"seed{seed:04d}"
+                    / "result.json"
+                )
+                checkpoint = (
+                    remote_project / "checkpoints" / args.run_id
+                    / "stacked_gp" / heldout / f"seed{seed:04d}"
+                )
+                command = [
+                    "env", "LC_ALL=C", "LANG=C", "SCOLHKG_OFFLINE=1",
+                    "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
+                    f"OMP_NUM_THREADS={int(args.cpu)}",
+                    f"MKL_NUM_THREADS={int(args.cpu)}",
+                    f"OPENBLAS_NUM_THREADS={int(args.cpu)}",
+                    f"PYTHONPATH={TRANSFER_TORCH_OVERLAY}:"
+                    f"{TRANSFERGPBO_OVERLAY}",
+                    f"SCOLHKG_EXTERNAL_REPO_ROOT={EXTERNAL_REPOS}",
+                    f"SCOLHKG_TRANSFERGPBO_OVERLAY={TRANSFERGPBO_OVERLAY}",
+                    str(REMOTE_PYTHON),
+                    "performance/benchmark_transfer_fairness.py",
+                    "--method", "stacked_transfer_gp_cbo",
+                    "--implementation", "official",
+                    "--heldout", heldout,
+                    "--archive", str(remote_archive),
+                    "--initial-design", "source_informed",
+                    "--initial-design-file", str(remote_design),
+                    "--out", str(remote_result),
+                    "--checkpoint-dir", str(checkpoint),
+                    "--seed", str(seed),
+                    "--d", str(args.d),
+                    "--N", str(args.N),
+                    "--n0", str(args.n0),
+                    "--source-dimension-adapter",
+                    "ordered_dct_quadratic",
+                    "--source-coordinate-max-frequency", "8",
+                    "--source-coordinate-frequency-penalty", "0.10",
+                    "--terminal-verification",
+                    "--terminal-verification-primary-budget", "80",
+                    "--terminal-verification-support-budget", "96",
+                    "--terminal-verification-delta", "0.05",
+                    "--terminal-verification-method",
+                    "normal_quantile_tolerance",
+                ]
+                spec = _base_spec(
+                    args,
+                    backend="stacked_gp",
+                    heldout=heldout,
+                    seed=seed,
+                    command=command,
+                    cpu=args.cpu,
+                    ram_mb=args.ram_mb,
+                    vram=0,
+                    allowed_nodes=CPU_NODES,
+                )
+                spec["wait_for_files"] = [
+                    str(local_archive), str(local_design)]
+                specs.append(spec)
+
+            if "saasbo" in backends:
+                remote_result = (
+                    remote_project / "profiles" / args.run_id
+                    / "saasbo" / heldout / f"seed{seed:04d}"
+                    / "result.json"
+                )
+                checkpoint = (
+                    remote_project / "checkpoints" / args.run_id
+                    / "saasbo" / heldout / f"seed{seed:04d}"
+                )
+                command = [
+                    "env", "LC_ALL=C", "LANG=C", "SCOLHKG_OFFLINE=1",
+                    "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
+                    f"OMP_NUM_THREADS={int(args.gpu_cpu)}",
+                    f"MKL_NUM_THREADS={int(args.gpu_cpu)}",
+                    f"OPENBLAS_NUM_THREADS={int(args.gpu_cpu)}",
+                    "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
+                    f"PYTHONPATH={BOTORCH_OVERLAY}",
+                    str(SAAS_PYTHON),
+                    "performance/benchmark_sota_fairness.py",
+                    "--protocol", "shared_archive_n13",
+                    "--method", "botorch_saasbo",
+                    "--heldout", heldout,
+                    "--seed", str(seed),
+                    "--manifest", str(manifest),
+                    "--out", str(remote_result),
+                    "--checkpoint-dir", str(checkpoint),
+                    "--initial-design-file", str(remote_design),
+                    "--target-budget", str(args.N),
+                    "--d", str(args.d),
+                    "--n0", str(args.n0),
+                    "--candidate-timeout-sec", "3600",
+                    "--torch-device", "cuda",
+                    "--saas-refit-schedule", "every_iteration",
+                    "--terminal-verification",
+                    "--terminal-verification-primary-budget", "80",
+                    "--terminal-verification-support-budget", "96",
+                    "--terminal-verification-delta", "0.05",
+                    "--terminal-verification-method",
+                    "normal_quantile_tolerance",
+                ]
+                spec = _base_spec(
+                    args,
+                    backend="saasbo",
+                    heldout=heldout,
+                    seed=seed,
+                    command=command,
+                    cpu=args.gpu_cpu,
+                    ram_mb=args.gpu_ram_mb,
+                    vram=args.gpu_vram_mb,
+                    allowed_nodes=GPU_NODES,
+                )
+                spec["wait_for_files"] = [str(local_design)]
+                spec["vram_resource_family"] = (
+                    f"KG-SYNTH/crossdim-backend/saasbo/{heldout}")
+                specs.append(spec)
+    return specs
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
+    parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
+    parser.add_argument("--run-id", default=(
+        "paper_certified_crossdim_backend_matrix_d50_d1000_n13_"
+        f"s80_99_{time.strftime('%Y%m%d_%H%M%S')}"))
+    parser.add_argument(
+        "--archive-run-id",
+        default="transfer_source_informed_official_n20_s20_20260716",
+    )
+    parser.add_argument(
+        "--design-run-id",
+        default="paper_certified_scolh_v64_cross_d50_d1000_s80_99_v1",
+    )
+    parser.add_argument(
+        "--v64-run-id",
+        default=(
+            "paper_certified_scolh_v64_cross_d50_d1000_n13_s80_99_v1"),
+    )
+    parser.add_argument("--heldouts", default=",".join(DOMAINS))
+    parser.add_argument("--backends", default=",".join(BACKENDS))
+    parser.add_argument("--seed-start", type=int, default=80)
+    parser.add_argument("--n-seeds", type=int, default=20)
+    parser.add_argument("--source-d", type=int, default=50)
+    parser.add_argument("--d", type=int, default=1000)
+    parser.add_argument("--N", type=int, default=13)
+    parser.add_argument("--n0", type=int, default=10)
+    parser.add_argument("--offline-source-calls", type=int, default=384)
+    parser.add_argument("--cpu", type=int, default=12)
+    parser.add_argument("--ram-mb", type=int, default=16384)
+    parser.add_argument("--gpu-cpu", type=int, default=12)
+    parser.add_argument("--gpu-ram-mb", type=int, default=24576)
+    parser.add_argument("--gpu-vram-mb", type=int, default=2048)
+    parser.add_argument(
+        "--sync-remote",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument("--dispatch", action="store_true")
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+    audit = validate_contract(args)
+    specs = build_specs(args)
+    expected = (
+        len(_parse_csv(args.heldouts))
+        * int(args.n_seeds)
+        * len(_parse_csv(args.backends))
+    )
+    if len(specs) != expected:
+        raise RuntimeError(
+            f"built {len(specs)} tasks, expected {expected}")
+    signatures = [spec["signature"] for spec in specs]
+    if len(signatures) != len(set(signatures)):
+        raise RuntimeError("crossdim backend signatures are not unique")
+    if args.dry_run:
+        print(json.dumps({
+            "audit": audit,
+            "task_count": len(specs),
+            "specs": specs,
+        }, indent=2))
+        return
+    if args.sync_remote:
+        subprocess.run([str(SYNC)], cwd=ROOT, check=True)
+    output = subprocess.check_output(
+        [
+            sys.executable,
+            str(args.scheduler),
+            "submit-jsonl",
+            "--stdin",
+            "--trusted",
+            "--json",
+            "--intent-label",
+            f"crossdim-backend-matrix-{args.run_id}",
+        ],
+        input=json.dumps(specs),
+        text=True,
+    )
+    response = json.loads(output)
+    submitted = response.get("submitted", [])
+    task_ids = [row["id"] for row in submitted if row.get("id")]
+    registration = {
+        "schema_version": 1,
+        "run_id": args.run_id,
+        "submitted_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "audit": audit,
+        "new_task_count": int(len(specs)),
+        "reused_v64_result_count": int(
+            audit["v64_reused_result_count"]),
+        "matrix_cell_count": int(
+            len(specs) + audit["v64_reused_result_count"]),
+        "task_ids": task_ids,
+        "checkpoint_results_synced_locally": False,
+    }
+    registration_path = (
+        Path(args.deploy) / "SC-OLH-KG" / "profiles" / args.run_id
+        / "submission_manifest.json"
+    )
+    registration_path.parent.mkdir(parents=True, exist_ok=True)
+    registration_path.write_text(
+        json.dumps(registration, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    if args.dispatch and task_ids:
+        subprocess.run(
+            [
+                sys.executable,
+                str(args.scheduler),
+                "dispatch",
+                *sum((["--task-id", task_id] for task_id in task_ids), []),
+            ],
+            check=True,
+        )
+    print(json.dumps(registration, indent=2))
+
+
+if __name__ == "__main__":
+    main()

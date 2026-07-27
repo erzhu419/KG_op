@@ -12,7 +12,11 @@ import time
 import numpy as np
 from scipy.stats import norm, qmc
 
-from baselines.transfer_archive import FrozenTransferArchive
+from baselines.transfer_archive import (
+    FrozenTransferArchive,
+    dimension_equivariant_profile_features,
+    resample_normalized_profiles,
+)
 from core.designs import (
     common_sobol_integer_design,
     integer_design_fingerprint,
@@ -99,6 +103,9 @@ class TransferBOConfig:
     checkpoint_resume: bool = True
     progress_logging: bool = False
     progress_label: str = ""
+    source_dimension_adapter: str = "none"
+    source_coordinate_max_frequency: int = 8
+    source_coordinate_frequency_penalty: float = 0.10
 
     def __post_init__(self):
         self.method = str(self.method).lower()
@@ -125,6 +132,20 @@ class TransferBOConfig:
             raise ValueError("source_informed design must contain exactly n0 points")
         elif len(set(self.initial_points)) != self.n0:
             raise ValueError("source_informed design points must be unique")
+        if self.source_dimension_adapter not in {
+            "none",
+            "ordered_dct_quadratic",
+        }:
+            raise ValueError(
+                "source_dimension_adapter must be none or "
+                "ordered_dct_quadratic"
+            )
+        if self.source_coordinate_max_frequency < 0:
+            raise ValueError(
+                "source_coordinate_max_frequency cannot be negative")
+        if self.source_coordinate_frequency_penalty < 0.0:
+            raise ValueError(
+                "source_coordinate_frequency_penalty cannot be negative")
 
 
 def scalar_tasks_from_archive(archive, output):
@@ -228,8 +249,17 @@ class TransferConstrainedBO:
         self._progress_phase_started_at = self._progress_started_at
         self._progress_phase_start_done = 0
         self.problem = problem
-        self.archive = archive.validate(expected_dimension=problem.d)
         self.config = config
+        expected_dimension = (
+            problem.d
+            if config.source_dimension_adapter == "none"
+            else None
+        )
+        self.archive = archive.validate(
+            expected_dimension=expected_dimension)
+        self.source_dimension = int(self.archive.tasks[0].X.shape[1])
+        self.model_input_dimension = int(self._model_profiles(
+            self.archive.tasks[0].X[:1]).shape[1])
         self.rng = np.random.default_rng(config.seed)
         self.objective_model = make_transfer_model(
             config.method, role="objective", config=config, seed=config.seed)
@@ -284,7 +314,17 @@ class TransferConstrainedBO:
                 total=len(roles),
                 role=role,
             )
-            model.meta_fit(scalar_tasks_from_archive(self.archive, role))
+            tasks = scalar_tasks_from_archive(self.archive, role)
+            tasks = [
+                ScalarTaskData(
+                    name=task.name,
+                    X=self._model_profiles(task.X),
+                    y=task.y,
+                    noise=task.noise,
+                )
+                for task in tasks
+            ]
+            model.meta_fit(tasks)
             self._emit_progress(
                 "source_model_done",
                 phase="source_training",
@@ -323,6 +363,9 @@ class TransferConstrainedBO:
             append_point(point, "common_sobol_pool")
 
         source = np.vstack([task.X for task in self.archive.tasks])
+        if source.shape[1] != int(self.problem.d):
+            source = resample_normalized_profiles(
+                source, int(self.problem.d))
         for profile in source:
             append_point(
                 self.problem.continuous_to_int(profile),
@@ -361,16 +404,32 @@ class TransferConstrainedBO:
         ], dtype=float)
         return X, objective, constraint, log_variance
 
+    def _model_profiles(self, profiles):
+        values = np.asarray(profiles, dtype=float)
+        if values.ndim == 1:
+            values = values.reshape(1, -1)
+        if self.config.source_dimension_adapter == "none":
+            return values
+        return dimension_equivariant_profile_features(
+            values,
+            max_frequency=self.config.source_coordinate_max_frequency,
+            frequency_penalty=(
+                self.config.source_coordinate_frequency_penalty),
+        )
+
     def _adapt_models(self):
         X, objective, constraint, log_variance = self._arrays()
         nominal = max(float(self.problem.sigma_level) ** 2, 1e-8)
         observation_noise = np.full(len(objective), nominal, dtype=float)
         risk_noise = np.full(len(objective), 2.0, dtype=float)
-        self.objective_model.adapt(X, objective, observation_noise)
-        self.constraint_model.adapt(X, constraint, observation_noise)
-        self.risk_model.adapt(X, log_variance, risk_noise)
+        model_X = self._model_profiles(X)
+        self.objective_model.adapt(model_X, objective, observation_noise)
+        self.constraint_model.adapt(
+            model_X, constraint, observation_noise)
+        self.risk_model.adapt(model_X, log_variance, risk_noise)
 
     def _posterior(self, profiles):
+        profiles = self._model_profiles(profiles)
         objective_mean, objective_variance = self.objective_model.predict(
             profiles)
         constraint_mean, constraint_variance = self.constraint_model.predict(
@@ -492,8 +551,9 @@ class TransferConstrainedBO:
 
     def _observe(self, point, selection):
         profile = np.asarray(self.problem.normalize(point), dtype=float)
+        model_profile = self._model_profiles(profile.reshape(1, -1))
         constraint_mean_before, constraint_variance_before = (
-            self.constraint_model.predict(profile.reshape(1, -1)))
+            self.constraint_model.predict(model_profile))
         observation = np.asarray(
             self.problem.simulate(point, self.rng), dtype=float)
         centered = float(observation[1] - self.problem.tau)
@@ -525,6 +585,8 @@ class TransferConstrainedBO:
             "schema_version": 1,
             "method": self.config.method,
             "archive_fingerprint": self.archive.fingerprint,
+            "source_dimension_adapter": str(
+                self.config.source_dimension_adapter),
             "N": int(self.config.N),
             "n0": int(self.config.n0),
             "history": self.history,
@@ -545,6 +607,10 @@ class TransferConstrainedBO:
             raise ValueError("checkpoint source archive fingerprint changed")
         if state.get("method") != self.config.method:
             raise ValueError("checkpoint transfer method changed")
+        if state.get("source_dimension_adapter", "none") != (
+            self.config.source_dimension_adapter
+        ):
+            raise ValueError("checkpoint source dimension adapter changed")
         self.history = list(state.get("history", []))
         if len(self.history) > self.config.N:
             raise ValueError("checkpoint exceeds requested target budget")
@@ -771,13 +837,23 @@ class TransferConstrainedBO:
             "constraint_mean": self.constraint_model.diagnostics(),
             "log_variance": self.risk_model.diagnostics(),
         }
+        source_contract = self.archive.information_contract()
+        source_contract.update({
+            "source_policy_dimension": int(self.source_dimension),
+            "target_policy_dimension": int(self.problem.d),
+            "source_dimension_adapter": str(
+                self.config.source_dimension_adapter),
+            "model_input_dimension": int(self.model_input_dimension),
+            "dimension_adapter_uses_target_labels": False,
+            "dimension_adapter_uses_target_oracle": False,
+        })
         return {
             "method": self.config.method,
             "implementation": self.config.implementation,
             "implementation_fidelity": diagnostics["objective"].get(
                 "implementation_fidelity", "paper_core_reimplementation"),
             "source_archive_fingerprint": self.archive.fingerprint,
-            "source_information_contract": self.archive.information_contract(),
+            "source_information_contract": source_contract,
             "target_information_contract": {
                 "dimension": int(self.problem.d),
                 "n0": int(self.config.n0),
@@ -789,6 +865,9 @@ class TransferConstrainedBO:
                 "initial_points": [list(map(int, point)) for point in initial],
                 "source_informed_initial_design": bool(
                     self.config.initial_design == "source_informed"),
+                "source_dimension_adapter": str(
+                    self.config.source_dimension_adapter),
+                "model_input_dimension": int(self.model_input_dimension),
                 "target_oracle_used_for_selection": False,
                 "target_true_sigma_used_for_selection": False,
                 "post_run_truth_used_for_metrics_only": True,

@@ -194,6 +194,9 @@ def run_one(args):
         "terminal_verification_method": "normal_quantile_tolerance",
         "terminal_safe_interior_probability_slack": 0.05,
         "terminal_safe_interior_require_provider": True,
+        "source_dimension_adapter": "none",
+        "source_coordinate_max_frequency": 8,
+        "source_coordinate_frequency_penalty": 0.10,
     }
     for name, value in terminal_defaults.items():
         if not hasattr(args, name):
@@ -213,7 +216,11 @@ def run_one(args):
     ]
     archive.validate(
         expected_domains=map(str.strip, source_domains),
-        expected_dimension=args.d,
+        expected_dimension=(
+            args.d
+            if args.source_dimension_adapter == "none"
+            else None
+        ),
     )
     if args.require_source_domains > 0 and len(archive.tasks) != int(
         args.require_source_domains
@@ -257,6 +264,11 @@ def run_one(args):
             f"transfer:{args.implementation}:{args.heldout}:"
             f"{args.method}:seed={int(args.seed)}"
         ),
+        source_dimension_adapter=args.source_dimension_adapter,
+        source_coordinate_max_frequency=(
+            args.source_coordinate_max_frequency),
+        source_coordinate_frequency_penalty=(
+            args.source_coordinate_frequency_penalty),
     )
     started = time.time()
     payload = {
@@ -274,6 +286,15 @@ def run_one(args):
             "source_profiles_per_domain": archive.profiles_per_domain,
             "source_simulator_calls": int(archive.simulator_calls),
             "target_dimension": int(args.d),
+            "source_dimension": int(archive.tasks[0].X.shape[1]),
+            "source_dimension_adapter": str(
+                args.source_dimension_adapter),
+            "source_coordinate_max_frequency": int(
+                args.source_coordinate_max_frequency),
+            "source_coordinate_frequency_penalty": float(
+                args.source_coordinate_frequency_penalty),
+            "dimension_adapter_uses_target_labels": False,
+            "dimension_adapter_uses_target_oracle": False,
             "target_initial_calls_n0": int(args.n0),
             "target_total_calls_N": int(args.N),
             "total_source_plus_target_calls": int(
@@ -393,6 +414,15 @@ def main():
     parser.add_argument("--beta-risk", type=float, default=2.0)
     parser.add_argument("--source-train-steps", type=int, default=0)
     parser.add_argument("--target-finetune-steps", type=int, default=100)
+    parser.add_argument(
+        "--source-dimension-adapter",
+        choices=("none", "ordered_dct_quadratic"),
+        default="none",
+    )
+    parser.add_argument(
+        "--source-coordinate-max-frequency", type=int, default=8)
+    parser.add_argument(
+        "--source-coordinate-frequency-penalty", type=float, default=0.10)
     parser.add_argument(
         "--terminal-verification",
         action=argparse.BooleanOptionalAction,

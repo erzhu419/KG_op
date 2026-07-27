@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "status": "ready_to_submit",
+  "comparison_question": "With one byte-identical frozen cross-dimension n0 proposal, what is the incremental value of each online/posterior backend?",
+  "domains": [
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl"
+  ],
+  "source_contract": {
+    "dimension": 50,
+    "source_domains_per_heldout": 2,
+    "profiles_per_source_domain": 64,
+    "replicates_per_profile": 3,
+    "simulator_calls": 384,
+    "oracle_aided": false
+  },
+  "target_contract": {
+    "dimension": 1000,
+    "seed_start": 80,
+    "n_seeds": 20,
+    "n0": 10,
+    "online_search_calls_after_n0": 3,
+    "terminal_verification_candidate_budgets": [
+      80,
+      96
+    ],
+    "terminal_verification_familywise_delta": 0.05,
+    "terminal_verification_updates_optimizer": false
+  },
+  "frozen_proposal_contract": {
+    "run_id": "paper_certified_scolh_v64_cross_d50_d1000_s80_99_v1",
+    "proposal_mode": "risk_objective_atlas",
+    "structural_prior_profile": "low_frequency_only",
+    "dimension_holdout": true,
+    "byte_identical_within_heldout_and_seed": true,
+    "target_labels_used_to_generate_proposal": false,
+    "target_oracle_used_to_generate_proposal": false
+  },
+  "rows": {
+    "proposal_only": {
+      "target_search_calls": 10,
+      "source_archive_consumed_by_backend": false,
+      "online_backend": "none",
+      "terminal_selector": "nominal_one_shot_empirical"
+    },
+    "v64": {
+      "target_search_calls": 13,
+      "source_archive_consumed_by_backend": true,
+      "source_dimension_adapter": "native_SC_dimension_equivariant_coordinate",
+      "results_reused_from": "paper_certified_scolh_v64_cross_d50_d1000_n13_s80_99_v1"
+    },
+    "stacked_gp": {
+      "target_search_calls": 13,
+      "source_archive_consumed_by_backend": true,
+      "source_dimension_adapter": "ordered_dct_quadratic_65d",
+      "target_labels_used_by_dimension_adapter": false,
+      "official_backend": "boschresearch/transfergpbo SHGP"
+    },
+    "saasbo": {
+      "target_search_calls": 13,
+      "source_archive_consumed_by_backend": false,
+      "frozen_proposal_used_as_warm_start": true,
+      "official_backend": "BoTorch SaasFullyBayesianSingleTaskGP"
+    }
+  },
+  "accounting": {
+    "reused_v64_results": 60,
+    "new_proposal_only_tasks": 60,
+    "new_stacked_gp_tasks": 60,
+    "new_saasbo_tasks": 60,
+    "new_tasks_total": 180,
+    "matrix_cells_total": 240,
+    "raw_checkpoints_sync_locally": false
+  },
+  "interpretation_guard": "The four rows share proposal bytes, target seeds, target dimension, and terminal verification. They do not all consume the full source archive in the backend; that difference is part of the backend contract and must remain explicit."
+}

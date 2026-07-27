@@ -11,6 +11,88 @@ import numpy as np
 from scipy.stats import norm
 
 
+def dimension_equivariant_profile_features(
+    profiles,
+    *,
+    max_frequency=8,
+    frequency_penalty=0.10,
+):
+    """Map policies of any raw dimension to one fixed ordered coordinate.
+
+    The map is the frozen low-frequency coordinate used by the cross-dimension
+    proposal: mean, standard deviation, cosine coefficients, and their upper
+    triangular quadratic products.  It is deterministic and label-free.
+    """
+
+    values = np.asarray(profiles, dtype=float)
+    if values.ndim == 1:
+        values = values.reshape(1, -1)
+    if values.ndim != 2 or values.shape[1] < 1:
+        raise ValueError("profiles must be a nonempty finite matrix")
+    if not np.all(np.isfinite(values)):
+        raise ValueError("profiles contain non-finite values")
+    max_frequency = max(0, int(max_frequency))
+    frequency_penalty = max(0.0, float(frequency_penalty))
+    positions = (
+        np.arange(values.shape[1], dtype=float) + 0.5
+    ) / float(values.shape[1])
+    centered = values - np.mean(values, axis=1, keepdims=True)
+    columns = [
+        np.mean(values, axis=1),
+        np.std(values, axis=1),
+    ]
+    for frequency in range(1, max_frequency + 1):
+        columns.append(2.0 * np.mean(
+            centered
+            * np.cos(np.pi * frequency * positions)[None, :],
+            axis=1,
+        ))
+    linear = np.column_stack(columns)
+    if max_frequency:
+        weights = np.concatenate([
+            np.ones(2, dtype=float),
+            1.0 / (
+                1.0
+                + frequency_penalty
+                * np.arange(max_frequency, dtype=float)
+            ),
+        ])
+        linear = linear * weights[None, :]
+    upper = np.triu_indices(linear.shape[1])
+    quadratic = (
+        linear[:, upper[0]] * linear[:, upper[1]]
+    )
+    coordinate = np.concatenate([linear, quadratic], axis=1)
+    scale = np.maximum(
+        np.linalg.norm(coordinate, axis=1, keepdims=True),
+        1.0,
+    )
+    return coordinate / scale
+
+
+def resample_normalized_profiles(profiles, target_dimension):
+    """Interpolate normalized policy curves onto a target policy grid."""
+
+    values = np.asarray(profiles, dtype=float)
+    if values.ndim == 1:
+        values = values.reshape(1, -1)
+    if values.ndim != 2 or values.shape[1] < 1:
+        raise ValueError("profiles must be a nonempty finite matrix")
+    if not np.all(np.isfinite(values)):
+        raise ValueError("profiles contain non-finite values")
+    target_dimension = max(1, int(target_dimension))
+    if values.shape[1] == target_dimension:
+        return values.copy()
+    if values.shape[1] == 1:
+        return np.repeat(values, target_dimension, axis=1)
+    source_grid = np.linspace(0.0, 1.0, values.shape[1])
+    target_grid = np.linspace(0.0, 1.0, target_dimension)
+    return np.vstack([
+        np.interp(target_grid, source_grid, row)
+        for row in values
+    ])
+
+
 @dataclass(frozen=True)
 class TransferTaskArchive:
     """Ordinary replicated observations from one source domain."""
