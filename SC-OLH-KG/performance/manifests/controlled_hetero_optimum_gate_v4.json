@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "status": "registered",
+  "registered_on": "2026-07-27",
+  "purpose": "Test near-optimal recovery after the certificate causal question was resolved. Keep the V3 observed-history verification contract and expand only the label-free latent-control maximin design from 8 to 24 points.",
+  "parent_run": {
+    "manifest": "controlled_hetero_optimum_gate_v3.json",
+    "certificate_gate_passed": true,
+    "near_optimal_hits_at_regret_0_01": 0
+  },
+  "causal_change": {
+    "changed": "state_candidate_count",
+    "from": 8,
+    "to": 24,
+    "latent_design": "scenario_invariant_label_free_box_maximin",
+    "source_archive_used": false,
+    "target_labels_used": false,
+    "target_oracle_used": false,
+    "terminal_protocol_changed": false
+  },
+  "matrix": {
+    "raw_dimension": 1000,
+    "search_budget": 20,
+    "initial_budget": 10,
+    "target_seeds": 5,
+    "scenarios": [
+      "homoscedastic",
+      "smooth_boundary",
+      "optimum_hotspot",
+      "safe_interior_hotspot",
+      "regime_step",
+      "sparse_axis",
+      "shared_factor",
+      "hidden_periodic"
+    ],
+    "backends": [
+      "risk_ts",
+      "joint_voi"
+    ],
+    "risk_ts_variance_modes": [
+      "pooled",
+      "orthogonal",
+      "factor",
+      "oracle"
+    ],
+    "joint_voi_variance_modes": [
+      "factor"
+    ],
+    "planned_tasks": 200
+  },
+  "verification_contract": {
+    "candidate_scope": "frozen_observed_history",
+    "primary_calls": 80,
+    "support_calls": 96,
+    "familywise_delta": 0.05,
+    "verification_updates_optimizer": false
+  },
+  "gate": [
+    "zero independent terminal false certificates",
+    "zero certificate-induced feasibility losses",
+    "strictly positive regret-0.01 hit count in every provider-exact scenario",
+    "report pooled versus factor HVD on identical seeds",
+    "report hidden-periodic as registered provider misspecification",
+    "do not expand to 20 seeds if the near-optimal gate fails"
+  ]
+}

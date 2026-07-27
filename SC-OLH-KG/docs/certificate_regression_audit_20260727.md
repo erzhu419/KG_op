@@ -125,3 +125,17 @@ current posterior mean/HVD uncertainty model is therefore not calibrated
 enough to support a safety claim. V3 keeps the search fixed and expands only
 the pre-verification candidate universe from the initial atlas to all observed
 policies.
+
+V3 matched all 200 non-Sobol V2 rows exactly: primary recommendation, best
+evaluated feasible regret, and candidate-source counts had zero mismatches.
+The only change was the frozen terminal candidate universe. Certified
+deployment rose from `11/200` to `130/200`; 119 unsafe primaries were rescued,
+with zero feasibility losses and zero false independent certificates. Sixteen
+runs had evaluated a truly feasible policy but still did not certify one.
+
+This resolves the causal question. Non-vacuous independent certification did
+not reduce optimization quality. It converted discovered safe support into a
+deployable decision. It did not, and should not be expected to, manufacture a
+near-optimal policy: the eight-anchor V2/V3 design contains only coarse control
+corners, and no run reached regret `0.01`. The next gate expands only the same
+label-free latent design, leaving the certificate protocol fixed.
