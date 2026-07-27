@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "status": "registered",
+  "status": "completed_terminal_ranking_gate_failure",
   "registered_on": "2026-07-27",
+  "execution": {
+    "run_id": "controlled_hetero_optimum_gate_v2_d1000_n20_s5_20260727_01",
+    "submitted_at": "2026-07-27T19:33:40+0800",
+    "task_id_first": "t55217",
+    "task_id_last": "t55576",
+    "submitted_tasks": 360,
+    "completed_tasks": 360,
+    "failed_tasks": 0,
+    "code_commit": "99ca82a",
+    "compact_results": "SC-OLH-KG/results/controlled_hetero_optimum_gate_v2_d1000_n20_s5_20260727_01"
+  },
+  "outcome": {
+    "evaluated_true_feasible_runs": 146,
+    "search_primary_true_feasible_runs": 11,
+    "verified_deployment_true_feasible_runs": 11,
+    "independent_terminal_certificates": 11,
+    "independent_terminal_false_certificates": 0,
+    "certificate_induced_recommendation_changes": 0,
+    "certificate_induced_feasibility_losses": 0,
+    "posterior_nonvacuous_runs": 169,
+    "posterior_certified_points": 395,
+    "posterior_certified_true_feasible_points": 132,
+    "posterior_false_certified_points": 263,
+    "expansion_gate_passed": false,
+    "diagnosis": "Label-free latent support repaired candidate availability, but terminal Bayes ranking ignored most evaluated feasible policies. The two-policy verification fallback was restricted to the infeasible raw-Sobol n0 atlas. Independent verification caused no regression; the online posterior certificate is not calibrated at this sample size."
+  },
   "purpose": "Repeat the V1 controlled heteroscedastic gate after replacing random-raw state inversion with scenario-invariant, label-free coverage of the observable latent-control cube.",
   "parent_run": {
     "manifest": "controlled_hetero_optimum_gate_v1.json",

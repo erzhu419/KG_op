@@ -335,6 +335,62 @@ class TerminalVerificationTests(unittest.TestCase):
         self.assertFalse(support["target_oracle_used"])
         self.assertFalse(support["verification_samples_used"])
 
+    def test_safe_interior_can_use_all_frozen_observed_points(self):
+        algorithm = self._algorithm(seed=53, budget=8)
+        algorithm.config.terminal_verification_policy = (
+            "ordered_frozen_shortlist")
+        algorithm.config.terminal_verification_shortlist_size = 2
+        algorithm.config.terminal_verification_shortlist_mode = (
+            "posterior_primary_safe_interior")
+        algorithm.config.terminal_safe_interior_candidate_scope = "observed"
+        primary = (2, 2, 2, 2, 2)
+        initial = (1, 1, 1, 1, 1)
+        later_safe = (10, 10, 10, 10, 10)
+        algorithm.history = [
+            (initial, np.zeros(2)),
+            (later_safe, np.zeros(2)),
+        ]
+        algorithm.config.n0 = 1
+        algorithm._last_terminal_bayes_ranked_points = [
+            primary, initial, later_safe]
+
+        def fake_components(*args, **kwargs):
+            del args, kwargs
+            return {
+                "probability_violation": np.asarray([0.30, 0.01]),
+            }
+
+        def fake_verification(
+            point,
+            *,
+            verification_delta=None,
+            candidate_index=0,
+            verification_budget=None,
+        ):
+            del verification_delta
+            certified = tuple(point) == later_safe
+            return {
+                "enabled": True,
+                "status": "certified" if certified else "not_certified",
+                "method": "gaussian_noncentral_t_tolerance",
+                "verification_budget": int(verification_budget),
+                "sample_count": int(verification_budget),
+                "certified": certified,
+                "candidate_index": candidate_index,
+                "target_oracle_used": False,
+            }
+
+        algorithm._terminal_bayes_risk_components = fake_components
+        algorithm._terminal_fixed_policy_verification = fake_verification
+        deployed, result = algorithm._terminal_verification_protocol(primary)
+
+        self.assertEqual(deployed, later_safe)
+        support = result["frozen_shortlist"][1]
+        self.assertEqual(
+            support["candidate_universe"], "frozen_observed_history")
+        self.assertFalse(support["target_labels_used"])
+        self.assertFalse(support["verification_samples_used"])
+
 
 if __name__ == "__main__":
     unittest.main()

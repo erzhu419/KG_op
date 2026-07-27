@@ -96,3 +96,32 @@ boundary noise, optimum-local noise, safe-interior noise, regime jumps, sparse
 drivers, shared factors, and a deliberately misspecified high-frequency
 interaction. This is a causal HVD/certification diagnostic, not a replacement
 for the transfer/SOTA matrix.
+
+## Controlled Gate Results
+
+The first `d=1000, N=20` gate evaluated no true-feasible policy in any of 360
+runs. Raw high-dimensional Sobol policies and random-raw state inversion both
+concentrated the three block-mean controls near `0.5`. Even oracle-variance
+rows failed, proving that this was candidate support failure before HVD or
+certification.
+
+V2 replaced only that inversion with a scenario-invariant, label-free design
+on the observable latent-control cube. The eight scenarios received exactly
+the same anchors; no objective, constraint, variance, source archive, or oracle
+label entered their construction. This made true-feasible evaluated policies
+available in `146/360` runs. Nevertheless, the frozen search primary was truly
+feasible in only `11/360` runs.
+
+Independent terminal verification certified those same 11 policies with zero
+false certificates, zero recommendation changes, and zero feasibility losses.
+It therefore did not cause the optimization regression. The bottleneck is the
+terminal ranking and shortlist: the support candidate was restricted to the
+first `n0` raw-Sobol points, excluding safe latent anchors observed later.
+
+The online posterior certificate must not be conflated with this independent
+certificate. In V2 it declared 395 evaluated points feasible, of which only
+132 were truly feasible and 263 were false certificates. At `N=20`, the
+current posterior mean/HVD uncertainty model is therefore not calibrated
+enough to support a safety claim. V3 keeps the search fixed and expands only
+the pre-verification candidate universe from the initial atlas to all observed
+policies.

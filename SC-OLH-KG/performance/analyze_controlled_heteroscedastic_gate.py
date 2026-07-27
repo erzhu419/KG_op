@@ -146,6 +146,8 @@ def analyze(root):
     paired = [row["paired_deployment_effect"] for row in rows]
     terminal = [
         row["independent_terminal_certificate"] for row in rows]
+    evaluated = [row["best_evaluated_truth"] for row in rows]
+    posterior = [row["posterior_certificate"] for row in rows]
     return {
         "schema_version": 1,
         "experiment": "controlled_heteroscedastic_optimum_gate",
@@ -153,6 +155,44 @@ def analyze(root):
         "planned": planned,
         "completed": int(len(rows)),
         "complete": bool(planned > 0 and len(rows) == planned),
+        "optimization_support": {
+            "evaluated_true_feasible_runs": int(sum(
+                bool(row.get("found_true_feasible", False))
+                for row in evaluated
+            )),
+            "primary_true_feasible_runs": int(sum(
+                bool(row.get("primary_true_feasible", False))
+                for row in paired
+            )),
+            "deployment_true_feasible_runs": int(sum(
+                bool(row.get("deployment_true_feasible", False))
+                for row in paired
+            )),
+            "found_but_not_primary_runs": int(sum(
+                bool(found.get("found_true_feasible", False))
+                and not bool(effect.get("primary_true_feasible", False))
+                for found, effect in zip(evaluated, paired)
+            )),
+        },
+        "posterior_certificate_audit": {
+            "nonvacuous_runs": int(sum(
+                not bool(row.get(
+                    "posterior_certificate_vacuous", True))
+                for row in posterior
+            )),
+            "certified_points": int(sum(
+                int(row.get("posterior_certified_count", 0))
+                for row in posterior
+            )),
+            "certified_true_feasible_points": int(sum(
+                int(row.get("certified_true_feasible_count", 0))
+                for row in posterior
+            )),
+            "false_certified_points": int(sum(
+                int(row.get("false_certificate_count", 0))
+                for row in posterior
+            )),
+        },
         "paired_certificate_effect": {
             "recommendation_changes": int(sum(
                 bool(row["recommendation_changed"]) for row in paired)),

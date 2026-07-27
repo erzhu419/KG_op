@@ -119,6 +119,8 @@ def build_specs(args):
                     str(args.verification_support_budget),
                     "--verification-delta",
                     str(args.verification_delta),
+                    "--terminal-safe-interior-scope",
+                    str(args.terminal_safe_interior_scope),
                     "--out", str(output),
                 ]
                 specs.append({
@@ -171,6 +173,11 @@ def main():
     parser.add_argument("--verification-primary-budget", type=int, default=80)
     parser.add_argument("--verification-support-budget", type=int, default=96)
     parser.add_argument("--verification-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--terminal-safe-interior-scope",
+        choices=("initial", "observed"),
+        default="initial",
+    )
     parser.add_argument("--light-cpu", type=int, default=1)
     parser.add_argument("--light-ram-mb", type=int, default=4096)
     parser.add_argument("--exact-cpu", type=int, default=12)
@@ -222,6 +229,8 @@ def main():
             "terminal_verification_support_budget": int(
                 args.verification_support_budget),
             "verification_updates_optimizer": False,
+            "terminal_safe_interior_candidate_scope": str(
+                args.terminal_safe_interior_scope),
             "oracle_rows_are_diagnostic_only": True,
         },
         "allowed_nodes": list(CPU_NODES),

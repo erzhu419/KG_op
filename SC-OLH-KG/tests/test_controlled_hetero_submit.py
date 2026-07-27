@@ -39,6 +39,7 @@ def test_submission_matrix_shards_every_seed_and_limits_exact_row():
         verification_primary_budget=80,
         verification_support_budget=96,
         verification_delta=0.05,
+        terminal_safe_interior_scope="observed",
         light_cpu=1,
         light_ram_mb=4096,
         exact_cpu=12,
@@ -54,6 +55,10 @@ def test_submission_matrix_shards_every_seed_and_limits_exact_row():
     assert all(spec["cpu"] == 12 for spec in exact)
     light = [spec for spec in specs if spec not in exact]
     assert all(spec["cpu"] == 1 for spec in light)
+    assert all(
+        "--terminal-safe-interior-scope observed" in spec["cmd"]
+        for spec in specs
+    )
 
 
 def test_analyzer_keeps_posterior_and_terminal_certificates_separate(tmp_path):

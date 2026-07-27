@@ -252,6 +252,8 @@ def run_cell(args):
         ),
         terminal_safe_interior_probability_slack=0.05,
         terminal_safe_interior_require_provider=bool(args.verify),
+        terminal_safe_interior_candidate_scope=(
+            args.terminal_safe_interior_scope),
         checkpoint_interval=0,
         checkpoint_dir="",
         truth_pool_diagnostics=True,
@@ -322,6 +324,29 @@ def run_cell(args):
             ),
             "recommendation_changed": bool(
                 terminal.get("recommendation_changed", False)),
+            "shortlist_mode": terminal.get("shortlist_mode"),
+            "safe_interior_candidate_scope": (
+                args.terminal_safe_interior_scope),
+            "shortlist_diagnostics": [
+                {
+                    key: value
+                    for key, value in row.items()
+                    if key != "point"
+                }
+                for row in terminal.get("frozen_shortlist", [])
+            ],
+            "attempt_diagnostics": [
+                {
+                    key: value
+                    for key, value in row.items()
+                    if key not in {
+                        "point",
+                        "samples",
+                        "raw_samples",
+                    }
+                }
+                for row in terminal.get("attempts", [])
+            ],
         },
         "variance_audit": _variance_audit(
             algorithm, problem),
@@ -343,6 +368,8 @@ def run_cell(args):
             "problem_specific_refinement_used": False,
             "state_candidate_provider_used": True,
             "state_anchor_contract": base.state_anchor_contract(),
+            "terminal_safe_interior_candidate_scope": (
+                args.terminal_safe_interior_scope),
             "target_oracle_used_for_search": bool(
                 args.variance_mode == "oracle"),
             "oracle_variance_row_is_diagnostic_upper_bound": bool(
@@ -392,6 +419,11 @@ def main():
     parser.add_argument(
         "--verification-support-budget", type=int, default=96)
     parser.add_argument("--verification-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--terminal-safe-interior-scope",
+        choices=("initial", "observed"),
+        default="initial",
+    )
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     if args.n0 > args.N:

@@ -123,6 +123,7 @@ def test_compact_benchmark_separates_primary_and_terminal_certificate():
         verification_primary_budget=8,
         verification_support_budget=8,
         verification_delta=0.05,
+        terminal_safe_interior_scope="observed",
     )
     result = run_cell(args)
     assert result["status"] == "ok"
@@ -132,6 +133,11 @@ def test_compact_benchmark_separates_primary_and_terminal_certificate():
     anchor_contract = result["information_contract"]["state_anchor_contract"]
     assert anchor_contract["scenario_specific"] is False
     assert anchor_contract["target_oracle_used"] is False
+    assert (
+        result["information_contract"][
+            "terminal_safe_interior_candidate_scope"
+        ] == "observed"
+    )
     assert (
         result["posterior_certificate"]["posterior_certificate_vacuous"]
         in (True, False)

@@ -288,11 +288,12 @@ def cumulative_risk_coordinate(problem, point, *, require_provider=True):
 def select_posterior_safe_interior(
     problem,
     primary,
-    initial_points,
+    candidate_points,
     violation_probability,
     *,
     probability_slack=0.05,
     require_provider=True,
+    candidate_universe="frozen_initial_atlas",
 ):
     """Select a posterior-safe, cumulative-risk-diverse frozen support."""
 
@@ -302,7 +303,7 @@ def select_posterior_safe_interior(
             "terminal safe-interior probability slack must lie in [0, 1]")
     unique = []
     seen = set()
-    for point in initial_points:
+    for point in candidate_points:
         point = tuple(int(value) for value in point)
         if point not in seen:
             seen.add(point)
@@ -312,7 +313,7 @@ def select_posterior_safe_interior(
     if not alternatives:
         raise RuntimeError(
             "terminal safe-interior selection requires a distinct "
-            "initial-atlas candidate")
+            "frozen candidate")
     probability = np.asarray(
         violation_probability, dtype=float).reshape(-1)
     if len(probability) != len(unique) or not np.all(np.isfinite(probability)):
@@ -376,7 +377,7 @@ def select_posterior_safe_interior(
         "point": unique[selected_index],
         "selection_contract": (
             "posterior_violation_sublevel_maximin_cumulative_risk"),
-        "candidate_universe": "frozen_initial_atlas",
+        "candidate_universe": str(candidate_universe),
         "candidate_universe_size": len(unique),
         "eligible_count": len(eligible),
         "probability_slack": slack,

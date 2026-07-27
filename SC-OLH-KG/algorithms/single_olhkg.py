@@ -469,6 +469,7 @@ class SingleOLHKGConfig:
     terminal_verification_shortlist_mode: str = "posterior_ranked"
     terminal_safe_interior_probability_slack: float = 0.05
     terminal_safe_interior_require_provider: bool = False
+    terminal_safe_interior_candidate_scope: str = "initial"
     observed_incumbent_use_replicate_variance: bool = False
     safe_interior_candidate_count: int = 0
     safe_interior_pool_size: int = 300
@@ -1380,26 +1381,40 @@ class SingleOLHKGAlgorithm:
         HVD model. No verification sample or target truth enters this choice.
         """
 
-        initial = unique_candidates([
-            point for point, _ in self.history[: int(self.config.n0)]
+        candidate_scope = str(
+            self.config.terminal_safe_interior_candidate_scope or "initial"
+        ).strip().lower().replace("-", "_")
+        if candidate_scope == "initial":
+            candidate_history = self.history[: int(self.config.n0)]
+            candidate_universe = "frozen_initial_atlas"
+        elif candidate_scope == "observed":
+            candidate_history = self.history
+            candidate_universe = "frozen_observed_history"
+        else:
+            raise ValueError(
+                "terminal_safe_interior_candidate_scope must be "
+                "'initial' or 'observed'")
+        candidates = unique_candidates([
+            point for point, _ in candidate_history
         ])
         primary = tuple(int(value) for value in primary)
         components = self._terminal_bayes_risk_components(
             self.gpr,
             self.variance_model,
-            initial,
+            candidates,
             task_ensemble=self.task_ensemble,
             risk_penalty=self.config.decision_risk_penalty,
         )
         return select_posterior_safe_interior(
             self.problem,
             primary,
-            initial,
+            candidates,
             components["probability_violation"],
             probability_slack=float(
                 self.config.terminal_safe_interior_probability_slack),
             require_provider=bool(
                 self.config.terminal_safe_interior_require_provider),
+            candidate_universe=candidate_universe,
         )
 
     def _fit_initial_belief(self, samples):
