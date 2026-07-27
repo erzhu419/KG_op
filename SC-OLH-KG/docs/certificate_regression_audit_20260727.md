@@ -139,3 +139,16 @@ deployable decision. It did not, and should not be expected to, manufacture a
 near-optimal policy: the eight-anchor V2/V3 design contains only coarse control
 corners, and no run reached regret `0.01`. The next gate expands only the same
 label-free latent design, leaving the certificate protocol fixed.
+
+The 24-anchor V4 gate increased evaluated-feasible support to `154/200` and
+reduced median best-evaluated regret from `0.2945` to `0.2437`, but produced no
+regret-`0.01` hit. Independent verification still produced zero false
+certificates and zero losses, rescuing 117 unsafe primaries. The gate therefore
+failed for optimization resolution, not certification.
+
+This also shows why the next synthetic experiment must separate two questions.
+At `d=1000`, raw-space concentration and latent candidate resolution dominate
+the outcome. A `d=3` gate, where raw and observable latent coordinates
+coincide, is needed to test heteroscedastic model identification and optimum
+recovery without that representation confound. Dimension scaling should then
+be a separate experiment with the HVD/backend fixed.

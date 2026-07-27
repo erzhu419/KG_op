@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "registered",
+  "registered_on": "2026-07-27",
+  "purpose": "Identify HVD and optimum-recovery behavior without high-dimensional representation confounding. Set raw dimension equal to the three-dimensional observable control coordinate and increase the search budget to 40.",
+  "parent_runs": [
+    "controlled_hetero_optimum_gate_v3.json",
+    "controlled_hetero_optimum_gate_v4.json"
+  ],
+  "causal_contract": {
+    "raw_dimension": 3,
+    "observable_latent_dimension": 3,
+    "raw_and_latent_coordinates_coincide": true,
+    "source_archive_used": false,
+    "source_proposal_used": false,
+    "target_oracle_used": false,
+    "initial_design": "common_sobol",
+    "search_budget": 40,
+    "initial_budget": 10,
+    "state_candidate_count": 24,
+    "terminal_candidate_scope": "frozen_observed_history"
+  },
+  "matrix": {
+    "target_seeds": 5,
+    "scenarios": [
+      "homoscedastic",
+      "smooth_boundary",
+      "optimum_hotspot",
+      "safe_interior_hotspot",
+      "regime_step",
+      "sparse_axis",
+      "shared_factor",
+      "hidden_periodic"
+    ],
+    "backends": [
+      "risk_ts",
+      "joint_voi"
+    ],
+    "risk_ts_variance_modes": [
+      "pooled",
+      "orthogonal",
+      "factor",
+      "oracle"
+    ],
+    "joint_voi_variance_modes": [
+      "factor"
+    ],
+    "planned_tasks": 200
+  },
+  "verification_contract": {
+    "primary_calls": 80,
+    "support_calls": 96,
+    "familywise_delta": 0.05,
+    "verification_updates_optimizer": false
+  },
+  "gate": [
+    "zero independent terminal false certificates",
+    "zero certificate-induced feasibility losses",
+    "at least one regret-0.01 hit in every provider-exact scenario",
+    "factor HVD improves shared-factor variance calibration relative to pooled variance",
+    "report optimum recovery, certificate coverage, false posterior certificates, and variance calibration separately",
+    "hidden-periodic remains a registered misspecification stress test"
+  ]
+}

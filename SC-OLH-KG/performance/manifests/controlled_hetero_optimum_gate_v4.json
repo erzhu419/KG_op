@@ -1,7 +1,31 @@
 {
   "schema_version": 1,
-  "status": "registered",
+  "status": "completed_near_optimum_gate_failed",
   "registered_on": "2026-07-27",
+  "execution": {
+    "run_id": "controlled_hetero_optimum_gate_v4_latent24_d1000_n20_s5_20260727_01",
+    "submitted_at": "2026-07-27T19:54:39+0800",
+    "task_id_first": "t55780",
+    "task_id_last": "t55979",
+    "submitted_tasks": 200,
+    "completed_tasks": 200,
+    "failed_tasks": 0,
+    "code_commit": "b6462ad",
+    "compact_results": "SC-OLH-KG/results/controlled_hetero_optimum_gate_v4_latent24_d1000_n20_s5_20260727_01"
+  },
+  "outcome": {
+    "evaluated_true_feasible_runs": 154,
+    "search_primary_true_feasible_runs": 1,
+    "verified_deployment_true_feasible_runs": 118,
+    "certificate_feasibility_rescues": 117,
+    "certificate_feasibility_losses": 0,
+    "independent_terminal_false_certificates": 0,
+    "near_optimal_hits_at_regret_0_01": 0,
+    "median_best_evaluated_feasible_regret": 0.24370400000000025,
+    "v3_median_best_evaluated_feasible_regret": 0.29452800000000035,
+    "expansion_gate_passed": false,
+    "diagnosis": "Broader latent support improved the best evaluated regret but did not resolve optimum recovery. It also enlarged the set of attractive unsafe candidates, exposing weak terminal Bayes ranking. This d=1000 gate confounds representation support with HVD optimization and must not be expanded to 20 seeds."
+  },
   "purpose": "Test near-optimal recovery after the certificate causal question was resolved. Keep the V3 observed-history verification contract and expand only the label-free latent-control maximin design from 8 to 24 points.",
   "parent_run": {
     "manifest": "controlled_hetero_optimum_gate_v3.json",
@@ -62,5 +86,6 @@
     "report pooled versus factor HVD on identical seeds",
     "report hidden-periodic as registered provider misspecification",
     "do not expand to 20 seeds if the near-optimal gate fails"
-  ]
+  ],
+  "gate_passed": false
 }
