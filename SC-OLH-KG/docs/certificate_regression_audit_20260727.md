@@ -152,3 +152,24 @@ the outcome. A `d=3` gate, where raw and observable latent coordinates
 coincide, is needed to test heteroscedastic model identification and optimum
 recovery without that representation confound. Dimension scaling should then
 be a separate experiment with the HVD/backend fixed.
+
+The `d=3, N=40` V5 gate removed that representation confound. It found a
+truly feasible evaluated policy in `198/200` runs, but no run reached regret
+`0.01`, and the soft-penalty Bayes-risk primary was unsafe in all 200 runs.
+Observed-history terminal verification rescued 123 deployments with zero
+losses and zero false independent certificates.
+
+Factor-HVD did show the intended local signal in the shared-factor scenario.
+For risk-aware TS, median log-variance RMSE improved from `0.686` (pooled) to
+`0.580` (factor), and upper-variance coverage improved from `0.297` to `0.904`.
+That is not yet a general HVD win: factor was worse than pooled in some smooth
+variance scenarios, and the online posterior certificate still produced 88
+false declarations among 315 certified points.
+
+The remaining optimum failure is therefore attributable to the decision
+layer. The current risk-TS backend minimizes a fixed soft penalty
+`sampled_objective + rho * positive_margin`, so a sufficiently low objective
+can dominate a positive sampled violation. The terminal primary uses the same
+kind of Bayes-risk ranking. The next backend comparison should use
+feasible-first constrained posterior sampling and an objective-ranked frozen
+safe shortlist, keeping the cumulative HVD and independent verifier fixed.
