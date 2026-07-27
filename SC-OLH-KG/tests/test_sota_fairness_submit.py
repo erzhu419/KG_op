@@ -136,8 +136,7 @@ def test_shared_archive_uses_exact_frozen_design_when_run_id_is_set():
     assert spec["wait_for_files"] == [expected]
     assert (
         "--initial-design-file "
-        "/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy/"
-        "SC-OLH-KG/archives/paper_archive/InventorySupplyChain/"
+        "archives/paper_archive/InventorySupplyChain/"
         "source_initial_designs.json"
     ) in spec["cmd"]
 

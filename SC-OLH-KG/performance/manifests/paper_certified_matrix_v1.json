@@ -1,10 +1,12 @@
 {
   "schema_version": 1,
-  "status": "launched",
+  "status": "recovery_in_progress",
   "launched_on": "2026-07-26",
   "base_code_commit": "1f254a5",
   "compatibility_patch_commits": {
-    "official_safe_fpacoh_adaptive_functional_kl_jitter": "8a32bcb"
+    "official_safe_fpacoh_adaptive_functional_kl_jitter": "8a32bcb",
+    "official_safe_fpacoh_prior_and_posterior_covariance_stabilization": "5d0e83f",
+    "long_budget_saas_periodic_hyperposterior": "cc5d38b"
   },
   "branch": "codex/sc-olh-kg-performance-validation",
   "domains": [
@@ -119,6 +121,30 @@
     "all_signatures_unique_at_launch": true,
     "scheduler_retry_tasks_excluded": true
   },
+  "recovery_policy": {
+    "audited_on": "2026-07-27",
+    "original_signatures_done_before_recovery": 1380,
+    "original_signatures_without_success": 252,
+    "direct_equivalent_reruns": {
+      "logical_signatures": 193,
+      "source_informed_safe_fpacoh": 34,
+      "common_sobol_safe_fpacoh": 33,
+      "shared_archive_n13_botorch": 103,
+      "target_cost_matched_n397_non_saas": 23,
+      "algorithm_contract_changed": false
+    },
+    "long_budget_saas_substitution": {
+      "canonical_unresolved_signatures": 59,
+      "replacement_run_id": "paper_certified_saas_periodic_capped_exclusive_v5_d1000_n397_s80_99",
+      "replacement_signatures_scheduled": 60,
+      "variant_label": "SAASBO periodic capped hyperposterior",
+      "refit_schedule": "doubling",
+      "refit_max_history": 80,
+      "canonical_equivalence_claimed": false,
+      "results_must_be_reported_as_separate_variant": true,
+      "reason": "Canonical per-iteration NUTS refits scale to tens or hundreds of hours at N=397; the separately labelled replacement completes a full seed in approximately 1.2-1.8 hours."
+    }
+  },
   "comparison_strata": {
     "equal_search_same_archive": [
       "paper_certified_scolh_v64_same_d1000_n13_s80_99_v1",
@@ -149,7 +175,7 @@
     "botorch_gpu_nodes": [
       "jtl110gpu",
       "jtl110gpu2",
-      "jtl311linux"
+      "node007"
     ],
     "botorch_versions": {
       "torch": "2.5.1+cu121",

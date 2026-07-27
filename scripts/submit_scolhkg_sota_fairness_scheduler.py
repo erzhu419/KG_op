@@ -22,8 +22,6 @@ DEFAULT_PYTHON = (
 BOTORCH_OVERLAY = (
     "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310"
 )
-REMOTE_ROOT = Path(
-    "/home/zhengliang01/scheduleurm_work/KG_op_scheduler_deploy")
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
 GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
 CUDA_METHODS = (
@@ -82,7 +80,6 @@ def build_specs(args):
             f"methods without an audited CUDA adapter: {unknown_gpu_methods}")
     heldouts = parse_csv(args.heldouts)
     deploy_project = Path(args.deploy) / "SC-OLH-KG"
-    remote_project = REMOTE_ROOT / "SC-OLH-KG"
     profile_root = deploy_project / "profiles" / args.run_id
     checkpoint_root = deploy_project / "checkpoints" / args.run_id
     specs = []
@@ -116,8 +113,8 @@ def build_specs(args):
                         and args.source_run_id
                         else None
                     )
-                    remote_initial_design = (
-                        remote_project / "archives" / args.source_run_id
+                    staged_initial_design = (
+                        Path("archives") / args.source_run_id
                         / heldout / "source_initial_designs.json"
                         if local_initial_design is not None
                         else None
@@ -165,10 +162,10 @@ def build_specs(args):
                             "--saas-refit-max-history",
                             str(args.saas_refit_max_history),
                         ])
-                    if remote_initial_design is not None:
+                    if staged_initial_design is not None:
                         command.extend([
                             "--initial-design-file",
-                            str(remote_initial_design),
+                            str(staged_initial_design),
                         ])
                     if args.terminal_verification:
                         command.extend([
