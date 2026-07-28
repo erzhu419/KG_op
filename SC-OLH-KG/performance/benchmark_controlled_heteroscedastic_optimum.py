@@ -613,7 +613,10 @@ def run_cell(args):
             "method": terminal.get("method"),
             "verification_budget": int(
                 terminal.get("verification_budget", 0)),
-            "selected_rank": terminal.get("selected_rank"),
+            "selected_rank": terminal.get(
+                "selected_shortlist_rank",
+                terminal.get("selected_rank"),
+            ),
             "false_certificate": bool(
                 raw.get("terminal_verification_certified", False)
                 and not bool(final.get("true_feasible", False))
