@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "five_seed_gate_complete_deterministic_saas_followup",
+  "status": "paper_grade_20_seed_expansion_ready",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -113,6 +113,34 @@
       "saas_terminal_code_executes_after_search": true,
       "saas_cuda_same_seed_exact_replay": "6/10 comparable prior rows",
       "saas_replay_finding": "CUDA NUTS remained distributionally seeded but not bitwise deterministic; deterministic CUDA is required before the 20-seed expansion."
+    },
+    "deterministic_saas_followup": {
+      "implementation_commit": "b8367b3",
+      "task_ids": [
+        "t58108",
+        "t58110"
+      ],
+      "run_ids": [
+        "paper_v9_saas_determinism_replay_a_d50_d1000_n13_s80_v1",
+        "paper_v9_saas_determinism_replay_b_d50_d1000_n13_s80_v1"
+      ],
+      "nodes": [
+        "node007:GPU0",
+        "node007:GPU1"
+      ],
+      "exact_matches": {
+        "initial_points": true,
+        "search_history": true,
+        "search_recommendation": true,
+        "frozen_terminal_shortlist": true,
+        "terminal_verification": true,
+        "deployed_policy": true,
+        "feasible_regret": true
+      },
+      "wall_time_seconds": [
+        1514.0736062526703,
+        1509.454097032547
+      ]
     }
   },
   "submission": {
