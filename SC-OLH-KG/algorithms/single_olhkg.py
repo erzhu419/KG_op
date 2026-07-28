@@ -1338,6 +1338,9 @@ class SingleOLHKGAlgorithm:
                 "posterior_rank": posterior_rank.get(point),
                 "point": list(map(int, point)),
                 "point_fingerprint": integer_design_fingerprint([point]),
+                "target_oracle_used": False,
+                "verification_samples_used": False,
+                "shortlist_frozen_before_verification": True,
             }
             if (
                 safe_interior is not None

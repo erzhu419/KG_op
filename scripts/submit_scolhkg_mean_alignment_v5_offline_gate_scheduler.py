@@ -213,6 +213,11 @@ def _flags(profile, args):
         str(profile.get("hvd_singleton_evidence", "in_sample_residual")),
         "--decision-backend",
         str(profile.get("decision_backend", "sobol_new")),
+        "--decision-terminal-rule",
+        str(profile.get("decision_terminal_rule", "bayes_risk")),
+        "--decision-terminal-maximum-violation-probability",
+        str(profile.get(
+            "decision_terminal_maximum_violation_probability", 0.05)),
         "--decision-risk-penalty",
         str(profile.get("decision_risk_penalty", 5.0)),
         "--decision-aleatoric-mode",

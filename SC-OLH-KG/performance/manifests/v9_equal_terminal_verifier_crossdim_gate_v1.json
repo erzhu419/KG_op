@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "paper_grade_20_seed_expansion_submitted",
+  "status": "paper_grade_20_seed_expansion_completed_backend_challenge_ready",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -199,6 +199,96 @@
       "node007"
     ],
     "checkpoint_sync": false
+  },
+  "expansion_result": {
+    "completed_cells": 240,
+    "parse_errors": 0,
+    "paired_domain_seed_cells": "60/60",
+    "protocol_checks": {
+      "initial_design_fingerprint_equal_across_all_methods": "60/60",
+      "source_archive_fingerprint_equal_across_all_methods": "60/60",
+      "three_distinct_frozen_candidates": "240/240",
+      "candidate_budgets_80_128_128": "240/240",
+      "familywise_delta_0_05": "240/240",
+      "top_level_target_oracle_used": "0/240",
+      "search_plus_verification_equals_total": "240/240",
+      "verification_sample_counts_match_budgets": "240/240",
+      "deterministic_cuda_saas_contract": "60/60"
+    },
+    "methods": {
+      "proposal_only": {
+        "true_feasible": "60/60",
+        "independently_certified": "60/60",
+        "terminal_abstentions": 0,
+        "false_certificates": 0,
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_feasible_regret": 0.00756115,
+        "n0_to_final_improve_tie_loss": "0/60/0",
+        "search_calls": 10,
+        "mean_verification_calls": 97.06666666666666,
+        "median_verification_calls": 80,
+        "mean_total_target_calls": 107.06666666666666,
+        "mean_source_plus_target_calls": 491.06666666666666
+      },
+      "stacked_gp": {
+        "true_feasible": "60/60",
+        "independently_certified": "60/60",
+        "terminal_abstentions": 0,
+        "false_certificates": 0,
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_feasible_regret": 0.00754884,
+        "n0_to_final_improve_tie_loss": "1/59/0",
+        "search_calls": 13,
+        "mean_verification_calls": 84.26666666666667,
+        "median_verification_calls": 80,
+        "mean_total_target_calls": 97.26666666666667,
+        "mean_source_plus_target_calls": 481.26666666666665
+      },
+      "scolh_v65": {
+        "true_feasible": "60/60",
+        "independently_certified": "60/60",
+        "terminal_abstentions": 0,
+        "false_certificates": 0,
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_feasible_regret": 0.00753289,
+        "n0_to_final_improve_tie_loss": "3/57/0",
+        "search_calls": 13,
+        "mean_verification_calls": 103.46666666666667,
+        "median_verification_calls": 80,
+        "mean_total_target_calls": 116.46666666666667,
+        "mean_source_plus_target_calls": 500.4666666666667,
+        "selected_shortlist_rank_1": "49/60"
+      },
+      "canonical_saasbo": {
+        "true_feasible": "60/60",
+        "independently_certified": "59/60",
+        "terminal_abstentions": 1,
+        "false_certificates": 0,
+        "median_feasible_regret": 0.00436819831,
+        "mean_feasible_regret": 0.00535441,
+        "n0_to_final_improve_tie_loss": "31/23/6",
+        "search_calls": 13,
+        "mean_verification_calls": 92.8,
+        "median_verification_calls": 80,
+        "mean_total_target_calls": 105.8,
+        "mean_source_plus_target_calls": 489.8,
+        "selected_shortlist_rank_1": "56/60",
+        "median_regret_by_domain": {
+          "FactorShockStatePolicyRZDT1": 0.00824999999999998,
+          "InventorySupplyChain": 0.003065325775,
+          "QueueResourceControl": 0.00167704404
+        }
+      }
+    },
+    "paired_saasbo_minus_scolh": {
+      "overall_better_tie_worse": "31/23/6",
+      "overall_median_regret_difference": -0.000601238325,
+      "FactorShockStatePolicyRZDT1": "0/20/0",
+      "InventorySupplyChain": "17/2/1",
+      "QueueResourceControl": "14/1/5"
+    },
+    "interpretation": "With the front end, initial design, and independent verifier held fixed, certification is no longer the confounder. The remaining performance gap is an online decision-backend gap: canonical SAASBO improves Inventory and Queue while V65, Stacked GP, and proposal-only mostly preserve n0-best.",
+    "audit_note": "Some SC-generated shortlist records omitted redundant per-candidate oracle-free flags even though the top-level contract was oracle-free and frozen. Post-expansion code now emits those fields explicitly; no target oracle or verification sample entered selection."
   },
   "reporting": [
     "search budget",

@@ -210,6 +210,9 @@ def load_config(path):
     config.setdefault("target_shared_shock_scale", 1.0)
     config.setdefault("variance_audit_size", 128)
     config.setdefault("decision_backend", "legacy")
+    config.setdefault("decision_terminal_rule", "bayes_risk")
+    config.setdefault(
+        "decision_terminal_maximum_violation_probability", 0.05)
     config.setdefault("decision_risk_penalty", 5.0)
     config.setdefault("decision_aleatoric_mode", "certification_upper")
     config.setdefault("decision_violation_loss_mode", "positive_part")
@@ -373,7 +376,8 @@ def main():
         "--decision-backend",
         choices=(
             "legacy", "additive", "exact_kg", "n0_best", "random",
-            "sobol", "sobol_new", "sobol_hvd_voi", "sobol_joint_voi", "risk_ts",
+            "sobol", "sobol_new", "sobol_hvd_voi", "sobol_joint_voi",
+            "risk_ts", "constrained_ts",
             "sobol_exact_joint_voi",
             "certificate_depth_new",
             "bayes_risk_ei", "constrained_ei", "transfer_utility",
@@ -381,6 +385,16 @@ def main():
         default="legacy",
     )
     parser.add_argument("--decision-risk-penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--decision-terminal-rule",
+        choices=("bayes_risk", "feasible_first"),
+        default="bayes_risk",
+    )
+    parser.add_argument(
+        "--decision-terminal-maximum-violation-probability",
+        type=float,
+        default=0.05,
+    )
     parser.add_argument(
         "--decision-aleatoric-mode",
         choices=("certification_upper", "posterior_central"),
@@ -1309,6 +1323,9 @@ def main():
             args.task_latent_calibration_mode),
         "exact_kg_sampling_mode": str(args.exact_sampling_mode),
         "decision_backend": str(args.decision_backend),
+        "decision_terminal_rule": str(args.decision_terminal_rule),
+        "decision_terminal_maximum_violation_probability": float(
+            args.decision_terminal_maximum_violation_probability),
         "decision_risk_penalty": float(args.decision_risk_penalty),
         "decision_aleatoric_mode": str(args.decision_aleatoric_mode),
         "decision_violation_loss_mode": str(
@@ -1749,6 +1766,9 @@ def main():
                 args.task_latent_calibration_mode),
             "exact_kg_sampling_mode": str(args.exact_sampling_mode),
             "decision_backend": str(args.decision_backend),
+            "decision_terminal_rule": str(args.decision_terminal_rule),
+            "decision_terminal_maximum_violation_probability": float(
+                args.decision_terminal_maximum_violation_probability),
             "decision_risk_penalty": float(args.decision_risk_penalty),
             "decision_source_utility_weight": float(
                 args.decision_source_utility_weight),

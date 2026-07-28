@@ -791,6 +791,10 @@ def run_one(task):
         lf_os_residual_floor_scale=args_dict["lf_os_residual_floor_scale"],
         acquisition_mode=args_dict["acquisition_mode"],
         decision_backend=args_dict.get("decision_backend", "legacy"),
+        decision_terminal_rule=args_dict.get(
+            "decision_terminal_rule", "bayes_risk"),
+        decision_terminal_maximum_violation_probability=args_dict.get(
+            "decision_terminal_maximum_violation_probability", 0.05),
         decision_risk_penalty=args_dict.get("decision_risk_penalty", 5.0),
         decision_aleatoric_mode=args_dict.get(
             "decision_aleatoric_mode", "certification_upper"),
@@ -1436,6 +1440,11 @@ def run_one(task):
             "exact_kg_clip_negative"]),
         "decision_backend": str(args_dict.get(
             "decision_backend", "legacy")),
+        "decision_terminal_rule_requested": str(args_dict.get(
+            "decision_terminal_rule", "bayes_risk")),
+        "decision_terminal_maximum_violation_probability": float(
+            args_dict.get(
+                "decision_terminal_maximum_violation_probability", 0.05)),
         "decision_risk_penalty": float(args_dict.get(
             "decision_risk_penalty", 5.0)),
         "decision_aleatoric_mode": str(args_dict.get(
@@ -2598,12 +2607,23 @@ def main():
             "sobol_exact_joint_voi",
             "certificate_depth_new",
             "risk_ts",
+            "constrained_ts",
             "bayes_risk_ei",
             "constrained_ei",
             "transfer_utility",
         ),
     )
     parser.add_argument("--decision_risk_penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--decision_terminal_rule",
+        choices=("bayes_risk", "feasible_first"),
+        default="bayes_risk",
+    )
+    parser.add_argument(
+        "--decision_terminal_maximum_violation_probability",
+        type=float,
+        default=0.05,
+    )
     parser.add_argument(
         "--decision_aleatoric_mode",
         choices=("certification_upper", "posterior_central"),

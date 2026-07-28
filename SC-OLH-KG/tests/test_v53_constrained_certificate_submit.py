@@ -644,6 +644,53 @@ def test_v65_changes_only_to_verification_aware_three_policy_terminal(
     assert args.stage_family == "v65_verification_aware_terminal"
 
 
+def test_v66_v68_isolate_feasible_first_backend_and_incumbent(tmp_path):
+    args = _args(tmp_path, (MODULE.V66, MODULE.V67, MODULE.V68))
+    args.terminal_safe_interior_probability_slack = 0.05
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 3 * 3 * 2
+    by_variant = {
+        variant: [
+            spec for spec in specs
+            if f"/{variant}/" in spec["signature"]
+        ]
+        for variant in (MODULE.V66, MODULE.V67, MODULE.V68)
+    }
+    assert all(
+        "--decision-backend constrained_ts" in spec["cmd"]
+        and "--decision-terminal-rule feasible_first" in spec["cmd"]
+        and (
+            "--decision-terminal-maximum-violation-probability 0.5"
+            in spec["cmd"]
+        )
+        and "--terminal-verification-budget 80" in spec["cmd"]
+        and "--terminal-verification-fallback-budget 128" in spec["cmd"]
+        and "--terminal-verification-shortlist-size 3" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-safe-interior-selection-mode diverse" in spec["cmd"]
+        for spec in by_variant[MODULE.V66]
+    )
+    assert all(
+        "--terminal-safe-interior-selection-mode objective_safe_ranked"
+        in spec["cmd"]
+        for variant in (MODULE.V67, MODULE.V68)
+        for spec in by_variant[variant]
+    )
+    assert all(
+        "--posterior-dominance-enabled" not in spec["cmd"]
+        for variant in (MODULE.V66, MODULE.V67)
+        for spec in by_variant[variant]
+    )
+    assert all(
+        "--posterior-dominance-enabled" in spec["cmd"]
+        and "--posterior-dominance-delta 0.05" in spec["cmd"]
+        for spec in by_variant[MODULE.V68]
+    )
+    assert args.stage_family == "v65_v68_online_backend_gate"
+
+
 def test_v53_bounded_gain_profile_is_versioned_and_not_double_normalized(tmp_path):
     args = _args(tmp_path, (MODULE.V53,))
     args.score_normalization = "none"

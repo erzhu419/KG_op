@@ -46,10 +46,14 @@ V62 = "v62_exact_tolerance_shortlist_verification"
 V63 = "v63_safe_interior_shortlist_verification"
 V64 = "v64_powered_safe_interior_verification"
 V65 = "v65_verification_aware_terminal"
+V66 = "v66_feasible_first_ts"
+V67 = "v67_feasible_first_ts_objective_safe"
+V68 = "v68_feasible_first_ts_incumbent"
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
     *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY,
     V57, V58, V59, V60, V61, V62, V63, V64, V65,
+    V66, V67, V68,
 )
 
 
@@ -193,6 +197,64 @@ def _v53_profile(
         "policy_improvement_pairwise_error_multiplier": float(
             pairwise_error_multiplier),
     }
+
+
+def _feasible_first_profile(
+    common,
+    args,
+    *,
+    implementation_contract_id,
+    theory_contract_id,
+    safe_interior_selection_mode,
+    posterior_dominance_enabled=False,
+):
+    """Keep V65's front end and verifier while replacing its backend."""
+
+    profile = {
+        **common,
+        "implementation_contract_id": str(implementation_contract_id),
+        "theory_contract_id": str(theory_contract_id),
+        "decision_backend": "constrained_ts",
+        "decision_terminal_rule": "feasible_first",
+        "decision_terminal_maximum_violation_probability": 0.5,
+        "evaluate_or_replicate_new_action_count": 4,
+        "evaluate_or_replicate_new_action_policy": (
+            "canonical_plus_posterior_risk"),
+        "policy_improvement_mode": "off",
+        "posterior_dominance_enabled": bool(
+            posterior_dominance_enabled),
+        "terminal_verification_budget": 80,
+        "terminal_verification_delta": float(
+            args.terminal_verification_delta),
+        "terminal_verification_mean_delta_fraction": float(
+            args.terminal_verification_mean_delta_fraction),
+        "terminal_verification_method": "normal_quantile_tolerance",
+        "terminal_verification_policy": "ordered_frozen_shortlist",
+        "terminal_verification_shortlist_size": 3,
+        "terminal_verification_fallback_budget": 128,
+        "terminal_verification_shortlist_mode": (
+            "posterior_objective_challenger_then_safe"),
+        "terminal_objective_challenger_max_violation_probability": 0.5,
+        "terminal_safe_interior_candidate_scope": "observed",
+        "terminal_safe_interior_selection_mode": str(
+            safe_interior_selection_mode),
+        "terminal_safe_interior_probability_slack": float(
+            getattr(
+                args,
+                "terminal_safe_interior_probability_slack",
+                0.05,
+            )),
+        "terminal_safe_interior_require_provider": True,
+    }
+    if posterior_dominance_enabled:
+        profile.update({
+            "posterior_dominance_delta": (
+                0.05 / max(int(args.N) - int(args.n0), 1)
+            ),
+            "posterior_dominance_min_mean_gain": 0.0,
+            "posterior_dominance_initialization": "risk",
+        })
+    return profile
 
 
 def variant_profiles(args):
@@ -545,6 +607,34 @@ def variant_profiles(args):
                 )),
             "terminal_safe_interior_require_provider": True,
         },
+        V66: _feasible_first_profile(
+            common,
+            args,
+            implementation_contract_id=(
+                "v66_feasible_first_constrained_posterior_sampling"),
+            theory_contract_id=(
+                "v66_lexicographic_constrained_posterior_sampling_v1"),
+            safe_interior_selection_mode="diverse",
+        ),
+        V67: _feasible_first_profile(
+            common,
+            args,
+            implementation_contract_id=(
+                "v67_feasible_first_objective_safe_terminal"),
+            theory_contract_id=(
+                "v67_feasible_first_objective_safe_shortlist_v1"),
+            safe_interior_selection_mode="objective_safe_ranked",
+        ),
+        V68: _feasible_first_profile(
+            common,
+            args,
+            implementation_contract_id=(
+                "v68_feasible_first_posterior_incumbent"),
+            theory_contract_id=(
+                "v68_sequential_posterior_dominance_composition_v1"),
+            safe_interior_selection_mode="objective_safe_ranked",
+            posterior_dominance_enabled=True,
+        ),
     }
 
 
@@ -577,7 +667,9 @@ def build_specs(args):
             "v56/v57/v58 confirmation variants require "
             "independent_confirmation")
     if any(
-        name in {V59, V60, V61, V62, V63, V64, V65}
+        name in {
+            V59, V60, V61, V62, V63, V64, V65, V66, V67, V68,
+        }
         for name in requested
     ):
         if int(args.terminal_verification_budget) < 2:
@@ -657,6 +749,21 @@ def build_specs(args):
         args.stage_family = "v65_verification_aware_terminal_paired"
         args.gate_label = (
             "V51 versus V65 verification-aware terminal")
+    elif requested == [V66]:
+        args.stage_family = "v66_feasible_first_ts"
+        args.gate_label = "V66 feasible-first constrained posterior sampling"
+    elif requested == [V67]:
+        args.stage_family = "v67_feasible_first_ts_objective_safe"
+        args.gate_label = (
+            "V67 feasible-first sampling with objective-safe support")
+    elif requested == [V68]:
+        args.stage_family = "v68_feasible_first_ts_incumbent"
+        args.gate_label = (
+            "V68 feasible-first sampling with posterior incumbent")
+    elif set(requested).issubset({V65, V66, V67, V68}):
+        args.stage_family = "v65_v68_online_backend_gate"
+        args.gate_label = (
+            "V65 exact VOI versus feasible-first posterior backends")
     else:
         args.stage_family = "v53_constrained_certificate_deficit"
         args.gate_label = "V53 constrained certificate-deficit policy"
