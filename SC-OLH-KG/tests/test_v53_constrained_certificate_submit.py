@@ -691,6 +691,37 @@ def test_v66_v68_isolate_feasible_first_backend_and_incumbent(tmp_path):
     assert args.stage_family == "v65_v68_online_backend_gate"
 
 
+def test_v69_adds_only_independent_initial_incumbent_guard(tmp_path):
+    args = _args(tmp_path, (MODULE.V69,))
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 3 * 2
+    assert all(
+        "--decision-backend constrained_ts" in spec["cmd"]
+        and "--decision-terminal-rule feasible_first" in spec["cmd"]
+        and "--terminal-objective-incumbent-guard" in spec["cmd"]
+        and "--terminal-objective-comparison-budget 8" in spec["cmd"]
+        and (
+            "--terminal-objective-comparison-delta "
+            "0.016666666666666666" in spec["cmd"]
+        )
+        and "--terminal-verification-shortlist-size 3" in spec["cmd"]
+        and "--terminal-verification-budget 80" in spec["cmd"]
+        and "--terminal-verification-fallback-budget 128" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v69_feasible_first_verified_initial_incumbent" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--theory-contract-id "
+        "v69_familywise_safety_paired_objective_dominance_v1"
+        in spec["cmd"] for spec in specs
+    )
+    assert args.stage_family == "v69_feasible_first_verified_incumbent"
+
+
 def test_v53_bounded_gain_profile_is_versioned_and_not_double_normalized(tmp_path):
     args = _args(tmp_path, (MODULE.V53,))
     args.score_normalization = "none"

@@ -1029,6 +1029,12 @@ def run_one(task):
             "terminal_verification_fallback_budget", 0)),
         terminal_verification_shortlist_mode=str(args_dict.get(
             "terminal_verification_shortlist_mode", "posterior_ranked")),
+        terminal_objective_incumbent_guard=bool(args_dict.get(
+            "terminal_objective_incumbent_guard", False)),
+        terminal_objective_comparison_budget=int(args_dict.get(
+            "terminal_objective_comparison_budget", 0)),
+        terminal_objective_comparison_delta=float(args_dict.get(
+            "terminal_objective_comparison_delta", 0.05)),
         terminal_safe_interior_probability_slack=float(args_dict.get(
             "terminal_safe_interior_probability_slack", 0.05)),
         terminal_safe_interior_require_provider=bool(args_dict.get(
@@ -1601,6 +1607,12 @@ def run_one(task):
             "terminal_verification_fallback_budget", 0)),
         "terminal_verification_shortlist_mode": str(args_dict.get(
             "terminal_verification_shortlist_mode", "posterior_ranked")),
+        "terminal_objective_incumbent_guard": bool(args_dict.get(
+            "terminal_objective_incumbent_guard", False)),
+        "terminal_objective_comparison_budget": int(args_dict.get(
+            "terminal_objective_comparison_budget", 0)),
+        "terminal_objective_comparison_delta": float(args_dict.get(
+            "terminal_objective_comparison_delta", 0.05)),
         "terminal_safe_interior_probability_slack": float(args_dict.get(
             "terminal_safe_interior_probability_slack", 0.05)),
         "terminal_safe_interior_require_provider": bool(args_dict.get(
@@ -1616,6 +1628,16 @@ def run_one(task):
             "n_search_simulations", result["n_simulations"])),
         "n_verification_simulations": int(result.get(
             "n_verification_simulations", 0)),
+        "n_safety_verification_simulations": int(result.get(
+            "n_safety_verification_simulations",
+            result.get("n_verification_simulations", 0),
+        )),
+        "n_objective_comparison_simulations": int(result.get(
+            "n_objective_comparison_simulations", 0)),
+        "optimization_recommendation_truth": result.get(
+            "optimization_recommendation_truth"),
+        "terminal_verification_truth_audit": result.get(
+            "terminal_verification_truth_audit"),
         "observed_incumbent_use_replicate_variance": bool(args_dict[
             "observed_incumbent_use_replicate_variance"]),
         "transfer_cell": f"{line}-{basis_label}",
@@ -1658,6 +1680,12 @@ def run_one(task):
         "adaptive_loss": bool((
             result.get("adaptive_outcome_audit") or {}
         ).get("adaptive_loss", False)),
+        "adaptive_objective_loss": bool((
+            result.get("adaptive_outcome_audit") or {}
+        ).get("adaptive_objective_loss", False)),
+        "adaptive_objective_nonworsening": bool((
+            result.get("adaptive_outcome_audit") or {}
+        ).get("adaptive_objective_nonworsening", False)),
         "adaptive_preservation": bool((
             result.get("adaptive_outcome_audit") or {}
         ).get("adaptive_preservation", False)),
@@ -3055,8 +3083,24 @@ def main():
         choices=(
             "posterior_ranked",
             "posterior_primary_safe_interior",
+            "posterior_objective_challenger_then_safe",
         ),
         default="posterior_ranked",
+    )
+    parser.add_argument(
+        "--terminal_objective_incumbent_guard",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--terminal_objective_comparison_budget",
+        type=int,
+        default=0,
+    )
+    parser.add_argument(
+        "--terminal_objective_comparison_delta",
+        type=float,
+        default=0.05,
     )
     parser.add_argument(
         "--terminal_safe_interior_probability_slack",

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "paper_grade_20_seed_expansion_completed_v66_expansion_ready",
+  "status": "v69_objective_guard_implemented_gate_pending",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -392,6 +392,8 @@
     "decision": "V66 passes the five-seed promotion gate and is the sole 20-seed challenger. V67 is behaviorally redundant and V68 adds verification cost without benefit."
   },
   "v66_expansion": {
+    "run_id": "paper_v66_feasible_first_cross_d50_d1000_n13_s80_99_v1",
+    "task_ids": "t58530-t58589",
     "seed_start": 80,
     "n_seeds": 20,
     "logical_cells": 60,
@@ -402,7 +404,86 @@
       "no adaptive loss against n0",
       "paired improvement over V65 remains positive in Inventory and Queue",
       "report search, verification, total target, and source-plus-target budgets"
-    ]
+    ],
+    "result": {
+      "completed_tasks": "60/60",
+      "failed_tasks": 0,
+      "true_feasible": "60/60",
+      "independently_certified": "60/60",
+      "false_certificates": 0,
+      "feasibility_improve_tie_loss_against_n0": "18/42/0",
+      "deployment_objective_better_tie_worse_against_n0": "16/39/5",
+      "median_feasible_regret": 0.00824999999999998,
+      "mean_feasible_regret": 0.0076284563,
+      "mean_safety_verification_calls": 92.8,
+      "mean_total_target_calls": 105.8,
+      "mean_source_plus_target_calls": 489.8,
+      "median_wall_time_seconds": 336.5,
+      "paired_vs_v65_better_tie_worse": "16/39/5",
+      "paired_mean_regret_difference": 0.0000956,
+      "domain_pairing_vs_v65": {
+        "FactorShockStatePolicyRZDT1": "0/20/0",
+        "InventorySupplyChain": "9/6/5",
+        "QueueResourceControl": "7/13/0"
+      },
+      "objective_loss_inventory_seeds": [
+        90,
+        91,
+        93,
+        95,
+        96
+      ],
+      "finding": "V66 is safe and substantially faster than V65, but the V9 verifier stops at the first safe policy and therefore permits five Inventory deployments that are safe yet objectively worse than the frozen n0 incumbent."
+    }
+  },
+  "v69_objective_guard": {
+    "implementation_contract_id": "v69_feasible_first_verified_initial_incumbent",
+    "theory_contract_id": "v69_familywise_safety_paired_objective_dominance_v1",
+    "base_backend": "V66 feasible-first constrained posterior sampling",
+    "safety_shortlist_contract": {
+      "size": 3,
+      "candidate_budgets": [
+        80,
+        128,
+        128
+      ],
+      "familywise_delta": 0.05,
+      "initial_incumbent_inserted_before_verification": true
+    },
+    "objective_comparison_contract": {
+      "paired_common_random_numbers": true,
+      "replications_per_policy": 8,
+      "simulation_calls_when_both_policies_are_safe": 16,
+      "one_sided_delta": 0.016666666666666666,
+      "stream_independent_from_search_and_safety": true,
+      "target_oracle_used": false
+    },
+    "posthoc_oracle_free_counterfactual": {
+      "cells": 60,
+      "deployment_objective_better_tie_worse_against_n0": "18/42/0",
+      "FactorShockStatePolicyRZDT1": "0/20/0",
+      "InventorySupplyChain": "9/11/0",
+      "QueueResourceControl": "9/11/0",
+      "note": "This counterfactual selected from budgeted observations and independent simulator streams only; it is not promoted until the prospective V69 run reproduces it."
+    },
+    "gate_plan": {
+      "seed_start": 90,
+      "n_seeds": 7,
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "logical_cells": 21,
+      "requirements": [
+        "21/21 true-feasible independently certified deployments",
+        "zero false certificates",
+        "zero deployment objective losses against n0",
+        "all five V66 Inventory loss seeds are protected",
+        "all shortlist and objective-comparison inputs are explicitly oracle-free",
+        "search, safety verification, objective comparison, and total budgets are reported separately"
+      ]
+    }
   },
   "reporting": [
     "search budget",

@@ -22,7 +22,9 @@ from core.designs import (  # noqa: E402
 )
 from core.terminal_verification import (  # noqa: E402
     build_verification_aware_shortlist,
+    freeze_objective_incumbent_shortlist,
     parse_verification_candidate_budgets,
+    select_initial_empirical_objective_incumbent,
     verify_frozen_shortlist,
 )
 from performance.benchmark_lodo_meta_prior import build_scalarized_problem  # noqa: E402
@@ -218,6 +220,18 @@ def run_one(args):
         probability_slack=float(getattr(
             args, "terminal_safe_interior_probability_slack", 0.05)),
     )
+    incumbent_audit = None
+    if bool(getattr(args, "terminal_objective_incumbent_guard", False)):
+        incumbent = select_initial_empirical_objective_incumbent(
+            points,
+            observations,
+            n0=int(args.n0),
+        )
+        shortlist, incumbent_audit = freeze_objective_incumbent_shortlist(
+            shortlist,
+            incumbent,
+            shortlist_size=len(shortlist),
+        )
     candidate_budgets = parse_verification_candidate_budgets(
         getattr(args, "terminal_verification_candidate_budgets", ""),
         default=(
@@ -239,6 +253,15 @@ def run_one(args):
         mean_delta_fraction=float(
             args.terminal_verification_mean_delta_fraction),
         shortlist_mode=shortlist_mode,
+        objective_incumbent_position=(
+            None
+            if incumbent_audit is None
+            else incumbent_audit["objective_incumbent_position"]
+        ),
+        objective_comparison_budget=int(getattr(
+            args, "terminal_objective_comparison_budget", 0)),
+        objective_comparison_delta=float(getattr(
+            args, "terminal_objective_comparison_delta", 0.05)),
     )
     initial_truth = [_true_metrics(problem, point) for point in points]
     deployed_metrics = _true_metrics(problem, deployed)
@@ -272,6 +295,12 @@ def run_one(args):
             "target_initial_calls_n0": int(args.n0),
             "target_search_calls": int(args.n0),
             "target_verification_calls": verification_calls,
+            "target_safety_verification_calls": int(
+                verification.get(
+                    "safety_verification_budget", verification_calls)
+            ),
+            "target_objective_comparison_calls": int(
+                verification.get("objective_comparison_budget", 0)),
             "target_total_calls": int(args.n0) + verification_calls,
             "online_optimization_calls_after_n0": 0,
             "online_backend": "none",
@@ -297,6 +326,17 @@ def run_one(args):
         "frozen_terminal_shortlist": shortlist,
         "terminal_shortlist_selection_audit": shortlist_audit,
         "terminal_verification": verification,
+        "terminal_objective_incumbent": incumbent_audit,
+        "n_search_simulations": int(args.n0),
+        "n_safety_verification_simulations": int(
+            verification.get(
+                "safety_verification_budget", verification_calls)
+        ),
+        "n_objective_comparison_simulations": int(
+            verification.get("objective_comparison_budget", 0)),
+        "n_verification_simulations": int(verification_calls),
+        "n_target_simulations_total": int(args.n0) + verification_calls,
+        "n_simulations": int(args.n0) + verification_calls,
         "initial_truth_audit": {
             "computed_after_shortlist_freeze_and_verification": True,
             "used_for_selection_or_certification": False,
@@ -351,6 +391,15 @@ def main():
     )
     parser.add_argument(
         "--terminal-verification-shortlist-size", type=int, default=2)
+    parser.add_argument(
+        "--terminal-objective-incumbent-guard",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--terminal-objective-comparison-budget", type=int, default=0)
+    parser.add_argument(
+        "--terminal-objective-comparison-delta", type=float, default=0.05)
     parser.add_argument(
         "--terminal-objective-challenger-max-violation-probability",
         type=float,

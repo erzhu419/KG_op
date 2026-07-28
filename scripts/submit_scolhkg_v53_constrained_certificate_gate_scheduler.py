@@ -49,11 +49,12 @@ V65 = "v65_verification_aware_terminal"
 V66 = "v66_feasible_first_ts"
 V67 = "v67_feasible_first_ts_objective_safe"
 V68 = "v68_feasible_first_ts_incumbent"
+V69 = "v69_feasible_first_verified_incumbent"
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
     *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY,
     V57, V58, V59, V60, V61, V62, V63, V64, V65,
-    V66, V67, V68,
+    V66, V67, V68, V69,
 )
 
 
@@ -635,6 +636,23 @@ def variant_profiles(args):
             safe_interior_selection_mode="objective_safe_ranked",
             posterior_dominance_enabled=True,
         ),
+        V69: {
+            **_feasible_first_profile(
+                common,
+                args,
+                implementation_contract_id=(
+                    "v69_feasible_first_verified_initial_incumbent"),
+                theory_contract_id=(
+                    "v69_familywise_safety_paired_objective_"
+                    "dominance_v1"),
+                safe_interior_selection_mode="diverse",
+            ),
+            "terminal_objective_incumbent_guard": True,
+            "terminal_objective_comparison_budget": 8,
+            "terminal_objective_comparison_delta": (
+                float(args.terminal_verification_delta) / 3.0
+            ),
+        },
     }
 
 
@@ -669,6 +687,7 @@ def build_specs(args):
     if any(
         name in {
             V59, V60, V61, V62, V63, V64, V65, V66, V67, V68,
+            V69,
         }
         for name in requested
     ):
@@ -760,7 +779,12 @@ def build_specs(args):
         args.stage_family = "v68_feasible_first_ts_incumbent"
         args.gate_label = (
             "V68 feasible-first sampling with posterior incumbent")
-    elif set(requested).issubset({V65, V66, V67, V68}):
+    elif requested == [V69]:
+        args.stage_family = "v69_feasible_first_verified_incumbent"
+        args.gate_label = (
+            "V69 feasible-first sampling with independently verified "
+            "initial incumbent")
+    elif set(requested).issubset({V65, V66, V67, V68, V69}):
         args.stage_family = "v65_v68_online_backend_gate"
         args.gate_label = (
             "V65 exact VOI versus feasible-first posterior backends")

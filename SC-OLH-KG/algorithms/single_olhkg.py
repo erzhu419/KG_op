@@ -50,12 +50,16 @@ from core.gpr import (
 )
 from core.metrics import summarize_stage_times
 from core.terminal_verification import (
+    TERMINAL_OBJECTIVE_COMPARISON_STREAM_TAG,
     TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG,
     TERMINAL_VERIFICATION_STREAM_TAG,
     cumulative_risk_coordinate,
+    freeze_objective_incumbent_shortlist,
+    select_initial_empirical_objective_incumbent,
     select_objective_verification_challenger,
     select_posterior_safe_interior,
     verify_frozen_policy,
+    verify_paired_objective_dominance,
 )
 from encoders.policy_state_encoder import (
     ContrastivePolicyEncoder,
@@ -474,6 +478,9 @@ class SingleOLHKGConfig:
     terminal_verification_fallback_budget: int = 0
     terminal_verification_shortlist_mode: str = "posterior_ranked"
     terminal_objective_challenger_max_violation_probability: float = 0.5
+    terminal_objective_incumbent_guard: bool = False
+    terminal_objective_comparison_budget: int = 0
+    terminal_objective_comparison_delta: float = 0.05
     terminal_safe_interior_probability_slack: float = 0.05
     terminal_safe_interior_require_provider: bool = False
     terminal_safe_interior_candidate_scope: str = "initial"
@@ -1366,29 +1373,149 @@ class SingleOLHKGAlgorithm:
                     if key != "point"
                 })
             frozen_shortlist.append(record)
+        objective_incumbent_audit = None
+        if bool(self.config.terminal_objective_incumbent_guard):
+            initial_incumbent = self._terminal_initial_objective_incumbent()
+            frozen_shortlist, objective_incumbent_audit = (
+                freeze_objective_incumbent_shortlist(
+                    frozen_shortlist,
+                    initial_incumbent,
+                    shortlist_size=requested_size,
+                )
+            )
+            shortlist = [
+                tuple(int(value) for value in record["point"])
+                for record in frozen_shortlist
+            ]
+
+        comparison_budget = int(
+            self.config.terminal_objective_comparison_budget)
+        if comparison_budget < 0:
+            raise ValueError(
+                "terminal objective comparison budget must be nonnegative")
+        objective_guard_enabled = bool(
+            objective_incumbent_audit is not None
+            and comparison_budget > 0
+        )
+        comparison_delta = float(
+            self.config.terminal_objective_comparison_delta)
+        if (
+            bool(self.config.terminal_objective_incumbent_guard)
+            and comparison_budget < 2
+        ):
+            raise ValueError(
+                "terminal objective incumbent guard requires at least two "
+                "paired objective replications")
+        if objective_guard_enabled and not 0.0 < comparison_delta < 1.0:
+            raise ValueError(
+                "terminal objective comparison delta must lie in (0, 1)")
+        incumbent_index = (
+            None
+            if objective_incumbent_audit is None
+            else int(
+                objective_incumbent_audit[
+                    "objective_incumbent_position"
+                ]
+            ) - 1
+        )
         attempts = []
+        attempts_by_index = {}
         deployed = primary
         selected_rank = None
-        if budget > 0:
-            for candidate_index, (point, candidate_budget) in enumerate(
-                zip(shortlist, candidate_budgets)
-            ):
-                verification = self._terminal_fixed_policy_verification(
-                    point,
-                    verification_delta=per_candidate_delta,
-                    candidate_index=candidate_index,
-                    verification_budget=candidate_budget,
-                )
-                attempts.append(verification)
-                if bool(verification.get("certified", False)):
-                    deployed = point
-                    selected_rank = candidate_index + 1
-                    break
+        objective_comparison = {
+            "enabled": False,
+            "status": (
+                "disabled"
+                if objective_incumbent_audit is None
+                or comparison_budget == 0 else "not_required"
+            ),
+            "comparison_budget_per_policy": int(comparison_budget),
+            "simulation_calls": 0,
+            "delta": comparison_delta,
+            "target_oracle_used": False,
+            "comparison_samples_logged": False,
+        }
 
-        actual_budget = int(sum(
+        def verify_index(candidate_index):
+            if candidate_index in attempts_by_index:
+                return attempts_by_index[candidate_index]
+            verification = self._terminal_fixed_policy_verification(
+                shortlist[candidate_index],
+                verification_delta=per_candidate_delta,
+                candidate_index=candidate_index,
+                verification_budget=candidate_budgets[candidate_index],
+            )
+            attempts.append(verification)
+            attempts_by_index[candidate_index] = verification
+            return verification
+
+        if budget > 0:
+            if objective_guard_enabled:
+                challenger_attempt = verify_index(0)
+                incumbent_attempt = verify_index(incumbent_index)
+                challenger_certified = bool(
+                    challenger_attempt.get("certified", False))
+                incumbent_certified = bool(
+                    incumbent_attempt.get("certified", False))
+                if incumbent_index == 0 and challenger_certified:
+                    deployed = shortlist[0]
+                    selected_rank = 1
+                    objective_comparison["status"] = "same_policy"
+                elif challenger_certified and incumbent_certified:
+                    objective_comparison = (
+                        verify_paired_objective_dominance(
+                            self.problem,
+                            shortlist[0],
+                            shortlist[incumbent_index],
+                            seed=int(self.config.seed),
+                            comparison_budget=comparison_budget,
+                            delta=comparison_delta,
+                        )
+                    )
+                    if bool(
+                        objective_comparison["challenger_dominates"]
+                    ):
+                        deployed = shortlist[0]
+                        selected_rank = 1
+                    else:
+                        deployed = shortlist[incumbent_index]
+                        selected_rank = incumbent_index + 1
+                elif challenger_certified:
+                    deployed = shortlist[0]
+                    selected_rank = 1
+                    objective_comparison["status"] = (
+                        "incumbent_not_safety_certified")
+                elif incumbent_certified:
+                    deployed = shortlist[incumbent_index]
+                    selected_rank = incumbent_index + 1
+                    objective_comparison["status"] = (
+                        "challenger_not_safety_certified")
+                else:
+                    objective_comparison["status"] = (
+                        "neither_primary_nor_incumbent_safety_certified")
+                    for candidate_index in range(len(shortlist)):
+                        if candidate_index in attempts_by_index:
+                            continue
+                        verification = verify_index(candidate_index)
+                        if bool(verification.get("certified", False)):
+                            deployed = shortlist[candidate_index]
+                            selected_rank = candidate_index + 1
+                            break
+            else:
+                for candidate_index in range(len(shortlist)):
+                    verification = verify_index(candidate_index)
+                    if bool(verification.get("certified", False)):
+                        deployed = shortlist[candidate_index]
+                        selected_rank = candidate_index + 1
+                        break
+
+        safety_budget = int(sum(
             int(attempt.get("verification_budget", 0))
             for attempt in attempts
         ))
+        objective_budget = int(
+            objective_comparison.get("simulation_calls", 0))
+        actual_budget = int(safety_budget + objective_budget)
         certified = selected_rank is not None
         recommendation_changed = bool(deployed != primary)
         attempt_method = (
@@ -1432,13 +1559,23 @@ class SingleOLHKGAlgorithm:
             "search_samples_reused": False,
             "posterior_updated_from_verification": False,
             "verification_budget": int(actual_budget),
+            "safety_verification_budget": int(safety_budget),
+            "objective_comparison_budget": int(objective_budget),
+            "objective_comparison_budget_per_policy": int(
+                comparison_budget),
             "verification_budget_per_candidate": int(budget),
             "fallback_verification_budget": int(
                 effective_fallback_budget),
             "candidate_verification_budgets": [
                 int(value) for value in candidate_budgets
             ],
-            "max_verification_budget": int(sum(candidate_budgets)),
+            "max_verification_budget": int(
+                sum(candidate_budgets)
+                + (
+                    2 * comparison_budget
+                    if objective_guard_enabled else 0
+                )
+            ),
             "search_evaluation_count": int(len(self.history)),
             "total_evaluation_count": int(
                 len(self.history) + actual_budget),
@@ -1450,6 +1587,16 @@ class SingleOLHKGAlgorithm:
             "frozen_shortlist": frozen_shortlist,
             "attempts": attempts,
             "attempt_count": int(len(attempts)),
+            "objective_incumbent_guard_enabled": bool(
+                objective_guard_enabled),
+            "objective_incumbent": copy.deepcopy(
+                objective_incumbent_audit),
+            "objective_incumbent_position": (
+                None
+                if incumbent_index is None
+                else int(incumbent_index + 1)
+            ),
+            "objective_comparison": objective_comparison,
             "certified": bool(certified),
             "selected_shortlist_rank": (
                 None if selected_rank is None else int(selected_rank)),
@@ -1460,7 +1607,12 @@ class SingleOLHKGAlgorithm:
             "recommendation_changed": recommendation_changed,
             "target_oracle_used": False,
             "certification_scope": (
-                "familywise_frozen_ordered_terminal_shortlist"),
+                "familywise_frozen_ordered_terminal_shortlist"
+                + (
+                    "_with_independent_paired_objective_guard"
+                    if objective_guard_enabled else ""
+                )
+            ),
             "verification_samples_logged": False,
         }
 
@@ -1472,6 +1624,16 @@ class SingleOLHKGAlgorithm:
             point,
             require_provider=bool(
                 self.config.terminal_safe_interior_require_provider),
+        )
+
+    def _terminal_initial_objective_incumbent(self):
+        """Freeze the n0 empirical objective incumbent before verification."""
+
+        initial_history = self.history[: int(self.config.n0)]
+        return select_initial_empirical_objective_incumbent(
+            [point for point, _ in initial_history],
+            [observation for _, observation in initial_history],
+            n0=int(self.config.n0),
         )
 
     def _terminal_safe_interior_candidate(self, primary):
@@ -13909,6 +14071,11 @@ class SingleOLHKGAlgorithm:
         )
         initial_best = (
             float(min(feasible_regrets)) if feasible_regrets else None)
+        objective_loss = bool(
+            initial_best is not None
+            and final_regret is not None
+            and final_regret > initial_best + 1e-12
+        )
         return {
             "initial_design_size": int(len(initial_points)),
             "initial_true_feasible_count": int(len(feasible_regrets)),
@@ -13922,8 +14089,14 @@ class SingleOLHKGAlgorithm:
                 not initial_has_feasible and final_feasible),
             "adaptive_loss": bool(
                 initial_has_feasible and not final_feasible),
+            "adaptive_objective_loss": objective_loss,
             "adaptive_preservation": bool(
                 initial_has_feasible and final_feasible),
+            "adaptive_objective_nonworsening": bool(
+                initial_best is not None
+                and final_regret is not None
+                and not objective_loss
+            ),
             "adaptive_improves_initial_best": bool(
                 initial_best is not None
                 and final_regret is not None
@@ -16583,6 +16756,16 @@ class SingleOLHKGAlgorithm:
             "n_search_simulations": int(len(self.history)),
             "n_verification_simulations": int(
                 terminal_verification.get("verification_budget", 0)),
+            "n_safety_verification_simulations": int(
+                terminal_verification.get(
+                    "safety_verification_budget",
+                    terminal_verification.get("verification_budget", 0),
+                )
+            ),
+            "n_objective_comparison_simulations": int(
+                terminal_verification.get(
+                    "objective_comparison_budget", 0)
+            ),
             "n_simulations": int(
                 len(self.history)
                 + int(terminal_verification.get(
@@ -16619,6 +16802,8 @@ class SingleOLHKGAlgorithm:
                     TERMINAL_VERIFICATION_STREAM_TAG),
                 "shortlist_verification_stream_tag": int(
                     TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG),
+                "objective_comparison_stream_tag": int(
+                    TERMINAL_OBJECTIVE_COMPARISON_STREAM_TAG),
                 "verification_protocol": str(
                     terminal_verification.get(
                         "protocol", "fixed_policy")),
@@ -16631,6 +16816,7 @@ class SingleOLHKGAlgorithm:
                         "verification_budget", 0))
                 ),
                 "verification_stream_independent": True,
+                "objective_comparison_stream_independent": True,
                 "proposal_rng_independent": True,
                 "common_random_numbers_by_evaluation_index": True,
                 "target_oracle_used": False,

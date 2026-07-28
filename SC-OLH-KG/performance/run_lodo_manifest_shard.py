@@ -93,6 +93,9 @@ def load_config(path):
         "terminal_verification_shortlist_mode", "posterior_ranked")
     config.setdefault(
         "terminal_objective_challenger_max_violation_probability", 0.5)
+    config.setdefault("terminal_objective_incumbent_guard", False)
+    config.setdefault("terminal_objective_comparison_budget", 0)
+    config.setdefault("terminal_objective_comparison_delta", 0.05)
     config.setdefault(
         "terminal_safe_interior_candidate_scope", "initial")
     config.setdefault(
@@ -1033,6 +1036,21 @@ def main():
         default=None,
     )
     parser.add_argument(
+        "--terminal-objective-incumbent-guard",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+    )
+    parser.add_argument(
+        "--terminal-objective-comparison-budget",
+        type=int,
+        default=None,
+    )
+    parser.add_argument(
+        "--terminal-objective-comparison-delta",
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
         "--terminal-safe-interior-candidate-scope",
         choices=("initial", "observed"),
         default=None,
@@ -1121,6 +1139,21 @@ def main():
             args
             .terminal_objective_challenger_max_violation_probability
         )
+    )
+    terminal_objective_incumbent_guard = bool(
+        config["terminal_objective_incumbent_guard"]
+        if args.terminal_objective_incumbent_guard is None
+        else args.terminal_objective_incumbent_guard
+    )
+    terminal_objective_comparison_budget = int(
+        config["terminal_objective_comparison_budget"]
+        if args.terminal_objective_comparison_budget is None
+        else args.terminal_objective_comparison_budget
+    )
+    terminal_objective_comparison_delta = float(
+        config["terminal_objective_comparison_delta"]
+        if args.terminal_objective_comparison_delta is None
+        else args.terminal_objective_comparison_delta
     )
     terminal_safe_interior_candidate_scope = str(
         config["terminal_safe_interior_candidate_scope"]
@@ -1637,6 +1670,12 @@ def main():
             terminal_verification_shortlist_mode),
         "terminal_objective_challenger_max_violation_probability": float(
             terminal_objective_challenger_max_violation_probability),
+        "terminal_objective_incumbent_guard": bool(
+            terminal_objective_incumbent_guard),
+        "terminal_objective_comparison_budget": int(
+            terminal_objective_comparison_budget),
+        "terminal_objective_comparison_delta": float(
+            terminal_objective_comparison_delta),
         "terminal_safe_interior_candidate_scope": str(
             terminal_safe_interior_candidate_scope),
         "terminal_safe_interior_selection_mode": str(
@@ -2027,6 +2066,12 @@ def main():
                 terminal_verification_shortlist_mode),
             "terminal_objective_challenger_max_violation_probability": float(
                 terminal_objective_challenger_max_violation_probability),
+            "terminal_objective_incumbent_guard": bool(
+                terminal_objective_incumbent_guard),
+            "terminal_objective_comparison_budget": int(
+                terminal_objective_comparison_budget),
+            "terminal_objective_comparison_delta": float(
+                terminal_objective_comparison_delta),
             "terminal_safe_interior_candidate_scope": str(
                 terminal_safe_interior_candidate_scope),
             "terminal_safe_interior_selection_mode": str(

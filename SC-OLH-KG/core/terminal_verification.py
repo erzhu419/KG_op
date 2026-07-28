@@ -6,6 +6,7 @@ from dataclasses import asdict
 import copy
 
 import numpy as np
+from scipy.stats import t as student_t
 
 from core.certification import (
     gaussian_quantile_tolerance_certificate,
@@ -17,6 +18,7 @@ from core.designs import integer_design_fingerprint
 
 TERMINAL_VERIFICATION_STREAM_TAG = 0x56455249
 TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG = 0x56534C54
+TERMINAL_OBJECTIVE_COMPARISON_STREAM_TAG = 0x4F424A44
 
 
 def parse_verification_candidate_budgets(value, *, default):
@@ -38,6 +40,253 @@ def parse_verification_candidate_budgets(value, *, default):
         raise ValueError(
             "terminal verification budgets must be nonnegative")
     return budgets
+
+
+def select_initial_empirical_objective_incumbent(
+    points,
+    observations,
+    *,
+    n0=None,
+):
+    """Freeze the lowest empirical-objective initial policy without truth."""
+
+    point_rows = [tuple(int(value) for value in point) for point in points]
+    observation_rows = [
+        np.asarray(observation, dtype=float).reshape(-1)
+        for observation in observations
+    ]
+    if len(point_rows) != len(observation_rows):
+        raise ValueError(
+            "initial incumbent points and observations must have equal length")
+    limit = len(point_rows) if n0 is None else int(n0)
+    if limit < 1:
+        raise ValueError("initial incumbent selection requires n0 >= 1")
+    point_rows = point_rows[:limit]
+    observation_rows = observation_rows[:limit]
+    if not point_rows:
+        raise ValueError("initial incumbent selection received no observations")
+
+    objective_by_point = {}
+    first_position = {}
+    for position, (point, observation) in enumerate(
+        zip(point_rows, observation_rows)
+    ):
+        if observation.size < 1 or not np.isfinite(observation[0]):
+            raise ValueError(
+                "initial incumbent objective observations must be finite")
+        objective_by_point.setdefault(point, []).append(float(observation[0]))
+        first_position.setdefault(point, int(position))
+    ranked = []
+    for point, values in objective_by_point.items():
+        ranked.append((
+            float(np.mean(values)),
+            int(first_position[point]),
+            point,
+            int(len(values)),
+        ))
+    objective_mean, position, point, count = min(ranked)
+    return {
+        "status": "selected",
+        "point": point,
+        "observed_objective_mean": float(objective_mean),
+        "initial_observation_count": int(count),
+        "initial_design_position": int(position + 1),
+        "initial_design_size_used": int(len(point_rows)),
+        "candidate_universe": "frozen_initial_design",
+        "selection_contract": (
+            "minimum_empirical_objective_in_frozen_initial_design"),
+        "target_labels_used": True,
+        "target_oracle_used": False,
+        "verification_samples_used": False,
+        "shortlist_frozen_before_verification": True,
+    }
+
+
+def freeze_objective_incumbent_shortlist(
+    frozen_shortlist,
+    initial_incumbent,
+    *,
+    shortlist_size=None,
+):
+    """Insert a frozen initial incumbent while preserving shortlist size."""
+
+    records = [copy.deepcopy(record) for record in frozen_shortlist]
+    if not records:
+        raise ValueError("objective-guard shortlist cannot be empty")
+    requested = (
+        len(records) if shortlist_size is None else int(shortlist_size))
+    if requested < 1 or requested > len(records):
+        raise ValueError(
+            "objective-guard shortlist size must preserve the frozen "
+            "candidate count")
+    incumbent = copy.deepcopy(initial_incumbent)
+    if incumbent.get("point") is None:
+        raise ValueError("initial objective incumbent must contain a point")
+    incumbent_point = tuple(
+        int(value) for value in incumbent["point"])
+
+    ordered = [records[0]]
+    first_point = tuple(int(value) for value in ordered[0]["point"])
+    if incumbent_point != first_point:
+        ordered.append({
+            "shortlist_role": "frozen_initial_empirical_objective_incumbent",
+            "point": list(incumbent_point),
+            "point_fingerprint": integer_design_fingerprint([
+                incumbent_point]),
+            **{
+                key: copy.deepcopy(value)
+                for key, value in incumbent.items()
+                if key != "point"
+            },
+        })
+    seen = {
+        tuple(int(value) for value in record["point"])
+        for record in ordered
+    }
+    for record in records[1:]:
+        point = tuple(int(value) for value in record["point"])
+        if point not in seen:
+            ordered.append(record)
+            seen.add(point)
+        if len(ordered) >= requested:
+            break
+    ordered = ordered[:requested]
+    if len(ordered) != requested:
+        raise RuntimeError(
+            "objective incumbent insertion could not preserve shortlist size")
+
+    incumbent_position = None
+    for position, record in enumerate(ordered, start=1):
+        point = tuple(int(value) for value in record["point"])
+        record["shortlist_position"] = int(position)
+        record["shortlist_frozen_before_verification"] = True
+        record["target_oracle_used"] = False
+        record["verification_samples_used"] = False
+        record["objective_incumbent"] = bool(point == incumbent_point)
+        if point == incumbent_point:
+            incumbent_position = int(position)
+            record.update({
+                key: copy.deepcopy(value)
+                for key, value in incumbent.items()
+                if key != "point"
+            })
+    if incumbent_position is None:
+        raise RuntimeError("initial objective incumbent was not frozen")
+    return ordered, {
+        "enabled": True,
+        "objective_incumbent_position": int(incumbent_position),
+        "objective_incumbent_fingerprint": integer_design_fingerprint([
+            incumbent_point]),
+        "shortlist_size": int(len(ordered)),
+        "selection_contract": (
+            "preverification_initial_empirical_incumbent_insertion"),
+        "target_labels_used": True,
+        "target_oracle_used": False,
+        "verification_samples_used": False,
+        "shortlist_frozen_before_verification": True,
+    }
+
+
+def verify_paired_objective_dominance(
+    problem,
+    challenger,
+    incumbent,
+    *,
+    seed,
+    comparison_budget,
+    delta,
+):
+    """Test objective improvement on an independent paired-CRN stream."""
+
+    budget = int(comparison_budget)
+    if budget < 2:
+        raise ValueError(
+            "paired objective comparison requires at least two replications")
+    delta = float(delta)
+    if not 0.0 < delta < 1.0:
+        raise ValueError("objective comparison delta must lie in (0, 1)")
+    challenger = tuple(int(value) for value in challenger)
+    incumbent = tuple(int(value) for value in incumbent)
+    if challenger == incumbent:
+        return {
+            "enabled": True,
+            "status": "same_policy",
+            "challenger_dominates": False,
+            "comparison_budget_per_policy": 0,
+            "simulation_calls": 0,
+            "delta": delta,
+            "paired_common_random_numbers": True,
+            "target_oracle_used": False,
+            "comparison_samples_logged": False,
+        }
+    noise_model = str(getattr(
+        problem, "simulation_noise_model", "unknown"))
+    if noise_model != "iid_gaussian":
+        raise RuntimeError(
+            "paired Gaussian objective comparison requires an "
+            "iid_gaussian simulation_noise_model")
+
+    differences = []
+    for replication in range(budget):
+        seed_components = [
+            int(seed),
+            int(replication),
+            TERMINAL_OBJECTIVE_COMPARISON_STREAM_TAG,
+        ]
+        challenger_rng = np.random.default_rng(
+            np.random.SeedSequence(seed_components))
+        incumbent_rng = np.random.default_rng(
+            np.random.SeedSequence(seed_components))
+        challenger_value = np.asarray(
+            problem.simulate(challenger, challenger_rng),
+            dtype=float,
+        ).reshape(-1)
+        incumbent_value = np.asarray(
+            problem.simulate(incumbent, incumbent_rng),
+            dtype=float,
+        ).reshape(-1)
+        if challenger_value.size < 1 or incumbent_value.size < 1:
+            raise RuntimeError(
+                "objective comparison requires an objective output")
+        differences.append(
+            float(challenger_value[0] - incumbent_value[0]))
+    differences = np.asarray(differences, dtype=float)
+    mean_difference = float(np.mean(differences))
+    std_difference = float(np.std(differences, ddof=1))
+    standard_error = float(std_difference / np.sqrt(budget))
+    critical_value = float(student_t.ppf(1.0 - delta, budget - 1))
+    upper_bound = float(
+        mean_difference + critical_value * standard_error)
+    dominates = bool(upper_bound < 0.0)
+    return {
+        "enabled": True,
+        "status": (
+            "challenger_dominates"
+            if dominates else "incumbent_retained"
+        ),
+        "challenger_dominates": dominates,
+        "objective_difference_definition": (
+            "challenger_minus_incumbent_for_minimization"),
+        "sample_mean_difference": mean_difference,
+        "sample_std_difference": std_difference,
+        "standard_error": standard_error,
+        "one_sided_upper_confidence_bound": upper_bound,
+        "critical_value": critical_value,
+        "degrees_of_freedom": int(budget - 1),
+        "comparison_budget_per_policy": int(budget),
+        "simulation_calls": int(2 * budget),
+        "delta": delta,
+        "paired_common_random_numbers": True,
+        "comparison_stream_tag": int(
+            TERMINAL_OBJECTIVE_COMPARISON_STREAM_TAG),
+        "comparison_stream_independent_from_search_and_safety": True,
+        "challenger_fingerprint": integer_design_fingerprint([
+            challenger]),
+        "incumbent_fingerprint": integer_design_fingerprint([
+            incumbent]),
+        "target_oracle_used": False,
+        "comparison_samples_logged": False,
+    }
 
 
 def select_objective_verification_challenger(
@@ -407,8 +656,11 @@ def verify_frozen_shortlist(
     method="normal_quantile_tolerance",
     mean_delta_fraction=0.5,
     shortlist_mode="posterior_primary_safe_interior",
+    objective_incumbent_position=None,
+    objective_comparison_budget=0,
+    objective_comparison_delta=0.05,
 ):
-    """Deploy the first independently certified policy in a frozen order."""
+    """Deploy a certified policy, optionally guarding an initial incumbent."""
 
     records = [copy.deepcopy(record) for record in frozen_shortlist]
     points = [
@@ -429,35 +681,122 @@ def verify_frozen_shortlist(
     if not 0.0 < familywise_delta < 1.0:
         raise ValueError("familywise delta must lie strictly between 0 and 1")
     per_candidate_delta = familywise_delta / float(len(points))
+    comparison_budget = int(objective_comparison_budget)
+    if comparison_budget < 0:
+        raise ValueError(
+            "objective comparison budget must be nonnegative")
+    incumbent_index = None
+    if objective_incumbent_position is not None:
+        incumbent_index = int(objective_incumbent_position) - 1
+        if incumbent_index < 0 or incumbent_index >= len(points):
+            raise ValueError(
+                "objective incumbent position must belong to the shortlist")
+    objective_guard_enabled = bool(
+        incumbent_index is not None and comparison_budget > 0)
+    comparison_delta = float(objective_comparison_delta)
+    if objective_guard_enabled and not 0.0 < comparison_delta < 1.0:
+        raise ValueError(
+            "objective comparison delta must lie in (0, 1)")
 
     attempts = []
+    attempts_by_index = {}
     deployed = points[0]
     selected_rank = None
-    if budgets[0] > 0:
-        for candidate_index, (point, budget) in enumerate(
-            zip(points, budgets)
-        ):
-            attempt = verify_frozen_policy(
-                problem,
-                point,
-                seed=seed,
-                search_evaluation_count=search_evaluation_count,
-                verification_budget=budget,
-                delta=per_candidate_delta,
-                candidate_index=candidate_index,
-                method=method,
-                mean_delta_fraction=mean_delta_fraction,
-            )
-            attempts.append(attempt)
-            if bool(attempt.get("certified", False)):
-                deployed = point
-                selected_rank = candidate_index + 1
-                break
+    objective_comparison = {
+        "enabled": False,
+        "status": (
+            "disabled"
+            if incumbent_index is None or comparison_budget == 0
+            else "not_required"
+        ),
+        "comparison_budget_per_policy": int(comparison_budget),
+        "simulation_calls": 0,
+        "delta": comparison_delta,
+        "target_oracle_used": False,
+        "comparison_samples_logged": False,
+    }
 
-    actual_budget = int(sum(
+    def verify_index(candidate_index):
+        if candidate_index in attempts_by_index:
+            return attempts_by_index[candidate_index]
+        attempt = verify_frozen_policy(
+            problem,
+            points[candidate_index],
+            seed=seed,
+            search_evaluation_count=search_evaluation_count,
+            verification_budget=budgets[candidate_index],
+            delta=per_candidate_delta,
+            candidate_index=candidate_index,
+            method=method,
+            mean_delta_fraction=mean_delta_fraction,
+        )
+        attempts.append(attempt)
+        attempts_by_index[candidate_index] = attempt
+        return attempt
+
+    if budgets[0] > 0:
+        if objective_guard_enabled:
+            challenger_attempt = verify_index(0)
+            incumbent_attempt = verify_index(incumbent_index)
+            challenger_certified = bool(
+                challenger_attempt.get("certified", False))
+            incumbent_certified = bool(
+                incumbent_attempt.get("certified", False))
+            if incumbent_index == 0 and challenger_certified:
+                deployed = points[0]
+                selected_rank = 1
+                objective_comparison["status"] = "same_policy"
+            elif challenger_certified and incumbent_certified:
+                objective_comparison = verify_paired_objective_dominance(
+                    problem,
+                    points[0],
+                    points[incumbent_index],
+                    seed=seed,
+                    comparison_budget=comparison_budget,
+                    delta=comparison_delta,
+                )
+                if bool(objective_comparison["challenger_dominates"]):
+                    deployed = points[0]
+                    selected_rank = 1
+                else:
+                    deployed = points[incumbent_index]
+                    selected_rank = incumbent_index + 1
+            elif challenger_certified:
+                deployed = points[0]
+                selected_rank = 1
+                objective_comparison["status"] = (
+                    "incumbent_not_safety_certified")
+            elif incumbent_certified:
+                deployed = points[incumbent_index]
+                selected_rank = incumbent_index + 1
+                objective_comparison["status"] = (
+                    "challenger_not_safety_certified")
+            else:
+                objective_comparison["status"] = (
+                    "neither_primary_nor_incumbent_safety_certified")
+                for candidate_index in range(len(points)):
+                    if candidate_index in attempts_by_index:
+                        continue
+                    attempt = verify_index(candidate_index)
+                    if bool(attempt.get("certified", False)):
+                        deployed = points[candidate_index]
+                        selected_rank = candidate_index + 1
+                        break
+        else:
+            for candidate_index in range(len(points)):
+                attempt = verify_index(candidate_index)
+                if bool(attempt.get("certified", False)):
+                    deployed = points[candidate_index]
+                    selected_rank = candidate_index + 1
+                    break
+
+    safety_budget = int(sum(
         int(attempt.get("verification_budget", 0))
         for attempt in attempts
     ))
+    objective_budget = int(
+        objective_comparison.get("simulation_calls", 0))
+    actual_budget = int(safety_budget + objective_budget)
     _, method_label = _verification_method(method)
     certified = selected_rank is not None
     return deployed, {
@@ -476,11 +815,17 @@ def verify_frozen_shortlist(
         "search_samples_reused": False,
         "posterior_updated_from_verification": False,
         "verification_budget": actual_budget,
+        "safety_verification_budget": safety_budget,
+        "objective_comparison_budget": objective_budget,
+        "objective_comparison_budget_per_policy": int(comparison_budget),
         "verification_budget_per_candidate": budgets[0],
         "fallback_verification_budget": (
             budgets[1] if len(budgets) > 1 else budgets[0]),
         "candidate_verification_budgets": budgets,
-        "max_verification_budget": int(sum(budgets)),
+        "max_verification_budget": int(
+            sum(budgets)
+            + (2 * comparison_budget if objective_guard_enabled else 0)
+        ),
         "search_evaluation_count": int(search_evaluation_count),
         "total_evaluation_count": int(search_evaluation_count) + actual_budget,
         "familywise_delta": familywise_delta,
@@ -490,6 +835,10 @@ def verify_frozen_shortlist(
         "frozen_shortlist": records,
         "attempts": attempts,
         "attempt_count": len(attempts),
+        "objective_incumbent_guard_enabled": objective_guard_enabled,
+        "objective_incumbent_position": (
+            None if incumbent_index is None else int(incumbent_index + 1)),
+        "objective_comparison": objective_comparison,
         "certified": certified,
         "selected_shortlist_rank": selected_rank,
         "primary_policy_fingerprint": integer_design_fingerprint([points[0]]),
@@ -497,7 +846,12 @@ def verify_frozen_shortlist(
         "recommendation_changed": bool(deployed != points[0]),
         "target_oracle_used": False,
         "certification_scope": (
-            "familywise_frozen_ordered_terminal_shortlist"),
+            "familywise_frozen_ordered_terminal_shortlist"
+            + (
+                "_with_independent_paired_objective_guard"
+                if objective_guard_enabled else ""
+            )
+        ),
         "verification_samples_logged": False,
     }
 

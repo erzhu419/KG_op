@@ -13,11 +13,14 @@ from algorithms.single_olhkg import (  # noqa: E402
 )
 from core.terminal_verification import (  # noqa: E402
     build_verification_aware_shortlist,
+    freeze_objective_incumbent_shortlist,
     parse_verification_candidate_budgets,
+    select_initial_empirical_objective_incumbent,
     select_objective_verification_challenger,
     select_posterior_safe_interior,
     verify_frozen_policy,
     verify_frozen_shortlist,
+    verify_paired_objective_dominance,
 )
 from problems.rzdt import (  # noqa: E402
     FactorShockStatePolicyRZDT1,
@@ -36,6 +39,147 @@ class _TwoPolicyGaussianProblem:
         unsafe = int(point[0]) == 0
         constraint = (1.0 if unsafe else -1.0) + rng.normal(0.0, 0.01)
         return np.asarray([float(point[0]), constraint], dtype=float)
+
+
+class _ObjectiveGuardGaussianProblem:
+    d = 1
+    alpha = 0.05
+    tau = 0.0
+    simulation_noise_model = "iid_gaussian"
+
+    def simulate(self, point, rng):
+        index = int(point[0])
+        objective = float(index) + rng.normal(0.0, 0.02)
+        constraint_mean = 1.0 if index in {7, 8} else -1.0
+        constraint = constraint_mean + rng.normal(0.0, 0.01)
+        return np.asarray([objective, constraint], dtype=float)
+
+
+def _shortlist(*points):
+    return [
+        {
+            "shortlist_position": index + 1,
+            "shortlist_role": (
+                "posterior_primary" if index == 0 else "posterior_support"),
+            "point": [int(point)],
+        }
+        for index, point in enumerate(points)
+    ]
+
+
+def test_initial_empirical_incumbent_is_oracle_free_and_inserted_second():
+    incumbent = select_initial_empirical_objective_incumbent(
+        [(5,), (2,), (2,), (3,)],
+        [[5.0, -1.0], [2.5, -1.0], [1.5, -1.0], [3.0, -1.0]],
+        n0=4,
+    )
+    assert incumbent["point"] == (2,)
+    assert incumbent["observed_objective_mean"] == 2.0
+    assert incumbent["initial_observation_count"] == 2
+    assert incumbent["target_oracle_used"] is False
+
+    frozen, audit = freeze_objective_incumbent_shortlist(
+        _shortlist(4, 5, 6),
+        incumbent,
+        shortlist_size=3,
+    )
+    assert [row["point"] for row in frozen] == [[4], [2], [5]]
+    assert frozen[1]["shortlist_role"] == (
+        "frozen_initial_empirical_objective_incumbent")
+    assert audit["objective_incumbent_position"] == 2
+    assert audit["target_oracle_used"] is False
+
+
+def test_paired_objective_dominance_is_reproducible_and_one_sided():
+    problem = _ObjectiveGuardGaussianProblem()
+    first = verify_paired_objective_dominance(
+        problem,
+        (1,),
+        (3,),
+        seed=13,
+        comparison_budget=8,
+        delta=0.05 / 3.0,
+    )
+    second = verify_paired_objective_dominance(
+        problem,
+        (1,),
+        (3,),
+        seed=13,
+        comparison_budget=8,
+        delta=0.05 / 3.0,
+    )
+    assert first == second
+    assert first["challenger_dominates"] is True
+    assert first["one_sided_upper_confidence_bound"] < 0.0
+    assert first["simulation_calls"] == 16
+    assert first["paired_common_random_numbers"] is True
+    assert first["target_oracle_used"] is False
+
+
+def test_objective_guard_retains_better_independently_safe_incumbent():
+    problem = _ObjectiveGuardGaussianProblem()
+    deployed, audit = verify_frozen_shortlist(
+        problem,
+        _shortlist(4, 1, 6),
+        seed=7,
+        search_evaluation_count=13,
+        candidate_budgets=(12, 12, 12),
+        familywise_delta=0.05,
+        method="normal_quantile_tolerance",
+        objective_incumbent_position=2,
+        objective_comparison_budget=8,
+        objective_comparison_delta=0.05 / 3.0,
+    )
+    assert deployed == (1,)
+    assert audit["certified"] is True
+    assert audit["selected_shortlist_rank"] == 2
+    assert audit["attempt_count"] == 2
+    assert audit["safety_verification_budget"] == 24
+    assert audit["objective_comparison_budget"] == 16
+    assert audit["verification_budget"] == 40
+    assert audit["objective_comparison"]["status"] == "incumbent_retained"
+
+
+def test_objective_guard_accepts_significantly_better_safe_challenger():
+    problem = _ObjectiveGuardGaussianProblem()
+    deployed, audit = verify_frozen_shortlist(
+        problem,
+        _shortlist(1, 4, 6),
+        seed=11,
+        search_evaluation_count=13,
+        candidate_budgets=(12, 12, 12),
+        familywise_delta=0.05,
+        method="normal_quantile_tolerance",
+        objective_incumbent_position=2,
+        objective_comparison_budget=8,
+        objective_comparison_delta=0.05 / 3.0,
+    )
+    assert deployed == (1,)
+    assert audit["selected_shortlist_rank"] == 1
+    assert audit["objective_comparison"]["status"] == (
+        "challenger_dominates")
+
+
+def test_objective_guard_uses_third_policy_when_both_leaders_are_unsafe():
+    problem = _ObjectiveGuardGaussianProblem()
+    deployed, audit = verify_frozen_shortlist(
+        problem,
+        _shortlist(7, 8, 2),
+        seed=17,
+        search_evaluation_count=13,
+        candidate_budgets=(12, 12, 12),
+        familywise_delta=0.05,
+        method="normal_quantile_tolerance",
+        objective_incumbent_position=2,
+        objective_comparison_budget=8,
+        objective_comparison_delta=0.05 / 3.0,
+    )
+    assert deployed == (2,)
+    assert audit["selected_shortlist_rank"] == 3
+    assert audit["attempt_count"] == 3
+    assert audit["objective_comparison_budget"] == 0
+    assert audit["objective_comparison"]["status"] == (
+        "neither_primary_nor_incumbent_safety_certified")
 
 
 def test_v9_shortlist_freezes_challenger_primary_and_distinct_support():

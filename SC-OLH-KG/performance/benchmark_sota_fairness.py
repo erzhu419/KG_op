@@ -18,7 +18,9 @@ from baselines.botorch_adapters import (  # noqa: E402
     BoTorchBaselineConfig,
 )
 from core.terminal_verification import (  # noqa: E402
+    freeze_objective_incumbent_shortlist,
     parse_verification_candidate_budgets,
+    select_initial_empirical_objective_incumbent,
     verify_frozen_shortlist,
 )
 from core.designs import load_frozen_source_informed_design  # noqa: E402
@@ -130,6 +132,19 @@ def _apply_terminal_verification(optimizer, result, args):
         raise RuntimeError(
             "terminal verification requires a pre-truth frozen shortlist")
     search_calls = int(result["n_simulations"])
+    incumbent_audit = None
+    if bool(getattr(args, "terminal_objective_incumbent_guard", False)):
+        initial_history = optimizer.history[: int(args.n0)]
+        incumbent = select_initial_empirical_objective_incumbent(
+            [point for point, _ in initial_history],
+            [observation for _, observation in initial_history],
+            n0=int(args.n0),
+        )
+        shortlist, incumbent_audit = freeze_objective_incumbent_shortlist(
+            shortlist,
+            incumbent,
+            shortlist_size=len(shortlist),
+        )
     primary_metrics = {
         key: result.get(key)
         for key in (
@@ -171,6 +186,15 @@ def _apply_terminal_verification(optimizer, result, args):
             "terminal_verification_shortlist_mode",
             "posterior_primary_safe_interior",
         )),
+        objective_incumbent_position=(
+            None
+            if incumbent_audit is None
+            else incumbent_audit["objective_incumbent_position"]
+        ),
+        objective_comparison_budget=int(getattr(
+            args, "terminal_objective_comparison_budget", 0)),
+        objective_comparison_delta=float(getattr(
+            args, "terminal_objective_comparison_delta", 0.05)),
     )
     truth_rows = []
     for record in shortlist:
@@ -185,6 +209,8 @@ def _apply_terminal_verification(optimizer, result, args):
     result.update({
         "search_recommendation": primary_metrics,
         "terminal_verification": verification,
+        "frozen_terminal_shortlist": shortlist,
+        "terminal_objective_incumbent": incumbent_audit,
         "terminal_verification_truth_audit": {
             "computed_after_shortlist_freeze_and_verification": True,
             "used_for_selection_or_certification": False,
@@ -192,6 +218,11 @@ def _apply_terminal_verification(optimizer, result, args):
         },
         "n_search_simulations": search_calls,
         "n_verification_simulations": verification_calls,
+        "n_safety_verification_simulations": int(
+            verification.get("safety_verification_budget", verification_calls)
+        ),
+        "n_objective_comparison_simulations": int(
+            verification.get("objective_comparison_budget", 0)),
         "n_target_simulations_total": search_calls + verification_calls,
         "n_simulations": search_calls + verification_calls,
     })
@@ -208,6 +239,9 @@ def run_one(args):
             "posterior_primary_safe_interior"),
         "terminal_verification_shortlist_size": 2,
         "terminal_objective_challenger_max_violation_probability": 0.5,
+        "terminal_objective_incumbent_guard": False,
+        "terminal_objective_comparison_budget": 0,
+        "terminal_objective_comparison_delta": 0.05,
         "terminal_verification_delta": 0.05,
         "terminal_verification_method": "normal_quantile_tolerance",
         "terminal_safe_interior_probability_slack": 0.05,
@@ -405,6 +439,12 @@ def run_one(args):
         payload["information_contract"].update({
             "target_search_calls": search_calls,
             "target_verification_calls": verification_calls,
+            "target_safety_verification_calls": int(result.get(
+                "n_safety_verification_simulations",
+                verification_calls,
+            )),
+            "target_objective_comparison_calls": int(result.get(
+                "n_objective_comparison_simulations", 0)),
             "target_total_calls": target_total_calls,
             "total_source_plus_target_search_calls": int(
                 offline_calls + search_calls),
@@ -546,6 +586,15 @@ def main():
         type=float,
         default=0.5,
     )
+    parser.add_argument(
+        "--terminal-objective-incumbent-guard",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--terminal-objective-comparison-budget", type=int, default=0)
+    parser.add_argument(
+        "--terminal-objective-comparison-delta", type=float, default=0.05)
     parser.add_argument(
         "--terminal-verification-delta", type=float, default=0.05)
     parser.add_argument(

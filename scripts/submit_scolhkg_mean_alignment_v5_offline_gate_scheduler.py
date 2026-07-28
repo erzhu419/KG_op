@@ -291,6 +291,18 @@ def _flags(profile, args):
                     "max_violation_probability",
                     0.5,
                 )),
+                *(
+                    ["--terminal-objective-incumbent-guard"]
+                    if profile.get(
+                        "terminal_objective_incumbent_guard", False)
+                    else []
+                ),
+                "--terminal-objective-comparison-budget",
+                str(profile.get(
+                    "terminal_objective_comparison_budget", 0)),
+                "--terminal-objective-comparison-delta",
+                str(profile.get(
+                    "terminal_objective_comparison_delta", 0.05)),
                 "--terminal-safe-interior-candidate-scope",
                 str(profile.get(
                     "terminal_safe_interior_candidate_scope", "initial")),

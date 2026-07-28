@@ -126,6 +126,24 @@ def test_crossdim_v9_uses_identical_three_policy_verifier(tmp_path):
         assert "--terminal-verification-delta 0.05" in spec["cmd"]
 
 
+def test_crossdim_v69_adds_identical_objective_incumbent_guard(tmp_path):
+    args = _args(tmp_path)
+    args.terminal_profile = "v69"
+    specs = SUBMIT.build_specs(args)
+    assert specs
+    for spec in specs:
+        assert (
+            "--terminal-verification-candidate-budgets 80,128,128"
+            in spec["cmd"]
+        )
+        assert "--terminal-objective-incumbent-guard" in spec["cmd"]
+        assert "--terminal-objective-comparison-budget 8" in spec["cmd"]
+        assert (
+            "--terminal-objective-comparison-delta "
+            "0.016666666666666666" in spec["cmd"]
+        )
+
+
 def test_crossdim_recovery_skips_only_compact_success_results(tmp_path):
     args = _args(tmp_path)
     args.heldouts = "FactorShockStatePolicyRZDT1"

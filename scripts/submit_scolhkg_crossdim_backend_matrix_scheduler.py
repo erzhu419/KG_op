@@ -52,8 +52,8 @@ def _terminal_verification_flags(args):
     profile = str(
         getattr(args, "terminal_profile", "v7")
     ).strip().lower()
-    if profile == "v9":
-        return [
+    if profile in {"v9", "v69"}:
+        flags = [
             "--terminal-verification-primary-budget", "80",
             "--terminal-verification-support-budget", "128",
             "--terminal-verification-candidate-budgets", "80,128,128",
@@ -67,6 +67,14 @@ def _terminal_verification_flags(args):
             "0.5",
             "--terminal-safe-interior-probability-slack", "0.05",
         ]
+        if profile == "v69":
+            flags.extend([
+                "--terminal-objective-incumbent-guard",
+                "--terminal-objective-comparison-budget", "8",
+                "--terminal-objective-comparison-delta",
+                str(0.05 / 3.0),
+            ])
+        return flags
     if profile == "v7":
         return [
             "--terminal-verification-primary-budget", "80",
@@ -75,7 +83,7 @@ def _terminal_verification_flags(args):
             "--terminal-verification-method",
             "normal_quantile_tolerance",
         ]
-    raise ValueError("terminal profile must be v7 or v9")
+    raise ValueError("terminal profile must be v7, v9, or v69")
 
 
 def validate_contract(args):
@@ -418,12 +426,13 @@ def main():
     parser.add_argument("--offline-source-calls", type=int, default=384)
     parser.add_argument(
         "--terminal-profile",
-        choices=("v7", "v9"),
+        choices=("v7", "v9", "v69"),
         default="v7",
         help=(
             "Shared terminal protocol for every backend. v9 freezes an "
             "objective challenger, strict primary, and safe support with "
-            "80/128/128 independent verification calls."
+            "80/128/128 independent verification calls. v69 adds an "
+            "independent paired objective-incumbent comparison."
         ),
     )
     parser.add_argument("--cpu", type=int, default=12)
@@ -506,14 +515,18 @@ def main():
         "terminal_verification_contract": {
             "shortlist_mode": (
                 "posterior_objective_challenger_then_safe"
-                if args.terminal_profile == "v9"
+                if args.terminal_profile in {"v9", "v69"}
                 else "posterior_primary_safe_interior"
             ),
             "candidate_budgets": (
                 [80, 128, 128]
-                if args.terminal_profile == "v9"
+                if args.terminal_profile in {"v9", "v69"}
                 else [80, 96]
             ),
+            "objective_incumbent_guard": bool(
+                args.terminal_profile == "v69"),
+            "objective_comparison_budget_per_policy": (
+                8 if args.terminal_profile == "v69" else 0),
             "familywise_delta": 0.05,
             "verification_updates_optimizer": False,
             "target_oracle_used": False,
