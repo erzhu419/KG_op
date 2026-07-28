@@ -140,11 +140,6 @@ def validate_contract(args):
 def _base_spec(args, *, backend, heldout, seed, command, cpu, ram_mb,
                vram, allowed_nodes):
     deploy_project = Path(args.deploy) / "SC-OLH-KG"
-    remote_project = REMOTE_ROOT / "SC-OLH-KG"
-    remote_result = (
-        remote_project / "profiles" / args.run_id / backend / heldout
-        / f"seed{seed:04d}"
-    )
     local_result = (
         deploy_project / "profiles" / args.run_id / backend / heldout
         / f"seed{seed:04d}"
@@ -165,7 +160,10 @@ def _base_spec(args, *, backend, heldout, seed, command, cpu, ram_mb,
         "cpu": int(cpu),
         "ram_mb": int(ram_mb),
         "allowed_nodes": list(allowed_nodes),
-        "result_dir": str(remote_result),
+        # Scheduler rewrites paths rooted at the local deployment for compute
+        # nodes while leaving them unchanged on GPU jump hosts. Hard-coding
+        # the compute-node root makes the same task non-portable to jtl hosts.
+        "result_dir": str(local_result),
         "local_result_dir": str(local_result),
         "stage_excludes": ["checkpoints", "profiles", "results"],
         "allow_duplicate": True,
@@ -174,8 +172,8 @@ def _base_spec(args, *, backend, heldout, seed, command, cpu, ram_mb,
 
 def build_specs(args):
     deploy_project = Path(args.deploy) / "SC-OLH-KG"
-    remote_project = REMOTE_ROOT / "SC-OLH-KG"
-    manifest = remote_project / "performance/manifests/v18b_exactkg_mcdiag.json"
+    manifest = (
+        deploy_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     domains = _parse_csv(args.heldouts)
     backends = _parse_csv(args.backends)
     unknown = sorted(set(backends) - set(BACKENDS))
@@ -187,16 +185,8 @@ def build_specs(args):
             deploy_project / "archives" / args.archive_run_id / heldout
             / f"heldout_{heldout}.json"
         )
-        remote_archive = (
-            remote_project / "archives" / args.archive_run_id / heldout
-            / f"heldout_{heldout}.json"
-        )
         local_design = (
             deploy_project / "archives" / args.design_run_id / heldout
-            / "source_initial_designs.json"
-        )
-        remote_design = (
-            remote_project / "archives" / args.design_run_id / heldout
             / "source_initial_designs.json"
         )
         for seed in range(
@@ -204,8 +194,8 @@ def build_specs(args):
             int(args.seed_start) + int(args.n_seeds),
         ):
             if "proposal_only" in backends:
-                remote_result = (
-                    remote_project / "profiles" / args.run_id
+                execution_result = (
+                    deploy_project / "profiles" / args.run_id
                     / "proposal_only" / heldout / f"seed{seed:04d}"
                     / "result.json"
                 )
@@ -218,8 +208,8 @@ def build_specs(args):
                     "performance/benchmark_frozen_proposal_only.py",
                     "--heldout", heldout,
                     "--seed", str(seed),
-                    "--initial-design-file", str(remote_design),
-                    "--out", str(remote_result),
+                    "--initial-design-file", str(local_design),
+                    "--out", str(execution_result),
                     "--source-d", str(args.source_d),
                     "--d", str(args.d),
                     "--n0", str(args.n0),
@@ -245,13 +235,13 @@ def build_specs(args):
                 specs.append(spec)
 
             if "stacked_gp" in backends:
-                remote_result = (
-                    remote_project / "profiles" / args.run_id
+                execution_result = (
+                    deploy_project / "profiles" / args.run_id
                     / "stacked_gp" / heldout / f"seed{seed:04d}"
                     / "result.json"
                 )
                 checkpoint = (
-                    remote_project / "checkpoints" / args.run_id
+                    deploy_project / "checkpoints" / args.run_id
                     / "stacked_gp" / heldout / f"seed{seed:04d}"
                 )
                 command = [
@@ -269,10 +259,10 @@ def build_specs(args):
                     "--method", "stacked_transfer_gp_cbo",
                     "--implementation", "official",
                     "--heldout", heldout,
-                    "--archive", str(remote_archive),
+                    "--archive", str(local_archive),
                     "--initial-design", "source_informed",
-                    "--initial-design-file", str(remote_design),
-                    "--out", str(remote_result),
+                    "--initial-design-file", str(local_design),
+                    "--out", str(execution_result),
                     "--checkpoint-dir", str(checkpoint),
                     "--seed", str(seed),
                     "--d", str(args.d),
@@ -305,13 +295,13 @@ def build_specs(args):
                 specs.append(spec)
 
             if "saasbo" in backends:
-                remote_result = (
-                    remote_project / "profiles" / args.run_id
+                execution_result = (
+                    deploy_project / "profiles" / args.run_id
                     / "saasbo" / heldout / f"seed{seed:04d}"
                     / "result.json"
                 )
                 checkpoint = (
-                    remote_project / "checkpoints" / args.run_id
+                    deploy_project / "checkpoints" / args.run_id
                     / "saasbo" / heldout / f"seed{seed:04d}"
                 )
                 command = [
@@ -329,9 +319,9 @@ def build_specs(args):
                     "--heldout", heldout,
                     "--seed", str(seed),
                     "--manifest", str(manifest),
-                    "--out", str(remote_result),
+                    "--out", str(execution_result),
                     "--checkpoint-dir", str(checkpoint),
-                    "--initial-design-file", str(remote_design),
+                    "--initial-design-file", str(local_design),
                     "--target-budget", str(args.N),
                     "--d", str(args.d),
                     "--n0", str(args.n0),

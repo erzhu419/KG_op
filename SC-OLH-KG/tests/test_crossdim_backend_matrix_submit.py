@@ -89,6 +89,13 @@ def test_crossdim_backend_contracts_keep_backend_information_explicit(
     assert "--target-budget 13" in saas["cmd"]
     assert saas["allowed_nodes"] == list(SUBMIT.GPU_NODES)
     assert saas["vram"] == 2048
+    assert str(
+        tmp_path / "SC-OLH-KG/performance/manifests/"
+        "v18b_exactkg_mcdiag.json"
+    ) in saas["cmd"]
+    assert str(SUBMIT.REMOTE_ROOT / "SC-OLH-KG/performance/manifests") not in (
+        saas["cmd"])
+    assert saas["result_dir"].startswith(str(tmp_path / "SC-OLH-KG"))
 
 
 def test_crossdim_recovery_skips_only_compact_success_results(tmp_path):
