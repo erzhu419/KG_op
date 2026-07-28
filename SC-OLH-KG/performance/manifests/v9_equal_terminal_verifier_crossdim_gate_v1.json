@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "paper_grade_20_seed_expansion_completed_backend_challenge_ready",
+  "status": "paper_grade_20_seed_expansion_completed_backend_challenge_submitted",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -289,6 +289,51 @@
     },
     "interpretation": "With the front end, initial design, and independent verifier held fixed, certification is no longer the confounder. The remaining performance gap is an online decision-backend gap: canonical SAASBO improves Inventory and Queue while V65, Stacked GP, and proposal-only mostly preserve n0-best.",
     "audit_note": "Some SC-generated shortlist records omitted redundant per-candidate oracle-free flags even though the top-level contract was oracle-free and frozen. Post-expansion code now emits those fields explicitly; no target oracle or verification sample entered selection."
+  },
+  "backend_challenge": {
+    "submitted_on": "2026-07-28",
+    "code_commit": "64300c1",
+    "run_id": "paper_v66_v68_feasible_first_gate_cross_d50_d1000_n13_s80_84_v1",
+    "task_ids": "t58465-t58524",
+    "task_count": 60,
+    "seed_start": 80,
+    "n_seeds": 5,
+    "variants": [
+      "v65_verification_aware_terminal",
+      "v66_feasible_first_ts",
+      "v67_feasible_first_ts_objective_safe",
+      "v68_feasible_first_ts_incumbent"
+    ],
+    "controlled_constants": {
+      "source_dimension": 50,
+      "target_dimension": 1000,
+      "target_search_calls": 13,
+      "target_initial_calls_n0": 10,
+      "frozen_initial_design_run_id": "paper_certified_scolh_v64_cross_d50_d1000_s80_99_v1",
+      "hvd_and_front_end": "promoted V65 cumulative-HVD front end",
+      "verifier": "V9 three-policy 80/128/128 familywise verifier"
+    },
+    "isolated_changes": {
+      "v66": "replace exact VOI by feasible-first constrained posterior sampling",
+      "v67": "V66 plus objective-ranked posterior-safe shortlist support",
+      "v68": "V67 plus sequential posterior-dominance incumbent preservation"
+    },
+    "promotion_requirements": [
+      "15/15 true-feasible deployments",
+      "zero false independent certificates",
+      "no adaptive loss against the common n0 incumbent",
+      "strictly more paired improvements or lower paired regret than V65",
+      "all shortlist records explicitly oracle-free and frozen before verification"
+    ],
+    "allowed_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "checkpoint_sync": false
   },
   "reporting": [
     "search budget",
