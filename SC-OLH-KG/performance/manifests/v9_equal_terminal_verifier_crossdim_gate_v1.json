@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "v69_20_seed_complete_equal_backend_matrix_ready",
+  "status": "v69_equal_backend_matrix_complete",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -594,6 +594,135 @@
         "search_plus_safety_plus_objective_budget_identity": "60/60"
       },
       "decision": "Promote V69 as the SC deployment protocol and rerun proposal-only, Stacked GP, and canonical SAASBO with the identical V69 verifier."
+    },
+    "equal_backend_matrix": {
+      "run_id": "paper_v69_equal_verifier_backends_cross_d50_d1000_n13_s80_99_v1",
+      "comparison_sc_run_id": "paper_v69_objective_guard_cross_d50_d1000_n13_s80_99_v1",
+      "new_task_ids": "t58701-t58880",
+      "new_tasks_completed": "180/180",
+      "new_tasks_failed": 0,
+      "logical_cells": 240,
+      "paired_domain_seed_cells": "60/60",
+      "compact_result_json_files_synced": 180,
+      "checkpoint_or_binary_files_synced": 0,
+      "protocol_checks": {
+        "initial_design_fingerprint_equal_across_all_methods": "60/60",
+        "source_archive_fingerprint_equal_across_all_methods": "60/60",
+        "three_distinct_frozen_candidates": "240/240",
+        "candidate_budgets_80_128_128": "240/240",
+        "familywise_delta_0_05": "240/240",
+        "oracle_free_frozen_shortlist": "240/240",
+        "independent_paired_objective_comparison": "240/240",
+        "search_plus_safety_plus_objective_equals_total": "240/240",
+        "safety_plus_objective_equals_verification": "240/240",
+        "deterministic_cuda_saas_contract": "60/60"
+      },
+      "methods": {
+        "proposal_only": {
+          "true_feasible": "60/60",
+          "independently_certified": "60/60",
+          "false_certificates": 0,
+          "terminal_abstentions": 0,
+          "n0_to_final_improve_tie_loss": "0/60/0",
+          "median_feasible_regret": 0.00824999999999998,
+          "mean_feasible_regret": 0.007561150318447969,
+          "mean_search_calls": 10,
+          "mean_safety_verification_calls": 103.46666666666667,
+          "mean_objective_comparison_calls": 0,
+          "mean_total_verification_calls": 103.46666666666667,
+          "mean_total_target_calls": 113.46666666666667,
+          "mean_source_plus_target_calls": 497.46666666666664
+        },
+        "stacked_gp": {
+          "true_feasible": "60/60",
+          "independently_certified": "60/60",
+          "false_certificates": 0,
+          "terminal_abstentions": 0,
+          "n0_to_final_improve_tie_loss": "1/59/0",
+          "median_feasible_regret": 0.00824999999999998,
+          "mean_feasible_regret": 0.007548837280272249,
+          "mean_search_calls": 13,
+          "mean_safety_verification_calls": 90.66666666666667,
+          "mean_objective_comparison_calls": 0.26666666666666666,
+          "mean_total_verification_calls": 90.93333333333334,
+          "mean_total_target_calls": 103.93333333333334,
+          "mean_source_plus_target_calls": 487.93333333333334
+        },
+        "scolh_v69": {
+          "true_feasible": "60/60",
+          "independently_certified": "60/60",
+          "false_certificates": 0,
+          "terminal_abstentions": 0,
+          "n0_to_final_improve_tie_loss": "18/42/0",
+          "median_feasible_regret": 0.00824999999999998,
+          "mean_feasible_regret": 0.007381445530116629,
+          "mean_search_calls": 13,
+          "mean_safety_verification_calls": 150.4,
+          "mean_objective_comparison_calls": 5.333333333333333,
+          "mean_total_verification_calls": 155.73333333333332,
+          "mean_total_target_calls": 168.73333333333332,
+          "mean_source_plus_target_calls": 552.7333333333333
+        },
+        "canonical_saasbo": {
+          "true_feasible": "60/60",
+          "independently_certified": "60/60",
+          "false_certificates": 0,
+          "terminal_abstentions": 0,
+          "n0_to_final_improve_tie_loss": "33/25/2",
+          "median_feasible_regret": 0.0034549030422328375,
+          "mean_feasible_regret": 0.004881830661846348,
+          "mean_search_calls": 13,
+          "mean_safety_verification_calls": 167.46666666666667,
+          "mean_objective_comparison_calls": 9.333333333333334,
+          "mean_total_verification_calls": 176.8,
+          "mean_total_target_calls": 189.8,
+          "mean_source_plus_target_calls": 573.8
+        }
+      },
+      "domain_results": {
+        "FactorShockStatePolicyRZDT1": {
+          "proposal_only_n0_improve_tie_loss": "0/20/0",
+          "stacked_gp_n0_improve_tie_loss": "0/20/0",
+          "scolh_v69_n0_improve_tie_loss": "0/20/0",
+          "canonical_saasbo_n0_improve_tie_loss": "0/20/0",
+          "all_method_median_regret": 0.00824999999999998
+        },
+        "InventorySupplyChain": {
+          "proposal_only_n0_improve_tie_loss": "0/20/0",
+          "stacked_gp_n0_improve_tie_loss": "1/19/0",
+          "scolh_v69_n0_improve_tie_loss": "9/11/0",
+          "canonical_saasbo_n0_improve_tie_loss": "17/3/0",
+          "proposal_only_median_regret": 0.011556952461906411,
+          "scolh_v69_median_regret": 0.011556952461906411,
+          "canonical_saasbo_median_regret": 0.0030653257750624385
+        },
+        "QueueResourceControl": {
+          "proposal_only_n0_improve_tie_loss": "0/20/0",
+          "stacked_gp_n0_improve_tie_loss": "0/20/0",
+          "scolh_v69_n0_improve_tie_loss": "9/11/0",
+          "canonical_saasbo_n0_improve_tie_loss": "16/2/2",
+          "proposal_only_median_regret": 0.002876498493437518,
+          "scolh_v69_median_regret": 0.002876498493437518,
+          "canonical_saasbo_median_regret": 0.0014327770906072679
+        }
+      },
+      "paired_against_scolh_v69": {
+        "proposal_only_better_tie_worse": "0/42/18",
+        "stacked_gp_better_tie_worse": "1/42/17",
+        "canonical_saasbo_better_tie_worse": "32/23/5",
+        "canonical_saasbo_mean_regret_difference": -0.0024996148682702806
+      },
+      "objective_loss_audit": {
+        "scolh_v69_losses_against_n0": 0,
+        "canonical_saasbo_losses_against_n0": 2,
+        "canonical_saasbo_loss_cells": [
+          "QueueResourceControl/seed87",
+          "QueueResourceControl/seed88"
+        ],
+        "cause": "The frozen n0 incumbents were truly feasible but did not pass finite-sample independent safety certification. The paired objective comparison was therefore not entered, and the independently certified challenger was deployed.",
+        "paired_objective_false_switches": 0
+      },
+      "finding": "With the source archive, frozen n0 proposal, and V69 verifier fixed, SC-V69 improves on proposal-only while preserving all n0 incumbents, but canonical SAASBO is the strongest online backend on Inventory and Queue. The remaining two SAASBO objective losses are certification-power failures for the incumbent, not paired objective-comparison errors. Search, verification, and total target budgets must remain separate in all comparisons."
     }
   },
   "reporting": [
