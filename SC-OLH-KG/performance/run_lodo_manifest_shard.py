@@ -92,6 +92,12 @@ def load_config(path):
     config.setdefault(
         "terminal_verification_shortlist_mode", "posterior_ranked")
     config.setdefault(
+        "terminal_objective_challenger_max_violation_probability", 0.5)
+    config.setdefault(
+        "terminal_safe_interior_candidate_scope", "initial")
+    config.setdefault(
+        "terminal_safe_interior_selection_mode", "diverse")
+    config.setdefault(
         "terminal_safe_interior_probability_slack", 0.05)
     config.setdefault(
         "terminal_safe_interior_require_provider", False)
@@ -1003,7 +1009,23 @@ def main():
         choices=(
             "posterior_ranked",
             "posterior_primary_safe_interior",
+            "posterior_objective_challenger_then_safe",
         ),
+        default=None,
+    )
+    parser.add_argument(
+        "--terminal-objective-challenger-max-violation-probability",
+        type=float,
+        default=None,
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-candidate-scope",
+        choices=("initial", "observed"),
+        default=None,
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-selection-mode",
+        choices=("diverse", "objective_ranked", "objective_safe_ranked"),
         default=None,
     )
     parser.add_argument(
@@ -1071,6 +1093,30 @@ def main():
         config["terminal_verification_shortlist_mode"]
         if args.terminal_verification_shortlist_mode is None
         else args.terminal_verification_shortlist_mode
+    )
+    terminal_objective_challenger_max_violation_probability = float(
+        config[
+            "terminal_objective_challenger_max_violation_probability"
+        ]
+        if (
+            args
+            .terminal_objective_challenger_max_violation_probability
+            is None
+        )
+        else (
+            args
+            .terminal_objective_challenger_max_violation_probability
+        )
+    )
+    terminal_safe_interior_candidate_scope = str(
+        config["terminal_safe_interior_candidate_scope"]
+        if args.terminal_safe_interior_candidate_scope is None
+        else args.terminal_safe_interior_candidate_scope
+    )
+    terminal_safe_interior_selection_mode = str(
+        config["terminal_safe_interior_selection_mode"]
+        if args.terminal_safe_interior_selection_mode is None
+        else args.terminal_safe_interior_selection_mode
     )
     terminal_safe_interior_probability_slack = float(
         config["terminal_safe_interior_probability_slack"]
@@ -1572,6 +1618,12 @@ def main():
             terminal_verification_fallback_budget),
         "terminal_verification_shortlist_mode": str(
             terminal_verification_shortlist_mode),
+        "terminal_objective_challenger_max_violation_probability": float(
+            terminal_objective_challenger_max_violation_probability),
+        "terminal_safe_interior_candidate_scope": str(
+            terminal_safe_interior_candidate_scope),
+        "terminal_safe_interior_selection_mode": str(
+            terminal_safe_interior_selection_mode),
         "terminal_safe_interior_probability_slack": float(
             terminal_safe_interior_probability_slack),
         "terminal_safe_interior_require_provider": bool(
@@ -1953,6 +2005,12 @@ def main():
                 terminal_verification_fallback_budget),
             "terminal_verification_shortlist_mode": str(
                 terminal_verification_shortlist_mode),
+            "terminal_objective_challenger_max_violation_probability": float(
+                terminal_objective_challenger_max_violation_probability),
+            "terminal_safe_interior_candidate_scope": str(
+                terminal_safe_interior_candidate_scope),
+            "terminal_safe_interior_selection_mode": str(
+                terminal_safe_interior_selection_mode),
             "terminal_safe_interior_probability_slack": float(
                 terminal_safe_interior_probability_slack),
             "terminal_safe_interior_require_provider": bool(

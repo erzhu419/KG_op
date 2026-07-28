@@ -272,6 +272,36 @@ def test_transfer_freezes_method_specific_terminal_shortlist_before_truth():
     assert shortlist[1]["verification_samples_used"] is False
 
 
+def test_transfer_v9_freezes_three_policy_objective_challenger():
+    archive = _archive()
+    runner = TransferConstrainedBO(
+        _problem(),
+        archive,
+        TransferBOConfig(
+            method="hyperbo_cbo",
+            N=4,
+            n0=3,
+            seed=30,
+            candidate_pool_size=16,
+        ),
+    )
+    result = runner.run(
+        freeze_terminal_shortlist=True,
+        terminal_probability_slack=0.05,
+        terminal_require_provider=True,
+        terminal_shortlist_mode=(
+            "posterior_objective_challenger_then_safe"),
+        terminal_shortlist_size=3,
+        terminal_maximum_violation_probability=0.5,
+    )
+    shortlist = result["frozen_terminal_shortlist"]
+    assert len(shortlist) == 3
+    assert len({tuple(row["point"]) for row in shortlist}) == 3
+    assert all(row["target_oracle_used"] is False for row in shortlist)
+    assert all(
+        row["verification_samples_used"] is False for row in shortlist)
+
+
 def test_transfer_terminal_runner_charges_search_and_verification_separately():
     archive = _archive()
     problem = _problem()

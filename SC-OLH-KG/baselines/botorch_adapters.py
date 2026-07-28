@@ -30,7 +30,10 @@ from scipy.stats import norm
 
 from core.candidates import boundary_solutions, unique_candidates
 from core.designs import integer_design_fingerprint
-from core.terminal_verification import select_posterior_safe_interior
+from core.terminal_verification import (
+    build_verification_aware_shortlist,
+    select_posterior_safe_interior,
+)
 
 
 try:  # pragma: no cover - exercised only when the optional stack is installed.
@@ -1296,14 +1299,76 @@ class BoTorchBaseline:
                 mean / np.sqrt(variance)),
         }
 
+    def _terminal_posterior_for_points(self, points):
+        """Return objective minimization and chance-margin posteriors."""
+
+        obj_model = self._last_models[0]
+        if obj_model is None:
+            raise RuntimeError(
+                "terminal shortlist requires a fitted objective model")
+        X = torch.as_tensor(np.asarray([
+            self.problem.normalize(point) for point in points
+        ], dtype=float), dtype=torch.double, device=self._torch_device)
+        with torch.no_grad():
+            posterior = obj_model.posterior(X)
+            maximization_mean = getattr(
+                posterior, "mixture_mean", posterior.mean
+            ).reshape(-1).detach().cpu().numpy()
+        constraint = self._constraint_posterior_for_points(points)
+        return {
+            "objective_mean": -np.asarray(
+                maximization_mean, dtype=float),
+            **constraint,
+        }
+
     def terminal_verification_shortlist(
         self,
         primary,
         *,
         probability_slack=0.05,
         require_provider=True,
+        shortlist_mode="posterior_primary_safe_interior",
+        shortlist_size=2,
+        maximum_violation_probability=0.5,
     ):
         """Freeze a BoTorch-posterior shortlist without target truth."""
+
+        primary = tuple(int(value) for value in primary)
+        normalized_mode = str(
+            shortlist_mode
+        ).strip().lower().replace("-", "_")
+        if normalized_mode == "posterior_objective_challenger_then_safe":
+            observed = []
+            seen = set()
+            for point, _ in self.history:
+                point = tuple(int(value) for value in point)
+                if point not in seen:
+                    seen.add(point)
+                    observed.append(point)
+            if primary not in seen:
+                observed.append(primary)
+            posterior = self._terminal_posterior_for_points(observed)
+            shortlist, _ = build_verification_aware_shortlist(
+                self.problem,
+                primary,
+                observed,
+                posterior["objective_mean"],
+                posterior["probability_violation"],
+                shortlist_size=int(shortlist_size),
+                maximum_violation_probability=float(
+                    maximum_violation_probability),
+                probability_slack=float(probability_slack),
+                support_selection_mode="diverse",
+                require_provider=require_provider,
+                selector_posterior=(
+                    "botorch_latent_chance_margin_posterior"),
+                candidate_universe=(
+                    "frozen_observed_history_plus_search_recommendation"),
+            )
+            return shortlist
+        if normalized_mode != "posterior_primary_safe_interior":
+            raise ValueError(
+                "unknown BoTorch terminal shortlist mode")
 
         initial = []
         seen = set()
@@ -1313,7 +1378,6 @@ class BoTorchBaseline:
                 seen.add(point)
                 initial.append(point)
         posterior = self._constraint_posterior_for_points(initial)
-        primary = tuple(int(value) for value in primary)
         support = select_posterior_safe_interior(
             self.problem,
             primary,
@@ -1513,6 +1577,9 @@ class BoTorchBaseline:
         freeze_terminal_shortlist=False,
         terminal_probability_slack=0.05,
         terminal_require_provider=True,
+        terminal_shortlist_mode="posterior_primary_safe_interior",
+        terminal_shortlist_size=2,
+        terminal_maximum_violation_probability=0.5,
     ):
         t_start = time.time()
         self._progress_start_unit = len(self.history)
@@ -1555,6 +1622,10 @@ class BoTorchBaseline:
                 x_best,
                 probability_slack=terminal_probability_slack,
                 require_provider=terminal_require_provider,
+                shortlist_mode=terminal_shortlist_mode,
+                shortlist_size=terminal_shortlist_size,
+                maximum_violation_probability=(
+                    terminal_maximum_violation_probability),
             )
         result = self._evaluate_recommendation(x_best)
         runtime = botorch_runtime_fingerprint(self._torch_device)

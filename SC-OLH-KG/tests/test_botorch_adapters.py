@@ -112,6 +112,37 @@ class BoTorchAdapterTests(unittest.TestCase):
         self.assertFalse(shortlist[1]["target_oracle_used"])
         self.assertFalse(shortlist[1]["verification_samples_used"])
 
+    def test_botorch_v9_freezes_three_policy_objective_challenger(self):
+        problem = ScalarizedProblem(
+            FactorShockStatePolicyRZDT1(d=5, L=100, sigma=0.04))
+        config = BoTorchBaselineConfig(
+            N=5,
+            n0=4,
+            seed=17,
+            method="botorch_scbo",
+            raw_samples=8,
+            num_restarts=2,
+            maxiter=10,
+            ts_candidates=32,
+        )
+        result = BoTorchBaseline(problem, config).run(
+            freeze_terminal_shortlist=True,
+            terminal_probability_slack=0.05,
+            terminal_require_provider=True,
+            terminal_shortlist_mode=(
+                "posterior_objective_challenger_then_safe"),
+            terminal_shortlist_size=3,
+            terminal_maximum_violation_probability=0.5,
+        )
+        shortlist = result["frozen_terminal_shortlist"]
+        self.assertEqual(len(shortlist), 3)
+        self.assertEqual(
+            len({tuple(row["point"]) for row in shortlist}), 3)
+        self.assertTrue(all(
+            row["target_oracle_used"] is False for row in shortlist))
+        self.assertTrue(all(
+            row["verification_samples_used"] is False for row in shortlist))
+
     def test_saasbo_runs_with_tiny_nuts_budget(self):
         config = BoTorchBaselineConfig(
             N=5,

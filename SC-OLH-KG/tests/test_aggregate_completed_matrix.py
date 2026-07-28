@@ -125,6 +125,64 @@ def test_reads_top_level_frozen_proposal_result_without_dropping_outcome(
     assert rows[0]["terminal_certified"] is True
 
 
+def test_v9_aggregation_does_not_mislabel_rank_one_challenger_as_primary(
+    tmp_path,
+):
+    root = tmp_path / "v9"
+    _write(root / "Domain" / "seed0080" / "result.json", {
+        "status": "ok",
+        "method": "v9_method",
+        "heldout_target_domain": "Domain",
+        "seed": 80,
+        "true_feasible": True,
+        "feasible_regret": 0.02,
+        "search_recommendation": {
+            "true_feasible": False,
+            "feasible_regret": None,
+        },
+        "terminal_verification_truth_audit": {
+            "rows": [
+                {
+                    "shortlist_position": 1,
+                    "shortlist_role": (
+                        "posterior_objective_verification_challenger"),
+                    "true_feasible": True,
+                    "feasible_regret": 0.02,
+                },
+                {
+                    "shortlist_position": 2,
+                    "shortlist_role": (
+                        "posterior_feasible_primary_fallback"),
+                    "true_feasible": False,
+                    "feasible_regret": None,
+                },
+            ],
+        },
+        "terminal_verification": {
+            "enabled": True,
+            "certified": True,
+            "selected_shortlist_rank": 1,
+            "shortlist_mode": (
+                "posterior_objective_challenger_then_safe"),
+            "candidate_verification_budgets": [80, 128, 128],
+            "max_verification_budget": 336,
+            "familywise_delta": 0.05,
+            "attempts": [{"certified": True}],
+        },
+    })
+
+    rows, errors = MODULE.load_rows([root])
+
+    assert errors == []
+    assert rows[0]["primary_true_feasible"] is False
+    assert rows[0]["terminal_selected_rank"] == 1
+    assert rows[0]["terminal_shortlist_mode"] == (
+        "posterior_objective_challenger_then_safe")
+    assert rows[0]["terminal_candidate_budgets"] == "[80,128,128]"
+    assert rows[0]["terminal_max_verification_budget"] == 336
+    assert rows[0]["terminal_familywise_delta"] == 0.05
+
+
 def test_recovers_replicated_source_calls_for_new_archive_origin(tmp_path):
     root = tmp_path / "shared_uniform_run"
     _write(root / "joint" / "Domain" / "seed0" / "result.json", {

@@ -12,6 +12,8 @@ from algorithms.single_olhkg import (  # noqa: E402
     SingleOLHKGConfig,
 )
 from core.terminal_verification import (  # noqa: E402
+    build_verification_aware_shortlist,
+    parse_verification_candidate_budgets,
     select_objective_verification_challenger,
     select_posterior_safe_interior,
     verify_frozen_policy,
@@ -34,6 +36,50 @@ class _TwoPolicyGaussianProblem:
         unsafe = int(point[0]) == 0
         constraint = (1.0 if unsafe else -1.0) + rng.normal(0.0, 0.01)
         return np.asarray([float(point[0]), constraint], dtype=float)
+
+
+def test_v9_shortlist_freezes_challenger_primary_and_distinct_support():
+    problem = ScalarizedProblem(FactorShockStatePolicyRZDT1(
+        d=5, L=100, sigma=0.04, alpha=0.05))
+    points = [
+        (5, 5, 5, 5, 5),
+        (20, 20, 20, 20, 20),
+        (50, 50, 50, 50, 50),
+        (90, 90, 90, 90, 90),
+    ]
+    primary = points[0]
+    shortlist, audit = build_verification_aware_shortlist(
+        problem,
+        primary,
+        points,
+        objective_mean=[0.8, 0.1, 0.4, 0.0],
+        probability_violation=[0.01, 0.40, 0.03, 0.90],
+        shortlist_size=3,
+        maximum_violation_probability=0.5,
+        probability_slack=0.05,
+        require_provider=True,
+    )
+    selected = [tuple(row["point"]) for row in shortlist]
+    assert selected[0] == points[1]
+    assert selected[1] == primary
+    assert len(selected) == len(set(selected)) == 3
+    assert shortlist[0]["shortlist_role"] == (
+        "posterior_objective_verification_challenger")
+    assert shortlist[1]["shortlist_role"] == (
+        "posterior_feasible_primary_fallback")
+    assert audit["shortlist_mode"] == (
+        "posterior_objective_challenger_then_safe")
+    assert audit["target_oracle_used"] is False
+    assert audit["verification_samples_used"] is False
+
+
+def test_explicit_candidate_budget_parser_preserves_order():
+    assert parse_verification_candidate_budgets(
+        "80,128,128", default=(1, 2)
+    ) == (80, 128, 128)
+    assert parse_verification_candidate_budgets(
+        "", default=(80, 96)
+    ) == (80, 96)
 
 
 def test_shared_single_policy_verifier_is_v64_byte_equivalent():

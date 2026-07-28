@@ -45,10 +45,11 @@ V61 = "v61_power_ordered_shortlist_verification"
 V62 = "v62_exact_tolerance_shortlist_verification"
 V63 = "v63_safe_interior_shortlist_verification"
 V64 = "v64_powered_safe_interior_verification"
+V65 = "v65_verification_aware_terminal"
 VARIANTS = (
     CONTROL, V52, V53, *FIDELITY, HIGH_FIDELITY,
     *V54_FIDELITY, *V55_FIDELITY, *V56_FIDELITY,
-    V57, V58, V59, V60, V61, V62, V63, V64,
+    V57, V58, V59, V60, V61, V62, V63, V64, V65,
 )
 
 
@@ -508,6 +509,42 @@ def variant_profiles(args):
                 )),
             "terminal_safe_interior_require_provider": True,
         },
+        V65: {
+            **common,
+            "implementation_contract_id": (
+                "v65_verification_aware_objective_challenger"),
+            "theory_contract_id": (
+                "v65_frozen_three_policy_familywise_quantile_"
+                "certificate_v1"),
+            "evaluate_or_replicate_new_action_count": 4,
+            "evaluate_or_replicate_new_action_policy": (
+                "canonical_plus_posterior_risk"),
+            "policy_improvement_mode": "off",
+            "posterior_dominance_enabled": False,
+            "terminal_verification_budget": 80,
+            "terminal_verification_delta": float(
+                args.terminal_verification_delta),
+            "terminal_verification_mean_delta_fraction": float(
+                args.terminal_verification_mean_delta_fraction),
+            "terminal_verification_method": (
+                "normal_quantile_tolerance"),
+            "terminal_verification_policy": (
+                "ordered_frozen_shortlist"),
+            "terminal_verification_shortlist_size": 3,
+            "terminal_verification_fallback_budget": 128,
+            "terminal_verification_shortlist_mode": (
+                "posterior_objective_challenger_then_safe"),
+            "terminal_objective_challenger_max_violation_probability": 0.5,
+            "terminal_safe_interior_candidate_scope": "observed",
+            "terminal_safe_interior_selection_mode": "diverse",
+            "terminal_safe_interior_probability_slack": float(
+                getattr(
+                    args,
+                    "terminal_safe_interior_probability_slack",
+                    0.05,
+                )),
+            "terminal_safe_interior_require_provider": True,
+        },
     }
 
 
@@ -539,7 +576,10 @@ def build_specs(args):
         raise ValueError(
             "v56/v57/v58 confirmation variants require "
             "independent_confirmation")
-    if any(name in {V59, V60, V61, V62, V63} for name in requested):
+    if any(
+        name in {V59, V60, V61, V62, V63, V64, V65}
+        for name in requested
+    ):
         if int(args.terminal_verification_budget) < 2:
             raise ValueError(
                 "terminal verification requires at least two calls")
@@ -609,6 +649,14 @@ def build_specs(args):
             "v64_powered_safe_interior_verification_paired")
         args.gate_label = (
             "V51 versus V64 powered safe-interior verification")
+    elif requested == [V65]:
+        args.stage_family = "v65_verification_aware_terminal"
+        args.gate_label = (
+            "V65 verification-aware objective-challenger terminal")
+    elif set(requested) == {CONTROL, V65}:
+        args.stage_family = "v65_verification_aware_terminal_paired"
+        args.gate_label = (
+            "V51 versus V65 verification-aware terminal")
     else:
         args.stage_family = "v53_constrained_certificate_deficit"
         args.gate_label = "V53 constrained certificate-deficit policy"

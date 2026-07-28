@@ -48,6 +48,36 @@ def _read_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def _terminal_verification_flags(args):
+    profile = str(
+        getattr(args, "terminal_profile", "v7")
+    ).strip().lower()
+    if profile == "v9":
+        return [
+            "--terminal-verification-primary-budget", "80",
+            "--terminal-verification-support-budget", "128",
+            "--terminal-verification-candidate-budgets", "80,128,128",
+            "--terminal-verification-delta", "0.05",
+            "--terminal-verification-method",
+            "normal_quantile_tolerance",
+            "--terminal-verification-shortlist-mode",
+            "posterior_objective_challenger_then_safe",
+            "--terminal-verification-shortlist-size", "3",
+            "--terminal-objective-challenger-max-violation-probability",
+            "0.5",
+            "--terminal-safe-interior-probability-slack", "0.05",
+        ]
+    if profile == "v7":
+        return [
+            "--terminal-verification-primary-budget", "80",
+            "--terminal-verification-support-budget", "96",
+            "--terminal-verification-delta", "0.05",
+            "--terminal-verification-method",
+            "normal_quantile_tolerance",
+        ]
+    raise ValueError("terminal profile must be v7 or v9")
+
+
 def validate_contract(args):
     """Audit frozen bytes and the 60 V64 rows before adding challengers."""
 
@@ -180,6 +210,7 @@ def build_specs(args):
     if unknown:
         raise ValueError(f"unknown backend rows: {unknown}")
     specs = []
+    terminal_flags = _terminal_verification_flags(args)
     for heldout in domains:
         local_archive = (
             deploy_project / "archives" / args.archive_run_id / heldout
@@ -214,11 +245,7 @@ def build_specs(args):
                     "--d", str(args.d),
                     "--n0", str(args.n0),
                     "--offline-source-calls", str(args.offline_source_calls),
-                    "--terminal-verification-primary-budget", "80",
-                    "--terminal-verification-support-budget", "96",
-                    "--terminal-verification-delta", "0.05",
-                    "--terminal-verification-method",
-                    "normal_quantile_tolerance",
+                    *terminal_flags,
                 ]
                 spec = _base_spec(
                     args,
@@ -273,11 +300,7 @@ def build_specs(args):
                     "--source-coordinate-max-frequency", "8",
                     "--source-coordinate-frequency-penalty", "0.10",
                     "--terminal-verification",
-                    "--terminal-verification-primary-budget", "80",
-                    "--terminal-verification-support-budget", "96",
-                    "--terminal-verification-delta", "0.05",
-                    "--terminal-verification-method",
-                    "normal_quantile_tolerance",
+                    *terminal_flags,
                 ]
                 spec = _base_spec(
                     args,
@@ -329,11 +352,7 @@ def build_specs(args):
                     "--torch-device", "cuda",
                     "--saas-refit-schedule", "every_iteration",
                     "--terminal-verification",
-                    "--terminal-verification-primary-budget", "80",
-                    "--terminal-verification-support-budget", "96",
-                    "--terminal-verification-delta", "0.05",
-                    "--terminal-verification-method",
-                    "normal_quantile_tolerance",
+                    *terminal_flags,
                 ]
                 spec = _base_spec(
                     args,
@@ -394,6 +413,16 @@ def main():
     parser.add_argument("--N", type=int, default=13)
     parser.add_argument("--n0", type=int, default=10)
     parser.add_argument("--offline-source-calls", type=int, default=384)
+    parser.add_argument(
+        "--terminal-profile",
+        choices=("v7", "v9"),
+        default="v7",
+        help=(
+            "Shared terminal protocol for every backend. v9 freezes an "
+            "objective challenger, strict primary, and safe support with "
+            "80/128/128 independent verification calls."
+        ),
+    )
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=16384)
     parser.add_argument("--gpu-cpu", type=int, default=12)
@@ -470,6 +499,22 @@ def main():
             audit["v64_reused_result_count"]),
         "matrix_cell_count": int(
             len(specs) + audit["v64_reused_result_count"]),
+        "terminal_profile": str(args.terminal_profile),
+        "terminal_verification_contract": {
+            "shortlist_mode": (
+                "posterior_objective_challenger_then_safe"
+                if args.terminal_profile == "v9"
+                else "posterior_primary_safe_interior"
+            ),
+            "candidate_budgets": (
+                [80, 128, 128]
+                if args.terminal_profile == "v9"
+                else [80, 96]
+            ),
+            "familywise_delta": 0.05,
+            "verification_updates_optimizer": False,
+            "target_oracle_used": False,
+        },
         "task_ids": task_ids,
         "checkpoint_results_synced_locally": False,
     }

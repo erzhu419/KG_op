@@ -21,7 +21,10 @@ from core.designs import (
     common_sobol_integer_design,
     integer_design_fingerprint,
 )
-from core.terminal_verification import select_posterior_safe_interior
+from core.terminal_verification import (
+    build_verification_aware_shortlist,
+    select_posterior_safe_interior,
+)
 from baselines.transfer_learned_models import (
     PaperCoreFSBOSurrogate,
     PaperCoreMALIBOSurrogate,
@@ -675,8 +678,52 @@ class TransferConstrainedBO:
         *,
         probability_slack=0.05,
         require_provider=True,
+        shortlist_mode="posterior_primary_safe_interior",
+        shortlist_size=2,
+        maximum_violation_probability=0.5,
     ):
         """Freeze a method-specific posterior shortlist without target truth."""
+
+        primary = tuple(int(value) for value in primary)
+        normalized_mode = str(
+            shortlist_mode
+        ).strip().lower().replace("-", "_")
+        if normalized_mode == "posterior_objective_challenger_then_safe":
+            observed = []
+            seen = set()
+            for row in self.history:
+                point = tuple(int(value) for value in row["x"])
+                if point not in seen:
+                    seen.add(point)
+                    observed.append(point)
+            if primary not in seen:
+                observed.append(primary)
+            profiles = np.vstack([
+                np.asarray(self.problem.normalize(point), dtype=float)
+                for point in observed
+            ])
+            posterior = self._posterior(profiles)
+            shortlist, _ = build_verification_aware_shortlist(
+                self.problem,
+                primary,
+                observed,
+                posterior["objective_mean"],
+                posterior["probability_violation"],
+                shortlist_size=int(shortlist_size),
+                maximum_violation_probability=float(
+                    maximum_violation_probability),
+                probability_slack=float(probability_slack),
+                support_selection_mode="diverse",
+                require_provider=require_provider,
+                selector_posterior=(
+                    "transfer_method_specific_delta_chance_margin"),
+                candidate_universe=(
+                    "frozen_observed_history_plus_search_recommendation"),
+            )
+            return shortlist
+        if normalized_mode != "posterior_primary_safe_interior":
+            raise ValueError(
+                "unknown transfer terminal shortlist mode")
 
         initial = []
         seen = set()
@@ -690,7 +737,6 @@ class TransferConstrainedBO:
             for point in initial
         ])
         posterior = self._posterior(profiles)
-        primary = tuple(int(value) for value in primary)
         support = select_posterior_safe_interior(
             self.problem,
             primary,
@@ -735,6 +781,9 @@ class TransferConstrainedBO:
         freeze_terminal_shortlist=False,
         terminal_probability_slack=0.05,
         terminal_require_provider=True,
+        terminal_shortlist_mode="posterior_primary_safe_interior",
+        terminal_shortlist_size=2,
+        terminal_maximum_violation_probability=0.5,
     ):
         started = time.time()
         self._resume()
@@ -772,6 +821,10 @@ class TransferConstrainedBO:
                 recommended,
                 probability_slack=terminal_probability_slack,
                 require_provider=terminal_require_provider,
+                shortlist_mode=terminal_shortlist_mode,
+                shortlist_size=terminal_shortlist_size,
+                maximum_violation_probability=(
+                    terminal_maximum_violation_probability),
             )
         true_objective = float(self.problem.true_objective(recommended))
         true_constraint_mean = float(

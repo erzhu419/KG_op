@@ -20,7 +20,11 @@ from core.designs import (  # noqa: E402
     integer_design_fingerprint,
     load_frozen_source_informed_design,
 )
-from core.terminal_verification import verify_frozen_shortlist  # noqa: E402
+from core.terminal_verification import (  # noqa: E402
+    build_verification_aware_shortlist,
+    parse_verification_candidate_budgets,
+    verify_frozen_shortlist,
+)
 from performance.benchmark_lodo_meta_prior import build_scalarized_problem  # noqa: E402
 from performance.benchmark_quality import json_safe, parse_weights  # noqa: E402
 
@@ -62,7 +66,16 @@ def _true_metrics(problem, point):
     }
 
 
-def _select_shortlist(problem, points, observations):
+def _select_shortlist(
+    problem,
+    points,
+    observations,
+    *,
+    shortlist_mode="proposal_only_empirical_safe_interior",
+    shortlist_size=2,
+    maximum_violation_probability=0.5,
+    probability_slack=0.05,
+):
     """Use only one-shot target observations to rank the frozen proposal."""
 
     observations = np.asarray(observations, dtype=float)
@@ -84,6 +97,40 @@ def _select_shortlist(problem, points, observations):
             empirical_margin,
         ))[0])
         primary_reason = "minimum_nominal_one_shot_chance_margin"
+    normalized_mode = str(
+        shortlist_mode
+    ).strip().lower().replace("-", "_")
+    if normalized_mode == "posterior_objective_challenger_then_safe":
+        nominal_scale = max(float(problem.sigma_level), 1e-12)
+        probability_violation = norm.cdf(
+            empirical_margin / nominal_scale)
+        shortlist, audit = build_verification_aware_shortlist(
+            problem,
+            points[primary_index],
+            points,
+            observations[:, 0],
+            probability_violation,
+            shortlist_size=int(shortlist_size),
+            maximum_violation_probability=float(
+                maximum_violation_probability),
+            probability_slack=float(probability_slack),
+            support_selection_mode="diverse",
+            require_provider=True,
+            selector_posterior="one_shot_nominal_empirical_plugin",
+            candidate_universe="frozen_source_informed_n0",
+        )
+        return shortlist, {
+            **audit,
+            "primary_reason": primary_reason,
+            "posterior_contract": (
+                "one_shot_gaussian_plugin_not_fitted_surrogate"),
+            "target_observations_used": True,
+            "target_oracle_used": False,
+        }
+    if normalized_mode != "proposal_only_empirical_safe_interior":
+        raise ValueError(
+            "unknown proposal-only terminal shortlist mode")
+
     support_order = np.argsort(empirical_margin, kind="stable")
     support_index = next(
         (int(index) for index in support_order if int(index) != primary_index),
@@ -120,7 +167,13 @@ def _select_shortlist(problem, points, observations):
             "target_oracle_used": False,
             "verification_samples_used": False,
         })
-    return rows
+    return rows, {
+        "shortlist_mode": normalized_mode,
+        "shortlist_size": int(len(rows)),
+        "primary_reason": primary_reason,
+        "target_observations_used": True,
+        "target_oracle_used": False,
+    }
 
 
 def run_one(args):
@@ -145,21 +198,47 @@ def run_one(args):
         np.asarray(problem.simulate(point, rng), dtype=float)
         for point in points
     ]
-    shortlist = _select_shortlist(problem, points, observations)
+    shortlist_mode = str(getattr(
+        args,
+        "terminal_verification_shortlist_mode",
+        "proposal_only_empirical_safe_interior",
+    ))
+    shortlist, shortlist_audit = _select_shortlist(
+        problem,
+        points,
+        observations,
+        shortlist_mode=shortlist_mode,
+        shortlist_size=int(getattr(
+            args, "terminal_verification_shortlist_size", 2)),
+        maximum_violation_probability=float(getattr(
+            args,
+            "terminal_objective_challenger_max_violation_probability",
+            0.5,
+        )),
+        probability_slack=float(getattr(
+            args, "terminal_safe_interior_probability_slack", 0.05)),
+    )
+    candidate_budgets = parse_verification_candidate_budgets(
+        getattr(args, "terminal_verification_candidate_budgets", ""),
+        default=(
+            int(args.terminal_verification_primary_budget),
+            int(args.terminal_verification_support_budget),
+        ),
+    )
+    if len(candidate_budgets) != len(shortlist):
+        raise ValueError(
+            "proposal-only terminal shortlist and candidate budgets differ")
     deployed, verification = verify_frozen_shortlist(
         problem,
         shortlist,
         seed=int(args.seed),
         search_evaluation_count=int(args.n0),
-        candidate_budgets=(
-            int(args.terminal_verification_primary_budget),
-            int(args.terminal_verification_support_budget),
-        ),
+        candidate_budgets=candidate_budgets,
         familywise_delta=float(args.terminal_verification_delta),
         method=str(args.terminal_verification_method),
         mean_delta_fraction=float(
             args.terminal_verification_mean_delta_fraction),
-        shortlist_mode="proposal_only_empirical_safe_interior",
+        shortlist_mode=shortlist_mode,
     )
     initial_truth = [_true_metrics(problem, point) for point in points]
     deployed_metrics = _true_metrics(problem, deployed)
@@ -202,6 +281,11 @@ def run_one(args):
             "target_true_sigma_used_for_selection": False,
             "terminal_verification_identical_across_methods": True,
             "terminal_verification_updates_optimizer": False,
+            "terminal_verification_shortlist_mode": shortlist_mode,
+            "terminal_verification_candidate_budgets": list(
+                candidate_budgets),
+            "terminal_verification_familywise_delta": float(
+                args.terminal_verification_delta),
         },
         "initial_observations": [
             {
@@ -211,6 +295,7 @@ def run_one(args):
             for point, observation in zip(points, observations)
         ],
         "frozen_terminal_shortlist": shortlist,
+        "terminal_shortlist_selection_audit": shortlist_audit,
         "terminal_verification": verification,
         "initial_truth_audit": {
             "computed_after_shortlist_freeze_and_verification": True,
@@ -248,6 +333,34 @@ def main():
         "--terminal-verification-primary-budget", type=int, default=80)
     parser.add_argument(
         "--terminal-verification-support-budget", type=int, default=96)
+    parser.add_argument(
+        "--terminal-verification-candidate-budgets",
+        default="",
+        help=(
+            "Optional comma-separated ordered budgets. When set, this "
+            "overrides the legacy primary/support pair."
+        ),
+    )
+    parser.add_argument(
+        "--terminal-verification-shortlist-mode",
+        choices=(
+            "proposal_only_empirical_safe_interior",
+            "posterior_objective_challenger_then_safe",
+        ),
+        default="proposal_only_empirical_safe_interior",
+    )
+    parser.add_argument(
+        "--terminal-verification-shortlist-size", type=int, default=2)
+    parser.add_argument(
+        "--terminal-objective-challenger-max-violation-probability",
+        type=float,
+        default=0.5,
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-probability-slack",
+        type=float,
+        default=0.05,
+    )
     parser.add_argument(
         "--terminal-verification-delta", type=float, default=0.05)
     parser.add_argument(

@@ -592,6 +592,58 @@ def test_v64_fixes_powered_safe_interior_verification_budget(tmp_path):
         "v64_powered_safe_interior_verification_paired")
 
 
+def test_v65_changes_only_to_verification_aware_three_policy_terminal(
+    tmp_path,
+):
+    args = _args(tmp_path, (MODULE.V65,))
+    args.terminal_verification_budget = 7
+    args.terminal_verification_fallback_budget = 11
+    args.terminal_safe_interior_probability_slack = 0.05
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 3 * 2
+    assert all(
+        "--terminal-verification-budget 80" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-fallback-budget 128" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-shortlist-size 3" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-verification-shortlist-mode "
+        "posterior_objective_challenger_then_safe" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-objective-challenger-"
+        "max-violation-probability 0.5" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        "--terminal-safe-interior-candidate-scope observed"
+        in spec["cmd"] for spec in specs
+    )
+    assert all(
+        "--terminal-safe-interior-selection-mode diverse"
+        in spec["cmd"] for spec in specs
+    )
+    assert all(
+        "--implementation-contract-id "
+        "v65_verification_aware_objective_challenger"
+        in spec["cmd"] for spec in specs
+    )
+    assert all(
+        "--theory-contract-id "
+        "v65_frozen_three_policy_familywise_quantile_certificate_v1"
+        in spec["cmd"] for spec in specs
+    )
+    assert args.stage_family == "v65_verification_aware_terminal"
+
+
 def test_v53_bounded_gain_profile_is_versioned_and_not_double_normalized(tmp_path):
     args = _args(tmp_path, (MODULE.V53,))
     args.score_normalization = "none"

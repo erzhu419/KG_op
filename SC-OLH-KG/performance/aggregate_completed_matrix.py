@@ -66,6 +66,10 @@ ROW_FIELDS = (
     "terminal_abstained",
     "terminal_false_certificate",
     "terminal_attempt_count",
+    "terminal_shortlist_mode",
+    "terminal_candidate_budgets",
+    "terminal_max_verification_budget",
+    "terminal_familywise_delta",
     "primary_true_feasible",
     "primary_feasible_regret",
     "posterior_certificate_vacuous",
@@ -228,15 +232,33 @@ def _terminal_fields(result: dict) -> dict:
         row for row in truth_audit.get("rows", [])
         if isinstance(row, dict)
     ]
-    primary_truth = next(
+    declared_primary = _dict(_first(
+        result.get("optimization_recommendation_truth"),
+        result.get("search_recommendation"),
+    ))
+    role_primary = next(
+        (
+            row for row in truth_rows
+            if str(row.get("shortlist_role", "")) in {
+                "posterior_bayes_primary",
+                "posterior_objective_primary",
+                "posterior_feasible_primary_fallback",
+                "proposal_only_empirical_primary",
+            }
+        ),
+        {},
+    )
+    position_primary = next(
         (
             row for row in truth_rows
             if _integer(row.get("shortlist_position")) == 1
         ),
-        _dict(_first(
-            result.get("optimization_recommendation_truth"),
-            result.get("search_recommendation"),
-        )),
+        {},
+    )
+    primary_truth = (
+        declared_primary
+        if declared_primary.get("true_feasible") is not None
+        else role_primary or position_primary
     )
     primary_feasible = _boolean(primary_truth.get("true_feasible"))
     primary_regret = (
@@ -269,6 +291,15 @@ def _terminal_fields(result: dict) -> dict:
             verification.get("attempt_count"),
             len(attempts) if attempts else None,
         )),
+        "terminal_shortlist_mode": verification.get("shortlist_mode"),
+        "terminal_candidate_budgets": json.dumps(
+            verification.get("candidate_verification_budgets", []),
+            separators=(",", ":"),
+        ),
+        "terminal_max_verification_budget": _integer(
+            verification.get("max_verification_budget")),
+        "terminal_familywise_delta": _finite(
+            verification.get("familywise_delta")),
         "primary_true_feasible": primary_feasible,
         "primary_feasible_regret": primary_regret,
     }

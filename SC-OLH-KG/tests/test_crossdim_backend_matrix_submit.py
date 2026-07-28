@@ -33,6 +33,7 @@ def _args(tmp_path):
         gpu_cpu=12,
         gpu_ram_mb=24576,
         gpu_vram_mb=2048,
+        terminal_profile="v7",
     )
 
 
@@ -96,6 +97,30 @@ def test_crossdim_backend_contracts_keep_backend_information_explicit(
     assert str(SUBMIT.REMOTE_ROOT / "SC-OLH-KG/performance/manifests") not in (
         saas["cmd"])
     assert saas["result_dir"].startswith(str(tmp_path / "SC-OLH-KG"))
+
+
+def test_crossdim_v9_uses_identical_three_policy_verifier(tmp_path):
+    args = _args(tmp_path)
+    args.terminal_profile = "v9"
+    specs = SUBMIT.build_specs(args)
+    assert specs
+    for spec in specs:
+        assert (
+            "--terminal-verification-candidate-budgets 80,128,128"
+            in spec["cmd"]
+        )
+        assert (
+            "--terminal-verification-shortlist-mode "
+            "posterior_objective_challenger_then_safe"
+            in spec["cmd"]
+        )
+        assert "--terminal-verification-shortlist-size 3" in spec["cmd"]
+        assert (
+            "--terminal-objective-challenger-"
+            "max-violation-probability 0.5"
+            in spec["cmd"]
+        )
+        assert "--terminal-verification-delta 0.05" in spec["cmd"]
 
 
 def test_crossdim_recovery_skips_only_compact_success_results(tmp_path):

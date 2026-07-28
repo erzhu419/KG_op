@@ -280,6 +280,18 @@ def _flags(profile, args):
                 str(profile.get(
                     "terminal_verification_shortlist_mode",
                     "posterior_ranked")),
+                "--terminal-objective-challenger-max-violation-probability",
+                str(profile.get(
+                    "terminal_objective_challenger_"
+                    "max_violation_probability",
+                    0.5,
+                )),
+                "--terminal-safe-interior-candidate-scope",
+                str(profile.get(
+                    "terminal_safe_interior_candidate_scope", "initial")),
+                "--terminal-safe-interior-selection-mode",
+                str(profile.get(
+                    "terminal_safe_interior_selection_mode", "diverse")),
                 "--terminal-safe-interior-probability-slack",
                 str(profile.get(
                     "terminal_safe_interior_probability_slack", 0.05)),

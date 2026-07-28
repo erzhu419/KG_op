@@ -24,7 +24,10 @@ from baselines.transfer_bo_adapters import (  # noqa: E402
 from core.designs import (  # noqa: E402
     load_frozen_source_informed_design,
 )
-from core.terminal_verification import verify_frozen_shortlist  # noqa: E402
+from core.terminal_verification import (  # noqa: E402
+    parse_verification_candidate_budgets,
+    verify_frozen_shortlist,
+)
 from performance.benchmark_lodo_meta_prior import build_scalarized_problem  # noqa: E402
 from performance.benchmark_quality import json_safe, parse_weights  # noqa: E402
 
@@ -114,20 +117,31 @@ def _apply_terminal_verification(problem, result, args):
             "constraint_violation",
         )
     }
+    candidate_budgets = parse_verification_candidate_budgets(
+        getattr(args, "terminal_verification_candidate_budgets", ""),
+        default=(
+            int(args.terminal_verification_primary_budget),
+            int(args.terminal_verification_support_budget),
+        ),
+    )
+    if len(candidate_budgets) != len(shortlist):
+        raise ValueError(
+            "transfer terminal shortlist and candidate budgets differ")
     deployed, verification = verify_frozen_shortlist(
         problem,
         shortlist,
         seed=int(args.seed),
         search_evaluation_count=search_calls,
-        candidate_budgets=(
-            int(args.terminal_verification_primary_budget),
-            int(args.terminal_verification_support_budget),
-        ),
+        candidate_budgets=candidate_budgets,
         familywise_delta=float(args.terminal_verification_delta),
         method=str(args.terminal_verification_method),
         mean_delta_fraction=float(
             args.terminal_verification_mean_delta_fraction),
-        shortlist_mode="posterior_primary_safe_interior",
+        shortlist_mode=str(getattr(
+            args,
+            "terminal_verification_shortlist_mode",
+            "posterior_primary_safe_interior",
+        )),
     )
     truth_rows = []
     for record in shortlist:
@@ -177,6 +191,23 @@ def _apply_terminal_verification(problem, result, args):
             args.terminal_verification_primary_budget),
         "terminal_verification_support_budget": int(
             args.terminal_verification_support_budget),
+        "terminal_verification_candidate_budgets": list(
+            candidate_budgets),
+        "terminal_verification_shortlist_mode": str(
+            getattr(
+                args,
+                "terminal_verification_shortlist_mode",
+                "posterior_primary_safe_interior",
+            )),
+        "terminal_objective_challenger_max_violation_probability": float(
+            getattr(
+                args,
+                (
+                    "terminal_objective_challenger_"
+                    "max_violation_probability"
+                ),
+                0.5,
+            )),
         "terminal_shortlist_frozen_before_truth_metrics": True,
         "verification_observations_update_posterior": False,
         "verification_samples_reused_from_search": False,
@@ -189,6 +220,11 @@ def run_one(args):
         "terminal_verification": False,
         "terminal_verification_primary_budget": 80,
         "terminal_verification_support_budget": 96,
+        "terminal_verification_candidate_budgets": "",
+        "terminal_verification_shortlist_mode": (
+            "posterior_primary_safe_interior"),
+        "terminal_verification_shortlist_size": 2,
+        "terminal_objective_challenger_max_violation_probability": 0.5,
         "terminal_verification_delta": 0.05,
         "terminal_verification_mean_delta_fraction": 0.5,
         "terminal_verification_method": "normal_quantile_tolerance",
@@ -326,6 +362,13 @@ def run_one(args):
                 args.terminal_safe_interior_probability_slack),
             terminal_require_provider=bool(
                 args.terminal_safe_interior_require_provider),
+            terminal_shortlist_mode=str(
+                args.terminal_verification_shortlist_mode),
+            terminal_shortlist_size=int(
+                args.terminal_verification_shortlist_size),
+            terminal_maximum_violation_probability=float(
+                args
+                .terminal_objective_challenger_max_violation_probability),
         )
         if args.terminal_verification:
             result = _apply_terminal_verification(problem, result, args)
@@ -432,6 +475,23 @@ def main():
         "--terminal-verification-primary-budget", type=int, default=80)
     parser.add_argument(
         "--terminal-verification-support-budget", type=int, default=96)
+    parser.add_argument(
+        "--terminal-verification-candidate-budgets", default="")
+    parser.add_argument(
+        "--terminal-verification-shortlist-mode",
+        choices=(
+            "posterior_primary_safe_interior",
+            "posterior_objective_challenger_then_safe",
+        ),
+        default="posterior_primary_safe_interior",
+    )
+    parser.add_argument(
+        "--terminal-verification-shortlist-size", type=int, default=2)
+    parser.add_argument(
+        "--terminal-objective-challenger-max-violation-probability",
+        type=float,
+        default=0.5,
+    )
     parser.add_argument(
         "--terminal-verification-delta", type=float, default=0.05)
     parser.add_argument(

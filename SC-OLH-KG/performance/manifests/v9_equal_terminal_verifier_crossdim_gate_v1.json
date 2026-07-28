@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "implementation_validated_pending_scheduler_gate",
+  "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
+  "domains": [
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl"
+  ],
+  "information_contract": {
+    "source_dimension": 50,
+    "target_dimension": 1000,
+    "offline_source_calls": 384,
+    "target_search_calls": 13,
+    "target_initial_calls_n0": 10,
+    "source_archive_oracle_aided": false,
+    "target_oracle_used_for_selection": false,
+    "frozen_initial_design_run_id": "paper_certified_scolh_v64_cross_d50_d1000_s80_99_v1",
+    "initial_design_byte_identical_by_domain_and_seed": true
+  },
+  "terminal_protocol": {
+    "name": "v9_verification_aware_objective_challenger",
+    "shortlist_mode": "posterior_objective_challenger_then_safe",
+    "candidate_universe": "frozen_observed_history_plus_search_recommendation",
+    "shortlist_size": 3,
+    "objective_challenger_maximum_violation_probability": 0.5,
+    "safe_support_probability_slack": 0.05,
+    "safe_support_selection": "diverse_cumulative_risk_coordinate",
+    "candidate_verification_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "certificate": "gaussian_noncentral_t_tolerance",
+    "verification_updates_optimizer": false,
+    "verification_samples_reused_from_search": false,
+    "target_oracle_used": false
+  },
+  "posterior_contracts": {
+    "scolh_v65": "cumulative-HVD chance-margin posterior",
+    "stacked_gp": "method-specific transfer delta chance-margin posterior",
+    "saasbo": "BoTorch latent chance-margin posterior",
+    "proposal_only": "one-shot nominal Gaussian plug-in; no fitted surrogate"
+  },
+  "gate": {
+    "seed_start": 80,
+    "n_seeds": 5,
+    "logical_cells": 60,
+    "requirements": [
+      "all result schemas expose search, verification, and total target calls",
+      "all frozen shortlists contain three distinct policies",
+      "all methods use candidate budgets 80/128/128 and familywise delta 0.05",
+      "search histories match their V64/V7 controls for identical seeds",
+      "no target truth or verification sample enters shortlist selection"
+    ]
+  },
+  "expansion": {
+    "seed_start": 80,
+    "n_seeds": 20,
+    "logical_cells": 240,
+    "trigger": "schema, search-invariance, and information-contract gate passes"
+  },
+  "reporting": [
+    "search budget",
+    "verification budget",
+    "total target budget",
+    "source plus target budget",
+    "n0-best to final regret change",
+    "adaptive rescue and loss",
+    "true-feasible deployment rate",
+    "conditional feasible regret",
+    "certificate coverage",
+    "false certification",
+    "selected shortlist rank"
+  ],
+  "storage_contract": {
+    "compact_result_json_only": true,
+    "sync_checkpoints": false,
+    "sync_pickle": false,
+    "sync_numpy_arrays": false
+  }
+}
