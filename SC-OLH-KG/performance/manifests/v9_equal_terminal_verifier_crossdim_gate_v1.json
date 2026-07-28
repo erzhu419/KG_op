@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "v69_objective_guard_implemented_gate_pending",
+  "status": "v69_gate_passed_20_seed_expansion_ready",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -482,6 +482,60 @@
         "all five V66 Inventory loss seeds are protected",
         "all shortlist and objective-comparison inputs are explicitly oracle-free",
         "search, safety verification, objective comparison, and total budgets are reported separately"
+      ]
+    },
+    "gate_result": {
+      "run_id": "paper_v69_objective_guard_cross_d50_d1000_n13_s90_96_v1",
+      "task_ids": "t58617-t58637",
+      "completed_tasks": "21/21",
+      "failed_tasks": 0,
+      "true_feasible": "21/21",
+      "independently_certified": "21/21",
+      "false_certificates": 0,
+      "deployment_objective_better_tie_worse_against_n0": "4/17/0",
+      "paired_vs_v66_better_tie_worse": "5/16/0",
+      "all_five_v66_inventory_losses_protected": true,
+      "mean_feasible_regret": 0.0074495938854542715,
+      "median_feasible_regret": 0.00824999999999998,
+      "mean_safety_verification_calls": 153.14285714285714,
+      "mean_objective_comparison_calls": 6.095238095238095,
+      "mean_total_verification_calls": 159.23809523809524,
+      "mean_total_target_calls": 172.23809523809524,
+      "median_wall_time_seconds": 327.1091980934143,
+      "domain_results": {
+        "FactorShockStatePolicyRZDT1": {
+          "n0_better_tie_worse": "0/7/0",
+          "paired_vs_v66_better_tie_worse": "0/7/0"
+        },
+        "InventorySupplyChain": {
+          "n0_better_tie_worse": "1/6/0",
+          "paired_vs_v66_better_tie_worse": "5/2/0"
+        },
+        "QueueResourceControl": {
+          "n0_better_tie_worse": "3/4/0",
+          "paired_vs_v66_better_tie_worse": "0/7/0"
+        }
+      },
+      "protocol_checks": {
+        "initial_design_fingerprint_equal_to_v66": "21/21",
+        "source_archive_fingerprint_equal_to_v66": "21/21",
+        "online_action_fingerprint_equal_to_v66": "21/21",
+        "oracle_free_frozen_shortlist": "21/21",
+        "search_plus_safety_plus_objective_budget_identity": "21/21",
+        "postrun_truth_audit_present": "21/21"
+      },
+      "decision": "V69 prospectively removes V66's safe-but-objectively-worse deployments without changing the front end or online action sequence. Expand to all seeds 80-99."
+    },
+    "expansion_plan": {
+      "seed_start": 80,
+      "n_seeds": 20,
+      "logical_cells": 60,
+      "requirements": [
+        "60/60 true-feasible independently certified deployments",
+        "zero false certificates",
+        "zero deployment objective losses against n0",
+        "retain V66 improvements whenever paired objective dominance is supported",
+        "report search, safety verification, objective comparison, total target, and source-plus-target budgets"
       ]
     }
   },
