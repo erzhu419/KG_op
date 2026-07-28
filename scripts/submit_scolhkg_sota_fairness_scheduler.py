@@ -58,6 +58,7 @@ def build_specs(args):
         "saas_refit_growth_factor": 2.0,
         "saas_refit_max_history": 0,
         "hard_pin_nodes": False,
+        "skip_existing_success": False,
     }
     for name, value in defaults.items():
         if not hasattr(args, name):
@@ -244,6 +245,20 @@ def build_specs(args):
                         "stage_excludes": ["checkpoints", "profiles", "results"],
                         "allow_duplicate": True,
                     })
+    if bool(args.skip_existing_success):
+        filtered = []
+        for spec in specs:
+            result_path = Path(spec["local_result_dir"]) / "result.json"
+            if result_path.is_file():
+                try:
+                    payload = json.loads(result_path.read_text(
+                        encoding="utf-8"))
+                    if payload.get("status") == "ok":
+                        continue
+                except (OSError, ValueError, json.JSONDecodeError):
+                    pass
+            filtered.append(spec)
+        specs = filtered
     return specs
 
 
@@ -362,6 +377,15 @@ def main():
     )
     parser.add_argument("--sync-remote", action=argparse.BooleanOptionalAction,
                         default=True)
+    parser.add_argument(
+        "--skip-existing-success",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Submit only logical cells without a compact status=ok "
+            "result.json."
+        ),
+    )
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()

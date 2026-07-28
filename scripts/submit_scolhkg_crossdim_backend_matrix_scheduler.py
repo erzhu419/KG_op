@@ -360,6 +360,18 @@ def build_specs(args):
                 spec["vram_resource_family"] = (
                     f"KG-SYNTH/crossdim-backend/saasbo/{heldout}")
                 specs.append(spec)
+    if bool(getattr(args, "skip_existing_success", False)):
+        filtered = []
+        for spec in specs:
+            result_path = Path(spec["local_result_dir"]) / "result.json"
+            if result_path.is_file():
+                try:
+                    if _read_json(result_path).get("status") == "ok":
+                        continue
+                except (OSError, ValueError, json.JSONDecodeError):
+                    pass
+            filtered.append(spec)
+        specs = filtered
     return specs
 
 
@@ -402,6 +414,15 @@ def main():
         action=argparse.BooleanOptionalAction,
         default=True,
     )
+    parser.add_argument(
+        "--skip-existing-success",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Submit only logical cells whose local compact result.json is "
+            "missing or does not have status=ok."
+        ),
+    )
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
@@ -412,9 +433,12 @@ def main():
         * int(args.n_seeds)
         * len(_parse_csv(args.backends))
     )
-    if len(specs) != expected:
+    if not args.skip_existing_success and len(specs) != expected:
         raise RuntimeError(
             f"built {len(specs)} tasks, expected {expected}")
+    if args.skip_existing_success and len(specs) > expected:
+        raise RuntimeError(
+            f"built {len(specs)} recovery tasks, expected at most {expected}")
     signatures = [spec["signature"] for spec in specs]
     if len(signatures) != len(set(signatures)):
         raise RuntimeError("crossdim backend signatures are not unique")
@@ -450,6 +474,8 @@ def main():
         "submitted_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "audit": audit,
         "new_task_count": int(len(specs)),
+        "skip_existing_success": bool(args.skip_existing_success),
+        "candidate_task_count_before_success_filter": int(expected),
         "reused_v64_result_count": int(
             audit["v64_reused_result_count"]),
         "matrix_cell_count": int(

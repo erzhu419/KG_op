@@ -36,6 +36,7 @@ from problems.single_objective import ScalarizedProblem  # noqa: E402
 BACKENDS = {
     "sobol": "sobol_new",
     "risk_ts": "risk_ts",
+    "constrained_ts": "constrained_ts",
     "joint_voi": "sobol_exact_joint_voi",
 }
 
@@ -179,6 +180,8 @@ def run_cell(args):
     problem = ScalarizedProblem(base, weights=(0.5, 0.5))
     backend = BACKENDS[args.backend]
     exact = args.backend == "joint_voi"
+    terminal_support_selection = str(getattr(
+        args, "terminal_safe_interior_selection", "diverse"))
     config = SingleOLHKGConfig(
         implementation_contract_id=(
             "controlled_hetero_v51_search_v64_terminal_v2"),
@@ -254,6 +257,8 @@ def run_cell(args):
         terminal_safe_interior_require_provider=bool(args.verify),
         terminal_safe_interior_candidate_scope=(
             args.terminal_safe_interior_scope),
+        terminal_safe_interior_selection_mode=(
+            terminal_support_selection),
         checkpoint_interval=0,
         checkpoint_dir="",
         truth_pool_diagnostics=True,
@@ -327,6 +332,8 @@ def run_cell(args):
             "shortlist_mode": terminal.get("shortlist_mode"),
             "safe_interior_candidate_scope": (
                 args.terminal_safe_interior_scope),
+            "safe_interior_selection_mode": (
+                terminal_support_selection),
             "shortlist_diagnostics": [
                 {
                     key: value
@@ -370,6 +377,8 @@ def run_cell(args):
             "state_anchor_contract": base.state_anchor_contract(),
             "terminal_safe_interior_candidate_scope": (
                 args.terminal_safe_interior_scope),
+            "terminal_safe_interior_selection_mode": (
+                terminal_support_selection),
             "target_oracle_used_for_search": bool(
                 args.variance_mode == "oracle"),
             "oracle_variance_row_is_diagnostic_upper_bound": bool(
@@ -423,6 +432,11 @@ def main():
         "--terminal-safe-interior-scope",
         choices=("initial", "observed"),
         default="initial",
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-selection",
+        choices=("diverse", "objective_ranked"),
+        default="diverse",
     )
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()

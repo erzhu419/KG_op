@@ -89,3 +89,24 @@ def test_crossdim_backend_contracts_keep_backend_information_explicit(
     assert "--target-budget 13" in saas["cmd"]
     assert saas["allowed_nodes"] == list(SUBMIT.GPU_NODES)
     assert saas["vram"] == 2048
+
+
+def test_crossdim_recovery_skips_only_compact_success_results(tmp_path):
+    args = _args(tmp_path)
+    args.heldouts = "FactorShockStatePolicyRZDT1"
+    args.backends = "saasbo"
+    args.skip_existing_success = True
+    complete = (
+        tmp_path / "SC-OLH-KG" / "profiles" / args.run_id / "saasbo"
+        / "FactorShockStatePolicyRZDT1" / "seed0080" / "result.json"
+    )
+    complete.parent.mkdir(parents=True)
+    complete.write_text('{"status":"ok"}')
+    failed = complete.parent.parent / "seed0081" / "result.json"
+    failed.parent.mkdir(parents=True)
+    failed.write_text('{"status":"failed"}')
+
+    specs = SUBMIT.build_specs(args)
+
+    assert len(specs) == 1
+    assert specs[0]["signature"].endswith("seed0081")

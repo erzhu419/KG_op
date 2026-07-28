@@ -1264,6 +1264,11 @@ def score_decision_backend(
     risk_coordinate_coverage = None
     risk_coordinate_coverage_source = None
     guard_decomposition_support = None
+    sampled_objective = None
+    sampled_constraint = None
+    sampled_margin = None
+    sampled_feasible_count = None
+    sampled_feasibility_mode = None
 
     if name in {"random", "random_continuation"}:
         total = rng.random(len(candidates))
@@ -1534,6 +1539,48 @@ def score_decision_backend(
         total = -(
             sampled_objective
             + float(risk_penalty) * sampled_violation_loss)
+        sampled_feasible_count = int(np.sum(sampled_margin <= 0.0))
+        sampled_feasibility_mode = "soft_penalty"
+    elif name in {
+        "constrained_ts",
+        "feasible_first_ts",
+        "posterior_constrained_ts",
+    }:
+        if task_ensemble is None:
+            sampled_objective = _joint_gpr_draw(obj_gpr, candidates, rng)
+            sampled_constraint = _joint_gpr_draw(con_gpr, candidates, rng)
+        else:
+            sampled_objective, sampled_constraint, sampled_expert = (
+                _task_posterior_draw(task_ensemble, candidates, rng))
+        z_alpha = float(norm.ppf(1.0 - float(problem.alpha)))
+        sampled_margin = (
+            sampled_constraint
+            + z_alpha * np.sqrt(np.maximum(
+                moments.constraint_aleatoric, _EPS))
+            - float(problem.tau)
+        )
+        sampled_feasible = sampled_margin <= 0.0
+        sampled_feasible_count = int(np.sum(sampled_feasible))
+        if sampled_feasible_count > 0:
+            # Lexicographic constrained posterior sampling: feasibility is
+            # the first coordinate and objective is compared only within the
+            # sampled feasible set. A finite sentinel keeps downstream
+            # score/trace validation well-defined.
+            total = np.full(len(candidates), -1e300, dtype=float)
+            total[sampled_feasible] = -sampled_objective[sampled_feasible]
+            sampled_feasibility_mode = "feasible_objective"
+        else:
+            # When this posterior draw contains no feasible policy, reduce
+            # sampled chance violation. Objective is only a deterministic
+            # numerical tie-break and cannot trade against feasibility.
+            objective_scale = max(
+                float(np.max(np.abs(sampled_objective))), 1.0)
+            total = (
+                -sampled_margin
+                - np.finfo(float).eps
+                * sampled_objective / objective_scale
+            )
+            sampled_feasibility_mode = "minimum_violation"
     elif name in {"bayes_risk_ei", "risk_ei"}:
         total = bayes_ei
     elif name in {"constrained_ei", "cei"}:
@@ -1600,6 +1647,14 @@ def score_decision_backend(
     if name in {"transfer_utility", "source_utility", "utility"}:
         out["transfer_utility_status"] = utility_status
         out["transfer_utility"] = transferred
+    if sampled_objective is not None:
+        out["sampled_objective"] = np.asarray(
+            sampled_objective, dtype=float)
+        out["sampled_constraint"] = np.asarray(
+            sampled_constraint, dtype=float)
+        out["sampled_margin"] = np.asarray(sampled_margin, dtype=float)
+        out["sampled_feasible_count"] = int(sampled_feasible_count)
+        out["sampled_feasibility_mode"] = str(sampled_feasibility_mode)
     if hvd_information is not None:
         out["hvd_information_reduction"] = hvd_information
         out["hvd_action_reliability"] = hvd_reliability

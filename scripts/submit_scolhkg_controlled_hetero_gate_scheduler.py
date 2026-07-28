@@ -32,7 +32,7 @@ SCENARIOS = (
     "hidden_periodic",
 )
 VARIANCE_MODES = ("pooled", "orthogonal", "factor", "oracle")
-BACKENDS = ("sobol", "risk_ts", "joint_voi")
+BACKENDS = ("sobol", "risk_ts", "constrained_ts", "joint_voi")
 
 
 def _parse_csv(value):
@@ -42,23 +42,49 @@ def _parse_csv(value):
 
 def _matrix_variants(args):
     scenarios = _parse_csv(args.scenarios)
-    modes = _parse_csv(args.variance_modes)
-    backends = _parse_csv(args.backends)
+    explicit = _parse_csv(getattr(args, "variant_specs", ""))
+    if explicit:
+        variants = []
+        for value in explicit:
+            parts = tuple(part.strip() for part in value.split(":"))
+            if len(parts) != 3:
+                raise ValueError(
+                    "each variant spec must be backend:variance:selection")
+            variants.append(parts)
+        modes = tuple(mode for _, mode, _ in variants)
+        backends = tuple(backend for backend, _, _ in variants)
+        selections = tuple(selection for _, _, selection in variants)
+    else:
+        modes = _parse_csv(args.variance_modes)
+        backends = _parse_csv(args.backends)
+        selection = str(getattr(
+            args, "terminal_safe_interior_selection", "diverse"))
+        selections = (selection,)
+        variants = [
+            (backend, mode, selection)
+            for backend in backends
+            for mode in modes
+            if backend != "joint_voi" or mode == "factor"
+        ]
     unknown_scenarios = sorted(set(scenarios) - set(SCENARIOS))
     unknown_modes = sorted(set(modes) - set(VARIANCE_MODES))
     unknown_backends = sorted(set(backends) - set(BACKENDS))
-    if unknown_scenarios or unknown_modes or unknown_backends:
+    unknown_selections = sorted(
+        set(selections) - {"diverse", "objective_ranked"})
+    if (
+        unknown_scenarios
+        or unknown_modes
+        or unknown_backends
+        or unknown_selections
+    ):
         raise ValueError({
             "unknown_scenarios": unknown_scenarios,
             "unknown_variance_modes": unknown_modes,
             "unknown_backends": unknown_backends,
+            "unknown_terminal_selections": unknown_selections,
         })
-    variants = []
-    for backend in backends:
-        for mode in modes:
-            if backend == "joint_voi" and mode != "factor":
-                continue
-            variants.append((backend, mode))
+    if len(variants) != len(set(variants)):
+        raise ValueError("controlled heteroscedastic variants must be unique")
     return scenarios, tuple(variants)
 
 
@@ -68,7 +94,7 @@ def build_specs(args):
     remote_project = REMOTE_ROOT / "SC-OLH-KG"
     specs = []
     for scenario in scenarios:
-        for backend, variance_mode in variants:
+        for backend, variance_mode, support_selection in variants:
             exact = backend == "joint_voi"
             cpu = int(args.exact_cpu if exact else args.light_cpu)
             ram_mb = int(args.exact_ram_mb if exact else args.light_ram_mb)
@@ -79,11 +105,13 @@ def build_specs(args):
                 remote_dir = (
                     remote_project / "profiles" / args.run_id
                     / scenario / variance_mode / backend
+                    / support_selection
                     / f"seed{seed:04d}"
                 )
                 local_dir = (
                     deploy_project / "profiles" / args.run_id
                     / scenario / variance_mode / backend
+                    / support_selection
                     / f"seed{seed:04d}"
                 )
                 output = remote_dir / "result.json"
@@ -121,18 +149,21 @@ def build_specs(args):
                     str(args.verification_delta),
                     "--terminal-safe-interior-scope",
                     str(args.terminal_safe_interior_scope),
+                    "--terminal-safe-interior-selection",
+                    str(support_selection),
                     "--out", str(output),
                 ]
                 specs.append({
                     "description": (
                         f"controlled hetero {scenario} {variance_mode} "
-                        f"{backend} seed={seed}"
+                        f"{backend} {support_selection} seed={seed}"
                     ),
                     "cmd": f"{shlex.join(command)} && echo DONE",
                     "cwd": str(deploy_project),
                     "signature": (
                         f"KG_op/controlled_hetero/{args.run_id}/{scenario}/"
-                        f"{variance_mode}/{backend}/seed{seed:04d}"
+                        f"{variance_mode}/{backend}/{support_selection}/"
+                        f"seed{seed:04d}"
                     ),
                     "project": "KG-SYNTH",
                     "vram": 0,
@@ -160,6 +191,14 @@ def main():
     parser.add_argument(
         "--variance-modes", default=",".join(VARIANCE_MODES))
     parser.add_argument("--backends", default=",".join(BACKENDS))
+    parser.add_argument(
+        "--variant-specs",
+        default="",
+        help=(
+            "Optional comma-separated backend:variance:selection triples; "
+            "when set they replace the backend/variance Cartesian matrix."
+        ),
+    )
     parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=5)
     parser.add_argument("--d", type=int, default=1000)
@@ -177,6 +216,11 @@ def main():
         "--terminal-safe-interior-scope",
         choices=("initial", "observed"),
         default="initial",
+    )
+    parser.add_argument(
+        "--terminal-safe-interior-selection",
+        choices=("diverse", "objective_ranked"),
+        default="diverse",
     )
     parser.add_argument("--light-cpu", type=int, default=1)
     parser.add_argument("--light-ram-mb", type=int, default=4096)
@@ -213,8 +257,12 @@ def main():
         "task_count": int(len(specs)),
         "scenarios": list(scenarios),
         "variants": [
-            {"backend": backend, "variance_mode": mode}
-            for backend, mode in variants
+            {
+                "backend": backend,
+                "variance_mode": mode,
+                "terminal_safe_interior_selection": selection,
+            }
+            for backend, mode, selection in variants
         ],
         "contract": {
             "raw_dimension": int(args.d),
@@ -231,6 +279,9 @@ def main():
             "verification_updates_optimizer": False,
             "terminal_safe_interior_candidate_scope": str(
                 args.terminal_safe_interior_scope),
+            "terminal_safe_interior_selection_modes": sorted({
+                selection for _, _, selection in variants
+            }),
             "oracle_rows_are_diagnostic_only": True,
         },
         "allowed_nodes": list(CPU_NODES),

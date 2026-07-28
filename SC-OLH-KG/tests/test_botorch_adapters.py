@@ -138,6 +138,44 @@ class BoTorchAdapterTests(unittest.TestCase):
             "saas_fully_bayesian_nuts_constrained_qlogei",
         )
 
+    def test_saas_duplicate_rounding_uses_discrete_acquisition_fallback(self):
+        baseline = BoTorchBaseline(
+            self._problem(),
+            BoTorchBaselineConfig(
+                N=5,
+                n0=4,
+                seed=23,
+                method="botorch_saasbo",
+                raw_samples=8,
+                num_restarts=2,
+                maxiter=10,
+            ),
+        )
+        duplicate = (0, 0, 0, 0, 0)
+        fallback = (1, 1, 1, 1, 1)
+        baseline.history = [(duplicate, np.zeros(2))]
+        continuous = torch.zeros(
+            1, self._problem().d, dtype=torch.double)
+        with (
+            patch.object(
+                adapters,
+                "optimize_acqf",
+                return_value=(continuous, torch.zeros(1)),
+            ),
+            patch.object(
+                baseline,
+                "_discrete_saas_acquisition_fallback",
+                return_value=fallback,
+            ) as discrete,
+        ):
+            selected = baseline._optimize_saas_acquisition(
+                lambda value: value.sum(dim=(-1, -2)))
+
+        self.assertEqual(selected, fallback)
+        discrete.assert_called_once()
+        self.assertEqual(
+            baseline._saas_discrete_candidate_fallback_count, 1)
+
     def test_saas_doubling_refit_conditions_on_each_new_observation(self):
         config = BoTorchBaselineConfig(
             N=5,

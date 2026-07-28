@@ -146,3 +146,41 @@ def test_fairness_scheduler_dispatches_only_newly_submitted_tasks():
         Path("/scheduler.py"), ["t100", "t101"])
 
     assert command[-4:] == ["--task-id", "t100", "--task-id", "t101"]
+
+
+def test_fairness_recovery_skips_only_compact_success_results(tmp_path):
+    parser_args = type("Args", (), {
+        "nodes": "node001,node002",
+        "gpu_nodes": "node007",
+        "gpu_methods": "botorch_saasbo",
+        "protocols": "shared_archive_n13",
+        "methods": "botorch_saasbo",
+        "heldouts": "InventorySupplyChain",
+        "deploy": tmp_path,
+        "source_run_id": "paper_archive",
+        "run_id": "shared_design_recovery",
+        "seed_start": 80,
+        "n_seeds": 2,
+        "python": "/python",
+        "manifest": tmp_path / "SC-OLH-KG/base.json",
+        "candidate_timeout_sec": 3600.0,
+        "cpu": 12,
+        "ram_mb": 8192,
+        "skip_existing_success": True,
+    })()
+    complete = (
+        tmp_path / "SC-OLH-KG" / "profiles"
+        / parser_args.run_id / "shared_archive_n13"
+        / "InventorySupplyChain" / "botorch_saasbo"
+        / "seed0080" / "result.json"
+    )
+    complete.parent.mkdir(parents=True)
+    complete.write_text('{"status":"ok"}')
+    failed = complete.parent.parent / "seed0081" / "result.json"
+    failed.parent.mkdir(parents=True)
+    failed.write_text('{"status":"failed"}')
+
+    specs = submit.build_specs(parser_args)
+
+    assert len(specs) == 1
+    assert specs[0]["signature"].endswith("seed0081")

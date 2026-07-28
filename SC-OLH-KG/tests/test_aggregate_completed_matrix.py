@@ -88,6 +88,43 @@ def test_records_official_runtime_failure_as_a_result_row(tmp_path):
     assert rows[0]["d_over_target_calls"] == 50.0
 
 
+def test_reads_top_level_frozen_proposal_result_without_dropping_outcome(
+    tmp_path,
+):
+    root = tmp_path / "proposal_only"
+    _write(root / "Domain" / "seed0080" / "result.json", {
+        "status": "ok",
+        "method": "frozen_crossdim_proposal_only",
+        "heldout_target_domain": "Domain",
+        "seed": 80,
+        "true_feasible": True,
+        "feasible_regret": 0.012,
+        "true_objective": 1.25,
+        "information_contract": {
+            "target_dimension": 1000,
+            "target_search_calls": 10,
+            "target_verification_calls": 80,
+            "offline_source_calls": 384,
+            "target_initial_calls_n0": 10,
+        },
+        "terminal_verification": {
+            "enabled": True,
+            "certified": True,
+            "selected_shortlist_rank": 1,
+            "attempts": [{"certified": True}],
+        },
+    })
+
+    rows, errors = MODULE.load_rows([root])
+
+    assert errors == []
+    assert len(rows) == 1
+    assert rows[0]["domain"] == "Domain"
+    assert rows[0]["true_feasible"] is True
+    assert rows[0]["feasible_regret"] == 0.012
+    assert rows[0]["terminal_certified"] is True
+
+
 def test_recovers_replicated_source_calls_for_new_archive_origin(tmp_path):
     root = tmp_path / "shared_uniform_run"
     _write(root / "joint" / "Domain" / "seed0" / "result.json", {

@@ -291,11 +291,13 @@ def select_posterior_safe_interior(
     candidate_points,
     violation_probability,
     *,
+    objective_mean=None,
+    selection_mode="diverse",
     probability_slack=0.05,
     require_provider=True,
     candidate_universe="frozen_initial_atlas",
 ):
-    """Select a posterior-safe, cumulative-risk-diverse frozen support."""
+    """Select one frozen support from a posterior-safe probability sublevel."""
 
     slack = float(probability_slack)
     if not np.isfinite(slack) or not 0.0 <= slack <= 1.0:
@@ -320,21 +322,47 @@ def select_posterior_safe_interior(
         raise RuntimeError(
             "terminal safe-interior selection requires finite posterior "
             "violation probabilities")
+    mode = str(
+        selection_mode or "diverse"
+    ).strip().lower().replace("-", "_")
+    if mode not in {"diverse", "objective_ranked"}:
+        raise ValueError(
+            "terminal safe-interior selection mode must be "
+            "'diverse' or 'objective_ranked'")
+    objective = None
+    if objective_mean is not None:
+        objective = np.asarray(objective_mean, dtype=float).reshape(-1)
+        if len(objective) != len(unique) or not np.all(np.isfinite(objective)):
+            raise RuntimeError(
+                "objective-ranked terminal support requires finite posterior "
+                "objective means")
+    if mode == "objective_ranked" and objective is None:
+        raise RuntimeError(
+            "objective-ranked terminal support requires objective_mean")
     minimum = float(np.min(probability))
+    alternative_indices = [
+        index for index, point in enumerate(unique)
+        if point != primary
+    ]
+    alternative_minimum = float(np.min(probability[alternative_indices]))
+    eligibility_reference = (
+        alternative_minimum if mode == "objective_ranked" else minimum)
     eligible = [
         index for index, point in enumerate(unique)
-        if point != primary and float(probability[index]) <= minimum + slack
+        if (
+            point != primary
+            and float(probability[index]) <= eligibility_reference + slack
+        )
     ]
+    eligibility_status = "posterior_violation_sublevel"
     if not eligible:
         eligible = [
             min(
-                (
-                    index for index, point in enumerate(unique)
-                    if point != primary
-                ),
+                alternative_indices,
                 key=lambda index: (float(probability[index]), int(index)),
             )
         ]
+        eligibility_status = "minimum_violation_fallback"
 
     points_for_scale = list(unique)
     if primary not in points_for_scale:
@@ -365,25 +393,52 @@ def select_posterior_safe_interior(
         ) ** 2,
         axis=1,
     ))
-    selected_index = max(
-        eligible,
-        key=lambda index: (
-            float(distance[index]),
-            -float(probability[index]),
-            -int(index),
-        ),
-    )
+    if mode == "objective_ranked":
+        selected_index = min(
+            eligible,
+            key=lambda index: (
+                float(objective[index]),
+                float(probability[index]),
+                int(index),
+            ),
+        )
+        selection_contract = (
+            "posterior_violation_sublevel_minimum_posterior_objective")
+    else:
+        selected_index = max(
+            eligible,
+            key=lambda index: (
+                float(distance[index]),
+                -float(probability[index]),
+                -int(index),
+            ),
+        )
+        selection_contract = (
+            "posterior_violation_sublevel_maximin_cumulative_risk")
     return {
         "point": unique[selected_index],
-        "selection_contract": (
-            "posterior_violation_sublevel_maximin_cumulative_risk"),
+        "selection_contract": selection_contract,
+        "selection_mode": mode,
         "candidate_universe": str(candidate_universe),
         "candidate_universe_size": len(unique),
         "eligible_count": len(eligible),
         "probability_slack": slack,
         "minimum_posterior_violation_probability": minimum,
+        "minimum_alternative_posterior_violation_probability": (
+            alternative_minimum),
+        "eligibility_reference": (
+            "minimum_alternative"
+            if mode == "objective_ranked"
+            else "global_minimum"
+        ),
+        "eligibility_status": eligibility_status,
         "selected_posterior_violation_probability": float(
             probability[selected_index]),
+        "selected_posterior_objective": (
+            None
+            if objective is None
+            else float(objective[selected_index])
+        ),
         "selected_standardized_coordinate_distance": float(
             distance[selected_index]),
         "coordinate_source": str(sources[selected_index]),

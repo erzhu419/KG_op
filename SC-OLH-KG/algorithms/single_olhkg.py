@@ -470,6 +470,7 @@ class SingleOLHKGConfig:
     terminal_safe_interior_probability_slack: float = 0.05
     terminal_safe_interior_require_provider: bool = False
     terminal_safe_interior_candidate_scope: str = "initial"
+    terminal_safe_interior_selection_mode: str = "diverse"
     observed_incumbent_use_replicate_variance: bool = False
     safe_interior_candidate_count: int = 0
     safe_interior_pool_size: int = 300
@@ -1254,7 +1255,13 @@ class SingleOLHKGAlgorithm:
             role = (
                 "posterior_bayes_primary"
                 if index == 0 else
-                "posterior_safe_interior_diversified"
+                (
+                    "posterior_safe_interior_objective_ranked"
+                    if safe_interior is not None
+                    and safe_interior.get("selection_mode")
+                    == "objective_ranked"
+                    else "posterior_safe_interior_diversified"
+                )
                 if shortlist_mode == "posterior_primary_safe_interior"
                 else "posterior_bayes_fallback"
             )
@@ -1405,11 +1412,20 @@ class SingleOLHKGAlgorithm:
             task_ensemble=self.task_ensemble,
             risk_penalty=self.config.decision_risk_penalty,
         )
+        selection_mode = str(
+            self.config.terminal_safe_interior_selection_mode)
         return select_posterior_safe_interior(
             self.problem,
             primary,
             candidates,
             components["probability_violation"],
+            objective_mean=(
+                components.get("objective")
+                if selection_mode.strip().lower().replace("-", "_")
+                == "objective_ranked"
+                else None
+            ),
+            selection_mode=selection_mode,
             probability_slack=float(
                 self.config.terminal_safe_interior_probability_slack),
             require_provider=bool(

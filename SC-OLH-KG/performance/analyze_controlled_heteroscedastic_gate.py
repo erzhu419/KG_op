@@ -39,6 +39,11 @@ def _group_summary(rows):
             row["scenario"],
             row["variance_mode"],
             row["backend"],
+            row.get("information_contract", {}).get(
+                "terminal_safe_interior_selection_mode",
+                row.get("independent_terminal_certificate", {}).get(
+                    "safe_interior_selection_mode", "diverse"),
+            ),
         )
         groups.setdefault(key, []).append(row)
     output = []
@@ -64,6 +69,7 @@ def _group_summary(rows):
             "scenario": key[0],
             "variance_mode": key[1],
             "backend": key[2],
+            "terminal_safe_interior_selection": key[3],
             "completed": int(len(members)),
             "primary_true_feasible": int(sum(primary)),
             "deployment_true_feasible": int(sum(deployment)),

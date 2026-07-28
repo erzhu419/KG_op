@@ -61,6 +61,51 @@ def test_submission_matrix_shards_every_seed_and_limits_exact_row():
     )
 
 
+def test_submission_accepts_explicit_causal_variant_specs():
+    module = _module()
+    args = SimpleNamespace(
+        deploy=Path("/tmp/deploy"),
+        run_id="test_controlled_causal",
+        scenarios="smooth_boundary,shared_factor",
+        variance_modes="factor",
+        backends="risk_ts",
+        variant_specs=(
+            "risk_ts:factor:objective_ranked,"
+            "constrained_ts:factor:diverse,"
+            "constrained_ts:factor:objective_ranked"
+        ),
+        seed_start=0,
+        n_seeds=2,
+        d=3,
+        N=40,
+        n0=10,
+        K1=24,
+        posterior_pool_size=128,
+        state_candidate_count=8,
+        state_inverse_pool_size=256,
+        exact_mc_samples=8,
+        verification_primary_budget=80,
+        verification_support_budget=96,
+        verification_delta=0.05,
+        terminal_safe_interior_scope="observed",
+        terminal_safe_interior_selection="diverse",
+        light_cpu=1,
+        light_ram_mb=4096,
+        exact_cpu=12,
+        exact_ram_mb=16384,
+    )
+    specs = module.build_specs(args)
+    assert len(specs) == 2 * 3 * 2
+    assert any(
+        "/constrained_ts/objective_ranked/" in spec["signature"]
+        for spec in specs
+    )
+    assert any(
+        "--terminal-safe-interior-selection objective_ranked" in spec["cmd"]
+        for spec in specs
+    )
+
+
 def test_analyzer_keeps_posterior_and_terminal_certificates_separate(tmp_path):
     manifest = {
         "run_id": "gate",

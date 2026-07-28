@@ -9,6 +9,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+import acquisition.decision_backends as decision_backends  # noqa: E402
 from acquisition.decision_backends import (  # noqa: E402
     _constraint_epistemic_reduction,
     minimization_expected_improvement,
@@ -250,6 +251,7 @@ def test_all_nonlegacy_backends_return_finite_shared_posterior_scores():
         "sobol_exact_joint_voi",
         "certificate_depth_new",
         "risk_ts",
+        "constrained_ts",
         "bayes_risk_ei",
         "constrained_ei",
         "transfer_utility",
@@ -976,6 +978,42 @@ def test_risk_aware_thompson_sampling_is_reproducible_for_fixed_seed():
     different = _score("risk_ts", seed=82)
     np.testing.assert_allclose(first["total"], second["total"])
     assert not np.allclose(first["total"], different["total"])
+
+
+def test_constrained_ts_is_lexicographically_feasible_first(monkeypatch):
+    draws = iter([
+        np.asarray([0.0, 3.0, 1.0, 2.0]),
+        np.asarray([1.0, -1.0, 1.0, -1.0]),
+    ])
+    monkeypatch.setattr(
+        decision_backends,
+        "_joint_gpr_draw",
+        lambda *args, **kwargs: next(draws),
+    )
+    result = _score("constrained_ts", seed=81)
+    assert result["sampled_feasible_count"] == 2
+    assert result["sampled_feasibility_mode"] == "feasible_objective"
+    assert int(np.argmax(result["total"])) == 3
+    assert result["total"][0] < -1e250
+    assert result["total"][2] < -1e250
+
+
+def test_constrained_ts_minimizes_violation_when_draw_has_no_feasible_policy(
+    monkeypatch,
+):
+    draws = iter([
+        np.asarray([0.0, 3.0, 1.0, 2.0]),
+        np.asarray([1.0, 0.9, 0.8, 0.7]),
+    ])
+    monkeypatch.setattr(
+        decision_backends,
+        "_joint_gpr_draw",
+        lambda *args, **kwargs: next(draws),
+    )
+    result = _score("constrained_ts", seed=82)
+    assert result["sampled_feasible_count"] == 0
+    assert result["sampled_feasibility_mode"] == "minimum_violation"
+    assert int(np.argmax(result["total"])) == 3
 
 
 def test_transfer_utility_declares_frozen_source_prior_use():

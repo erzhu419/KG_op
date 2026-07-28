@@ -369,6 +369,7 @@ class BoTorchBaseline:
         self._saas_condition_failures = 0
         self._saas_condition_last_error = ""
         self._saas_resume_rebuild_history_size = 0
+        self._saas_discrete_candidate_fallback_count = 0
         self._timeout_fallback_active = False
         self._restart_count = 0
         self._restart_design_sizes: list[int] = []
@@ -457,6 +458,8 @@ class BoTorchBaseline:
             "trust_region_initialized": bool(self._tr_initialized),
             "fit_failures": int(self._fit_failures),
             "candidate_failures": int(self._candidate_failures),
+            "saas_discrete_candidate_fallback_count": int(
+                self._saas_discrete_candidate_fallback_count),
             "timeout_fallback_active": bool(self._timeout_fallback_active),
             "restart_count": int(self._restart_count),
             "restart_design_sizes": list(self._restart_design_sizes),
@@ -496,6 +499,8 @@ class BoTorchBaseline:
             payload.get("trust_region_initialized", False))
         self._fit_failures = int(payload.get("fit_failures", 0))
         self._candidate_failures = int(payload.get("candidate_failures", 0))
+        self._saas_discrete_candidate_fallback_count = int(payload.get(
+            "saas_discrete_candidate_fallback_count", 0))
         self._timeout_fallback_active = bool(
             payload.get("timeout_fallback_active", False))
         self._restart_count = int(payload.get("restart_count", 0))
@@ -1049,9 +1054,69 @@ class BoTorchBaseline:
             raise
         x = self._unseen_integer_candidate(candidate)
         if x is None:
-            self._candidate_failures += 1
-            raise RuntimeError("SAASBO acquisition returned an evaluated integer point")
+            x = self._discrete_saas_acquisition_fallback(acqf)
+            self._saas_discrete_candidate_fallback_count += 1
         return x
+
+    def _discrete_saas_acquisition_fallback(self, acqf):
+        """Maximize the same acquisition over unseen integer Sobol policies.
+
+        Continuous acquisition maximization can legitimately round to an
+        already evaluated integer policy. Failing the whole benchmark in that
+        case is an adapter artifact, not a property of SAASBO. This fallback
+        keeps the fitted model and acquisition unchanged and only replaces
+        continuous optimization by an audited finite integer candidate set.
+        """
+
+        seed = self._stage_seed("saas_discrete_candidate_fallback")
+        pool_size = max(128, min(512, 4 * int(self.config.raw_samples)))
+        engine = SobolEngine(
+            dimension=int(self.problem.d),
+            scramble=True,
+            seed=int(seed),
+        )
+        continuous = engine.draw(pool_size).to(
+            dtype=torch.double, device=self._torch_device)
+        seen = {x for x, _ in self.history}
+        lo, hi = self.problem.int_bounds()
+        lo = np.asarray(lo, dtype=float)
+        hi = np.asarray(hi, dtype=float)
+        scale = np.maximum(hi - lo, 1.0)
+        integer_rows = []
+        normalized_rows = []
+        accepted = set()
+        for row in continuous.detach().cpu().numpy():
+            point = tuple(self.problem.continuous_to_int(row))
+            if point in seen or point in accepted:
+                continue
+            accepted.add(point)
+            integer_rows.append(point)
+            normalized_rows.append(
+                (np.asarray(point, dtype=float) - lo) / scale)
+        if not integer_rows:
+            self._candidate_failures += 1
+            raise RuntimeError(
+                "SAASBO discrete acquisition fallback found no unseen policy")
+        values = []
+        rows = torch.as_tensor(
+            np.asarray(normalized_rows),
+            dtype=torch.double,
+            device=self._torch_device,
+        )
+        with self._deterministic_torch_stage(
+            "saas_discrete_candidate_fallback_score"
+        ), torch.no_grad():
+            for chunk in torch.split(rows, 8, dim=0):
+                value = acqf(chunk.unsqueeze(-2))
+                values.append(value.reshape(-1).detach().cpu())
+        scores = torch.cat(values).numpy()
+        finite = np.isfinite(scores)
+        if not np.any(finite):
+            self._candidate_failures += 1
+            raise RuntimeError(
+                "SAASBO discrete acquisition fallback returned no finite score")
+        best = int(np.argmax(np.where(finite, scores, -np.inf)))
+        return integer_rows[best]
 
     def _saas_candidate(self):
         with _wall_time_limit(self.config.timeout_sec):
@@ -1542,6 +1607,8 @@ class BoTorchBaseline:
             "saas_condition_failures": int(self._saas_condition_failures),
             "saas_condition_last_error": str(
                 self._saas_condition_last_error),
+            "saas_discrete_candidate_fallback_count": int(
+                self._saas_discrete_candidate_fallback_count),
             "saas_resume_rebuild_history_size": int(
                 self._saas_resume_rebuild_history_size),
             "initial_design": str(self._initial_design_source),

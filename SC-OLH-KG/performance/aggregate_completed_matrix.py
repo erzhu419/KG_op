@@ -566,6 +566,11 @@ def _normalize_sc_result(
 
 def _normalize_transfer_result(payload: dict, path: Path, root: Path) -> dict:
     result = _dict(payload.get("result"))
+    if not result:
+        # Lightweight proposal-only baselines intentionally write their
+        # compact result at the top level. Treat that schema as a complete
+        # result rather than silently dropping its truth/certificate fields.
+        result = payload
     contract = _dict(payload.get("comparison_contract"))
     information = _dict(payload.get("information_contract"))
     target = _dict(result.get("target_information_contract"))
@@ -670,6 +675,7 @@ def _normalize_transfer_result(payload: dict, path: Path, root: Path) -> dict:
         "domain": _first(
             payload.get("heldout_target_domain"),
             payload.get("heldout"),
+            result.get("heldout_target_domain"),
             result.get("heldout"),
         ),
         "seed": _integer(payload.get("seed")),

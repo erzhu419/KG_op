@@ -122,3 +122,29 @@ def test_safe_interior_selector_uses_only_posterior_and_common_risk_coordinate()
     assert support["target_labels_used"] is False
     assert support["target_oracle_used"] is False
     assert support["verification_samples_used"] is False
+
+
+def test_safe_interior_selector_can_rank_safe_sublevel_by_objective():
+    problem = ScalarizedProblem(FactorShockStatePolicyRZDT1(
+        d=5, L=100, sigma=0.04, alpha=0.05))
+    primary = (2, 2, 2, 2, 2)
+    points = [
+        (1, 1, 1, 1, 1),
+        (10, 10, 10, 10, 10),
+        (90, 90, 90, 90, 90),
+    ]
+    support = select_posterior_safe_interior(
+        problem,
+        primary,
+        points,
+        [0.10, 0.12, 0.80],
+        objective_mean=[0.1, 0.5, 0.0],
+        selection_mode="objective_ranked",
+        probability_slack=0.05,
+        require_provider=True,
+    )
+    assert support["point"] == points[0]
+    assert support["selection_mode"] == "objective_ranked"
+    assert support["selected_posterior_objective"] == 0.1
+    assert support["selection_contract"] == (
+        "posterior_violation_sublevel_minimum_posterior_objective")
