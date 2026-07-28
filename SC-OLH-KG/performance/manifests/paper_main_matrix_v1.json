@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "paper_method": "source-only low-frequency proposal + separated mean/cumulative-risk posterior + evaluate-or-replicate Bayes-risk VOI",
+  "contracts": {
+    "implementation_contract_id": "promoted_v51_observed_terminal_closure",
+    "theory_contract_id": "v51_statistical_closure_v2",
+    "declaration_timing": "before_target_evaluation",
+    "registry": "theory_contract_registry.json"
+  },
+  "freeze_evidence": {
+    "implementation_closure": "scolh_promoted_v51_closure_s20_20260721_01",
+    "certification_budget_gate": "scolh_promoted_v51_certification_budget_s5_20260721_02",
+    "voi_fidelity_gate": "scolh_promoted_v51_voi_fidelity_s5_20260721_01",
+    "replication_cap": 20,
+    "exact_mc_samples": 32,
+    "exact_shortlist_size": 32,
+    "exact_sampling_mode": "antithetic_nested",
+    "voi_fidelity_gate_passed": true,
+    "voi_fidelity_evidence": "paper_gate_c_voi_fidelity.json",
+    "certification_budget_gate_passed": true,
+    "certification_budget_evidence": "paper_gate_b_certification_budget.json",
+    "d1000_frontier_passed": null
+  },
+  "source_contract": {
+    "archive_calls": 384,
+    "source_dimension": 50,
+    "records_per_source_domain": 64,
+    "replicates_per_record": 3,
+    "source_design_mode": "universal_mixture",
+    "proposal_mode": "risk_objective_atlas",
+    "proposal_prior_profile": "low_frequency_only",
+    "target_labels_used": false,
+    "target_oracle_used": false
+  },
+  "synthetic_domains": [
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl"
+  ],
+  "frontier": [
+    {"d": 200, "budgets": [20, 40, 80], "seeds": 20},
+    {"d": 1000, "budgets": [20, 40, 80], "seeds": 20},
+    {"d": 10000, "budgets": [20, 40], "seeds": 10, "requires_d1000_gate": true}
+  ],
+  "main_variants": [
+    "frozen_proposal",
+    "proposal_sobol",
+    "promoted_joint_voi",
+    "new_point_only",
+    "pooled_variance",
+    "frozen_source_discrepancy"
+  ],
+  "separate_registered_matrices": {
+    "causal_prior": "retrain source model and proposal for every prior profile",
+    "transfer_baselines": "identical frozen 384-call archive and target n0/N",
+    "target_only_total_cost": "target-only methods receive 384+N calls and are reported separately",
+    "legacy_rzdt_bridge": "original RZDT definitions with scalarized single objective",
+    "sumo": "strict no-history, fresh trajectory CSV, out-of-sample seeds"
+  },
+  "reporting_contract": {
+    "paired_seeds": true,
+    "minimum_primary_seeds": 20,
+    "report_feasibility_denominator_with_regret": true,
+    "report_source_and_target_calls": true,
+    "report_certificate_vacuity": true,
+    "report_failures_and_timeouts_in_denominator": true,
+    "result_json_only": true,
+    "copy_checkpoints_or_models": false
+  }
+}

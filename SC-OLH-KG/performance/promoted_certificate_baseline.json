@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "name": "v64_powered_safe_interior_verification",
+  "role": "certified_deployment_baseline",
+  "search_performance_baseline": "v51_observed_terminal_closure",
+  "profile_module": "scripts/submit_scolhkg_v53_constrained_certificate_gate_scheduler.py",
+  "profile_key": "v64_powered_safe_interior_verification",
+  "implementation_contract_id": "v64_powered_cumulative_risk_safe_interior_verification",
+  "theory_contract_id": "v64_frozen_selector_powered_familywise_quantile_certificate_v1",
+  "source_archive_calls": 384,
+  "target_search_budget": 13,
+  "initial_budget": 10,
+  "source_records_per_domain": 64,
+  "source_proposal": {
+    "kind": "frozen_source_informed_risk_objective_atlas",
+    "run_id": "scolh_lowfreq_support_dimholdout_d1000_s80_20260726/proposals/risk_objective_atlas/low_frequency_only",
+    "source_dimension": 50,
+    "target_dimension": 1000,
+    "target_labels_used": false,
+    "target_oracle_used": false,
+    "source_archive_oracle_aided": false
+  },
+  "verification": {
+    "shortlist_size": 2,
+    "selector": "posterior_violation_sublevel_maximin_cumulative_risk",
+    "coordinate": "cumulative_risk_psi=(A,N)",
+    "primary_budget": 80,
+    "support_budget": 96,
+    "familywise_delta": 0.05,
+    "maximum_target_verification_calls": 176,
+    "verification_samples_independent": true,
+    "verification_updates_posterior": false
+  },
+  "evidence": {
+    "path": "SC-OLH-KG/performance/baselines/v64_powered_safe_interior_evidence.json",
+    "run_id": "scolh_v64_powered_safe_interior_n13_r80_96_s20fresh_20260726_01",
+    "formal_gate_passed": true,
+    "terminal_certified": 60,
+    "terminal_false_certificates": 0,
+    "paired_wins": 14,
+    "paired_losses": 0,
+    "paired_ties": 46,
+    "feasibility_rescues": 3,
+    "feasibility_losses": 0
+  },
+  "budget_interpretation": {
+    "equal_search_budget_claim_uses_v51": true,
+    "certified_deployment_claim_uses_v64": true,
+    "verification_calls_must_be_reported_separately": true,
+    "verification_calls_must_be_included_in_total_cost": true
+  }
+}

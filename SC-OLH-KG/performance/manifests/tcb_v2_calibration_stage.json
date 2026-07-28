@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "source_screen_run_id": "tcb_source_screen_v3_20260712",
+  "stage": "bayesian_predictive_calibration",
+  "selection_uses_online_sentinel_domains": false,
+  "selection_rule": "Retain the fixed baseline and every V1 challenger with rank-loss wins on at least four of five source LODO folds and no single-domain collapse. Predictive calibration cannot alter either criterion, so all omitted cells are mathematically unable to pass the frozen V2 gate.",
+  "baseline_variant_id": "learned_psi__linear_monotone__frozen__r2",
+  "task_indices": "20,22,24,50,51,52,74,76,80,82,92,93,94",
+  "count": 13,
+  "predictive_model": {
+    "kind": "source-regularized Bayesian linear output calibration",
+    "upper_alpha": 0.01,
+    "calibration_prior_df": 4.0,
+    "manual_guard_sweep": false
+  },
+  "promotion_gate": {
+    "worst_false_safe_nonworse": true,
+    "rank_loss_wins_required": 4,
+    "no_single_domain_collapse": true,
+    "dangerous_recall_nonworse": true,
+    "certified_safe_rate_strictly_improves": true,
+    "nonvacuous_safe_fold_count_required": 2,
+    "adaptation_dimension_cap_fraction_n0": 0.35,
+    "target_oracle_forbidden": true,
+    "target_evaluation_fit_forbidden": true
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "run_id": "scolh_promoted_v51_closure_s20_20260721_01",
+  "control_run_ids": [
+    "scolh_mean_alignment_v51_full_s5_20260721_01",
+    "scolh_mean_alignment_v51_full_s20_tail_20260721_02"
+  ],
+  "configuration": {
+    "domains": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "dimension": 1000,
+    "source_calls": 384,
+    "target_budget": 20,
+    "initial_budget": 10,
+    "seeds_per_domain": 20
+  },
+  "contracts": {
+    "source_oracle_free": true,
+    "paired_initial_design": true,
+    "observed_terminal_closure": true,
+    "domainwise_safety_noninferior": true
+  },
+  "outcome": {
+    "completed_runs": 60,
+    "true_feasible_recommendations": 60,
+    "adaptive_improvements": 26,
+    "adaptive_losses": 0,
+    "false_certificates": 0,
+    "certified_points": 0,
+    "vacuous_certificate_runs": 60,
+    "median_feasible_regret": 0.00824999999999998,
+    "selected_new_points": 311,
+    "selected_replications": 289
+  },
+  "paired_vs_preclosure_v51": {
+    "wins": 17,
+    "losses": 7,
+    "ties": 36
+  },
+  "gate_passes": true
+}

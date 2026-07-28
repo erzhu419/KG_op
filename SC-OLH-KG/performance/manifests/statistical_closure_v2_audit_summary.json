@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "scope": "v51_statistical_closure_v2_audit",
+  "run_id": "scolh_statistical_closure_v2_audit_s5_20260721_01",
+  "analyzer_code_commit": "f3bd967",
+  "aggregation_policy": "Analyzed on HPC; no checkpoints, PKL files, profiles, or per-run result files were copied locally.",
+  "contracts": {
+    "implementation_contract_id": "promoted_v51_observed_terminal_closure",
+    "theory_contract_id": "v51_statistical_closure_v2",
+    "contract_complete": true,
+    "target_oracle_used_for_decision": false
+  },
+  "configuration": {
+    "dimension": 1000,
+    "budget": 20,
+    "initial_budget": 10,
+    "exact_mc_samples": 2,
+    "exact_shortlist_size": 4,
+    "exact_sampling_mode": "antithetic",
+    "replication_cap": 5,
+    "domain_count": 3,
+    "seeds_per_domain": 5,
+    "expected_runs": 15,
+    "parsed_runs": 15
+  },
+  "overall": {
+    "finite_sample_hvd_assumptions_hold_for_all_runs": true,
+    "finite_sample_hvd_audit_passed": true,
+    "active_identifiable_count": 15,
+    "positive_replication_dof_count": 15,
+    "active_calibration_dimension_median": 2.0,
+    "active_rank_median": 2.0,
+    "lean_excitation_kappa_median": 3.7666492680443753e-06,
+    "lean_excitation_kappa_minimum": 2.7477094958984735e-07,
+    "target_evidence_solution_count_median": 4.0,
+    "replicated_solution_count_median": 4.0,
+    "true_feasible_recommendation_count": 15,
+    "median_feasible_regret": 0.00824999999999998,
+    "posterior_certified_count": 0,
+    "nonvacuous_run_count": 0,
+    "vacuous_run_count": 15,
+    "false_certificate_count": 0,
+    "certificate_nonvacuity_observed": false,
+    "publication_eligible": false
+  },
+  "by_domain": {
+    "FactorShockStatePolicyRZDT1": {
+      "run_count": 5,
+      "finite_sample_hvd_applicable_count": 5,
+      "true_feasible_recommendation_count": 5,
+      "median_feasible_regret": 0.00824999999999998,
+      "lean_excitation_kappa_median": 0.00012606681885504734,
+      "lean_excitation_kappa_minimum": 4.3283325692971e-07,
+      "posterior_certified_count": 0
+    },
+    "InventorySupplyChain": {
+      "run_count": 5,
+      "finite_sample_hvd_applicable_count": 5,
+      "true_feasible_recommendation_count": 5,
+      "median_feasible_regret": 0.011556952461906411,
+      "lean_excitation_kappa_median": 2.32902119956524e-06,
+      "lean_excitation_kappa_minimum": 2.7477094958984735e-07,
+      "posterior_certified_count": 0
+    },
+    "QueueResourceControl": {
+      "run_count": 5,
+      "finite_sample_hvd_applicable_count": 5,
+      "true_feasible_recommendation_count": 5,
+      "median_feasible_regret": 0.0023552819149597615,
+      "lean_excitation_kappa_median": 3.3293762612129907e-06,
+      "lean_excitation_kappa_minimum": 1.5557586755459141e-06,
+      "posterior_certified_count": 0
+    }
+  },
+  "interpretation": {
+    "finite_sample_theorem_status": "The active-subspace HVD assumptions are instantiated in all 15 runs, but the very small excitation constants imply weak numerical bounds.",
+    "certificate_status": "This N=20 audit is completely vacuous and is not certificate-efficacy evidence. Zero false certificates is not an estimable precision claim when zero certificates are issued.",
+    "separate_nonvacuity_evidence": {
+      "run_id": "scolh_promoted_v51_certification_budget_s5_20260721_02",
+      "budget": 80,
+      "replication_cap": 20,
+      "posterior_certified_count": 3,
+      "false_certificate_count": 0,
+      "evidence_file": "paper_gate_b_certification_budget.json"
+    },
+    "non_mixing_rule": "The N=20 behavior-preserving audit and N=80 certification-budget gate have different experiment configurations and are reported separately."
+  }
+}

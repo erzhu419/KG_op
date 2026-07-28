@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "source_screen_run_id": "tcb_excitation_v5_20260712",
+  "stage": "robust_source_only_boundary_excitation",
+  "selection_uses_online_sentinel_domains": false,
+  "selection_rule": "V5 reached both true boundary sides but D-optimal leverage selected unsupported source-score outliers. Freeze the posterior and gate; robustify only the unlabeled pilot design.",
+  "task_indices": "2,3,8,9,14,15,20,21,24,26,27,32,33,38,39,44,45,50,51,56,57,62,63,68,69,74,75,80,81,86,87,92,93",
+  "count": 33,
+  "pilot_design": {
+    "mode": "source_boundary_robust_d_optimal",
+    "pilot_size": 10,
+    "support_interval": [0.05, 0.95],
+    "seed_score_quantiles": [0.10, "nearest_zero", 0.90],
+    "score_and_coordinate_scaling": "median/central-80%-range",
+    "standardized_clip": [-3.0, 3.0],
+    "target_outcomes_used_for_selection": false,
+    "target_oracle_used": false
+  },
+  "target_posterior": {
+    "intercept_precision_multiplier": 0.001,
+    "target_residual_rank": 1,
+    "effective_dimension": 3,
+    "upper_alpha": 0.01,
+    "calibration_prior_df": 1.0
+  },
+  "promotion_gate_manifest": "tcb_v2_calibration_stage.json"
+}

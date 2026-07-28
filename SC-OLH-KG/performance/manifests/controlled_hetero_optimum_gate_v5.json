@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "status": "completed_hvd_partial_optimum_gate_failed",
+  "registered_on": "2026-07-27",
+  "execution": {
+    "run_id": "controlled_hetero_optimum_gate_v5_d3_n40_s5_20260727_01",
+    "submitted_at": "2026-07-27T20:00:23+0800",
+    "task_id_first": "t55980",
+    "task_id_last": "t56179",
+    "submitted_tasks": 200,
+    "completed_tasks": 200,
+    "failed_tasks": 0,
+    "code_commit": "263b9f9",
+    "compact_results": "SC-OLH-KG/results/controlled_hetero_optimum_gate_v5_d3_n40_s5_20260727_01"
+  },
+  "outcome": {
+    "evaluated_true_feasible_runs": 198,
+    "search_primary_true_feasible_runs": 0,
+    "verified_deployment_true_feasible_runs": 123,
+    "certificate_feasibility_rescues": 123,
+    "certificate_feasibility_losses": 0,
+    "independent_terminal_false_certificates": 0,
+    "near_optimal_hits_at_regret_0_01": 0,
+    "median_best_evaluated_feasible_regret": 0.12284800000000018,
+    "median_verified_deployment_regret": 0.29113999999999995,
+    "posterior_certified_points": 315,
+    "posterior_false_certified_points": 88,
+    "shared_factor_risk_ts_pooled_log_variance_rmse": 0.6856180794656386,
+    "shared_factor_risk_ts_factor_log_variance_rmse": 0.5803215678607951,
+    "shared_factor_risk_ts_pooled_upper_coverage": 0.29737609329446063,
+    "shared_factor_risk_ts_factor_upper_coverage": 0.9037900874635568,
+    "gate_passed": false,
+    "diagnosis": "Removing the dimensional confound makes feasible support nearly universal and confirms a factor-HVD calibration signal on shared-factor noise. Optimum recovery still fails because soft-penalty posterior sampling and terminal Bayes ranking favor low-objective unsafe candidates; independent certification is not the cause."
+  },
+  "purpose": "Identify HVD and optimum-recovery behavior without high-dimensional representation confounding. Set raw dimension equal to the three-dimensional observable control coordinate and increase the search budget to 40.",
+  "parent_runs": [
+    "controlled_hetero_optimum_gate_v3.json",
+    "controlled_hetero_optimum_gate_v4.json"
+  ],
+  "causal_contract": {
+    "raw_dimension": 3,
+    "observable_latent_dimension": 3,
+    "raw_and_latent_coordinates_coincide": true,
+    "source_archive_used": false,
+    "source_proposal_used": false,
+    "target_oracle_used": false,
+    "initial_design": "common_sobol",
+    "search_budget": 40,
+    "initial_budget": 10,
+    "state_candidate_count": 24,
+    "terminal_candidate_scope": "frozen_observed_history"
+  },
+  "matrix": {
+    "target_seeds": 5,
+    "scenarios": [
+      "homoscedastic",
+      "smooth_boundary",
+      "optimum_hotspot",
+      "safe_interior_hotspot",
+      "regime_step",
+      "sparse_axis",
+      "shared_factor",
+      "hidden_periodic"
+    ],
+    "backends": [
+      "risk_ts",
+      "joint_voi"
+    ],
+    "risk_ts_variance_modes": [
+      "pooled",
+      "orthogonal",
+      "factor",
+      "oracle"
+    ],
+    "joint_voi_variance_modes": [
+      "factor"
+    ],
+    "planned_tasks": 200
+  },
+  "verification_contract": {
+    "primary_calls": 80,
+    "support_calls": 96,
+    "familywise_delta": 0.05,
+    "verification_updates_optimizer": false
+  },
+  "gate": [
+    "zero independent terminal false certificates",
+    "zero certificate-induced feasibility losses",
+    "at least one regret-0.01 hit in every provider-exact scenario",
+    "factor HVD improves shared-factor variance calibration relative to pooled variance",
+    "report optimum recovery, certificate coverage, false posterior certificates, and variance calibration separately",
+    "hidden-periodic remains a registered misspecification stress test"
+  ],
+  "gate_passed": false
+}

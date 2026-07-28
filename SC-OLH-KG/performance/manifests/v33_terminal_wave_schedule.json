@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": "v33_terminal_n20_preregistered_20260712",
+  "matrix_size": 105,
+  "reason": "The scheduler live-load placement ignored later 32-process exact-KG forks, so the original bulk launch was reduced to physical-core-safe waves.",
+  "node_caps": {
+    "node001": 5,
+    "node002": 5,
+    "node003": 5,
+    "node004": 4,
+    "node005": 5,
+    "node006": 5
+  },
+  "waves": [
+    {
+      "wave": 1,
+      "task_indices": "0-4,6-28,62",
+      "count": 29,
+      "status": "completed"
+    },
+    {
+      "wave": 2,
+      "task_indices": "5,29-56",
+      "count": 29,
+      "status": "completed"
+    },
+    {
+      "wave": 3,
+      "task_indices": "57-61,63-86",
+      "count": 29,
+      "status": "completed"
+    },
+    {
+      "wave": 4,
+      "task_indices": "87-104",
+      "count": 18,
+      "status": "completed",
+      "task_ids": "t30017-t30034",
+      "declared_cpu_cores_per_task": 33,
+      "depth3_prefix_workers": 32,
+      "depth3_terminal_kg_elapsed_sec": {
+        "samples": 18,
+        "min": 221.121,
+        "median": 264.666,
+        "max": 330.697,
+        "legacy_samples": 3,
+        "legacy_median": 1473.165,
+        "median_speedup": 5.57
+      }
+    }
+  ],
+  "resume_contract": {
+    "same_signature": true,
+    "same_result_path": true,
+    "same_checkpoint_path": true,
+    "submit_with_allow_duplicate": true,
+    "checkpoint_sync_to_local": false
+  }
+}

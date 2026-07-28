@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "source_screen_run_id": "tcb_weakshift_v4_20260712",
+  "stage": "source_only_boundary_excitation",
+  "selection_uses_online_sentinel_domains": false,
+  "selection_rule": "V4 produced one nonvacuous safe fold but failed the frozen requirement of two. Keep the 33-cell weak-shift model fixed and replace unstratified random target pilots with a source-only boundary D-optimal design selected from unlabeled target descriptors.",
+  "task_indices": "2,3,8,9,14,15,20,21,24,26,27,32,33,38,39,44,45,50,51,56,57,62,63,68,69,74,75,80,81,86,87,92,93",
+  "count": 33,
+  "pilot_design": {
+    "mode": "source_boundary_d_optimal",
+    "pilot_size": 10,
+    "pool_multiplier": 4,
+    "seed_points": [
+      "minimum_source_margin",
+      "nearest_source_boundary",
+      "maximum_source_margin"
+    ],
+    "remaining_rule": "greedy log-det gain plus source-boundary bonus",
+    "target_outcomes_used_for_selection": false,
+    "target_oracle_used": false
+  },
+  "target_posterior": {
+    "intercept_precision_multiplier": 0.001,
+    "target_residual_rank": 1,
+    "effective_dimension": 3,
+    "upper_alpha": 0.01,
+    "calibration_prior_df": 1.0
+  },
+  "promotion_gate_manifest": "tcb_v2_calibration_stage.json"
+}

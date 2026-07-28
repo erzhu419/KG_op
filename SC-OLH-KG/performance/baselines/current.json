@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-04T07:37:52",
+  "baseline_policy": "Quality-first baseline. Promotion requires feasible primary and state-coupled and bi-objective smoke runs, non-worse simple_regret/true_objective when those metrics exist, and wall time within max_wall_slowdown. SC feasibility is recorded but is only a hard gate when require_sc_feasible is enabled. Faster wall time alone is not an optimization improvement.",
+  "promoted_candidate": {
+    "name": "single_olhkg",
+    "primary_wall_time_sec": 0.3608682155609131,
+    "metrics": {
+      "name": "single_olhkg",
+      "wall_time_sec": 0.3608682155609131,
+      "wall_time_sec_runs": [
+        0.3704526424407959,
+        0.3512837886810303
+      ],
+      "runs": 2,
+      "stage_times": {
+        "t_posterior_solve": {
+          "total": 0.10318183898925781,
+          "mean": 0.014740262712751116,
+          "share": 0.31286421821898963
+        },
+        "t_candidate_gen": {
+          "total": 0.01749706268310547,
+          "mean": 0.0024995803833007812,
+          "share": 0.05305395688914175
+        },
+        "t_kg_compute": {
+          "total": 0.14615750312805176,
+          "mean": 0.020879643304007395,
+          "share": 0.44317346347895675
+        },
+        "t_simulate": {
+          "total": 0.0002753734588623047,
+          "mean": 3.933906555175781e-05,
+          "share": 0.0008349773833182363
+        },
+        "t_update": {
+          "total": 0.0016489028930664062,
+          "mean": 0.00023555755615234375,
+          "share": 0.004999743361929803
+        },
+        "t_eval": {
+          "total": 0.06103682518005371,
+          "mean": 0.008719546454293388,
+          "share": 0.18507364066766382
+        }
+      },
+      "n_simulations": 12,
+      "n_distinct_solutions": 11,
+      "true_feasible": true,
+      "simple_regret": 0.0,
+      "true_objective": 0.375,
+      "true_best_objective": 0.375,
+      "variance_mode": "orthogonal"
+    }
+  },
+  "validation_config": {
+    "N": 12,
+    "n0": 5,
+    "K1": 10,
+    "legacy_K2": 1,
+    "candidate_K2": 1,
+    "posterior_pool_size": 150,
+    "posterior_keep": 8,
+    "repeats": 2,
+    "seed": 123,
+    "max_wall_slowdown": 1.25,
+    "max_regret_delta": 0.0,
+    "max_objective_delta": 0.0,
+    "require_sc_feasible": false,
+    "use_state_basis": false,
+    "variance_mode": "orthogonal",
+    "candidate_problem": "RegimeRZDT1",
+    "legacy_problem": "RZDT1"
+  },
+  "acceptance_gates": {
+    "wall_time_ratio": 0.9938719837207844,
+    "wall_time_constraint_pass": true,
+    "baseline_simple_regret": 0.0,
+    "candidate_simple_regret": 0.0,
+    "simple_regret_delta": 0.0,
+    "quality_regret_pass": true,
+    "baseline_true_objective": 0.375,
+    "candidate_true_objective": 0.375,
+    "true_objective_delta": 0.0,
+    "quality_objective_pass": true,
+    "single_feasible_pass": true,
+    "sc_smoke_pass": true,
+    "sc_feasible_observed": true,
+    "sc_feasible_required": false,
+    "biobj_smoke_pass": true,
+    "all_pass": true
+  },
+  "full_validation": {
+    "schema_version": 1,
+    "created_at": "2026-07-04T07:37:52",
+    "validation_config": {
+      "N": 12,
+      "n0": 5,
+      "K1": 10,
+      "legacy_K2": 1,
+      "candidate_K2": 1,
+      "posterior_pool_size": 150,
+      "posterior_keep": 8,
+      "repeats": 2,
+      "seed": 123,
+      "max_wall_slowdown": 1.25,
+      "max_regret_delta": 0.0,
+      "max_objective_delta": 0.0,
+      "require_sc_feasible": false,
+      "use_state_basis": false,
+      "variance_mode": "orthogonal",
+      "candidate_problem": "RegimeRZDT1",
+      "legacy_problem": "RZDT1"
+    },
+    "active_baseline_kind": "promoted",
+    "baseline_source": "promoted_candidate",
+    "baseline_file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/baselines/current.json",
+    "baseline_metrics": {
+      "wall_time_sec": 0.3630932569503784,
+      "simple_regret": 0.0,
+      "true_objective": 0.375,
+      "true_best_objective": 0.375,
+      "true_feasible": true
+    },
+    "baseline_wall_time_sec": 0.3630932569503784,
+    "legacy_baseline": null,
+    "candidates": {
+      "single_olhkg": {
+        "name": "single_olhkg",
+        "wall_time_sec": 0.3608682155609131,
+        "wall_time_sec_runs": [
+          0.3704526424407959,
+          0.3512837886810303
+        ],
+        "runs": 2,
+        "stage_times": {
+          "t_posterior_solve": {
+            "total": 0.10318183898925781,
+            "mean": 0.014740262712751116,
+            "share": 0.31286421821898963
+          },
+          "t_candidate_gen": {
+            "total": 0.01749706268310547,
+            "mean": 0.0024995803833007812,
+            "share": 0.05305395688914175
+          },
+          "t_kg_compute": {
+            "total": 0.14615750312805176,
+            "mean": 0.020879643304007395,
+            "share": 0.44317346347895675
+          },
+          "t_simulate": {
+            "total": 0.0002753734588623047,
+            "mean": 3.933906555175781e-05,
+            "share": 0.0008349773833182363
+          },
+          "t_update": {
+            "total": 0.0016489028930664062,
+            "mean": 0.00023555755615234375,
+            "share": 0.004999743361929803
+          },
+          "t_eval": {
+            "total": 0.06103682518005371,
+            "mean": 0.008719546454293388,
+            "share": 0.18507364066766382
+          }
+        },
+        "n_simulations": 12,
+        "n_distinct_solutions": 11,
+        "true_feasible": true,
+        "simple_regret": 0.0,
+        "true_objective": 0.375,
+        "true_best_objective": 0.375,
+        "variance_mode": "orthogonal"
+      },
+      "sc_olhkg": {
+        "name": "sc_olhkg",
+        "wall_time_sec": 0.3799632787704468,
+        "wall_time_sec_runs": [
+          0.3833174705505371,
+          0.37660908699035645
+        ],
+        "runs": 2,
+        "stage_times": {
+          "t_posterior_solve": {
+            "total": 0.10505151748657227,
+            "mean": 0.015007359640938895,
+            "share": 0.2959161743886485
+          },
+          "t_candidate_gen": {
+            "total": 0.018174171447753906,
+            "mean": 0.0025963102068219867,
+            "share": 0.05119422751975156
+          },
+          "t_kg_compute": {
+            "total": 0.16773343086242676,
+            "mean": 0.023961918694632395,
+            "share": 0.47248280049106917
+          },
+          "t_simulate": {
+            "total": 0.00035119056701660156,
+            "mean": 5.017008100237165e-05,
+            "share": 0.000989257190751352
+          },
+          "t_update": {
+            "total": 0.0016522407531738281,
+            "mean": 0.00023603439331054688,
+            "share": 0.004654142791518581
+          },
+          "t_eval": {
+            "total": 0.0620417594909668,
+            "mean": 0.008863108498709542,
+            "share": 0.1747633976182609
+          }
+        },
+        "n_simulations": 12,
+        "n_distinct_solutions": 11,
+        "true_feasible": true,
+        "simple_regret": 0.0,
+        "true_objective": 0.375,
+        "true_best_objective": 0.375,
+        "variance_mode": "orthogonal"
+      },
+      "biobj_olhkg_smoke": {
+        "name": "biobj_olhkg_smoke",
+        "wall_time_sec": 0.19160187244415283,
+        "wall_time_sec_runs": [
+          0.18608450889587402,
+          0.19711923599243164
+        ],
+        "runs": 2,
+        "stage_times": {
+          "t_posterior_solve": {
+            "total": 0.03969120979309082,
+            "mean": 0.005670172827584403,
+            "share": 0.20932261889344195
+          },
+          "t_candidate_gen": {
+            "total": 0.0022487640380859375,
+            "mean": 0.0003212520054408482,
+            "share": 0.011859481738636235
+          },
+          "t_kg_compute": {
+            "total": 0.12760210037231445,
+            "mean": 0.018228871481759206,
+            "share": 0.6729451172054273
+          },
+          "t_simulate": {
+            "total": 0.0003495216369628906,
+            "mean": 4.9931662423270086e-05,
+            "share": 0.0018432994305386684
+          },
+          "t_update": {
+            "total": 0.0024209022521972656,
+            "mean": 0.0003458431788853237,
+            "share": 0.012767300421343546
+          },
+          "t_eval": {
+            "total": 0.01730489730834961,
+            "mean": 0.002472128186907087,
+            "share": 0.0912621823106123
+          }
+        },
+        "n_simulations": 12,
+        "hv_final": 1.625,
+        "pareto_size": 8,
+        "variance_mode": "class"
+      }
+    },
+    "primary_candidate": "single_olhkg",
+    "primary_wall_time_sec": 0.3608682155609131,
+    "gates": {
+      "wall_time_ratio": 0.9938719837207844,
+      "wall_time_constraint_pass": true,
+      "baseline_simple_regret": 0.0,
+      "candidate_simple_regret": 0.0,
+      "simple_regret_delta": 0.0,
+      "quality_regret_pass": true,
+      "baseline_true_objective": 0.375,
+      "candidate_true_objective": 0.375,
+      "true_objective_delta": 0.0,
+      "quality_objective_pass": true,
+      "single_feasible_pass": true,
+      "sc_smoke_pass": true,
+      "sc_feasible_observed": true,
+      "sc_feasible_required": false,
+      "biobj_smoke_pass": true,
+      "all_pass": true
+    }
+  }
+}
