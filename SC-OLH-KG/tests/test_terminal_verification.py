@@ -391,6 +391,102 @@ class TerminalVerificationTests(unittest.TestCase):
         self.assertFalse(support["target_labels_used"])
         self.assertFalse(support["verification_samples_used"])
 
+    def test_objective_challenger_is_verified_before_safe_fallbacks(self):
+        algorithm = self._algorithm(seed=59, budget=8)
+        algorithm.config.terminal_verification_policy = (
+            "ordered_frozen_shortlist")
+        algorithm.config.terminal_verification_shortlist_size = 3
+        algorithm.config.terminal_verification_shortlist_mode = (
+            "posterior_objective_challenger_then_safe")
+        algorithm.config.terminal_safe_interior_candidate_scope = "observed"
+        primary = (2, 2, 2, 2, 2)
+        challenger = (4, 4, 4, 4, 4)
+        safe_support = (10, 10, 10, 10, 10)
+        algorithm.history = [
+            (primary, np.zeros(2)),
+            (challenger, np.zeros(2)),
+            (safe_support, np.zeros(2)),
+        ]
+        algorithm.observations = {
+            point: [np.zeros(2)]
+            for point in (primary, challenger, safe_support)
+        }
+        algorithm._last_terminal_bayes_ranked_points = [
+            primary, safe_support, challenger]
+
+        def fake_components(*args, **kwargs):
+            points = list(args[2])
+            objective = {
+                primary: 0.5,
+                challenger: 0.1,
+                safe_support: 0.7,
+            }
+            violation = {
+                primary: 0.01,
+                challenger: 0.40,
+                safe_support: 0.02,
+            }
+            return {
+                "objective": np.asarray([
+                    objective[tuple(point)] for point in points]),
+                "probability_violation": np.asarray([
+                    violation[tuple(point)] for point in points]),
+            }
+
+        algorithm._terminal_bayes_risk_components = fake_components
+        algorithm._terminal_safe_interior_candidate = lambda point: {
+            "point": safe_support,
+            "selection_mode": "diverse",
+            "selection_contract": "test_safe_support",
+            "target_oracle_used": False,
+        }
+        calls = []
+
+        def fake_verification(
+            point,
+            *,
+            verification_delta=None,
+            candidate_index=0,
+            verification_budget=None,
+        ):
+            calls.append((
+                tuple(point),
+                verification_delta,
+                candidate_index,
+                verification_budget,
+            ))
+            certified = tuple(point) == challenger
+            return {
+                "enabled": True,
+                "status": "certified" if certified else "not_certified",
+                "method": "gaussian_noncentral_t_tolerance",
+                "verification_budget": int(verification_budget),
+                "sample_count": int(verification_budget),
+                "certified": certified,
+                "candidate_index": candidate_index,
+                "delta": verification_delta,
+                "target_oracle_used": False,
+            }
+
+        algorithm._terminal_fixed_policy_verification = fake_verification
+        deployed, result = algorithm._terminal_verification_protocol(primary)
+
+        self.assertEqual(deployed, challenger)
+        self.assertEqual(calls, [(challenger, 0.05 / 3.0, 0, 8)])
+        self.assertEqual(
+            [row["shortlist_role"] for row in result["frozen_shortlist"]],
+            [
+                "posterior_objective_verification_challenger",
+                "posterior_feasible_primary_fallback",
+                "posterior_safe_interior_diversified",
+            ],
+        )
+        self.assertEqual(
+            result["objective_challenger"]["eligible_count"], 3)
+        self.assertTrue(result["recommendation_changed"])
+        self.assertFalse(
+            result["objective_challenger"]["target_oracle_used"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -447,6 +447,18 @@ def run_cell(args):
         "decision_terminal_maximum_violation_probability",
         0.05,
     ))
+    terminal_verification_shortlist_mode = str(getattr(
+        args,
+        "terminal_verification_shortlist_mode",
+        "posterior_primary_safe_interior",
+    ))
+    terminal_verification_shortlist_size = int(getattr(
+        args, "terminal_verification_shortlist_size", 2))
+    terminal_objective_challenger_max_violation_probability = float(getattr(
+        args,
+        "terminal_objective_challenger_max_violation_probability",
+        0.5,
+    ))
     config = SingleOLHKGConfig(
         implementation_contract_id=(
             "controlled_hetero_"
@@ -518,13 +530,17 @@ def run_cell(args):
         terminal_verification_method="normal_quantile_tolerance",
         terminal_verification_policy=(
             "ordered_frozen_shortlist" if args.verify else "fixed_policy"),
-        terminal_verification_shortlist_size=2 if args.verify else 1,
+        terminal_verification_shortlist_size=(
+            terminal_verification_shortlist_size
+            if args.verify else 1),
         terminal_verification_fallback_budget=(
             args.verification_support_budget if args.verify else 0),
         terminal_verification_shortlist_mode=(
-            "posterior_primary_safe_interior"
+            terminal_verification_shortlist_mode
             if args.verify else "posterior_ranked"
         ),
+        terminal_objective_challenger_max_violation_probability=float(
+            terminal_objective_challenger_max_violation_probability),
         terminal_safe_interior_probability_slack=0.05,
         terminal_safe_interior_require_provider=bool(args.verify),
         terminal_safe_interior_candidate_scope=(
@@ -654,6 +670,12 @@ def run_cell(args):
                 args.terminal_safe_interior_scope),
             "terminal_safe_interior_selection_mode": (
                 terminal_support_selection),
+            "terminal_verification_shortlist_mode": (
+                terminal_verification_shortlist_mode),
+            "terminal_verification_shortlist_size": int(
+                terminal_verification_shortlist_size),
+            "terminal_objective_challenger_max_violation_probability": float(
+                terminal_objective_challenger_max_violation_probability),
             "decision_terminal_rule": decision_terminal_rule,
             "decision_terminal_maximum_violation_probability": float(
                 decision_terminal_maximum_violation_probability),
@@ -726,12 +748,31 @@ def main():
         choices=("diverse", "objective_ranked", "objective_safe_ranked"),
         default="diverse",
     )
+    parser.add_argument(
+        "--terminal-verification-shortlist-mode",
+        choices=(
+            "posterior_ranked",
+            "posterior_primary_safe_interior",
+            "posterior_objective_challenger_then_safe",
+        ),
+        default="posterior_primary_safe_interior",
+    )
+    parser.add_argument(
+        "--terminal-verification-shortlist-size", type=int, default=2)
+    parser.add_argument(
+        "--terminal-objective-challenger-max-violation-probability",
+        type=float,
+        default=0.5,
+    )
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
     if args.n0 > args.N:
         raise ValueError("n0 cannot exceed N")
     if args.d < 3:
         raise ValueError("controlled suite requires d >= 3")
+    if args.verify and args.terminal_verification_shortlist_size < 2:
+        raise ValueError(
+            "ordered verification requires a shortlist of at least two")
     started = time.perf_counter()
     result = run_cell(args)
     result["runner_wall_time_sec"] = float(time.perf_counter() - started)

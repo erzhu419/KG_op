@@ -153,6 +153,24 @@ def build_specs(args):
                     str(args.terminal_safe_interior_scope),
                     "--terminal-safe-interior-selection",
                     str(support_selection),
+                    "--terminal-verification-shortlist-mode",
+                    str(getattr(
+                        args,
+                        "terminal_verification_shortlist_mode",
+                        "posterior_primary_safe_interior",
+                    )),
+                    "--terminal-verification-shortlist-size",
+                    str(getattr(
+                        args, "terminal_verification_shortlist_size", 2)),
+                    "--terminal-objective-challenger-max-violation-probability",
+                    str(getattr(
+                        args,
+                        (
+                            "terminal_objective_challenger_"
+                            "max_violation_probability"
+                        ),
+                        0.5,
+                    )),
                     "--decision-terminal-rule",
                     str(getattr(
                         args, "decision_terminal_rule", "bayes_risk")),
@@ -234,6 +252,22 @@ def main():
         default="diverse",
     )
     parser.add_argument(
+        "--terminal-verification-shortlist-mode",
+        choices=(
+            "posterior_ranked",
+            "posterior_primary_safe_interior",
+            "posterior_objective_challenger_then_safe",
+        ),
+        default="posterior_primary_safe_interior",
+    )
+    parser.add_argument(
+        "--terminal-verification-shortlist-size", type=int, default=2)
+    parser.add_argument(
+        "--terminal-objective-challenger-max-violation-probability",
+        type=float,
+        default=0.5,
+    )
+    parser.add_argument(
         "--decision-terminal-rule",
         choices=("bayes_risk", "feasible_first"),
         default="bayes_risk",
@@ -303,6 +337,13 @@ def main():
             "terminal_safe_interior_selection_modes": sorted({
                 selection for _, _, selection in variants
             }),
+            "terminal_verification_shortlist_mode": str(
+                args.terminal_verification_shortlist_mode),
+            "terminal_verification_shortlist_size": int(
+                args.terminal_verification_shortlist_size),
+            "terminal_objective_challenger_max_violation_probability": float(
+                args
+                .terminal_objective_challenger_max_violation_probability),
             "decision_terminal_rule": str(args.decision_terminal_rule),
             "decision_terminal_maximum_violation_probability": float(
                 args.decision_terminal_maximum_violation_probability),

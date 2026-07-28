@@ -19,6 +19,68 @@ TERMINAL_VERIFICATION_STREAM_TAG = 0x56455249
 TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG = 0x56534C54
 
 
+def select_objective_verification_challenger(
+    candidates,
+    objective_mean,
+    probability_violation,
+    *,
+    maximum_violation_probability=0.5,
+):
+    """Select the best objective among posterior-median feasible policies.
+
+    A violation probability at most one half is equivalent to a nonpositive
+    posterior median chance margin under the Gaussian decision model. This
+    admits candidates whose epistemic uncertainty prevents a paper-grade
+    certificate, while the independent verifier remains solely responsible
+    for deployment safety.
+    """
+
+    points = [tuple(int(value) for value in point) for point in candidates]
+    objective = np.asarray(objective_mean, dtype=float).reshape(-1)
+    violation = np.asarray(probability_violation, dtype=float).reshape(-1)
+    if len(points) != len(objective) or len(points) != len(violation):
+        raise ValueError(
+            "candidate, objective, and violation arrays must have equal length")
+    threshold = float(maximum_violation_probability)
+    if not 0.0 < threshold <= 1.0:
+        raise ValueError(
+            "objective challenger violation threshold must lie in (0, 1]")
+    eligible = (
+        np.isfinite(objective)
+        & np.isfinite(violation)
+        & (violation <= threshold)
+    )
+    indices = np.flatnonzero(eligible)
+    if not len(indices):
+        return {
+            "status": "no_posterior_median_feasible_candidate",
+            "point": None,
+            "eligible_count": 0,
+            "maximum_violation_probability": threshold,
+            "selection_contract": (
+                "posterior_median_feasible_minimum_posterior_objective"),
+            "verification_required_for_deployment": True,
+            "target_labels_used": False,
+            "target_oracle_used": False,
+            "verification_samples_used": False,
+        }
+    selected = int(indices[np.argmin(objective[indices])])
+    return {
+        "status": "selected",
+        "point": points[selected],
+        "eligible_count": int(len(indices)),
+        "maximum_violation_probability": threshold,
+        "selected_posterior_objective": float(objective[selected]),
+        "selected_probability_violation": float(violation[selected]),
+        "selection_contract": (
+            "posterior_median_feasible_minimum_posterior_objective"),
+        "verification_required_for_deployment": True,
+        "target_labels_used": False,
+        "target_oracle_used": False,
+        "verification_samples_used": False,
+    }
+
+
 def _verification_method(method):
     normalized = str(
         method or "component_bonferroni"

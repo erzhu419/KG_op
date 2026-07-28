@@ -53,6 +53,7 @@ from core.terminal_verification import (
     TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG,
     TERMINAL_VERIFICATION_STREAM_TAG,
     cumulative_risk_coordinate,
+    select_objective_verification_challenger,
     select_posterior_safe_interior,
     verify_frozen_policy,
 )
@@ -472,6 +473,7 @@ class SingleOLHKGConfig:
     terminal_verification_shortlist_size: int = 1
     terminal_verification_fallback_budget: int = 0
     terminal_verification_shortlist_mode: str = "posterior_ranked"
+    terminal_objective_challenger_max_violation_probability: float = 0.5
     terminal_safe_interior_probability_slack: float = 0.05
     terminal_safe_interior_require_provider: bool = False
     terminal_safe_interior_candidate_scope: str = "initial"
@@ -1215,13 +1217,16 @@ class SingleOLHKGAlgorithm:
         allowed_shortlist_modes = {
             "posterior_ranked",
             "posterior_primary_safe_interior",
+            "posterior_objective_challenger_then_safe",
         }
         if shortlist_mode not in allowed_shortlist_modes:
             raise ValueError(
                 "terminal verification shortlist mode must be "
-                "posterior_ranked or posterior_primary_safe_interior")
+                "posterior_ranked, posterior_primary_safe_interior, or "
+                "posterior_objective_challenger_then_safe")
         shortlist = [primary]
         safe_interior = None
+        objective_challenger = None
         if shortlist_mode == "posterior_primary_safe_interior":
             if requested_size != 2:
                 raise ValueError(
@@ -1231,6 +1236,39 @@ class SingleOLHKGAlgorithm:
             point = tuple(int(value) for value in safe_interior["point"])
             if point not in shortlist:
                 shortlist.append(point)
+        elif shortlist_mode == "posterior_objective_challenger_then_safe":
+            candidates = unique_candidates([
+                point for point, _ in self.history
+            ] + [primary])
+            components = self._terminal_bayes_risk_components(
+                self.gpr,
+                self.variance_model,
+                candidates,
+                task_ensemble=self.task_ensemble,
+                risk_penalty=self.config.decision_risk_penalty,
+            )
+            objective_challenger = (
+                select_objective_verification_challenger(
+                    candidates,
+                    components["objective"],
+                    components["probability_violation"],
+                    maximum_violation_probability=float(
+                        self.config
+                        .terminal_objective_challenger_max_violation_probability
+                    ),
+                )
+            )
+            shortlist = []
+            challenger_point = objective_challenger.get("point")
+            if challenger_point is not None:
+                shortlist.append(tuple(int(value) for value in challenger_point))
+            if primary not in shortlist:
+                shortlist.append(primary)
+            if len(shortlist) < requested_size:
+                safe_interior = self._terminal_safe_interior_candidate(primary)
+                point = tuple(int(value) for value in safe_interior["point"])
+                if point not in shortlist:
+                    shortlist.append(point)
         for candidate in ranked:
             if len(shortlist) >= requested_size:
                 break
@@ -1257,19 +1295,43 @@ class SingleOLHKGAlgorithm:
         }
         frozen_shortlist = []
         for index, point in enumerate(shortlist):
-            role = (
-                "posterior_bayes_primary"
-                if index == 0 else
-                (
-                    "posterior_safe_interior_objective_ranked"
-                    if safe_interior is not None
-                    and safe_interior.get("selection_mode")
-                    in {"objective_ranked", "objective_safe_ranked"}
-                    else "posterior_safe_interior_diversified"
+            if shortlist_mode == "posterior_objective_challenger_then_safe":
+                challenger_point = (
+                    None
+                    if objective_challenger is None
+                    or objective_challenger.get("point") is None
+                    else tuple(int(value) for value in
+                               objective_challenger["point"])
                 )
-                if shortlist_mode == "posterior_primary_safe_interior"
-                else "posterior_bayes_fallback"
-            )
+                safe_point = (
+                    None
+                    if safe_interior is None
+                    else tuple(int(value) for value in safe_interior["point"])
+                )
+                if point == challenger_point and point == primary:
+                    role = "posterior_objective_primary"
+                elif point == challenger_point:
+                    role = "posterior_objective_verification_challenger"
+                elif point == primary:
+                    role = "posterior_feasible_primary_fallback"
+                elif point == safe_point:
+                    role = "posterior_safe_interior_diversified"
+                else:
+                    role = "posterior_bayes_fallback"
+            else:
+                role = (
+                    "posterior_bayes_primary"
+                    if index == 0 else
+                    (
+                        "posterior_safe_interior_objective_ranked"
+                        if safe_interior is not None
+                        and safe_interior.get("selection_mode")
+                        in {"objective_ranked", "objective_safe_ranked"}
+                        else "posterior_safe_interior_diversified"
+                    )
+                    if shortlist_mode == "posterior_primary_safe_interior"
+                    else "posterior_bayes_fallback"
+                )
             record = {
                 "shortlist_position": int(index + 1),
                 "shortlist_role": role,
@@ -1277,10 +1339,27 @@ class SingleOLHKGAlgorithm:
                 "point": list(map(int, point)),
                 "point_fingerprint": integer_design_fingerprint([point]),
             }
-            if index == 1 and safe_interior is not None:
+            if (
+                safe_interior is not None
+                and tuple(int(value) for value in safe_interior["point"])
+                == point
+            ):
                 record.update({
                     key: copy.deepcopy(value)
                     for key, value in safe_interior.items()
+                    if key != "point"
+                })
+            if (
+                objective_challenger is not None
+                and objective_challenger.get("point") is not None
+                and tuple(
+                    int(value)
+                    for value in objective_challenger["point"]
+                ) == point
+            ):
+                record.update({
+                    key: copy.deepcopy(value)
+                    for key, value in objective_challenger.items()
                     if key != "point"
                 })
             frozen_shortlist.append(record)
@@ -1336,6 +1415,15 @@ class SingleOLHKGAlgorithm:
                 f"ordered_frozen_shortlist_{attempt_method}"),
             "protocol": "ordered_frozen_shortlist",
             "shortlist_mode": shortlist_mode,
+            "objective_challenger": (
+                None
+                if objective_challenger is None
+                else {
+                    key: copy.deepcopy(value)
+                    for key, value in objective_challenger.items()
+                    if key != "point"
+                }
+            ),
             "policy_frozen_before_verification": True,
             "shortlist_frozen_before_verification": True,
             "search_samples_reused": False,

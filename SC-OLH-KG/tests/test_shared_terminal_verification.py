@@ -12,6 +12,7 @@ from algorithms.single_olhkg import (  # noqa: E402
     SingleOLHKGConfig,
 )
 from core.terminal_verification import (  # noqa: E402
+    select_objective_verification_challenger,
     select_posterior_safe_interior,
     verify_frozen_policy,
     verify_frozen_shortlist,
@@ -175,3 +176,20 @@ def test_objective_safe_selector_uses_global_safety_reference():
     assert support["selection_contract"] == (
         "posterior_global_violation_sublevel_"
         "minimum_posterior_objective")
+
+
+def test_objective_verification_challenger_uses_posterior_median_feasibility():
+    points = [(1,), (2,), (3,)]
+    selected = select_objective_verification_challenger(
+        points,
+        objective_mean=[0.3, 0.1, 0.2],
+        probability_violation=[0.1, 0.7, 0.4],
+        maximum_violation_probability=0.5,
+    )
+    assert selected["point"] == points[2]
+    assert selected["eligible_count"] == 2
+    assert selected["selected_probability_violation"] == 0.4
+    assert selected["verification_required_for_deployment"] is True
+    assert selected["target_labels_used"] is False
+    assert selected["target_oracle_used"] is False
+    assert selected["verification_samples_used"] is False
