@@ -462,7 +462,7 @@ def main():
     )
     parser.add_argument(
         "--terminal-safe-interior-selection",
-        choices=("diverse", "objective_ranked"),
+        choices=("diverse", "objective_ranked", "objective_safe_ranked"),
         default="diverse",
     )
     parser.add_argument("--out", type=Path, required=True)

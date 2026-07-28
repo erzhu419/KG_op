@@ -325,10 +325,12 @@ def select_posterior_safe_interior(
     mode = str(
         selection_mode or "diverse"
     ).strip().lower().replace("-", "_")
-    if mode not in {"diverse", "objective_ranked"}:
+    objective_modes = {"objective_ranked", "objective_safe_ranked"}
+    if mode not in {"diverse", *objective_modes}:
         raise ValueError(
             "terminal safe-interior selection mode must be "
-            "'diverse' or 'objective_ranked'")
+            "'diverse', 'objective_ranked', or "
+            "'objective_safe_ranked'")
     objective = None
     if objective_mean is not None:
         objective = np.asarray(objective_mean, dtype=float).reshape(-1)
@@ -336,7 +338,7 @@ def select_posterior_safe_interior(
             raise RuntimeError(
                 "objective-ranked terminal support requires finite posterior "
                 "objective means")
-    if mode == "objective_ranked" and objective is None:
+    if mode in objective_modes and objective is None:
         raise RuntimeError(
             "objective-ranked terminal support requires objective_mean")
     minimum = float(np.min(probability))
@@ -393,7 +395,7 @@ def select_posterior_safe_interior(
         ) ** 2,
         axis=1,
     ))
-    if mode == "objective_ranked":
+    if mode in objective_modes:
         selected_index = min(
             eligible,
             key=lambda index: (
@@ -403,7 +405,10 @@ def select_posterior_safe_interior(
             ),
         )
         selection_contract = (
-            "posterior_violation_sublevel_minimum_posterior_objective")
+            "posterior_global_violation_sublevel_minimum_posterior_objective"
+            if mode == "objective_safe_ranked"
+            else "posterior_violation_sublevel_minimum_posterior_objective"
+        )
     else:
         selected_index = max(
             eligible,

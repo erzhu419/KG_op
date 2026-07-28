@@ -70,7 +70,9 @@ def _matrix_variants(args):
     unknown_modes = sorted(set(modes) - set(VARIANCE_MODES))
     unknown_backends = sorted(set(backends) - set(BACKENDS))
     unknown_selections = sorted(
-        set(selections) - {"diverse", "objective_ranked"})
+        set(selections)
+        - {"diverse", "objective_ranked", "objective_safe_ranked"}
+    )
     if (
         unknown_scenarios
         or unknown_modes
@@ -228,7 +230,7 @@ def main():
     )
     parser.add_argument(
         "--terminal-safe-interior-selection",
-        choices=("diverse", "objective_ranked"),
+        choices=("diverse", "objective_ranked", "objective_safe_ranked"),
         default="diverse",
     )
     parser.add_argument(

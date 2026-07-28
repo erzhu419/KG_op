@@ -148,3 +148,30 @@ def test_safe_interior_selector_can_rank_safe_sublevel_by_objective():
     assert support["selected_posterior_objective"] == 0.1
     assert support["selection_contract"] == (
         "posterior_violation_sublevel_minimum_posterior_objective")
+
+
+def test_objective_safe_selector_uses_global_safety_reference():
+    problem = ScalarizedProblem(FactorShockStatePolicyRZDT1(
+        d=5, L=100, sigma=0.04, alpha=0.05))
+    primary = (2, 2, 2, 2, 2)
+    points = [
+        primary,
+        (10, 10, 10, 10, 10),
+        (90, 90, 90, 90, 90),
+    ]
+    support = select_posterior_safe_interior(
+        problem,
+        primary,
+        points,
+        [0.01, 0.04, 0.07],
+        objective_mean=[1.0, 0.5, 0.0],
+        selection_mode="objective_safe_ranked",
+        probability_slack=0.05,
+        require_provider=True,
+    )
+    assert support["point"] == points[1]
+    assert support["eligible_count"] == 1
+    assert support["eligibility_reference"] == "global_minimum"
+    assert support["selection_contract"] == (
+        "posterior_global_violation_sublevel_"
+        "minimum_posterior_objective")

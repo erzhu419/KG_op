@@ -72,7 +72,7 @@ def test_submission_accepts_explicit_causal_variant_specs():
         variant_specs=(
             "risk_ts:factor:objective_ranked,"
             "constrained_ts:factor:diverse,"
-            "constrained_ts:factor:objective_ranked"
+            "constrained_ts:factor:objective_safe_ranked"
         ),
         seed_start=0,
         n_seeds=2,
@@ -97,11 +97,12 @@ def test_submission_accepts_explicit_causal_variant_specs():
     specs = module.build_specs(args)
     assert len(specs) == 2 * 3 * 2
     assert any(
-        "/constrained_ts/objective_ranked/" in spec["signature"]
+        "/constrained_ts/objective_safe_ranked/" in spec["signature"]
         for spec in specs
     )
     assert any(
-        "--terminal-safe-interior-selection objective_ranked" in spec["cmd"]
+        "--terminal-safe-interior-selection objective_safe_ranked"
+        in spec["cmd"]
         for spec in specs
     )
 

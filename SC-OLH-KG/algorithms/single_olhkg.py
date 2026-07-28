@@ -1264,7 +1264,7 @@ class SingleOLHKGAlgorithm:
                     "posterior_safe_interior_objective_ranked"
                     if safe_interior is not None
                     and safe_interior.get("selection_mode")
-                    == "objective_ranked"
+                    in {"objective_ranked", "objective_safe_ranked"}
                     else "posterior_safe_interior_diversified"
                 )
                 if shortlist_mode == "posterior_primary_safe_interior"
@@ -1427,7 +1427,7 @@ class SingleOLHKGAlgorithm:
             objective_mean=(
                 components.get("objective")
                 if selection_mode.strip().lower().replace("-", "_")
-                == "objective_ranked"
+                in {"objective_ranked", "objective_safe_ranked"}
                 else None
             ),
             selection_mode=selection_mode,
