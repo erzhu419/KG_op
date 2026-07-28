@@ -483,9 +483,14 @@ def main():
         "task_ids": task_ids,
         "checkpoint_results_synced_locally": False,
     }
+    manifest_name = (
+        f"recovery_submission_manifest_{time.strftime('%Y%m%d_%H%M%S')}.json"
+        if args.skip_existing_success
+        else "submission_manifest.json"
+    )
     registration_path = (
         Path(args.deploy) / "SC-OLH-KG" / "profiles" / args.run_id
-        / "submission_manifest.json"
+        / manifest_name
     )
     registration_path.parent.mkdir(parents=True, exist_ok=True)
     registration_path.write_text(
