@@ -182,11 +182,22 @@ def run_cell(args):
     exact = args.backend == "joint_voi"
     terminal_support_selection = str(getattr(
         args, "terminal_safe_interior_selection", "diverse"))
+    decision_terminal_rule = str(getattr(
+        args, "decision_terminal_rule", "bayes_risk"))
+    decision_terminal_maximum_violation_probability = float(getattr(
+        args,
+        "decision_terminal_maximum_violation_probability",
+        0.05,
+    ))
     config = SingleOLHKGConfig(
         implementation_contract_id=(
-            "controlled_hetero_v51_search_v64_terminal_v2"),
+            "controlled_hetero_"
+            f"{args.backend}_terminal_{decision_terminal_rule}_v1"
+        ),
         theory_contract_id=(
-            "controlled_hetero_paired_search_verification_v1"),
+            "controlled_hetero_lexicographic_posterior_action_"
+            f"{decision_terminal_rule}_verification_v1"
+        ),
         N=args.N,
         n0=args.n0,
         initial_design="common_sobol",
@@ -222,6 +233,9 @@ def run_cell(args):
         decision_violation_loss_mode="positive_part",
         decision_ambiguity_mode="posterior_nominal",
         decision_recommend_observed_only=True,
+        decision_terminal_rule=decision_terminal_rule,
+        decision_terminal_maximum_violation_probability=(
+            decision_terminal_maximum_violation_probability),
         adaptive_replication_voi=bool(exact),
         evaluate_or_replicate_new_action_count=4,
         evaluate_or_replicate_new_action_policy=(
@@ -379,6 +393,9 @@ def run_cell(args):
                 args.terminal_safe_interior_scope),
             "terminal_safe_interior_selection_mode": (
                 terminal_support_selection),
+            "decision_terminal_rule": decision_terminal_rule,
+            "decision_terminal_maximum_violation_probability": float(
+                decision_terminal_maximum_violation_probability),
             "target_oracle_used_for_search": bool(
                 args.variance_mode == "oracle"),
             "oracle_variance_row_is_diagnostic_upper_bound": bool(
@@ -416,6 +433,16 @@ def main():
     parser.add_argument("--state-inverse-pool-size", type=int, default=256)
     parser.add_argument("--beta-g", type=float, default=2.0)
     parser.add_argument("--risk-penalty", type=float, default=5.0)
+    parser.add_argument(
+        "--decision-terminal-rule",
+        choices=("bayes_risk", "feasible_first"),
+        default="bayes_risk",
+    )
+    parser.add_argument(
+        "--decision-terminal-maximum-violation-probability",
+        type=float,
+        default=0.05,
+    )
     parser.add_argument("--exact-mc-samples", type=int, default=8)
     parser.add_argument("--exact-jobs", type=int, default=12)
     parser.add_argument(

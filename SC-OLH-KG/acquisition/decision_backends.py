@@ -52,6 +52,57 @@ def minimization_expected_improvement(best, mean, standard_deviation):
     return np.maximum(improvement * norm.cdf(z) + sd * norm.pdf(z), 0.0)
 
 
+def feasible_first_terminal_order(
+    objective_mean,
+    violation_probability,
+    *,
+    maximum_violation_probability=0.05,
+):
+    """Return a stable lexicographic constrained terminal ordering."""
+
+    objective = np.asarray(objective_mean, dtype=float).reshape(-1)
+    violation = np.asarray(
+        violation_probability, dtype=float).reshape(-1)
+    if (
+        len(objective) != len(violation)
+        or not np.all(np.isfinite(objective))
+        or not np.all(np.isfinite(violation))
+    ):
+        raise ValueError(
+            "feasible-first terminal ordering requires equal finite arrays")
+    threshold = float(maximum_violation_probability)
+    if not np.isfinite(threshold) or not 0.0 <= threshold <= 1.0:
+        raise ValueError(
+            "maximum terminal violation probability must lie in [0, 1]")
+    feasible = violation <= threshold
+    if np.any(feasible):
+        mode = "posterior_feasible_objective"
+        order = sorted(
+            range(len(objective)),
+            key=lambda index: (
+                not bool(feasible[index]),
+                (
+                    float(objective[index])
+                    if feasible[index]
+                    else float(violation[index])
+                ),
+                float(violation[index]),
+                int(index),
+            ),
+        )
+    else:
+        mode = "minimum_posterior_violation"
+        order = sorted(
+            range(len(objective)),
+            key=lambda index: (
+                float(violation[index]),
+                float(objective[index]),
+                int(index),
+            ),
+        )
+    return np.asarray(order, dtype=int), mode
+
+
 def _variance_model_many(variance_model, output_index, candidates, problem):
     if hasattr(variance_model, "predict_certification_variance_many"):
         values = variance_model.predict_certification_variance_many(

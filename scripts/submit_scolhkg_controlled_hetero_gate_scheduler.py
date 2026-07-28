@@ -151,6 +151,15 @@ def build_specs(args):
                     str(args.terminal_safe_interior_scope),
                     "--terminal-safe-interior-selection",
                     str(support_selection),
+                    "--decision-terminal-rule",
+                    str(getattr(
+                        args, "decision_terminal_rule", "bayes_risk")),
+                    "--decision-terminal-maximum-violation-probability",
+                    str(getattr(
+                        args,
+                        "decision_terminal_maximum_violation_probability",
+                        0.05,
+                    )),
                     "--out", str(output),
                 ]
                 specs.append({
@@ -222,6 +231,16 @@ def main():
         choices=("diverse", "objective_ranked"),
         default="diverse",
     )
+    parser.add_argument(
+        "--decision-terminal-rule",
+        choices=("bayes_risk", "feasible_first"),
+        default="bayes_risk",
+    )
+    parser.add_argument(
+        "--decision-terminal-maximum-violation-probability",
+        type=float,
+        default=0.05,
+    )
     parser.add_argument("--light-cpu", type=int, default=1)
     parser.add_argument("--light-ram-mb", type=int, default=4096)
     parser.add_argument("--exact-cpu", type=int, default=12)
@@ -282,6 +301,9 @@ def main():
             "terminal_safe_interior_selection_modes": sorted({
                 selection for _, _, selection in variants
             }),
+            "decision_terminal_rule": str(args.decision_terminal_rule),
+            "decision_terminal_maximum_violation_probability": float(
+                args.decision_terminal_maximum_violation_probability),
             "oracle_rows_are_diagnostic_only": True,
         },
         "allowed_nodes": list(CPU_NODES),

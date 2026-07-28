@@ -16,7 +16,10 @@ import zlib
 import numpy as np
 from scipy.stats import norm, qmc
 
-from acquisition.decision_backends import score_decision_backend
+from acquisition.decision_backends import (
+    feasible_first_terminal_order,
+    score_decision_backend,
+)
 from acquisition.olhkg import OLHKGAcquisition
 from core.certification import (
     CertificationResult,
@@ -355,6 +358,8 @@ class SingleOLHKGConfig:
     decision_source_utility_weight: float = 1.0
     decision_backend_seed_offset: int = 470_003
     decision_recommend_observed_only: bool = True
+    decision_terminal_rule: str = "bayes_risk"
+    decision_terminal_maximum_violation_probability: float = 0.05
     exact_kg_mc_samples: int = 8
     exact_kg_jobs: int = 1
     exact_kg_parallel_backend: str = "thread"
@@ -9620,6 +9625,33 @@ class SingleOLHKGAlgorithm:
         )
         return f"{mode}:{aleatoric}:{ambiguity}:{violation}:{universe}:v1"
 
+    def _decision_terminal_value_contract_id(self):
+        rule = str(
+            self.config.decision_terminal_rule or "bayes_risk"
+        ).strip().lower().replace("-", "_")
+        if rule == "bayes_risk":
+            return self._terminal_value_contract_id()
+        if rule not in {"feasible_first", "posterior_feasible_first"}:
+            raise ValueError(f"unknown decision terminal rule {rule!r}")
+        aleatoric = str(
+            self.config.decision_aleatoric_mode or "certification_upper"
+        ).strip().lower().replace("-", "_")
+        ambiguity = str(
+            self.config.decision_ambiguity_mode or "kl_robust"
+        ).strip().lower().replace("-", "_")
+        universe = (
+            "observed_actions"
+            if self._decision_backend_observed_terminal_active()
+            else "fixed_terminal_pool"
+        )
+        probability = float(
+            self.config.decision_terminal_maximum_violation_probability)
+        return (
+            "posterior_feasible_first:"
+            f"pmax={probability:.12g}:{aleatoric}:{ambiguity}:"
+            f"{universe}:v1"
+        )
+
     def _terminal_value_from_models(
         self,
         gpr_models,
@@ -13455,20 +13487,51 @@ class SingleOLHKGAlgorithm:
             task_ensemble=self.task_ensemble,
             risk_penalty=self.config.decision_risk_penalty,
         )
-        order = np.argsort(
-            np.asarray(components["risk"], dtype=float),
-            kind="stable",
-        )
+        terminal_rule = str(
+            self.config.decision_terminal_rule or "bayes_risk"
+        ).strip().lower().replace("-", "_")
+        if terminal_rule == "bayes_risk":
+            order = np.argsort(
+                np.asarray(components["risk"], dtype=float),
+                kind="stable",
+            )
+            terminal_feasibility_mode = "soft_bayes_risk"
+        elif terminal_rule in {
+            "feasible_first",
+            "posterior_feasible_first",
+        }:
+            order, terminal_feasibility_mode = (
+                feasible_first_terminal_order(
+                    components["objective"],
+                    components["probability_violation"],
+                    maximum_violation_probability=float(
+                        self.config
+                        .decision_terminal_maximum_violation_probability),
+                )
+            )
+        else:
+            raise ValueError(
+                "decision terminal rule must be 'bayes_risk' or "
+                "'feasible_first'")
         self._last_terminal_bayes_ranked_points = [
             tuple(int(v) for v in action_pool[int(index)])
             for index in order
         ]
-        local = int(np.argmin(components["risk"]))
+        local = int(order[0])
         selected = tuple(int(v) for v in action_pool[local])
         _, details = self._solve_posterior_recommendation(pool=[selected])
         details.update({
             "decision_backend_terminal_used": True,
-            "decision_backend_terminal_rule": "posterior_bayes_risk",
+            "decision_backend_terminal_rule": (
+                "posterior_bayes_risk"
+                if terminal_rule == "bayes_risk"
+                else "posterior_feasible_first"
+            ),
+            "decision_backend_terminal_feasibility_mode": (
+                terminal_feasibility_mode),
+            "decision_backend_terminal_maximum_violation_probability": float(
+                self.config
+                .decision_terminal_maximum_violation_probability),
             "decision_backend_terminal_name": backend,
             "decision_backend_terminal_pool_source": pool_source,
             "decision_backend_terminal_pool_size": int(len(action_pool)),
@@ -13503,7 +13566,8 @@ class SingleOLHKGAlgorithm:
             "decision_backend_terminal_kl_radius": float(
                 components["kl_radius"]),
             "decision_backend_terminal_target_oracle_used": False,
-            "terminal_value_contract": self._terminal_value_contract_id(),
+            "terminal_value_contract": (
+                self._decision_terminal_value_contract_id()),
             "terminal_bayes_pool_audit": self._terminal_bayes_pool_audit(
                 action_pool, components, selected),
         })
@@ -16095,7 +16159,10 @@ class SingleOLHKGAlgorithm:
                 if final_post.get(
                     "posterior_dominance_terminal_used", False)
                 else (
-                    "posterior_bayes_risk"
+                    str(final_post.get(
+                        "decision_backend_terminal_rule",
+                        "posterior_bayes_risk",
+                    ))
                     if final_post.get(
                         "decision_backend_terminal_used", False)
                     else str(self.config.exact_kg_terminal_mode)
@@ -16103,7 +16170,25 @@ class SingleOLHKGAlgorithm:
             ),
             "terminal_recommendation_observed_only": bool(
                 self.config.decision_recommend_observed_only),
-            "terminal_value_contract": self._terminal_value_contract_id(),
+            "terminal_value_contract": (
+                self._decision_terminal_value_contract_id()
+                if final_post.get(
+                    "decision_backend_terminal_used", False)
+                else self._terminal_value_contract_id()
+            ),
+            "acquisition_and_recommendation_share_constraint_ordering": bool(
+                str(self.config.decision_backend).strip().lower().replace(
+                    "-", "_")
+                in {
+                    "constrained_ts",
+                    "feasible_first_ts",
+                    "posterior_constrained_ts",
+                }
+                and str(
+                    self.config.decision_terminal_rule
+                ).strip().lower().replace("-", "_")
+                in {"feasible_first", "posterior_feasible_first"}
+            ),
             "acquisition_terminal_observed_only": bool(
                 self._decision_backend_observed_terminal_active()),
             "acquisition_and_recommendation_share_terminal_action_universe": (

@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT))
 import acquisition.decision_backends as decision_backends  # noqa: E402
 from acquisition.decision_backends import (  # noqa: E402
     _constraint_epistemic_reduction,
+    feasible_first_terminal_order,
     minimization_expected_improvement,
     normal_positive_part,
     score_decision_backend,
@@ -106,6 +107,24 @@ def test_gaussian_loss_primitives_are_finite_and_nonnegative():
     assert np.all(positive >= 0.0)
     assert np.all(np.isfinite(improvement))
     assert np.all(improvement >= 0.0)
+
+
+def test_feasible_first_terminal_order_is_lexicographic():
+    order, mode = feasible_first_terminal_order(
+        [0.0, 10.0, 1.0],
+        [0.90, 0.01, 0.02],
+        maximum_violation_probability=0.05,
+    )
+    assert order.tolist() == [2, 1, 0]
+    assert mode == "posterior_feasible_objective"
+
+    order, mode = feasible_first_terminal_order(
+        [0.0, 10.0, 1.0],
+        [0.90, 0.50, 0.60],
+        maximum_violation_probability=0.05,
+    )
+    assert order.tolist() == [1, 2, 0]
+    assert mode == "minimum_posterior_violation"
 
 
 def test_decision_central_hvd_does_not_relax_theory_margin():
