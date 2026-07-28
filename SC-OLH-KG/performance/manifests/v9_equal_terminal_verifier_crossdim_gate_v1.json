@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "v69_gate_passed_20_seed_expansion_ready",
+  "status": "v69_20_seed_complete_equal_backend_matrix_ready",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -537,6 +537,63 @@
         "retain V66 improvements whenever paired objective dominance is supported",
         "report search, safety verification, objective comparison, total target, and source-plus-target budgets"
       ]
+    },
+    "expansion_result": {
+      "run_id": "paper_v69_objective_guard_cross_d50_d1000_n13_s80_99_v1",
+      "task_ids": "t58639-t58698",
+      "completed_tasks": "60/60",
+      "failed_tasks": 0,
+      "true_feasible": "60/60",
+      "independently_certified": "60/60",
+      "false_certificates": 0,
+      "deployment_objective_better_tie_worse_against_n0": "18/42/0",
+      "deployment_objective_losses_against_n0": 0,
+      "paired_vs_v66_better_tie_worse": "5/55/0",
+      "mean_feasible_regret": 0.007381445530116629,
+      "median_feasible_regret": 0.00824999999999998,
+      "mean_search_calls": 13,
+      "mean_safety_verification_calls": 150.4,
+      "mean_objective_comparison_calls": 5.333333333333333,
+      "mean_total_verification_calls": 155.73333333333332,
+      "mean_total_target_calls": 168.73333333333332,
+      "mean_source_plus_target_calls": 552.7333333333333,
+      "median_wall_time_seconds": 342.0304584503174,
+      "domain_results": {
+        "FactorShockStatePolicyRZDT1": {
+          "n0_better_tie_worse": "0/20/0",
+          "paired_vs_v66_better_tie_worse": "0/20/0",
+          "mean_regret": 0.00824999999999998,
+          "mean_total_target_calls": 93
+        },
+        "InventorySupplyChain": {
+          "n0_better_tie_worse": "9/11/0",
+          "paired_vs_v66_better_tie_worse": "5/15/0",
+          "mean_regret": 0.01125866932191622,
+          "mean_total_target_calls": 217.8
+        },
+        "QueueResourceControl": {
+          "n0_better_tie_worse": "9/11/0",
+          "paired_vs_v66_better_tie_worse": "0/20/0",
+          "mean_regret": 0.0026356672684336863,
+          "mean_total_target_calls": 195.4
+        }
+      },
+      "objective_comparison_status_counts": {
+        "same_policy": 28,
+        "challenger_dominates": 15,
+        "challenger_not_safety_certified": 5,
+        "incumbent_not_safety_certified": 6,
+        "incumbent_retained": 5,
+        "neither_primary_nor_incumbent_safety_certified": 1
+      },
+      "protocol_checks": {
+        "initial_design_fingerprint_equal_to_v66": "60/60",
+        "source_archive_fingerprint_equal_to_v66": "60/60",
+        "online_action_fingerprint_equal_to_v66": "60/60",
+        "oracle_free_frozen_shortlist": "60/60",
+        "search_plus_safety_plus_objective_budget_identity": "60/60"
+      },
+      "decision": "Promote V69 as the SC deployment protocol and rerun proposal-only, Stacked GP, and canonical SAASBO with the identical V69 verifier."
     }
   },
   "reporting": [
