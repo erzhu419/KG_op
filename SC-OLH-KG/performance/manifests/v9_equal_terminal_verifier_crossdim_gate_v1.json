@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "implementation_validated_pending_scheduler_gate",
+  "status": "five_seed_scheduler_gate_submitted",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -53,6 +53,27 @@
       "all methods use candidate budgets 80/128/128 and familywise delta 0.05",
       "search histories match their V64/V7 controls for identical seeds",
       "no target truth or verification sample enters shortlist selection"
+    ]
+  },
+  "submission": {
+    "submitted_on": "2026-07-28",
+    "scolh_run_id": "paper_v9_equal_verifier_scolh_v65_cross_d50_d1000_n13_s80_84_gate_v1",
+    "scolh_task_ids": "t58033-t58047",
+    "comparison_backend_run_id": "paper_v9_equal_verifier_backends_cross_d50_d1000_n13_s80_84_gate_v1",
+    "comparison_backend_task_ids": "t58048-t58092",
+    "task_count": 60,
+    "allowed_cpu_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "allowed_gpu_nodes": [
+      "jtl110gpu",
+      "jtl110gpu2",
+      "node007"
     ]
   },
   "expansion": {
