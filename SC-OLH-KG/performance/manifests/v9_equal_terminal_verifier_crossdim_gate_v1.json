@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "paper_grade_20_seed_expansion_completed_backend_challenge_submitted",
+  "status": "paper_grade_20_seed_expansion_completed_v66_expansion_ready",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -334,6 +334,75 @@
       "node006"
     ],
     "checkpoint_sync": false
+  },
+  "backend_challenge_result": {
+    "completed_tasks": "60/60",
+    "failed_tasks": 0,
+    "parsed_rows": 60,
+    "parse_errors": 0,
+    "protocol_checks": {
+      "four_variants_per_domain_seed": "15/15",
+      "initial_design_fingerprint_equal": "15/15",
+      "source_archive_fingerprint_equal": "15/15",
+      "v66_v67_v68_online_action_fingerprint_equal": "15/15",
+      "three_distinct_frozen_candidates": "60/60",
+      "candidate_budgets_80_128_128": "60/60",
+      "explicit_shortlist_oracle_free_and_preverification": "60/60",
+      "online_action_and_verifier_oracle_free": "60/60"
+    },
+    "variants": {
+      "v65_verification_aware_terminal": {
+        "true_feasible": "15/15",
+        "independently_certified": "15/15",
+        "false_certificates": 0,
+        "n0_to_final_improve_tie_loss": "0/15/0",
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_feasible_regret": 0.007561150318447969,
+        "mean_verification_calls": 97.06666666666666,
+        "mean_total_target_calls": 110.06666666666666,
+        "median_wall_time_seconds": 668.2244012355804
+      },
+      "v66_feasible_first_ts": {
+        "true_feasible": "15/15",
+        "independently_certified": "15/15",
+        "false_certificates": 0,
+        "n0_to_final_improve_tie_loss": "6/9/0",
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_feasible_regret": 0.0073174254243422495,
+        "mean_verification_calls": 105.6,
+        "mean_total_target_calls": 118.6,
+        "median_wall_time_seconds": 338.88298988342285,
+        "paired_vs_v65_better_tie_worse": "6/9/0",
+        "paired_mean_regret_difference": -0.00024372489410571981
+      },
+      "v67_feasible_first_ts_objective_safe": {
+        "finding": "Search actions, deployments, regret, and certification outcomes are identical to V66 on all 15 paired cells.",
+        "retain": false
+      },
+      "v68_feasible_first_ts_incumbent": {
+        "finding": "No regret improvement over V66; posterior dominance made zero online switches and increased mean verification calls to 114.13333333333334.",
+        "retain": false
+      }
+    },
+    "domain_improvements_for_v66": {
+      "FactorShockStatePolicyRZDT1": "0/5",
+      "InventorySupplyChain": "4/5",
+      "QueueResourceControl": "2/5"
+    },
+    "decision": "V66 passes the five-seed promotion gate and is the sole 20-seed challenger. V67 is behaviorally redundant and V68 adds verification cost without benefit."
+  },
+  "v66_expansion": {
+    "seed_start": 80,
+    "n_seeds": 20,
+    "logical_cells": 60,
+    "comparison_control": "existing V65 20-seed expansion_result on identical frozen initial designs and verifier",
+    "requirements": [
+      "60/60 true-feasible deployments",
+      "zero false independent certificates",
+      "no adaptive loss against n0",
+      "paired improvement over V65 remains positive in Inventory and Queue",
+      "report search, verification, total target, and source-plus-target budgets"
+    ]
   },
   "reporting": [
     "search budget",
