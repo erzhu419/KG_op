@@ -43,6 +43,13 @@ The remaining equivalent recovery set is therefore:
 - 2 failed periodic-capped SAASBO cells;
 - 48 cross-dimension SAASBO cells without a successful compact result.
 
+After the first recovery wave, the cross-dimension matrix reached 149/180
+compact successes: proposal-only 60/60, Stacked GP 60/60, and canonical
+SAASBO 29/60. The remaining 31 canonical SAASBO logical cells were submitted
+with the path-portable runner and `skip_existing_success`; they remain a
+separate completion item and are not used in the controlled-heteroscedastic
+conclusions below.
+
 ## Current paper-matrix signal
 
 With the dimension-50 frozen proposal transferred to dimension 1000, all
@@ -130,3 +137,91 @@ Promotion requires zero false terminal certificates, no reduction below the
 V5 factor deployment count of 26/40, and a strict improvement in either
 median deployed regret or best-evaluated regret. Only a passing variant is
 expanded to 20 seeds.
+
+## V6 and V7 results
+
+On the matched 20-seed, eight-scenario matrix (`160` runs), V6
+`constrained_ts` found at least one true-feasible evaluated policy in
+160/160 runs and reduced median best-evaluated feasible regret from V5's
+`0.135816` to `0.059338`. Its old soft terminal decision was nevertheless
+true-feasible in 0/160 runs.
+
+V7 paired the same constrained posterior sampling trajectory with a
+feasible-first terminal rule:
+
+| Metric | V6 | V7 |
+|---|---:|---:|
+| search found a true-feasible point | 160/160 | 160/160 |
+| true-feasible primary | 0/160 | 127/160 |
+| true-feasible verified deployment | 130/160 | 151/160 |
+| independently certified deployment | 130/160 | 147/160 |
+| false independent certificate | 0/160 | 1/160 |
+| median best-evaluated feasible regret | 0.059338 | 0.059338 |
+| median deployed feasible regret | 0.286460 | 0.220868 |
+
+The one V7 false certificate had true chance margin `+7.67e-5`, consistent
+with a finite-sample tail event under the declared family-wise `delta=0.05`.
+A `delta=0.01` sensitivity removed it but reduced certificate coverage.
+
+## Post-run terminal error decomposition
+
+The decomposition reran the exact promoted V7 contract
+(`state_candidate_count=24`, inverse pool `512`, observed support scope) on
+five seeds per scenario. Truth was joined only after all decisions froze.
+
+- The best evaluated true-feasible policy existed in 40/40 runs, with median
+  regret `0.067842`.
+- Giving the fitted objective head the oracle feasible set selected a
+  true-feasible policy in 40/40 runs, with median regret `0.072534`.
+- The fitted posterior safe set had mean precision `0.7823`, mean recall
+  `0.4431`, and contained the best evaluated policy in only 11/40 runs.
+- Replacing fitted aleatoric variance with oracle variance reduced false-safe
+  points from 37 to 13 but left mean safe recall essentially unchanged
+  (`0.4431` to `0.4421`).
+- Replacing both mean and variance with their oracle values removed all
+  false-safe points, yet mean safe recall remained only `0.3683`; the current
+  epistemic uncertainty plus a hard `P(violation)<=0.05` filter still rejected
+  most shallow-interior feasible policies.
+
+Thus the objective head is not the dominant terminal bottleneck, and further
+HVD tuning cannot close the deployment-quality gap by itself. The dominant
+loss is using a paper-grade posterior certificate as the candidate-admission
+rule rather than as the final deployment test.
+
+## V9 verification-aware terminal policy
+
+V9 freezes an ordered three-policy shortlist before independent labels:
+
+1. the minimum posterior objective among observed candidates with posterior
+   violation probability at most `0.5` (posterior-median chance feasible);
+2. the original V7 strict posterior-feasible primary;
+3. the cumulative-risk safe-interior support.
+
+The first candidate is a verification challenger, not a certificate.
+Independent Gaussian quantile-tolerance verification remains the sole
+deployment authority. Family-wise `delta=0.05` is split over all three
+candidates, with precommitted budgets `80/128/128`.
+
+Across the full 20-seed matrix, V7 and V9 had byte-identical search-primary
+policies in all 160 cells:
+
+| Metric | V7 | V9 |
+|---|---:|---:|
+| true-feasible primary | 127/160 | 127/160 |
+| true-feasible verified deployment | 151/160 | 153/160 |
+| independently certified deployment | 147/160 | 151/160 |
+| false independent certificate | 1/160 | 1/160 |
+| median deployed feasible regret | 0.220868 | 0.163552 |
+| mean independent verification calls | 109.4 | 184.8 |
+
+Paired outcomes were three feasibility rescues, one feasibility loss,
+28 strict regret improvements, one strict regret loss, and 121 ties among
+jointly feasible deployments. The sole V9 false certificate was a
+`+2.84e-4` true-margin boundary case whose independent upper margin was
+`-1.80e-4`.
+
+The preregistered `delta=0.01` sensitivity produced 152/160 true-feasible
+deployments, 149/160 certificates, zero false certificates, and median
+deployed regret `0.193036`. It is reported as a conservative sensitivity;
+the main `delta=0.05` result is retained rather than changed after observing
+the boundary event.

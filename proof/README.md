@@ -395,6 +395,9 @@ mathlib and its cache; later builds should be fast.
   cumulative-risk safe-interior shortlist contract and proves that
   verification cannot alter its primary/support pair. V64 retains that
   selector and instantiates the asymmetric budget theorem at 80/96 calls.
+  The controlled-heteroscedastic V9 extension freezes an objective challenger,
+  the posterior-feasible primary, and a cumulative-risk support before any
+  verification sample, and proves the exact 80/128/128 budget cap.
 - `SCOLHKG/Measure/GaussianReplicationCertificate.lean`: false terminal
   certification is contained in the union of mean- and scale-coverage
   failures, yielding the declared per-policy error bound by a finite-measure
@@ -407,9 +410,10 @@ mathlib and its cache; later builds should be fast.
   certificate in one quantile-coverage failure. V63 specializes the
   two-policy family-wise theorem to any frozen safe-interior selector, so its
   data-dependent posterior choice does not consume the independent
-  verification error budget.
-  certificate in its single quantile-coverage failure and composes the two
-  frozen policies with the same family-wise theorem.
+  verification error budget. The V9 theorem extends the same finite union
+  argument to three ordered frozen policies and proves family-wise false
+  deployment at most `delta_1 + delta_2 + delta_3`, without independence
+  between certificate events.
 - `SCOLHKG/Real/HierarchicalBoundaryCertificate.lean`: TCB-V2 positive
   location/log-scale adaptation, planar-rotation norm preservation,
   nonnegative Cholesky/rotation/orthogonal-residual predictive variance,

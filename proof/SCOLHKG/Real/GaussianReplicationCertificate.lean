@@ -296,4 +296,80 @@ theorem safe_interior_shortlist_freeze_is_verification_invariant
       [shortlist.primary, shortlist.support] := by
   rfl
 
+structure FrozenObjectiveChallengerShortlist (Design : Type*) where
+  challenger : Design
+  primary : Design
+  support : Design
+  challengerPosteriorMedianFeasible : Prop
+  shortlistFrozenBeforeVerification : Prop
+  searchBudget : ℕ
+
+def freezeObjectiveChallengerShortlist
+    {Design : Type*}
+    (challenger primary support : Design)
+    (challengerPosteriorMedianFeasible : Prop)
+    (shortlistFrozenBeforeVerification : Prop)
+    (searchBudget : ℕ) :
+    FrozenObjectiveChallengerShortlist Design where
+  challenger := challenger
+  primary := primary
+  support := support
+  challengerPosteriorMedianFeasible :=
+    challengerPosteriorMedianFeasible
+  shortlistFrozenBeforeVerification :=
+    shortlistFrozenBeforeVerification
+  searchBudget := searchBudget
+
+def objectiveChallengerPolicies
+    {Design : Type*}
+    (shortlist : FrozenObjectiveChallengerShortlist Design) : List Design :=
+  [shortlist.challenger, shortlist.primary, shortlist.support]
+
+theorem objective_challenger_selector_contract
+    {Design : Type*}
+    (challenger primary support : Design)
+    (challengerPosteriorMedianFeasible : Prop)
+    (shortlistFrozenBeforeVerification : Prop)
+    (searchBudget : ℕ)
+    (hMedian : challengerPosteriorMedianFeasible)
+    (hFrozen : shortlistFrozenBeforeVerification) :
+    let shortlist :=
+      freezeObjectiveChallengerShortlist
+        challenger primary support
+        challengerPosteriorMedianFeasible
+        shortlistFrozenBeforeVerification
+        searchBudget
+    shortlist.challengerPosteriorMedianFeasible
+      ∧ shortlist.shortlistFrozenBeforeVerification := by
+  exact ⟨hMedian, hFrozen⟩
+
+theorem objective_challenger_shortlist_freeze_is_verification_invariant
+    {Design Sample : Type*}
+    (shortlist : FrozenObjectiveChallengerShortlist Design)
+    (_verification : List Sample) :
+    objectiveChallengerPolicies shortlist =
+      [shortlist.challenger, shortlist.primary, shortlist.support] := by
+  rfl
+
+theorem ordered_three_policy_asymmetric_verification_budget_le
+    (searchBudget firstBudget secondBudget thirdBudget : ℕ)
+    (firstCertified secondCertified : Bool) :
+    searchBudget
+        + (if firstCertified then firstBudget
+           else firstBudget
+             + if secondCertified then secondBudget
+               else secondBudget + thirdBudget)
+      ≤ searchBudget + firstBudget + secondBudget + thirdBudget := by
+  cases firstCertified <;> cases secondCertified <;> simp <;> omega
+
+theorem ordered_three_policy_objective_challenger_budget_le
+    (searchBudget : ℕ)
+    (challengerCertified primaryCertified : Bool) :
+    searchBudget
+        + (if challengerCertified then 80
+           else 80 + if primaryCertified then 128 else 128 + 128)
+      ≤ searchBudget + 80 + 128 + 128 := by
+  exact ordered_three_policy_asymmetric_verification_budget_le
+    searchBudget 80 128 128 challengerCertified primaryCertified
+
 end SCOLHKG.Real

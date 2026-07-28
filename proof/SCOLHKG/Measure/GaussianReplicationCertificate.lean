@@ -280,4 +280,140 @@ theorem false_frozen_safe_interior_deployment_probability_le
       deltaFirst deltaSecond familywiseDelta
       hFirst hSecond hSpend
 
+def FalseOrderedThreePolicyDeployment
+    (unsafeFirst unsafeSecond unsafeThird : Prop)
+    (certifiedFirst certifiedSecond certifiedThird : Ω → Prop) : Set Ω :=
+  {ω |
+    (certifiedFirst ω ∧ unsafeFirst)
+      ∨
+    (¬ certifiedFirst ω ∧ certifiedSecond ω ∧ unsafeSecond)
+      ∨
+    (¬ certifiedFirst ω ∧ ¬ certifiedSecond ω
+      ∧ certifiedThird ω ∧ unsafeThird)}
+
+theorem false_ordered_three_policy_deployment_subset
+    (unsafeFirst unsafeSecond unsafeThird : Prop)
+    (certifiedFirst certifiedSecond certifiedThird : Ω → Prop) :
+    FalseOrderedThreePolicyDeployment
+        unsafeFirst unsafeSecond unsafeThird
+        certifiedFirst certifiedSecond certifiedThird
+      ⊆ CandidateFalseCertificate unsafeFirst certifiedFirst
+        ∪ (CandidateFalseCertificate unsafeSecond certifiedSecond
+          ∪ CandidateFalseCertificate unsafeThird certifiedThird) := by
+  intro ω hFalse
+  rcases hFalse with hFirst | hSecond | hThird
+  · exact Set.mem_union_left _ hFirst
+  · exact Set.mem_union_right _ (Set.mem_union_left _ ⟨hSecond.2.1, hSecond.2.2⟩)
+  · exact Set.mem_union_right _ (Set.mem_union_right _ ⟨hThird.2.2.1, hThird.2.2.2⟩)
+
+theorem false_ordered_three_policy_deployment_probability_le
+    (unsafeFirst unsafeSecond unsafeThird : Prop)
+    (certifiedFirst certifiedSecond certifiedThird : Ω → Prop)
+    (deltaFirst deltaSecond deltaThird : ℝ)
+    [IsFiniteMeasure μ]
+    (hFirst :
+      μ.real (CandidateFalseCertificate unsafeFirst certifiedFirst)
+        ≤ deltaFirst)
+    (hSecond :
+      μ.real (CandidateFalseCertificate unsafeSecond certifiedSecond)
+        ≤ deltaSecond)
+    (hThird :
+      μ.real (CandidateFalseCertificate unsafeThird certifiedThird)
+        ≤ deltaThird) :
+    μ.real (FalseOrderedThreePolicyDeployment
+      unsafeFirst unsafeSecond unsafeThird
+      certifiedFirst certifiedSecond certifiedThird)
+      ≤ deltaFirst + deltaSecond + deltaThird := by
+  let firstEvent :=
+    CandidateFalseCertificate unsafeFirst certifiedFirst
+  let secondEvent :=
+    CandidateFalseCertificate unsafeSecond certifiedSecond
+  let thirdEvent :=
+    CandidateFalseCertificate unsafeThird certifiedThird
+  calc
+    μ.real (FalseOrderedThreePolicyDeployment
+        unsafeFirst unsafeSecond unsafeThird
+        certifiedFirst certifiedSecond certifiedThird)
+      ≤ μ.real (firstEvent ∪ (secondEvent ∪ thirdEvent)) :=
+        measureReal_mono (
+          false_ordered_three_policy_deployment_subset
+            unsafeFirst unsafeSecond unsafeThird
+            certifiedFirst certifiedSecond certifiedThird)
+    _ ≤ μ.real firstEvent + μ.real (secondEvent ∪ thirdEvent) :=
+      measureReal_union_le _ _
+    _ ≤ μ.real firstEvent + (μ.real secondEvent + μ.real thirdEvent) := by
+      gcongr
+      exact measureReal_union_le _ _
+    _ ≤ deltaFirst + deltaSecond + deltaThird := by
+      dsimp [firstEvent, secondEvent, thirdEvent]
+      linarith
+
+theorem false_ordered_three_policy_deployment_probability_le_familywise_delta
+    (unsafeFirst unsafeSecond unsafeThird : Prop)
+    (certifiedFirst certifiedSecond certifiedThird : Ω → Prop)
+    (deltaFirst deltaSecond deltaThird familywiseDelta : ℝ)
+    [IsFiniteMeasure μ]
+    (hFirst :
+      μ.real (CandidateFalseCertificate unsafeFirst certifiedFirst)
+        ≤ deltaFirst)
+    (hSecond :
+      μ.real (CandidateFalseCertificate unsafeSecond certifiedSecond)
+        ≤ deltaSecond)
+    (hThird :
+      μ.real (CandidateFalseCertificate unsafeThird certifiedThird)
+        ≤ deltaThird)
+    (hSpend :
+      deltaFirst + deltaSecond + deltaThird ≤ familywiseDelta) :
+    μ.real (FalseOrderedThreePolicyDeployment
+      unsafeFirst unsafeSecond unsafeThird
+      certifiedFirst certifiedSecond certifiedThird)
+      ≤ familywiseDelta := by
+  exact le_trans (
+    false_ordered_three_policy_deployment_probability_le
+      unsafeFirst unsafeSecond unsafeThird
+      certifiedFirst certifiedSecond certifiedThird
+      deltaFirst deltaSecond deltaThird
+      hFirst hSecond hThird
+  ) hSpend
+
+theorem false_frozen_objective_challenger_deployment_probability_le
+    {Design : Type*}
+    (shortlist : SCOLHKG.Real.FrozenObjectiveChallengerShortlist Design)
+    (isUnsafe : Design → Prop)
+    (certifiedFirst certifiedSecond certifiedThird : Ω → Prop)
+    (deltaFirst deltaSecond deltaThird familywiseDelta : ℝ)
+    [IsFiniteMeasure μ]
+    (hFirst :
+      μ.real (
+        CandidateFalseCertificate
+          (isUnsafe shortlist.challenger) certifiedFirst)
+        ≤ deltaFirst)
+    (hSecond :
+      μ.real (
+        CandidateFalseCertificate
+          (isUnsafe shortlist.primary) certifiedSecond)
+        ≤ deltaSecond)
+    (hThird :
+      μ.real (
+        CandidateFalseCertificate
+          (isUnsafe shortlist.support) certifiedThird)
+        ≤ deltaThird)
+    (hSpend :
+      deltaFirst + deltaSecond + deltaThird ≤ familywiseDelta) :
+    μ.real (
+      FalseOrderedThreePolicyDeployment
+        (isUnsafe shortlist.challenger)
+        (isUnsafe shortlist.primary)
+        (isUnsafe shortlist.support)
+        certifiedFirst certifiedSecond certifiedThird)
+      ≤ familywiseDelta := by
+  exact
+    false_ordered_three_policy_deployment_probability_le_familywise_delta
+      (isUnsafe shortlist.challenger)
+      (isUnsafe shortlist.primary)
+      (isUnsafe shortlist.support)
+      certifiedFirst certifiedSecond certifiedThird
+      deltaFirst deltaSecond deltaThird familywiseDelta
+      hFirst hSecond hThird hSpend
+
 end SCOLHKG.Measure
