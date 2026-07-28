@@ -34,6 +34,7 @@ def _args(tmp_path):
         gpu_ram_mb=24576,
         gpu_vram_mb=2048,
         terminal_profile="v7",
+        initial_design_mode="source_informed",
     )
 
 
@@ -142,6 +143,32 @@ def test_crossdim_v69_adds_identical_objective_incumbent_guard(tmp_path):
             "--terminal-objective-comparison-delta "
             "0.016666666666666666" in spec["cmd"]
         )
+
+
+def test_crossdim_common_sobol_uses_one_shared_generator(tmp_path):
+    args = _args(tmp_path)
+    args.initial_design_mode = "common_sobol"
+    specs = SUBMIT.build_specs(args)
+    proposal = next(
+        spec for spec in specs if "/proposal_only/" in spec["signature"])
+    stacked = next(
+        spec for spec in specs if "/stacked_gp/" in spec["signature"])
+    saas = next(
+        spec for spec in specs if "/saasbo/" in spec["signature"])
+
+    assert "--initial-design common_sobol" in proposal["cmd"]
+    assert "--offline-source-calls 0" in proposal["cmd"]
+    assert "--initial-design-file" not in proposal["cmd"]
+    assert proposal["wait_for_files"] == []
+
+    assert "--initial-design common_sobol" in stacked["cmd"]
+    assert "--initial-design-file" not in stacked["cmd"]
+    assert len(stacked["wait_for_files"]) == 1
+
+    assert "--protocol target_n13" in saas["cmd"]
+    assert "--common-sobol-initial-design" in saas["cmd"]
+    assert "--initial-design-file" not in saas["cmd"]
+    assert saas["wait_for_files"] == []
 
 
 def test_crossdim_recovery_skips_only_compact_success_results(tmp_path):

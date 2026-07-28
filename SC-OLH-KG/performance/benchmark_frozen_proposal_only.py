@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from core.designs import (  # noqa: E402
+    common_sobol_integer_design,
     integer_design_fingerprint,
     load_frozen_source_informed_design,
 )
@@ -77,6 +78,7 @@ def _select_shortlist(
     shortlist_size=2,
     maximum_violation_probability=0.5,
     probability_slack=0.05,
+    candidate_universe="frozen_source_informed_n0",
 ):
     """Use only one-shot target observations to rank the frozen proposal."""
 
@@ -119,7 +121,7 @@ def _select_shortlist(
             support_selection_mode="diverse",
             require_provider=True,
             selector_posterior="one_shot_nominal_empirical_plugin",
-            candidate_universe="frozen_source_informed_n0",
+            candidate_universe=str(candidate_universe),
         )
         return shortlist, {
             **audit,
@@ -178,6 +180,46 @@ def _select_shortlist(
     }
 
 
+def _load_initial_design(args, problem):
+    mode = str(getattr(
+        args, "initial_design", "source_informed"
+    )).strip().lower()
+    if mode == "source_informed":
+        if not str(getattr(args, "initial_design_file", "")).strip():
+            raise ValueError(
+                "source_informed proposal-only runs require "
+                "--initial-design-file"
+            )
+        points, contract = load_frozen_source_informed_design(
+            args.initial_design_file,
+            heldout=args.heldout,
+            seed=args.seed,
+            n0=args.n0,
+            dimension=args.d,
+        )
+        return points, contract, int(args.offline_source_calls)
+    if mode == "common_sobol":
+        points = tuple(common_sobol_integer_design(
+            problem,
+            int(args.n0),
+            int(args.seed),
+        ))
+        fingerprint = integer_design_fingerprint(points)
+        return points, {
+            "design_kind": "common_sobol",
+            "proposal_mode": "none",
+            "structural_prior_profile": "none",
+            "source_dimension": int(args.d),
+            "target_dimension": int(args.d),
+            "fingerprint": fingerprint,
+            "source_archive_fingerprint": None,
+            "source_archive_oracle_aided": False,
+            "target_labels_used": False,
+            "target_oracle_used": False,
+        }, 0
+    raise ValueError("initial_design must be source_informed or common_sobol")
+
+
 def run_one(args):
     started = time.time()
     problem = build_scalarized_problem(
@@ -188,13 +230,13 @@ def run_one(args):
         args.alpha,
         parse_weights(args.weights),
     )
-    points, design_contract = load_frozen_source_informed_design(
-        args.initial_design_file,
-        heldout=args.heldout,
-        seed=args.seed,
-        n0=args.n0,
-        dimension=args.d,
+    points, design_contract, offline_source_calls = _load_initial_design(
+        args,
+        problem,
     )
+    initial_design_mode = str(getattr(
+        args, "initial_design", "source_informed"
+    )).strip().lower()
     rng = np.random.default_rng(int(args.seed))
     observations = [
         np.asarray(problem.simulate(point, rng), dtype=float)
@@ -219,6 +261,11 @@ def run_one(args):
         )),
         probability_slack=float(getattr(
             args, "terminal_safe_interior_probability_slack", 0.05)),
+        candidate_universe=(
+            "frozen_source_informed_n0"
+            if initial_design_mode == "source_informed"
+            else "common_sobol_n0"
+        ),
     )
     incumbent_audit = None
     if bool(getattr(args, "terminal_objective_incumbent_guard", False)):
@@ -274,13 +321,23 @@ def run_one(args):
     return {
         "schema_version": 1,
         "status": "ok",
-        "method": "frozen_crossdim_proposal_only",
+        "method": (
+            "frozen_crossdim_proposal_only"
+            if initial_design_mode == "source_informed"
+            else "common_sobol_proposal_only"
+        ),
         "heldout_target_domain": str(args.heldout),
         "seed": int(args.seed),
-        "source_archive_fingerprint": str(
-            design_contract["source_archive_fingerprint"]),
+        "source_archive_fingerprint": (
+            None
+            if design_contract["source_archive_fingerprint"] is None
+            else str(design_contract["source_archive_fingerprint"])
+        ),
         "initial_design_fingerprint": str(design_contract["fingerprint"]),
         "information_contract": {
+            "initial_design": initial_design_mode,
+            "uses_source_archive": bool(
+                initial_design_mode == "source_informed"),
             "source_dimension": int(
                 design_contract.get("source_dimension", args.source_d)),
             "target_dimension": int(args.d),
@@ -291,7 +348,7 @@ def run_one(args):
             "frozen_initial_points": [list(map(int, point)) for point in points],
             "frozen_initial_points_fingerprint": integer_design_fingerprint(
                 points),
-            "offline_source_calls": int(args.offline_source_calls),
+            "offline_source_calls": int(offline_source_calls),
             "target_initial_calls_n0": int(args.n0),
             "target_search_calls": int(args.n0),
             "target_verification_calls": verification_calls,
@@ -359,7 +416,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--heldout", required=True)
     parser.add_argument("--seed", type=int, required=True)
-    parser.add_argument("--initial-design-file", required=True)
+    parser.add_argument(
+        "--initial-design",
+        choices=("source_informed", "common_sobol"),
+        default="source_informed",
+    )
+    parser.add_argument("--initial-design-file", default="")
     parser.add_argument("--out", required=True)
     parser.add_argument("--source-d", type=int, default=50)
     parser.add_argument("--d", type=int, default=1000)
@@ -428,6 +490,7 @@ def main():
     print(json.dumps({
         "status": payload["status"],
         "method": payload["method"],
+        "initial_design": args.initial_design,
         "heldout": args.heldout,
         "seed": args.seed,
         "out": args.out,

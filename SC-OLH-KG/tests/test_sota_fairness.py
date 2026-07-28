@@ -2,12 +2,16 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-from core.designs import integer_design_fingerprint
+from core.designs import (
+    common_sobol_integer_design,
+    integer_design_fingerprint,
+)
 from performance.benchmark_sota_fairness import (
     oracle_free_lodo_config,
     run_one,
     source_archive_cost,
 )
+from performance.benchmark_lodo_meta_prior import build_scalarized_problem
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -133,4 +137,33 @@ def test_shared_archive_loads_the_exact_frozen_initial_design(tmp_path):
     )
     assert payload["information_contract"]["initial_design_contract"] == (
         "byte_identical_frozen_source_informed_n0"
+    )
+
+
+def test_target_only_can_use_byte_identical_common_sobol(tmp_path):
+    args = _args(tmp_path, "target_n20")
+    args.common_sobol_initial_design = True
+
+    payload = run_one(args)
+
+    problem = build_scalarized_problem(
+        args.heldout,
+        args.d,
+        args.L,
+        args.sigma,
+        args.alpha,
+        (0.5, 0.5),
+    )
+    expected = common_sobol_integer_design(
+        problem,
+        args.n0,
+        args.seed,
+    )
+    assert problem.d == args.d
+    assert payload["initial_points"] == [
+        list(point) for point in expected
+    ]
+    assert payload["information_contract"]["offline_source_calls"] == 0
+    assert payload["information_contract"]["initial_design_contract"] == (
+        "byte_identical_common_sobol_n0"
     )

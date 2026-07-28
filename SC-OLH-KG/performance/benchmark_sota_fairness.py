@@ -23,7 +23,10 @@ from core.terminal_verification import (  # noqa: E402
     select_initial_empirical_objective_incumbent,
     verify_frozen_shortlist,
 )
-from core.designs import load_frozen_source_informed_design  # noqa: E402
+from core.designs import (  # noqa: E402
+    common_sobol_integer_design,
+    load_frozen_source_informed_design,
+)
 from performance.benchmark_quality import json_safe, parse_weights  # noqa: E402
 from performance.benchmark_lodo_meta_prior import (  # noqa: E402
     build_scalarized_problem,
@@ -267,7 +270,25 @@ def run_one(args):
     archive_diagnostics = None
     archive_fingerprint = None
     offline_calls = 0
-    if protocol["uses_archive"]:
+    common_sobol_override = bool(getattr(
+        args, "common_sobol_initial_design", False))
+    if common_sobol_override:
+        if args.initial_design_file:
+            raise ValueError(
+                "--common-sobol-initial-design cannot be combined with "
+                "--initial-design-file"
+            )
+        initial_points = tuple(common_sobol_integer_design(
+            problem,
+            int(args.n0),
+            int(args.seed),
+        ))
+        archive_diagnostics = {
+            "initial_design_contract": "shared_common_sobol_n0",
+            "target_labels_used": False,
+            "target_oracle_used": False,
+        }
+    elif protocol["uses_archive"]:
         if args.initial_design_file:
             initial_points, design_contract = (
                 load_frozen_source_informed_design(
@@ -395,11 +416,15 @@ def run_one(args):
             "torch_deterministic": bool(getattr(
                 args, "torch_deterministic", False)),
             "initial_design_contract": (
-                "byte_identical_frozen_source_informed_n0"
-                if protocol["uses_archive"] and args.initial_design_file
+                "byte_identical_common_sobol_n0"
+                if common_sobol_override
                 else (
-                    "frozen_source_consensus_n0"
-                    if protocol["uses_archive"] else "target_sobol_n0"
+                    "byte_identical_frozen_source_informed_n0"
+                    if protocol["uses_archive"] and args.initial_design_file
+                    else (
+                        "frozen_source_consensus_n0"
+                        if protocol["uses_archive"] else "target_sobol_n0"
+                    )
                 )
             ),
         },
@@ -510,6 +535,15 @@ def main():
             "Optional frozen source-informed design. Required by the "
             "paper-grade shared-archive submitter so every method receives "
             "byte-identical n0 points."
+        ),
+    )
+    parser.add_argument(
+        "--common-sobol-initial-design",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Supply the optimizer with the shared deterministic SciPy Sobol "
+            "n0 used by SC and transfer controls."
         ),
     )
     parser.add_argument("--target-budget", type=int, default=0)

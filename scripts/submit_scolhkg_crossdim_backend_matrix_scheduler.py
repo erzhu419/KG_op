@@ -37,6 +37,7 @@ DOMAINS = (
     "QueueResourceControl",
 )
 BACKENDS = ("proposal_only", "stacked_gp", "saasbo")
+INITIAL_DESIGNS = ("source_informed", "common_sobol")
 
 
 def _parse_csv(value):
@@ -87,15 +88,22 @@ def _terminal_verification_flags(args):
 
 
 def validate_contract(args):
-    """Audit frozen bytes and the 60 V64 rows before adding challengers."""
+    """Audit source inputs and any reused SC rows before adding challengers."""
 
     deploy_project = Path(args.deploy) / "SC-OLH-KG"
     domains = _parse_csv(args.heldouts)
+    initial_design_mode = str(getattr(
+        args, "initial_design_mode", "source_informed"
+    )).strip().lower()
+    if initial_design_mode not in INITIAL_DESIGNS:
+        raise ValueError(
+            f"initial design must be one of {INITIAL_DESIGNS}")
     required_seeds = set(range(
         int(args.seed_start),
         int(args.seed_start) + int(args.n_seeds),
     ))
     audit = {
+        "initial_design_mode": initial_design_mode,
         "domains": {},
         "v64_reused_result_count": 0,
         "all_initial_designs_byte_identical_by_seed": True,
@@ -109,16 +117,32 @@ def validate_contract(args):
             deploy_project / "archives" / args.design_run_id / heldout
             / "source_initial_designs.json"
         )
-        if not archive_path.is_file() or not design_path.is_file():
+        if not archive_path.is_file():
             raise FileNotFoundError(
-                f"missing frozen cross-dimension input for {heldout}")
+                f"missing cross-dimension source archive for {heldout}")
         archive = _read_json(archive_path)
-        design = _read_json(design_path)
         archive_dimensions = {
             len(task["X"][0]) for task in archive["tasks"]
         }
         if archive_dimensions != {int(args.source_d)}:
             raise ValueError(f"{heldout} archive is not source-dimension data")
+        if initial_design_mode == "common_sobol":
+            audit["domains"][heldout] = {
+                "archive_fingerprint": archive["fingerprint"],
+                "source_dimension": int(args.source_d),
+                "target_dimension": int(args.d),
+                "n0": int(args.n0),
+                "seed_count": int(len(required_seeds)),
+                "v64_rows_reused": 0,
+                "common_sobol_generator": (
+                    "core.designs.common_sobol_integer_design"
+                ),
+            }
+            continue
+        if not design_path.is_file():
+            raise FileNotFoundError(
+                f"missing frozen cross-dimension design for {heldout}")
+        design = _read_json(design_path)
         if archive["fingerprint"] != design["source_archive_fingerprint"]:
             raise ValueError(f"{heldout} archive/design fingerprint mismatch")
         if int(design["source_dimension"]) != int(args.source_d):
@@ -184,7 +208,8 @@ def _base_spec(args, *, backend, heldout, seed, command, cpu, ram_mb,
     )
     return {
         "description": (
-            f"crossdim frozen proposal backend {backend} {heldout} "
+            f"crossdim {getattr(args, 'initial_design_mode', 'source_informed')} "
+            f"backend {backend} {heldout} "
             f"seed={seed}"
         ),
         "cmd": f"{shlex.join(command)} && echo DONE",
@@ -214,6 +239,12 @@ def build_specs(args):
         deploy_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     domains = _parse_csv(args.heldouts)
     backends = _parse_csv(args.backends)
+    initial_design_mode = str(getattr(
+        args, "initial_design_mode", "source_informed"
+    )).strip().lower()
+    if initial_design_mode not in INITIAL_DESIGNS:
+        raise ValueError(
+            f"initial design must be one of {INITIAL_DESIGNS}")
     unknown = sorted(set(backends) - set(BACKENDS))
     if unknown:
         raise ValueError(f"unknown backend rows: {unknown}")
@@ -247,14 +278,22 @@ def build_specs(args):
                     "performance/benchmark_frozen_proposal_only.py",
                     "--heldout", heldout,
                     "--seed", str(seed),
-                    "--initial-design-file", str(local_design),
+                    "--initial-design", initial_design_mode,
                     "--out", str(execution_result),
                     "--source-d", str(args.source_d),
                     "--d", str(args.d),
                     "--n0", str(args.n0),
-                    "--offline-source-calls", str(args.offline_source_calls),
+                    "--offline-source-calls", str(
+                        args.offline_source_calls
+                        if initial_design_mode == "source_informed"
+                        else 0
+                    ),
                     *terminal_flags,
                 ]
+                if initial_design_mode == "source_informed":
+                    command.extend([
+                        "--initial-design-file", str(local_design),
+                    ])
                 spec = _base_spec(
                     args,
                     backend="proposal_only",
@@ -266,7 +305,11 @@ def build_specs(args):
                     vram=0,
                     allowed_nodes=CPU_NODES,
                 )
-                spec["wait_for_files"] = [str(local_design)]
+                spec["wait_for_files"] = (
+                    [str(local_design)]
+                    if initial_design_mode == "source_informed"
+                    else []
+                )
                 specs.append(spec)
 
             if "stacked_gp" in backends:
@@ -295,8 +338,7 @@ def build_specs(args):
                     "--implementation", "official",
                     "--heldout", heldout,
                     "--archive", str(local_archive),
-                    "--initial-design", "source_informed",
-                    "--initial-design-file", str(local_design),
+                    "--initial-design", initial_design_mode,
                     "--out", str(execution_result),
                     "--checkpoint-dir", str(checkpoint),
                     "--seed", str(seed),
@@ -310,6 +352,10 @@ def build_specs(args):
                     "--terminal-verification",
                     *terminal_flags,
                 ]
+                if initial_design_mode == "source_informed":
+                    command.extend([
+                        "--initial-design-file", str(local_design),
+                    ])
                 spec = _base_spec(
                     args,
                     backend="stacked_gp",
@@ -321,8 +367,9 @@ def build_specs(args):
                     vram=0,
                     allowed_nodes=CPU_NODES,
                 )
-                spec["wait_for_files"] = [
-                    str(local_archive), str(local_design)]
+                spec["wait_for_files"] = [str(local_archive)]
+                if initial_design_mode == "source_informed":
+                    spec["wait_for_files"].append(str(local_design))
                 specs.append(spec)
 
             if "saasbo" in backends:
@@ -347,14 +394,17 @@ def build_specs(args):
                     f"PYTHONPATH={BOTORCH_OVERLAY}",
                     str(SAAS_PYTHON),
                     "performance/benchmark_sota_fairness.py",
-                    "--protocol", "shared_archive_n13",
+                    "--protocol", (
+                        "shared_archive_n13"
+                        if initial_design_mode == "source_informed"
+                        else "target_n13"
+                    ),
                     "--method", "botorch_saasbo",
                     "--heldout", heldout,
                     "--seed", str(seed),
                     "--manifest", str(manifest),
                     "--out", str(execution_result),
                     "--checkpoint-dir", str(checkpoint),
-                    "--initial-design-file", str(local_design),
                     "--target-budget", str(args.N),
                     "--d", str(args.d),
                     "--n0", str(args.n0),
@@ -365,6 +415,12 @@ def build_specs(args):
                     "--terminal-verification",
                     *terminal_flags,
                 ]
+                if initial_design_mode == "source_informed":
+                    command.extend([
+                        "--initial-design-file", str(local_design),
+                    ])
+                else:
+                    command.append("--common-sobol-initial-design")
                 spec = _base_spec(
                     args,
                     backend="saasbo",
@@ -376,7 +432,11 @@ def build_specs(args):
                     vram=args.gpu_vram_mb,
                     allowed_nodes=GPU_NODES,
                 )
-                spec["wait_for_files"] = [str(local_design)]
+                spec["wait_for_files"] = (
+                    [str(local_design)]
+                    if initial_design_mode == "source_informed"
+                    else []
+                )
                 spec["vram_resource_family"] = (
                     f"KG-SYNTH/crossdim-backend/saasbo/{heldout}")
                 specs.append(spec)
@@ -417,6 +477,11 @@ def main():
     )
     parser.add_argument("--heldouts", default=",".join(DOMAINS))
     parser.add_argument("--backends", default=",".join(BACKENDS))
+    parser.add_argument(
+        "--initial-design-mode",
+        choices=INITIAL_DESIGNS,
+        default="source_informed",
+    )
     parser.add_argument("--seed-start", type=int, default=80)
     parser.add_argument("--n-seeds", type=int, default=20)
     parser.add_argument("--source-d", type=int, default=50)
@@ -512,6 +577,7 @@ def main():
         "matrix_cell_count": int(
             len(specs) + audit["v64_reused_result_count"]),
         "terminal_profile": str(args.terminal_profile),
+        "initial_design_mode": str(args.initial_design_mode),
         "terminal_verification_contract": {
             "shortlist_mode": (
                 "posterior_objective_challenger_then_safe"
