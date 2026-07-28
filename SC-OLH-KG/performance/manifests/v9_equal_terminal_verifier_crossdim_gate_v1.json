@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "v69_equal_backend_matrix_complete",
+  "status": "v69_frontend_backend_factorial_complete",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -723,6 +723,129 @@
         "paired_objective_false_switches": 0
       },
       "finding": "With the source archive, frozen n0 proposal, and V69 verifier fixed, SC-V69 improves on proposal-only while preserving all n0 incumbents, but canonical SAASBO is the strongest online backend on Inventory and Queue. The remaining two SAASBO objective losses are certification-power failures for the incumbent, not paired objective-comparison errors. Search, verification, and total target budgets must remain separate in all comparisons."
+    },
+    "common_sobol_factorial": {
+      "run_id": "paper_v69_common_sobol_backend_factorial_d1000_n13_s80_99_v1",
+      "source_informed_comparison_run_id": "paper_v69_equal_verifier_backends_cross_d50_d1000_n13_s80_99_v1",
+      "task_ids": "t58962-t59141",
+      "tasks_completed": "180/180",
+      "tasks_failed": 0,
+      "compact_result_json_files_synced": 180,
+      "checkpoint_or_binary_files_synced": 0,
+      "design": {
+        "domains": 3,
+        "seeds_per_domain": 20,
+        "target_dimension": 1000,
+        "search_budget": 13,
+        "initial_design_budget": 10,
+        "initial_design": "common_sobol_integer_design",
+        "proposal_only_source_calls": 0,
+        "canonical_saasbo_source_calls": 0,
+        "stacked_gp_source_archive_calls": 384,
+        "stacked_gp_source_dimension": 50
+      },
+      "protocol_checks": {
+        "initial_design_fingerprint_equal_across_methods": "60/60",
+        "three_distinct_frozen_candidates": "180/180",
+        "candidate_budgets_80_128_128": "180/180",
+        "familywise_delta_0_05": "180/180",
+        "oracle_free_frozen_shortlist": "180/180",
+        "independent_paired_objective_comparison": "180/180",
+        "search_plus_safety_plus_objective_equals_total": "180/180",
+        "safety_plus_objective_equals_verification": "180/180",
+        "deterministic_cuda_saas_contract": "60/60"
+      },
+      "methods": {
+        "proposal_only": {
+          "n0_true_feasible": "0/60",
+          "final_true_feasible": "0/60",
+          "independently_certified": "0/60",
+          "false_certificates": 0,
+          "terminal_abstentions": 60,
+          "mean_search_calls": 10,
+          "mean_total_verification_calls": 336,
+          "mean_total_target_calls": 346,
+          "mean_source_plus_target_calls": 346
+        },
+        "stacked_gp": {
+          "n0_true_feasible": "0/60",
+          "final_true_feasible": "1/60",
+          "independently_certified": "1/60",
+          "false_certificates": 0,
+          "terminal_abstentions": 59,
+          "mean_search_calls": 13,
+          "mean_total_verification_calls": 336,
+          "mean_total_target_calls": 349,
+          "mean_source_plus_target_calls": 733
+        },
+        "canonical_saasbo": {
+          "n0_true_feasible": "0/60",
+          "final_true_feasible": "0/60",
+          "independently_certified": "0/60",
+          "false_certificates": 0,
+          "terminal_abstentions": 60,
+          "mean_search_calls": 13,
+          "mean_total_verification_calls": 336,
+          "mean_total_target_calls": 349,
+          "mean_source_plus_target_calls": 349,
+          "median_wall_time_seconds": 3809.76
+        }
+      },
+      "source_proposal_main_effect": {
+        "proposal_only_source_better_tie_worse": "60/0/0",
+        "stacked_gp_source_better_tie_worse": "59/1/0",
+        "canonical_saasbo_source_better_tie_worse": "60/0/0",
+        "source_informed_true_feasible_and_certified": {
+          "proposal_only": "60/60",
+          "stacked_gp": "60/60",
+          "canonical_saasbo": "60/60"
+        }
+      },
+      "backend_interaction": {
+        "source_informed_canonical_saasbo_vs_proposal_better_tie_worse": "33/25/2",
+        "source_informed_canonical_saasbo_mean_regret_difference": -0.002679319656601621,
+        "source_informed_stacked_gp_vs_proposal_better_tie_worse": "1/59/0",
+        "common_sobol_stacked_gp_rescues": "1/60",
+        "common_sobol_canonical_saasbo_rescues": "0/60"
+      },
+      "chance_boundary_audit": {
+        "common_sobol_nearest_true_margin_by_seed": {
+          "FactorShockStatePolicyRZDT1": {
+            "median": 0.69216,
+            "minimum": 0.64783,
+            "maximum": 0.72736,
+            "feasible_initial_points": "0/200"
+          },
+          "InventorySupplyChain": {
+            "median": 0.057573,
+            "minimum": 0.048489,
+            "maximum": 0.066884,
+            "feasible_initial_points": "0/200"
+          },
+          "QueueResourceControl": {
+            "median": 0.074459,
+            "minimum": 0.059434,
+            "maximum": 0.087424,
+            "feasible_initial_points": "0/200"
+          }
+        },
+        "source_informed_feasible_initial_points": {
+          "FactorShockStatePolicyRZDT1": "20/200",
+          "InventorySupplyChain": "40/200",
+          "QueueResourceControl": "20/200"
+        }
+      },
+      "lodo_leakage_audit": {
+        "source_oracle_used": false,
+        "target_oracle_used": false,
+        "target_outcomes_used_during_source_training": false,
+        "proposal_frozen_before_target_observations": true,
+        "source_design_fingerprints_per_heldout_domain": 1,
+        "common_sobol_design_fingerprints_per_domain": 20,
+        "interpretation": "The source-informed design is heldout-domain-specific LODO: it is learned from the other two source domains, knows the target task identity and policy shape, but uses no target outcomes or oracle labels."
+      },
+      "finding": "The frozen source-informed proposal is the dominant causal contributor at d=1000 and N=13. A source posterior without that proposal rescues only one of 60 common-Sobol cells, and canonical SAASBO rescues none; once the proposal places the initial design inside the feasible basin, canonical SAASBO supplies the strongest online objective improvement. Independent verification correctly abstains when every frozen candidate is infeasible, but it cannot repair the search because verifier samples are not returned to the optimizer.",
+      "limitations": "This factorial establishes a large front-end effect on these three heldout domains, not universal high-dimensional recovery. Paper-grade evidence still needs a total-cost target-only control near N=397 and controlled synthetic heteroscedastic geometries with broader feasible-set depth."
     }
   },
   "reporting": [
