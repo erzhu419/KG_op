@@ -25,6 +25,9 @@ from algorithms.single_olhkg import (  # noqa: E402
     SingleOLHKGAlgorithm,
     SingleOLHKGConfig,
 )
+from acquisition.decision_backends import (  # noqa: E402
+    feasible_first_terminal_order,
+)
 from performance.benchmark_quality import json_safe  # noqa: E402
 from problems.controlled_heteroscedastic import (  # noqa: E402
     CONTROLLED_HETERO_SCENARIOS,
@@ -132,6 +135,261 @@ def _best_evaluated_truth(algorithm, problem):
         ),
         "truth_join_timing": "post_run_only",
         "target_oracle_used_for_decision": False,
+    }
+
+
+def _finite_or_none(value):
+    value = float(value)
+    return value if np.isfinite(value) else None
+
+
+def _terminal_observed_truth_decomposition(algorithm, problem):
+    """Join frozen terminal posteriors to truth after optimization finishes.
+
+    The audit separates constraint filtering, objective ranking, aleatoric
+    variance, and constraint-mean errors on the exact set of charged target
+    evaluations. None of these counterfactuals can affect a search,
+    recommendation, or verification action.
+    """
+
+    points = [
+        tuple(int(value) for value in point)
+        for point in algorithm.observations
+    ]
+    if not points:
+        return {
+            "status": "no_observations",
+            "diagnostic_only": True,
+            "truth_join_timing": "post_run_only",
+            "target_oracle_used_for_decision": False,
+        }
+
+    components = algorithm._terminal_bayes_risk_components(
+        algorithm.gpr,
+        algorithm.variance_model,
+        points,
+        task_ensemble=algorithm.task_ensemble,
+        risk_penalty=algorithm.config.decision_risk_penalty,
+    )
+    posterior_objective = np.asarray(
+        components["objective"], dtype=float)
+    probability_violation = np.asarray(
+        components["probability_violation"], dtype=float)
+    pmax = float(
+        algorithm.config
+        .decision_terminal_maximum_violation_probability)
+    posterior_safe = np.isfinite(probability_violation) & (
+        probability_violation <= pmax)
+
+    true_objective = np.asarray([
+        problem.true_objective(point) for point in points
+    ], dtype=float)
+    true_margin = np.asarray([
+        problem.true_constraint_mean(point)
+        + norm.ppf(1.0 - problem.alpha) * problem.true_sigma(point)[1]
+        - problem.tau
+        for point in points
+    ], dtype=float)
+    true_feasible = true_margin <= 0.0
+    empirical_objective = np.asarray([
+        float(np.mean(np.asarray(
+            algorithm.observations[point], dtype=float)[:, 0]))
+        for point in points
+    ], dtype=float)
+    _, global_true_best = problem.true_best_feasible()
+
+    def selection(index):
+        if index is None:
+            return {
+                "available": False,
+                "true_feasible": False,
+                "true_regret": None,
+            }
+        index = int(index)
+        feasible = bool(true_feasible[index])
+        return {
+            "available": True,
+            "true_feasible": feasible,
+            "true_regret": (
+                _finite_or_none(
+                    true_objective[index] - global_true_best)
+                if feasible else None
+            ),
+            "true_margin": float(true_margin[index]),
+            "true_objective": float(true_objective[index]),
+            "posterior_objective": float(
+                posterior_objective[index]),
+            "empirical_objective": float(
+                empirical_objective[index]),
+            "posterior_probability_violation": float(
+                probability_violation[index]),
+        }
+
+    def minimum_index(mask, scores):
+        indices = np.flatnonzero(mask)
+        if not len(indices):
+            return None
+        finite = indices[np.isfinite(scores[indices])]
+        if not len(finite):
+            return int(indices[0])
+        return int(finite[np.argmin(scores[finite])])
+
+    best_evaluated_index = minimum_index(
+        true_feasible, true_objective)
+    posterior_order, posterior_mode = feasible_first_terminal_order(
+        posterior_objective,
+        probability_violation,
+        maximum_violation_probability=pmax,
+    )
+    posterior_choice = (
+        int(posterior_order[0]) if len(posterior_order) else None)
+    oracle_feasibility_choice = minimum_index(
+        true_feasible, posterior_objective)
+    oracle_objective_choice = minimum_index(
+        posterior_safe, true_objective)
+    empirical_objective_choice = minimum_index(
+        posterior_safe, empirical_objective)
+
+    true_feasible_count = int(np.sum(true_feasible))
+    posterior_safe_count = int(np.sum(posterior_safe))
+    true_safe_count = int(np.sum(posterior_safe & true_feasible))
+
+    def safe_set_audit(probability):
+        probability = np.asarray(probability, dtype=float)
+        safe = np.isfinite(probability) & (probability <= pmax)
+        safe_count = int(np.sum(safe))
+        safe_true_count = int(np.sum(safe & true_feasible))
+        return {
+            "posterior_safe_count": safe_count,
+            "posterior_safe_true_feasible_count": safe_true_count,
+            "false_safe_count": int(np.sum(safe & ~true_feasible)),
+            "false_unsafe_count": int(np.sum(~safe & true_feasible)),
+            "safe_precision": (
+                float(safe_true_count / safe_count)
+                if safe_count else None
+            ),
+            "safe_recall": (
+                float(safe_true_count / true_feasible_count)
+                if true_feasible_count else None
+            ),
+            "best_evaluated_in_safe_set": bool(
+                best_evaluated_index is not None
+                and safe[int(best_evaluated_index)]
+            ),
+            "best_evaluated_probability_violation": (
+                None
+                if best_evaluated_index is None
+                else float(probability[int(best_evaluated_index)])
+            ),
+        }
+
+    posterior_spearman = None
+    empirical_spearman = None
+    feasible_indices = np.flatnonzero(true_feasible)
+    if len(feasible_indices) >= 2:
+        if (
+            np.std(true_objective[feasible_indices]) > 1e-15
+            and np.std(posterior_objective[feasible_indices]) > 1e-15
+        ):
+            value = spearmanr(
+                true_objective[feasible_indices],
+                posterior_objective[feasible_indices],
+            ).statistic
+            posterior_spearman = _finite_or_none(value)
+        if (
+            np.std(true_objective[feasible_indices]) > 1e-15
+            and np.std(empirical_objective[feasible_indices]) > 1e-15
+        ):
+            value = spearmanr(
+                true_objective[feasible_indices],
+                empirical_objective[feasible_indices],
+            ).statistic
+            empirical_spearman = _finite_or_none(value)
+
+    counterfactual_safe_sets = {
+        "fitted_mean_fitted_variance": safe_set_audit(
+            probability_violation),
+    }
+    if algorithm.task_ensemble is None:
+        constraint_mean = np.asarray(
+            algorithm.gpr[1].posterior_mean_many(points), dtype=float)
+        if hasattr(problem, "pilot_constraint_guard"):
+            constraint_mean = constraint_mean + max(
+                float(problem.pilot_constraint_guard()), 0.0)
+        epistemic = np.maximum(np.asarray(
+            algorithm._constraint_decision_epistemic_many(
+                algorithm.gpr[1], points),
+            dtype=float,
+        ), 1e-12)
+        variance_method = (
+            algorithm.variance_model.predict_certification_variance_many
+            if str(
+                algorithm.config.decision_aleatoric_mode
+            ).strip().lower().replace("-", "_") == "certification_upper"
+            else algorithm.variance_model.predict_variance_many
+        )
+        fitted_aleatoric = np.maximum(np.asarray(
+            variance_method(1, points, problem), dtype=float), 0.0)
+        oracle_aleatoric = np.asarray([
+            problem.true_sigma(point)[1] ** 2 for point in points
+        ], dtype=float)
+        oracle_constraint_mean = np.asarray([
+            problem.true_constraint_mean(point) for point in points
+        ], dtype=float)
+        z_alpha = float(norm.ppf(1.0 - problem.alpha))
+
+        def counterfactual_probability(mean, aleatoric):
+            margin = (
+                np.asarray(mean, dtype=float)
+                + z_alpha * np.sqrt(np.maximum(aleatoric, 0.0))
+                - problem.tau
+            )
+            return norm.cdf(margin / np.sqrt(epistemic))
+
+        counterfactual_safe_sets.update({
+            "fitted_mean_oracle_variance": safe_set_audit(
+                counterfactual_probability(
+                    constraint_mean, oracle_aleatoric)),
+            "oracle_mean_fitted_variance": safe_set_audit(
+                counterfactual_probability(
+                    oracle_constraint_mean, fitted_aleatoric)),
+            "oracle_mean_oracle_variance": safe_set_audit(
+                counterfactual_probability(
+                    oracle_constraint_mean, oracle_aleatoric)),
+        })
+
+    return {
+        "status": "ok",
+        "diagnostic_only": True,
+        "truth_join_timing": "post_run_only",
+        "target_oracle_used_for_decision": False,
+        "observed_distinct_count": int(len(points)),
+        "observed_true_feasible_count": true_feasible_count,
+        "decision_maximum_violation_probability": pmax,
+        "posterior_feasible_first_mode": posterior_mode,
+        "posterior_safe_count": posterior_safe_count,
+        "posterior_safe_true_feasible_count": true_safe_count,
+        "posterior_safe_precision": (
+            float(true_safe_count / posterior_safe_count)
+            if posterior_safe_count else None
+        ),
+        "posterior_safe_recall": (
+            float(true_safe_count / true_feasible_count)
+            if true_feasible_count else None
+        ),
+        "posterior_objective_spearman_on_true_feasible": (
+            posterior_spearman),
+        "empirical_objective_spearman_on_true_feasible": (
+            empirical_spearman),
+        "best_evaluated_truth": selection(best_evaluated_index),
+        "joint_posterior_choice": selection(posterior_choice),
+        "objective_head_with_oracle_feasibility": selection(
+            oracle_feasibility_choice),
+        "constraint_filter_with_oracle_objective": selection(
+            oracle_objective_choice),
+        "empirical_head_with_posterior_feasibility": selection(
+            empirical_objective_choice),
+        "counterfactual_safe_sets": counterfactual_safe_sets,
     }
 
 
@@ -328,6 +586,9 @@ def run_cell(args):
             primary, final, terminal),
         "best_evaluated_truth": _best_evaluated_truth(
             algorithm, problem),
+        "terminal_observed_truth_decomposition": (
+            _terminal_observed_truth_decomposition(
+                algorithm, problem)),
         "posterior_certificate": dict(
             raw.get("certificate_outcome_audit") or {}),
         "independent_terminal_certificate": {

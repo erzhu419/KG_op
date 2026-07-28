@@ -146,3 +146,21 @@ def test_compact_benchmark_separates_primary_and_terminal_certificate():
     assert effect["primary_true_feasible"] in (True, False)
     assert effect["deployment_true_feasible"] in (True, False)
     assert result["oracle_contract"]["used_for_decision"] is False
+    decomposition = result["terminal_observed_truth_decomposition"]
+    assert decomposition["status"] == "ok"
+    assert decomposition["diagnostic_only"] is True
+    assert decomposition["truth_join_timing"] == "post_run_only"
+    assert decomposition["target_oracle_used_for_decision"] is False
+    assert decomposition["observed_distinct_count"] <= 4
+    assert (
+        decomposition["counterfactual_safe_sets"][
+            "fitted_mean_fitted_variance"
+        ]["posterior_safe_count"]
+        == decomposition["posterior_safe_count"]
+    )
+    assert {
+        "fitted_mean_fitted_variance",
+        "fitted_mean_oracle_variance",
+        "oracle_mean_fitted_variance",
+        "oracle_mean_oracle_variance",
+    } == set(decomposition["counterfactual_safe_sets"])
