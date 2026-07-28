@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "paper_grade_20_seed_expansion_ready",
+  "status": "paper_grade_20_seed_expansion_submitted",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -169,6 +169,36 @@
     "n_seeds": 20,
     "logical_cells": 240,
     "trigger": "protocol checks pass and deterministic CUDA SAAS duplicate replay is exact"
+  },
+  "expansion_submission": {
+    "submitted_on": "2026-07-28",
+    "code_commit": "1105847",
+    "scolh_run_id": "paper_v9_equal_verifier_scolh_v65_cross_d50_d1000_n13_s80_99_final_v2",
+    "scolh_task_ids": "t58296-t58355",
+    "comparison_backend_run_id": "paper_v9_equal_verifier_backends_deterministic_cross_d50_d1000_n13_s80_99_final_v2",
+    "comparison_backend_task_ids": "t58116-t58295",
+    "task_ids": "t58116-t58355",
+    "task_count": 240,
+    "methods": {
+      "scolh_v65": 60,
+      "proposal_only": 60,
+      "stacked_gp": 60,
+      "canonical_saasbo_deterministic": 60
+    },
+    "allowed_cpu_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "allowed_gpu_nodes": [
+      "jtl110gpu",
+      "jtl110gpu2",
+      "node007"
+    ],
+    "checkpoint_sync": false
   },
   "reporting": [
     "search budget",
