@@ -88,6 +88,9 @@ def test_crossdim_backend_contracts_keep_backend_information_explicit(
     assert "--protocol shared_archive_n13" in saas["cmd"]
     assert "--method botorch_saasbo" in saas["cmd"]
     assert "--target-budget 13" in saas["cmd"]
+    assert "SCOLHKG_TORCH_DETERMINISTIC=1" in saas["cmd"]
+    assert "CUBLAS_WORKSPACE_CONFIG=:4096:8" in saas["cmd"]
+    assert "--torch-deterministic" in saas["cmd"]
     assert saas["allowed_nodes"] == list(SUBMIT.GPU_NODES)
     assert saas["vram"] == 2048
     assert str(

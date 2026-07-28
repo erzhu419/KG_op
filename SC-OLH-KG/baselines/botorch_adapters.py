@@ -35,6 +35,14 @@ from core.terminal_verification import (
     select_posterior_safe_interior,
 )
 
+_TORCH_DETERMINISTIC_REQUESTED = (
+    str(os.environ.get("SCOLHKG_TORCH_DETERMINISTIC", "0")).strip().lower()
+    in {"1", "true", "yes", "on"}
+)
+if _TORCH_DETERMINISTIC_REQUESTED:
+    # cuBLAS reads this before its first workspace is created.
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+
 
 try:  # pragma: no cover - exercised only when the optional stack is installed.
     import torch
@@ -273,6 +281,7 @@ class BoTorchBaselineConfig:
     saas_refit_interval: int = 16
     saas_refit_growth_factor: float = 2.0
     saas_refit_max_history: int = 0
+    torch_deterministic: bool = False
 
 
 @dataclass
@@ -356,9 +365,10 @@ class BoTorchBaseline:
                 f"torch_device={requested_device!r} requested but CUDA is unavailable"
             )
         self._torch_device = torch.device(requested_device)
+        self._model_start_index = 0
+        self._torch_determinism = self._configure_torch_determinism()
         self.rng = np.random.default_rng(config.seed)
         self.history: list[tuple[tuple[int, ...], np.ndarray]] = []
-        self._model_start_index = 0
         self._fit_failures = 0
         self._candidate_failures = 0
         self._saas_parallel_fit_count = 0
@@ -384,6 +394,56 @@ class BoTorchBaseline:
         self._normalized_saas_refit_schedule()
         if self.config.checkpoint_resume and self._checkpoint_path() is not None:
             self._load_checkpoint()
+
+    def _configure_torch_determinism(self):
+        enabled = bool(getattr(self.config, "torch_deterministic", False))
+        contract = {
+            "enabled": enabled,
+            "algorithm_mode": "default",
+            "cublas_workspace_config": (
+                os.environ.get("CUBLAS_WORKSPACE_CONFIG")
+            ),
+            "stage_seed_schedule": "per_iteration_stage_seed_v1",
+        }
+        if not enabled:
+            return contract
+        if (
+            self._torch_device.type == "cuda"
+            and os.environ.get("CUBLAS_WORKSPACE_CONFIG")
+            not in {":16:8", ":4096:8"}
+        ):
+            raise RuntimeError(
+                "deterministic CUDA requires CUBLAS_WORKSPACE_CONFIG="
+                ":4096:8 before importing Torch"
+            )
+        torch.use_deterministic_algorithms(True)
+        if hasattr(torch.backends, "cudnn"):
+            torch.backends.cudnn.benchmark = False
+            torch.backends.cudnn.deterministic = True
+        if hasattr(torch.backends, "cuda") and hasattr(
+            torch.backends.cuda, "matmul"
+        ):
+            torch.backends.cuda.matmul.allow_tf32 = False
+        seed = self._stage_seed("constructor", history_size=0)
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if self._torch_device.type == "cuda":
+            torch.cuda.manual_seed_all(seed)
+        try:
+            import pyro
+
+            pyro.set_rng_seed(seed)
+        except ImportError:
+            pass
+        contract.update({
+            "algorithm_mode": "torch_deterministic_algorithms",
+            "constructor_seed": int(seed),
+            "cudnn_benchmark": False,
+            "cudnn_deterministic": True,
+            "cuda_tf32": False,
+        })
+        return contract
 
     def _stage_seed(self, stage, *, history_size=None):
         """Stable per-iteration seed, independent of process restart timing."""
@@ -433,12 +493,15 @@ class BoTorchBaseline:
         return None if not value else Path(value)
 
     def _checkpoint_signature(self):
-        return {
+        signature = {
             "method": str(self.config.method),
             "seed": int(self.config.seed),
             "dimension": int(self.problem.d),
             "n0": int(self.config.n0),
         }
+        if bool(getattr(self.config, "torch_deterministic", False)):
+            signature["torch_deterministic"] = True
+        return signature
 
     def _save_checkpoint(self, *, force=False):
         path = self._checkpoint_path()
@@ -1660,6 +1723,7 @@ class BoTorchBaseline:
                 "base_seed": int(self.config.seed),
                 "resume_replays_inflight_stage": True,
             },
+            "torch_determinism": dict(self._torch_determinism),
             "saas_constrained": bool(self.config.saas_constrained),
             "saas_parallel_models": bool(self._use_parallel_saas_models()),
             "saas_parallel_fit_count": int(self._saas_parallel_fit_count),

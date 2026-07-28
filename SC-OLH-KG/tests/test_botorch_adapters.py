@@ -169,6 +169,30 @@ class BoTorchAdapterTests(unittest.TestCase):
             "saas_fully_bayesian_nuts_constrained_qlogei",
         )
 
+    def test_deterministic_contract_is_recorded_on_cpu(self):
+        previous = torch.are_deterministic_algorithms_enabled()
+        config = BoTorchBaselineConfig(
+            N=4,
+            n0=4,
+            seed=31,
+            method="botorch_scbo",
+            torch_deterministic=True,
+        )
+        try:
+            result = BoTorchBaseline(self._problem(), config).run()
+        finally:
+            torch.use_deterministic_algorithms(previous)
+        contract = result["torch_determinism"]
+        self.assertTrue(contract["enabled"])
+        self.assertEqual(
+            contract["algorithm_mode"],
+            "torch_deterministic_algorithms",
+        )
+        self.assertEqual(
+            contract["stage_seed_schedule"],
+            "per_iteration_stage_seed_v1",
+        )
+
     def test_saas_duplicate_rounding_uses_discrete_acquisition_fallback(self):
         baseline = BoTorchBaseline(
             self._problem(),

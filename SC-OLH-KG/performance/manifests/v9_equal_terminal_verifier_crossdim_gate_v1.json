@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "five_seed_scheduler_gate_submitted",
+  "status": "five_seed_gate_complete_deterministic_saas_followup",
   "objective": "Apply one verification-aware terminal protocol to SC-OLH, proposal-only, Stacked GP, and canonical SAASBO while keeping each method's search process unchanged.",
   "domains": [
     "FactorShockStatePolicyRZDT1",
@@ -11,7 +11,8 @@
     "source_dimension": 50,
     "target_dimension": 1000,
     "offline_source_calls": 384,
-    "target_search_calls": 13,
+    "target_search_calls_online_backends": 13,
+    "target_search_calls_proposal_only": 10,
     "target_initial_calls_n0": 10,
     "source_archive_oracle_aided": false,
     "target_oracle_used_for_selection": false,
@@ -55,6 +56,65 @@
       "no target truth or verification sample enters shortlist selection"
     ]
   },
+  "gate_result": {
+    "completed_cells": 60,
+    "parse_errors": 0,
+    "protocol_checks": {
+      "three_distinct_frozen_candidates": "60/60",
+      "candidate_budgets_80_128_128": "60/60",
+      "familywise_delta_0_05": "60/60",
+      "target_oracle_free_verification": "60/60",
+      "search_plus_verification_equals_total": "60/60"
+    },
+    "methods": {
+      "proposal_only": {
+        "true_feasible": "15/15",
+        "independently_certified": "15/15",
+        "false_certificates": 0,
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_verification_calls": 105.6,
+        "n0_to_final_improvements": 0
+      },
+      "stacked_gp": {
+        "true_feasible": "15/15",
+        "independently_certified": "15/15",
+        "false_certificates": 0,
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_verification_calls": 80.0,
+        "n0_to_final_improvements": 0
+      },
+      "scolh_v65": {
+        "true_feasible": "15/15",
+        "independently_certified": "15/15",
+        "false_certificates": 0,
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_verification_calls": 97.06666666666666,
+        "n0_to_final_improvements": 0
+      },
+      "canonical_saasbo": {
+        "true_feasible": "15/15",
+        "independently_certified": "14/15",
+        "terminal_abstentions": 1,
+        "false_certificates": 0,
+        "median_feasible_regret": 0.002575604050916891,
+        "mean_verification_calls": 114.13333333333334,
+        "n0_to_final_improvements": 9,
+        "median_regret_by_domain": {
+          "FactorShockStatePolicyRZDT1": 0.00824999999999998,
+          "InventorySupplyChain": 0.002575604050916891,
+          "QueueResourceControl": 0.001090992241453148
+        }
+      }
+    },
+    "search_isolation_audit": {
+      "scolh_action_fingerprint_matches_v64": "15/15",
+      "proposal_initial_observations_match_v7": "15/15",
+      "stacked_history_matches_v7": "15/15",
+      "saas_terminal_code_executes_after_search": true,
+      "saas_cuda_same_seed_exact_replay": "6/10 comparable prior rows",
+      "saas_replay_finding": "CUDA NUTS remained distributionally seeded but not bitwise deterministic; deterministic CUDA is required before the 20-seed expansion."
+    }
+  },
   "submission": {
     "submitted_on": "2026-07-28",
     "scolh_run_id": "paper_v9_equal_verifier_scolh_v65_cross_d50_d1000_n13_s80_84_gate_v1",
@@ -80,7 +140,7 @@
     "seed_start": 80,
     "n_seeds": 20,
     "logical_cells": 240,
-    "trigger": "schema, search-invariance, and information-contract gate passes"
+    "trigger": "protocol checks pass and deterministic CUDA SAAS duplicate replay is exact"
   },
   "reporting": [
     "search budget",

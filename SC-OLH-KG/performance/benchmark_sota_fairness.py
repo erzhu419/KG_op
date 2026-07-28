@@ -331,6 +331,8 @@ def run_one(args):
             args, "saas_refit_growth_factor", 2.0)),
         saas_refit_max_history=int(getattr(
             args, "saas_refit_max_history", 0)),
+        torch_deterministic=bool(getattr(
+            args, "torch_deterministic", False)),
     )
     started = time.time()
     payload = {
@@ -356,6 +358,8 @@ def run_one(args):
             "target_initial_calls_n0": int(args.n0),
             "target_calls": int(target_budget),
             "total_simulator_calls": int(offline_calls + target_budget),
+            "torch_deterministic": bool(getattr(
+                args, "torch_deterministic", False)),
             "initial_design_contract": (
                 "byte_identical_frozen_source_informed_n0"
                 if protocol["uses_archive"] and args.initial_design_file
@@ -505,6 +509,16 @@ def main():
     parser.add_argument(
         "--torch-device", default="cpu",
         help="BoTorch device: cpu, cuda, cuda:N, or auto",
+    )
+    parser.add_argument(
+        "--torch-deterministic",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help=(
+            "Require deterministic Torch kernels and the stage-seeded "
+            "Torch/Pyro schedule. CUDA runs also require the declared "
+            "cuBLAS workspace contract."
+        ),
     )
     parser.add_argument(
         "--terminal-verification",
