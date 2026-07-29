@@ -110,6 +110,7 @@ def test_crossdim_frozen_snapshot_separates_code_from_runtime_data(
     args = _args(tmp_path / "runtime")
     args.code_root = tmp_path / "snapshots" / ("a" * 40)
     args.require_frozen_snapshot = True
+    args.reuse_v64_results = False
     args.code_root.mkdir(parents=True)
     (args.code_root / "SC-OLH-KG").mkdir()
     marker = {
@@ -145,6 +146,41 @@ def test_crossdim_frozen_snapshot_separates_code_from_runtime_data(
         )
         assert spec["result_dir"].startswith(
             str(args.deploy / "SC-OLH-KG"))
+
+
+def test_crossdim_final_replay_does_not_reuse_historical_v64(tmp_path):
+    args = _args(tmp_path)
+    args.reuse_v64_results = False
+    for heldout in SUBMIT.DOMAINS:
+        archive = (
+            tmp_path / "SC-OLH-KG/archives" / args.archive_run_id
+            / heldout / f"heldout_{heldout}.json"
+        )
+        design = (
+            tmp_path / "SC-OLH-KG/archives" / args.design_run_id
+            / heldout / "source_initial_designs.json"
+        )
+        archive.parent.mkdir(parents=True)
+        archive.write_text(json.dumps({
+            "fingerprint": f"archive-{heldout}",
+            "tasks": [{"X": [[0] * 50]}],
+        }), encoding="utf-8")
+        design.parent.mkdir(parents=True)
+        design.write_text(json.dumps({
+            "source_archive_fingerprint": f"archive-{heldout}",
+            "source_dimension": 50,
+            "dimension": 1000,
+            "n0": 10,
+            "designs": {"80": {}, "81": {}},
+        }), encoding="utf-8")
+
+    audit = SUBMIT.validate_contract(args)
+
+    assert audit["v64_reused_result_count"] == 0
+    assert all(
+        row["v64_rows_reused"] == 0
+        for row in audit["domains"].values()
+    )
 
 
 def test_crossdim_v9_uses_identical_three_policy_verifier(tmp_path):

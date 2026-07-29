@@ -248,6 +248,16 @@ def validate_contract(args):
         if not required_seeds.issubset(available):
             raise ValueError(f"{heldout} frozen design is missing seeds")
 
+        if not bool(getattr(args, "reuse_v64_results", True)):
+            audit["domains"][heldout] = {
+                "archive_fingerprint": archive["fingerprint"],
+                "source_dimension": int(args.source_d),
+                "target_dimension": int(args.d),
+                "n0": int(args.n0),
+                "seed_count": int(len(required_seeds)),
+                "v64_rows_reused": 0,
+            }
+            continue
         v64_root = (
             deploy_project / "profiles" / args.v64_run_id
             / "v64_powered_safe_interior_verification"
@@ -643,6 +653,15 @@ def main():
         "--v64-run-id",
         default=(
             "paper_certified_scolh_v64_cross_d50_d1000_n13_s80_99_v1"),
+    )
+    parser.add_argument(
+        "--reuse-v64-results",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "Retain the historical SC-V64 row in a legacy backend matrix. "
+            "Final immutable replays must pass --no-reuse-v64-results."
+        ),
     )
     parser.add_argument("--heldouts", default=",".join(DOMAINS))
     parser.add_argument("--backends", default=",".join(BACKENDS))
