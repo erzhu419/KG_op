@@ -110,6 +110,30 @@ def test_bootstrap_interval_is_deterministic():
     assert first == second
 
 
+def test_terminal_certificate_rate_takes_precedence_over_pointwise_coverage():
+    metrics = MODULE._cell_metrics([
+        {
+            "true_feasible": True,
+            "feasible_regret": 0.1,
+            "terminal_certified": True,
+            "terminal_false_certificate": False,
+            "posterior_certified_count": 0,
+            "evaluated_point_count": 100,
+        },
+        {
+            "true_feasible": True,
+            "feasible_regret": 0.2,
+            "terminal_certified": False,
+            "terminal_false_certificate": False,
+            "posterior_certified_count": 100,
+            "evaluated_point_count": 100,
+        },
+    ])
+    assert metrics["certificate_coverage"] == 0.5
+    assert metrics["certificate_metric"] == (
+        "independent_terminal_certification_rate")
+
+
 def test_registered_paper_variants_have_stable_labels_and_colors():
     for method in (
         "frozen_proposal",

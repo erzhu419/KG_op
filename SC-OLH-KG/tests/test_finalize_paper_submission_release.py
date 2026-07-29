@@ -309,13 +309,26 @@ def _fixtures(tmp_path):
         },
     })
     table = _write(tmp_path / "table.tex", {"table": "content"})
+    render_inputs = _write(tmp_path / "render_inputs.json", {
+        "status": "complete",
+        "contract_id": "audited_compact_render_input_v1",
+    })
     import hashlib
     artifact = _write(tmp_path / "artifact_manifest.json", {
         "status": "complete",
+        "inputs": {
+            "audit_export_manifest": {
+                "path": str(render_inputs),
+                "sha256": hashlib.sha256(
+                    render_inputs.read_bytes()).hexdigest(),
+                "contract_id": "audited_compact_render_input_v1",
+            },
+        },
         "contracts": {
             "reads_checkpoints": False,
             "reads_pickle_or_model_weights": False,
             "post_run_truth_not_used_for_decisions": True,
+            "rows_from_passed_registered_paper_audit": True,
         },
         "outputs": [{
             "name": table.name,

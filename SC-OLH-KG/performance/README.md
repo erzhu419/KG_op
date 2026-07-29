@@ -26,7 +26,12 @@ source-informed or common-Sobol matrices.
 curves from `result.json` only. It exports point fingerprints rather than
 policy vectors, excludes all terminal-verification samples from the search
 curve, and marks target truth as post-run diagnostics that were unavailable to
-the optimizer. `finalize_paper_submission_release.py` refuses to freeze a
+the optimizer. `export_paper_audit_render_inputs.py` exports table rows only
+from registry tracks whose compact audit passed, retaining failures and
+timeouts. `render_paper_artifacts.py --input-manifest ...` verifies that
+export receipt before rendering; the generic matrix aggregator is not
+admissible for final-paper figures. `finalize_paper_submission_release.py`
+refuses to freeze a
 release unless every registered headline result has every charged search call,
 its terminal truth matches the registered problem contract, and the compact
 audit receipts agree byte-for-byte. The release additionally requires the

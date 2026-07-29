@@ -525,6 +525,8 @@ def validate_release_inputs(
         failures,
     )
     output_rows = list(artifact_manifest.get("outputs", ()))
+    render_input = artifact_manifest.get(
+        "inputs", {}).get("audit_export_manifest") or {}
     _require(
         artifact_manifest.get("status") == "complete"
         and artifact_manifest.get("contracts", {}).get(
@@ -533,8 +535,20 @@ def validate_release_inputs(
             "reads_pickle_or_model_weights") is False
         and artifact_manifest.get("contracts", {}).get(
             "post_run_truth_not_used_for_decisions") is True
+        and artifact_manifest.get("contracts", {}).get(
+            "rows_from_passed_registered_paper_audit") is True
+        and render_input.get("contract_id")
+        == "audited_compact_render_input_v1"
         and bool(output_rows),
-        "publication artifact manifest is incomplete or reads runtime state",
+        "publication artifact manifest is incomplete, unaudited, or reads "
+        "runtime state",
+        failures,
+    )
+    render_input_path = Path(str(render_input.get("path", "")))
+    _require(
+        render_input_path.is_file()
+        and _sha256(render_input_path) == render_input.get("sha256"),
+        "audited render-input manifest is missing or changed",
         failures,
     )
     artifact_root = Path(str(artifact_manifest.get(

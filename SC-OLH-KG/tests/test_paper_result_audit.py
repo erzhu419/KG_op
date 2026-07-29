@@ -39,6 +39,10 @@ def _write_result(
             "target_search_calls": 13,
             "target_verification_calls": 80,
             "target_total_calls": 93,
+            "source_oracle_aided": False,
+            "target_oracle_used_for_selection": False,
+            "terminal_verification_updates_optimizer": False,
+            "terminal_verification_target_oracle_used": False,
         },
         "result": {
             "method": method,
@@ -196,6 +200,12 @@ def test_track_audit_requires_frozen_execution_contract(tmp_path):
             "required_scripts_tree": "d" * 40,
             "required_method_contract_id": "method-v1",
             "required_theory_contract_id": "theory-v1",
+            "required_false_fields": [
+                "source_oracle_aided",
+                "target_oracle_used_for_selection",
+                "terminal_verification_updates_optimizer",
+                "terminal_verification_target_oracle_used",
+            ],
         }],
     }
     audit = build_audit(registry, root=tmp_path)
@@ -205,6 +215,8 @@ def test_track_audit_requires_frozen_execution_contract(tmp_path):
     assert row["execution_scolhkg_tree"] == "b" * 40
     assert row["execution_proof_tree"] == "c" * 40
     assert row["execution_scripts_tree"] == "d" * 40
+    assert row["source_oracle_aided"] is False
+    assert row["target_oracle_used_for_selection"] is False
 
     payload = json.loads(result.read_text(encoding="utf-8"))
     payload["execution_provenance"]["repository_commit"] = "e" * 40
@@ -223,6 +235,19 @@ def test_track_audit_requires_frozen_execution_contract(tmp_path):
     assert failed["status"] == "incomplete_or_failed"
     assert any(
         row["kind"] == "execution_scripts_tree_mismatch"
+        for row in failed["track_audits"][0]["failures"]
+    )
+
+    payload["execution_provenance"]["scripts_tree"] = "d" * 40
+    payload["information_contract"][
+        "target_oracle_used_for_selection"
+    ] = True
+    result.write_text(json.dumps(payload), encoding="utf-8")
+    failed = build_audit(registry, root=tmp_path)
+    assert failed["status"] == "incomplete_or_failed"
+    assert any(
+        row["kind"]
+        == "required_false_target_oracle_used_for_selection_mismatch"
         for row in failed["track_audits"][0]["failures"]
     )
 

@@ -107,6 +107,12 @@
         "initial_design_fingerprint",
         "problem_contract_fingerprint",
         "verifier_signature"
+      ],
+      "required_false_fields": [
+        "source_oracle_aided",
+        "target_oracle_used_for_selection",
+        "terminal_verification_updates_optimizer",
+        "terminal_verification_target_oracle_used"
       ]
     },
     {
@@ -143,6 +149,12 @@
       "required_scripts_tree": "9e300ecf5c22127b1279229f0b718c4b4f6e5eef",
       "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
       "required_method_contract_id": "or_transfer_frontend_saas_hvd_causal_v1",
+      "required_false_fields": [
+        "source_oracle_aided",
+        "target_oracle_used_for_selection",
+        "terminal_verification_updates_optimizer",
+        "terminal_verification_target_oracle_used"
+      ],
       "disallowed_method_identities": ["saasbo_periodic_capped"]
     },
     {
@@ -454,6 +466,12 @@
         "stacked_transfer_gp_cbo:official_transfergpbo_code": "or_transfer_frontend_stacked_gp_ablation_v1",
         "canonical_saasbo_every_iteration": "or_transfer_frontend_saas_v1"
       },
+      "required_false_fields": [
+        "source_oracle_aided",
+        "target_oracle_used_for_selection",
+        "terminal_verification_updates_optimizer",
+        "terminal_verification_target_oracle_used"
+      ],
       "disallowed_method_identities": ["saasbo_periodic_capped"]
     },
     {
@@ -502,6 +520,12 @@
         "stacked_transfer_gp_cbo:official_transfergpbo_code": "or_transfer_frontend_stacked_gp_ablation_v1",
         "canonical_saasbo_every_iteration": "or_transfer_frontend_saas_v1"
       },
+      "required_false_fields": [
+        "source_oracle_aided",
+        "target_oracle_used_for_selection",
+        "terminal_verification_updates_optimizer",
+        "terminal_verification_target_oracle_used"
+      ],
       "disallowed_method_identities": ["saasbo_periodic_capped"]
     }
   ],
@@ -1008,6 +1032,20 @@
         "verifier_signature"
       ]
     }
+  ],
+  "paper_render_tracks": [
+    "final_frozen_source_frontend_backend_d1000_n13",
+    "final_frozen_sobol_frontend_control_d1000_n13",
+    "final_archive_fair_transfer_matrix_d1000_n13",
+    "source_hvd_causal_gate_d1000_n13",
+    "uniform_external_total_cost_d1000_n397",
+    "frontend_component_causal_ablation_d1000_n10",
+    "legacy_related_family_bridge_d5_n13",
+    "dimension_frontier_d200_d10000_n13",
+    "dimension_budget_frontier_gate_proposal_d200_d1000_n10",
+    "dimension_budget_frontier_gate_saas_d200_d1000_n20",
+    "dimension_budget_frontier_gate_saas_d200_d1000_n40",
+    "dimension_budget_frontier_gate_saas_d200_d1000_n80"
   ],
   "inference_families": [
     {

@@ -187,6 +187,7 @@ def extract_result_record(path, *, track_id):
     source_info = result.get("source_information_contract") or {}
     adaptation_info = result.get("source_target_adaptation_contract") or {}
     target_info = result.get("target_information_contract") or {}
+    initial_truth_audit = result.get("initial_truth_audit") or {}
     verification = result.get("terminal_verification") or {}
     aleatoric_audit = result.get("post_run_aleatoric_audit") or {}
     execution = _first(
@@ -281,6 +282,31 @@ def extract_result_record(path, *, track_id):
     )
     true_feasible = result.get("true_feasible")
     certified = verification.get("certified")
+    source_oracle_aided = _first(
+        info.get("source_oracle_aided"),
+        comparison.get("source_oracle_aided"),
+        source_info.get("source_oracle_aided"),
+        initial_truth_audit.get("source_oracle_aided"),
+        result.get("source_oracle_aided"),
+    )
+    target_oracle_used_for_selection = _first(
+        info.get("target_oracle_used_for_selection"),
+        comparison.get("target_oracle_used_for_selection"),
+        target_info.get("target_oracle_used_for_selection"),
+        initial_truth_audit.get("target_oracle_used_for_selection"),
+        result.get("target_oracle_used_for_selection"),
+        result.get("target_oracle_used_for_decision"),
+    )
+    terminal_verification_updates_optimizer = _first(
+        info.get("terminal_verification_updates_optimizer"),
+        comparison.get("terminal_verification_updates_optimizer"),
+        verification.get("posterior_updated_from_verification"),
+    )
+    terminal_verification_target_oracle_used = _first(
+        info.get("terminal_verification_target_oracle_used"),
+        comparison.get("terminal_verification_target_oracle_used"),
+        verification.get("target_oracle_used"),
+    )
     return {
         "track_id": str(track_id),
         "path": str(path),
@@ -311,6 +337,22 @@ def extract_result_record(path, *, track_id):
         "execution_theory_contract_id": execution.get(
             "theory_contract_id"),
         "execution_snapshot_root": execution.get("snapshot_root"),
+        "source_oracle_aided": (
+            None if source_oracle_aided is None
+            else bool(source_oracle_aided)
+        ),
+        "target_oracle_used_for_selection": (
+            None if target_oracle_used_for_selection is None
+            else bool(target_oracle_used_for_selection)
+        ),
+        "terminal_verification_updates_optimizer": (
+            None if terminal_verification_updates_optimizer is None
+            else bool(terminal_verification_updates_optimizer)
+        ),
+        "terminal_verification_target_oracle_used": (
+            None if terminal_verification_target_oracle_used is None
+            else bool(terminal_verification_target_oracle_used)
+        ),
         "source_calls": _int_or_none(source_calls),
         "target_search_calls": _int_or_none(search_calls),
         "target_verification_calls": _int_or_none(verification_calls),
@@ -712,6 +754,19 @@ def audit_track(records, specification):
             "kind": "disallowed_algorithm_identity",
             "observed": sorted(contaminated),
         })
+    for field in map(str, specification.get(
+        "required_false_fields", ()
+    )):
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row.get(field) is not False
+        ]
+        if bad:
+            failures.append({
+                "kind": f"required_false_{field}_mismatch",
+                "count": len(bad),
+            })
     required_provenance = specification.get(
         "required_execution_provenance_status")
     if required_provenance is not None:

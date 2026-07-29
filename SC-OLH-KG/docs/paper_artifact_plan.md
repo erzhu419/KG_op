@@ -30,8 +30,8 @@ single-objective chance-constrained metrics and fresh out-of-sample audits.
 6. **HVD causal audit.** Log-variance RMSE, variance-shape correlation,
    variance-upper coverage, feasibility, regret, and false certification for
    pooled versus cumulative factor models under the same proposal, backend,
-   and verifier. The completed five-seed gate is reported as a negative
-   headline-promotion result.
+   and verifier. The five-seed gate is a pilot only; the paper decision uses
+   the separately frozen 20-seed replay.
 7. **Evaluate-or-replicate allocation.** Replication action fraction over
    target budget by domain, paired with the HVD calibration result.
 8. **Certification budget.** Certified/evaluated coverage and false
@@ -61,8 +61,13 @@ single-objective chance-constrained metrics and fresh out-of-sample audits.
 - no checkpoint, pickle, model weight, or raw scheduler profile is needed for
   figure generation.
 
-`performance/aggregate_completed_matrix.py` emits compact `rows.csv`,
-`grouped_summary.csv`, and `traces.csv`. `performance/render_paper_artifacts.py`
-turns only those files into LaTeX tables, PDF/PNG figures, paired statistics,
-and a hash-addressed artifact manifest. Figure exports include editable-text
+`performance/export_paper_audit_render_inputs.py` emits the final `rows.csv`
+and `grouped_summary.csv` only from tracks that passed the frozen experiment
+registry audit; failures and timeouts remain in those files.
+`performance/paper_convergence_extract.py` emits the post-run joined
+`traces.csv`. `performance/render_paper_artifacts.py` verifies the audit-export
+manifest before producing LaTeX tables, PDF/PNG figures, paired statistics,
+and a hash-addressed artifact manifest. The generic
+`aggregate_completed_matrix.py` remains useful for exploratory diagnostics but
+is not admissible for the final release. Figure exports include editable-text
 PDF/SVG plus 300-dpi PNG and 600-dpi TIFF from the same Python backend.

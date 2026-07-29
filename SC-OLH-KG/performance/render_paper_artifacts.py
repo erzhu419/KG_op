@@ -189,10 +189,25 @@ def _cell_metrics(items: list[dict]) -> dict:
         statistic=np.mean,
     )
     regret_ci = bootstrap_interval(regrets)
-    certified = sum(_integer(row.get("posterior_certified_count")) or 0
-                    for row in items)
-    evaluated = sum(_integer(row.get("evaluated_point_count")) or 0
-                    for row in items)
+    terminal_certification_available = any(
+        _boolean(row.get("terminal_certified")) is not None
+        for row in items
+    )
+    if terminal_certification_available:
+        certified = sum(
+            _boolean(row.get("terminal_certified")) is True
+            for row in items
+        )
+        evaluated = len(items)
+    else:
+        certified = sum(
+            _integer(row.get("posterior_certified_count")) or 0
+            for row in items
+        )
+        evaluated = sum(
+            _integer(row.get("evaluated_point_count")) or 0
+            for row in items
+        )
     return {
         "n": len(items),
         "feasible_count": len(feasible),
@@ -201,9 +216,17 @@ def _cell_metrics(items: list[dict]) -> dict:
         "median_regret": statistics.median(regrets) if regrets else None,
         "median_regret_ci": regret_ci,
         "false_certificates": sum(
-            _integer(row.get("false_certificate_count")) or 0
-            for row in items),
+            int(_boolean(row.get("terminal_false_certificate")) is True)
+            if _boolean(row.get("terminal_false_certificate")) is not None
+            else (_integer(row.get("false_certificate_count")) or 0)
+            for row in items
+        ),
         "certificate_coverage": certified / evaluated if evaluated else None,
+        "certificate_metric": (
+            "independent_terminal_certification_rate"
+            if terminal_certification_available
+            else "posterior_pointwise_coverage"
+        ),
         "median_wall_time": (
             statistics.median(values)
             if (values := [
@@ -220,7 +243,7 @@ def write_main_table(rows: list[dict], path: Path) -> None:
     lines = [
         "\\begin{tabular}{lllrrrrr}",
         "\\toprule",
-        "Domain & $d/N$ & Method & Feasible & Regret & Cert. cov. & False cert. & Time (s) \\\\",
+        "Domain & $d/N$ & Method & Feasible & Regret & Indep. cert. & False cert. & Time (s) \\\\",
         "\\midrule",
     ]
     previous_domain = None
@@ -681,8 +704,37 @@ def plot_action_allocation(rows: list[dict], stem: Path) -> bool:
     return True
 
 
+def _validate_render_input_manifest(
+    path, *, rows_path, summary_path,
+):
+    if path is None:
+        return None
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if (
+        payload.get("status") != "complete"
+        or payload.get("contract_id") != "audited_compact_render_input_v1"
+        or payload.get("rows", {}).get("sha256") != _sha256(rows_path)
+        or payload.get("summary", {}).get("sha256")
+        != _sha256(summary_path)
+        or payload.get("contracts", {}).get(
+            "source_is_passed_compact_paper_audit") is not True
+        or payload.get("contracts", {}).get(
+            "unregistered_tracks_excluded") is not True
+        or payload.get("contracts", {}).get(
+            "failures_and_timeouts_retained") is not True
+    ):
+        raise ValueError("render input manifest failed its audit contract")
+    return payload
+
+
 def render(rows_path: Path, summary_path: Path, traces_path: Path,
-           out_dir: Path, primary_method: str, no_plots: bool = False) -> dict:
+           out_dir: Path, primary_method: str, no_plots: bool = False,
+           input_manifest_path: Path | None = None) -> dict:
+    input_manifest = _validate_render_input_manifest(
+        input_manifest_path,
+        rows_path=rows_path,
+        summary_path=summary_path,
+    )
     rows = read_csv(rows_path)
     summaries = read_csv(summary_path)
     traces = read_csv(traces_path)
@@ -721,6 +773,15 @@ def render(rows_path: Path, summary_path: Path, traces_path: Path,
                 "path": str(summary_path), "sha256": _sha256(summary_path)},
             "traces": {
                 "path": str(traces_path), "sha256": _sha256(traces_path)},
+            "audit_export_manifest": (
+                None
+                if input_manifest_path is None
+                else {
+                    "path": str(input_manifest_path),
+                    "sha256": _sha256(input_manifest_path),
+                    "contract_id": input_manifest["contract_id"],
+                }
+            ),
         },
         "row_count": len(rows),
         "summary_count": len(summaries),
@@ -736,6 +797,8 @@ def render(rows_path: Path, summary_path: Path, traces_path: Path,
             "reads_compact_csv_only": True,
             "reads_checkpoints": False,
             "reads_pickle_or_model_weights": False,
+            "rows_from_passed_registered_paper_audit": bool(
+                input_manifest is not None),
             "conditional_regret_always_accompanied_by_feasibility": True,
             "post_run_truth_not_used_for_decisions": all(
                 _boolean(row.get("target_oracle_used_for_decision")) is not True
@@ -756,10 +819,12 @@ def main() -> None:
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--primary-method", default="promoted_joint_voi")
     parser.add_argument("--no-plots", action="store_true")
+    parser.add_argument("--input-manifest", type=Path, default=None)
     args = parser.parse_args()
     manifest = render(
         args.rows, args.summary, args.traces, args.out_dir,
-        args.primary_method, no_plots=args.no_plots)
+        args.primary_method, no_plots=args.no_plots,
+        input_manifest_path=args.input_manifest)
     print(json.dumps(manifest, indent=2))
 
 
