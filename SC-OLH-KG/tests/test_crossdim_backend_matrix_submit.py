@@ -1,4 +1,5 @@
 import importlib.util
+import json
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -101,6 +102,49 @@ def test_crossdim_backend_contracts_keep_backend_information_explicit(
     assert str(SUBMIT.REMOTE_ROOT / "SC-OLH-KG/performance/manifests") not in (
         saas["cmd"])
     assert saas["result_dir"].startswith(str(tmp_path / "SC-OLH-KG"))
+
+
+def test_crossdim_frozen_snapshot_separates_code_from_runtime_data(
+    tmp_path,
+):
+    args = _args(tmp_path / "runtime")
+    args.code_root = tmp_path / "snapshots" / ("a" * 40)
+    args.require_frozen_snapshot = True
+    args.code_root.mkdir(parents=True)
+    (args.code_root / "SC-OLH-KG").mkdir()
+    marker = {
+        "status": "frozen",
+        "repository_commit": "a" * 40,
+        "scolhkg_tree": "b" * 40,
+        "proof_tree": "c" * 40,
+        "scripts_tree": "d" * 40,
+        "method_contract_id": "or_transfer_frontend_saas_v1",
+        "theory_contract_id": (
+            "source_target_geometric_atlas_coverage_v1"),
+        "snapshot_root": str(args.code_root.resolve()),
+    }
+    (args.code_root / SUBMIT.SNAPSHOT_MARKER).write_text(
+        json.dumps(marker),
+        encoding="utf-8",
+    )
+
+    specs = SUBMIT.build_specs(args)
+
+    assert specs
+    for spec in specs:
+        backend = next(
+            name for name in SUBMIT.BACKENDS
+            if f"/{name}/" in spec["signature"]
+        )
+        assert spec["cwd"] == str(args.code_root / "SC-OLH-KG")
+        assert "SCOLHKG_EXECUTION_PROVENANCE_REQUIRED=1" in spec["cmd"]
+        assert f"SCOLHKG_EXECUTION_COMMIT={'a' * 40}" in spec["cmd"]
+        assert (
+            "SCOLHKG_METHOD_CONTRACT_ID="
+            f"{SUBMIT.METHOD_CONTRACT_BY_BACKEND[backend]}" in spec["cmd"]
+        )
+        assert spec["result_dir"].startswith(
+            str(args.deploy / "SC-OLH-KG"))
 
 
 def test_crossdim_v9_uses_identical_three_policy_verifier(tmp_path):

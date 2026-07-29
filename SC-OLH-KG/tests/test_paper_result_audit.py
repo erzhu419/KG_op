@@ -17,7 +17,14 @@ from performance.paper_result_record_shard import (  # noqa: E402
 )
 
 
-def _write_result(path, *, method, seed, schedule="every_iteration"):
+def _write_result(
+    path,
+    *,
+    method,
+    seed,
+    schedule="every_iteration",
+    frozen_execution=False,
+):
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "schema_version": 2,
@@ -58,6 +65,17 @@ def _write_result(path, *, method, seed, schedule="every_iteration"):
             },
         },
     }
+    if frozen_execution:
+        payload["execution_provenance"] = {
+            "status": "frozen",
+            "repository_commit": "a" * 40,
+            "scolhkg_tree": "b" * 40,
+            "proof_tree": "c" * 40,
+            "scripts_tree": "d" * 40,
+            "method_contract_id": "method-v1",
+            "theory_contract_id": "theory-v1",
+            "snapshot_root": "/immutable/a",
+        }
     path.write_text(json.dumps(payload), encoding="utf-8")
 
 
@@ -151,6 +169,89 @@ def test_track_audit_requires_paired_information_contracts(tmp_path):
     assert audit["status"] == "pass", audit
     assert audit["record_count"] == 2
     assert audit["track_audits"][0]["status"] == "pass"
+
+
+def test_track_audit_requires_frozen_execution_contract(tmp_path):
+    result = tmp_path / "frozen" / "result.json"
+    _write_result(
+        result,
+        method="botorch_saasbo",
+        seed=80,
+        frozen_execution=True,
+    )
+    registry = {
+        "registry_id": "frozen",
+        "tracks": [{
+            "track_id": "frozen",
+            "result_root": "frozen",
+            "expected_method_identities": [
+                "canonical_saasbo_every_iteration",
+            ],
+            "expected_domains": ["QueueResourceControl"],
+            "expected_seeds": [80],
+            "required_execution_provenance_status": "frozen",
+            "allowed_execution_commits": ["a" * 40],
+            "required_scolhkg_tree": "b" * 40,
+            "required_method_contract_id": "method-v1",
+            "required_theory_contract_id": "theory-v1",
+        }],
+    }
+    audit = build_audit(registry, root=tmp_path)
+    assert audit["status"] == "pass", audit
+    row = audit["records"][0]
+    assert row["execution_repository_commit"] == "a" * 40
+    assert row["execution_scolhkg_tree"] == "b" * 40
+
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    payload["execution_provenance"]["repository_commit"] = "e" * 40
+    result.write_text(json.dumps(payload), encoding="utf-8")
+    failed = build_audit(registry, root=tmp_path)
+    assert failed["status"] == "incomplete_or_failed"
+    assert any(
+        row["kind"] == "execution_commit_mismatch"
+        for row in failed["track_audits"][0]["failures"]
+    )
+
+
+def test_track_audit_accepts_backend_specific_execution_contracts(tmp_path):
+    first = tmp_path / "contracts" / "first" / "result.json"
+    second = tmp_path / "contracts" / "second" / "result.json"
+    _write_result(
+        first,
+        method="botorch_turbo",
+        seed=80,
+        frozen_execution=True,
+    )
+    _write_result(
+        second,
+        method="botorch_scbo",
+        seed=80,
+        frozen_execution=True,
+    )
+    second_payload = json.loads(second.read_text(encoding="utf-8"))
+    second_payload["execution_provenance"][
+        "method_contract_id"
+    ] = "method-v2"
+    second.write_text(json.dumps(second_payload), encoding="utf-8")
+    registry = {
+        "registry_id": "method-contracts",
+        "tracks": [{
+            "track_id": "contracts",
+            "result_root": "contracts",
+            "expected_method_identities": [
+                "botorch_turbo:canonical_turbo1_ts",
+                "botorch_scbo:canonical_scbo_constrained_ts",
+            ],
+            "expected_domains": ["QueueResourceControl"],
+            "expected_seeds": [80],
+            "required_method_contract_by_method": {
+                "botorch_turbo:canonical_turbo1_ts": "method-v1",
+                "botorch_scbo:canonical_scbo_constrained_ts": "method-v2",
+            },
+        }],
+    }
+    audit = build_audit(registry, root=tmp_path)
+    assert audit["status"] == "pass", audit
 
 
 def test_result_level_source_calls_and_total_optimization_contract(tmp_path):

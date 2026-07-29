@@ -38,6 +38,12 @@ DOMAINS = (
 )
 BACKENDS = ("proposal_only", "stacked_gp", "saasbo")
 INITIAL_DESIGNS = ("source_informed", "common_sobol")
+SNAPSHOT_MARKER = ".scolhkg_execution_snapshot.json"
+METHOD_CONTRACT_BY_BACKEND = {
+    "proposal_only": "or_transfer_frontend_proposal_only_ablation_v1",
+    "stacked_gp": "or_transfer_frontend_stacked_gp_ablation_v1",
+    "saasbo": "or_transfer_frontend_saas_v1",
+}
 
 
 def _parse_csv(value):
@@ -47,6 +53,56 @@ def _parse_csv(value):
 
 def _read_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _execution_snapshot(args):
+    code_root = getattr(args, "code_root", None)
+    required = bool(getattr(args, "require_frozen_snapshot", False))
+    if code_root in (None, ""):
+        if required:
+            raise ValueError(
+                "--require-frozen-snapshot needs --code-root")
+        return None
+    marker = Path(code_root) / SNAPSHOT_MARKER
+    if not marker.is_file():
+        raise FileNotFoundError(
+            f"frozen code snapshot marker is missing: {marker}")
+    snapshot = _read_json(marker)
+    required_fields = (
+        "repository_commit",
+        "scolhkg_tree",
+        "proof_tree",
+        "scripts_tree",
+        "method_contract_id",
+        "theory_contract_id",
+        "snapshot_root",
+    )
+    missing = [field for field in required_fields if not snapshot.get(field)]
+    if missing:
+        raise ValueError(
+            f"frozen code snapshot is incomplete: {missing}")
+    if Path(snapshot["snapshot_root"]).resolve() != Path(code_root).resolve():
+        raise ValueError("snapshot marker/root mismatch")
+    if snapshot.get("status") != "frozen":
+        raise ValueError("code snapshot is not frozen")
+    return snapshot
+
+
+def _execution_env(snapshot, *, backend):
+    if snapshot is None:
+        return []
+    method_contract = METHOD_CONTRACT_BY_BACKEND[str(backend)]
+    values = {
+        "SCOLHKG_EXECUTION_PROVENANCE_REQUIRED": "1",
+        "SCOLHKG_EXECUTION_COMMIT": snapshot["repository_commit"],
+        "SCOLHKG_SCOLHKG_TREE": snapshot["scolhkg_tree"],
+        "SCOLHKG_PROOF_TREE": snapshot["proof_tree"],
+        "SCOLHKG_SCRIPTS_TREE": snapshot["scripts_tree"],
+        "SCOLHKG_METHOD_CONTRACT_ID": method_contract,
+        "SCOLHKG_THEORY_CONTRACT_ID": snapshot["theory_contract_id"],
+        "SCOLHKG_CODE_SNAPSHOT_ROOT": snapshot["snapshot_root"],
+    }
+    return [f"{key}={value}" for key, value in values.items()]
 
 
 def _load_only_cells(args):
@@ -238,9 +294,14 @@ def validate_contract(args):
 
 def _base_spec(args, *, backend, heldout, seed, command, cpu, ram_mb,
                vram, allowed_nodes):
-    deploy_project = Path(args.deploy) / "SC-OLH-KG"
+    data_project = Path(args.deploy) / "SC-OLH-KG"
+    code_project = (
+        Path(args.code_root) / "SC-OLH-KG"
+        if getattr(args, "code_root", None)
+        else data_project
+    )
     local_result = (
-        deploy_project / "profiles" / args.run_id / backend / heldout
+        data_project / "profiles" / args.run_id / backend / heldout
         / f"seed{seed:04d}"
     )
     return {
@@ -250,7 +311,7 @@ def _base_spec(args, *, backend, heldout, seed, command, cpu, ram_mb,
             f"seed={seed}"
         ),
         "cmd": f"{shlex.join(command)} && echo DONE",
-        "cwd": str(deploy_project),
+        "cwd": str(code_project),
         "signature": (
             f"KG_op/crossdim_backend_matrix/{args.run_id}/{backend}/"
             f"{heldout}/seed{seed:04d}"
@@ -272,8 +333,13 @@ def _base_spec(args, *, backend, heldout, seed, command, cpu, ram_mb,
 
 def build_specs(args):
     deploy_project = Path(args.deploy) / "SC-OLH-KG"
+    code_project = (
+        Path(args.code_root) / "SC-OLH-KG"
+        if getattr(args, "code_root", None)
+        else deploy_project
+    )
     manifest = (
-        deploy_project / "performance/manifests/v18b_exactkg_mcdiag.json")
+        code_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     domains = _parse_csv(args.heldouts)
     backends = _parse_csv(args.backends)
     selected_cells = _load_only_cells(args)
@@ -288,6 +354,7 @@ def build_specs(args):
         raise ValueError(f"unknown backend rows: {unknown}")
     specs = []
     terminal_flags = _terminal_verification_flags(args)
+    execution_snapshot = _execution_snapshot(args)
     for heldout in domains:
         local_archive = (
             deploy_project / "archives" / args.archive_run_id / heldout
@@ -318,6 +385,10 @@ def build_specs(args):
                     "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
                     "OMP_NUM_THREADS=1", "MKL_NUM_THREADS=1",
                     "OPENBLAS_NUM_THREADS=1",
+                    *_execution_env(
+                        execution_snapshot,
+                        backend="proposal_only",
+                    ),
                     str(REMOTE_PYTHON),
                     "performance/benchmark_frozen_proposal_only.py",
                     "--heldout", heldout,
@@ -378,6 +449,10 @@ def build_specs(args):
                     f"OMP_NUM_THREADS={int(args.cpu)}",
                     f"MKL_NUM_THREADS={int(args.cpu)}",
                     f"OPENBLAS_NUM_THREADS={int(args.cpu)}",
+                    *_execution_env(
+                        execution_snapshot,
+                        backend="stacked_gp",
+                    ),
                     f"PYTHONPATH={TRANSFER_TORCH_OVERLAY}:"
                     f"{TRANSFERGPBO_OVERLAY}",
                     f"SCOLHKG_EXTERNAL_REPO_ROOT={EXTERNAL_REPOS}",
@@ -444,6 +519,10 @@ def build_specs(args):
                     f"OMP_NUM_THREADS={int(args.gpu_cpu)}",
                     f"MKL_NUM_THREADS={int(args.gpu_cpu)}",
                     f"OPENBLAS_NUM_THREADS={int(args.gpu_cpu)}",
+                    *_execution_env(
+                        execution_snapshot,
+                        backend="saasbo",
+                    ),
                     "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
                     "SCOLHKG_TORCH_DETERMINISTIC=1",
                     "CUBLAS_WORKSPACE_CONFIG=:4096:8",
@@ -535,6 +614,20 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
     parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
+    parser.add_argument(
+        "--code-root",
+        type=Path,
+        default=None,
+        help=(
+            "Immutable repository snapshot root. Runtime data and outputs "
+            "continue to use --deploy."
+        ),
+    )
+    parser.add_argument(
+        "--require-frozen-snapshot",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
     parser.add_argument("--run-id", default=(
         "paper_certified_crossdim_backend_matrix_d50_d1000_n13_"
         f"s80_99_{time.strftime('%Y%m%d_%H%M%S')}"))
@@ -609,6 +702,7 @@ def main():
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    execution_snapshot = _execution_snapshot(args)
     audit = validate_contract(args)
     specs = build_specs(args)
     selected_cells = _load_only_cells(args)
@@ -696,6 +790,7 @@ def main():
         },
         "task_ids": task_ids,
         "checkpoint_results_synced_locally": False,
+        "execution_snapshot": execution_snapshot,
     }
     manifest_name = (
         f"recovery_submission_manifest_{time.strftime('%Y%m%d_%H%M%S')}.json"

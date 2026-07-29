@@ -31,6 +31,9 @@ from core.designs import (  # noqa: E402
     load_frozen_source_informed_design,
 )
 from performance.benchmark_quality import json_safe, parse_weights  # noqa: E402
+from performance.execution_provenance import (  # noqa: E402
+    attach_execution_provenance,
+)
 from performance.benchmark_lodo_meta_prior import (  # noqa: E402
     build_scalarized_problem,
     train_meta_prior,
@@ -831,7 +834,7 @@ def main():
         default=True,
     )
     args = parser.parse_args()
-    payload = run_one(args)
+    payload = attach_execution_provenance(run_one(args))
     _atomic_json(args.out, payload)
     print(json.dumps(json_safe({
         "status": payload["status"],

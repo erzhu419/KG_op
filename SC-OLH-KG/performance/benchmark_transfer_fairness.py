@@ -33,6 +33,9 @@ from core.terminal_verification import (  # noqa: E402
 )
 from performance.benchmark_lodo_meta_prior import build_scalarized_problem  # noqa: E402
 from performance.benchmark_quality import json_safe, parse_weights  # noqa: E402
+from performance.execution_provenance import (  # noqa: E402
+    attach_execution_provenance,
+)
 
 
 FORMAL_SOURCE_STEPS = {
@@ -567,7 +570,7 @@ def main():
         default=True,
     )
     args = parser.parse_args()
-    payload = run_one(args)
+    payload = attach_execution_provenance(run_one(args))
     _atomic_json(args.out, payload)
     print(json.dumps({
         "status": payload["status"],

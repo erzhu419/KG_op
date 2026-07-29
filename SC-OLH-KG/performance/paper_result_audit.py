@@ -189,6 +189,11 @@ def extract_result_record(path, *, track_id):
     target_info = result.get("target_information_contract") or {}
     verification = result.get("terminal_verification") or {}
     aleatoric_audit = result.get("post_run_aleatoric_audit") or {}
+    execution = _first(
+        payload.get("execution_provenance"),
+        result.get("execution_provenance"),
+        {},
+    )
     status = str(
         payload.get("status")
         or result.get("status")
@@ -295,6 +300,17 @@ def extract_result_record(path, *, track_id):
             payload.get("implementation"),
             result.get("implementation"),
         ),
+        "execution_provenance_status": execution.get("status"),
+        "execution_repository_commit": execution.get(
+            "repository_commit"),
+        "execution_scolhkg_tree": execution.get("scolhkg_tree"),
+        "execution_proof_tree": execution.get("proof_tree"),
+        "execution_scripts_tree": execution.get("scripts_tree"),
+        "execution_method_contract_id": execution.get(
+            "method_contract_id"),
+        "execution_theory_contract_id": execution.get(
+            "theory_contract_id"),
+        "execution_snapshot_root": execution.get("snapshot_root"),
         "source_calls": _int_or_none(source_calls),
         "target_search_calls": _int_or_none(search_calls),
         "target_verification_calls": _int_or_none(verification_calls),
@@ -669,6 +685,90 @@ def audit_track(records, specification):
             "kind": "disallowed_algorithm_identity",
             "observed": sorted(contaminated),
         })
+    required_provenance = specification.get(
+        "required_execution_provenance_status")
+    if required_provenance is not None:
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row.get("execution_provenance_status")
+            != str(required_provenance)
+        ]
+        if bad:
+            failures.append({
+                "kind": "execution_provenance_status_mismatch",
+                "count": len(bad),
+            })
+    allowed_commits = set(map(str, specification.get(
+        "allowed_execution_commits", ())))
+    if allowed_commits:
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row.get("execution_repository_commit")
+            not in allowed_commits
+        ]
+        if bad:
+            failures.append({
+                "kind": "execution_commit_mismatch",
+                "count": len(bad),
+                "allowed": sorted(allowed_commits),
+            })
+    for specification_field, row_field, failure_kind in (
+        (
+            "required_method_contract_id",
+            "execution_method_contract_id",
+            "execution_method_contract_mismatch",
+        ),
+        (
+            "required_theory_contract_id",
+            "execution_theory_contract_id",
+            "execution_theory_contract_mismatch",
+        ),
+        (
+            "required_scolhkg_tree",
+            "execution_scolhkg_tree",
+            "execution_scolhkg_tree_mismatch",
+        ),
+    ):
+        expected = specification.get(specification_field)
+        if expected is None:
+            continue
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row.get(row_field) != str(expected)
+        ]
+        if bad:
+            failures.append({
+                "kind": failure_kind,
+                "count": len(bad),
+            })
+    contract_by_method = {
+        str(method): str(contract)
+        for method, contract in specification.get(
+            "required_method_contract_by_method", {}
+        ).items()
+    }
+    if contract_by_method:
+        missing_contracts = expected_methods - set(contract_by_method)
+        if missing_contracts:
+            failures.append({
+                "kind": "missing_method_execution_contract",
+                "methods": sorted(missing_contracts),
+            })
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row["method_identity"] in contract_by_method
+            if row.get("execution_method_contract_id")
+            != contract_by_method[row["method_identity"]]
+        ]
+        if bad:
+            failures.append({
+                "kind": "method_execution_contract_mismatch",
+                "count": len(bad),
+            })
     failed_rows = [row for row in rows if row["status"] != "ok"]
     if failed_rows and not bool(specification.get("allow_failures", False)):
         failures.append({
