@@ -132,6 +132,7 @@ def extract_result_record(path, *, track_id):
     )
 
     source_calls = _first(
+        result.get("source_calls"),
         info.get("offline_source_calls"),
         comparison.get("source_simulator_calls"),
         source_info.get("source_simulator_calls"),
@@ -163,6 +164,11 @@ def extract_result_record(path, *, track_id):
         None
         if target_total is None or source_calls is None
         else int(source_calls) + int(target_total)
+    )
+    optimization_calls = (
+        None
+        if source_calls is None or search_calls is None
+        else int(source_calls) + int(search_calls)
     )
     initial_fingerprint = _first(
         payload.get("initial_points_fingerprint"),
@@ -216,6 +222,8 @@ def extract_result_record(path, *, track_id):
         "target_search_calls": _int_or_none(search_calls),
         "target_verification_calls": _int_or_none(verification_calls),
         "target_total_calls": _int_or_none(target_total),
+        "optimization_calls_excluding_verification": _int_or_none(
+            optimization_calls),
         "source_plus_target_total_calls": _int_or_none(
             source_plus_target),
         "initial_design_fingerprint": initial_fingerprint,
@@ -285,6 +293,10 @@ def summarize_records(records):
                 [row["target_verification_calls"] for row in ok]),
             "mean_target_total_calls": _mean(
                 [row["target_total_calls"] for row in ok]),
+            "mean_optimization_calls_excluding_verification": _mean([
+                row["optimization_calls_excluding_verification"]
+                for row in ok
+            ]),
             "mean_source_plus_target_total_calls": _mean([
                 row["source_plus_target_total_calls"] for row in ok
             ]),
@@ -411,6 +423,20 @@ def audit_track(records, specification):
         if bad:
             failures.append({
                 "kind": "target_search_budget_mismatch",
+                "count": len(bad),
+            })
+    required_optimization_calls = specification.get(
+        "required_optimization_calls")
+    if required_optimization_calls is not None:
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row["optimization_calls_excluding_verification"]
+            != int(required_optimization_calls)
+        ]
+        if bad:
+            failures.append({
+                "kind": "optimization_budget_mismatch",
                 "count": len(bad),
             })
     disallowed_identities = set(map(str, specification.get(

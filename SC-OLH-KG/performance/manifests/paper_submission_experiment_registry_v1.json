@@ -182,6 +182,31 @@
       ]
     },
     {
+      "track_id": "uniform_external_total_cost_d1000_n397",
+      "result_root": "paper_uniform_external_total_cost_v1",
+      "expected_method_identities": [
+        "uniform_verified::canonical_saasbo_every_iteration",
+        "uniform_verified::botorch_turbo:canonical_turbo1_ts",
+        "uniform_verified::botorch_scbo:canonical_scbo_constrained_ts",
+        "uniform_verified::saasbo_periodic_capped"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "required_optimization_calls": 397,
+      "paired_equality_fields": [
+        "verifier_signature",
+        "optimization_calls_excluding_verification"
+      ]
+    },
+    {
       "track_id": "legacy_related_family_bridge_d5_n13",
       "result_root": "paper_final_legacy_bridge_d5_n13_s80_99_v1",
       "expected_method_identities": [
@@ -202,9 +227,387 @@
       "disallowed_method_identities": ["saasbo_periodic_capped"]
     }
   ],
+  "primary_comparisons": [
+    {
+      "comparison_id": "final_saas_vs_proposal_only",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_frontend_backend_factorial_d1000_n13",
+      "right_method": "frozen_crossdim_proposal_only",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "final_saas_vs_scolh_v69",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_frontend_backend_factorial_d1000_n13",
+      "right_method": "scolh:v65_verification_aware_objective_challenger",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "stacked_vs_proposal_only",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "stacked_transfer_gp_cbo:official_transfergpbo_code",
+      "right_track": "final_frontend_backend_factorial_d1000_n13",
+      "right_method": "frozen_crossdim_proposal_only",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "source_frontend_effect_saas",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "common_sobol_frontend_negative_control_d1000_n13",
+      "right_method": "canonical_saasbo_every_iteration",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": ["verifier_signature"]
+    },
+    {
+      "comparison_id": "source_frontend_effect_stacked",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "stacked_transfer_gp_cbo:official_transfergpbo_code",
+      "right_track": "common_sobol_frontend_negative_control_d1000_n13",
+      "right_method": "stacked_transfer_gp_cbo:official_transfergpbo_code",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": ["verifier_signature"]
+    },
+    {
+      "comparison_id": "cumulative_factor_hvd_vs_pooled",
+      "left_track": "source_hvd_causal_gate_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration+hvd:cumulative_factor",
+      "right_track": "source_hvd_causal_gate_d1000_n13",
+      "right_method": "canonical_saasbo_every_iteration+hvd:pooled",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 15,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "dimension_frontier_saas_vs_proposal",
+      "left_track": "dimension_frontier_d200_d10000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "dimension_frontier_d200_d10000_n13",
+      "right_method": "frozen_crossdim_proposal_only",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [200, 10000],
+      "expected_pairs": 30,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "target_only_scbo_vs_turbo_n397",
+      "left_track": "target_only_total_cost_n397",
+      "left_method": "botorch_scbo:canonical_scbo_constrained_ts",
+      "right_track": "target_only_total_cost_n397",
+      "right_method": "botorch_turbo:canonical_turbo1_ts",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": ["verifier_signature"]
+    },
+    {
+      "comparison_id": "target_only_periodic_saas_vs_scbo_n397",
+      "left_track": "target_only_periodic_capped_saas_n397",
+      "left_method": "saasbo_periodic_capped",
+      "right_track": "target_only_total_cost_n397",
+      "right_method": "botorch_scbo:canonical_scbo_constrained_ts",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": ["verifier_signature"]
+    },
+    {
+      "comparison_id": "target_only_periodic_saas_vs_turbo_n397",
+      "left_track": "target_only_periodic_capped_saas_n397",
+      "left_method": "saasbo_periodic_capped",
+      "right_track": "target_only_total_cost_n397",
+      "right_method": "botorch_turbo:canonical_turbo1_ts",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": ["verifier_signature"]
+    },
+    {
+      "comparison_id": "final_saas_vs_safe_fpacoh",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
+      "right_method": "safe_fpacoh_cbo:official_code_with_compatibility_shims",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "final_saas_vs_rgpe",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
+      "right_method": "rgpe_cbo:official_transfergpbo_code",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "final_saas_vs_stacked_transfer",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
+      "right_method": "stacked_transfer_gp_cbo:official_transfergpbo_code",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "final_saas_vs_mtgp",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
+      "right_method": "mtgp_cbo:official_transfergpbo_code",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "final_saas_vs_fsbo",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
+      "right_method": "fsbo_cbo:official_code_adapted_to_scalar_cbo",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "final_saas_vs_hyperbo",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
+      "right_method": "hyperbo_cbo:official_hyperbo_code_with_gfile_shim",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "final_saas_vs_metabo",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
+      "right_method": "metabo_cbo:official_neuralaf_ppo_fixed_archive_extension",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "final_saas_vs_malibo",
+      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
+      "right_method": "malibo_cbo:official_metablor_core_adapted_to_cbo",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "total_cost_final_saas_vs_target_turbo",
+      "left_track": "uniform_external_total_cost_d1000_n397",
+      "left_method": "uniform_verified::canonical_saasbo_every_iteration",
+      "right_track": "uniform_external_total_cost_d1000_n397",
+      "right_method": "uniform_verified::botorch_turbo:canonical_turbo1_ts",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "optimization_calls_excluding_verification",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "total_cost_final_saas_vs_target_scbo",
+      "left_track": "uniform_external_total_cost_d1000_n397",
+      "left_method": "uniform_verified::canonical_saasbo_every_iteration",
+      "right_track": "uniform_external_total_cost_d1000_n397",
+      "right_method": "uniform_verified::botorch_scbo:canonical_scbo_constrained_ts",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "optimization_calls_excluding_verification",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "total_cost_final_saas_vs_target_periodic_saas",
+      "left_track": "uniform_external_total_cost_d1000_n397",
+      "left_method": "uniform_verified::canonical_saasbo_every_iteration",
+      "right_track": "uniform_external_total_cost_d1000_n397",
+      "right_method": "uniform_verified::saasbo_periodic_capped",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "optimization_calls_excluding_verification",
+        "verifier_signature"
+      ]
+    }
+  ],
   "separate_non_gaussian_external_artifact": {
-    "run_id": "paper_final_external_traffic_s80_84_R100_v1",
-    "result": "paper_final_external_traffic_s80_84_R100_v1/traffic/external_traffic_audit.json",
+    "run_id": "paper_final_external_traffic_gpu_s80_84_R100_v3",
+    "result": "paper_final_external_traffic_gpu_s80_84_R100_v3/traffic/external_traffic_audit.json",
     "reason": "SUMO uses a familywise exact binomial fresh-seed verifier rather than the synthetic Gaussian verifier"
   }
 }

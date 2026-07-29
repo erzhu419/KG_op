@@ -101,3 +101,45 @@ def test_track_audit_requires_paired_information_contracts(tmp_path):
     assert audit["status"] == "pass"
     assert audit["record_count"] == 2
     assert audit["track_audits"][0]["status"] == "pass"
+
+
+def test_result_level_source_calls_and_total_optimization_contract(tmp_path):
+    path = tmp_path / "uniform" / "result.json"
+    _write_result(
+        path,
+        method="uniform_verified::canonical_saasbo_every_iteration",
+        seed=80,
+    )
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["information_contract"].pop("offline_source_calls")
+    payload["result"]["source_calls"] = 384
+    payload["result"].pop("algorithm_fidelity")
+    payload["result"].pop("saas_nuts_schedule")
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    registry = {
+        "registry_id": "uniform",
+        "tracks": [{
+            "track_id": "uniform",
+            "result_root": "uniform",
+            "expected_method_identities": [
+                "uniform_verified::canonical_saasbo_every_iteration",
+            ],
+            "expected_domains": ["QueueResourceControl"],
+            "expected_seeds": [80],
+            "required_optimization_calls": 397,
+        }],
+    }
+    audit = build_audit(registry, root=tmp_path)
+    assert audit["status"] == "pass"
+    record = audit["records"][0]
+    assert record["source_calls"] == 384
+    assert record["optimization_calls_excluding_verification"] == 397
+
+    registry["tracks"][0]["required_optimization_calls"] = 398
+    failed = build_audit(registry, root=tmp_path)
+    assert failed["status"] == "incomplete_or_failed"
+    assert failed["track_audits"][0]["failures"] == [{
+        "kind": "optimization_budget_mismatch",
+        "count": 1,
+    }]
