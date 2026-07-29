@@ -49,4 +49,8 @@ def test_final_paper_bridge_is_final_contract_and_gpu_sharded(tmp_path):
                for spec in runs)
     assert all("--terminal-objective-incumbent-guard" in spec["cmd"]
                for spec in runs)
+    assert all(
+        "--no-terminal-safe-interior-require-provider" in spec["cmd"]
+        for spec in runs
+    )
     assert all("checkpoints" in spec["stage_excludes"] for spec in specs)

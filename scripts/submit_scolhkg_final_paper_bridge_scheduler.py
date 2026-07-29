@@ -43,6 +43,7 @@ def _terminal_flags():
         "--terminal-objective-comparison-budget", "8",
         "--terminal-objective-comparison-delta", str(0.05 / 3.0),
         "--terminal-safe-interior-probability-slack", "0.05",
+        "--no-terminal-safe-interior-require-provider",
     ]
 
 
@@ -238,7 +239,8 @@ def main():
             "target_domains": list(TARGETS),
             "target_search_calls": int(args.N),
             "backend": "canonical_saasbo_every_iteration",
-            "verifier": "v69",
+            "verifier": "v69_no_provider_legacy_bridge",
+            "cumulative_risk_provider_required": False,
             "target_oracle_used_for_selection": False,
             "metric_bridge": (
                 "new scalarized regret; legacy HV/IGD/CVR context only"),

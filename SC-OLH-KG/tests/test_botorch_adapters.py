@@ -294,6 +294,40 @@ class BoTorchAdapterTests(unittest.TestCase):
         self.assertEqual(
             baseline._saas_discrete_candidate_fallback_count, 1)
 
+    def test_saas_acquisition_initialization_chunks_exactly_in_high_dimension(
+        self,
+    ):
+        problem = FactorShockStatePolicyRZDT1(d=10000)
+        baseline = BoTorchBaseline(
+            problem,
+            BoTorchBaselineConfig(
+                N=3,
+                n0=2,
+                seed=23,
+                method="botorch_saasbo",
+                raw_samples=8,
+                num_restarts=2,
+                maxiter=10,
+                saas_acquisition_init_element_budget=65536,
+            ),
+        )
+        candidate = torch.full(
+            (1, problem.d),
+            0.5,
+            dtype=torch.double,
+        )
+        with patch.object(
+            adapters,
+            "optimize_acqf",
+            return_value=(candidate, torch.zeros(1)),
+        ) as optimize:
+            baseline._optimize_saas_acquisition(
+                lambda value: value.sum(dim=(-1, -2)))
+
+        options = optimize.call_args.kwargs["options"]
+        self.assertEqual(options["init_batch_limit"], 6)
+        self.assertEqual(options["batch_limit"], 5)
+
     def test_saas_doubling_refit_conditions_on_each_new_observation(self):
         config = BoTorchBaselineConfig(
             N=5,

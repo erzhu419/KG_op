@@ -282,6 +282,7 @@ class BoTorchBaselineConfig:
     saas_refit_interval: int = 16
     saas_refit_growth_factor: float = 2.0
     saas_refit_max_history: int = 0
+    saas_acquisition_init_element_budget: int = 65536
     torch_deterministic: bool = False
 
 
@@ -1149,6 +1150,15 @@ class BoTorchBaseline:
         ])
 
     def _optimize_saas_acquisition(self, acqf):
+        dimension = max(int(self.problem.d), 1)
+        init_batch_limit = max(
+            1,
+            min(
+                64,
+                int(self.config.saas_acquisition_init_element_budget)
+                // dimension,
+            ),
+        )
         try:
             with self._deterministic_torch_stage("saas_acquisition_optimize"):
                 candidate, _ = optimize_acqf(
@@ -1160,7 +1170,7 @@ class BoTorchBaseline:
                     options={
                         "maxiter": int(self.config.maxiter),
                         "batch_limit": 5,
-                        "init_batch_limit": 64,
+                        "init_batch_limit": init_batch_limit,
                     },
                     timeout_sec=self.config.timeout_sec,
                 )
@@ -1813,6 +1823,23 @@ class BoTorchBaseline:
                 self._saas_condition_last_error),
             "saas_discrete_candidate_fallback_count": int(
                 self._saas_discrete_candidate_fallback_count),
+            "saas_acquisition_batching": {
+                "kind": "dimension_aware_exact_chunking_v1",
+                "raw_samples": int(self.config.raw_samples),
+                "init_element_budget": int(
+                    self.config.saas_acquisition_init_element_budget),
+                "init_batch_limit": int(max(
+                    1,
+                    min(
+                        64,
+                        int(
+                            self.config
+                            .saas_acquisition_init_element_budget
+                        ) // max(int(self.problem.d), 1),
+                    ),
+                )),
+                "changes_candidate_objective": False,
+            },
             "saas_resume_rebuild_history_size": int(
                 self._saas_resume_rebuild_history_size),
             "initial_design": str(self._initial_design_source),
