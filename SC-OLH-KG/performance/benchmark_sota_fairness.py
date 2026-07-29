@@ -9,6 +9,8 @@ from pathlib import Path
 import sys
 import time
 
+import numpy as np
+
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -17,6 +19,7 @@ from baselines.botorch_adapters import (  # noqa: E402
     BoTorchBaseline,
     BoTorchBaselineConfig,
 )
+from baselines.transfer_archive import FrozenTransferArchive  # noqa: E402
 from core.terminal_verification import (  # noqa: E402
     freeze_objective_incumbent_shortlist,
     parse_verification_candidate_budgets,
@@ -33,6 +36,10 @@ from performance.benchmark_lodo_meta_prior import (  # noqa: E402
     train_meta_prior,
 )
 from performance.run_lodo_manifest_shard import load_config  # noqa: E402
+from variance.source_archive_hvd import (  # noqa: E402
+    FrozenSourceArchiveAleatoricHead,
+    SourceArchiveHVDConfig,
+)
 
 
 PROTOCOLS = {
@@ -45,6 +52,11 @@ PROTOCOLS = {
         "uses_archive": True,
         "target_budget": 13,
         "archive_access": "warm_start_only",
+    },
+    "shared_archive_hvd_n13": {
+        "uses_archive": True,
+        "target_budget": 13,
+        "archive_access": "warm_start_plus_source_aleatoric_head",
     },
     "target_cost_matched_n397": {
         "uses_archive": False,
@@ -87,6 +99,59 @@ def _fingerprint(value):
         json_safe(value), sort_keys=True, separators=(",", ":")
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def post_run_aleatoric_audit(problem, head, *, seed, audit_size=256):
+    """Evaluate variance calibration only after search and verification end."""
+
+    if head is None or not hasattr(problem, "true_sigma"):
+        return {
+            "status": "unavailable",
+            "used_for_search_or_selection": False,
+        }
+    points = common_sobol_integer_design(
+        problem,
+        max(8, int(audit_size)),
+        int(seed) + 9041081,
+    )
+    predicted = np.asarray([
+        head.predict_variance(point) for point in points
+    ], dtype=float)
+    upper = np.asarray([
+        head.predict_certification_variance(point) for point in points
+    ], dtype=float)
+    truth = np.asarray([
+        max(float(problem.true_sigma(point)[1]) ** 2, 1e-14)
+        for point in points
+    ], dtype=float)
+    log_error = np.log(np.maximum(predicted, 1e-14)) - np.log(truth)
+    centered_prediction = predicted - float(np.mean(predicted))
+    centered_truth = truth - float(np.mean(truth))
+    denominator = float(np.sqrt(
+        np.sum(centered_prediction ** 2)
+        * np.sum(centered_truth ** 2)
+    ))
+    correlation = (
+        0.0
+        if denominator <= 1e-14
+        else float(np.sum(
+            centered_prediction * centered_truth) / denominator)
+    )
+    return {
+        "status": "ok",
+        "audit_size": int(len(points)),
+        "audit_seed": int(seed) + 9041081,
+        "used_for_search_or_selection": False,
+        "target_oracle_used_post_run_only": True,
+        "log_variance_rmse": float(np.sqrt(np.mean(log_error ** 2))),
+        "variance_rmse": float(np.sqrt(np.mean(
+            (predicted - truth) ** 2))),
+        "variance_shape_correlation": correlation,
+        "upper_coverage": float(np.mean(truth <= upper)),
+        "mean_predicted_variance": float(np.mean(predicted)),
+        "mean_upper_variance": float(np.mean(upper)),
+        "mean_true_variance": float(np.mean(truth)),
+    }
 
 
 def oracle_free_lodo_config(manifest):
@@ -250,6 +315,11 @@ def run_one(args):
         "terminal_safe_interior_probability_slack": 0.05,
         "terminal_safe_interior_require_provider": True,
         "initial_design_file": "",
+        "source_archive_file": "",
+        "aleatoric_head_mode": "nominal",
+        "source_hvd_calibration_delta": 0.05,
+        "source_hvd_calibration_quantile": 0.95,
+        "aleatoric_audit_size": 256,
     }
     for name, value in terminal_defaults.items():
         if not hasattr(args, name):
@@ -269,6 +339,8 @@ def run_one(args):
     initial_points = None
     archive_diagnostics = None
     archive_fingerprint = None
+    source_archive = None
+    aleatoric_head = None
     offline_calls = 0
     common_sobol_override = bool(getattr(
         args, "common_sobol_initial_design", False))
@@ -314,6 +386,49 @@ def run_one(args):
             archive_diagnostics = prior.diagnostics()
             archive_fingerprint = _fingerprint(archive_diagnostics)
         offline_calls = source_archive_cost(lodo_config, args.heldout)
+    aleatoric_head_mode = str(
+        args.aleatoric_head_mode).strip().lower()
+    if aleatoric_head_mode != "nominal":
+        if args.protocol != "shared_archive_hvd_n13":
+            raise ValueError(
+                "source HVD heads require shared_archive_hvd_n13")
+        if not args.source_archive_file:
+            raise ValueError(
+                "source HVD heads require --source-archive-file")
+        source_archive = FrozenTransferArchive.load(
+            args.source_archive_file)
+        if int(source_archive.simulator_calls) != int(offline_calls):
+            raise ValueError(
+                "declared and materialized source simulator costs disagree")
+        expected_source_domains = {
+            name.strip()
+            for name in str(lodo_config["domains"]).split(",")
+            if name.strip() and name.strip() != str(args.heldout)
+        }
+        if set(source_archive.source_domains) != expected_source_domains:
+            raise ValueError(
+                "HVD source archive does not match the held-out LODO split")
+        if (
+            archive_fingerprint is not None
+            and source_archive.fingerprint != archive_fingerprint
+        ):
+            raise ValueError(
+                "HVD source archive and frozen proposal archive disagree")
+        archive_fingerprint = str(source_archive.fingerprint)
+        aleatoric_head = FrozenSourceArchiveAleatoricHead(
+            archive=source_archive,
+            target_problem=problem,
+            config=SourceArchiveHVDConfig(
+                mode=aleatoric_head_mode,
+                calibration_delta=float(
+                    args.source_hvd_calibration_delta),
+                calibration_quantile=float(
+                    args.source_hvd_calibration_quantile),
+            ),
+        )
+    elif args.protocol == "shared_archive_hvd_n13":
+        raise ValueError(
+            "shared_archive_hvd_n13 requires pooled or cumulative_factor")
     target_budget = int(protocol["target_budget"])
     if args.target_budget > 0:
         target_budget = int(args.target_budget)
@@ -333,7 +448,7 @@ def run_one(args):
         Path(args.checkpoint_dir)
         / args.protocol
         / args.heldout
-        / args.method
+        / f"{args.method}_{aleatoric_head_mode}"
         / f"seed{int(args.seed):04d}.pkl"
     )
     config = BoTorchBaselineConfig(
@@ -351,6 +466,7 @@ def run_one(args):
         num_restarts=args.num_restarts,
         maxiter=args.maxiter,
         timeout_sec=args.candidate_timeout_sec,
+        aleatoric_head_mode=aleatoric_head_mode,
         certification_beta=args.beta_g,
         saas_warmup_steps=args.saas_warmup_steps,
         saas_num_samples=args.saas_num_samples,
@@ -400,7 +516,8 @@ def run_one(args):
         "information_contract": {
             "uses_source_archive": bool(protocol["uses_archive"]),
             "source_archive_access": str(protocol["archive_access"]),
-            "full_source_observations_consumed_by_model": False,
+            "full_source_observations_consumed_by_model": bool(
+                aleatoric_head is not None),
             "warm_start_only_ablation": bool(
                 protocol["archive_access"] == "warm_start_only"),
             "source_archive_shared_across_target_seeds": True,
@@ -427,6 +544,14 @@ def run_one(args):
                     )
                 )
             ),
+            "aleatoric_head_mode": aleatoric_head_mode,
+            "aleatoric_head_contract": (
+                None
+                if aleatoric_head is None
+                else str(aleatoric_head.contract_id)
+            ),
+            "aleatoric_head_target_outcomes_used": False,
+            "aleatoric_head_target_oracle_used": False,
         },
         "source_archive_fingerprint": archive_fingerprint,
         "initial_points": (
@@ -439,7 +564,11 @@ def run_one(args):
         "source_archive_diagnostics": archive_diagnostics,
     }
     try:
-        optimizer = BoTorchBaseline(problem, config)
+        optimizer = BoTorchBaseline(
+            problem,
+            config,
+            aleatoric_head=aleatoric_head,
+        )
         result = optimizer.run(
             freeze_terminal_shortlist=bool(args.terminal_verification),
             terminal_probability_slack=float(
@@ -456,6 +585,12 @@ def run_one(args):
         )
         if args.terminal_verification:
             result = _apply_terminal_verification(optimizer, result, args)
+        result["post_run_aleatoric_audit"] = post_run_aleatoric_audit(
+            problem,
+            aleatoric_head,
+            seed=int(args.seed),
+            audit_size=int(args.aleatoric_audit_size),
+        )
         search_calls = int(result.get(
             "n_search_simulations", result["n_simulations"]))
         verification_calls = int(result.get(
@@ -537,6 +672,24 @@ def main():
             "byte-identical n0 points."
         ),
     )
+    parser.add_argument(
+        "--source-archive-file",
+        default="",
+        help=(
+            "Frozen replicated source archive used by a pooled or cumulative "
+            "aleatoric head. It must fingerprint-match the proposal archive."
+        ),
+    )
+    parser.add_argument(
+        "--aleatoric-head-mode",
+        choices=("nominal", "pooled", "cumulative_factor"),
+        default="nominal",
+    )
+    parser.add_argument(
+        "--source-hvd-calibration-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--source-hvd-calibration-quantile", type=float, default=0.95)
+    parser.add_argument("--aleatoric-audit-size", type=int, default=256)
     parser.add_argument(
         "--common-sobol-initial-design",
         action=argparse.BooleanOptionalAction,

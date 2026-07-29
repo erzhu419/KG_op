@@ -248,6 +248,7 @@ class BoTorchBaselineConfig:
     maxiter: int = 100
     timeout_sec: float | None = None
     nominal_sigma_scale: float = 1.0
+    aleatoric_head_mode: str = "nominal"
     certification_beta: float = 2.0
     ts_candidates: int = 0
     gp_noise_lower: float = 1e-6
@@ -344,7 +345,13 @@ class BoTorchBaseline:
 
     VALID_METHODS = {"botorch_turbo", "botorch_scbo", "botorch_saasbo"}
 
-    def __init__(self, problem, config: BoTorchBaselineConfig):
+    def __init__(
+        self,
+        problem,
+        config: BoTorchBaselineConfig,
+        *,
+        aleatoric_head=None,
+    ):
         method = _normalize_method(config.method)
         if method not in self.VALID_METHODS:
             raise ValueError(f"unknown BoTorch baseline method {config.method!r}")
@@ -357,6 +364,26 @@ class BoTorchBaseline:
         self.problem = problem
         self.config = config
         self.config.method = method
+        self.aleatoric_head = aleatoric_head
+        requested_head = str(
+            getattr(config, "aleatoric_head_mode", "nominal")
+        ).strip().lower()
+        if requested_head == "nominal":
+            if aleatoric_head is not None:
+                raise ValueError(
+                    "nominal aleatoric mode cannot receive an external head")
+        else:
+            if aleatoric_head is None:
+                raise ValueError(
+                    f"aleatoric_head_mode={requested_head!r} requires a head")
+            actual_mode = str(getattr(
+                getattr(aleatoric_head, "config", None),
+                "mode",
+                requested_head,
+            )).strip().lower()
+            if actual_mode != requested_head:
+                raise ValueError(
+                    "configured and supplied aleatoric head modes disagree")
         requested_device = str(config.torch_device or "cpu").strip().lower()
         if requested_device == "auto":
             requested_device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -499,6 +526,13 @@ class BoTorchBaseline:
             "dimension": int(self.problem.d),
             "n0": int(self.config.n0),
         }
+        if self.aleatoric_head is not None:
+            signature.update({
+                "aleatoric_head_mode": str(
+                    getattr(self.config, "aleatoric_head_mode", "nominal")),
+                "aleatoric_head_contract": str(
+                    self.aleatoric_head.contract_id),
+            })
         if bool(getattr(self.config, "torch_deterministic", False)):
             signature["torch_deterministic"] = True
         return signature
@@ -590,17 +624,32 @@ class BoTorchBaseline:
             failure_tolerance=max(1, failure_tolerance),
         )
 
-    def _observed_chance_margin(self, y):
+    def _aleatoric_certification_variance(self, x):
+        if self.aleatoric_head is not None:
+            return float(max(
+                self.aleatoric_head.predict_certification_variance(x),
+                1e-14,
+            ))
         sigma = float(getattr(self.problem, "sigma_level", 0.04))
+        return float(max(
+            (
+                float(self.config.nominal_sigma_scale)
+                * sigma
+            ) ** 2,
+            1e-14,
+        ))
+
+    def _observed_chance_margin(self, x, y):
         z = norm.ppf(1.0 - float(self.problem.alpha))
         return float(
             y[1]
-            + z * float(self.config.nominal_sigma_scale) * sigma
+            + z * math.sqrt(
+                self._aleatoric_certification_variance(x))
             - float(self.problem.tau)
         )
 
-    def _score_observation(self, y):
-        margin = self._observed_chance_margin(y)
+    def _score_observation(self, x, y):
+        margin = self._observed_chance_margin(x, y)
         if margin <= 0.0:
             return (0, float(y[0]), margin)
         return (1, margin, float(y[0]))
@@ -680,7 +729,7 @@ class BoTorchBaseline:
         Y = np.asarray([y for _, y in rows], dtype=float)
         obj = -Y[:, [0]]
         con = np.asarray([
-            [self._observed_chance_margin(y)] for y in Y
+            [self._observed_chance_margin(x, y)] for x, y in rows
         ], dtype=float)
         return (
             torch.as_tensor(X, dtype=torch.double, device=self._torch_device),
@@ -1259,12 +1308,12 @@ class BoTorchBaseline:
             return self._handle_candidate_error(exc)
         raise AssertionError(self.config.method)
 
-    def _update_tr_state(self, y):
+    def _update_tr_state(self, x, y):
         if self.config.method == "botorch_turbo":
             self._tr.update_turbo(-float(y[0]))
         elif self.config.method == "botorch_scbo":
             self._tr.update_scbo(
-                -float(y[0]), self._observed_chance_margin(y))
+                -float(y[0]), self._observed_chance_margin(x, y))
 
     def _restart_if_needed(self, remaining_budget):
         if self.config.method == "botorch_saasbo" or not self._tr.restart_triggered:
@@ -1331,7 +1380,17 @@ class BoTorchBaseline:
             "posterior_beta_g": float(self.config.certification_beta),
             "n_posterior_feasible": int(np.sum(feasible)),
             "posterior_certificate_kind": (
-                "gp_latent_ucb_plus_nominal_aleatoric_shift"),
+                "gp_latent_ucb_plus_"
+                + (
+                    "nominal_aleatoric_shift"
+                    if self.aleatoric_head is None
+                    else "source_calibrated_hvd_aleatoric_shift"
+                )
+            ),
+            "aleatoric_head_mode": str(
+                getattr(self.config, "aleatoric_head_mode", "nominal")),
+            "aleatoric_certification_variance": float(
+                self._aleatoric_certification_variance(unique[index])),
             "recommendation_rule": rule,
         }
 
@@ -1675,7 +1734,7 @@ class BoTorchBaseline:
             else:
                 x = self._next_candidate()
                 y = self._simulate(x)
-                self._update_tr_state(y)
+                self._update_tr_state(x, y)
                 self._save_checkpoint()
             self._emit_progress(t_start)
         x_best, posterior = self._posterior_recommendation()
@@ -1747,6 +1806,18 @@ class BoTorchBaseline:
             "saas_resume_rebuild_history_size": int(
                 self._saas_resume_rebuild_history_size),
             "initial_design": str(self._initial_design_source),
+            "aleatoric_head_mode": str(
+                getattr(self.config, "aleatoric_head_mode", "nominal")),
+            "aleatoric_head": (
+                {
+                    "status": "nominal",
+                    "target_outcomes_used": False,
+                    "target_oracle_used": False,
+                    "terminal_verifier_labels_used": False,
+                }
+                if self.aleatoric_head is None
+                else self.aleatoric_head.diagnostics()
+            ),
             "ts_candidates": int(
                 self.config.ts_candidates
                 if int(self.config.ts_candidates) > 0

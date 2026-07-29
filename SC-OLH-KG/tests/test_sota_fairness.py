@@ -8,6 +8,7 @@ from core.designs import (
 )
 from performance.benchmark_sota_fairness import (
     oracle_free_lodo_config,
+    post_run_aleatoric_audit,
     run_one,
     source_archive_cost,
 )
@@ -52,6 +53,28 @@ def test_oracle_free_source_archive_cost_is_384():
     assert source_archive_cost(config, "QueueResourceControl") == 384
     assert config["meta_source_observation_mode"] == "replicated"
     assert config["meta_source_observation_replicates"] == 3
+
+
+def test_post_run_aleatoric_audit_is_explicitly_nonadaptive():
+    problem = build_scalarized_problem(
+        "QueueResourceControl", 8, 100, 0.04, 0.05, (0.5, 0.5))
+
+    class _Head:
+        @staticmethod
+        def predict_variance(point):
+            return float(problem.true_sigma(point)[1] ** 2)
+
+        @staticmethod
+        def predict_certification_variance(point):
+            return float(problem.true_sigma(point)[1] ** 2)
+
+    audit = post_run_aleatoric_audit(
+        problem, _Head(), seed=3, audit_size=16)
+    assert audit["status"] == "ok"
+    assert audit["used_for_search_or_selection"] is False
+    assert audit["target_oracle_used_post_run_only"] is True
+    assert audit["log_variance_rmse"] < 1e-12
+    assert audit["upper_coverage"] == 1.0
 
 
 def test_target_only_and_archive_shared_protocols_have_auditable_designs(tmp_path):

@@ -611,6 +611,58 @@ class OrthogonalHVD:
             self.replication_dof[i][x_tuple] = 1.0
         self._fit_output(i, problem)
 
+    def fit_from_variances(
+        self,
+        X,
+        variances,
+        output_index=0,
+        problem=None,
+        replicate_counts=None,
+        *,
+        replace=False,
+    ):
+        """Fit directly from independent within-policy sample variances.
+
+        This is the source-archive entry point for cumulative HVD.  Unlike
+        ``fit_from_residuals``, every row is known to come from repeated
+        simulator evaluations, so its chi-square degrees of freedom are
+        retained for the certification tail guard.
+        """
+
+        self._last_problem = problem or self._last_problem
+        i = int(output_index)
+        rows = list(X)
+        values = np.asarray(variances, dtype=float).reshape(-1)
+        if len(rows) != len(values):
+            raise ValueError("X and variances must have the same length")
+        if replicate_counts is None:
+            counts = np.full(len(rows), 2, dtype=int)
+        else:
+            counts = np.asarray(replicate_counts, dtype=int).reshape(-1)
+            if len(counts) != len(rows):
+                raise ValueError(
+                    "replicate_counts and variances must have the same length")
+            if np.any(counts < 2):
+                raise ValueError("sample variances require at least 2 replicates")
+        if not np.all(np.isfinite(values)) or np.any(values < 0.0):
+            raise ValueError("variances must be finite and nonnegative")
+        if replace:
+            self.records[i] = []
+            self.replicated_keys[i] = set()
+            self.source_prior_pseudo_keys[i] = set()
+            self.prequential_upper_records[i] = {}
+            self.replication_dof[i] = {}
+        for x, variance, count in zip(rows, values, counts):
+            x_tuple = tuple(int(v) for v in np.asarray(x).reshape(-1))
+            self.records[i].append((
+                x_tuple,
+                max(float(variance), self.floor),
+            ))
+            self.replicated_keys[i].add(x_tuple)
+            self.replication_dof[i][x_tuple] = float(int(count) - 1)
+        self._fit_output(i, problem)
+        return self.diagnostics()
+
     def _source_prior_singleton_variance(self, i, x, problem=None):
         """Predict singleton variance without reading its response residual.
 

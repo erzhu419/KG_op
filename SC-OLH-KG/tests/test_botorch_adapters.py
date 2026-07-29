@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 import numpy as np
 import torch
+from scipy.stats import norm
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,6 +37,43 @@ from problems.single_objective import ScalarizedProblem  # noqa: E402
 class BoTorchAdapterTests(unittest.TestCase):
     def _problem(self):
         return ScalarizedProblem(StatePolicyRZDT1(d=5, L=100, sigma=0.04))
+
+    def test_external_aleatoric_head_changes_only_pointwise_margin_shift(self):
+        class _Config:
+            mode = "cumulative_factor"
+
+        class _Head:
+            config = _Config()
+            contract_id = "unit-head"
+
+            @staticmethod
+            def predict_certification_variance(x):
+                return 0.01 if int(x[0]) == 0 else 0.04
+
+            @staticmethod
+            def diagnostics():
+                return {"status": "frozen"}
+
+        config = BoTorchBaselineConfig(
+            N=4,
+            n0=4,
+            seed=5,
+            method="botorch_scbo",
+            aleatoric_head_mode="cumulative_factor",
+        )
+        optimizer = BoTorchBaseline(
+            self._problem(), config, aleatoric_head=_Head())
+        observation = np.array([1.0, -0.5])
+        low = optimizer._observed_chance_margin(
+            np.zeros(5, dtype=int), observation)
+        high = optimizer._observed_chance_margin(
+            np.ones(5, dtype=int), observation)
+        expected = norm.ppf(1.0 - optimizer.problem.alpha) * (0.2 - 0.1)
+        self.assertAlmostEqual(high - low, expected)
+        self.assertEqual(
+            optimizer._checkpoint_signature()["aleatoric_head_contract"],
+            "unit-head",
+        )
 
     def test_turbo_and_scbo_run_real_botorch_path(self):
         initial_designs = []
