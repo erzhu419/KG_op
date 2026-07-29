@@ -89,6 +89,11 @@ mathlib and its cache; later builds should be fast.
   uniform active-HVD event used by the finite-sample oracle inequality.
 - `SCOLHKG/Real/TransferGeneralization.lean`: source-task PAC-Bayes target-risk
   bound with an explicit held-out-domain discrepancy term.
+- `SCOLHKG/Real/ProposalCoverage.lean`: composes the source-to-target
+  PAC-Bayes miss-risk bound, effective structural dimension, and IID proposal
+  draws into the explicit `1-(1-p_lower)^n0` feasible-basin hit bound.
+- `SCOLHKG/Measure/ProposalCoverage.lean`: proves the exact finite-product
+  probability of missing a measurable feasible set in all IID proposal draws.
 - `SCOLHKG/Real/MeanRiskCoordinateSeparation.lean`: formal separation of the
   source-learned constraint-mean coordinate `eta` from cumulative-risk
   `psi=(A,N)`, plus joint-margin invariance and inherited certificate
@@ -823,6 +828,14 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 160. Conditional on independent two-head confirmation, the selected V58 action
      cannot increase either posterior Bayes risk or certificate deficit
      relative to the literal V51 fallback.
+161. A finite-task PAC-Bayes source miss-risk bound with explicit
+     source-to-target discrepancy and effective structural dimension yields a
+     conservative held-out feasible-mass lower bound.
+162. Under the finite IID product proposal law, `n0` frozen draws hit the
+     feasible basin with probability at least `1-(1-p_lower)^n0`.
+163. The backend-independent paper theorem composes source-label invariance,
+     proposal coverage, the observable coordinate quotient, cumulative HVD,
+     and conservative terminal certification.
 
 Remaining work is empirical/binding and assumption validation:
 

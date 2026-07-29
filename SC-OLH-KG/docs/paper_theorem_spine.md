@@ -54,32 +54,39 @@ claims only if their independently retrained rows show an incremental effect.
 
 1. **Source invariance.** A source-only proposal is unchanged under every
    change of held-out target labels.
-2. **Coordinate quotient.** Policies sharing both `eta` and `psi` have the
+2. **Source-to-target proposal coverage.** A finite-task PAC-Bayes miss-risk
+   bound, with explicit domain discrepancy and effective structural dimension,
+   yields a held-out feasible-mass lower bound `p_lower`.  For `n0`
+   independent frozen proposal draws, the probability of at least one
+   feasible initial policy is at least `1-(1-p_lower)^n0`.
+3. **Coordinate quotient.** Policies sharing both `eta` and `psi` have the
    same modeled mean, epistemic variance, cumulative certification variance,
    and chance margin. Complexity is therefore tied to the observable
    coordinate rather than nominal policy dimension under A2.
-3. **Cumulative HVD decomposition.** The total risk separates exactly into
+4. **Cumulative HVD decomposition.** The total risk separates exactly into
    floor, independent exposure, PSD shared shock, and linear residual terms;
    low-rank truncation error is the nonnegative omitted risk tail.
-4. **Certificate soundness.** On A4,
+5. **Certificate soundness.** On A4,
    `m_g + sqrt(beta_g)s_g + z sqrt(v_C_plus) <= tau` implies true chance
    feasibility. Bayes-ranking variance cannot relax the certificate.
-5. **Approximate one-step Bayes optimality.** The selected evaluate-or-
+6. **Approximate one-step Bayes optimality.** The selected evaluate-or-
    replicate action is within `epsilon_shortlist + 2 eta_MC` of every action
    in the declared finite audit pool.
-6. **Finite-budget accounting.** One-step posterior value reductions telescope
+7. **Finite-budget accounting.** One-step posterior value reductions telescope
    over the charged target budget, with the finite-action errors entering
    additively.
-7. **Safe regret.** A certified terminal action with objective error `epsilon`
+8. **Safe regret.** A certified terminal action with objective error `epsilon`
    is truly feasible and has safe simple regret at most `epsilon` on the joint
    confidence event.
 
 The umbrella Lean theorem is
-`SCOLHKG.Real.paper_mainline_finite_closure` in
+`SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate` in
 `proof/SCOLHKG/Real/PaperMainline.lean`. It composes source noninterference,
-cumulative HVD, coordinate quotienting, finite-action VOI, and terminal
-certification. The supporting probability, estimation, information-gain, and
-safe-regret results remain in their specialized files.
+effective-dimension proposal coverage, cumulative HVD, coordinate quotienting,
+and terminal certification without assuming a particular online backend.
+`paper_mainline_finite_closure` remains the separate evaluate-or-replicate VOI
+ablation theorem. The supporting probability, estimation, information-gain,
+and safe-regret results remain in their specialized files.
 
 ## Empirical obligations
 
@@ -87,6 +94,8 @@ The theorem package is conditionally complete, not an unconditional statement
 about every simulator. The paper must still measure:
 
 - source-only calibration of the PAC-Bayes/exponential-moment slack;
+- source-only inner-LODO calibration of the domain-discrepancy term entering
+  `p_lower`;
 - held-out sufficiency of `eta` and `psi`;
 - certificate coverage as well as false certification;
 - `epsilon_shortlist` and `eta_MC` sensitivity;

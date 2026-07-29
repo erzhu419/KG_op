@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "status": "method_identity_and_proposal_theory_frozen_hvd_gate_pending",
+  "contract_id": "or_transfer_frontend_saas_v1",
+  "primary_claim": "A source-only, target-label-invariant structural proposal raises heldout feasible-basin coverage in a dimension-equivariant policy coordinate.",
+  "novel_frontend": {
+    "contract_id": "lodo_low_frequency_risk_objective_atlas_v1",
+    "source_training": "leave-one-domain-out",
+    "structural_prior_profile": "low_frequency_only",
+    "proposal_mode": "risk_objective_atlas",
+    "source_domains_per_heldout": 2,
+    "source_profiles_per_domain": 64,
+    "replications_per_profile": 3,
+    "source_simulator_calls": 384,
+    "frozen_before_target_observations": true,
+    "target_labels_used": false,
+    "source_oracle_used": false,
+    "target_oracle_used": false
+  },
+  "online_backend": {
+    "contract_id": "canonical_botorch_saasbo_every_iteration_v1",
+    "implementation": "BoTorch SaasFullyBayesianSingleTaskGP",
+    "refit_schedule": "every_iteration",
+    "role": "replaceable backend rather than a novelty claim"
+  },
+  "terminal_verifier": {
+    "contract_id": "v69_independent_three_policy_objective_guard_v1",
+    "candidate_budgets": [
+      80,
+      128,
+      128
+    ],
+    "familywise_delta": 0.05,
+    "objective_incumbent_guard": true,
+    "objective_comparison_replications_per_policy": 8,
+    "objective_comparison_delta": 0.016666666666666666,
+    "verification_updates_optimizer": false
+  },
+  "primary_target_protocol": {
+    "n0": 10,
+    "target_search_calls": 13,
+    "source_search_and_verification_calls_reported_separately": true
+  },
+  "target_information_contract": {
+    "track": "descriptor_conditional_lodo",
+    "allowed": [
+      "heldout task-family identifier",
+      "policy dimension and integer bounds",
+      "policy/state exposure schema without target outcomes",
+      "simulator input and output schema"
+    ],
+    "forbidden": [
+      "target outcomes before the charged target stage",
+      "target oracle objective, optimizer, chance margin, or feasibility",
+      "terminal verification responses during search or shortlist construction"
+    ]
+  },
+  "claim_boundaries": {
+    "kg": "backend ablation only",
+    "scolh_v69": "backend ablation only",
+    "thompson_sampling": "backend ablation only",
+    "saasbo": "standard backend, not claimed as novel",
+    "manifold_and_transformer": "background representation ablations",
+    "orthogonality_sparsity_additivity": "hypothesis-class ablations without current coequal causal support",
+    "cumulative_hvd": "risk-calibration contribution pending the registered causal optimization gate"
+  },
+  "registered_stress_tests": [
+    "domain-blind proposal without heldout task-family identifier",
+    "dimension holdout from d_source to a different d_target",
+    "same-source-archive and total-cost baseline comparisons"
+  ],
+  "proposal_coverage_theory": {
+    "contract_id": "source_target_proposal_coverage_v1",
+    "lean_theorem": "SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate",
+    "finite_product_bridge": "SCOLHKG.Measure.iid_at_least_one_hit_probability",
+    "bound": "P(at least one feasible proposal) >= 1-(1-p_lower)^n0",
+    "p_lower_inputs": [
+      "posterior-weighted source miss risk",
+      "source-to-target domain discrepancy",
+      "effective structural dimension",
+      "finite proposal-library complexity",
+      "source sample count",
+      "confidence level"
+    ],
+    "empirical_obligation": "Calibrate domain discrepancy and all numeric constants using source-only inner LODO folds."
+  },
+  "supporting_evidence": {
+    "source_informed_common_sobol_factorial_manifest": "v9_equal_terminal_verifier_crossdim_gate_v1.json",
+    "source_informed_feasible_and_certified": {
+      "proposal_only": "60/60",
+      "stacked_gp": "60/60",
+      "canonical_saasbo": "60/60"
+    },
+    "common_sobol_feasible_and_certified": {
+      "proposal_only": "0/60",
+      "stacked_gp": "1/60",
+      "canonical_saasbo": "0/60"
+    }
+  }
+}

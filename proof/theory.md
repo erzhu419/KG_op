@@ -14,6 +14,13 @@ true safe optimum while retaining every representation, HVD, transfer, pool,
 shortlist, MC, and sequential error; and `StatisticalClosure.lean` supplies the
 joint high-probability wrapper. `TransferGeneralization.lean` instantiates the
 transfer term by a source-task PAC-Bayes radius plus explicit domain shift.
+`ProposalCoverage.lean` now converts that miss-risk bound, an explicit
+effective-dimension complexity term, and the finite IID proposal law into the
+held-out feasible-basin guarantee
+`P(hit by n0) >= 1 - (1 - p_lower)^n0`.  The backend-independent umbrella
+theorem is
+`SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate`; the older
+evaluate-or-replicate umbrella remains a backend ablation theorem.
 
 This is a behavior-preserving theorem upgrade, not a retrospective relabeling
 of experiments. The exact version policy and unresolved empirical obligations

@@ -492,7 +492,7 @@ def main():
     parser.add_argument(
         "--terminal-profile",
         choices=("v7", "v9", "v69"),
-        default="v7",
+        default="v69",
         help=(
             "Shared terminal protocol for every backend. v9 freezes an "
             "objective challenger, strict primary, and safe support with "

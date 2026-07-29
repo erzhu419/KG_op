@@ -27,6 +27,12 @@ from performance.benchmark_quality import parse_weights  # noqa: E402
 from performance.benchmark_sota_fairness import (  # noqa: E402
     oracle_free_lodo_config,
 )
+from performance.paper_method_contract import (  # noqa: E402
+    ALLOWED_TARGET_DESCRIPTORS,
+    FORBIDDEN_TARGET_INFORMATION,
+    FRONTEND_CONTRACT_ID,
+    validate_frozen_proposal_payload,
+)
 from performance.structural_ablation import (  # noqa: E402
     STRUCTURAL_PRIOR_PROFILES,
     apply_structural_prior_profile,
@@ -152,6 +158,19 @@ def materialize_source_designs(
         "source_archive_oracle_aided": False,
         "target_labels_used": False,
         "target_oracle_used": False,
+        "paper_frontend_contract_id": (
+            FRONTEND_CONTRACT_ID
+            if (
+                proposal_mode == "risk_objective_atlas"
+                and str(structural_prior_profile) == "low_frequency_only"
+            )
+            else None
+        ),
+        "target_descriptor_contract": {
+            "track": "descriptor_conditional_lodo",
+            "allowed": list(ALLOWED_TARGET_DESCRIPTORS),
+            "forbidden": list(FORBIDDEN_TARGET_INFORMATION),
+        },
         "proposal_diagnostics": dict(getattr(
             prior,
             (
@@ -163,6 +182,10 @@ def materialize_source_designs(
         )),
         "designs": designs,
     }
+    if payload["paper_frontend_contract_id"] is not None:
+        payload["paper_frontend_contract_audit"] = (
+            validate_frozen_proposal_payload(payload, expected_n0=n0)
+        )
     _atomic_json(output, payload)
     return payload
 
