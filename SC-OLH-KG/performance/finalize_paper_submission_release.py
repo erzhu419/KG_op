@@ -37,6 +37,7 @@ def validate_release_inputs(
     registry,
     audit,
     statistics,
+    convergence,
     traffic,
     proposal_coverage,
     proof_receipt,
@@ -78,6 +79,90 @@ def validate_release_inputs(
         all(row.get("status") == "pass"
             for row in statistics.get("comparison_audits", ())),
         "one or more preregistered comparisons are incomplete",
+        failures,
+    )
+    final_track = next((
+        track for track in registry.get("tracks", ())
+        if track.get("track_id")
+        == "final_frontend_backend_factorial_d1000_n13"
+    ), {})
+    _require(
+        bool(final_track),
+        "experiment registry is missing the headline factorial track",
+        failures,
+    )
+    _require(
+        convergence.get("contract_id")
+        == "post_run_search_convergence_v1"
+        and convergence.get("status") == "complete",
+        "final search convergence artifact is incomplete",
+        failures,
+    )
+    _require(
+        convergence.get("track_id")
+        == "final_frontend_backend_factorial_d1000_n13",
+        "convergence artifact does not describe the headline track",
+        failures,
+    )
+    _require(
+        set(convergence.get("method_identities", ()))
+        == set(final_track.get("expected_method_identities", ())),
+        "convergence artifact does not contain every headline method",
+        failures,
+    )
+    final_records = [
+        row for row in audit.get("records", ())
+        if row.get("track_id")
+        == "final_frontend_backend_factorial_d1000_n13"
+    ]
+    expected_final_results = (
+        len(final_track.get("expected_method_identities", ()))
+        * len(final_track.get("expected_domains", ()))
+        * len(final_track.get("expected_dimensions", (1,)))
+        * len(final_track.get("expected_seeds", ()))
+    )
+    _require(
+        len(final_records) == expected_final_results
+        and expected_final_results > 0,
+        "compact audit does not contain the complete headline factorial",
+        failures,
+    )
+    _require(
+        int(convergence.get("result_count", 0)) == len(final_records)
+        and int(convergence.get("completed_trace_count", 0))
+        == len(final_records),
+        "convergence artifact does not contain every headline result",
+        failures,
+    )
+    _require(
+        int(convergence.get("trace_row_count", -1))
+        == int(convergence.get("expected_trace_row_count", -2)),
+        "convergence artifact does not cover every target search call",
+        failures,
+    )
+    _require(
+        int(convergence.get(
+            "terminal_validation_failure_count", -1)) == 0,
+        "convergence reconstruction failed a terminal truth check",
+        failures,
+    )
+    _require(
+        convergence.get("target_truth_used_post_run_only") is True
+        and convergence.get(
+            "target_truth_used_for_search_or_selection") is False
+        and convergence.get("verification_samples_included") is False
+        and convergence.get("policy_vectors_exported") is False,
+        "convergence artifact violates the post-run compact-data contract",
+        failures,
+    )
+    expected_result_receipt = hashlib.sha256(json.dumps(
+        sorted(str(row["result_sha256"]) for row in final_records),
+        separators=(",", ":"),
+    ).encode("utf-8")).hexdigest()
+    _require(
+        convergence.get("result_receipts_sha256")
+        == expected_result_receipt,
+        "convergence result receipts differ from the compact audit",
         failures,
     )
     _require(
@@ -252,6 +337,7 @@ def build_release(
     registry_path,
     audit_path,
     statistics_path,
+    convergence_path,
     traffic_path,
     proposal_coverage_path,
     proof_receipt_path,
@@ -261,6 +347,7 @@ def build_release(
     registry = _load(registry_path)
     audit = _load(audit_path)
     statistics = _load(statistics_path)
+    convergence = _load(convergence_path)
     traffic = _load(traffic_path)
     proposal_coverage = _load(proposal_coverage_path)
     proof_receipt = _load(proof_receipt_path)
@@ -269,6 +356,7 @@ def build_release(
         registry,
         audit,
         statistics,
+        convergence,
         traffic,
         proposal_coverage,
         proof_receipt,
@@ -281,6 +369,7 @@ def build_release(
         "experiment_registry": Path(registry_path),
         "compact_audit": Path(audit_path),
         "paired_statistics": Path(statistics_path),
+        "search_convergence": Path(convergence_path),
         "external_traffic_audit": Path(traffic_path),
         "proposal_coverage_audit": Path(proposal_coverage_path),
         "lean_proof_receipt": Path(proof_receipt_path),
@@ -292,9 +381,9 @@ def build_release(
         ).encode("utf-8")
     ).hexdigest()
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "status": "ready_for_manuscript_lock",
-        "release_contract_id": "or_submission_evidence_release_v1",
+        "release_contract_id": "or_submission_evidence_release_v2",
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "repository_commit": str(repository_commit),
         "headline_method_contract_id": FINAL_CONTRACT_ID,
@@ -343,6 +432,16 @@ def build_release(
                 proposal_coverage[
                     "unconditional_global_coverage_claim_allowed"]),
         },
+        "search_convergence": {
+            "contract_id": convergence["contract_id"],
+            "track_id": convergence["track_id"],
+            "result_count": int(convergence["result_count"]),
+            "trace_row_count": int(convergence["trace_row_count"]),
+            "target_truth_used_post_run_only": True,
+            "verification_samples_included": False,
+            "result_receipts_sha256": convergence[
+                "result_receipts_sha256"],
+        },
         "proof": {
             "lean_source_count": int(
                 proof_receipt["lean_source_count"]),
@@ -378,6 +477,7 @@ def main():
     parser.add_argument("--registry", required=True)
     parser.add_argument("--audit", required=True)
     parser.add_argument("--statistics", required=True)
+    parser.add_argument("--convergence", required=True)
     parser.add_argument("--traffic", required=True)
     parser.add_argument("--proposal-coverage", required=True)
     parser.add_argument("--proof-receipt", required=True)
@@ -394,6 +494,7 @@ def main():
         registry_path=args.registry,
         audit_path=args.audit,
         statistics_path=args.statistics,
+        convergence_path=args.convergence,
         traffic_path=args.traffic,
         proposal_coverage_path=args.proposal_coverage,
         proof_receipt_path=args.proof_receipt,

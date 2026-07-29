@@ -14,6 +14,17 @@ quality-first:
   `--max_wall_slowdown`.
 
 Faster wall time alone is not a valid algorithmic improvement.
+
+Final paper artifacts are fail-closed. `paper_result_audit.py` hashes the full
+target problem contract before pairing methods.
+`paper_convergence_extract.py` then reconstructs true-feasible incumbent
+curves from `result.json` only. It exports point fingerprints rather than
+policy vectors, excludes all terminal-verification samples from the search
+curve, and marks target truth as post-run diagnostics that were unavailable to
+the optimizer. `finalize_paper_submission_release.py` refuses to freeze a
+release unless every registered headline result has every charged search call,
+its terminal truth matches the registered problem contract, and the compact
+audit receipts agree byte-for-byte.
 SC feasibility is recorded by default, but is only a hard gate when
 `--require-sc-feasible` is passed because SC coupling is a separate improvement
 stage from the primary single-objective OLH-KG baseline.

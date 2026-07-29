@@ -21,7 +21,13 @@ def _fixtures(tmp_path):
     })
     registry = _write(tmp_path / "registry.json", {
         "registry_id": "registry",
-        "tracks": [{}],
+        "tracks": [{
+            "track_id": "final_frontend_backend_factorial_d1000_n13",
+            "expected_method_identities": ["headline"],
+            "expected_domains": ["Domain"],
+            "expected_dimensions": [1000],
+            "expected_seeds": [80],
+        }],
         "primary_comparisons": [{}],
     })
     import hashlib
@@ -50,6 +56,22 @@ def _fixtures(tmp_path):
                 "verifier_signature": "uniform",
                 "false_certificate": False,
             })
+    records.append({
+        "track_id": "final_frontend_backend_factorial_d1000_n13",
+        "path": str(result),
+        "result_sha256": result_hash,
+        "status": "ok",
+        "method_identity": "headline",
+        "domain": "Domain",
+        "target_dimension": 1000,
+        "seed": 80,
+        "source_calls": 384,
+        "target_search_calls": 13,
+        "target_verification_calls": 256,
+        "optimization_calls_excluding_verification": 397,
+        "verifier_signature": "uniform",
+        "false_certificate": False,
+    })
     audit = _write(tmp_path / "audit.json", {
         "registry_id": "registry",
         "status": "pass",
@@ -61,6 +83,30 @@ def _fixtures(tmp_path):
         "comparison_audits": [{"status": "pass"}],
         "holm_family": "family",
         "rows": [],
+    })
+    convergence_receipt = hashlib.sha256(json.dumps(
+        sorted(
+            record["result_sha256"] for record in records
+            if record["track_id"]
+            == "final_frontend_backend_factorial_d1000_n13"
+        ),
+        separators=(",", ":"),
+    ).encode("utf-8")).hexdigest()
+    convergence = _write(tmp_path / "convergence.json", {
+        "contract_id": "post_run_search_convergence_v1",
+        "status": "complete",
+        "track_id": "final_frontend_backend_factorial_d1000_n13",
+        "method_identities": ["headline"],
+        "result_count": 1,
+        "completed_trace_count": 1,
+        "trace_row_count": 13,
+        "expected_trace_row_count": 13,
+        "terminal_validation_failure_count": 0,
+        "target_truth_used_post_run_only": True,
+        "target_truth_used_for_search_or_selection": False,
+        "verification_samples_included": False,
+        "policy_vectors_exported": False,
+        "result_receipts_sha256": convergence_receipt,
     })
     traffic_rows = [{
         "certificate": "one_sided_clopper_pearson_bonferroni",
@@ -116,6 +162,7 @@ def _fixtures(tmp_path):
         registry,
         audit,
         statistics,
+        convergence,
         traffic,
         proposal_coverage,
         proof,
@@ -129,27 +176,29 @@ def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
         registry_path=paths[1],
         audit_path=paths[2],
         statistics_path=paths[3],
-        traffic_path=paths[4],
-        proposal_coverage_path=paths[5],
-        proof_receipt_path=paths[6],
+        convergence_path=paths[4],
+        traffic_path=paths[5],
+        proposal_coverage_path=paths[6],
+        proof_receipt_path=paths[7],
         repository_commit="commit",
     )
     assert release["status"] == "ready_for_manuscript_lock"
-    assert release["audited_result_count"] == 240
+    assert release["audited_result_count"] == 241
     assert release["failed_or_timeout_result_count"] == 0
     assert len(release["audited_result_receipt_sha256"]) == 64
 
-    traffic = json.loads(paths[4].read_text(encoding="utf-8"))
+    traffic = json.loads(paths[5].read_text(encoding="utf-8"))
     traffic["n_seeds"] = 5
-    paths[4].write_text(json.dumps(traffic), encoding="utf-8")
+    paths[5].write_text(json.dumps(traffic), encoding="utf-8")
     with pytest.raises(ValueError, match="fewer than 20"):
         build_release(
             method_contract_path=paths[0],
             registry_path=paths[1],
             audit_path=paths[2],
             statistics_path=paths[3],
-            traffic_path=paths[4],
-            proposal_coverage_path=paths[5],
-            proof_receipt_path=paths[6],
+            convergence_path=paths[4],
+            traffic_path=paths[5],
+            proposal_coverage_path=paths[6],
+            proof_receipt_path=paths[7],
             repository_commit="commit",
         )

@@ -118,6 +118,22 @@
       "proposal_only": "0/60",
       "stacked_gp": "1/60",
       "canonical_saasbo": "0/60"
+    },
+    "artifact_release_contract": {
+      "release_contract_id": "or_submission_evidence_release_v2",
+      "compact_result_format": "result.json only",
+      "runtime_checkpoints_or_model_weights_included": false,
+      "search_convergence_contract_id": "post_run_search_convergence_v1",
+      "search_convergence_excludes_verification_samples": true,
+      "search_convergence_exports_policy_vectors": false,
+      "search_convergence_truth_timing": "post_run_only",
+      "required_machine_checks": [
+        "every registered result cell is present exactly once",
+        "every paired comparison has an identical target problem fingerprint",
+        "every headline result contributes every target search call",
+        "terminal truth reconstructed from the problem contract matches the stored result",
+        "paired statistics, proof receipt, traffic holdout, and proposal coverage audits pass"
+      ]
     }
   }
 }
