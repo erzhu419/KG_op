@@ -94,6 +94,8 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
     assert all(spec["vram"] == 0 for spec in non_search)
     assert all(
         "--historical-anchor" not in spec["cmd"] for spec in search)
+    assert all("unit_seed008" in spec["cmd"] for spec in search)
+    assert all("unit_seed008" in spec["cmd"] for spec in oos)
     assert all("--R 100" in spec["cmd"] for spec in oos)
     assert all("--source-indexes 0,1,2" in spec["cmd"] for spec in oos)
     assert all(

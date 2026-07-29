@@ -116,7 +116,7 @@ def build_specs(args):
         int(args.seed_start),
         int(args.seed_start) + int(args.n_seeds),
     ):
-        partition = f"paper_final_external_v1_seed{seed:04d}"
+        partition = f"{args.run_id}_seed{seed:04d}"
         run_dir = (
             gpr_code / "results" / "ingolstadt21"
             / f"PaperFinal_SourceProposal_SAAS_{partition}_seed{seed}"
