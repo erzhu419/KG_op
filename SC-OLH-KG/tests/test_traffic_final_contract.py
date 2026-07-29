@@ -56,7 +56,7 @@ def test_traffic_audit_deploys_first_certified_frozen_rank():
     assert audit["verification_samples_used_to_reorder_shortlist"] is False
 
 
-def test_traffic_submitter_uses_cpu_nodes_and_keeps_checkpoints_remote(tmp_path):
+def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
     args = SimpleNamespace(
         deploy=tmp_path,
         run_id="unit",
@@ -77,14 +77,21 @@ def test_traffic_submitter_uses_cpu_nodes_and_keeps_checkpoints_remote(tmp_path)
         "node001", "node002", "node003",
         "node004", "node005", "node006",
     ]
-    assert all(spec["allowed_nodes"] == expected_nodes for spec in specs)
-    assert all(spec["vram"] == 0 for spec in specs)
+    expected_gpu_nodes = ["jtl110gpu", "jtl110gpu2", "node007"]
     assert all("jtl311linux" not in str(spec) for spec in specs)
     search = [spec for spec in specs if "/search/" in spec["signature"]]
     oos = [spec for spec in specs if "/oos/" in spec["signature"]]
+    non_search = [spec for spec in specs if spec not in search]
     assert len(search) == 2
     assert len(oos) == 2
-    assert all("--torch-device cpu" in spec["cmd"] for spec in search)
+    assert all(
+        spec["allowed_nodes"] == expected_gpu_nodes for spec in search)
+    assert all(spec["vram"] == 8192 for spec in search)
+    assert all(spec["project"] == "KG-SYNTH" for spec in search)
+    assert all("--torch-device cuda" in spec["cmd"] for spec in search)
+    assert all(
+        spec["allowed_nodes"] == expected_nodes for spec in non_search)
+    assert all(spec["vram"] == 0 for spec in non_search)
     assert all(
         "--historical-anchor" not in spec["cmd"] for spec in search)
     assert all("--R 100" in spec["cmd"] for spec in oos)

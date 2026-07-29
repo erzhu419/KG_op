@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "registry_id": "paper_submission_experiment_registry_v1",
+  "status": "runs_in_progress",
+  "tracks": [
+    {
+      "track_id": "final_frontend_backend_factorial_d1000_n13",
+      "result_roots": [
+        "paper_v9_equal_verifier_scolh_v65_cross_d50_d1000_n13_s80_99_final_v2",
+        "paper_v69_equal_verifier_backends_cross_d50_d1000_n13_s80_99_v1"
+      ],
+      "expected_method_identities": [
+        "scolh:v65_verification_aware_objective_challenger",
+        "frozen_crossdim_proposal_only",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code",
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "required_source_calls": 384,
+      "paired_equality_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "common_sobol_frontend_negative_control_d1000_n13",
+      "result_root": "paper_v69_common_sobol_backend_factorial_d1000_n13_s80_99_v1",
+      "expected_method_identities": [
+        "common_sobol_proposal_only",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code",
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "paired_equality_fields": [
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "final_archive_fair_transfer_matrix_d1000_n13",
+      "result_root": "paper_final_transfer_risk_atlas_v69_d50_d1000_n13_s80_99_v1",
+      "expected_method_identities": [
+        "safe_fpacoh_cbo:official_code_with_compatibility_shims",
+        "rgpe_cbo:official_transfergpbo_code",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code",
+        "mtgp_cbo:official_transfergpbo_code",
+        "fsbo_cbo:official_code_adapted_to_scalar_cbo",
+        "hyperbo_cbo:official_hyperbo_code_with_gfile_shim",
+        "metabo_cbo:official_neuralaf_ppo_fixed_archive_extension",
+        "malibo_cbo:official_metablor_core_adapted_to_cbo"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "required_source_calls": 384,
+      "required_search_calls": 13,
+      "paired_equality_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "track_id": "source_hvd_causal_gate_d1000_n13",
+      "result_root": "paper_source_hvd_saas_gate_d50_d1000_n13_s80_84_v1",
+      "expected_method_identities": [
+        "canonical_saasbo_every_iteration+hvd:pooled",
+        "canonical_saasbo_every_iteration+hvd:cumulative_factor"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [80, 81, 82, 83, 84],
+      "required_source_calls": 384,
+      "required_search_calls": 13,
+      "paired_equality_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "dimension_frontier_d200_d10000_n13",
+      "result_root": "paper_dimension_frontier_gate_d200_d10000_n13_s80_84_v1",
+      "expected_method_identities": [
+        "frozen_crossdim_proposal_only",
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [200, 10000],
+      "expected_seeds": [80, 81, 82, 83, 84],
+      "required_source_calls": 384,
+      "paired_equality_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "verifier_signature"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "target_only_total_cost_n397",
+      "result_root": "paper_certified_sota_d1000_n13_s80_99_v1",
+      "glob": "target_cost_matched_n397/**/result.json",
+      "expected_method_identities": [
+        "botorch_turbo:canonical_turbo1_ts",
+        "botorch_scbo:canonical_scbo_constrained_ts"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "required_source_calls": 0,
+      "required_search_calls": 397,
+      "exclude_methods": ["botorch_saasbo"],
+      "paired_equality_fields": ["verifier_signature"],
+      "disallowed_method_identities": [
+        "canonical_saasbo_every_iteration",
+        "saasbo_periodic_capped"
+      ]
+    },
+    {
+      "track_id": "target_only_periodic_capped_saas_n397",
+      "result_root": "paper_certified_saas_periodic_capped_exclusive_v5_d1000_n397_s80_99",
+      "expected_method_identities": ["saasbo_periodic_capped"],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "required_source_calls": 0,
+      "required_search_calls": 397,
+      "paired_equality_fields": ["verifier_signature"],
+      "disallowed_method_identities": [
+        "canonical_saasbo_every_iteration"
+      ]
+    },
+    {
+      "track_id": "legacy_related_family_bridge_d5_n13",
+      "result_root": "paper_final_legacy_bridge_d5_n13_s80_99_v1",
+      "expected_method_identities": [
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "PaperRZDT1",
+        "PaperRZDT2",
+        "PaperRZDT5_RR"
+      ],
+      "expected_dimensions": [5],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "required_source_calls": 384,
+      "required_search_calls": 13,
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    }
+  ],
+  "separate_non_gaussian_external_artifact": {
+    "run_id": "paper_final_external_traffic_s80_84_R100_v1",
+    "result": "paper_final_external_traffic_s80_84_R100_v1/traffic/external_traffic_audit.json",
+    "reason": "SUMO uses a familywise exact binomial fresh-seed verifier rather than the synthetic Gaussian verifier"
+  }
+}

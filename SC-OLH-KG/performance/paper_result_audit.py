@@ -1,0 +1,532 @@
+#!/usr/bin/env python3
+"""Build compact, budget-explicit audits from paper experiment artifacts."""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import math
+from pathlib import Path
+import statistics
+
+
+def _first(*values):
+    for value in values:
+        if value is not None:
+            return value
+    return None
+
+
+def _nested(mapping, *keys):
+    value = mapping
+    for key in keys:
+        if not isinstance(value, dict):
+            return None
+        value = value.get(key)
+    return value
+
+
+def _int_or_none(value):
+    return None if value is None else int(value)
+
+
+def _float_or_none(value):
+    if value is None:
+        return None
+    value = float(value)
+    return value if math.isfinite(value) else None
+
+
+def _saas_identity(result):
+    fidelity = str(result.get("algorithm_fidelity") or "")
+    schedule = result.get("saas_nuts_schedule") or {}
+    refit = str(schedule.get(
+        "hyperposterior_refit_schedule") or "")
+    if (
+        fidelity == "saas_fully_bayesian_nuts_constrained_qlogei"
+        and refit == "every_iteration"
+        and bool(schedule.get("posterior_conditions_on_every_observation"))
+    ):
+        return "canonical_saasbo_every_iteration"
+    if "periodic" in fidelity or refit not in {"", "every_iteration"}:
+        return "saasbo_periodic_capped"
+    return f"saasbo_unclassified:{fidelity or 'missing_fidelity'}"
+
+
+def _method_identity(payload, result):
+    method = str(_first(
+        result.get("method"),
+        payload.get("method"),
+        "unknown",
+    ))
+    if method == "botorch_saasbo":
+        identity = _saas_identity(result)
+        head_mode = str(_first(
+            _nested(payload, "information_contract", "aleatoric_head_mode"),
+            result.get("aleatoric_head_mode"),
+            "nominal",
+        ))
+        if head_mode != "nominal":
+            identity += f"+hvd:{head_mode}"
+        return identity
+    if method == "botorch_turbo":
+        return "botorch_turbo:canonical_turbo1_ts"
+    if method == "botorch_scbo":
+        return "botorch_scbo:canonical_scbo_constrained_ts"
+    implementation_contract = result.get("implementation_contract_id")
+    if method == "unknown" and implementation_contract:
+        return f"scolh:{implementation_contract}"
+    fidelity = str(_first(
+        result.get("implementation_fidelity"),
+        result.get("algorithm_fidelity"),
+        payload.get("implementation"),
+        "",
+    ))
+    return method if not fidelity else f"{method}:{fidelity}"
+
+
+def _verifier_signature(verification):
+    if not isinstance(verification, dict) or not verification:
+        return None
+    return json.dumps({
+        "method": verification.get("method"),
+        "protocol": verification.get("protocol"),
+        "familywise_delta": verification.get("familywise_delta"),
+        "candidate_budgets": verification.get(
+            "candidate_verification_budgets"),
+        "shortlist_mode": verification.get("shortlist_mode"),
+        "updates_optimizer": verification.get(
+            "posterior_updated_from_verification"),
+        "search_samples_reused": verification.get(
+            "search_samples_reused"),
+    }, sort_keys=True, separators=(",", ":"))
+
+
+def extract_result_record(path, *, track_id):
+    """Extract one compact row without copying histories or policy vectors."""
+
+    path = Path(path)
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    result = payload.get("result")
+    if not isinstance(result, dict):
+        row_payload = payload.get("rows")
+        if isinstance(row_payload, list) and len(row_payload) == 1:
+            result = row_payload[0]
+        else:
+            result = payload
+    info = payload.get("information_contract") or {}
+    comparison = _first(
+        payload.get("comparison_contract"),
+        result.get("comparison_contract"),
+        {},
+    )
+    source_info = result.get("source_information_contract") or {}
+    adaptation_info = result.get("source_target_adaptation_contract") or {}
+    target_info = result.get("target_information_contract") or {}
+    verification = result.get("terminal_verification") or {}
+    status = str(
+        payload.get("status")
+        or result.get("status")
+        or ("ok" if result is not payload else "unknown")
+    )
+
+    source_calls = _first(
+        info.get("offline_source_calls"),
+        comparison.get("source_simulator_calls"),
+        source_info.get("source_simulator_calls"),
+        adaptation_info.get("source_simulator_calls"),
+        0,
+    )
+    search_calls = _first(
+        result.get("n_search_simulations"),
+        info.get("target_search_calls"),
+        comparison.get("target_search_calls"),
+        target_info.get("target_search_calls"),
+    )
+    verification_calls = _first(
+        result.get("n_verification_simulations"),
+        info.get("target_verification_calls"),
+        comparison.get("target_verification_calls"),
+        target_info.get("target_verification_calls"),
+        0,
+    )
+    target_total = _first(
+        result.get("n_target_simulations_total"),
+        info.get("target_total_calls"),
+        comparison.get("target_total_calls"),
+        target_info.get("target_total_calls"),
+    )
+    if target_total is None and search_calls is not None:
+        target_total = int(search_calls) + int(verification_calls or 0)
+    source_plus_target = (
+        None
+        if target_total is None or source_calls is None
+        else int(source_calls) + int(target_total)
+    )
+    initial_fingerprint = _first(
+        payload.get("initial_points_fingerprint"),
+        payload.get("initial_design_fingerprint"),
+        result.get("initial_points_fingerprint"),
+        result.get("initial_design_fingerprint"),
+        adaptation_info.get("target_initial_design_fingerprint"),
+        comparison.get("target_initial_design_fingerprint"),
+        target_info.get("initial_design_fingerprint"),
+        result.get("target_design_fingerprint"),
+    )
+    archive_fingerprint = _first(
+        payload.get("source_archive_fingerprint"),
+        result.get("source_archive_fingerprint"),
+        comparison.get("source_archive_fingerprint"),
+        source_info.get("archive_fingerprint"),
+        adaptation_info.get("source_archive_fingerprint"),
+    )
+    true_feasible = result.get("true_feasible")
+    certified = verification.get("certified")
+    return {
+        "track_id": str(track_id),
+        "path": str(path),
+        "status": status,
+        "domain": str(_first(
+            payload.get("heldout"),
+            payload.get("heldout_target_domain"),
+            result.get("heldout_target_domain"),
+            result.get("problem"),
+            result.get("heldout"),
+            "unknown",
+        )),
+        "seed": _int_or_none(_first(
+            payload.get("seed"), result.get("seed"))),
+        "target_dimension": _int_or_none(_first(
+            info.get("target_dimension"),
+            comparison.get("target_dimension"),
+            target_info.get("dimension"),
+            result.get("proposal_target_dimension"),
+            result.get("d"),
+            payload.get("d"),
+        )),
+        "method": str(_first(
+            result.get("method"), payload.get("method"), "unknown")),
+        "method_identity": _method_identity(payload, result),
+        "implementation": _first(
+            payload.get("implementation"),
+            result.get("implementation"),
+        ),
+        "source_calls": _int_or_none(source_calls),
+        "target_search_calls": _int_or_none(search_calls),
+        "target_verification_calls": _int_or_none(verification_calls),
+        "target_total_calls": _int_or_none(target_total),
+        "source_plus_target_total_calls": _int_or_none(
+            source_plus_target),
+        "initial_design_fingerprint": initial_fingerprint,
+        "source_archive_fingerprint": archive_fingerprint,
+        "verifier_signature": _verifier_signature(verification),
+        "terminal_certified": (
+            None if certified is None else bool(certified)),
+        "true_feasible": (
+            None if true_feasible is None else bool(true_feasible)),
+        "false_certificate": bool(
+            certified is True and true_feasible is False),
+        "feasible_regret": _float_or_none(
+            _first(
+                result.get("feasible_regret"),
+                result.get("feasible_simple_regret"),
+                result.get("recommendation_true_best_feasible_regret"),
+            )),
+        "constraint_violation": _float_or_none(
+            result.get("constraint_violation")),
+        "failure_type": payload.get("failure_type"),
+        "failure_message": payload.get("failure_message"),
+    }
+
+
+def _median(values):
+    values = [value for value in values if value is not None]
+    return None if not values else float(statistics.median(values))
+
+
+def _mean(values):
+    values = [value for value in values if value is not None]
+    return None if not values else float(statistics.fmean(values))
+
+
+def summarize_records(records):
+    groups = {}
+    for row in records:
+        key = (row["track_id"], row["method_identity"], row["domain"])
+        groups.setdefault(key, []).append(row)
+    summaries = []
+    for (track_id, method, domain), rows in sorted(groups.items()):
+        ok = [row for row in rows if row["status"] == "ok"]
+        regret = [
+            row["feasible_regret"] for row in ok
+            if row["feasible_regret"] is not None
+        ]
+        summaries.append({
+            "track_id": track_id,
+            "method_identity": method,
+            "domain": domain,
+            "submitted_rows": len(rows),
+            "successful_rows": len(ok),
+            "failed_rows": len(rows) - len(ok),
+            "true_feasible_count": sum(
+                row["true_feasible"] is True for row in ok),
+            "certified_count": sum(
+                row["terminal_certified"] is True for row in ok),
+            "false_certificate_count": sum(
+                row["false_certificate"] for row in ok),
+            "median_feasible_regret": _median(regret),
+            "mean_feasible_regret": _mean(regret),
+            "mean_source_calls": _mean(
+                [row["source_calls"] for row in ok]),
+            "mean_target_search_calls": _mean(
+                [row["target_search_calls"] for row in ok]),
+            "mean_target_verification_calls": _mean(
+                [row["target_verification_calls"] for row in ok]),
+            "mean_target_total_calls": _mean(
+                [row["target_total_calls"] for row in ok]),
+            "mean_source_plus_target_total_calls": _mean([
+                row["source_plus_target_total_calls"] for row in ok
+            ]),
+        })
+    return summaries
+
+
+def audit_track(records, specification):
+    track_id = str(specification["track_id"])
+    rows = [row for row in records if row["track_id"] == track_id]
+    expected_methods = set(map(str, specification.get(
+        "expected_method_identities", ())))
+    observed_methods = {row["method_identity"] for row in rows}
+    expected_domains = set(map(str, specification.get(
+        "expected_domains", ())))
+    observed_domains = {row["domain"] for row in rows}
+    expected_seeds = set(map(int, specification.get(
+        "expected_seeds", ())))
+    expected_dimensions = set(map(int, specification.get(
+        "expected_dimensions", ())))
+    observed_dimensions = {
+        row["target_dimension"] for row in rows
+        if row["target_dimension"] is not None
+    }
+    failures = []
+    if expected_methods and observed_methods != expected_methods:
+        failures.append({
+            "kind": "method_identity_mismatch",
+            "expected": sorted(expected_methods),
+            "observed": sorted(observed_methods),
+        })
+    if expected_domains and observed_domains != expected_domains:
+        failures.append({
+            "kind": "domain_mismatch",
+            "expected": sorted(expected_domains),
+            "observed": sorted(observed_domains),
+        })
+    if expected_dimensions and observed_dimensions != expected_dimensions:
+        failures.append({
+            "kind": "target_dimension_mismatch",
+            "expected": sorted(expected_dimensions),
+            "observed": sorted(observed_dimensions),
+        })
+    cell_map = {}
+    for row in rows:
+        key = (
+            row["method_identity"],
+            row["domain"],
+            row["target_dimension"],
+            row["seed"],
+        )
+        cell_map.setdefault(key, []).append(row)
+    duplicates = [key for key, group in cell_map.items() if len(group) != 1]
+    if duplicates:
+        failures.append({
+            "kind": "duplicate_cells",
+            "count": len(duplicates),
+        })
+    if expected_methods and expected_domains and expected_seeds:
+        dimensions = expected_dimensions or observed_dimensions or {None}
+        expected_cells = {
+            (method, domain, dimension, seed)
+            for method in expected_methods
+            for domain in expected_domains
+            for dimension in dimensions
+            for seed in expected_seeds
+        }
+        missing = expected_cells - set(cell_map)
+        if missing:
+            failures.append({
+                "kind": "missing_cells",
+                "count": len(missing),
+            })
+
+    comparable = {}
+    for row in rows:
+        if row["status"] != "ok":
+            continue
+        comparable.setdefault(
+            (
+                row["domain"],
+                row["target_dimension"],
+                row["seed"],
+            ),
+            [],
+        ).append(row)
+    equality_fields = specification.get("paired_equality_fields", ())
+    paired_checks = {}
+    for field in equality_fields:
+        bad = []
+        for key, group in comparable.items():
+            values = {row.get(field) for row in group}
+            if len(values) != 1 or None in values:
+                bad.append(key)
+        paired_checks[str(field)] = {
+            "passed_cells": len(comparable) - len(bad),
+            "total_cells": len(comparable),
+            "failed_cells": len(bad),
+        }
+        if bad:
+            failures.append({
+                "kind": f"paired_{field}_mismatch",
+                "count": len(bad),
+            })
+    required_source_calls = specification.get("required_source_calls")
+    if required_source_calls is not None:
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row["source_calls"] != int(required_source_calls)
+        ]
+        if bad:
+            failures.append({
+                "kind": "source_budget_mismatch",
+                "count": len(bad),
+            })
+    required_search_calls = specification.get("required_search_calls")
+    if required_search_calls is not None:
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row["target_search_calls"] != int(required_search_calls)
+        ]
+        if bad:
+            failures.append({
+                "kind": "target_search_budget_mismatch",
+                "count": len(bad),
+            })
+    disallowed_identities = set(map(str, specification.get(
+        "disallowed_method_identities", ())))
+    contaminated = observed_methods & disallowed_identities
+    if contaminated:
+        failures.append({
+            "kind": "disallowed_algorithm_identity",
+            "observed": sorted(contaminated),
+        })
+    failed_rows = [row for row in rows if row["status"] != "ok"]
+    if failed_rows and not bool(specification.get("allow_failures", False)):
+        failures.append({
+            "kind": "failed_rows",
+            "count": len(failed_rows),
+        })
+    return {
+        "track_id": track_id,
+        "status": "pass" if not failures else "fail",
+        "row_count": len(rows),
+        "successful_count": sum(
+            row["status"] == "ok" for row in rows),
+        "failed_count": sum(
+            row["status"] != "ok" for row in rows),
+        "observed_method_identities": sorted(observed_methods),
+        "observed_domains": sorted(observed_domains),
+        "observed_dimensions": sorted(observed_dimensions),
+        "paired_checks": paired_checks,
+        "failures": failures,
+    }
+
+
+def build_audit(registry, *, root):
+    root = Path(root)
+    records = []
+    track_audits = []
+    for specification in registry["tracks"]:
+        track_id = str(specification["track_id"])
+        result_roots = specification.get("result_roots")
+        if result_roots is None:
+            result_roots = [specification["result_root"]]
+        paths = []
+        for result_root_value in result_roots:
+            result_root = root / str(result_root_value)
+            paths.extend(result_root.glob(str(
+                specification.get("glob", "**/result.json"))))
+        paths = sorted(set(paths))
+        extracted = [
+            extract_result_record(path, track_id=track_id)
+            for path in paths
+        ]
+        excluded_methods = set(map(str, specification.get(
+            "exclude_methods", ())))
+        records.extend(
+            row for row in extracted
+            if row["method"] not in excluded_methods
+        )
+    for specification in registry["tracks"]:
+        track_audits.append(audit_track(records, specification))
+    return {
+        "schema_version": 1,
+        "registry_id": registry.get("registry_id"),
+        "status": (
+            "pass"
+            if all(row["status"] == "pass" for row in track_audits)
+            else "incomplete_or_failed"
+        ),
+        "record_count": len(records),
+        "track_audits": track_audits,
+        "summaries": summarize_records(records),
+        "records": records,
+    }
+
+
+def _atomic_json(path, payload):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
+def _write_csv(path, rows):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if not rows:
+        path.write_text("", encoding="utf-8")
+        return
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--registry", required=True)
+    parser.add_argument("--root", required=True)
+    parser.add_argument("--out", required=True)
+    parser.add_argument("--summary-csv", required=True)
+    args = parser.parse_args()
+    registry = json.loads(Path(args.registry).read_text(encoding="utf-8"))
+    audit = build_audit(registry, root=args.root)
+    _atomic_json(args.out, audit)
+    _write_csv(args.summary_csv, audit["summaries"])
+    print(json.dumps({
+        "status": audit["status"],
+        "record_count": audit["record_count"],
+        "track_count": len(audit["track_audits"]),
+        "out": str(args.out),
+        "summary_csv": str(args.summary_csv),
+    }, indent=2))
+
+
+if __name__ == "__main__":
+    main()

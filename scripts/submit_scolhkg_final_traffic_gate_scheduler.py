@@ -23,6 +23,7 @@ BOTORCH_OVERLAY = Path(
 SUMO_PKG = Path(
     "/home/zhengliang01/scheduleurm_work/python_pkgs/eclipse_sumo_1_25")
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
+GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
 METHOD_LABEL = "PaperFinal-SourceProposal-SAAS"
 
 
@@ -54,6 +55,20 @@ def _sumo_env(cpu):
 
 
 def build_specs(args):
+    gpu_nodes = [
+        node.strip()
+        for node in str(getattr(
+            args, "gpu_nodes", ",".join(GPU_NODES))).split(",")
+        if node.strip()
+    ]
+    if not gpu_nodes or any(node not in GPU_NODES for node in gpu_nodes):
+        raise ValueError(
+            "gpu_nodes must be a nonempty subset of "
+            + ",".join(GPU_NODES)
+        )
+    gpu_cpu = int(getattr(args, "gpu_cpu", 12))
+    gpu_ram_mb = int(getattr(args, "gpu_ram_mb", 32768))
+    gpu_vram_mb = int(getattr(args, "gpu_vram_mb", 8192))
     deploy = Path(args.deploy)
     project = deploy / "SC-OLH-KG"
     gpr_code = deploy / "Final_Submission" / "GPR_KG_Code"
@@ -111,9 +126,11 @@ def build_specs(args):
             / f"seed{seed:04d}"
         )
         search_cmd = [
-            *_sumo_env(args.cpu),
+            *_sumo_env(gpu_cpu),
+            "SCOLHKG_OFFLINE=1",
             "SCOLHKG_TORCH_DETERMINISTIC=1",
             "CUBLAS_WORKSPACE_CONFIG=:4096:8",
+            "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
             str(REMOTE_PYTHON),
             "performance/benchmark_traffic_final_contract.py",
             "--initial-design-file", str(design),
@@ -122,10 +139,10 @@ def build_specs(args):
             "--seed", str(seed),
             "--N", str(args.N),
             "--n0", str(args.n0),
-            "--torch-device", "cpu",
+            "--torch-device", "cuda",
             "--torch-deterministic",
             "--saas-parallel-threads-per-model",
-            str(max(1, int(args.cpu) // 2)),
+            str(max(1, gpu_cpu // 2)),
             "--resume",
         ]
         specs.append({
@@ -135,11 +152,11 @@ def build_specs(args):
             "signature": (
                 f"KG_op/final_traffic/{args.run_id}/search/seed{seed:04d}"
             ),
-            "project": "KG-SUMO",
-            "vram": 0,
-            "cpu": int(args.cpu),
-            "ram_mb": int(args.ram_mb),
-            "allowed_nodes": list(CPU_NODES),
+            "project": "KG-SYNTH",
+            "vram": gpu_vram_mb,
+            "cpu": gpu_cpu,
+            "ram_mb": gpu_ram_mb,
+            "allowed_nodes": gpu_nodes,
             "wait_for_files": [str(design)],
             "result_dir": str(run_dir),
             "local_result_dir": str(run_dir),
@@ -243,6 +260,10 @@ def main():
     parser.add_argument("--verification-seed-start", type=int, default=900000)
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=24576)
+    parser.add_argument("--gpu-nodes", default=",".join(GPU_NODES))
+    parser.add_argument("--gpu-cpu", type=int, default=12)
+    parser.add_argument("--gpu-ram-mb", type=int, default=32768)
+    parser.add_argument("--gpu-vram-mb", type=int, default=8192)
     parser.add_argument(
         "--sync-remote",
         action=argparse.BooleanOptionalAction,
