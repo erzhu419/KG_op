@@ -111,7 +111,7 @@
     },
     {
       "track_id": "source_hvd_causal_gate_d1000_n13",
-      "result_root": "paper_source_hvd_saas_gate_d50_d1000_n13_s80_84_v1",
+      "result_root": "paper_final_frozen_hvd_623cf78_d1000_n13_s80_99_v1",
       "expected_method_identities": [
         "canonical_saasbo_every_iteration+hvd:pooled",
         "canonical_saasbo_every_iteration+hvd:cumulative_factor"
@@ -122,7 +122,10 @@
         "QueueResourceControl"
       ],
       "expected_dimensions": [1000],
-      "expected_seeds": [80, 81, 82, 83, 84],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
       "required_source_calls": 384,
       "required_search_calls": 13,
       "paired_equality_fields": [
@@ -131,6 +134,15 @@
         "problem_contract_fingerprint",
         "verifier_signature"
       ],
+      "required_execution_provenance_status": "frozen",
+      "allowed_execution_commits": [
+        "623cf78d23262f41478a5eabebf6c7c04b895daf"
+      ],
+      "required_scolhkg_tree": "95b34d540c020ec29959019049dabc49022f632d",
+      "required_proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
+      "required_scripts_tree": "9e300ecf5c22127b1279229f0b718c4b4f6e5eef",
+      "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
+      "required_method_contract_id": "or_transfer_frontend_saas_hvd_causal_v1",
       "disallowed_method_identities": ["saasbo_periodic_capped"]
     },
     {
@@ -434,6 +446,8 @@
         "27d55e0d5f265034f91ee7b3f7988dd8233881e5"
       ],
       "required_scolhkg_tree": "bc2aa8763ed29c9935757c130febe05dc91d30f5",
+      "required_proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
+      "required_scripts_tree": "3a9765b187861ac2b47b5b847de9dd6c168cb7bb",
       "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
       "required_method_contract_by_method": {
         "frozen_crossdim_proposal_only": "or_transfer_frontend_proposal_only_ablation_v1",
@@ -480,6 +494,8 @@
         "27d55e0d5f265034f91ee7b3f7988dd8233881e5"
       ],
       "required_scolhkg_tree": "bc2aa8763ed29c9935757c130febe05dc91d30f5",
+      "required_proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
+      "required_scripts_tree": "3a9765b187861ac2b47b5b847de9dd6c168cb7bb",
       "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
       "required_method_contract_by_method": {
         "common_sobol_proposal_only": "or_transfer_frontend_proposal_only_ablation_v1",
@@ -591,7 +607,7 @@
         "QueueResourceControl"
       ],
       "dimensions": [1000],
-      "expected_pairs": 15,
+      "expected_pairs": 60,
       "required_equal_fields": [
         "source_archive_fingerprint",
         "initial_design_fingerprint",

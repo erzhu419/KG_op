@@ -468,7 +468,7 @@ def validate_release_inputs(
     )
     hvd_gate = hvd_causal_gate.get("gate", {})
     _require(
-        int(hvd_gate.get("complete_pair_count", 0)) == 15
+        int(hvd_gate.get("complete_pair_count", 0)) == 60
         and hvd_gate.get("all_expected_pairs_present") is True
         and hvd_gate.get("all_rows_paired") is True
         and hvd_gate.get("false_certification_not_harmed") is True

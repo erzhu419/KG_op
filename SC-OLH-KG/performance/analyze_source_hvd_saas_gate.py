@@ -397,7 +397,7 @@ def main():
         default=",".join(DEFAULT_DOMAINS),
     )
     parser.add_argument("--seed-start", type=int, default=80)
-    parser.add_argument("--n-seeds", type=int, default=5)
+    parser.add_argument("--n-seeds", type=int, default=20)
     args = parser.parse_args()
     expected_domains = [
         item.strip()

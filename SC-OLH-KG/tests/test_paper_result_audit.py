@@ -192,6 +192,8 @@ def test_track_audit_requires_frozen_execution_contract(tmp_path):
             "required_execution_provenance_status": "frozen",
             "allowed_execution_commits": ["a" * 40],
             "required_scolhkg_tree": "b" * 40,
+            "required_proof_tree": "c" * 40,
+            "required_scripts_tree": "d" * 40,
             "required_method_contract_id": "method-v1",
             "required_theory_contract_id": "theory-v1",
         }],
@@ -201,6 +203,8 @@ def test_track_audit_requires_frozen_execution_contract(tmp_path):
     row = audit["records"][0]
     assert row["execution_repository_commit"] == "a" * 40
     assert row["execution_scolhkg_tree"] == "b" * 40
+    assert row["execution_proof_tree"] == "c" * 40
+    assert row["execution_scripts_tree"] == "d" * 40
 
     payload = json.loads(result.read_text(encoding="utf-8"))
     payload["execution_provenance"]["repository_commit"] = "e" * 40
@@ -209,6 +213,16 @@ def test_track_audit_requires_frozen_execution_contract(tmp_path):
     assert failed["status"] == "incomplete_or_failed"
     assert any(
         row["kind"] == "execution_commit_mismatch"
+        for row in failed["track_audits"][0]["failures"]
+    )
+
+    payload["execution_provenance"]["repository_commit"] = "a" * 40
+    payload["execution_provenance"]["scripts_tree"] = "e" * 40
+    result.write_text(json.dumps(payload), encoding="utf-8")
+    failed = build_audit(registry, root=tmp_path)
+    assert failed["status"] == "incomplete_or_failed"
+    assert any(
+        row["kind"] == "execution_scripts_tree_mismatch"
         for row in failed["track_audits"][0]["failures"]
     )
 

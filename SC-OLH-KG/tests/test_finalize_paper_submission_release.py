@@ -257,7 +257,7 @@ def _fixtures(tmp_path):
     method.write_text(json.dumps(method_payload), encoding="utf-8")
     hvd = _write(tmp_path / "hvd.json", {
         "gate": {
-            "complete_pair_count": 15,
+            "complete_pair_count": 60,
             "all_expected_pairs_present": True,
             "all_rows_paired": True,
             "false_certification_not_harmed": True,

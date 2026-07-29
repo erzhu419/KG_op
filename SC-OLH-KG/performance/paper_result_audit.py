@@ -757,6 +757,16 @@ def audit_track(records, specification):
             "execution_scolhkg_tree",
             "execution_scolhkg_tree_mismatch",
         ),
+        (
+            "required_proof_tree",
+            "execution_proof_tree",
+            "execution_proof_tree_mismatch",
+        ),
+        (
+            "required_scripts_tree",
+            "execution_scripts_tree",
+            "execution_scripts_tree_mismatch",
+        ),
     ):
         expected = specification.get(specification_field)
         if expected is None:
