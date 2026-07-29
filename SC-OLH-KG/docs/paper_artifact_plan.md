@@ -66,8 +66,9 @@ and `grouped_summary.csv` only from tracks that passed the frozen experiment
 registry audit; failures and timeouts remain in those files.
 `performance/paper_convergence_extract.py` emits the post-run joined
 `traces.csv`. `performance/render_paper_artifacts.py` verifies the audit-export
-manifest before producing LaTeX tables, PDF/PNG figures, paired statistics,
-and a hash-addressed artifact manifest. The generic
+manifest and embeds the already preregistered paired-statistics artifact
+without recomputing a competing test family before producing LaTeX tables,
+PDF/PNG figures, and a hash-addressed artifact manifest. The generic
 `aggregate_completed_matrix.py` remains useful for exploratory diagnostics but
 is not admissible for the final release. Figure exports include editable-text
 PDF/SVG plus 300-dpi PNG and 600-dpi TIFF from the same Python backend.

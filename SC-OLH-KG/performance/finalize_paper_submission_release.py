@@ -527,6 +527,8 @@ def validate_release_inputs(
     output_rows = list(artifact_manifest.get("outputs", ()))
     render_input = artifact_manifest.get(
         "inputs", {}).get("audit_export_manifest") or {}
+    rendered_statistics = artifact_manifest.get(
+        "inputs", {}).get("paired_statistics") or {}
     _require(
         artifact_manifest.get("status") == "complete"
         and artifact_manifest.get("contracts", {}).get(
@@ -537,8 +539,11 @@ def validate_release_inputs(
             "post_run_truth_not_used_for_decisions") is True
         and artifact_manifest.get("contracts", {}).get(
             "rows_from_passed_registered_paper_audit") is True
+        and artifact_manifest.get("contracts", {}).get(
+            "paired_statistics_preregistered") is True
         and render_input.get("contract_id")
         == "audited_compact_render_input_v1"
+        and rendered_statistics.get("status") == "complete"
         and bool(output_rows),
         "publication artifact manifest is incomplete, unaudited, or reads "
         "runtime state",
@@ -549,6 +554,15 @@ def validate_release_inputs(
         render_input_path.is_file()
         and _sha256(render_input_path) == render_input.get("sha256"),
         "audited render-input manifest is missing or changed",
+        failures,
+    )
+    rendered_statistics_path = Path(str(
+        rendered_statistics.get("path", "")))
+    _require(
+        rendered_statistics_path.is_file()
+        and _sha256(rendered_statistics_path)
+        == rendered_statistics.get("sha256"),
+        "preregistered paired-statistics input is missing or changed",
         failures,
     )
     artifact_root = Path(str(artifact_manifest.get(

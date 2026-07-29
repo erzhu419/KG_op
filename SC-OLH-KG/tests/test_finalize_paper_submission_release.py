@@ -313,6 +313,13 @@ def _fixtures(tmp_path):
         "status": "complete",
         "contract_id": "audited_compact_render_input_v1",
     })
+    rendered_statistics = _write(
+        tmp_path / "rendered_statistics.json",
+        {
+            "status": "complete",
+            "inference_families": [{"family_id": "primary"}],
+        },
+    )
     import hashlib
     artifact = _write(tmp_path / "artifact_manifest.json", {
         "status": "complete",
@@ -323,12 +330,19 @@ def _fixtures(tmp_path):
                     render_inputs.read_bytes()).hexdigest(),
                 "contract_id": "audited_compact_render_input_v1",
             },
+            "paired_statistics": {
+                "path": str(rendered_statistics),
+                "sha256": hashlib.sha256(
+                    rendered_statistics.read_bytes()).hexdigest(),
+                "status": "complete",
+            },
         },
         "contracts": {
             "reads_checkpoints": False,
             "reads_pickle_or_model_weights": False,
             "post_run_truth_not_used_for_decisions": True,
             "rows_from_passed_registered_paper_audit": True,
+            "paired_statistics_preregistered": True,
         },
         "outputs": [{
             "name": table.name,

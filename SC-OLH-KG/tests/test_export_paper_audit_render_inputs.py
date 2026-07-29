@@ -90,6 +90,17 @@ def test_export_retains_failures_and_locks_renderer_to_audit(tmp_path):
     _write_csv(traces, [{
         "target_oracle_used_for_decision": False,
     }])
+    paired_statistics = _write_json(
+        tmp_path / "paired_statistics.json",
+        {
+            "status": "complete",
+            "inference_families": [{
+                "family_id": "primary",
+                "hypothesis_count": 1,
+            }],
+            "rows": [],
+        },
+    )
     rendered = render(
         rows,
         summary,
@@ -98,11 +109,13 @@ def test_export_retains_failures_and_locks_renderer_to_audit(tmp_path):
         "canonical_saasbo_every_iteration",
         no_plots=True,
         input_manifest_path=input_manifest,
+        paired_statistics_path=paired_statistics,
     )
     assert rendered["contracts"][
         "rows_from_passed_registered_paper_audit"] is True
     assert rendered["inputs"]["audit_export_manifest"][
         "contract_id"] == "audited_compact_render_input_v1"
+    assert rendered["contracts"]["paired_statistics_preregistered"] is True
 
     rows.write_text(rows.read_text() + "\n", encoding="utf-8")
     with pytest.raises(ValueError, match="render input manifest"):
@@ -114,4 +127,5 @@ def test_export_retains_failures_and_locks_renderer_to_audit(tmp_path):
             "canonical_saasbo_every_iteration",
             no_plots=True,
             input_manifest_path=input_manifest,
+            paired_statistics_path=paired_statistics,
         )

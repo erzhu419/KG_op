@@ -729,7 +729,8 @@ def _validate_render_input_manifest(
 
 def render(rows_path: Path, summary_path: Path, traces_path: Path,
            out_dir: Path, primary_method: str, no_plots: bool = False,
-           input_manifest_path: Path | None = None) -> dict:
+           input_manifest_path: Path | None = None,
+           paired_statistics_path: Path | None = None) -> dict:
     input_manifest = _validate_render_input_manifest(
         input_manifest_path,
         rows_path=rows_path,
@@ -742,9 +743,28 @@ def render(rows_path: Path, summary_path: Path, traces_path: Path,
     write_main_table(rows, out_dir / "table_main.tex")
     write_frontier_table(rows, out_dir / "table_frontier.tex")
     write_adaptation_table(rows, out_dir / "table_adaptation.tex")
-    comparisons = _paired_comparisons(rows, primary_method)
-    (out_dir / "paired_statistics.json").write_text(
-        json.dumps(comparisons, indent=2) + "\n", encoding="utf-8")
+    if paired_statistics_path is None:
+        comparisons = _paired_comparisons(rows, primary_method)
+        (out_dir / "paired_statistics.json").write_text(
+            json.dumps(comparisons, indent=2) + "\n", encoding="utf-8")
+        paired_statistics_input = None
+    else:
+        paired_statistics = json.loads(
+            Path(paired_statistics_path).read_text(encoding="utf-8"))
+        if (
+            paired_statistics.get("status") != "complete"
+            or not paired_statistics.get("inference_families")
+        ):
+            raise ValueError(
+                "paired statistics input is not a complete preregistered "
+                "artifact")
+        (out_dir / "paired_statistics.json").write_bytes(
+            Path(paired_statistics_path).read_bytes())
+        paired_statistics_input = {
+            "path": str(paired_statistics_path),
+            "sha256": _sha256(paired_statistics_path),
+            "status": "complete",
+        }
     figures = {}
     if not no_plots:
         _plot_style()
@@ -782,6 +802,7 @@ def render(rows_path: Path, summary_path: Path, traces_path: Path,
                     "contract_id": input_manifest["contract_id"],
                 }
             ),
+            "paired_statistics": paired_statistics_input,
         },
         "row_count": len(rows),
         "summary_count": len(summaries),
@@ -799,6 +820,8 @@ def render(rows_path: Path, summary_path: Path, traces_path: Path,
             "reads_pickle_or_model_weights": False,
             "rows_from_passed_registered_paper_audit": bool(
                 input_manifest is not None),
+            "paired_statistics_preregistered": bool(
+                paired_statistics_input is not None),
             "conditional_regret_always_accompanied_by_feasibility": True,
             "post_run_truth_not_used_for_decisions": all(
                 _boolean(row.get("target_oracle_used_for_decision")) is not True
@@ -820,11 +843,13 @@ def main() -> None:
     parser.add_argument("--primary-method", default="promoted_joint_voi")
     parser.add_argument("--no-plots", action="store_true")
     parser.add_argument("--input-manifest", type=Path, default=None)
+    parser.add_argument("--paired-statistics", type=Path, default=None)
     args = parser.parse_args()
     manifest = render(
         args.rows, args.summary, args.traces, args.out_dir,
         args.primary_method, no_plots=args.no_plots,
-        input_manifest_path=args.input_manifest)
+        input_manifest_path=args.input_manifest,
+        paired_statistics_path=args.paired_statistics)
     print(json.dumps(manifest, indent=2))
 
 
