@@ -11,6 +11,11 @@ import numpy as np
 
 
 MODES = ("pooled", "cumulative_factor")
+DEFAULT_DOMAINS = (
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl",
+)
 
 
 def _read_json(path):
@@ -73,7 +78,70 @@ def _row(path):
     }
 
 
-def analyze(root):
+def _summary(rows):
+    finite_regret = [
+        row["feasible_regret"] for row in rows
+        if np.isfinite(row["feasible_regret"])
+    ]
+    return {
+        "row_count": int(len(rows)),
+        "true_feasible_count": int(sum(
+            row["true_feasible"] for row in rows)),
+        "independently_certified_count": int(sum(
+            row["independently_certified"] for row in rows)),
+        "false_certification_count": int(sum(
+            row["false_certification"] for row in rows)),
+        "median_feasible_regret": (
+            None if not finite_regret
+            else float(np.median(finite_regret))
+        ),
+        "median_log_variance_rmse": (
+            None if not rows else float(np.median([
+                row["log_variance_rmse"] for row in rows]))
+        ),
+        "median_upper_coverage": (
+            None if not rows else float(np.median([
+                row["upper_coverage"] for row in rows]))
+        ),
+        "median_variance_shape_correlation": (
+            None if not rows else float(np.median([
+                row["variance_shape_correlation"] for row in rows]))
+        ),
+    }
+
+
+def _noninferiority_gate(pooled, factor):
+    return {
+        "calibration_improved": bool(
+            factor["median_log_variance_rmse"] is not None
+            and pooled["median_log_variance_rmse"] is not None
+            and factor["median_log_variance_rmse"]
+            < pooled["median_log_variance_rmse"]
+        ),
+        "shape_correlation_improved": bool(
+            factor["median_variance_shape_correlation"] is not None
+            and pooled["median_variance_shape_correlation"] is not None
+            and factor["median_variance_shape_correlation"]
+            > pooled["median_variance_shape_correlation"]
+        ),
+        "feasibility_not_harmed": bool(
+            factor["true_feasible_count"]
+            >= pooled["true_feasible_count"]
+        ),
+        "false_certification_not_harmed": bool(
+            factor["false_certification_count"]
+            <= pooled["false_certification_count"]
+        ),
+        "regret_not_harmed": bool(
+            factor["median_feasible_regret"] is not None
+            and pooled["median_feasible_regret"] is not None
+            and factor["median_feasible_regret"]
+            <= pooled["median_feasible_regret"] + 1e-12
+        ),
+    }
+
+
+def analyze(root, *, expected_domains=None, expected_seeds=None):
     root = Path(root)
     rows = [
         row
@@ -128,78 +196,90 @@ def analyze(root):
             ) - int(pooled["false_certification"]),
             "factor_regret_gain": regret_gain,
         })
-    summaries = {}
-    for mode in MODES:
-        selected = [row for row in rows if row["mode"] == mode]
-        finite_regret = [
-            row["feasible_regret"] for row in selected
-            if np.isfinite(row["feasible_regret"])
-        ]
-        summaries[mode] = {
-            "row_count": int(len(selected)),
-            "true_feasible_count": int(sum(
-                row["true_feasible"] for row in selected)),
-            "independently_certified_count": int(sum(
-                row["independently_certified"] for row in selected)),
-            "false_certification_count": int(sum(
-                row["false_certification"] for row in selected)),
-            "median_feasible_regret": (
-                None if not finite_regret
-                else float(np.median(finite_regret))
-            ),
-            "median_log_variance_rmse": (
-                None if not selected else float(np.median([
-                    row["log_variance_rmse"] for row in selected]))
-            ),
-            "median_upper_coverage": (
-                None if not selected else float(np.median([
-                    row["upper_coverage"] for row in selected]))
-            ),
-            "median_variance_shape_correlation": (
-                None if not selected else float(np.median([
-                    row["variance_shape_correlation"] for row in selected]))
-            ),
+    summaries = {
+        mode: _summary([
+            row for row in rows if row["mode"] == mode
+        ])
+        for mode in MODES
+    }
+    observed_domains = sorted({row["heldout"] for row in rows})
+    summaries_by_domain = {}
+    domain_gates = {}
+    for domain in observed_domains:
+        summaries_by_domain[domain] = {
+            mode: _summary([
+                row for row in rows
+                if row["mode"] == mode and row["heldout"] == domain
+            ])
+            for mode in MODES
         }
+        domain_gate = _noninferiority_gate(
+            summaries_by_domain[domain]["pooled"],
+            summaries_by_domain[domain]["cumulative_factor"],
+        )
+        domain_gate["complete_pair_count"] = int(sum(
+            heldout == domain for heldout, _seed in complete
+        ))
+        domain_gate["promote_in_domain"] = bool(all(
+            domain_gate[key]
+            for key in (
+                "calibration_improved",
+                "shape_correlation_improved",
+                "feasibility_not_harmed",
+                "false_certification_not_harmed",
+                "regret_not_harmed",
+            )
+        ))
+        domain_gates[domain] = domain_gate
     factor = summaries["cumulative_factor"]
     pooled = summaries["pooled"]
     complete_count = int(len(complete))
-    gate = {
+    gate = _noninferiority_gate(pooled, factor)
+    gate.update({
         "complete_pair_count": complete_count,
         "all_rows_paired": bool(
             complete_count > 0 and 2 * complete_count == len(rows)),
-        "calibration_improved": bool(
-            complete_count > 0
-            and factor["median_log_variance_rmse"]
-            < pooled["median_log_variance_rmse"]),
-        "shape_correlation_improved": bool(
-            complete_count > 0
-            and factor["median_variance_shape_correlation"]
-            > pooled["median_variance_shape_correlation"]),
-        "feasibility_not_harmed": bool(
-            factor["true_feasible_count"]
-            >= pooled["true_feasible_count"]),
-        "false_certification_not_harmed": bool(
-            factor["false_certification_count"]
-            <= pooled["false_certification_count"]),
-        "regret_not_harmed": bool(
-            factor["median_feasible_regret"] is not None
-            and pooled["median_feasible_regret"] is not None
-            and factor["median_feasible_regret"]
-            <= pooled["median_feasible_regret"] + 1e-12),
-    }
+    })
+    expected_keys = None
+    if expected_domains is not None and expected_seeds is not None:
+        expected_keys = {
+            (str(domain), int(seed))
+            for domain in expected_domains
+            for seed in expected_seeds
+        }
+    gate["all_expected_pairs_present"] = bool(
+        expected_keys is None or set(complete) == expected_keys)
+    expected_domain_set = (
+        set(observed_domains)
+        if expected_domains is None
+        else set(map(str, expected_domains))
+    )
+    gate["all_expected_domains_observed"] = bool(
+        set(observed_domains) == expected_domain_set)
     gate["promote_hvd_as_core"] = bool(
         gate["all_rows_paired"]
-        and gate["calibration_improved"]
-        and gate["shape_correlation_improved"]
-        and gate["feasibility_not_harmed"]
-        and gate["false_certification_not_harmed"]
-        and gate["regret_not_harmed"]
+        and gate["all_expected_pairs_present"]
+        and gate["all_expected_domains_observed"]
+        and all(
+            domain_gates.get(domain, {}).get(
+                "promote_in_domain", False)
+            for domain in expected_domain_set
+        )
     )
+    promoted_domains = sorted(
+        domain for domain, value in domain_gates.items()
+        if value["promote_in_domain"]
+    )
+    gate["promoted_domains"] = promoted_domains
+    gate["retain_as_domain_conditional_calibration_component"] = bool(
+        promoted_domains and not gate["promote_hvd_as_core"])
     return {
         "schema_version": 1,
         "root": str(root),
         "row_count": int(len(rows)),
         "summaries": summaries,
+        "summaries_by_domain": summaries_by_domain,
+        "domain_gates": domain_gates,
         "gate": gate,
         "pair_audits": pair_audits,
         "interpretation": (
@@ -214,8 +294,23 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", required=True)
     parser.add_argument("--out", required=True)
+    parser.add_argument(
+        "--expected-domains",
+        default=",".join(DEFAULT_DOMAINS),
+    )
+    parser.add_argument("--seed-start", type=int, default=80)
+    parser.add_argument("--n-seeds", type=int, default=5)
     args = parser.parse_args()
-    report = analyze(args.root)
+    report = analyze(
+        args.root,
+        expected_domains=[
+            item.strip()
+            for item in args.expected_domains.split(",")
+            if item.strip()
+        ],
+        expected_seeds=range(
+            args.seed_start, args.seed_start + args.n_seeds),
+    )
     _atomic_json(args.out, report)
     print(json.dumps(report["gate"], indent=2, sort_keys=True))
 

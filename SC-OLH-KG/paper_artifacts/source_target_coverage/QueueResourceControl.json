@@ -1,0 +1,229 @@
+{
+  "empirical_rank_diagnostic_without_dkw": {
+    "alignment_bound_covered_target": true,
+    "atlas_size": 10,
+    "finite_library_size": 10,
+    "lean_theorem": "SCOLHKG.Real.paper_frontend_rank_aligned_atlas_and_certificate",
+    "observed_atlas_contains_feasible": true,
+    "one_sided_source_rank_atlas_cover_error": 0.0,
+    "post_run_observed_target_alignment_error": 0.4444444444444445,
+    "post_run_target_safe_rank_interior_depth": 0.0,
+    "required_safe_rank_depth": 1.3333333333333335,
+    "source_only_alignment_error_bound": 0.6666666666666667,
+    "target_safe_rank_threshold": 0.0,
+    "target_truth_used_for_proposal_or_selection": false,
+    "target_truth_used_post_run_only": true,
+    "theorem_conditions_hold": false,
+    "theory_contract_id": "source_target_rank_aligned_atlas_coverage_v1"
+  },
+  "finite_sample_rank_theorem_audit": {
+    "alignment_bound_covered_target": true,
+    "atlas_size": 10,
+    "finite_library_size": 10,
+    "lean_theorem": "SCOLHKG.Real.paper_frontend_rank_aligned_atlas_and_certificate",
+    "observed_atlas_contains_feasible": true,
+    "one_sided_source_rank_atlas_cover_error": 0.0,
+    "post_run_observed_target_alignment_error": 0.4444444444444445,
+    "post_run_target_safe_rank_interior_depth": 0.0,
+    "required_safe_rank_depth": 2.0,
+    "source_only_alignment_error_bound": 1.0,
+    "target_safe_rank_threshold": 0.0,
+    "target_truth_used_for_proposal_or_selection": false,
+    "target_truth_used_post_run_only": true,
+    "theorem_conditions_hold": false,
+    "theory_contract_id": "source_target_rank_aligned_atlas_coverage_v1"
+  },
+  "geometric_atlas_theorem_audit": {
+    "atlas_size": 10,
+    "best_safe_center": {
+      "coverage_slack": 0.08954292256475879,
+      "finite_library_safe_radius": 0.12982613752795086,
+      "first_infeasible_distance": 0.12982613752795089,
+      "source_support_shift": 0.001919530643082597,
+      "target_library_index": 10
+    },
+    "coordinate_dimension": 65,
+    "empirical_effective_coordinate_rank": 10,
+    "finite_library_safe_ball_only": true,
+    "finite_library_theorem_conditions_hold": true,
+    "global_safe_ball_requires_separate_lipschitz_or_exhaustive_bound": true,
+    "lean_theorem": "SCOLHKG.Real.paper_frontend_geometric_atlas_and_certificate",
+    "lipschitz_audit": {
+      "best_safe_center": {
+        "cover_plus_support_shift": 0.04028321496319206,
+        "empirical_library_lipschitz_slack": -0.1415471771138525,
+        "max_admissible_lipschitz_constant": 0.6607793984317315,
+        "safe_depth": 0.026618318550274175,
+        "target_library_index": 10
+      },
+      "empirical_finite_library_one_sided_lipschitz": 4.174579804958079,
+      "finite_library_lipschitz_condition_holds": false,
+      "global_condition_status": "requires_problem_or_simulator_bound",
+      "global_lipschitz_upper_bound_certified": false
+    },
+    "observed_atlas_contains_feasible": true,
+    "source_support_atlas_cover_radius": 0.03836368432010946,
+    "source_support_size": 13,
+    "target_audit_library_size": 21,
+    "target_truth_used_for_proposal_or_selection": false,
+    "target_truth_used_post_run_only": true,
+    "theory_contract_id": "source_target_geometric_atlas_coverage_v1"
+  },
+  "geometric_source_support": "frozen_source_consensus_plus_universal_seed",
+  "heldout_target_domain": "QueueResourceControl",
+  "n0": 10,
+  "post_run_target_audit": {
+    "normalized_risk_ranks": [
+      1.0,
+      0.4444444444444444,
+      0.6666666666666666,
+      0.1111111111111111,
+      0.8888888888888888,
+      0.2222222222222222,
+      0.0,
+      0.5555555555555556,
+      0.3333333333333333,
+      0.7777777777777778
+    ],
+    "target_truth_used_for_proposal_or_selection": false,
+    "target_truth_used_post_run_only": true,
+    "true_chance_margins": [
+      0.43119160689615477,
+      0.057068896663925624,
+      0.0887090492298563,
+      0.018923696579142644,
+      0.1867292139785317,
+      0.038276142588760755,
+      -0.024302200638751388,
+      0.07479341743930104,
+      0.04783415663497627,
+      0.12058885903926289
+    ],
+    "true_feasible_count": 1
+  },
+  "schema_version": 1,
+  "source_archive_fingerprint": "5222c52f779d343ec92d5886627a9969ceadf4c8d0255d887c7846fb0d9b503c",
+  "source_only_calibration": {
+    "contract_id": "source_only_rank_alignment_envelope_v1",
+    "delta": 0.05,
+    "dkw_radius_per_domain": 0.46808261208219865,
+    "empirical_pairwise_sup_rank_error": 0.6666666666666667,
+    "heldout_extension_assumption": "source-source rank envelope upper-bounds heldout rank shift",
+    "shared_library_size": 10,
+    "source_domain_count": 2,
+    "source_only_alignment_error_bound": 1.0,
+    "target_labels_used": false
+  },
+  "source_rows": [
+    {
+      "domain": "FactorShockStatePolicyRZDT1",
+      "nearest_coordinate_distances": [
+        0.013964952827073948,
+        0.019062248765392698,
+        0.007161663566609515,
+        0.00043060235934028207,
+        0.0024059363007708392,
+        2.0175840826237854e-16,
+        0.004536659491181759,
+        0.0028348996494507125,
+        0.015201053209316867,
+        0.00043060235934027404
+      ],
+      "nearest_profile_indexes": [
+        26,
+        36,
+        37,
+        13,
+        59,
+        6,
+        62,
+        47,
+        36,
+        12
+      ],
+      "normalized_risk_ranks": [
+        1.0,
+        0.0,
+        0.5555555555555556,
+        0.8888888888888888,
+        0.2222222222222222,
+        0.3333333333333333,
+        0.7777777777777778,
+        0.6666666666666666,
+        0.1111111111111111,
+        0.4444444444444444
+      ],
+      "observed_chance_margins": [
+        0.8064345729378221,
+        0.21191811772197516,
+        0.450578940809881,
+        0.6612458239492334,
+        0.33529351079590886,
+        0.37671693164668785,
+        0.6198537805984532,
+        0.5176368610794566,
+        0.21191811772197516,
+        0.3895641806287837
+      ],
+      "observed_feasible_count": 0,
+      "target_oracle_used": false
+    },
+    {
+      "domain": "InventorySupplyChain",
+      "nearest_coordinate_distances": [
+        0.013964952827073948,
+        0.019062248765392698,
+        0.007161663566609515,
+        0.00043060235934028207,
+        0.0024059363007708392,
+        2.0175840826237854e-16,
+        0.004536659491181759,
+        0.0028348996494507125,
+        0.015201053209316867,
+        0.00043060235934027404
+      ],
+      "nearest_profile_indexes": [
+        26,
+        36,
+        37,
+        13,
+        59,
+        6,
+        62,
+        47,
+        36,
+        12
+      ],
+      "normalized_risk_ranks": [
+        1.0,
+        0.5555555555555556,
+        0.0,
+        0.2222222222222222,
+        0.8888888888888888,
+        0.4444444444444444,
+        0.1111111111111111,
+        0.3333333333333333,
+        0.6666666666666666,
+        0.7777777777777778
+      ],
+      "observed_chance_margins": [
+        0.6781887167990989,
+        0.06084108122926842,
+        0.0005308500784908105,
+        0.005362250521934987,
+        0.13837751788632024,
+        0.05244653488431345,
+        0.0037923433715487953,
+        0.048847750109069776,
+        0.06084108122926842,
+        0.09606762077325465
+      ],
+      "observed_feasible_count": 0,
+      "target_oracle_used": false
+    }
+  ],
+  "status": "complete",
+  "target_dimension": 1000,
+  "unique_design_fingerprint_count": 1,
+  "universal_seed_in_geometric_support": true
+}
