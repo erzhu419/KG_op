@@ -8,9 +8,13 @@ from concurrent.futures import ProcessPoolExecutor
 import json
 import math
 from pathlib import Path
+import sys
 
 import numpy as np
 from scipy.stats import norm
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from core.designs import integer_design_fingerprint
 from core.terminal_verification import verify_frozen_shortlist

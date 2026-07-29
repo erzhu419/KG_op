@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import sys
 import time
+import traceback
 
 from scipy.stats import norm
 
@@ -458,6 +459,7 @@ def run_one(args):
             ),
             "failure_type": type(exc).__name__,
             "failure_message": str(exc),
+            "failure_traceback": traceback.format_exc(),
             "wall_time_sec": float(time.time() - started),
             "checkpoint_path": str(checkpoint),
         })

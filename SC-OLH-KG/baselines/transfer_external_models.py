@@ -57,23 +57,51 @@ def _adaptive_positive_definite_jitter(
     initial_jitter,
     max_attempts=16,
 ):
-    """Return the minimally jittered covariance accepted by Cholesky."""
+    """Return a spectrally initialized diagonal repair accepted by Cholesky."""
 
     import torch
 
     covariance = 0.5 * (covariance + covariance.transpose(-1, -2))
+    if not bool(torch.all(torch.isfinite(covariance)).item()):
+        raise RuntimeError(
+            "F-PACOH functional-prior covariance contains nonfinite values")
     identity = torch.eye(
         covariance.shape[-1],
         dtype=covariance.dtype,
         device=covariance.device,
     )
-    jitter = max(float(initial_jitter), 1e-12)
+    base_jitter = max(float(initial_jitter), 1e-12)
+    with torch.no_grad():
+        minimum_eigenvalue = float(
+            torch.linalg.eigvalsh(covariance).min().item())
+        scale = max(
+            float(torch.max(torch.abs(covariance)).item()),
+            1.0,
+        )
+        tolerance = (
+            float(torch.finfo(covariance.dtype).eps)
+            * scale
+            * max(int(covariance.shape[-1]), 1)
+            * 8.0
+        )
+    jitter = max(
+        base_jitter,
+        -minimum_eigenvalue + tolerance,
+    )
+    spectral_retries = max(
+        0,
+        int(np.ceil(np.log2(max(jitter / base_jitter, 1.0)))),
+    )
     last_error = None
     for retry in range(int(max_attempts)):
         candidate = covariance + jitter * identity
         try:
             torch.linalg.cholesky(candidate)
-            return candidate, float(jitter), int(retry)
+            return (
+                candidate,
+                float(jitter),
+                int(spectral_retries + retry),
+            )
         except (RuntimeError, ValueError) as exc:
             last_error = exc
             jitter *= 2.0

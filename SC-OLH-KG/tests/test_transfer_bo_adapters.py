@@ -173,6 +173,43 @@ def test_cross_dimension_stacked_requires_declared_label_free_adapter():
     assert lifted.shape == (1, 8)
 
 
+def test_custom_acquisition_receives_dimension_equivariant_profiles():
+    archive = _archive(d=4)
+    runner = TransferConstrainedBO(
+        _problem(d=8),
+        archive,
+        TransferBOConfig(
+            method="hyperbo_cbo",
+            N=3,
+            n0=2,
+            seed=13,
+            candidate_pool_size=16,
+            source_dimension_adapter="ordered_dct_quadratic",
+        ),
+    )
+
+    class RecordingAcquisition:
+        def __init__(self, dimension):
+            self.dimension = int(dimension)
+            self.acquisition_width = None
+
+        def predict(self, X, full_cov=False):
+            assert X.shape[1] == self.dimension
+            mean = np.zeros(len(X))
+            variance = np.ones(len(X))
+            return mean, np.diag(variance) if full_cov else variance
+
+        def acquisition_scores(self, X, incumbent=None, progress=None):
+            self.acquisition_width = int(X.shape[1])
+            return np.linspace(0.0, 1.0, len(X))
+
+    model = RecordingAcquisition(runner.model_input_dimension)
+    runner.objective_model = model
+    runner._select_candidate()
+
+    assert model.acquisition_width == runner.model_input_dimension == 65
+
+
 def test_promoted_and_transfer_paths_use_byte_identical_common_sobol_n0():
     archive = _archive()
     transfer_problem = _problem()

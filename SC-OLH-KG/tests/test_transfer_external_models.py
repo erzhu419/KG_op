@@ -27,6 +27,23 @@ def test_adaptive_jitter_repairs_indefinite_functional_prior_covariance():
     assert torch.allclose(repaired, repaired.T)
 
 
+def test_spectral_jitter_repairs_beyond_legacy_retry_ceiling():
+    covariance = torch.tensor(
+        [[1.0, 2.0], [2.0, 1.0]],
+        dtype=torch.double,
+    )
+
+    repaired, jitter, retries = _adaptive_positive_definite_jitter(
+        covariance,
+        initial_jitter=1e-6,
+        max_attempts=2,
+    )
+
+    torch.linalg.cholesky(repaired)
+    assert jitter >= 1.0
+    assert retries >= 19
+
+
 def test_adaptive_jitter_is_deterministic():
     covariance = torch.tensor(
         [[0.5, 0.5], [0.5, 0.5]],

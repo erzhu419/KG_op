@@ -516,8 +516,9 @@ class TransferConstrainedBO:
             default=float(np.min(posterior["objective_mean"])),
         )
         if hasattr(self.objective_model, "acquisition_scores"):
+            model_profiles = self._model_profiles(profiles)
             scores = np.asarray(self.objective_model.acquisition_scores(
-                profiles,
+                model_profiles,
                 incumbent,
                 len(self.history) / max(self.config.N, 1),
             ), dtype=float)

@@ -1,4 +1,26 @@
+from pathlib import Path
+import subprocess
+import sys
+
 from performance.run_uniform_verification_shard import verify_row
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_uniform_verifier_starts_from_scheduler_working_directory():
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "performance/run_uniform_verification_shard.py",
+            "--help",
+        ],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert completed.returncode == 0, completed.stderr
 
 
 def test_uniform_verifier_is_reproducible_and_budget_explicit():
