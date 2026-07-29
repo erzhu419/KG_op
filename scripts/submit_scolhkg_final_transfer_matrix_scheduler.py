@@ -52,6 +52,42 @@ def _read_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def _load_only_cells(args):
+    path = getattr(args, "only_cells_file", None)
+    if path in (None, ""):
+        return None
+    payload = _read_json(path)
+    rows = payload.get("cells") if isinstance(payload, dict) else payload
+    if not isinstance(rows, list):
+        raise ValueError("only-cells file must contain a list or {cells: [...]}")
+    selected = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ValueError("each only-cells row must be an object")
+        cell = (
+            str(row["method"]),
+            str(row["heldout"]),
+            int(row["seed"]),
+        )
+        if cell in selected:
+            raise ValueError(f"duplicate only-cells row: {cell}")
+        selected.add(cell)
+    configured = {
+        (method, heldout, seed)
+        for method in _parse_csv(args.methods)
+        for heldout in _parse_csv(args.heldouts)
+        for seed in range(
+            int(args.seed_start),
+            int(args.seed_start) + int(args.n_seeds),
+        )
+    }
+    outside = sorted(selected - configured)
+    if outside:
+        raise ValueError(
+            f"only-cells rows fall outside the configured matrix: {outside}")
+    return selected
+
+
 def _terminal_flags():
     return [
         "--terminal-verification",
@@ -128,6 +164,7 @@ def build_specs(args):
     deploy_project = Path(args.deploy) / "SC-OLH-KG"
     specs = []
     methods = _parse_csv(args.methods)
+    selected_cells = _load_only_cells(args)
     unknown = sorted(set(methods) - set(METHODS))
     if unknown:
         raise ValueError(f"unknown transfer methods: {unknown}")
@@ -145,6 +182,11 @@ def build_specs(args):
                 int(args.seed_start),
                 int(args.seed_start) + int(args.n_seeds),
             ):
+                if (
+                    selected_cells is not None
+                    and (method, heldout, seed) not in selected_cells
+                ):
+                    continue
                 result_dir = (
                     deploy_project / "profiles" / args.run_id / "official"
                     / heldout / method / f"seed{seed:04d}"
@@ -224,6 +266,13 @@ def build_specs(args):
                     pass
             filtered.append(spec)
         specs = filtered
+    if (
+        selected_cells is not None
+        and not bool(getattr(args, "skip_existing_success", False))
+        and len(specs) != len(selected_cells)
+    ):
+        raise RuntimeError(
+            "one or more exact transfer recovery cells were not materialized")
     return specs
 
 
@@ -265,15 +314,29 @@ def main():
         action=argparse.BooleanOptionalAction,
         default=False,
     )
+    parser.add_argument(
+        "--only-cells-file",
+        type=Path,
+        default=None,
+        help=(
+            "Optional JSON list (or {cells: [...]}) of exact "
+            "{method, heldout, seed} logical cells to submit."
+        ),
+    )
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     audit = validate_contract(args)
     specs = build_specs(args)
+    selected_cells = _load_only_cells(args)
     expected = (
-        len(_parse_csv(args.heldouts))
-        * len(_parse_csv(args.methods))
-        * int(args.n_seeds)
+        len(selected_cells)
+        if selected_cells is not None
+        else (
+            len(_parse_csv(args.heldouts))
+            * len(_parse_csv(args.methods))
+            * int(args.n_seeds)
+        )
     )
     if not args.skip_existing_success and len(specs) != expected:
         raise RuntimeError(f"built {len(specs)} tasks, expected {expected}")
@@ -316,6 +379,11 @@ def main():
         "submitted_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "task_count": int(len(specs)),
         "task_ids": task_ids,
+        "only_cells_file": (
+            None
+            if args.only_cells_file is None
+            else str(args.only_cells_file)
+        ),
         "audit": audit,
         "contract": {
             "source_calls": int(args.offline_source_calls),
@@ -354,4 +422,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
