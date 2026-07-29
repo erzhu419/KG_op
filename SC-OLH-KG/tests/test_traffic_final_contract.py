@@ -17,6 +17,12 @@ from performance.analyze_traffic_final_contract import (  # noqa: E402
 from scripts.submit_scolhkg_final_traffic_gate_scheduler import (  # noqa: E402
     build_specs,
 )
+from performance.task_descriptor_retrieval import (  # noqa: E402
+    DESCRIPTOR_NEAREST,
+    DOMAIN_BLIND_CONTROL,
+    source_selection_contract,
+    weighted_role_distance,
+)
 
 
 def _candidate(index, successes, *, seed=80, trials=100):
@@ -72,6 +78,7 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
         verification_seed_start=900000,
         cpu=12,
         ram_mb=24576,
+        source_selection_mode=DESCRIPTOR_NEAREST,
     )
     specs = build_specs(args)
     assert len(specs) == 6
@@ -79,7 +86,7 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
         "node001", "node002", "node003",
         "node004", "node005", "node006",
     ]
-    expected_gpu_nodes = ["jtl110gpu", "jtl110gpu2", "node007"]
+    expected_gpu_nodes = ["jtl110gpu", "node007"]
     assert all("jtl311linux" not in str(spec) for spec in specs)
     search = [spec for spec in specs if "/search/" in spec["signature"]]
     oos = [spec for spec in specs if "/oos/" in spec["signature"]]
@@ -91,6 +98,12 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
     assert all(spec["vram"] == 8192 for spec in search)
     assert all(spec["project"] == "KG-SYNTH" for spec in search)
     assert all("--torch-device cuda" in spec["cmd"] for spec in search)
+    assert all(
+        "run_scolhkg_traffic_gpu_python.sh" in spec["cmd"]
+        for spec in search
+    )
+    assert all("--method-label PaperFinal-DescriptorProposal-SAAS" in (
+        spec["cmd"]) for spec in search)
     assert all(
         spec["allowed_nodes"] == expected_nodes for spec in non_search)
     assert all(spec["vram"] == 0 for spec in non_search)
@@ -106,13 +119,14 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
         spec for spec in specs if spec["signature"].endswith("/audit"))
     assert (
         "--source-domains "
-        "FactorShockStatePolicyRZDT1,InventorySupplyChain"
+        "QueueResourceControl,InventorySupplyChain"
         in aggregate["cmd"]
     )
     assert (
-        "--excluded-nearest-source-analogue QueueResourceControl"
+        "--source-split-heldout FactorShockStatePolicyRZDT1"
         in aggregate["cmd"]
     )
+    assert "--heldout-task-family-identifier-used" in aggregate["cmd"]
 
 
 def test_traffic_aggregate_records_domain_blind_information_contract(
@@ -143,3 +157,35 @@ def test_traffic_aggregate_records_domain_blind_information_contract(
     ]
     assert contract["excluded_nearest_source_analogue"] == (
         "QueueResourceControl")
+
+
+def test_observable_descriptor_retrieval_is_target_label_free_and_stable():
+    selection = source_selection_contract(DESCRIPTOR_NEAREST)
+    assert selection.source_domains == (
+        "QueueResourceControl",
+        "InventorySupplyChain",
+    )
+    assert selection.source_split_heldout == (
+        "FactorShockStatePolicyRZDT1")
+    assert selection.heldout_task_family_identifier_used
+    assert all(
+        "distance" in row and "observable_roles" in row
+        for row in selection.ranking
+    )
+    assert selection.as_dict()["target_outcomes_used"] is False
+    assert selection.as_dict()["target_oracle_used"] is False
+    assert weighted_role_distance(
+        "Ingolstadt21Traffic", "QueueResourceControl"
+    ) < weighted_role_distance(
+        "Ingolstadt21Traffic", "FactorShockStatePolicyRZDT1"
+    )
+
+
+def test_domain_blind_control_retains_registered_hard_split():
+    selection = source_selection_contract(DOMAIN_BLIND_CONTROL)
+    assert selection.source_domains == (
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+    )
+    assert selection.source_split_heldout == "QueueResourceControl"
+    assert not selection.heldout_task_family_identifier_used

@@ -133,6 +133,10 @@ def analyze(
     ),
     excluded_nearest_source_analogue="QueueResourceControl",
     target_domain="Ingolstadt21Traffic",
+    information_track="domain_blind_external_holdout",
+    source_selection_mode="domain_blind_exclude_nearest",
+    source_split_heldout=None,
+    heldout_task_family_identifier_used=False,
 ):
     rows = [
         audit_oos_payload(
@@ -167,12 +171,19 @@ def analyze(
         "total_calls_per_run": int(384 + 13 + statistics.median(
             row["verification_calls"] for row in rows)),
         "information_contract": {
-            "track": "domain_blind_external_holdout",
+            "track": str(information_track),
+            "source_selection_mode": str(source_selection_mode),
             "source_domains": list(map(str, source_domains)),
             "excluded_nearest_source_analogue": str(
                 excluded_nearest_source_analogue),
+            "source_split_heldout": (
+                None
+                if source_split_heldout is None
+                else str(source_split_heldout)
+            ),
             "target_domain": str(target_domain),
-            "heldout_task_family_identifier_used_by_proposal": False,
+            "heldout_task_family_identifier_used_by_proposal": bool(
+                heldout_task_family_identifier_used),
             "target_labels_used_to_fit_proposal": False,
             "target_oracle_used": False,
             "historical_target_anchor_used": False,
@@ -207,6 +218,19 @@ def main():
         default="QueueResourceControl",
     )
     parser.add_argument("--target-domain", default="Ingolstadt21Traffic")
+    parser.add_argument(
+        "--information-track",
+        default="domain_blind_external_holdout",
+    )
+    parser.add_argument(
+        "--source-selection-mode",
+        default="domain_blind_exclude_nearest",
+    )
+    parser.add_argument("--source-split-heldout", default="")
+    parser.add_argument(
+        "--heldout-task-family-identifier-used",
+        action="store_true",
+    )
     args = parser.parse_args()
     payload = analyze(
         args.paths,
@@ -220,6 +244,12 @@ def main():
         excluded_nearest_source_analogue=(
             args.excluded_nearest_source_analogue),
         target_domain=args.target_domain,
+        information_track=args.information_track,
+        source_selection_mode=args.source_selection_mode,
+        source_split_heldout=(
+            args.source_split_heldout.strip() or None),
+        heldout_task_family_identifier_used=(
+            args.heldout_task_family_identifier_used),
     )
     _atomic_json(args.out, payload)
     print(json.dumps({

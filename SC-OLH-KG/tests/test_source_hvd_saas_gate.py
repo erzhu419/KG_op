@@ -6,7 +6,10 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from performance.analyze_source_hvd_saas_gate import analyze  # noqa: E402
+from performance.analyze_source_hvd_saas_gate import (  # noqa: E402
+    analyze,
+    analyze_record_shards,
+)
 
 
 def _write_row(root, mode, seed, *, rmse, coverage, correlation):
@@ -112,3 +115,45 @@ def test_gate_rejects_cross_domain_median_masking(tmp_path):
     assert report["gate"]["promote_hvd_as_core"] is False
     assert report["gate"][
         "retain_as_domain_conditional_calibration_component"] is True
+
+
+def test_analyzer_accepts_hash_bound_compact_record_shards(tmp_path):
+    records = []
+    for mode, rmse, corr in (
+        ("pooled", 0.8, 0.1),
+        ("cumulative_factor", 0.4, 0.6),
+    ):
+        records.append({
+            "track_id": "source_hvd_causal_gate_d1000_n13",
+            "status": "ok",
+            "method_identity": (
+                f"canonical_saasbo_every_iteration+hvd:{mode}"),
+            "domain": "FactorShockStatePolicyRZDT1",
+            "seed": 80,
+            "path": f"/remote/{mode}.json",
+            "initial_design_fingerprint": "design",
+            "source_archive_fingerprint": "archive",
+            "target_search_calls": 13,
+            "target_verification_calls": 336,
+            "true_feasible": True,
+            "feasible_regret": 0.01,
+            "terminal_certified": True,
+            "false_certificate": False,
+            "aleatoric_log_variance_rmse": rmse,
+            "aleatoric_upper_coverage": 0.95,
+            "aleatoric_variance_shape_correlation": corr,
+        })
+    shard = tmp_path / "shard.json"
+    shard.write_text(json.dumps({
+        "origin": "unit",
+        "records_sha256": "receipt",
+        "records": records,
+    }), encoding="utf-8")
+    report = analyze_record_shards(
+        [shard],
+        expected_domains=["FactorShockStatePolicyRZDT1"],
+        expected_seeds=[80],
+    )
+    assert report["gate"]["promote_hvd_as_core"]
+    assert report["record_shard_receipts"][0][
+        "selected_row_count"] == 2

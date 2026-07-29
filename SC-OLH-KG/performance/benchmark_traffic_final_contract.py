@@ -42,7 +42,6 @@ from problems.traffic_ingolstadt21 import (  # noqa: E402
 )
 
 
-METHOD_LABEL = "PaperFinal-SourceProposal-SAAS"
 EXTERNAL_VERIFIER_CONTRACT = (
     "fresh_seed_familywise_exact_binomial_shortlist_v1")
 
@@ -89,6 +88,10 @@ def run_one(args):
         n0=int(args.n0),
         dimension=int(problem.d),
     )
+    method_label = str(args.method_label)
+    partition = str(args.partition_method)
+    if not method_label or not partition:
+        raise ValueError("paper traffic method and partition labels are required")
     output_dir = Path(args.output_dir)
     summary_path = output_dir / "summary.json"
     result_path = output_dir / "result.json"
@@ -155,8 +158,6 @@ def run_one(args):
         incumbent,
         shortlist_size=3,
     )
-    partition = (
-        f"paper_final_external_v1_seed{int(args.seed):04d}")
     result.update({
         "status": "ok",
         "frozen_terminal_shortlist": shortlist,
@@ -170,13 +171,14 @@ def run_one(args):
         "external_verifier_contract": EXTERNAL_VERIFIER_CONTRACT,
         "paper_frontend_contract_id": FRONTEND_CONTRACT_ID,
         "paper_backend_contract_id": BACKEND_CONTRACT_ID,
+        "source_selection_mode": design_payload["source_selection_mode"],
         "initial_design_contract": design_contract,
         "runtime": botorch_runtime_fingerprint(str(args.torch_device)),
         "wall_time_sec": float(time.time() - started),
     })
     summary = {
         "schema_version": 1,
-        "method": METHOD_LABEL,
+        "method": method_label,
         "partition_method": partition,
         "problem": TARGET_DOMAIN,
         "N": int(args.N),
@@ -227,6 +229,8 @@ def main():
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--checkpoint-dir", required=True)
     parser.add_argument("--seed", type=int, required=True)
+    parser.add_argument("--method-label", required=True)
+    parser.add_argument("--partition-method", required=True)
     parser.add_argument("--N", type=int, default=13)
     parser.add_argument("--n0", type=int, default=10)
     parser.add_argument("--weight-f1", type=float, default=0.5)

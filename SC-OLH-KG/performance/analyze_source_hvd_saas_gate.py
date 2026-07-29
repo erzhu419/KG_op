@@ -78,6 +78,48 @@ def _row(path):
     }
 
 
+def _row_from_compact_record(record):
+    if record.get("status") != "ok":
+        return None
+    identity = str(record.get("method_identity", ""))
+    marker = "+hvd:"
+    if marker not in identity:
+        return None
+    mode = identity.rsplit(marker, 1)[1]
+    if mode not in MODES:
+        return None
+    return {
+        "path": str(record.get("path", "")),
+        "mode": mode,
+        "heldout": str(record["domain"]),
+        "seed": int(record["seed"]),
+        "initial_points_fingerprint": str(
+            record["initial_design_fingerprint"]),
+        "source_archive_fingerprint": str(
+            record["source_archive_fingerprint"]),
+        "aleatoric_head_contract": identity,
+        "n_search": int(record["target_search_calls"]),
+        "n_verification": int(
+            record.get("target_verification_calls") or 0),
+        "true_feasible": bool(record["true_feasible"]),
+        "feasible_regret": (
+            float("inf")
+            if record.get("feasible_regret") is None
+            else float(record["feasible_regret"])
+        ),
+        "independently_certified": bool(
+            record.get("terminal_certified", False)),
+        "false_certification": bool(
+            record.get("false_certificate", False)),
+        "log_variance_rmse": float(
+            record["aleatoric_log_variance_rmse"]),
+        "upper_coverage": float(
+            record["aleatoric_upper_coverage"]),
+        "variance_shape_correlation": float(
+            record["aleatoric_variance_shape_correlation"]),
+    }
+
+
 def _summary(rows):
     finite_regret = [
         row["feasible_regret"] for row in rows
@@ -141,13 +183,14 @@ def _noninferiority_gate(pooled, factor):
     }
 
 
-def analyze(root, *, expected_domains=None, expected_seeds=None):
-    root = Path(root)
-    rows = [
-        row
-        for path in root.rglob("result.json")
-        if (row := _row(path)) is not None
-    ]
+def analyze_rows(
+    rows,
+    *,
+    evidence_source,
+    expected_domains=None,
+    expected_seeds=None,
+):
+    rows = [dict(row) for row in rows]
     by_key = {}
     for row in rows:
         key = (row["heldout"], row["seed"])
@@ -275,7 +318,7 @@ def analyze(root, *, expected_domains=None, expected_seeds=None):
         promoted_domains and not gate["promote_hvd_as_core"])
     return {
         "schema_version": 1,
-        "root": str(root),
+        "evidence_source": str(evidence_source),
         "row_count": int(len(rows)),
         "summaries": summaries,
         "summaries_by_domain": summaries_by_domain,
@@ -290,10 +333,65 @@ def analyze(root, *, expected_domains=None, expected_seeds=None):
     }
 
 
+def analyze(root, *, expected_domains=None, expected_seeds=None):
+    root = Path(root)
+    rows = [
+        row
+        for path in root.rglob("result.json")
+        if (row := _row(path)) is not None
+    ]
+    return analyze_rows(
+        rows,
+        evidence_source=root,
+        expected_domains=expected_domains,
+        expected_seeds=expected_seeds,
+    )
+
+
+def analyze_record_shards(
+    paths,
+    *,
+    track_id="source_hvd_causal_gate_d1000_n13",
+    expected_domains=None,
+    expected_seeds=None,
+):
+    rows = []
+    shard_receipts = []
+    for path in map(Path, paths):
+        payload = _read_json(path)
+        selected = [
+            row
+            for record in payload.get("records", ())
+            if str(record.get("track_id")) == str(track_id)
+            if (row := _row_from_compact_record(record)) is not None
+        ]
+        rows.extend(selected)
+        shard_receipts.append({
+            "path": str(path),
+            "origin": payload.get("origin"),
+            "records_sha256": payload.get("records_sha256"),
+            "selected_row_count": len(selected),
+        })
+    report = analyze_rows(
+        rows,
+        evidence_source="remote_compact_record_shards",
+        expected_domains=expected_domains,
+        expected_seeds=expected_seeds,
+    )
+    report["record_shard_receipts"] = shard_receipts
+    return report
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root", required=True)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--root")
+    source.add_argument("--record-shard", action="append")
     parser.add_argument("--out", required=True)
+    parser.add_argument(
+        "--track-id",
+        default="source_hvd_causal_gate_d1000_n13",
+    )
     parser.add_argument(
         "--expected-domains",
         default=",".join(DEFAULT_DOMAINS),
@@ -301,16 +399,26 @@ def main():
     parser.add_argument("--seed-start", type=int, default=80)
     parser.add_argument("--n-seeds", type=int, default=5)
     args = parser.parse_args()
-    report = analyze(
-        args.root,
-        expected_domains=[
-            item.strip()
-            for item in args.expected_domains.split(",")
-            if item.strip()
-        ],
-        expected_seeds=range(
-            args.seed_start, args.seed_start + args.n_seeds),
-    )
+    expected_domains = [
+        item.strip()
+        for item in args.expected_domains.split(",")
+        if item.strip()
+    ]
+    expected_seeds = range(
+        args.seed_start, args.seed_start + args.n_seeds)
+    if args.root:
+        report = analyze(
+            args.root,
+            expected_domains=expected_domains,
+            expected_seeds=expected_seeds,
+        )
+    else:
+        report = analyze_record_shards(
+            args.record_shard,
+            track_id=args.track_id,
+            expected_domains=expected_domains,
+            expected_seeds=expected_seeds,
+        )
     _atomic_json(args.out, report)
     print(json.dumps(report["gate"], indent=2, sort_keys=True))
 

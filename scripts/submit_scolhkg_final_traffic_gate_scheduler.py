@@ -13,6 +13,16 @@ import time
 
 
 ROOT = Path(__file__).resolve().parents[1]
+PROJECT_SOURCE = ROOT / "SC-OLH-KG"
+sys.path.insert(0, str(PROJECT_SOURCE))
+
+from performance.task_descriptor_retrieval import (  # noqa: E402
+    DESCRIPTOR_NEAREST,
+    SOURCE_SELECTION_MODES,
+    source_selection_contract,
+    traffic_method_label,
+)
+
 SYNC = ROOT / "scripts/sync_scolhkg_scheduler_deploy.sh"
 DEFAULT_SCHEDULER = Path.home() / "mine_code/scheduleurm/skill/scheduler.py"
 DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
@@ -23,8 +33,7 @@ BOTORCH_OVERLAY = Path(
 SUMO_PKG = Path(
     "/home/zhengliang01/scheduleurm_work/python_pkgs/eclipse_sumo_1_25")
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
-GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
-METHOD_LABEL = "PaperFinal-SourceProposal-SAAS"
+GPU_NODES = ("jtl110gpu", "node007")
 
 
 def _sumo_env(cpu):
@@ -55,6 +64,10 @@ def _sumo_env(cpu):
 
 
 def build_specs(args):
+    source_selection_mode = str(getattr(
+        args, "source_selection_mode", DESCRIPTOR_NEAREST))
+    selection = source_selection_contract(source_selection_mode)
+    method_label = traffic_method_label(source_selection_mode)
     gpu_nodes = [
         node.strip()
         for node in str(getattr(
@@ -76,9 +89,10 @@ def build_specs(args):
         project / "performance/manifests/v18b_exactkg_mcdiag.json")
     archive = (
         project / "archives" / args.archive_run_id
-        / "QueueResourceControl"
-        / "heldout_QueueResourceControl.json"
+        / selection.source_split_heldout
+        / f"heldout_{selection.source_split_heldout}.json"
     )
+    gpu_runner = deploy / "scripts/run_scolhkg_traffic_gpu_python.sh"
     design = (
         project / "archives" / args.run_id / "traffic"
         / "source_initial_designs.json"
@@ -94,6 +108,7 @@ def build_specs(args):
         "--n0", str(args.n0),
         "--seed-start", str(args.seed_start),
         "--n-seeds", str(args.n_seeds),
+        "--source-selection-mode", selection.mode,
     ]
     specs = [{
         "description": "paper final external traffic source proposal",
@@ -131,12 +146,14 @@ def build_specs(args):
             "SCOLHKG_TORCH_DETERMINISTIC=1",
             "CUBLAS_WORKSPACE_CONFIG=:4096:8",
             "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
-            str(REMOTE_PYTHON),
+            str(gpu_runner),
             "performance/benchmark_traffic_final_contract.py",
             "--initial-design-file", str(design),
             "--output-dir", str(run_dir),
             "--checkpoint-dir", str(checkpoint_dir),
             "--seed", str(seed),
+            "--method-label", method_label,
+            "--partition-method", partition,
             "--N", str(args.N),
             "--n0", str(args.n0),
             "--torch-device", "cuda",
@@ -172,7 +189,7 @@ def build_specs(args):
             *_sumo_env(args.cpu),
             str(REMOTE_PYTHON),
             "-m", "experiments.ingolstadt21.validate_oos_feasibility",
-            "--method", METHOD_LABEL,
+            "--method", method_label,
             "--partition", partition,
             "--R", str(args.R),
             "--seed-start", str(
@@ -221,10 +238,16 @@ def build_specs(args):
         "--target-probability", "0.95",
         "--familywise-delta", "0.05",
         "--source-domains",
-        "FactorShockStatePolicyRZDT1,InventorySupplyChain",
-        "--excluded-nearest-source-analogue", "QueueResourceControl",
+        ",".join(selection.source_domains),
+        "--excluded-nearest-source-analogue",
+        selection.source_split_heldout,
+        "--information-track", selection.track,
+        "--source-selection-mode", selection.mode,
+        "--source-split-heldout", selection.source_split_heldout,
         "--target-domain", "Ingolstadt21Traffic",
     ]
+    if selection.heldout_task_family_identifier_used:
+        analyze_cmd.append("--heldout-task-family-identifier-used")
     specs.append({
         "description": "paper final external traffic aggregate audit",
         "cmd": f"{shlex.join(analyze_cmd)} && echo DONE",
@@ -254,6 +277,11 @@ def main():
     parser.add_argument(
         "--archive-run-id",
         default="transfer_source_informed_official_n20_s20_20260716",
+    )
+    parser.add_argument(
+        "--source-selection-mode",
+        choices=SOURCE_SELECTION_MODES,
+        default=DESCRIPTOR_NEAREST,
     )
     parser.add_argument("--source-d", type=int, default=50)
     parser.add_argument("--seed-start", type=int, default=80)
@@ -318,11 +346,8 @@ def main():
         "task_count": len(specs),
         "task_ids": task_ids,
         "contract": {
-            "source_domains": [
-                "FactorShockStatePolicyRZDT1",
-                "InventorySupplyChain",
-            ],
-            "excluded_nearest_source_analogue": "QueueResourceControl",
+            "source_selection": source_selection_contract(
+                args.source_selection_mode).as_dict(),
             "source_calls": 384,
             "target_domain": "Ingolstadt21Traffic",
             "target_search_calls": int(args.N),
