@@ -663,6 +663,33 @@ def audit_track(records, specification):
                 "kind": "target_search_budget_mismatch",
                 "count": len(bad),
             })
+    required_search_calls_by_method = {
+        str(method): int(value)
+        for method, value in specification.get(
+            "required_search_calls_by_method", {}
+        ).items()
+    }
+    if required_search_calls_by_method:
+        missing_budget_contracts = (
+            expected_methods - set(required_search_calls_by_method)
+        )
+        if missing_budget_contracts:
+            failures.append({
+                "kind": "missing_method_search_budget_contract",
+                "methods": sorted(missing_budget_contracts),
+            })
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row["method_identity"] in required_search_calls_by_method
+            if row["target_search_calls"]
+            != required_search_calls_by_method[row["method_identity"]]
+        ]
+        if bad:
+            failures.append({
+                "kind": "method_search_budget_mismatch",
+                "count": len(bad),
+            })
     required_optimization_calls = specification.get(
         "required_optimization_calls")
     if required_optimization_calls is not None:

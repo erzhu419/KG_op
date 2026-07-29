@@ -345,6 +345,48 @@ def test_track_audit_enforces_method_specific_source_budgets(tmp_path):
     )
 
 
+def test_track_audit_enforces_method_specific_search_budgets(tmp_path):
+    proposal = tmp_path / "search" / "proposal" / "result.json"
+    backend = tmp_path / "search" / "backend" / "result.json"
+    _write_result(proposal, method="proposal", seed=80)
+    _write_result(backend, method="botorch_saasbo", seed=80)
+    proposal_payload = json.loads(
+        proposal.read_text(encoding="utf-8"))
+    proposal_payload["information_contract"]["target_search_calls"] = 10
+    proposal_payload["result"]["n_search_simulations"] = 10
+    proposal_payload["result"].pop("algorithm_fidelity")
+    proposal_payload["result"].pop("saas_nuts_schedule")
+    proposal.write_text(json.dumps(proposal_payload), encoding="utf-8")
+    registry = {
+        "registry_id": "search-budgets",
+        "tracks": [{
+            "track_id": "search",
+            "result_root": "search",
+            "expected_method_identities": [
+                "proposal",
+                "canonical_saasbo_every_iteration",
+            ],
+            "expected_domains": ["QueueResourceControl"],
+            "expected_seeds": [80],
+            "required_search_calls_by_method": {
+                "proposal": 10,
+                "canonical_saasbo_every_iteration": 13,
+            },
+        }],
+    }
+    audit = build_audit(registry, root=tmp_path)
+    assert audit["status"] == "pass", audit
+
+    registry["tracks"][0]["required_search_calls_by_method"][
+        "proposal"
+    ] = 11
+    failed = build_audit(registry, root=tmp_path)
+    assert any(
+        row["kind"] == "method_search_budget_mismatch"
+        for row in failed["track_audits"][0]["failures"]
+    )
+
+
 def test_result_sources_select_repaired_methods_without_duplicate_cells(
     tmp_path,
 ):

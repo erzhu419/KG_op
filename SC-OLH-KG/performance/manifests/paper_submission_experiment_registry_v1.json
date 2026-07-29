@@ -398,6 +398,95 @@
         "verifier_signature"
       ],
       "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "final_frozen_source_frontend_backend_d1000_n13",
+      "result_root": "paper_final_frozen_source_27d55e0_d1000_n13_s80_99_v1",
+      "expected_method_identities": [
+        "frozen_crossdim_proposal_only",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code",
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "required_source_calls": 384,
+      "required_search_calls_by_method": {
+        "frozen_crossdim_proposal_only": 10,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 13,
+        "canonical_saasbo_every_iteration": 13
+      },
+      "paired_equality_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ],
+      "required_execution_provenance_status": "frozen",
+      "allowed_execution_commits": [
+        "27d55e0d5f265034f91ee7b3f7988dd8233881e5"
+      ],
+      "required_scolhkg_tree": "bc2aa8763ed29c9935757c130febe05dc91d30f5",
+      "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
+      "required_method_contract_by_method": {
+        "frozen_crossdim_proposal_only": "or_transfer_frontend_proposal_only_ablation_v1",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": "or_transfer_frontend_stacked_gp_ablation_v1",
+        "canonical_saasbo_every_iteration": "or_transfer_frontend_saas_v1"
+      },
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "final_frozen_sobol_frontend_control_d1000_n13",
+      "result_root": "paper_final_frozen_sobol_27d55e0_d1000_n13_s80_99_v1",
+      "expected_method_identities": [
+        "common_sobol_proposal_only",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code",
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "required_source_calls_by_method": {
+        "common_sobol_proposal_only": 0,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 384,
+        "canonical_saasbo_every_iteration": 0
+      },
+      "required_search_calls_by_method": {
+        "common_sobol_proposal_only": 10,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 13,
+        "canonical_saasbo_every_iteration": 13
+      },
+      "paired_equality_fields": [
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ],
+      "required_execution_provenance_status": "frozen",
+      "allowed_execution_commits": [
+        "27d55e0d5f265034f91ee7b3f7988dd8233881e5"
+      ],
+      "required_scolhkg_tree": "bc2aa8763ed29c9935757c130febe05dc91d30f5",
+      "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
+      "required_method_contract_by_method": {
+        "common_sobol_proposal_only": "or_transfer_frontend_proposal_only_ablation_v1",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": "or_transfer_frontend_stacked_gp_ablation_v1",
+        "canonical_saasbo_every_iteration": "or_transfer_frontend_saas_v1"
+      },
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
     }
   ],
   "primary_comparisons": [
@@ -826,6 +915,82 @@
         "optimization_calls_excluding_verification",
         "verifier_signature"
       ]
+    },
+    {
+      "comparison_id": "frozen_source_saas_vs_proposal_only",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_frozen_source_frontend_backend_d1000_n13",
+      "right_method": "frozen_crossdim_proposal_only",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "frozen_source_saas_vs_stacked_gp",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_frozen_source_frontend_backend_d1000_n13",
+      "right_method": "stacked_transfer_gp_cbo:official_transfergpbo_code",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "frozen_source_vs_sobol_proposal_only",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
+      "left_method": "frozen_crossdim_proposal_only",
+      "right_track": "final_frozen_sobol_frontend_control_d1000_n13",
+      "right_method": "common_sobol_proposal_only",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "frozen_source_vs_sobol_saas",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_frozen_sobol_frontend_control_d1000_n13",
+      "right_method": "canonical_saasbo_every_iteration",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ]
     }
   ],
   "active_gate_runs": [
@@ -866,6 +1031,22 @@
       "target_dimensions": [5],
       "target_search_budgets": [13],
       "expected_search_seed_count": 20
+    },
+    {
+      "gate_id": "final_immutable_source_replay",
+      "run_id": "paper_final_frozen_source_27d55e0_d1000_n13_s80_99_v1",
+      "code_commit": "27d55e0d5f265034f91ee7b3f7988dd8233881e5",
+      "expected_task_count": 180,
+      "expected_search_seed_count": 20,
+      "historical_result_rows_reused": 0
+    },
+    {
+      "gate_id": "final_immutable_sobol_replay",
+      "run_id": "paper_final_frozen_sobol_27d55e0_d1000_n13_s80_99_v1",
+      "code_commit": "27d55e0d5f265034f91ee7b3f7988dd8233881e5",
+      "expected_task_count": 180,
+      "expected_search_seed_count": 20,
+      "historical_result_rows_reused": 0
     }
   ],
   "separate_non_gaussian_external_artifacts": {
