@@ -103,6 +103,9 @@ def validate_release_inputs(
     )
     snapshot_support = method_contract.get(
         "supporting_evidence", {}).get("immutable_execution_snapshot", {})
+    traffic_snapshot_support = method_contract.get(
+        "supporting_evidence", {}).get(
+            "external_traffic_execution_snapshot", {})
     _require(
         execution_snapshot.get("status") == "frozen"
         and execution_snapshot.get("repository_commit")
@@ -128,6 +131,35 @@ def validate_release_inputs(
     _require(
         audit.get("registry_id") == registry.get("registry_id"),
         "audit and experiment registry identities differ",
+        failures,
+    )
+    traffic_execution = traffic.get("execution_provenance", {})
+    _require(
+        traffic_execution.get("status") == "frozen"
+        and traffic_execution.get("repository_commit")
+        == traffic_snapshot_support.get("repository_commit")
+        and traffic_execution.get("scolhkg_tree")
+        == traffic_snapshot_support.get("scolhkg_tree")
+        and traffic_execution.get("proof_tree")
+        == traffic_snapshot_support.get("proof_tree")
+        and traffic_execution.get("scripts_tree")
+        == traffic_snapshot_support.get("scripts_tree")
+        and traffic_execution.get("legacy_traffic_tree")
+        == traffic_snapshot_support.get("legacy_traffic_tree")
+        and traffic_execution.get("traffic_decision_space_blob")
+        == traffic_snapshot_support.get("traffic_decision_space_blob")
+        and traffic_execution.get("traffic_baseline_blob")
+        == traffic_snapshot_support.get("traffic_baseline_blob")
+        and traffic_execution.get("method_contract_id")
+        == FINAL_CONTRACT_ID
+        and traffic_execution.get("theory_contract_id")
+        == "source_target_geometric_atlas_coverage_v1"
+        and traffic_execution.get(
+            "runtime_checkpoints_or_model_weights_in_snapshot") is False
+        and traffic_execution.get(
+            "target_outcomes_used_to_select_snapshot") is False,
+        "external traffic evidence is not bound to the registered sparse "
+        "traffic execution snapshot",
         failures,
     )
     _require(
@@ -727,6 +759,7 @@ def build_release(
         raise ValueError(
             "paper release validation failed:\n- " + "\n- ".join(failures))
     hvd_release_role = _hvd_release_role(hvd_causal_gate)
+    traffic_execution = traffic["execution_provenance"]
     paths = {
         "method_contract": Path(method_contract_path),
         "experiment_registry": Path(registry_path),
@@ -799,6 +832,18 @@ def build_release(
             "target_verification_calls_per_run": int(
                 traffic["target_verification_calls_per_run"]),
             "information_contract": traffic["information_contract"],
+            "execution_snapshot": {
+                key: traffic_execution[key]
+                for key in (
+                    "repository_commit",
+                    "scolhkg_tree",
+                    "proof_tree",
+                    "scripts_tree",
+                    "legacy_traffic_tree",
+                    "traffic_decision_space_blob",
+                    "traffic_baseline_blob",
+                )
+            },
         },
         "external_traffic_negative_control": {
             "n_seeds": int(traffic_negative_control["n_seeds"]),

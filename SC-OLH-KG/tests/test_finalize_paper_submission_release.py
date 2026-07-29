@@ -191,6 +191,21 @@ def _fixtures(tmp_path):
         "target_search_calls_per_run": 13,
         "target_verification_calls_per_run": 300,
         "policy_vectors_exported": False,
+        "execution_provenance": {
+            "status": "frozen",
+            "repository_commit": "1" * 40,
+            "scolhkg_tree": "2" * 40,
+            "proof_tree": "3" * 40,
+            "scripts_tree": "4" * 40,
+            "legacy_traffic_tree": "5" * 40,
+            "traffic_decision_space_blob": "6" * 40,
+            "traffic_baseline_blob": "7" * 40,
+            "method_contract_id": "or_transfer_frontend_saas_v1",
+            "theory_contract_id": (
+                "source_target_geometric_atlas_coverage_v1"),
+            "runtime_checkpoints_or_model_weights_in_snapshot": False,
+            "target_outcomes_used_to_select_snapshot": False,
+        },
         "information_contract": {
             "track": "descriptor_conditional_external_holdout",
             "source_selection_mode": "descriptor_nearest",
@@ -273,6 +288,15 @@ def _fixtures(tmp_path):
     })
     method_payload = json.loads(method.read_text(encoding="utf-8"))
     method_payload["supporting_evidence"] = {
+        "external_traffic_execution_snapshot": {
+            "repository_commit": "1" * 40,
+            "scolhkg_tree": "2" * 40,
+            "proof_tree": "3" * 40,
+            "scripts_tree": "4" * 40,
+            "legacy_traffic_tree": "5" * 40,
+            "traffic_decision_space_blob": "6" * 40,
+            "traffic_baseline_blob": "7" * 40,
+        },
         "immutable_execution_snapshot": {
             "repository_commit": "a" * 40,
             "scolhkg_tree": "b" * 40,
@@ -489,3 +513,28 @@ def test_release_accepts_preregistered_positive_hvd_decision(tmp_path):
     assert release["hvd_causal_decision"]["promote_hvd_as_core"] is True
     assert release["hvd_causal_decision"]["paper_role"] == (
         "core_cumulative_risk_calibration_contribution")
+
+
+def test_release_rejects_unregistered_traffic_snapshot(tmp_path):
+    paths = _fixtures(tmp_path)
+    traffic = json.loads(paths[5].read_text(encoding="utf-8"))
+    traffic["execution_provenance"]["legacy_traffic_tree"] = "8" * 40
+    paths[5].write_text(json.dumps(traffic), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="traffic execution snapshot"):
+        build_release(
+            method_contract_path=paths[0],
+            registry_path=paths[1],
+            audit_path=paths[2],
+            statistics_path=paths[3],
+            convergence_path=paths[4],
+            traffic_path=paths[5],
+            traffic_negative_control_path=paths[6],
+            proposal_coverage_path=paths[7],
+            proof_receipt_path=paths[8],
+            execution_snapshot_path=paths[9],
+            hvd_causal_gate_path=paths[10],
+            dimension_frontier_path=paths[11],
+            artifact_manifest_path=paths[12],
+            repository_commit="commit",
+        )
