@@ -88,12 +88,39 @@ def build_specs(args, manifest):
     return specs
 
 
+def load_or_materialize_manifest(args):
+    manifest_path = (
+        Path(args.deploy) / "SC-OLH-KG" / "archives" / args.run_id
+        / "uniform_verification_manifest.json"
+    )
+    if args.reuse_existing_manifest:
+        if not manifest_path.is_file():
+            raise FileNotFoundError(
+                f"frozen uniform verifier manifest is missing: "
+                f"{manifest_path}"
+            )
+        return json.loads(manifest_path.read_text(encoding="utf-8"))
+    if not args.audit or not args.selection:
+        raise ValueError(
+            "--audit and --selection are required unless "
+            "--reuse-existing-manifest is set"
+        )
+    audit = json.loads(Path(args.audit).read_text(encoding="utf-8"))
+    return materialize(
+        audit,
+        selections=args.selection,
+        candidate_count=2,
+        candidate_budget=args.candidate_budget,
+        familywise_delta=args.familywise_delta,
+    )
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
     parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
-    parser.add_argument("--audit", required=True)
-    parser.add_argument("--selection", action="append", required=True)
+    parser.add_argument("--audit", default="")
+    parser.add_argument("--selection", action="append", default=[])
     parser.add_argument(
         "--run-id",
         default=f"paper_uniform_verifier_{time.strftime('%Y%m%d_%H%M%S')}",
@@ -105,6 +132,15 @@ def main():
     parser.add_argument("--cpu", type=int, default=8)
     parser.add_argument("--ram-mb", type=int, default=8192)
     parser.add_argument(
+        "--reuse-existing-manifest",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    parser.add_argument(
+        "--registration-name",
+        default="submission_manifest.json",
+    )
+    parser.add_argument(
         "--sync-remote",
         action=argparse.BooleanOptionalAction,
         default=True,
@@ -113,14 +149,7 @@ def main():
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    audit = json.loads(Path(args.audit).read_text(encoding="utf-8"))
-    manifest = materialize(
-        audit,
-        selections=args.selection,
-        candidate_count=2,
-        candidate_budget=args.candidate_budget,
-        familywise_delta=args.familywise_delta,
-    )
+    manifest = load_or_materialize_manifest(args)
     expected = int(args.expected_per_selection)
     if expected > 0 and any(
         int(count) != expected
@@ -143,7 +172,8 @@ def main():
             "specs": specs,
         }, indent=2))
         return
-    _atomic_json(manifest_path, manifest)
+    if not args.reuse_existing_manifest:
+        _atomic_json(manifest_path, manifest)
     if args.sync_remote:
         subprocess.run([str(SYNC)], cwd=ROOT, check=True)
     output = subprocess.check_output(
@@ -177,10 +207,11 @@ def main():
         "task_count": len(task_ids),
         "task_ids": task_ids,
         "checkpoint_or_model_artifacts_transferred": False,
+        "reused_existing_manifest": bool(args.reuse_existing_manifest),
     }
     _atomic_json(
         Path(args.deploy) / "SC-OLH-KG" / "profiles" / args.run_id
-        / "submission_manifest.json",
+        / args.registration_name,
         registration,
     )
     if args.dispatch and task_ids:
