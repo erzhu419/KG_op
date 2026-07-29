@@ -310,7 +310,7 @@
     },
     {
       "track_id": "legacy_related_family_bridge_d5_n13",
-      "result_root": "paper_final_legacy_bridge_noprovider_3f8e46c_d5_n13_s80_99_v2",
+      "result_root": "paper_final_frozen_legacy_bridge_da01f40_d5_n13_s80_99_v1",
       "expected_method_identities": [
         "canonical_saasbo_every_iteration"
       ],
@@ -326,6 +326,21 @@
       ],
       "required_source_calls": 384,
       "required_search_calls": 13,
+      "required_execution_provenance_status": "frozen",
+      "allowed_execution_commits": [
+        "da01f40dfce175cd9bb723ba680ef6c719ec7ad6"
+      ],
+      "required_scolhkg_tree": "17f40e0c2105b6aae5aa0f2dfe373ad3cec2a2a3",
+      "required_proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
+      "required_scripts_tree": "c766fb254d4d6e588726c4c3edf532bae2e84913",
+      "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
+      "required_method_contract_id": "or_transfer_frontend_saas_v1",
+      "required_false_fields": [
+        "source_oracle_aided",
+        "target_oracle_used_for_selection",
+        "terminal_verification_updates_optimizer",
+        "terminal_verification_target_oracle_used"
+      ],
       "disallowed_method_identities": ["saasbo_periodic_capped"]
     },
     {
@@ -1145,11 +1160,15 @@
     },
     {
       "gate_id": "legacy_related_family_bridge",
-      "run_id": "paper_final_legacy_bridge_noprovider_3f8e46c_d5_n13_s80_99_v2",
-      "code_commit": "3f8e46c",
+      "run_id": "paper_final_frozen_legacy_bridge_da01f40_d5_n13_s80_99_v1",
+      "code_commit": "da01f40dfce175cd9bb723ba680ef6c719ec7ad6",
+      "task_id_range": ["t61678", "t61738"],
+      "expected_task_count": 61,
       "target_dimensions": [5],
       "target_search_budgets": [13],
-      "expected_search_seed_count": 20
+      "expected_search_seed_count": 20,
+      "historical_result_rows_reused": 0,
+      "execution_snapshot": "paper_artifacts/execution_snapshots/da01f40dfce175cd9bb723ba680ef6c719ec7ad6.json"
     },
     {
       "gate_id": "final_immutable_source_replay",
