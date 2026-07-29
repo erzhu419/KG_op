@@ -190,3 +190,41 @@ def test_target_only_can_use_byte_identical_common_sobol(tmp_path):
     assert payload["information_contract"]["initial_design_contract"] == (
         "byte_identical_common_sobol_n0"
     )
+
+
+def test_external_frozen_design_uses_audited_source_cost_override(tmp_path):
+    points = [tuple([value] * 8) for value in (5, 25, 50, 75)]
+    design_path = tmp_path / "external_source_initial_designs.json"
+    design_path.write_text(json.dumps({
+        "schema_version": 1,
+        "design_kind": "frozen_source_informed_risk_objective_atlas",
+        "proposal_mode": "risk_objective_atlas",
+        "structural_prior_profile": "low_frequency_only",
+        "heldout_target_domain": "PaperRZDT1",
+        "dimension": 8,
+        "source_dimension": 50,
+        "n0": 4,
+        "source_archive_fingerprint": "external-source-fingerprint",
+        "source_archive_simulator_calls": 384,
+        "source_archive_oracle_aided": False,
+        "target_labels_used": False,
+        "target_oracle_used": False,
+        "designs": {
+            "3": {
+                "points": [list(point) for point in points],
+                "fingerprint": integer_design_fingerprint(points),
+            },
+        },
+    }), encoding="utf-8")
+    args = _args(tmp_path, "shared_archive_n20")
+    args.heldout = "PaperRZDT1"
+    args.initial_design_file = str(design_path)
+    args.offline_source_calls_override = 384
+
+    payload = run_one(args)
+
+    assert payload["status"] == "ok"
+    assert payload["information_contract"]["offline_source_calls"] == 384
+    assert payload["information_contract"][
+        "offline_source_calls_explicit_override"
+    ] is True

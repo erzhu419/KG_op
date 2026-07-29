@@ -316,6 +316,7 @@ def run_one(args):
         "terminal_safe_interior_require_provider": True,
         "initial_design_file": "",
         "source_archive_file": "",
+        "offline_source_calls_override": 0,
         "aleatoric_head_mode": "nominal",
         "source_hvd_calibration_delta": 0.05,
         "source_hvd_calibration_quantile": 0.95,
@@ -326,6 +327,8 @@ def run_one(args):
             setattr(args, name, value)
     if args.protocol not in PROTOCOLS:
         raise ValueError(f"unknown fairness protocol {args.protocol!r}")
+    if int(getattr(args, "offline_source_calls_override", 0)) < 0:
+        raise ValueError("offline source-call override cannot be negative")
     protocol = PROTOCOLS[args.protocol]
     lodo_config = oracle_free_lodo_config(args.manifest)
     problem = build_scalarized_problem(
@@ -386,6 +389,23 @@ def run_one(args):
             archive_diagnostics = prior.diagnostics()
             archive_fingerprint = _fingerprint(archive_diagnostics)
         offline_calls = source_archive_cost(lodo_config, args.heldout)
+        declared_source_calls = int(getattr(
+            args, "offline_source_calls_override", 0))
+        if declared_source_calls > 0:
+            if not args.initial_design_file:
+                raise ValueError(
+                    "source-call override requires a frozen design artifact")
+            design_payload = json.loads(Path(
+                args.initial_design_file).read_text(encoding="utf-8"))
+            artifact_source_calls = design_payload.get(
+                "source_archive_simulator_calls")
+            if (
+                artifact_source_calls is not None
+                and int(artifact_source_calls) != declared_source_calls
+            ):
+                raise ValueError(
+                    "source-call override disagrees with design artifact")
+            offline_calls = declared_source_calls
     aleatoric_head_mode = str(
         args.aleatoric_head_mode).strip().lower()
     if aleatoric_head_mode != "nominal":
@@ -526,6 +546,8 @@ def run_one(args):
             "source_true_sigma_used": False,
             "target_oracle_used_for_selection": False,
             "offline_source_calls": int(offline_calls),
+            "offline_source_calls_explicit_override": bool(
+                int(getattr(args, "offline_source_calls_override", 0)) > 0),
             "target_dimension": int(args.d),
             "target_initial_calls_n0": int(args.n0),
             "target_calls": int(target_budget),
@@ -678,6 +700,15 @@ def main():
         help=(
             "Frozen replicated source archive used by a pooled or cumulative "
             "aleatoric head. It must fingerprint-match the proposal archive."
+        ),
+    )
+    parser.add_argument(
+        "--offline-source-calls-override",
+        type=int,
+        default=0,
+        help=(
+            "Explicit source cost for an external frozen proposal artifact. "
+            "The artifact must declare the same cost when the field exists."
         ),
     )
     parser.add_argument(
