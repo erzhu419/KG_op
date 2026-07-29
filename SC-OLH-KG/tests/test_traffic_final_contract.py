@@ -86,7 +86,7 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
         "node001", "node002", "node003",
         "node004", "node005", "node006",
     ]
-    expected_gpu_nodes = ["jtl110gpu", "node007"]
+    expected_gpu_nodes = ["jtl110gpu", "jtl110gpu2", "node007"]
     assert all("jtl311linux" not in str(spec) for spec in specs)
     search = [spec for spec in specs if "/search/" in spec["signature"]]
     oos = [spec for spec in specs if "/oos/" in spec["signature"]]
@@ -95,7 +95,7 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
     assert len(oos) == 2
     assert all(
         spec["allowed_nodes"] == expected_gpu_nodes for spec in search)
-    assert all(spec["vram"] == 8192 for spec in search)
+    assert all(spec["vram"] == 2048 for spec in search)
     assert all(spec["project"] == "KG-SYNTH" for spec in search)
     assert all("--torch-device cuda" in spec["cmd"] for spec in search)
     assert all(

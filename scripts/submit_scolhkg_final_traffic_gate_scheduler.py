@@ -24,6 +24,8 @@ from performance.task_descriptor_retrieval import (  # noqa: E402
 )
 
 SYNC = ROOT / "scripts/sync_scolhkg_scheduler_deploy.sh"
+SYNC_TRAFFIC_ASSETS = (
+    ROOT / "scripts/sync_scolhkg_traffic_problem_assets.sh")
 DEFAULT_SCHEDULER = Path.home() / "mine_code/scheduleurm/skill/scheduler.py"
 DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
 REMOTE_PYTHON = Path(
@@ -320,6 +322,8 @@ def main():
         return
     if args.sync_remote:
         subprocess.run([str(SYNC)], cwd=ROOT, check=True)
+        subprocess.run(
+            [str(SYNC_TRAFFIC_ASSETS)], cwd=ROOT, check=True)
     output = subprocess.check_output(
         [
             sys.executable,
