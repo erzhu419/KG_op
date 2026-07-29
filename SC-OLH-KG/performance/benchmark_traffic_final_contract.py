@@ -27,6 +27,9 @@ from core.terminal_verification import (  # noqa: E402
     select_initial_empirical_objective_incumbent,
 )
 from performance.benchmark_quality import json_safe  # noqa: E402
+from performance.execution_provenance import (  # noqa: E402
+    attach_execution_provenance,
+)
 from performance.materialize_external_traffic_design import (  # noqa: E402
     TARGET_DOMAIN,
 )
@@ -176,6 +179,7 @@ def run_one(args):
         "runtime": botorch_runtime_fingerprint(str(args.torch_device)),
         "wall_time_sec": float(time.time() - started),
     })
+    attach_execution_provenance(result)
     summary = {
         "schema_version": 1,
         "method": method_label,
@@ -207,6 +211,7 @@ def run_one(args):
             "proposal_frozen_before_target_observations": True,
             "external_verification_pending": True,
         },
+        "execution_provenance": result["execution_provenance"],
     }
     _atomic_json(summary_path, summary)
     _atomic_json(result_path, result)

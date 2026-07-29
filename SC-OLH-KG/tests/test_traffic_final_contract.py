@@ -129,6 +129,64 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
     assert "--heldout-task-family-identifier-used" in aggregate["cmd"]
 
 
+def test_traffic_submitter_binds_sparse_execution_snapshot(tmp_path):
+    code_root = tmp_path / "snapshot"
+    code_root.mkdir()
+    marker = {
+        "status": "frozen",
+        "snapshot_kind": "traffic_sparse",
+        "repository_commit": "a" * 40,
+        "scolhkg_tree": "b" * 40,
+        "proof_tree": "c" * 40,
+        "scripts_tree": "d" * 40,
+        "legacy_traffic_tree": "e" * 40,
+        "traffic_decision_space_blob": "f" * 40,
+        "traffic_baseline_blob": "1" * 40,
+        "theory_contract_id": (
+            "source_target_geometric_atlas_coverage_v1"),
+        "snapshot_root": str(code_root),
+    }
+    (code_root / ".scolhkg_execution_snapshot.json").write_text(
+        json.dumps(marker),
+        encoding="utf-8",
+    )
+    args = SimpleNamespace(
+        deploy=tmp_path / "deploy",
+        code_root=code_root,
+        require_frozen_snapshot=True,
+        run_id="frozen",
+        archive_run_id="archive",
+        source_d=50,
+        seed_start=80,
+        n_seeds=1,
+        N=13,
+        n0=10,
+        R=100,
+        verification_seed_start=900000,
+        cpu=12,
+        ram_mb=24576,
+        source_selection_mode=DESCRIPTOR_NEAREST,
+    )
+
+    specs = build_specs(args)
+
+    assert len(specs) == 4
+    assert all(str(code_root / "SC-OLH-KG") in spec["cwd"]
+               for spec in specs)
+    assert all(
+        "SCOLHKG_EXECUTION_PROVENANCE_REQUIRED=1" in spec["cmd"]
+        for spec in specs
+    )
+    assert all(
+        f"SCOLHKG_LEGACY_TRAFFIC_TREE={'e' * 40}" in spec["cmd"]
+        for spec in specs
+    )
+    oos = next(
+        spec for spec in specs if "/oos/" in spec["signature"])
+    assert "run_traffic_oos_explicit.py" in oos["cmd"]
+    assert "--results-root" in oos["cmd"]
+
+
 def test_traffic_aggregate_records_domain_blind_information_contract(
     tmp_path,
 ):

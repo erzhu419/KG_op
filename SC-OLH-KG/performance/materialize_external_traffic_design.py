@@ -27,6 +27,9 @@ from performance.paper_method_contract import (  # noqa: E402
     FRONTEND_CONTRACT_ID,
     validate_frozen_proposal_payload,
 )
+from performance.execution_provenance import (  # noqa: E402
+    attach_execution_provenance,
+)
 from performance.structural_ablation import apply_structural_prior_profile  # noqa: E402
 from performance.task_descriptor_retrieval import (  # noqa: E402
     DOMAIN_BLIND_CONTROL,
@@ -161,6 +164,7 @@ def materialize_external_traffic_design(
     payload["paper_frontend_contract_audit"] = (
         validate_frozen_proposal_payload(payload, expected_n0=n0)
     )
+    attach_execution_provenance(payload)
     _atomic_json(output, payload)
     return payload
 

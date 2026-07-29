@@ -7,8 +7,17 @@ import argparse
 import json
 from pathlib import Path
 import statistics
+import sys
 
 from scipy.stats import beta
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from performance.execution_provenance import (  # noqa: E402
+    attach_execution_provenance,
+)
 
 
 def exact_binomial_lower(successes, trials, delta):
@@ -139,13 +148,25 @@ def analyze(
     heldout_task_family_identifier_used=False,
     redact_policy_vectors=True,
 ):
+    source_payloads = [
+        json.loads(Path(path).read_text(encoding="utf-8"))
+        for path in paths
+    ]
+    provenances = [
+        payload.get("execution_provenance")
+        for payload in source_payloads
+    ]
+    if any(provenance is not None for provenance in provenances):
+        if any(provenance != provenances[0] for provenance in provenances):
+            raise ValueError(
+                "traffic OOS payloads use different execution snapshots")
     rows = [
         audit_oos_payload(
-            json.loads(Path(path).read_text(encoding="utf-8")),
+            payload,
             target_probability=target_probability,
             familywise_delta=familywise_delta,
         )
-        for path in paths
+        for payload in source_payloads
     ]
     if not rows:
         raise ValueError("no traffic OOS payloads were provided")
@@ -157,7 +178,7 @@ def analyze(
             row.pop("deployed_x", None)
             for candidate in row.get("candidate_rows", ()):
                 candidate.pop("x", None)
-    return {
+    payload = {
         "schema_version": 1,
         "status": "complete",
         "n_seeds": len(rows),
@@ -197,6 +218,8 @@ def analyze(
         },
         "rows": sorted(rows, key=lambda row: row["run_seed"]),
     }
+    attach_execution_provenance(payload)
+    return payload
 
 
 def _atomic_json(path, payload):

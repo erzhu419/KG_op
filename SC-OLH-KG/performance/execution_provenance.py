@@ -15,6 +15,12 @@ ENV_FIELDS = {
     "theory_contract_id": "SCOLHKG_THEORY_CONTRACT_ID",
     "snapshot_root": "SCOLHKG_CODE_SNAPSHOT_ROOT",
 }
+TRAFFIC_ENV_FIELDS = {
+    "legacy_traffic_tree": "SCOLHKG_LEGACY_TRAFFIC_TREE",
+    "traffic_decision_space_blob": (
+        "SCOLHKG_TRAFFIC_DECISION_SPACE_BLOB"),
+    "traffic_baseline_blob": "SCOLHKG_TRAFFIC_BASELINE_BLOB",
+}
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 
 
@@ -53,6 +59,28 @@ def execution_provenance_from_env():
             raise RuntimeError(
                 f"{ENV_FIELDS[field]} must be a full 40-character Git hash"
             )
+    traffic_values = {
+        field: os.environ.get(variable, "").strip()
+        for field, variable in TRAFFIC_ENV_FIELDS.items()
+    }
+    if any(traffic_values.values()):
+        missing_traffic = [
+            TRAFFIC_ENV_FIELDS[field]
+            for field, value in traffic_values.items()
+            if not value
+        ]
+        if missing_traffic:
+            raise RuntimeError(
+                "incomplete frozen traffic provenance: "
+                + ", ".join(sorted(missing_traffic))
+            )
+        for field, value in traffic_values.items():
+            if HEX40.fullmatch(value) is None:
+                raise RuntimeError(
+                    f"{TRAFFIC_ENV_FIELDS[field]} must be a full "
+                    "40-character Git hash"
+                )
+        values.update(traffic_values)
     return {
         "status": "frozen",
         "required": required,

@@ -51,6 +51,29 @@ def _require(condition, message, failures):
         failures.append(str(message))
 
 
+def _hvd_release_role(hvd_causal_gate):
+    gate = hvd_causal_gate.get("gate", {})
+    domain_gates = hvd_causal_gate.get("domain_gates", {})
+    expected_promotion = bool(
+        domain_gates
+        and all(
+            value.get("promote_in_domain") is True
+            for value in domain_gates.values()
+        )
+    )
+    observed_promotion = gate.get("promote_hvd_as_core")
+    if observed_promotion is not expected_promotion:
+        raise ValueError(
+            "HVD promotion decision does not match the preregistered "
+            "all-domain gate"
+        )
+    if observed_promotion:
+        return "core_cumulative_risk_calibration_contribution"
+    if gate.get("retain_as_domain_conditional_calibration_component"):
+        return "domain_conditional_calibration_component"
+    return "mechanistic_negative_control_and_certification_ablation"
+
+
 def validate_release_inputs(
     method_contract,
     registry,
@@ -496,14 +519,19 @@ def validate_release_inputs(
         failures,
     )
     hvd_gate = hvd_causal_gate.get("gate", {})
+    try:
+        _hvd_release_role(hvd_causal_gate)
+        hvd_decision_consistent = True
+    except ValueError:
+        hvd_decision_consistent = False
     _require(
         int(hvd_gate.get("complete_pair_count", 0)) == 60
         and hvd_gate.get("all_expected_pairs_present") is True
         and hvd_gate.get("all_rows_paired") is True
         and hvd_gate.get("false_certification_not_harmed") is True
-        and hvd_gate.get("promote_hvd_as_core") is False,
-        "HVD causal gate is incomplete or its registered negative decision "
-        "changed",
+        and hvd_decision_consistent,
+        "HVD causal gate is incomplete, unsafe, or inconsistent with the "
+        "preregistered all-domain decision rule",
         failures,
     )
     expected_frontier = dimension_frontier.get("expected", {})
@@ -698,6 +726,7 @@ def build_release(
     if failures:
         raise ValueError(
             "paper release validation failed:\n- " + "\n- ".join(failures))
+    hvd_release_role = _hvd_release_role(hvd_causal_gate)
     paths = {
         "method_contract": Path(method_contract_path),
         "experiment_registry": Path(registry_path),
@@ -742,7 +771,10 @@ def build_release(
                 "theory_contract_id",
             )
         },
-        "claim_boundaries": method_contract["claim_boundaries"],
+        "claim_boundaries": {
+            **method_contract["claim_boundaries"],
+            "cumulative_hvd": hvd_release_role,
+        },
         "registry_id": registry["registry_id"],
         "registered_track_count": len(registry["tracks"]),
         "registered_comparison_count": len(
@@ -822,6 +854,7 @@ def build_release(
                 hvd_causal_gate["gate"]["complete_pair_count"]),
             "promote_hvd_as_core": bool(
                 hvd_causal_gate["gate"]["promote_hvd_as_core"]),
+            "paper_role": hvd_release_role,
         },
         "dimension_budget_frontier": {
             "dimensions": dimension_frontier["expected"]["dimensions"],

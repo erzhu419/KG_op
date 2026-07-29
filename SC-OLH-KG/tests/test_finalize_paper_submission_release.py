@@ -282,12 +282,18 @@ def _fixtures(tmp_path):
     }
     method.write_text(json.dumps(method_payload), encoding="utf-8")
     hvd = _write(tmp_path / "hvd.json", {
+        "domain_gates": {
+            "DomainA": {
+                "promote_in_domain": False,
+            },
+        },
         "gate": {
             "complete_pair_count": 60,
             "all_expected_pairs_present": True,
             "all_rows_paired": True,
             "false_certification_not_harmed": True,
             "promote_hvd_as_core": False,
+            "retain_as_domain_conditional_calibration_component": False,
         },
     })
     frontier = _write(tmp_path / "frontier.json", {
@@ -388,6 +394,8 @@ def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
     assert release["audited_result_count"] == 246
     assert release["failed_or_timeout_result_count"] == 0
     assert len(release["audited_result_receipt_sha256"]) == 64
+    assert release["hvd_causal_decision"]["paper_role"] == (
+        "mechanistic_negative_control_and_certification_ablation")
 
     traffic = json.loads(paths[5].read_text(encoding="utf-8"))
     traffic["n_seeds"] = 5
@@ -449,3 +457,35 @@ def test_release_accepts_hash_bound_remote_compact_shards(tmp_path):
     )
 
     assert release["status"] == "ready_for_manuscript_lock"
+
+
+def test_release_accepts_preregistered_positive_hvd_decision(tmp_path):
+    paths = _fixtures(tmp_path)
+    hvd = json.loads(paths[10].read_text(encoding="utf-8"))
+    hvd["domain_gates"] = {
+        "DomainA": {"promote_in_domain": True},
+        "DomainB": {"promote_in_domain": True},
+    }
+    hvd["gate"]["promote_hvd_as_core"] = True
+    paths[10].write_text(json.dumps(hvd), encoding="utf-8")
+
+    release = build_release(
+        method_contract_path=paths[0],
+        registry_path=paths[1],
+        audit_path=paths[2],
+        statistics_path=paths[3],
+        convergence_path=paths[4],
+        traffic_path=paths[5],
+        traffic_negative_control_path=paths[6],
+        proposal_coverage_path=paths[7],
+        proof_receipt_path=paths[8],
+        execution_snapshot_path=paths[9],
+        hvd_causal_gate_path=paths[10],
+        dimension_frontier_path=paths[11],
+        artifact_manifest_path=paths[12],
+        repository_commit="commit",
+    )
+
+    assert release["hvd_causal_decision"]["promote_hvd_as_core"] is True
+    assert release["hvd_causal_decision"]["paper_role"] == (
+        "core_cumulative_risk_calibration_contribution")

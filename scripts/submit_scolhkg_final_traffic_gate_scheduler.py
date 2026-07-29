@@ -36,6 +36,75 @@ SUMO_PKG = Path(
     "/home/zhengliang01/scheduleurm_work/python_pkgs/eclipse_sumo_1_25")
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
 GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
+SNAPSHOT_MARKER = ".scolhkg_execution_snapshot.json"
+METHOD_CONTRACT_ID = "or_transfer_frontend_saas_v1"
+THEORY_CONTRACT_ID = "source_target_geometric_atlas_coverage_v1"
+
+
+def _read_json(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _execution_snapshot(args):
+    code_root = getattr(args, "code_root", None)
+    required = bool(getattr(args, "require_frozen_snapshot", False))
+    if code_root in (None, ""):
+        if required:
+            raise ValueError(
+                "--require-frozen-snapshot needs --code-root")
+        return None
+    marker = Path(code_root) / SNAPSHOT_MARKER
+    if not marker.is_file():
+        raise FileNotFoundError(
+            f"frozen traffic snapshot marker is missing: {marker}")
+    snapshot = _read_json(marker)
+    required_fields = (
+        "repository_commit",
+        "scolhkg_tree",
+        "proof_tree",
+        "scripts_tree",
+        "legacy_traffic_tree",
+        "traffic_decision_space_blob",
+        "traffic_baseline_blob",
+        "theory_contract_id",
+        "snapshot_root",
+    )
+    missing = [
+        field for field in required_fields if not snapshot.get(field)
+    ]
+    if missing:
+        raise ValueError(
+            f"frozen traffic snapshot is incomplete: {missing}")
+    if Path(snapshot["snapshot_root"]).resolve() != Path(code_root).resolve():
+        raise ValueError("traffic snapshot marker/root mismatch")
+    if (
+        snapshot.get("status") != "frozen"
+        or snapshot.get("snapshot_kind") != "traffic_sparse"
+    ):
+        raise ValueError("code root is not a frozen sparse traffic snapshot")
+    return snapshot
+
+
+def _execution_env(snapshot):
+    if snapshot is None:
+        return []
+    values = {
+        "SCOLHKG_EXECUTION_PROVENANCE_REQUIRED": "1",
+        "SCOLHKG_EXECUTION_COMMIT": snapshot["repository_commit"],
+        "SCOLHKG_SCOLHKG_TREE": snapshot["scolhkg_tree"],
+        "SCOLHKG_PROOF_TREE": snapshot["proof_tree"],
+        "SCOLHKG_SCRIPTS_TREE": snapshot["scripts_tree"],
+        "SCOLHKG_LEGACY_TRAFFIC_TREE": (
+            snapshot["legacy_traffic_tree"]),
+        "SCOLHKG_TRAFFIC_DECISION_SPACE_BLOB": (
+            snapshot["traffic_decision_space_blob"]),
+        "SCOLHKG_TRAFFIC_BASELINE_BLOB": (
+            snapshot["traffic_baseline_blob"]),
+        "SCOLHKG_METHOD_CONTRACT_ID": METHOD_CONTRACT_ID,
+        "SCOLHKG_THEORY_CONTRACT_ID": snapshot["theory_contract_id"],
+        "SCOLHKG_CODE_SNAPSHOT_ROOT": snapshot["snapshot_root"],
+    }
+    return [f"{key}={value}" for key, value in values.items()]
 
 
 def _sumo_env(cpu):
@@ -84,25 +153,36 @@ def build_specs(args):
     gpu_cpu = int(getattr(args, "gpu_cpu", 12))
     gpu_ram_mb = int(getattr(args, "gpu_ram_mb", 32768))
     gpu_vram_mb = int(getattr(args, "gpu_vram_mb", 2048))
+    execution_snapshot = _execution_snapshot(args)
     deploy = Path(args.deploy)
-    project = deploy / "SC-OLH-KG"
-    gpr_code = deploy / "Final_Submission" / "GPR_KG_Code"
+    deploy_project = deploy / "SC-OLH-KG"
+    deploy_gpr_code = (
+        deploy / "Final_Submission" / "GPR_KG_Code")
+    code_root = (
+        Path(args.code_root)
+        if getattr(args, "code_root", None)
+        else deploy
+    )
+    code_project = code_root / "SC-OLH-KG"
     manifest = (
-        project / "performance/manifests/v18b_exactkg_mcdiag.json")
+        code_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     archive = (
-        project / "archives" / args.archive_run_id
+        deploy_project / "archives" / args.archive_run_id
         / selection.source_split_heldout
         / f"heldout_{selection.source_split_heldout}.json"
     )
-    gpu_runner = project / "runners/run_traffic_gpu_python.sh"
+    gpu_runner = code_project / "runners/run_traffic_gpu_python.sh"
     design = (
-        project / "archives" / args.run_id / "traffic"
+        deploy_project / "archives" / args.run_id / "traffic"
         / "source_initial_designs.json"
     )
     design_cmd = [
         *_sumo_env(args.cpu),
+        *_execution_env(execution_snapshot),
         str(REMOTE_PYTHON),
-        "performance/materialize_external_traffic_design.py",
+        str(
+            code_project
+            / "performance/materialize_external_traffic_design.py"),
         "--manifest", str(manifest),
         "--archive", str(archive),
         "--out", str(design),
@@ -115,7 +195,7 @@ def build_specs(args):
     specs = [{
         "description": "paper final external traffic source proposal",
         "cmd": f"{shlex.join(design_cmd)} && echo DONE",
-        "cwd": str(project),
+        "cwd": str(code_project),
         "signature": f"KG_op/final_traffic/{args.run_id}/design",
         "project": "KG-SUMO",
         "vram": 0,
@@ -135,21 +215,24 @@ def build_specs(args):
     ):
         partition = f"{args.run_id}_seed{seed:04d}"
         run_dir = (
-            gpr_code / "results" / "ingolstadt21"
+            deploy_gpr_code / "results" / "ingolstadt21"
             / f"PaperFinal_SourceProposal_SAAS_{partition}_seed{seed}"
         )
         checkpoint_dir = (
-            project / "checkpoints" / args.run_id / "traffic"
+            deploy_project / "checkpoints" / args.run_id / "traffic"
             / f"seed{seed:04d}"
         )
         search_cmd = [
             *_sumo_env(gpu_cpu),
+            *_execution_env(execution_snapshot),
             "SCOLHKG_OFFLINE=1",
             "SCOLHKG_TORCH_DETERMINISTIC=1",
             "CUBLAS_WORKSPACE_CONFIG=:4096:8",
             "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
             str(gpu_runner),
-            "performance/benchmark_traffic_final_contract.py",
+            str(
+                code_project
+                / "performance/benchmark_traffic_final_contract.py"),
             "--initial-design-file", str(design),
             "--output-dir", str(run_dir),
             "--checkpoint-dir", str(checkpoint_dir),
@@ -167,7 +250,7 @@ def build_specs(args):
         specs.append({
             "description": f"paper final traffic SAAS seed={seed}",
             "cmd": f"{shlex.join(search_cmd)} && echo DONE",
-            "cwd": str(project),
+            "cwd": str(code_project),
             "signature": (
                 f"KG_op/final_traffic/{args.run_id}/search/seed{seed:04d}"
             ),
@@ -183,14 +266,19 @@ def build_specs(args):
             "allow_duplicate": True,
         })
         oos_path = (
-            project / "profiles" / args.run_id / "traffic"
+            deploy_project / "profiles" / args.run_id / "traffic"
             / f"seed{seed:04d}" / f"oos_R{int(args.R)}.json"
         )
         oos_paths.append(oos_path)
         oos_cmd = [
             *_sumo_env(args.cpu),
+            *_execution_env(execution_snapshot),
             str(REMOTE_PYTHON),
-            "-m", "experiments.ingolstadt21.validate_oos_feasibility",
+            str(
+                code_project
+                / "performance/run_traffic_oos_explicit.py"),
+            "--results-root",
+            str(deploy_gpr_code / "results" / "ingolstadt21"),
             "--method", method_label,
             "--partition", partition,
             "--R", str(args.R),
@@ -210,7 +298,7 @@ def build_specs(args):
             "description": (
                 f"paper final traffic fresh OOS R={args.R} seed={seed}"),
             "cmd": f"{shlex.join(oos_cmd)} && echo DONE",
-            "cwd": str(gpr_code),
+            "cwd": str(code_project),
             "signature": (
                 f"KG_op/final_traffic/{args.run_id}/oos/seed{seed:04d}"
             ),
@@ -227,14 +315,17 @@ def build_specs(args):
         })
 
     audit_path = (
-        project / "profiles" / args.run_id / "traffic"
+        deploy_project / "profiles" / args.run_id / "traffic"
         / "external_traffic_audit.json"
     )
     analyze_cmd = [
         "env", "LC_ALL=C", "LANG=C", "SCOLHKG_OFFLINE=1",
         "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
+        *_execution_env(execution_snapshot),
         str(REMOTE_PYTHON),
-        "performance/analyze_traffic_final_contract.py",
+        str(
+            code_project
+            / "performance/analyze_traffic_final_contract.py"),
         *map(str, oos_paths),
         "--out", str(audit_path),
         "--target-probability", "0.95",
@@ -253,7 +344,7 @@ def build_specs(args):
     specs.append({
         "description": "paper final external traffic aggregate audit",
         "cmd": f"{shlex.join(analyze_cmd)} && echo DONE",
-        "cwd": str(project),
+        "cwd": str(code_project),
         "signature": f"KG_op/final_traffic/{args.run_id}/audit",
         "project": "KG-SYNTH",
         "vram": 0,
@@ -273,6 +364,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
     parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
+    parser.add_argument("--code-root", type=Path)
+    parser.add_argument(
+        "--require-frozen-snapshot",
+        action="store_true",
+    )
     parser.add_argument("--run-id", default=(
         "paper_final_external_traffic_s80_84_R100_"
         f"{time.strftime('%Y%m%d_%H%M%S')}"))
@@ -321,7 +417,12 @@ def main():
         }, indent=2))
         return
     if args.sync_remote:
-        subprocess.run([str(SYNC)], cwd=ROOT, check=True)
+        if args.require_frozen_snapshot:
+            if args.code_root is None:
+                raise ValueError(
+                    "--require-frozen-snapshot needs --code-root")
+        elif args.code_root is None:
+            subprocess.run([str(SYNC)], cwd=ROOT, check=True)
         subprocess.run(
             [str(SYNC_TRAFFIC_ASSETS)], cwd=ROOT, check=True)
     output = subprocess.check_output(
@@ -362,6 +463,11 @@ def main():
             "backend": "canonical_saasbo_every_iteration",
             "verifier": (
                 "fresh_seed_familywise_exact_binomial_shortlist_v1"),
+            "execution_snapshot": (
+                execution_snapshot
+                if execution_snapshot is not None
+                else {"status": "unregistered"}
+            ),
         },
         "checkpoint_results_synced_locally": False,
     }
