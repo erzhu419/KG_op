@@ -37,6 +37,20 @@ def _parse_csv(value):
         item.strip() for item in str(value).split(",") if item.strip())
 
 
+def _target_budgets(args):
+    configured = getattr(args, "budgets", "")
+    values = (
+        tuple(int(value) for value in _parse_csv(configured))
+        if str(configured).strip()
+        else (int(args.N),)
+    )
+    if not values or any(value <= int(args.n0) for value in values):
+        raise ValueError("every target budget must exceed n0")
+    if len(values) != len(set(values)):
+        raise ValueError("target budgets must be unique")
+    return values
+
+
 def _read_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
@@ -92,6 +106,7 @@ def build_specs(args):
     manifest = (
         deploy_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     dimensions = tuple(int(value) for value in _parse_csv(args.dimensions))
+    target_budgets = _target_budgets(args)
     backends = _parse_csv(args.backends)
     if sorted(set(backends) - set(BACKENDS)):
         raise ValueError("unknown frontier backend")
@@ -201,74 +216,77 @@ def build_specs(args):
                         "allow_duplicate": True,
                     })
                 if "saasbo" in backends:
-                    result_dir = (
-                        deploy_project / "profiles" / args.run_id
-                        / f"d{dimension}" / f"N{int(args.N)}" / "saasbo"
-                        / heldout / f"seed{seed:04d}"
-                    )
-                    checkpoint_dir = (
-                        deploy_project / "checkpoints" / args.run_id
-                        / f"d{dimension}" / f"N{int(args.N)}" / "saasbo"
-                        / heldout / f"seed{seed:04d}"
-                    )
-                    command = [
-                        "env", "LC_ALL=C", "LANG=C", "SCOLHKG_OFFLINE=1",
-                        "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
-                        f"OMP_NUM_THREADS={int(args.gpu_cpu)}",
-                        f"MKL_NUM_THREADS={int(args.gpu_cpu)}",
-                        f"OPENBLAS_NUM_THREADS={int(args.gpu_cpu)}",
-                        "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
-                        "SCOLHKG_TORCH_DETERMINISTIC=1",
-                        "CUBLAS_WORKSPACE_CONFIG=:4096:8",
-                        f"PYTHONPATH={BOTORCH_OVERLAY}",
-                        str(SAAS_PYTHON),
-                        "performance/benchmark_sota_fairness.py",
-                        "--protocol", "shared_archive_n13",
-                        "--method", "botorch_saasbo",
-                        "--heldout", heldout,
-                        "--seed", str(seed),
-                        "--manifest", str(manifest),
-                        "--out", str(result_dir / "result.json"),
-                        "--checkpoint-dir", str(checkpoint_dir),
-                        "--initial-design-file", str(design),
-                        "--target-budget", str(args.N),
-                        "--d", str(dimension),
-                        "--n0", str(args.n0),
-                        "--candidate-timeout-sec", "3600",
-                        "--torch-device", "cuda",
-                        "--torch-deterministic",
-                        "--saas-refit-schedule", "every_iteration",
-                        "--terminal-verification",
-                        *_terminal_flags(),
-                    ]
-                    specs.append({
-                        "description": (
-                            f"frontier SAAS d={dimension} {heldout} "
-                            f"seed={seed}"
-                        ),
-                        "cmd": f"{shlex.join(command)} && echo DONE",
-                        "cwd": str(deploy_project),
-                        "signature": (
-                            f"KG_op/dimension_frontier/{args.run_id}/"
-                            f"d{dimension}/N{int(args.N)}/saas/"
-                            f"{heldout}/seed{seed:04d}"
-                        ),
-                        "project": "KG-SYNTH",
-                        "vram": int(args.vram_mb),
-                        "cpu": int(args.gpu_cpu),
-                        "ram_mb": int(args.gpu_ram_mb),
-                        "allowed_nodes": list(GPU_NODES),
-                        "wait_for_files": [str(design)],
-                        "result_dir": str(result_dir),
-                        "local_result_dir": str(result_dir),
-                        "stage_excludes": [
-                            "checkpoints", "profiles", "results"],
-                        "allow_duplicate": True,
-                        "vram_resource_family": (
-                            f"KG-SYNTH/frontier-saas/d{dimension}/"
-                            f"{heldout}"
-                        ),
-                    })
+                    for target_budget in target_budgets:
+                        result_dir = (
+                            deploy_project / "profiles" / args.run_id
+                            / f"d{dimension}" / f"N{target_budget}"
+                            / "saasbo" / heldout / f"seed{seed:04d}"
+                        )
+                        checkpoint_dir = (
+                            deploy_project / "checkpoints" / args.run_id
+                            / f"d{dimension}" / f"N{target_budget}"
+                            / "saasbo" / heldout / f"seed{seed:04d}"
+                        )
+                        command = [
+                            "env", "LC_ALL=C", "LANG=C",
+                            "SCOLHKG_OFFLINE=1",
+                            "PYTHONUNBUFFERED=1",
+                            "PYTHONDONTWRITEBYTECODE=1",
+                            f"OMP_NUM_THREADS={int(args.gpu_cpu)}",
+                            f"MKL_NUM_THREADS={int(args.gpu_cpu)}",
+                            f"OPENBLAS_NUM_THREADS={int(args.gpu_cpu)}",
+                            "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
+                            "SCOLHKG_TORCH_DETERMINISTIC=1",
+                            "CUBLAS_WORKSPACE_CONFIG=:4096:8",
+                            f"PYTHONPATH={BOTORCH_OVERLAY}",
+                            str(SAAS_PYTHON),
+                            "performance/benchmark_sota_fairness.py",
+                            "--protocol", "shared_archive_n13",
+                            "--method", "botorch_saasbo",
+                            "--heldout", heldout,
+                            "--seed", str(seed),
+                            "--manifest", str(manifest),
+                            "--out", str(result_dir / "result.json"),
+                            "--checkpoint-dir", str(checkpoint_dir),
+                            "--initial-design-file", str(design),
+                            "--target-budget", str(target_budget),
+                            "--d", str(dimension),
+                            "--n0", str(args.n0),
+                            "--candidate-timeout-sec", "3600",
+                            "--torch-device", "cuda",
+                            "--torch-deterministic",
+                            "--saas-refit-schedule", "every_iteration",
+                            "--terminal-verification",
+                            *_terminal_flags(),
+                        ]
+                        specs.append({
+                            "description": (
+                                f"frontier SAAS d={dimension} "
+                                f"N={target_budget} {heldout} seed={seed}"
+                            ),
+                            "cmd": f"{shlex.join(command)} && echo DONE",
+                            "cwd": str(deploy_project),
+                            "signature": (
+                                f"KG_op/dimension_frontier/{args.run_id}/"
+                                f"d{dimension}/N{target_budget}/saas/"
+                                f"{heldout}/seed{seed:04d}"
+                            ),
+                            "project": "KG-SYNTH",
+                            "vram": int(args.vram_mb),
+                            "cpu": int(args.gpu_cpu),
+                            "ram_mb": int(args.gpu_ram_mb),
+                            "allowed_nodes": list(GPU_NODES),
+                            "wait_for_files": [str(design)],
+                            "result_dir": str(result_dir),
+                            "local_result_dir": str(result_dir),
+                            "stage_excludes": [
+                                "checkpoints", "profiles", "results"],
+                            "allow_duplicate": True,
+                            "vram_resource_family": (
+                                f"KG-SYNTH/frontier-saas/d{dimension}/"
+                                f"{heldout}"
+                            ),
+                        })
     return specs
 
 
@@ -290,6 +308,11 @@ def main():
     parser.add_argument("--n-seeds", type=int, default=5)
     parser.add_argument("--source-d", type=int, default=50)
     parser.add_argument("--N", type=int, default=13)
+    parser.add_argument(
+        "--budgets",
+        default="",
+        help="Comma-separated target budgets; overrides --N when nonempty.",
+    )
     parser.add_argument("--n0", type=int, default=10)
     parser.add_argument("--offline-source-calls", type=int, default=384)
     parser.add_argument("--cpu", type=int, default=12)
@@ -312,7 +335,12 @@ def main():
         * len(_parse_csv(args.heldouts))
         * (
             1
-            + int(args.n_seeds) * len(_parse_csv(args.backends))
+            + int(args.n_seeds)
+            * (
+                int("proposal_only" in _parse_csv(args.backends))
+                + int("saasbo" in _parse_csv(args.backends))
+                * len(_target_budgets(args))
+            )
         )
     )
     if len(specs) != expected:
@@ -362,7 +390,7 @@ def main():
             ],
             "source_calls": int(args.offline_source_calls),
             "n0": int(args.n0),
-            "saas_search_budget": int(args.N),
+            "saas_search_budgets": list(_target_budgets(args)),
             "proposal": "frozen_risk_objective_atlas",
             "backend": "canonical_saasbo_every_iteration",
             "verifier": "v69_independent_three_policy_objective_guard",

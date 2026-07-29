@@ -23,6 +23,7 @@ def test_frontier_gate_is_sharded_and_uses_correct_node_families(tmp_path):
         n_seeds=2,
         source_d=50,
         N=13,
+        budgets="13,20",
         n0=10,
         offline_source_calls=384,
         cpu=12,
@@ -32,14 +33,14 @@ def test_frontier_gate_is_sharded_and_uses_correct_node_families(tmp_path):
         vram_mb=2048,
     )
     specs = build_specs(args)
-    assert len(specs) == 2 * (1 + 2 * 2)
+    assert len(specs) == 2 * (1 + 2 * 3)
     designs = [spec for spec in specs if "/design/" in spec["signature"]]
     proposal = [
         spec for spec in specs if "/proposal/" in spec["signature"]]
     saas = [spec for spec in specs if "/saas/" in spec["signature"]]
     assert len(designs) == 2
     assert len(proposal) == 4
-    assert len(saas) == 4
+    assert len(saas) == 8
     assert all(spec["allowed_nodes"] == [
         "node001", "node002", "node003",
         "node004", "node005", "node006",
@@ -49,7 +50,7 @@ def test_frontier_gate_is_sharded_and_uses_correct_node_families(tmp_path):
     ] for spec in saas)
     assert all("--proposal-mode risk_objective_atlas" in spec["cmd"]
                for spec in designs)
-    assert all("--target-budget 13" in spec["cmd"] for spec in saas)
+    assert sum("--target-budget 13" in spec["cmd"] for spec in saas) == 4
+    assert sum("--target-budget 20" in spec["cmd"] for spec in saas) == 4
     assert all("--terminal-objective-incumbent-guard" in spec["cmd"]
                for spec in proposal + saas)
-
