@@ -28,6 +28,10 @@ when it has:
 Search and verification costs are different statistical stages and must never
 be collapsed into one unlabeled evaluation budget.
 
+Every paired result cell must also match a hash of the complete target problem
+contract, including the FactorShock shared-shock scale. Matching proposal,
+archive, and verifier fingerprints alone is insufficient.
+
 ## Information contract
 
 The primary experiment is **descriptor-conditional LODO**, not domain-blind

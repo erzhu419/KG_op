@@ -69,6 +69,51 @@ def test_result_audit_keeps_canonical_and_periodic_saas_separate(tmp_path):
         "canonical_saasbo_every_iteration")
     assert periodic_row["method_identity"] == "saasbo_periodic_capped"
     assert canonical_row["source_plus_target_total_calls"] == 477
+    assert canonical_row["problem_contract"]["shared_shock_scale"] is None
+    assert len(canonical_row["problem_contract_fingerprint"]) == 64
+
+
+def test_result_audit_detects_factor_shock_scenario_mismatch(tmp_path):
+    canonical = tmp_path / "track" / "canonical" / "result.json"
+    scolh = tmp_path / "track" / "scolh" / "result.json"
+    _write_result(
+        canonical, method="botorch_saasbo", seed=80)
+    canonical_payload = json.loads(canonical.read_text(encoding="utf-8"))
+    canonical_payload["heldout"] = "FactorShockStatePolicyRZDT1"
+    canonical_payload["information_contract"]["target_dimension"] = 1000
+    canonical.write_text(json.dumps(canonical_payload), encoding="utf-8")
+    _write_result(scolh, method="scolh", seed=80)
+    scolh_payload = json.loads(scolh.read_text(encoding="utf-8"))
+    scolh_payload["heldout"] = "FactorShockStatePolicyRZDT1"
+    scolh_payload["information_contract"]["target_dimension"] = 1000
+    scolh_payload["config"] = {
+        "d": 1000,
+        "target_shared_shock_scale": 0.0,
+    }
+    scolh_payload["result"].pop("algorithm_fidelity")
+    scolh_payload["result"].pop("saas_nuts_schedule")
+    scolh.write_text(json.dumps(scolh_payload), encoding="utf-8")
+    registry = {
+        "registry_id": "scenario",
+        "tracks": [{
+            "track_id": "scenario",
+            "result_root": "track",
+            "expected_method_identities": [
+                "canonical_saasbo_every_iteration",
+                "scolh",
+            ],
+            "expected_domains": ["FactorShockStatePolicyRZDT1"],
+            "expected_seeds": [80],
+            "paired_equality_fields": [
+                "problem_contract_fingerprint",
+            ],
+        }],
+    }
+    audit = build_audit(registry, root=tmp_path)
+    assert audit["status"] == "incomplete_or_failed"
+    assert {
+        row["kind"] for row in audit["track_audits"][0]["failures"]
+    } == {"paired_problem_contract_fingerprint_mismatch"}
 
 
 def test_track_audit_requires_paired_information_contracts(tmp_path):

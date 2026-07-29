@@ -112,6 +112,60 @@ def _verifier_signature(verification):
     }, sort_keys=True, separators=(",", ":"))
 
 
+def _scalarization_weights(value):
+    if value is None:
+        return [0.5, 0.5]
+    if isinstance(value, str):
+        values = [part.strip() for part in value.split(",") if part.strip()]
+    else:
+        values = list(value)
+    return [float(item) for item in values]
+
+
+def _problem_contract(payload, result, *, domain, dimension):
+    """Return the immutable target problem contract used for pairing.
+
+    Older baseline result schemas did not serialize the nominal problem
+    parameters. Their runners use the paper defaults recorded here. Newer SC
+    results serialize those fields in ``config`` or the result row, which lets
+    this audit catch mismatched target scenarios such as shared-shock scale.
+    """
+
+    config = payload.get("config") or {}
+    info = payload.get("information_contract") or {}
+    factor_domain = str(domain) == "FactorShockStatePolicyRZDT1"
+    shared_shock_scale = None
+    if factor_domain:
+        shared_shock_scale = float(_first(
+            result.get("target_shared_shock_scale"),
+            config.get("target_shared_shock_scale"),
+            result.get("shared_shock_scale"),
+            info.get("target_shared_shock_scale"),
+            1.0,
+        ))
+    contract = {
+        "domain": str(domain),
+        "dimension": _int_or_none(dimension),
+        "L": int(_first(config.get("L"), info.get("target_L"), 100)),
+        "sigma": float(_first(
+            config.get("sigma"), info.get("target_sigma"), 0.04)),
+        "alpha": float(_first(
+            config.get("alpha"), info.get("target_alpha"), 0.05)),
+        "scalarization_weights": _scalarization_weights(_first(
+            config.get("weights"),
+            info.get("scalarization_weights"),
+            (0.5, 0.5),
+        )),
+        "heteroscedastic": True,
+        "tau": 0.0,
+        "shared_shock_scale": shared_shock_scale,
+        "task_geometry": "nominal",
+    }
+    serialized = json.dumps(
+        contract, sort_keys=True, separators=(",", ":"))
+    return contract, hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
 def extract_result_record(path, *, track_id):
     """Extract one compact row without copying histories or policy vectors."""
 
@@ -197,6 +251,29 @@ def extract_result_record(path, *, track_id):
         source_info.get("archive_fingerprint"),
         adaptation_info.get("source_archive_fingerprint"),
     )
+    domain = str(_first(
+        payload.get("heldout"),
+        payload.get("heldout_target_domain"),
+        result.get("heldout_target_domain"),
+        result.get("problem"),
+        result.get("heldout"),
+        "unknown",
+    ))
+    target_dimension = _int_or_none(_first(
+        info.get("target_dimension"),
+        comparison.get("target_dimension"),
+        target_info.get("dimension"),
+        result.get("proposal_target_dimension"),
+        result.get("d"),
+        payload.get("d"),
+        _nested(payload, "config", "d"),
+    ))
+    problem_contract, problem_fingerprint = _problem_contract(
+        payload,
+        result,
+        domain=domain,
+        dimension=target_dimension,
+    )
     true_feasible = result.get("true_feasible")
     certified = verification.get("certified")
     return {
@@ -204,24 +281,12 @@ def extract_result_record(path, *, track_id):
         "path": str(path),
         "result_sha256": _sha256(path),
         "status": status,
-        "domain": str(_first(
-            payload.get("heldout"),
-            payload.get("heldout_target_domain"),
-            result.get("heldout_target_domain"),
-            result.get("problem"),
-            result.get("heldout"),
-            "unknown",
-        )),
+        "domain": domain,
         "seed": _int_or_none(_first(
             payload.get("seed"), result.get("seed"))),
-        "target_dimension": _int_or_none(_first(
-            info.get("target_dimension"),
-            comparison.get("target_dimension"),
-            target_info.get("dimension"),
-            result.get("proposal_target_dimension"),
-            result.get("d"),
-            payload.get("d"),
-        )),
+        "target_dimension": target_dimension,
+        "problem_contract": problem_contract,
+        "problem_contract_fingerprint": problem_fingerprint,
         "method": str(_first(
             result.get("method"), payload.get("method"), "unknown")),
         "method_identity": _method_identity(payload, result),
@@ -425,7 +490,13 @@ def audit_track(records, specification):
             ),
             [],
         ).append(row)
-    equality_fields = specification.get("paired_equality_fields", ())
+    equality_fields = list(specification.get(
+        "paired_equality_fields", ()))
+    if (
+        len(expected_methods) > 1
+        and "problem_contract_fingerprint" not in equality_fields
+    ):
+        equality_fields.append("problem_contract_fingerprint")
     paired_checks = {}
     for field in equality_fields:
         bad = []

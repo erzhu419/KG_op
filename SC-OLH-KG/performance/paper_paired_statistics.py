@@ -131,7 +131,11 @@ def _paired_rows(records, specification):
     keys = sorted(left_keys & right_keys)
     pairs = [(left[key], right[key]) for key in keys]
     equality_failures = {}
-    for field in specification.get("required_equal_fields", ()):
+    equality_fields = list(specification.get(
+        "required_equal_fields", ()))
+    if "problem_contract_fingerprint" not in equality_fields:
+        equality_fields.append("problem_contract_fingerprint")
+    for field in equality_fields:
         bad = [
             tuple(pair[0][key] for key in PAIR_KEY)
             for pair in pairs

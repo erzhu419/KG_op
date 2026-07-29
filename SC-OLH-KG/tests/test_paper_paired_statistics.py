@@ -25,6 +25,7 @@ def _row(
         "seed": seed,
         "source_archive_fingerprint": "archive",
         "initial_design_fingerprint": f"design-{seed}",
+        "problem_contract_fingerprint": "problem",
         "verifier_signature": "verifier",
         "true_feasible": feasible,
         "terminal_certified": certified,

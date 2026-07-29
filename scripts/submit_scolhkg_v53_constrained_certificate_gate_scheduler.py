@@ -714,7 +714,33 @@ def build_specs(args):
             "V61/V62 require at least two fallback verification calls")
     args.variant_profiles = {name: profiles[name] for name in requested}
     args.variants = ",".join(requested)
-    args.scenarios = closure.promoted.v51.v50.v49.v27.MEAN_SCENARIOS
+    factor_scale = float(getattr(args, "factor_shock_scale", 0.0))
+    selected_domains = {
+        value.strip()
+        for value in str(getattr(args, "scenario_domains", "")).split(",")
+        if value.strip()
+    }
+    scenarios = tuple(
+        (
+            name,
+            factor_scale
+            if name == "FactorShockStatePolicyRZDT1"
+            else shock_scale,
+        )
+        for name, shock_scale
+        in closure.promoted.v51.v50.v49.v27.MEAN_SCENARIOS
+        if not selected_domains or name in selected_domains
+    )
+    if selected_domains - {name for name, _ in scenarios}:
+        raise ValueError(
+            "unknown --scenario-domains: "
+            + ",".join(sorted(selected_domains - {
+                name for name, _ in scenarios
+            }))
+        )
+    if not scenarios:
+        raise ValueError("--scenario-domains selected no benchmark domains")
+    args.scenarios = scenarios
     if requested == [V59]:
         args.stage_family = "v59_terminal_gaussian_verification"
         args.gate_label = "V59 frozen-policy Gaussian verification"
@@ -823,6 +849,17 @@ def main():
     parser.add_argument("--n0", type=int, default=10)
     parser.add_argument("--seed-start", type=int, default=0)
     parser.add_argument("--n-seeds", type=int, default=5)
+    parser.add_argument(
+        "--factor-shock-scale",
+        type=float,
+        default=0.0,
+        help="Target shared-shock scale for FactorShockStatePolicyRZDT1.",
+    )
+    parser.add_argument(
+        "--scenario-domains",
+        default="",
+        help="Optional comma-separated subset of the three benchmark domains.",
+    )
     parser.add_argument("--pool-size", type=int, default=512)
     parser.add_argument("--variance-audit-size", type=int, default=512)
     parser.add_argument("--misspecification-prior-df", type=float, default=4.0)

@@ -722,6 +722,22 @@ def test_v69_adds_only_independent_initial_incumbent_guard(tmp_path):
     assert args.stage_family == "v69_feasible_first_verified_incumbent"
 
 
+def test_v69_can_override_and_isolate_factor_shock_scenario(tmp_path):
+    args = _args(tmp_path, (MODULE.V69,))
+    args.factor_shock_scale = 1.0
+    args.scenario_domains = "FactorShockStatePolicyRZDT1"
+    specs = MODULE.build_specs(args)
+    assert len(specs) == 2
+    assert all(
+        "/shock1/FactorShockStatePolicyRZDT1/" in spec["signature"]
+        for spec in specs
+    )
+    assert all(
+        "--target-shared-shock-scale 1.0" in spec["cmd"]
+        for spec in specs
+    )
+
+
 def test_v53_bounded_gain_profile_is_versioned_and_not_double_normalized(tmp_path):
     args = _args(tmp_path, (MODULE.V53,))
     args.score_normalization = "none"
