@@ -13,6 +13,18 @@ import time
 
 FINAL_CONTRACT_ID = "or_transfer_frontend_saas_v1"
 UNIFORM_VERIFIER_CONTRACT_ID = "uniform_two_policy_external_verifier_v1"
+FINAL_HEADLINE_TRACK = "final_frozen_source_frontend_backend_d1000_n13"
+FINAL_CONTROL_TRACK = "final_frozen_sobol_frontend_control_d1000_n13"
+FINAL_HEADLINE_METHODS = {
+    "frozen_crossdim_proposal_only",
+    "stacked_transfer_gp_cbo:official_transfergpbo_code",
+    "canonical_saasbo_every_iteration",
+}
+FINAL_CONTROL_METHODS = {
+    "common_sobol_proposal_only",
+    "stacked_transfer_gp_cbo:official_transfergpbo_code",
+    "canonical_saasbo_every_iteration",
+}
 
 
 def _sha256(path):
@@ -42,6 +54,10 @@ def validate_release_inputs(
     traffic_negative_control,
     proposal_coverage,
     proof_receipt,
+    execution_snapshot,
+    hvd_causal_gate,
+    dimension_frontier,
+    artifact_manifest,
 ):
     failures = []
     _require(
@@ -53,6 +69,30 @@ def validate_release_inputs(
         method_contract.get("online_backend", {}).get("refit_schedule")
         == "every_iteration",
         "headline backend is not canonical every-iteration SAASBO",
+        failures,
+    )
+    snapshot_support = method_contract.get(
+        "supporting_evidence", {}).get("immutable_execution_snapshot", {})
+    _require(
+        execution_snapshot.get("status") == "frozen"
+        and execution_snapshot.get("repository_commit")
+        == snapshot_support.get("repository_commit")
+        and execution_snapshot.get("scolhkg_tree")
+        == snapshot_support.get("scolhkg_tree")
+        and execution_snapshot.get("proof_tree")
+        == snapshot_support.get("proof_tree")
+        and execution_snapshot.get("scripts_tree")
+        == snapshot_support.get("scripts_tree")
+        and execution_snapshot.get("method_contract_id")
+        == FINAL_CONTRACT_ID
+        and execution_snapshot.get("theory_contract_id")
+        == "source_target_geometric_atlas_coverage_v1"
+        and execution_snapshot.get(
+            "runtime_checkpoints_or_model_weights_included") is False
+        and execution_snapshot.get(
+            "target_outcomes_used_to_select_snapshot") is False,
+        "immutable execution snapshot differs from the frozen method "
+        "contract",
         failures,
     )
     _require(
@@ -85,11 +125,28 @@ def validate_release_inputs(
     final_track = next((
         track for track in registry.get("tracks", ())
         if track.get("track_id")
-        == "final_frontend_backend_factorial_d1000_n13"
+        == FINAL_HEADLINE_TRACK
     ), {})
     _require(
         bool(final_track),
         "experiment registry is missing the headline factorial track",
+        failures,
+    )
+    control_track = next((
+        track for track in registry.get("tracks", ())
+        if track.get("track_id") == FINAL_CONTROL_TRACK
+    ), {})
+    _require(
+        bool(control_track),
+        "experiment registry is missing the frozen common-Sobol control",
+        failures,
+    )
+    _require(
+        set(final_track.get("expected_method_identities", ()))
+        == FINAL_HEADLINE_METHODS
+        and set(control_track.get("expected_method_identities", ()))
+        == FINAL_CONTROL_METHODS,
+        "frozen headline/control backend identities drifted",
         failures,
     )
     _require(
@@ -101,7 +158,7 @@ def validate_release_inputs(
     )
     _require(
         convergence.get("track_id")
-        == "final_frontend_backend_factorial_d1000_n13",
+        == FINAL_HEADLINE_TRACK,
         "convergence artifact does not describe the headline track",
         failures,
     )
@@ -114,7 +171,11 @@ def validate_release_inputs(
     final_records = [
         row for row in audit.get("records", ())
         if row.get("track_id")
-        == "final_frontend_backend_factorial_d1000_n13"
+        == FINAL_HEADLINE_TRACK
+    ]
+    control_records = [
+        row for row in audit.get("records", ())
+        if row.get("track_id") == FINAL_CONTROL_TRACK
     ]
     expected_final_results = (
         len(final_track.get("expected_method_identities", ()))
@@ -126,6 +187,39 @@ def validate_release_inputs(
         len(final_records) == expected_final_results
         and expected_final_results > 0,
         "compact audit does not contain the complete headline factorial",
+        failures,
+    )
+    expected_control_results = (
+        len(control_track.get("expected_method_identities", ()))
+        * len(control_track.get("expected_domains", ()))
+        * len(control_track.get("expected_dimensions", (1,)))
+        * len(control_track.get("expected_seeds", ()))
+    )
+    _require(
+        len(control_records) == expected_control_results
+        and expected_control_results > 0,
+        "compact audit does not contain the complete frozen Sobol control",
+        failures,
+    )
+    frozen_rows = final_records + control_records
+    _require(
+        bool(frozen_rows)
+        and all(
+            row.get("execution_provenance_status") == "frozen"
+            and row.get("execution_repository_commit")
+            == execution_snapshot.get("repository_commit")
+            and row.get("execution_scolhkg_tree")
+            == execution_snapshot.get("scolhkg_tree")
+            and row.get("execution_proof_tree")
+            == execution_snapshot.get("proof_tree")
+            and row.get("execution_scripts_tree")
+            == execution_snapshot.get("scripts_tree")
+            and row.get("execution_theory_contract_id")
+            == execution_snapshot.get("theory_contract_id")
+            for row in frozen_rows
+        ),
+        "one or more final replay rows lack exact frozen execution "
+        "provenance",
         failures,
     )
     _require(
@@ -372,6 +466,56 @@ def validate_release_inputs(
         "uniform total-cost comparison uses different verifiers",
         failures,
     )
+    hvd_gate = hvd_causal_gate.get("gate", {})
+    _require(
+        int(hvd_gate.get("complete_pair_count", 0)) == 15
+        and hvd_gate.get("all_expected_pairs_present") is True
+        and hvd_gate.get("all_rows_paired") is True
+        and hvd_gate.get("false_certification_not_harmed") is True
+        and hvd_gate.get("promote_hvd_as_core") is False,
+        "HVD causal gate is incomplete or its registered negative decision "
+        "changed",
+        failures,
+    )
+    expected_frontier = dimension_frontier.get("expected", {})
+    frontier_gates = list(
+        dimension_frontier.get("gates", {}).values())
+    _require(
+        dimension_frontier.get("status") == "complete"
+        and set(expected_frontier.get("dimensions", ())) >= {200, 1000}
+        and set(expected_frontier.get("budgets", ())) >= {10, 20, 40, 80}
+        and len(expected_frontier.get("seeds", ())) >= 20
+        and bool(frontier_gates)
+        and all(
+            gate.get("all_rows_ok") is True
+            and gate.get("false_certification_free") is True
+            for gate in frontier_gates
+        ),
+        "dimension/budget frontier lacks the complete 20-seed registered "
+        "matrix",
+        failures,
+    )
+    output_rows = list(artifact_manifest.get("outputs", ()))
+    _require(
+        artifact_manifest.get("status") == "complete"
+        and artifact_manifest.get("contracts", {}).get(
+            "reads_checkpoints") is False
+        and artifact_manifest.get("contracts", {}).get(
+            "reads_pickle_or_model_weights") is False
+        and artifact_manifest.get("contracts", {}).get(
+            "post_run_truth_not_used_for_decisions") is True
+        and bool(output_rows),
+        "publication artifact manifest is incomplete or reads runtime state",
+        failures,
+    )
+    artifact_root = Path(str(artifact_manifest.get(
+        "_manifest_path", ""))).parent
+    for output in output_rows:
+        path = artifact_root / str(output.get("name", ""))
+        if not path.is_file():
+            failures.append(f"rendered artifact is missing: {path}")
+        elif _sha256(path) != output.get("sha256"):
+            failures.append(f"rendered artifact hash changed: {path}")
     source_mode = audit.get("source_mode", "local_result_files")
     if source_mode == "remote_compact_record_shards":
         shard_receipts = list(audit.get("record_shard_receipts", ()))
@@ -429,6 +573,14 @@ def _record_receipts(audit):
                 "target_verification_calls"],
             "optimization_calls_excluding_verification": record[
                 "optimization_calls_excluding_verification"],
+            "execution_repository_commit": record.get(
+                "execution_repository_commit"),
+            "execution_scolhkg_tree": record.get(
+                "execution_scolhkg_tree"),
+            "execution_method_contract_id": record.get(
+                "execution_method_contract_id"),
+            "execution_theory_contract_id": record.get(
+                "execution_theory_contract_id"),
             "result_sha256": record["result_sha256"],
         })
     return sorted(rows, key=lambda row: (
@@ -451,6 +603,10 @@ def build_release(
     traffic_negative_control_path,
     proposal_coverage_path,
     proof_receipt_path,
+    execution_snapshot_path,
+    hvd_causal_gate_path,
+    dimension_frontier_path,
+    artifact_manifest_path,
     repository_commit,
 ):
     method_contract = _load(method_contract_path)
@@ -462,6 +618,11 @@ def build_release(
     traffic_negative_control = _load(traffic_negative_control_path)
     proposal_coverage = _load(proposal_coverage_path)
     proof_receipt = _load(proof_receipt_path)
+    execution_snapshot = _load(execution_snapshot_path)
+    hvd_causal_gate = _load(hvd_causal_gate_path)
+    dimension_frontier = _load(dimension_frontier_path)
+    artifact_manifest = _load(artifact_manifest_path)
+    artifact_manifest["_manifest_path"] = str(artifact_manifest_path)
     failures = validate_release_inputs(
         method_contract,
         registry,
@@ -472,6 +633,10 @@ def build_release(
         traffic_negative_control,
         proposal_coverage,
         proof_receipt,
+        execution_snapshot,
+        hvd_causal_gate,
+        dimension_frontier,
+        artifact_manifest,
     )
     if failures:
         raise ValueError(
@@ -487,6 +652,10 @@ def build_release(
             traffic_negative_control_path),
         "proposal_coverage_audit": Path(proposal_coverage_path),
         "lean_proof_receipt": Path(proof_receipt_path),
+        "execution_snapshot": Path(execution_snapshot_path),
+        "hvd_causal_gate": Path(hvd_causal_gate_path),
+        "dimension_budget_frontier": Path(dimension_frontier_path),
+        "rendered_artifact_manifest": Path(artifact_manifest_path),
     }
     records = _record_receipts(audit)
     record_digest = hashlib.sha256(
@@ -505,6 +674,17 @@ def build_release(
             "source-learned dimension-equivariant structural proposal + "
             "canonical SAASBO backend + independent verifier"
         ),
+        "execution_snapshot": {
+            key: execution_snapshot[key]
+            for key in (
+                "repository_commit",
+                "scolhkg_tree",
+                "proof_tree",
+                "scripts_tree",
+                "method_contract_id",
+                "theory_contract_id",
+            )
+        },
         "claim_boundaries": method_contract["claim_boundaries"],
         "registry_id": registry["registry_id"],
         "registered_track_count": len(registry["tracks"]),
@@ -580,6 +760,20 @@ def build_release(
             "forbidden_declaration_count": int(
                 proof_receipt["forbidden_declaration_count"]),
         },
+        "hvd_causal_decision": {
+            "complete_pair_count": int(
+                hvd_causal_gate["gate"]["complete_pair_count"]),
+            "promote_hvd_as_core": bool(
+                hvd_causal_gate["gate"]["promote_hvd_as_core"]),
+        },
+        "dimension_budget_frontier": {
+            "dimensions": dimension_frontier["expected"]["dimensions"],
+            "budgets": dimension_frontier["expected"]["budgets"],
+            "seed_count": len(
+                dimension_frontier["expected"]["seeds"]),
+        },
+        "rendered_artifact_count": len(
+            artifact_manifest["outputs"]),
         "artifact_sha256": {
             name: _sha256(path) for name, path in paths.items()
         },
@@ -610,6 +804,10 @@ def main():
     parser.add_argument("--traffic-negative-control", required=True)
     parser.add_argument("--proposal-coverage", required=True)
     parser.add_argument("--proof-receipt", required=True)
+    parser.add_argument("--execution-snapshot", required=True)
+    parser.add_argument("--hvd-causal-gate", required=True)
+    parser.add_argument("--dimension-frontier", required=True)
+    parser.add_argument("--artifact-manifest", required=True)
     parser.add_argument("--repository-root", default=".")
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
@@ -628,6 +826,10 @@ def main():
         traffic_negative_control_path=args.traffic_negative_control,
         proposal_coverage_path=args.proposal_coverage,
         proof_receipt_path=args.proof_receipt,
+        execution_snapshot_path=args.execution_snapshot,
+        hvd_causal_gate_path=args.hvd_causal_gate,
+        dimension_frontier_path=args.dimension_frontier,
+        artifact_manifest_path=args.artifact_manifest,
         repository_commit=commit,
     )
     _atomic_json(args.out, release)

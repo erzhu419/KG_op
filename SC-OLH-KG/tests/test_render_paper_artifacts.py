@@ -91,6 +91,17 @@ def test_renders_compact_tables_and_audit_without_runtime_state(tmp_path):
     assert statistics[0]["lexicographic_wins"] == 2
     assert manifest["contracts"]["reads_checkpoints"] is False
     assert manifest["contracts"]["post_run_truth_not_used_for_decisions"] is True
+    assert manifest["status"] == "complete"
+    assert {
+        row["name"] for row in manifest["outputs"]
+    } == {
+        "paired_statistics.json",
+        "table_adaptation.tex",
+        "table_frontier.tex",
+        "table_main.tex",
+    }
+    assert all(
+        len(row["sha256"]) == 64 for row in manifest["outputs"])
 
 
 def test_bootstrap_interval_is_deterministic():

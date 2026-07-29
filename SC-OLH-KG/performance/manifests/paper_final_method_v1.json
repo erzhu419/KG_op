@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "method_identity_and_proposal_theory_frozen_hvd_role_resolved",
+  "status": "immutable_final_replays_registered_external_gates_in_progress",
   "contract_id": "or_transfer_frontend_saas_v1",
   "primary_claim": "A source-only, target-label-invariant structural proposal raises heldout feasible-basin coverage in a dimension-equivariant policy coordinate.",
   "novel_frontend": {
@@ -108,6 +108,24 @@
     }
   },
   "supporting_evidence": {
+    "immutable_execution_snapshot": {
+      "artifact": "paper_artifacts/execution_snapshots/27d55e0d5f265034f91ee7b3f7988dd8233881e5.json",
+      "repository_commit": "27d55e0d5f265034f91ee7b3f7988dd8233881e5",
+      "scolhkg_tree": "bc2aa8763ed29c9935757c130febe05dc91d30f5",
+      "proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
+      "scripts_tree": "3a9765b187861ac2b47b5b847de9dd6c168cb7bb",
+      "historical_result_rows_reused": 0,
+      "source_informed_replay": {
+        "run_id": "paper_final_frozen_source_27d55e0_d1000_n13_s80_99_v1",
+        "task_id_range": ["t61188", "t61367"],
+        "task_count": 180
+      },
+      "common_sobol_replay": {
+        "run_id": "paper_final_frozen_sobol_27d55e0_d1000_n13_s80_99_v1",
+        "task_id_range": ["t61368", "t61547"],
+        "task_count": 180
+      }
+    },
     "source_informed_common_sobol_factorial_manifest": "v9_equal_terminal_verifier_crossdim_gate_v1.json",
     "source_informed_feasible_and_certified": {
       "proposal_only": "60/60",

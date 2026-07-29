@@ -708,8 +708,13 @@ def render(rows_path: Path, summary_path: Path, traces_path: Path,
             "action_allocation": plot_action_allocation(
                 rows, out_dir / "fig_action_allocation"),
         }
+    output_paths = sorted(
+        path for path in out_dir.iterdir()
+        if path.is_file() and path.name != "artifact_manifest.json"
+    )
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
+        "status": "complete",
         "inputs": {
             "rows": {"path": str(rows_path), "sha256": _sha256(rows_path)},
             "summary": {
@@ -722,6 +727,11 @@ def render(rows_path: Path, summary_path: Path, traces_path: Path,
         "trace_count": len(traces),
         "primary_method": primary_method,
         "figures": figures,
+        "outputs": [{
+            "name": path.name,
+            "sha256": _sha256(path),
+            "size_bytes": path.stat().st_size,
+        } for path in output_paths],
         "contracts": {
             "reads_compact_csv_only": True,
             "reads_checkpoints": False,

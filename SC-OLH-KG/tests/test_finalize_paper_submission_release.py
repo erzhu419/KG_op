@@ -19,15 +19,36 @@ def _fixtures(tmp_path):
         "online_backend": {"refit_schedule": "every_iteration"},
         "claim_boundaries": {"kg": "ablation"},
     })
+    headline_methods = [
+        "frozen_crossdim_proposal_only",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code",
+        "canonical_saasbo_every_iteration",
+    ]
+    control_methods = [
+        "common_sobol_proposal_only",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code",
+        "canonical_saasbo_every_iteration",
+    ]
     registry = _write(tmp_path / "registry.json", {
         "registry_id": "registry",
-        "tracks": [{
-            "track_id": "final_frontend_backend_factorial_d1000_n13",
-            "expected_method_identities": ["headline"],
-            "expected_domains": ["Domain"],
-            "expected_dimensions": [1000],
-            "expected_seeds": [80],
-        }],
+        "tracks": [
+            {
+                "track_id": (
+                    "final_frozen_source_frontend_backend_d1000_n13"),
+                "expected_method_identities": headline_methods,
+                "expected_domains": ["Domain"],
+                "expected_dimensions": [1000],
+                "expected_seeds": [80],
+            },
+            {
+                "track_id": (
+                    "final_frozen_sobol_frontend_control_d1000_n13"),
+                "expected_method_identities": control_methods,
+                "expected_domains": ["Domain"],
+                "expected_dimensions": [1000],
+                "expected_seeds": [80],
+            },
+        ],
         "primary_comparisons": [{}],
     })
     import hashlib
@@ -56,22 +77,44 @@ def _fixtures(tmp_path):
                 "verifier_signature": "uniform",
                 "false_certificate": False,
             })
-    records.append({
-        "track_id": "final_frontend_backend_factorial_d1000_n13",
-        "path": str(result),
-        "result_sha256": result_hash,
-        "status": "ok",
-        "method_identity": "headline",
-        "domain": "Domain",
-        "target_dimension": 1000,
-        "seed": 80,
-        "source_calls": 384,
-        "target_search_calls": 13,
-        "target_verification_calls": 256,
-        "optimization_calls_excluding_verification": 397,
-        "verifier_signature": "uniform",
-        "false_certificate": False,
-    })
+    execution = {
+        "execution_provenance_status": "frozen",
+        "execution_repository_commit": "a" * 40,
+        "execution_scolhkg_tree": "b" * 40,
+        "execution_proof_tree": "c" * 40,
+        "execution_scripts_tree": "d" * 40,
+        "execution_theory_contract_id": (
+            "source_target_geometric_atlas_coverage_v1"),
+    }
+    for track_id, methods in (
+        (
+            "final_frozen_source_frontend_backend_d1000_n13",
+            headline_methods,
+        ),
+        (
+            "final_frozen_sobol_frontend_control_d1000_n13",
+            control_methods,
+        ),
+    ):
+        for method_identity in methods:
+            records.append({
+                "track_id": track_id,
+                "path": str(result),
+                "result_sha256": result_hash,
+                "status": "ok",
+                "method_identity": method_identity,
+                "domain": "Domain",
+                "target_dimension": 1000,
+                "seed": 80,
+                "source_calls": 384,
+                "target_search_calls": (
+                    10 if "proposal_only" in method_identity else 13),
+                "target_verification_calls": 256,
+                "optimization_calls_excluding_verification": 397,
+                "verifier_signature": "uniform",
+                "false_certificate": False,
+                **execution,
+            })
     audit = _write(tmp_path / "audit.json", {
         "registry_id": "registry",
         "status": "pass",
@@ -88,19 +131,19 @@ def _fixtures(tmp_path):
         sorted(
             record["result_sha256"] for record in records
             if record["track_id"]
-            == "final_frontend_backend_factorial_d1000_n13"
+            == "final_frozen_source_frontend_backend_d1000_n13"
         ),
         separators=(",", ":"),
     ).encode("utf-8")).hexdigest()
     convergence = _write(tmp_path / "convergence.json", {
         "contract_id": "post_run_search_convergence_v1",
         "status": "complete",
-        "track_id": "final_frontend_backend_factorial_d1000_n13",
-        "method_identities": ["headline"],
-        "result_count": 1,
-        "completed_trace_count": 1,
-        "trace_row_count": 13,
-        "expected_trace_row_count": 13,
+        "track_id": "final_frozen_source_frontend_backend_d1000_n13",
+        "method_identities": headline_methods,
+        "result_count": 3,
+        "completed_trace_count": 3,
+        "trace_row_count": 36,
+        "expected_trace_row_count": 36,
         "terminal_validation_failure_count": 0,
         "target_truth_used_post_run_only": True,
         "target_truth_used_for_search_or_selection": False,
@@ -190,6 +233,69 @@ def _fixtures(tmp_path):
         "forbidden_declaration_count": 0,
         "build": {"executed": True, "returncode": 0},
     })
+    execution_snapshot = _write(tmp_path / "execution_snapshot.json", {
+        "status": "frozen",
+        "repository_commit": "a" * 40,
+        "scolhkg_tree": "b" * 40,
+        "proof_tree": "c" * 40,
+        "scripts_tree": "d" * 40,
+        "method_contract_id": "or_transfer_frontend_saas_v1",
+        "theory_contract_id": (
+            "source_target_geometric_atlas_coverage_v1"),
+        "runtime_checkpoints_or_model_weights_included": False,
+        "target_outcomes_used_to_select_snapshot": False,
+    })
+    method_payload = json.loads(method.read_text(encoding="utf-8"))
+    method_payload["supporting_evidence"] = {
+        "immutable_execution_snapshot": {
+            "repository_commit": "a" * 40,
+            "scolhkg_tree": "b" * 40,
+            "proof_tree": "c" * 40,
+            "scripts_tree": "d" * 40,
+        },
+    }
+    method.write_text(json.dumps(method_payload), encoding="utf-8")
+    hvd = _write(tmp_path / "hvd.json", {
+        "gate": {
+            "complete_pair_count": 15,
+            "all_expected_pairs_present": True,
+            "all_rows_paired": True,
+            "false_certification_not_harmed": True,
+            "promote_hvd_as_core": False,
+        },
+    })
+    frontier = _write(tmp_path / "frontier.json", {
+        "status": "complete",
+        "expected": {
+            "dimensions": [200, 1000],
+            "budgets": [10, 20, 40, 80],
+            "seeds": list(range(80, 100)),
+        },
+        "gates": {
+            "d200_N20": {
+                "all_rows_ok": True,
+                "false_certification_free": True,
+            },
+            "d1000_N80": {
+                "all_rows_ok": True,
+                "false_certification_free": True,
+            },
+        },
+    })
+    table = _write(tmp_path / "table.tex", {"table": "content"})
+    import hashlib
+    artifact = _write(tmp_path / "artifact_manifest.json", {
+        "status": "complete",
+        "contracts": {
+            "reads_checkpoints": False,
+            "reads_pickle_or_model_weights": False,
+            "post_run_truth_not_used_for_decisions": True,
+        },
+        "outputs": [{
+            "name": table.name,
+            "sha256": hashlib.sha256(table.read_bytes()).hexdigest(),
+        }],
+    })
     return (
         method,
         registry,
@@ -200,6 +306,10 @@ def _fixtures(tmp_path):
         traffic_negative_control,
         proposal_coverage,
         proof,
+        execution_snapshot,
+        hvd,
+        frontier,
+        artifact,
     )
 
 
@@ -215,10 +325,14 @@ def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
         traffic_negative_control_path=paths[6],
         proposal_coverage_path=paths[7],
         proof_receipt_path=paths[8],
+        execution_snapshot_path=paths[9],
+        hvd_causal_gate_path=paths[10],
+        dimension_frontier_path=paths[11],
+        artifact_manifest_path=paths[12],
         repository_commit="commit",
     )
     assert release["status"] == "ready_for_manuscript_lock"
-    assert release["audited_result_count"] == 241
+    assert release["audited_result_count"] == 246
     assert release["failed_or_timeout_result_count"] == 0
     assert len(release["audited_result_receipt_sha256"]) == 64
 
@@ -236,6 +350,10 @@ def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
             traffic_negative_control_path=paths[6],
             proposal_coverage_path=paths[7],
             proof_receipt_path=paths[8],
+            execution_snapshot_path=paths[9],
+            hvd_causal_gate_path=paths[10],
+            dimension_frontier_path=paths[11],
+            artifact_manifest_path=paths[12],
             repository_commit="commit",
         )
 
@@ -270,6 +388,10 @@ def test_release_accepts_hash_bound_remote_compact_shards(tmp_path):
         traffic_negative_control_path=paths[6],
         proposal_coverage_path=paths[7],
         proof_receipt_path=paths[8],
+        execution_snapshot_path=paths[9],
+        hvd_causal_gate_path=paths[10],
+        dimension_frontier_path=paths[11],
+        artifact_manifest_path=paths[12],
         repository_commit="commit",
     )
 
