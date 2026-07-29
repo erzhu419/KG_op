@@ -733,6 +733,46 @@
       ]
     }
   ],
+  "active_gate_runs": [
+    {
+      "gate_id": "descriptor_conditioned_traffic_five_seed_gate",
+      "run_id": "paper_final_external_traffic_descriptor_ed0fe90_s80_84_R100_v1",
+      "code_commit": "ccabb5c",
+      "task_ids": [
+        "t61047", "t61048", "t61049", "t61050", "t61051", "t61052",
+        "t61053", "t61054", "t61055", "t61056", "t61057", "t61058"
+      ],
+      "expected_search_seed_count": 5,
+      "expand_to_seed_count_on_pass": 20
+    },
+    {
+      "gate_id": "dimension_budget_frontier_d200_d1000",
+      "run_id": "paper_dimension_budget_frontier_066d8b2_d200_d1000_n20_n40_n80_s80_84_v1",
+      "code_commit": "066d8b2",
+      "task_id_range": ["t61059", "t61184"],
+      "target_dimensions": [200, 1000],
+      "target_search_budgets": [20, 40, 80],
+      "expected_search_seed_count": 5,
+      "expand_to_seed_count_on_pass": 20
+    },
+    {
+      "gate_id": "dimension_frontier_d10000_n13",
+      "run_id": "paper_dimension_frontier_d10000_chunked_3f8e46c_n13_s80_84_v2",
+      "code_commit": "3f8e46c",
+      "target_dimensions": [10000],
+      "target_search_budgets": [13],
+      "expected_search_seed_count": 5,
+      "next_budgets_on_pass": [20, 40]
+    },
+    {
+      "gate_id": "legacy_related_family_bridge",
+      "run_id": "paper_final_legacy_bridge_noprovider_3f8e46c_d5_n13_s80_99_v2",
+      "code_commit": "3f8e46c",
+      "target_dimensions": [5],
+      "target_search_budgets": [13],
+      "expected_search_seed_count": 20
+    }
+  ],
   "separate_non_gaussian_external_artifacts": {
     "reason": "SUMO uses a familywise exact binomial fresh-seed verifier rather than the synthetic Gaussian verifier",
     "main_descriptor_conditioned_track": {
@@ -756,6 +796,8 @@
     "domain_blind_negative_control": {
       "run_id": "paper_final_external_traffic_s80_84_R100_v1",
       "status": "complete_failed_external_validity_gate",
+      "artifact": "paper_artifacts/external_traffic/external_traffic_negative_control_compact.json",
+      "artifact_sha256": "e75f8aef4a7000cdcc7ed4331a90b395f0a30afcd3e7b93b2fd47fe85201a681",
       "seed_count": 5,
       "certified_seed_count": 0,
       "source_selection_mode": "domain_blind_exclude_nearest",
