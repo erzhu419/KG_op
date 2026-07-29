@@ -10,10 +10,11 @@ single-objective chance-constrained metrics and fresh out-of-sample audits.
 
 ## Main-text artifacts
 
-1. **Method diagram.** One source-to-target object: source-only low-frequency
-   proposal, separated observable mean/risk coordinates, cumulative HVD,
-   evaluate-or-replicate VOI, posterior terminal decision, and a separate
-   conservative certificate.
+1. **Method diagram.** One source-to-target object: source-only
+   dimension-equivariant structural proposal, a replaceable online backend
+   (canonical SAASBO in the headline implementation), and a separate
+   conservative verifier. Cumulative HVD is shown as an optional mechanistic
+   risk head rather than a required source of optimization gain.
 2. **Main comparison table.** True-feasible count, feasible regret, certificate
    coverage, false certificates, and wall time. Every regret is accompanied by
    its feasibility denominator.
@@ -26,9 +27,11 @@ single-objective chance-constrained metrics and fresh out-of-sample audits.
 5. **Proposal-to-adaptation table.** Initial feasible count, final feasible
    count, rescue/loss, and median `n0-best -> final` regret change. This
    separates the front end from the online optimizer.
-6. **HVD identifiability.** Log-variance RMSE and variance-upper coverage over
-   shared-shock strength and replication count, comparing pooled, pointwise,
-   and cumulative factor models.
+6. **HVD causal audit.** Log-variance RMSE, variance-shape correlation,
+   variance-upper coverage, feasibility, regret, and false certification for
+   pooled versus cumulative factor models under the same proposal, backend,
+   and verifier. The completed five-seed gate is reported as a negative
+   headline-promotion result.
 7. **Evaluate-or-replicate allocation.** Replication action fraction over
    target budget by domain, paired with the HVD calibration result.
 8. **Certification budget.** Certified/evaluated coverage and false
@@ -43,7 +46,8 @@ single-objective chance-constrained metrics and fresh out-of-sample audits.
 - target-only SOTA at both `N` and total-cost `384+N` budgets;
 - legacy RZDT scalarized bridge under the original problem definitions;
 - strict no-history SUMO using fresh trajectory CSV and fresh out-of-sample
-  certification seeds;
+  certification seeds, with descriptor-conditioned transfer as the main
+  external-validity track and domain-blind transfer as a negative control;
 - manifold/SSL/Transformer representation rows as background ablations only.
 
 ## Statistical contract

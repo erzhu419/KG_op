@@ -121,21 +121,54 @@ def _fixtures(tmp_path):
         "source_calls_per_run": 384,
         "target_search_calls_per_run": 13,
         "target_verification_calls_per_run": 300,
+        "policy_vectors_exported": False,
         "information_contract": {
-            "track": "domain_blind_external_holdout",
+            "track": "descriptor_conditional_external_holdout",
+            "source_selection_mode": "descriptor_nearest",
             "source_domains": [
-                "FactorShockStatePolicyRZDT1",
+                "QueueResourceControl",
                 "InventorySupplyChain",
             ],
-            "excluded_nearest_source_analogue": "QueueResourceControl",
+            "excluded_nearest_source_analogue": (
+                "FactorShockStatePolicyRZDT1"),
+            "source_split_heldout": "FactorShockStatePolicyRZDT1",
             "target_domain": "Ingolstadt21Traffic",
-            "heldout_task_family_identifier_used_by_proposal": False,
+            "heldout_task_family_identifier_used_by_proposal": True,
             "target_labels_used_to_fit_proposal": False,
             "target_oracle_used": False,
             "historical_target_anchor_used": False,
         },
         "rows": traffic_rows,
     })
+    traffic_negative_control = _write(
+        tmp_path / "traffic_negative_control.json",
+        {
+            "status": "complete",
+            "n_seeds": 5,
+            "certified_seed_count": 0,
+            "source_calls_per_run": 384,
+            "target_search_calls_per_run": 13,
+            "target_verification_calls_per_run": 300,
+            "policy_vectors_exported": False,
+            "information_contract": {
+                "track": "domain_blind_external_holdout",
+                "source_selection_mode": "domain_blind_exclude_nearest",
+                "source_domains": [
+                    "FactorShockStatePolicyRZDT1",
+                    "InventorySupplyChain",
+                ],
+                "excluded_nearest_source_analogue": (
+                    "QueueResourceControl"),
+                "source_split_heldout": "QueueResourceControl",
+                "target_domain": "Ingolstadt21Traffic",
+                "heldout_task_family_identifier_used_by_proposal": False,
+                "target_labels_used_to_fit_proposal": False,
+                "target_oracle_used": False,
+                "historical_target_anchor_used": False,
+            },
+            "rows": traffic_rows[:5],
+        },
+    )
     proposal_coverage = _write(tmp_path / "proposal_coverage.json", {
         "status": "complete_with_conditional_global_bound",
         "contract_id": "source_target_geometric_atlas_coverage_v1",
@@ -164,6 +197,7 @@ def _fixtures(tmp_path):
         statistics,
         convergence,
         traffic,
+        traffic_negative_control,
         proposal_coverage,
         proof,
     )
@@ -178,8 +212,9 @@ def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
         statistics_path=paths[3],
         convergence_path=paths[4],
         traffic_path=paths[5],
-        proposal_coverage_path=paths[6],
-        proof_receipt_path=paths[7],
+        traffic_negative_control_path=paths[6],
+        proposal_coverage_path=paths[7],
+        proof_receipt_path=paths[8],
         repository_commit="commit",
     )
     assert release["status"] == "ready_for_manuscript_lock"
@@ -198,8 +233,9 @@ def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
             statistics_path=paths[3],
             convergence_path=paths[4],
             traffic_path=paths[5],
-            proposal_coverage_path=paths[6],
-            proof_receipt_path=paths[7],
+            traffic_negative_control_path=paths[6],
+            proposal_coverage_path=paths[7],
+            proof_receipt_path=paths[8],
             repository_commit="commit",
         )
 
@@ -231,8 +267,9 @@ def test_release_accepts_hash_bound_remote_compact_shards(tmp_path):
         statistics_path=paths[3],
         convergence_path=paths[4],
         traffic_path=paths[5],
-        proposal_coverage_path=paths[6],
-        proof_receipt_path=paths[7],
+        traffic_negative_control_path=paths[6],
+        proposal_coverage_path=paths[7],
+        proof_receipt_path=paths[8],
         repository_commit="commit",
     )
 

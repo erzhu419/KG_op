@@ -1,0 +1,311 @@
+{
+  "domain_gates": {
+    "FactorShockStatePolicyRZDT1": {
+      "calibration_improved": true,
+      "complete_pair_count": 5,
+      "false_certification_not_harmed": true,
+      "feasibility_not_harmed": true,
+      "promote_in_domain": false,
+      "regret_not_harmed": true,
+      "shape_correlation_improved": false
+    },
+    "InventorySupplyChain": {
+      "calibration_improved": false,
+      "complete_pair_count": 5,
+      "false_certification_not_harmed": true,
+      "feasibility_not_harmed": true,
+      "promote_in_domain": false,
+      "regret_not_harmed": true,
+      "shape_correlation_improved": true
+    },
+    "QueueResourceControl": {
+      "calibration_improved": false,
+      "complete_pair_count": 5,
+      "false_certification_not_harmed": true,
+      "feasibility_not_harmed": true,
+      "promote_in_domain": false,
+      "regret_not_harmed": true,
+      "shape_correlation_improved": true
+    }
+  },
+  "evidence_source": "remote_compact_record_shards",
+  "gate": {
+    "all_expected_domains_observed": true,
+    "all_expected_pairs_present": true,
+    "all_rows_paired": true,
+    "calibration_improved": false,
+    "complete_pair_count": 15,
+    "false_certification_not_harmed": true,
+    "feasibility_not_harmed": true,
+    "promote_hvd_as_core": false,
+    "promoted_domains": [],
+    "regret_not_harmed": true,
+    "retain_as_domain_conditional_calibration_component": false,
+    "shape_correlation_improved": true
+  },
+  "interpretation": "HVD may be a core optimization contribution only when shape calibration improves without worsening feasibility, regret, or independent false certification under the paired SAAS contract.",
+  "pair_audits": [
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": -0.7043594877312479,
+      "factor_minus_pooled_shape_correlation": 0.0223946116578423,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "FactorShockStatePolicyRZDT1",
+      "seed": 80
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": -0.7007704645118422,
+      "factor_minus_pooled_shape_correlation": -0.08461615702912968,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "FactorShockStatePolicyRZDT1",
+      "seed": 81
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": -0.7081814049581883,
+      "factor_minus_pooled_shape_correlation": 0.04685279933133101,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "FactorShockStatePolicyRZDT1",
+      "seed": 82
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": -0.7102325116245458,
+      "factor_minus_pooled_shape_correlation": -0.023773996672559094,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "FactorShockStatePolicyRZDT1",
+      "seed": 83
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": -0.7084791951482385,
+      "factor_minus_pooled_shape_correlation": -0.006350648280097843,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "FactorShockStatePolicyRZDT1",
+      "seed": 84
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.419717314571983,
+      "factor_minus_pooled_shape_correlation": 0.05439816798334908,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "InventorySupplyChain",
+      "seed": 80
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.4176151805313617,
+      "factor_minus_pooled_shape_correlation": 0.06381064919337189,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "InventorySupplyChain",
+      "seed": 81
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.4239647307765567,
+      "factor_minus_pooled_shape_correlation": 0.1162324192583226,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "InventorySupplyChain",
+      "seed": 82
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.4286987098835122,
+      "factor_minus_pooled_shape_correlation": 0.13698089759362594,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "InventorySupplyChain",
+      "seed": 83
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.42411013473322645,
+      "factor_minus_pooled_shape_correlation": 0.08337525362519274,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "InventorySupplyChain",
+      "seed": 84
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.4346491737788518,
+      "factor_minus_pooled_shape_correlation": -0.016453469251153943,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "QueueResourceControl",
+      "seed": 80
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.43266082413659845,
+      "factor_minus_pooled_shape_correlation": -0.020497880219071247,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "QueueResourceControl",
+      "seed": 81
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.4386125329074122,
+      "factor_minus_pooled_shape_correlation": 0.07111405430196414,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "QueueResourceControl",
+      "seed": 82
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.44369992599432684,
+      "factor_minus_pooled_shape_correlation": 0.07790560510218131,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "QueueResourceControl",
+      "seed": 83
+    },
+    {
+      "factor_false_certification_gain": 0,
+      "factor_feasible_gain": 0,
+      "factor_minus_pooled_log_variance_rmse": 0.4390282843977411,
+      "factor_minus_pooled_shape_correlation": 0.037926071508964765,
+      "factor_minus_pooled_upper_coverage": 0.0,
+      "factor_regret_gain": 0.0,
+      "heldout": "QueueResourceControl",
+      "seed": 84
+    }
+  ],
+  "record_shard_receipts": [
+    {
+      "origin": "hpc_shared",
+      "path": "SC-OLH-KG/paper_artifacts/remote_record_shards/paper_records_hpc_ed0fe90.json",
+      "records_sha256": "4a41e3688cf55c3981dde5a2bc3a13d1a8d55828278311a9a4c48ff895c6832f",
+      "selected_row_count": 22
+    },
+    {
+      "origin": "jtl110gpu",
+      "path": "SC-OLH-KG/paper_artifacts/remote_record_shards/paper_records_jtl110gpu_ed0fe90.json",
+      "records_sha256": "f44dcf09a465de818e65c076b3ecbf2b3bd2049dd8c58be8b7abfb104bc6631d",
+      "selected_row_count": 4
+    },
+    {
+      "origin": "jtl110gpu2",
+      "path": "SC-OLH-KG/paper_artifacts/remote_record_shards/paper_records_jtl110gpu2_ed0fe90.json",
+      "records_sha256": "5678ff10c3762131e6f63194d92795cc243f61ba25b49a2c01eb28598aa4e1e1",
+      "selected_row_count": 4
+    }
+  ],
+  "row_count": 30,
+  "schema_version": 1,
+  "summaries": {
+    "cumulative_factor": {
+      "false_certification_count": 0,
+      "independently_certified_count": 15,
+      "median_feasible_regret": 0.00824999999999998,
+      "median_log_variance_rmse": 0.940308353529292,
+      "median_upper_coverage": 1.0,
+      "median_variance_shape_correlation": 0.04685279933133101,
+      "row_count": 15,
+      "true_feasible_count": 15
+    },
+    "pooled": {
+      "false_certification_count": 0,
+      "independently_certified_count": 15,
+      "median_feasible_regret": 0.00824999999999998,
+      "median_log_variance_rmse": 0.5770573761498801,
+      "median_upper_coverage": 1.0,
+      "median_variance_shape_correlation": 0.0,
+      "row_count": 15,
+      "true_feasible_count": 15
+    }
+  },
+  "summaries_by_domain": {
+    "FactorShockStatePolicyRZDT1": {
+      "cumulative_factor": {
+        "false_certification_count": 0,
+        "independently_certified_count": 5,
+        "median_feasible_regret": 0.00824999999999998,
+        "median_log_variance_rmse": 0.44964135617921624,
+        "median_upper_coverage": 1.0,
+        "median_variance_shape_correlation": -0.006350648280097843,
+        "row_count": 5,
+        "true_feasible_count": 5
+      },
+      "pooled": {
+        "false_certification_count": 0,
+        "independently_certified_count": 5,
+        "median_feasible_regret": 0.00824999999999998,
+        "median_log_variance_rmse": 1.1579066405452927,
+        "median_upper_coverage": 1.0,
+        "median_variance_shape_correlation": 0.0,
+        "row_count": 5,
+        "true_feasible_count": 5
+      }
+    },
+    "InventorySupplyChain": {
+      "cumulative_factor": {
+        "false_certification_count": 0,
+        "independently_certified_count": 5,
+        "median_feasible_regret": 0.011556952461906411,
+        "median_log_variance_rmse": 1.0009450563605644,
+        "median_upper_coverage": 1.0,
+        "median_variance_shape_correlation": 0.08337525362519274,
+        "row_count": 5,
+        "true_feasible_count": 5
+      },
+      "pooled": {
+        "false_certification_count": 0,
+        "independently_certified_count": 5,
+        "median_feasible_regret": 0.011556952461906411,
+        "median_log_variance_rmse": 0.5770573761498801,
+        "median_upper_coverage": 1.0,
+        "median_variance_shape_correlation": 0.0,
+        "row_count": 5,
+        "true_feasible_count": 5
+      }
+    },
+    "QueueResourceControl": {
+      "cumulative_factor": {
+        "false_certification_count": 0,
+        "independently_certified_count": 5,
+        "median_feasible_regret": 0.002876498493437518,
+        "median_log_variance_rmse": 0.940308353529292,
+        "median_upper_coverage": 1.0,
+        "median_variance_shape_correlation": 0.037926071508964765,
+        "row_count": 5,
+        "true_feasible_count": 5
+      },
+      "pooled": {
+        "false_certification_count": 0,
+        "independently_certified_count": 5,
+        "median_feasible_regret": 0.002876498493437518,
+        "median_log_variance_rmse": 0.5012800691315509,
+        "median_upper_coverage": 1.0,
+        "median_variance_shape_correlation": 0.0,
+        "row_count": 5,
+        "true_feasible_count": 5
+      }
+    }
+  }
+}

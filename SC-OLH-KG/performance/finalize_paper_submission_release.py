@@ -39,6 +39,7 @@ def validate_release_inputs(
     statistics,
     convergence,
     traffic,
+    traffic_negative_control,
     proposal_coverage,
     proof_receipt,
 ):
@@ -197,19 +198,79 @@ def validate_release_inputs(
         "traffic source/search budgets differ from the registered contract",
         failures,
     )
+    _require(
+        traffic.get("policy_vectors_exported") is False,
+        "traffic release artifact contains policy vectors",
+        failures,
+    )
     traffic_information = traffic.get("information_contract", {})
     _require(
         traffic_information.get("track")
-        == "domain_blind_external_holdout"
+        == "descriptor_conditional_external_holdout"
+        and traffic_information.get("source_selection_mode")
+        == "descriptor_nearest"
         and traffic_information.get(
-            "heldout_task_family_identifier_used_by_proposal") is False
+            "heldout_task_family_identifier_used_by_proposal") is True
         and traffic_information.get(
             "target_labels_used_to_fit_proposal") is False
         and traffic_information.get("target_oracle_used") is False
+        and traffic_information.get("historical_target_anchor_used") is False
         and traffic_information.get(
             "excluded_nearest_source_analogue")
-        == "QueueResourceControl",
-        "traffic experiment is not the registered domain-blind holdout",
+        == "FactorShockStatePolicyRZDT1"
+        and traffic_information.get("source_split_heldout")
+        == "FactorShockStatePolicyRZDT1"
+        and traffic_information.get("source_domains")
+        == ["QueueResourceControl", "InventorySupplyChain"],
+        "traffic experiment is not the registered descriptor-conditioned "
+        "external holdout",
+        failures,
+    )
+    _require(
+        traffic_negative_control.get("status") == "complete",
+        "domain-blind traffic negative control is incomplete",
+        failures,
+    )
+    _require(
+        int(traffic_negative_control.get("n_seeds", 0)) >= 5,
+        "domain-blind traffic negative control has fewer than 5 search seeds",
+        failures,
+    )
+    _require(
+        int(traffic_negative_control.get("source_calls_per_run", -1)) == 384
+        and int(traffic_negative_control.get(
+            "target_search_calls_per_run", -1)) == 13,
+        "domain-blind traffic negative-control budgets differ from the "
+        "registered contract",
+        failures,
+    )
+    _require(
+        traffic_negative_control.get("policy_vectors_exported") is False,
+        "traffic negative-control artifact contains policy vectors",
+        failures,
+    )
+    negative_information = traffic_negative_control.get(
+        "information_contract", {})
+    _require(
+        negative_information.get("track")
+        == "domain_blind_external_holdout"
+        and negative_information.get(
+            "heldout_task_family_identifier_used_by_proposal") is False
+        and negative_information.get(
+            "target_labels_used_to_fit_proposal") is False
+        and negative_information.get("target_oracle_used") is False
+        and negative_information.get(
+            "historical_target_anchor_used") is False
+        and negative_information.get(
+            "excluded_nearest_source_analogue")
+        == "QueueResourceControl"
+        and negative_information.get("source_domains")
+        == [
+            "FactorShockStatePolicyRZDT1",
+            "InventorySupplyChain",
+        ],
+        "traffic negative control is not the registered domain-blind "
+        "nearest-analogue exclusion",
         failures,
     )
     _require(
@@ -268,6 +329,22 @@ def validate_release_inputs(
             for row in traffic_rows
         ),
         "traffic verifier is not a fixed fresh-seed external certificate",
+        failures,
+    )
+    negative_traffic_rows = list(traffic_negative_control.get("rows", ()))
+    _require(
+        bool(negative_traffic_rows)
+        and all(
+            row.get("certificate")
+            == "one_sided_clopper_pearson_bonferroni"
+            and row.get("fixed_shortlist_order") is True
+            and row.get("verification_samples_update_optimizer") is False
+            and row.get(
+                "verification_samples_used_to_reorder_shortlist") is False
+            for row in negative_traffic_rows
+        ),
+        "traffic negative-control verifier is not a fixed fresh-seed "
+        "external certificate",
         failures,
     )
     uniform_rows = [
@@ -371,6 +448,7 @@ def build_release(
     statistics_path,
     convergence_path,
     traffic_path,
+    traffic_negative_control_path,
     proposal_coverage_path,
     proof_receipt_path,
     repository_commit,
@@ -381,6 +459,7 @@ def build_release(
     statistics = _load(statistics_path)
     convergence = _load(convergence_path)
     traffic = _load(traffic_path)
+    traffic_negative_control = _load(traffic_negative_control_path)
     proposal_coverage = _load(proposal_coverage_path)
     proof_receipt = _load(proof_receipt_path)
     failures = validate_release_inputs(
@@ -390,6 +469,7 @@ def build_release(
         statistics,
         convergence,
         traffic,
+        traffic_negative_control,
         proposal_coverage,
         proof_receipt,
     )
@@ -403,6 +483,8 @@ def build_release(
         "paired_statistics": Path(statistics_path),
         "search_convergence": Path(convergence_path),
         "external_traffic_audit": Path(traffic_path),
+        "external_traffic_negative_control": Path(
+            traffic_negative_control_path),
         "proposal_coverage_audit": Path(proposal_coverage_path),
         "lean_proof_receipt": Path(proof_receipt_path),
     }
@@ -448,6 +530,20 @@ def build_release(
             "target_verification_calls_per_run": int(
                 traffic["target_verification_calls_per_run"]),
             "information_contract": traffic["information_contract"],
+        },
+        "external_traffic_negative_control": {
+            "n_seeds": int(traffic_negative_control["n_seeds"]),
+            "certified_seed_count": int(
+                traffic_negative_control["certified_seed_count"]),
+            "source_calls_per_run": int(
+                traffic_negative_control["source_calls_per_run"]),
+            "target_search_calls_per_run": int(
+                traffic_negative_control["target_search_calls_per_run"]),
+            "target_verification_calls_per_run": int(
+                traffic_negative_control[
+                    "target_verification_calls_per_run"]),
+            "information_contract": traffic_negative_control[
+                "information_contract"],
         },
         "proposal_coverage": {
             "contract_id": proposal_coverage["contract_id"],
@@ -511,6 +607,7 @@ def main():
     parser.add_argument("--statistics", required=True)
     parser.add_argument("--convergence", required=True)
     parser.add_argument("--traffic", required=True)
+    parser.add_argument("--traffic-negative-control", required=True)
     parser.add_argument("--proposal-coverage", required=True)
     parser.add_argument("--proof-receipt", required=True)
     parser.add_argument("--repository-root", default=".")
@@ -528,6 +625,7 @@ def main():
         statistics_path=args.statistics,
         convergence_path=args.convergence,
         traffic_path=args.traffic,
+        traffic_negative_control_path=args.traffic_negative_control,
         proposal_coverage_path=args.proposal_coverage,
         proof_receipt_path=args.proof_receipt,
         repository_commit=commit,

@@ -6,10 +6,13 @@
    low-frequency proposal compress high-dimensional policy search into
    dimension-equivariant observable coordinates. Completed causal gates do
    not support describing all four structural switches as coequal drivers.
-2. State-coupled cumulative HVD improves variance calibration and prevents
-   false feasibility under shared shocks.
-3. Unified evaluate-or-replicate VOI improves the source-informed initial
-   design without sacrificing its incumbent.
+2. State-coupled cumulative HVD is a mechanistic risk model whose calibration
+   value is tested causally against pooled variance under an otherwise
+   identical proposal, backend, and verifier. It is not a headline
+   optimization claim unless that registered comparison passes.
+3. Online acquisition is a replaceable backend. The headline implementation
+   uses canonical every-iteration SAASBO; KG, Thompson sampling, and
+   evaluate-or-replicate VOI remain backend ablations.
 4. Performance depends on effective risk dimension rather than raw dimension.
 5. Conservative certification becomes nonvacuous when the charged evidence
    budget is statistically sufficient.
@@ -91,6 +94,19 @@ low-frequency front end.
   three feasibility rescues, and zero feasibility losses. Mean verification
   cost was 102.4 calls and the precommitted maximum was 176.
 
+### Gate E: cumulative-HVD causal role
+
+- Freeze the source archive, target initial design, canonical SAASBO backend,
+  search budget, and independent verifier.
+- Compare pooled variance with cumulative factor-HVD on all three synthetic
+  domains using paired seeds.
+- **Completed:** all 15 pairs were feasible and independently certified with
+  zero false certificates, but cumulative HVD did not change regret or
+  feasibility. It improved log-variance scale only on FactorShock, worsened
+  scale RMSE on Inventory and Queue, and did not recover FactorShock variance
+  shape. HVD is therefore retained as a mechanistic/conditional certification
+  component, not promoted as a core optimization contribution.
+
 ## Main matrix
 
 The certified-deployment matrix uses V64's frozen `80/96` verification suffix.
@@ -104,7 +120,10 @@ the `32/32` numerical audit schedule for experiments that exercise exact KG.
 - Inventory/supply-chain control: stockout-sensitive chance boundary.
 - Queue/resource control: burst/common-load risk.
 - SUMO ingolstadt21 strict no-history traffic with fresh trajectory CSV and
-  out-of-sample seed certification.
+  out-of-sample seed certification. The main external-validity track may use
+  a frozen observable task-family descriptor but no target outcomes, oracle,
+  or historical traffic anchor. A five-seed domain-blind split that excludes
+  the nearest source analogue is retained as a preregistered negative control.
 - Legacy RZDT1/RZDT2/RZDT5_RR bridge, using the original definitions and a
   scalarized single objective while retaining the original heteroscedastic
   profiles.
@@ -122,11 +141,13 @@ the `32/32` numerical audit schedule for experiments that exercise exact KG.
 ### Main methods
 
 - Frozen source proposal only (`n0-best`).
-- Frozen proposal plus neutral Sobol continuation.
-- V64 SC-OLH search policy with independently certified deployment.
-- Same model with new-point-only actions.
-- Same model with pooled variance instead of cumulative HVD.
-- Same model without source-discrepancy adaptation.
+- Frozen proposal plus canonical every-iteration SAASBO and independent
+  deployment verification.
+- Frozen proposal plus Stacked GP as the strongest audited transfer backend.
+- Common-Sobol versions of the same backends as front-end negative controls.
+- SC-V69, legacy exact KG, Thompson sampling, neutral Sobol continuation, and
+  evaluate-or-replicate VOI as backend ablations.
+- Pooled variance versus cumulative HVD as a registered mechanistic ablation.
 
 ### Fair baselines
 

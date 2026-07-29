@@ -147,6 +147,13 @@ def test_traffic_aggregate_records_domain_blind_information_contract(
         )
         paths.append(path)
     payload = analyze(paths)
+    assert payload["policy_vectors_exported"] is False
+    assert all("deployed_x" not in row for row in payload["rows"])
+    assert all(
+        "x" not in candidate
+        for row in payload["rows"]
+        for candidate in row["candidate_rows"]
+    )
     contract = payload["information_contract"]
     assert contract["track"] == "domain_blind_external_holdout"
     assert contract[

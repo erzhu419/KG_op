@@ -137,6 +137,7 @@ def analyze(
     source_selection_mode="domain_blind_exclude_nearest",
     source_split_heldout=None,
     heldout_task_family_identifier_used=False,
+    redact_policy_vectors=True,
 ):
     rows = [
         audit_oos_payload(
@@ -151,6 +152,11 @@ def analyze(
     seeds = [int(row["run_seed"]) for row in rows]
     if len(seeds) != len(set(seeds)):
         raise ValueError("traffic OOS audit contains duplicate search seeds")
+    if redact_policy_vectors:
+        for row in rows:
+            row.pop("deployed_x", None)
+            for candidate in row.get("candidate_rows", ()):
+                candidate.pop("x", None)
     return {
         "schema_version": 1,
         "status": "complete",
@@ -170,6 +176,7 @@ def analyze(
             row["verification_calls"] for row in rows)),
         "total_calls_per_run": int(384 + 13 + statistics.median(
             row["verification_calls"] for row in rows)),
+        "policy_vectors_exported": not bool(redact_policy_vectors),
         "information_contract": {
             "track": str(information_track),
             "source_selection_mode": str(source_selection_mode),
@@ -231,6 +238,11 @@ def main():
         "--heldout-task-family-identifier-used",
         action="store_true",
     )
+    parser.add_argument(
+        "--redact-policy-vectors",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
     args = parser.parse_args()
     payload = analyze(
         args.paths,
@@ -250,6 +262,7 @@ def main():
             args.source_split_heldout.strip() or None),
         heldout_task_family_identifier_used=(
             args.heldout_task_family_identifier_used),
+        redact_policy_vectors=args.redact_policy_vectors,
     )
     _atomic_json(args.out, payload)
     print(json.dumps({

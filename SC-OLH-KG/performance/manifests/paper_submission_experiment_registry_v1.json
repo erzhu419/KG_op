@@ -733,9 +733,41 @@
       ]
     }
   ],
-  "separate_non_gaussian_external_artifact": {
-    "run_id": "paper_final_external_traffic_gpu_s80_84_R100_v3",
-    "result": "paper_final_external_traffic_gpu_s80_84_R100_v3/traffic/external_traffic_audit.json",
-    "reason": "SUMO uses a familywise exact binomial fresh-seed verifier rather than the synthetic Gaussian verifier"
+  "separate_non_gaussian_external_artifacts": {
+    "reason": "SUMO uses a familywise exact binomial fresh-seed verifier rather than the synthetic Gaussian verifier",
+    "main_descriptor_conditioned_track": {
+      "run_id": "paper_final_external_traffic_descriptor_ed0fe90_s80_84_R100_v1",
+      "status": "five_seed_gate_submitted",
+      "required_gate_seeds": [80, 81, 82, 83, 84],
+      "required_final_seed_count_after_gate": 20,
+      "source_selection_mode": "descriptor_nearest",
+      "source_domains": [
+        "QueueResourceControl",
+        "InventorySupplyChain"
+      ],
+      "source_split_heldout": "FactorShockStatePolicyRZDT1",
+      "heldout_task_family_identifier_used": true,
+      "target_labels_used_to_fit_proposal": false,
+      "target_oracle_used": false,
+      "historical_target_anchor_used": false,
+      "backend": "canonical_saasbo_every_iteration",
+      "verifier": "fresh_seed_familywise_exact_binomial_shortlist_v1"
+    },
+    "domain_blind_negative_control": {
+      "run_id": "paper_final_external_traffic_s80_84_R100_v1",
+      "status": "complete_failed_external_validity_gate",
+      "seed_count": 5,
+      "certified_seed_count": 0,
+      "source_selection_mode": "domain_blind_exclude_nearest",
+      "source_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain"
+      ],
+      "excluded_nearest_source_analogue": "QueueResourceControl",
+      "heldout_task_family_identifier_used": false,
+      "target_labels_used_to_fit_proposal": false,
+      "target_oracle_used": false,
+      "historical_target_anchor_used": false
+    }
   }
 }
