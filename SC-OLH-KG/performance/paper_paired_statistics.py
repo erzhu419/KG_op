@@ -15,6 +15,7 @@ import math
 from pathlib import Path
 
 import numpy as np
+from scipy.stats import rankdata, wilcoxon
 
 
 PAIR_KEY = ("domain", "target_dimension", "seed")
@@ -79,6 +80,42 @@ def holm_adjust(p_values):
         running = max(running, candidate)
         adjusted[index] = running
     return adjusted
+
+
+def _wilcoxon_with_rank_biserial(oriented_differences):
+    """Paired signed-rank test with positive effect meaning left is better."""
+
+    values = np.asarray(oriented_differences, dtype=float)
+    values = values[np.isfinite(values)]
+    nonzero = values[np.abs(values) > 1e-12]
+    if len(nonzero) == 0:
+        return {
+            "statistic": 0.0,
+            "p_value": 1.0,
+            "matched_pairs_rank_biserial": 0.0,
+            "nonzero_pair_count": 0,
+        }
+    ranks = rankdata(np.abs(nonzero), method="average")
+    positive_rank_sum = float(np.sum(ranks[nonzero > 0.0]))
+    negative_rank_sum = float(np.sum(ranks[nonzero < 0.0]))
+    denominator = positive_rank_sum + negative_rank_sum
+    effect = (
+        0.0
+        if denominator <= 0.0
+        else (positive_rank_sum - negative_rank_sum) / denominator
+    )
+    test = wilcoxon(
+        nonzero,
+        alternative="two-sided",
+        zero_method="wilcox",
+        method="auto",
+    )
+    return {
+        "statistic": float(test.statistic),
+        "p_value": float(test.pvalue),
+        "matched_pairs_rank_biserial": float(effect),
+        "nonzero_pair_count": int(len(nonzero)),
+    }
 
 
 def _record_index(records, *, track_id, method_identity):
@@ -178,6 +215,11 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
             samples=samples,
             seed=_seed_for(comparison_id, stratum, field),
         )
+        signed_rank = (
+            None
+            if len(oriented) == 0
+            else _wilcoxon_with_rank_biserial(oriented)
+        )
         return {
             f"{field}_pair_count": int(len(values)),
             f"left_mean_{field}": (
@@ -204,6 +246,22 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
                 None
                 if not values
                 else _exact_two_sided_sign_p(left_wins, right_wins)
+            ),
+            f"{field}_wilcoxon_statistic": (
+                None if signed_rank is None
+                else signed_rank["statistic"]
+            ),
+            f"{field}_wilcoxon_p": (
+                None if signed_rank is None
+                else signed_rank["p_value"]
+            ),
+            f"{field}_matched_pairs_rank_biserial_left_better_positive": (
+                None if signed_rank is None
+                else signed_rank["matched_pairs_rank_biserial"]
+            ),
+            f"{field}_wilcoxon_nonzero_pair_count": (
+                None if signed_rank is None
+                else signed_rank["nonzero_pair_count"]
             ),
             f"{field}_higher_is_better": bool(higher_is_better),
         }
@@ -259,14 +317,10 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
         samples=samples,
         seed=_seed_for(comparison_id, stratum, "regret"),
     )
-    non_tied_regret = left_regret_wins + right_regret_wins
-    rank_biserial = (
+    regret_signed_rank = (
         None
-        if non_tied_regret == 0
-        else float(
-            (left_regret_wins - right_regret_wins)
-            / non_tied_regret
-        )
+        if len(regret_differences) == 0
+        else _wilcoxon_with_rank_biserial(-regret_differences)
     )
     summary = {
         "comparison_id": str(comparison_id),
@@ -320,7 +374,22 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
         "left_regret_win_count": left_regret_wins,
         "right_regret_win_count": right_regret_wins,
         "regret_tie_count": regret_ties,
-        "paired_regret_rank_biserial_left_better_positive": rank_biserial,
+        "paired_regret_rank_biserial_left_better_positive": (
+            None if regret_signed_rank is None
+            else regret_signed_rank["matched_pairs_rank_biserial"]
+        ),
+        "regret_wilcoxon_statistic": (
+            None if regret_signed_rank is None
+            else regret_signed_rank["statistic"]
+        ),
+        "regret_wilcoxon_p": (
+            None if regret_signed_rank is None
+            else regret_signed_rank["p_value"]
+        ),
+        "regret_wilcoxon_nonzero_pair_count": (
+            None if regret_signed_rank is None
+            else regret_signed_rank["nonzero_pair_count"]
+        ),
         "regret_exact_sign_p": _exact_two_sided_sign_p(
             left_regret_wins, right_regret_wins),
     }
@@ -333,6 +402,66 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
         summary.update(paired_metric(
             field, higher_is_better=higher_is_better))
     return summary
+
+
+P_FIELD_BY_METRIC = {
+    "feasibility": "feasibility_mcnemar_exact_p",
+    "certificate": "certificate_mcnemar_exact_p",
+    "regret": "regret_wilcoxon_p",
+    "aleatoric_log_variance_rmse": (
+        "aleatoric_log_variance_rmse_wilcoxon_p"),
+    "aleatoric_variance_rmse": "aleatoric_variance_rmse_wilcoxon_p",
+    "aleatoric_upper_coverage": "aleatoric_upper_coverage_wilcoxon_p",
+    "aleatoric_variance_shape_correlation": (
+        "aleatoric_variance_shape_correlation_wilcoxon_p"),
+}
+
+
+def _apply_registered_holm_families(rows, registry):
+    families = list(registry.get("inference_families", ()))
+    if not families:
+        families = [{
+            "family_id": "legacy_all_global_confirmatory",
+            "comparison_ids": sorted({
+                row["comparison_id"] for row in rows
+            }),
+            "metrics": ["feasibility", "certificate", "regret"],
+        }]
+    receipts = []
+    for family in families:
+        family_id = str(family["family_id"])
+        comparison_ids = set(map(
+            str, family.get("comparison_ids", ())))
+        metrics = list(map(str, family.get("metrics", ())))
+        unknown_metrics = sorted(set(metrics) - set(P_FIELD_BY_METRIC))
+        if unknown_metrics:
+            raise ValueError(
+                f"{family_id} has unknown inference metrics: "
+                f"{unknown_metrics}")
+        hypotheses = []
+        for row in rows:
+            if row["stratum"] != "all":
+                continue
+            if row["comparison_id"] not in comparison_ids:
+                continue
+            for metric in metrics:
+                field = P_FIELD_BY_METRIC[metric]
+                if row.get(field) is not None:
+                    hypotheses.append((row, field, metric))
+        adjusted = holm_adjust([
+            row[field] for row, field, _metric in hypotheses
+        ])
+        for (row, field, _metric), value in zip(hypotheses, adjusted):
+            row[f"{field}_holm"] = float(value)
+            row[f"{field}_holm_family"] = family_id
+        receipts.append({
+            "family_id": family_id,
+            "comparison_ids": sorted(comparison_ids),
+            "metrics": metrics,
+            "hypothesis_count": len(hypotheses),
+            "scope": "global_stratum_only",
+        })
+    return receipts
 
 
 def analyze(audit, registry, *, bootstrap_samples=10000):
@@ -412,26 +541,8 @@ def analyze(audit, registry, *, bootstrap_samples=10000):
             })
             rows.append(row)
 
-    p_fields = (
-        "feasibility_mcnemar_exact_p",
-        "certificate_mcnemar_exact_p",
-        "regret_exact_sign_p",
-        "aleatoric_log_variance_rmse_exact_sign_p",
-        "aleatoric_variance_rmse_exact_sign_p",
-        "aleatoric_upper_coverage_exact_sign_p",
-        "aleatoric_variance_shape_correlation_exact_sign_p",
-    )
-    hypotheses = [
-        (row, field)
-        for row in rows
-        for field in p_fields
-        if row.get(field) is not None
-    ]
-    adjusted = holm_adjust([
-        row[field] for row, field in hypotheses
-    ])
-    for (row, field), value in zip(hypotheses, adjusted):
-        row[f"{field}_holm"] = float(value)
+    inference_families = _apply_registered_holm_families(
+        rows, registry)
     return {
         "schema_version": 1,
         "registry_id": registry.get("registry_id"),
@@ -447,8 +558,11 @@ def analyze(audit, registry, *, bootstrap_samples=10000):
         ),
         "bootstrap_samples": int(bootstrap_samples),
         "holm_family": (
-            "all preregistered feasibility, certification, and paired "
-            "regret hypotheses in this artifact"
+            "preregistered confirmatory families; global stratum only"
+        ),
+        "inference_families": inference_families,
+        "domain_strata_inference_role": (
+            "unadjusted heterogeneity analysis, not confirmatory"
         ),
         "comparison_audits": comparison_audits,
         "rows": rows,

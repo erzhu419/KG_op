@@ -50,6 +50,16 @@ def _fixtures(tmp_path):
             },
         ],
         "primary_comparisons": [{}],
+        "inference_families": [
+            {"family_id": family_id}
+            for family_id in (
+                "frontend_coverage_confirmatory",
+                "online_backend_confirmatory",
+                "archive_fair_transfer_confirmatory",
+                "total_cost_sota_confirmatory",
+                "hvd_mechanistic_confirmatory",
+            )
+        ],
     })
     import hashlib
     result_hash = hashlib.sha256(result.read_bytes()).hexdigest()
@@ -125,6 +135,22 @@ def _fixtures(tmp_path):
         "status": "complete",
         "comparison_audits": [{"status": "pass"}],
         "holm_family": "family",
+        "inference_families": [
+            {
+                "family_id": family_id,
+                "hypothesis_count": 1,
+                "scope": "global_stratum_only",
+            }
+            for family_id in (
+                "frontend_coverage_confirmatory",
+                "online_backend_confirmatory",
+                "archive_fair_transfer_confirmatory",
+                "total_cost_sota_confirmatory",
+                "hvd_mechanistic_confirmatory",
+            )
+        ],
+        "domain_strata_inference_role": (
+            "unadjusted heterogeneity analysis, not confirmatory"),
         "rows": [],
     })
     convergence_receipt = hashlib.sha256(json.dumps(

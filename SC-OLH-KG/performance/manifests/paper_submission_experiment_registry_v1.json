@@ -728,7 +728,7 @@
     },
     {
       "comparison_id": "final_saas_vs_safe_fpacoh",
-      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
       "left_method": "canonical_saasbo_every_iteration",
       "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
       "right_method": "safe_fpacoh_cbo:official_code_with_compatibility_shims",
@@ -747,7 +747,7 @@
     },
     {
       "comparison_id": "final_saas_vs_rgpe",
-      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
       "left_method": "canonical_saasbo_every_iteration",
       "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
       "right_method": "rgpe_cbo:official_transfergpbo_code",
@@ -766,7 +766,7 @@
     },
     {
       "comparison_id": "final_saas_vs_stacked_transfer",
-      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
       "left_method": "canonical_saasbo_every_iteration",
       "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
       "right_method": "stacked_transfer_gp_cbo:official_transfergpbo_code",
@@ -785,7 +785,7 @@
     },
     {
       "comparison_id": "final_saas_vs_mtgp",
-      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
       "left_method": "canonical_saasbo_every_iteration",
       "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
       "right_method": "mtgp_cbo:official_transfergpbo_code",
@@ -804,7 +804,7 @@
     },
     {
       "comparison_id": "final_saas_vs_fsbo",
-      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
       "left_method": "canonical_saasbo_every_iteration",
       "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
       "right_method": "fsbo_cbo:official_code_adapted_to_scalar_cbo",
@@ -823,7 +823,7 @@
     },
     {
       "comparison_id": "final_saas_vs_hyperbo",
-      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
       "left_method": "canonical_saasbo_every_iteration",
       "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
       "right_method": "hyperbo_cbo:official_hyperbo_code_with_gfile_shim",
@@ -842,7 +842,7 @@
     },
     {
       "comparison_id": "final_saas_vs_metabo",
-      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
       "left_method": "canonical_saasbo_every_iteration",
       "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
       "right_method": "metabo_cbo:official_neuralaf_ppo_fixed_archive_extension",
@@ -861,7 +861,7 @@
     },
     {
       "comparison_id": "final_saas_vs_malibo",
-      "left_track": "final_frontend_backend_factorial_d1000_n13",
+      "left_track": "final_frozen_source_frontend_backend_d1000_n13",
       "left_method": "canonical_saasbo_every_iteration",
       "right_track": "final_archive_fair_transfer_matrix_d1000_n13",
       "right_method": "malibo_cbo:official_metablor_core_adapted_to_cbo",
@@ -1006,6 +1006,60 @@
       "required_equal_fields": [
         "problem_contract_fingerprint",
         "verifier_signature"
+      ]
+    }
+  ],
+  "inference_families": [
+    {
+      "family_id": "frontend_coverage_confirmatory",
+      "comparison_ids": [
+        "frozen_source_vs_sobol_proposal_only",
+        "frozen_source_vs_sobol_saas"
+      ],
+      "metrics": ["feasibility", "certificate", "regret"]
+    },
+    {
+      "family_id": "online_backend_confirmatory",
+      "comparison_ids": [
+        "frozen_source_saas_vs_proposal_only",
+        "frozen_source_saas_vs_stacked_gp"
+      ],
+      "metrics": ["feasibility", "certificate", "regret"]
+    },
+    {
+      "family_id": "archive_fair_transfer_confirmatory",
+      "comparison_ids": [
+        "final_saas_vs_safe_fpacoh",
+        "final_saas_vs_rgpe",
+        "final_saas_vs_stacked_transfer",
+        "final_saas_vs_mtgp",
+        "final_saas_vs_fsbo",
+        "final_saas_vs_hyperbo",
+        "final_saas_vs_metabo",
+        "final_saas_vs_malibo"
+      ],
+      "metrics": ["feasibility", "certificate", "regret"]
+    },
+    {
+      "family_id": "total_cost_sota_confirmatory",
+      "comparison_ids": [
+        "total_cost_final_saas_vs_target_turbo",
+        "total_cost_final_saas_vs_target_scbo",
+        "total_cost_final_saas_vs_target_periodic_saas"
+      ],
+      "metrics": ["feasibility", "certificate", "regret"]
+    },
+    {
+      "family_id": "hvd_mechanistic_confirmatory",
+      "comparison_ids": ["cumulative_factor_hvd_vs_pooled"],
+      "metrics": [
+        "feasibility",
+        "certificate",
+        "regret",
+        "aleatoric_log_variance_rmse",
+        "aleatoric_variance_rmse",
+        "aleatoric_upper_coverage",
+        "aleatoric_variance_shape_correlation"
       ]
     }
   ],

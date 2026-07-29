@@ -117,13 +117,17 @@ low-frequency front end.
 - Freeze the source archive, target initial design, canonical SAASBO backend,
   search budget, and independent verifier.
 - Compare pooled variance with cumulative factor-HVD on all three synthetic
-  domains using paired seeds.
-- **Completed:** all 15 pairs were feasible and independently certified with
-  zero false certificates, but cumulative HVD did not change regret or
+  domains using 20 paired seeds per domain.
+- **Five-seed pilot:** all 15 pairs were feasible and independently certified
+  with zero false certificates, but cumulative HVD did not change regret or
   feasibility. It improved log-variance scale only on FactorShock, worsened
   scale RMSE on Inventory and Queue, and did not recover FactorShock variance
-  shape. HVD is therefore retained as a mechanistic/conditional certification
-  component, not promoted as a core optimization contribution.
+  shape.
+- **Final replay registered:** 120 fresh immutable tasks rerun both variance
+  heads on all 60 paired cells. The five-seed pilot is not pooled into this
+  final result. HVD remains a mechanistic/conditional component unless the
+  final preregistered gate supports universal calibration without harming
+  feasibility, regret, or false certification.
 
 ## Main matrix
 
@@ -214,10 +218,13 @@ Retrain the source model and regenerate the proposal for every ablation.
 - Wall time split across candidate generation, fantasy update, HVD, simulation,
   and checkpointing.
 
-Use paired seeds, median/IQR curves, bootstrap 95% confidence intervals,
-Wilcoxon signed-rank tests with Holm correction, and effect sizes. Primary
-conclusions require at least 20 seeds; legacy-style 10-seed plots are visual
-supplements only.
+Use paired seeds, median/IQR curves, paired bootstrap 95% confidence
+intervals, exact McNemar tests for binary outcomes, and Wilcoxon signed-rank
+tests with matched-pairs rank-biserial effect sizes for continuous outcomes.
+Holm correction is applied within preregistered confirmatory families on the
+global paired stratum only; domain strata are unadjusted heterogeneity
+analyses. Primary conclusions require at least 20 seeds; legacy-style
+10-seed plots are visual supplements only.
 
 ## Figures
 

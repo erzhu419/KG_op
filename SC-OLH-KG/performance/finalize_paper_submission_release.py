@@ -25,6 +25,13 @@ FINAL_CONTROL_METHODS = {
     "stacked_transfer_gp_cbo:official_transfergpbo_code",
     "canonical_saasbo_every_iteration",
 }
+CONFIRMATORY_INFERENCE_FAMILIES = {
+    "frontend_coverage_confirmatory",
+    "online_backend_confirmatory",
+    "archive_fair_transfer_confirmatory",
+    "total_cost_sota_confirmatory",
+    "hvd_mechanistic_confirmatory",
+}
 
 
 def _sha256(path):
@@ -120,6 +127,28 @@ def validate_release_inputs(
         all(row.get("status") == "pass"
             for row in statistics.get("comparison_audits", ())),
         "one or more preregistered comparisons are incomplete",
+        failures,
+    )
+    registered_family_ids = {
+        row.get("family_id")
+        for row in registry.get("inference_families", ())
+    }
+    observed_families = list(statistics.get(
+        "inference_families", ()))
+    observed_family_ids = {
+        row.get("family_id") for row in observed_families
+    }
+    _require(
+        registered_family_ids == CONFIRMATORY_INFERENCE_FAMILIES
+        and observed_family_ids == CONFIRMATORY_INFERENCE_FAMILIES
+        and all(
+            int(row.get("hypothesis_count", 0)) > 0
+            and row.get("scope") == "global_stratum_only"
+            for row in observed_families
+        )
+        and statistics.get("domain_strata_inference_role")
+        == "unadjusted heterogeneity analysis, not confirmatory",
+        "confirmatory inference families or Holm scopes drifted",
         failures,
     )
     final_track = next((

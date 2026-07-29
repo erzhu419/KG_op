@@ -2,6 +2,7 @@ import copy
 
 from performance.paper_paired_statistics import (
     _exact_two_sided_sign_p,
+    _wilcoxon_with_rank_biserial,
     analyze,
     holm_adjust,
 )
@@ -67,6 +68,15 @@ def test_exact_sign_and_holm_are_conservative_and_deterministic():
     assert _exact_two_sided_sign_p(4, 0) == 0.125
     assert _exact_two_sided_sign_p(0, 0) == 1.0
     assert holm_adjust([0.01, 0.04, 0.20]) == [0.03, 0.08, 0.2]
+    signed = _wilcoxon_with_rank_biserial([3.0, 2.0, 1.0, 0.0])
+    assert signed["matched_pairs_rank_biserial"] == 1.0
+    assert signed["nonzero_pair_count"] == 3
+    assert _wilcoxon_with_rank_biserial([0.0, 0.0]) == {
+        "statistic": 0.0,
+        "p_value": 1.0,
+        "matched_pairs_rank_biserial": 0.0,
+        "nonzero_pair_count": 0,
+    }
 
 
 def test_paired_statistics_count_rescue_loss_and_regret_direction():
@@ -98,6 +108,8 @@ def test_paired_statistics_count_rescue_loss_and_regret_direction():
     assert row[
         "median_paired_regret_difference_left_minus_right"
     ] < 0.0
+    assert row["regret_wilcoxon_nonzero_pair_count"] == 1
+    assert row["regret_wilcoxon_p"] == 1.0
 
     repeated = analyze(
         {"status": "pass", "records": copy.deepcopy(records)},
@@ -161,3 +173,45 @@ def test_paired_statistics_reports_post_run_variance_calibration():
     assert row[
         "median_paired_aleatoric_log_variance_rmse_difference_left_minus_right"
     ] < 0.0
+    assert row[
+        "aleatoric_log_variance_rmse_matched_pairs_rank_biserial_left_better_positive"
+    ] == 1.0
+
+
+def test_holm_uses_only_registered_global_inference_family():
+    records = []
+    for seed in range(4):
+        records.extend([
+            _row(
+                "left", seed, feasible=True, regret=0.1,
+                certified=True),
+            _row(
+                "right", seed, feasible=True, regret=0.2,
+                certified=True),
+        ])
+    registry = _registry()
+    registry["inference_families"] = [{
+        "family_id": "primary",
+        "comparison_ids": ["left_vs_right"],
+        "metrics": ["regret"],
+    }]
+    result = analyze(
+        {"status": "pass", "records": records},
+        registry,
+        bootstrap_samples=100,
+    )
+    global_row = next(
+        row for row in result["rows"] if row["stratum"] == "all")
+    domain_row = next(
+        row for row in result["rows"]
+        if row["stratum"] == "domain=Domain")
+    assert global_row["regret_wilcoxon_p_holm_family"] == "primary"
+    assert "regret_wilcoxon_p_holm" in global_row
+    assert "regret_wilcoxon_p_holm" not in domain_row
+    assert result["inference_families"] == [{
+        "family_id": "primary",
+        "comparison_ids": ["left_vs_right"],
+        "metrics": ["regret"],
+        "hypothesis_count": 1,
+        "scope": "global_stratum_only",
+    }]
