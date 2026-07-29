@@ -202,3 +202,38 @@ def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
             proof_receipt_path=paths[7],
             repository_commit="commit",
         )
+
+
+def test_release_accepts_hash_bound_remote_compact_shards(tmp_path):
+    paths = _fixtures(tmp_path)
+    audit = json.loads(paths[2].read_text(encoding="utf-8"))
+    shard = _write(tmp_path / "remote_shard.json", {
+        "schema_version": 1,
+        "records": audit["records"],
+    })
+    import hashlib
+    audit["source_mode"] = "remote_compact_record_shards"
+    audit["record_shard_receipts"] = [{
+        "path": str(shard),
+        "sha256": hashlib.sha256(shard.read_bytes()).hexdigest(),
+        "record_count": len(audit["records"]),
+    }]
+    for record in audit["records"]:
+        record["path"] = "/remote/results/result.json"
+        record["content_verified_at_extraction"] = True
+    paths[2].write_text(json.dumps(audit), encoding="utf-8")
+    (tmp_path / "result.json").unlink()
+
+    release = build_release(
+        method_contract_path=paths[0],
+        registry_path=paths[1],
+        audit_path=paths[2],
+        statistics_path=paths[3],
+        convergence_path=paths[4],
+        traffic_path=paths[5],
+        proposal_coverage_path=paths[6],
+        proof_receipt_path=paths[7],
+        repository_commit="commit",
+    )
+
+    assert release["status"] == "ready_for_manuscript_lock"

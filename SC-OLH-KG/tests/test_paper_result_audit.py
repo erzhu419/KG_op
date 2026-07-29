@@ -8,7 +8,12 @@ sys.path.insert(0, str(ROOT))
 
 from performance.paper_result_audit import (  # noqa: E402
     build_audit,
+    build_audit_from_records,
     extract_result_record,
+    load_record_shards,
+)
+from performance.paper_result_record_shard import (  # noqa: E402
+    build_record_shard,
 )
 
 
@@ -237,3 +242,116 @@ def test_track_audit_enforces_method_specific_source_budgets(tmp_path):
         row["kind"] == "method_source_budget_mismatch"
         for row in failed["track_audits"][0]["failures"]
     )
+
+
+def test_result_sources_select_repaired_methods_without_duplicate_cells(
+    tmp_path,
+):
+    old = tmp_path / "old"
+    repaired = tmp_path / "repaired"
+    _write_result(
+        old / "stable" / "result.json",
+        method="botorch_turbo",
+        seed=80,
+    )
+    _write_result(
+        old / "broken" / "result.json",
+        method="botorch_scbo",
+        seed=80,
+    )
+    broken = json.loads(
+        (old / "broken" / "result.json").read_text(encoding="utf-8"))
+    broken["status"] = "failed"
+    (old / "broken" / "result.json").write_text(
+        json.dumps(broken), encoding="utf-8")
+    _write_result(
+        repaired / "fixed" / "result.json",
+        method="botorch_scbo",
+        seed=80,
+    )
+    registry = {
+        "registry_id": "repaired",
+        "tracks": [{
+            "track_id": "track",
+            "result_sources": [
+                {
+                    "result_root": "old",
+                    "include_method_identities": [
+                        "botorch_turbo:canonical_turbo1_ts"
+                    ],
+                },
+                {
+                    "result_root": "repaired",
+                    "include_method_identities": [
+                        "botorch_scbo:canonical_scbo_constrained_ts"
+                    ],
+                },
+            ],
+            "expected_method_identities": [
+                "botorch_turbo:canonical_turbo1_ts",
+                "botorch_scbo:canonical_scbo_constrained_ts",
+            ],
+            "expected_domains": ["QueueResourceControl"],
+            "expected_seeds": [80],
+        }],
+    }
+
+    audit = build_audit(registry, root=tmp_path)
+
+    assert audit["status"] == "pass", audit
+    assert audit["record_count"] == 2
+    assert {row["method_identity"] for row in audit["records"]} == {
+        "botorch_turbo:canonical_turbo1_ts",
+        "botorch_scbo:canonical_scbo_constrained_ts",
+    }
+
+
+def test_remote_compact_record_shard_is_hash_bound(tmp_path):
+    _write_result(
+        tmp_path / "track" / "result.json",
+        method="botorch_turbo",
+        seed=80,
+    )
+    registry = {
+        "registry_id": "remote",
+        "tracks": [{
+            "track_id": "track",
+            "result_root": "track",
+            "expected_method_identities": [
+                "botorch_turbo:canonical_turbo1_ts"
+            ],
+            "expected_domains": ["QueueResourceControl"],
+            "expected_seeds": [80],
+        }],
+    }
+    shard_payload = build_record_shard(
+        registry,
+        root=tmp_path,
+        origin="node001",
+    )
+    shard = tmp_path / "record_shard.json"
+    shard.write_text(json.dumps(shard_payload), encoding="utf-8")
+
+    records, receipts, sources = load_record_shards(
+        [shard],
+        registry=registry,
+    )
+    audit = build_audit_from_records(
+        registry,
+        records,
+        source_mode="remote_compact_record_shards",
+        record_shard_receipts=receipts,
+        source_receipts=sources,
+    )
+    assert audit["status"] == "pass"
+    assert audit["source_mode"] == "remote_compact_record_shards"
+    assert audit["records"][0]["extraction_origin"] == "node001"
+
+    shard_payload["records"][0]["seed"] = 81
+    shard.write_text(json.dumps(shard_payload), encoding="utf-8")
+    try:
+        load_record_shards([shard], registry=registry)
+    except ValueError as error:
+        assert "payload hash mismatch" in str(error)
+    else:
+        raise AssertionError("tampered compact record shard was accepted")

@@ -60,7 +60,26 @@
     },
     {
       "track_id": "final_archive_fair_transfer_matrix_d1000_n13",
-      "result_root": "paper_final_transfer_risk_atlas_v69_d50_d1000_n13_s80_99_v1",
+      "result_sources": [
+        {
+          "result_root": "paper_final_transfer_risk_atlas_v69_d50_d1000_n13_s80_99_v1",
+          "include_method_identities": [
+            "rgpe_cbo:official_transfergpbo_code",
+            "stacked_transfer_gp_cbo:official_transfergpbo_code",
+            "mtgp_cbo:official_transfergpbo_code",
+            "fsbo_cbo:official_code_adapted_to_scalar_cbo",
+            "hyperbo_cbo:official_hyperbo_code_with_gfile_shim"
+          ]
+        },
+        {
+          "result_root": "paper_final_transfer_risk_atlas_repaired_ed83009_d50_d1000_n13_s80_99_v1",
+          "include_method_identities": [
+            "safe_fpacoh_cbo:official_code_with_compatibility_shims",
+            "metabo_cbo:official_neuralaf_ppo_fixed_archive_extension",
+            "malibo_cbo:official_metablor_core_adapted_to_cbo"
+          ]
+        }
+      ],
       "expected_method_identities": [
         "safe_fpacoh_cbo:official_code_with_compatibility_shims",
         "rgpe_cbo:official_transfergpbo_code",
@@ -116,7 +135,36 @@
     },
     {
       "track_id": "dimension_frontier_d200_d10000_n13",
-      "result_root": "paper_dimension_frontier_gate_d200_d10000_n13_s80_84_v1",
+      "result_sources": [
+        {
+          "result_root": "paper_dimension_frontier_gate_d200_d10000_n13_s80_84_v1",
+          "include_method_identities": [
+            "frozen_crossdim_proposal_only"
+          ],
+          "include_dimensions": [
+            200,
+            10000
+          ]
+        },
+        {
+          "result_root": "paper_dimension_frontier_gate_d200_d10000_n13_s80_84_v1",
+          "include_method_identities": [
+            "canonical_saasbo_every_iteration"
+          ],
+          "include_dimensions": [
+            200
+          ]
+        },
+        {
+          "result_root": "paper_dimension_frontier_d10000_chunked_3f8e46c_n13_s80_84_v2",
+          "include_method_identities": [
+            "canonical_saasbo_every_iteration"
+          ],
+          "include_dimensions": [
+            10000
+          ]
+        }
+      ],
       "expected_method_identities": [
         "frozen_crossdim_proposal_only",
         "canonical_saasbo_every_iteration"
@@ -238,7 +286,7 @@
     },
     {
       "track_id": "legacy_related_family_bridge_d5_n13",
-      "result_root": "paper_final_legacy_bridge_d5_n13_s80_99_v1",
+      "result_root": "paper_final_legacy_bridge_noprovider_3f8e46c_d5_n13_s80_99_v2",
       "expected_method_identities": [
         "canonical_saasbo_every_iteration"
       ],

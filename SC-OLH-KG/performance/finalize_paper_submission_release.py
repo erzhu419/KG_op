@@ -295,13 +295,45 @@ def validate_release_inputs(
         "uniform total-cost comparison uses different verifiers",
         failures,
     )
-    for record in audit.get("records", ()):
-        path = Path(str(record.get("path", "")))
-        if not path.is_file():
-            failures.append(f"audited result is missing: {path}")
-            continue
-        if _sha256(path) != record.get("result_sha256"):
-            failures.append(f"audited result changed after audit: {path}")
+    source_mode = audit.get("source_mode", "local_result_files")
+    if source_mode == "remote_compact_record_shards":
+        shard_receipts = list(audit.get("record_shard_receipts", ()))
+        _require(
+            bool(shard_receipts),
+            "remote compact audit has no record-shard receipts",
+            failures,
+        )
+        for receipt in shard_receipts:
+            path = Path(str(receipt.get("path", "")))
+            if not path.is_file():
+                failures.append(f"compact record shard is missing: {path}")
+                continue
+            if _sha256(path) != receipt.get("sha256"):
+                failures.append(
+                    f"compact record shard changed after audit: {path}")
+        _require(
+            all(
+                record.get("content_verified_at_extraction") is True
+                and isinstance(record.get("result_sha256"), str)
+                and len(record["result_sha256"]) == 64
+                for record in audit.get("records", ())
+            ),
+            "remote compact audit contains an unverified result receipt",
+            failures,
+        )
+    else:
+        _require(
+            source_mode == "local_result_files",
+            f"unsupported compact audit source mode: {source_mode}",
+            failures,
+        )
+        for record in audit.get("records", ()):
+            path = Path(str(record.get("path", "")))
+            if not path.is_file():
+                failures.append(f"audited result is missing: {path}")
+                continue
+            if _sha256(path) != record.get("result_sha256"):
+                failures.append(f"audited result changed after audit: {path}")
     return failures
 
 

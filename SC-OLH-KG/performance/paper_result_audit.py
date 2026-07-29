@@ -280,6 +280,7 @@ def extract_result_record(path, *, track_id):
         "track_id": str(track_id),
         "path": str(path),
         "result_sha256": _sha256(path),
+        "content_verified_at_extraction": True,
         "status": status,
         "domain": domain,
         "seed": _int_or_none(_first(
@@ -339,6 +340,86 @@ def extract_result_record(path, *, track_id):
         "failure_type": payload.get("failure_type"),
         "failure_message": payload.get("failure_message"),
     }
+
+
+def _result_sources(specification):
+    sources = specification.get("result_sources")
+    if sources is not None:
+        if not isinstance(sources, list) or not sources:
+            raise ValueError("result_sources must be a nonempty list")
+        return [dict(source) for source in sources]
+    roots = specification.get("result_roots")
+    if roots is None:
+        roots = [specification["result_root"]]
+    return [
+        {
+            "result_root": root,
+            "glob": specification.get("glob", "**/result.json"),
+        }
+        for root in roots
+    ]
+
+
+def _source_accepts(row, source):
+    include_methods = set(map(
+        str, source.get("include_method_identities", ())))
+    exclude_methods = set(map(
+        str, source.get("exclude_method_identities", ())))
+    include_domains = set(map(str, source.get("include_domains", ())))
+    include_dimensions = set(map(
+        int, source.get("include_dimensions", ())))
+    include_seeds = set(map(int, source.get("include_seeds", ())))
+    if include_methods and row["method_identity"] not in include_methods:
+        return False
+    if row["method_identity"] in exclude_methods:
+        return False
+    if include_domains and row["domain"] not in include_domains:
+        return False
+    if (
+        include_dimensions
+        and row["target_dimension"] not in include_dimensions
+    ):
+        return False
+    if include_seeds and row["seed"] not in include_seeds:
+        return False
+    return True
+
+
+def extract_registry_records(registry, *, root, origin=None):
+    root = Path(root)
+    records = []
+    source_receipts = []
+    for specification in registry["tracks"]:
+        track_id = str(specification["track_id"])
+        excluded_methods = set(map(str, specification.get(
+            "exclude_methods", ())))
+        for source in _result_sources(specification):
+            result_root = root / str(source["result_root"])
+            glob = str(source.get(
+                "glob",
+                specification.get("glob", "**/result.json"),
+            ))
+            paths = sorted(set(result_root.glob(glob)))
+            accepted = 0
+            for path in paths:
+                row = extract_result_record(path, track_id=track_id)
+                if row["method"] in excluded_methods:
+                    continue
+                if not _source_accepts(row, source):
+                    continue
+                if origin is not None:
+                    row["extraction_origin"] = str(origin)
+                records.append(row)
+                accepted += 1
+            source_receipts.append({
+                "track_id": track_id,
+                "result_root": str(source["result_root"]),
+                "glob": glob,
+                "matched_file_count": len(paths),
+                "accepted_record_count": accepted,
+                "origin": None if origin is None else str(origin),
+            })
+    return records, source_receipts
 
 
 def _median(values):
@@ -610,36 +691,24 @@ def audit_track(records, specification):
     }
 
 
-def build_audit(registry, *, root):
-    root = Path(root)
-    records = []
+def build_audit_from_records(
+    registry,
+    records,
+    *,
+    source_mode="local_result_files",
+    record_shard_receipts=None,
+    source_receipts=None,
+):
+    records = list(records)
     track_audits = []
-    for specification in registry["tracks"]:
-        track_id = str(specification["track_id"])
-        result_roots = specification.get("result_roots")
-        if result_roots is None:
-            result_roots = [specification["result_root"]]
-        paths = []
-        for result_root_value in result_roots:
-            result_root = root / str(result_root_value)
-            paths.extend(result_root.glob(str(
-                specification.get("glob", "**/result.json"))))
-        paths = sorted(set(paths))
-        extracted = [
-            extract_result_record(path, track_id=track_id)
-            for path in paths
-        ]
-        excluded_methods = set(map(str, specification.get(
-            "exclude_methods", ())))
-        records.extend(
-            row for row in extracted
-            if row["method"] not in excluded_methods
-        )
     for specification in registry["tracks"]:
         track_audits.append(audit_track(records, specification))
     return {
         "schema_version": 1,
         "registry_id": registry.get("registry_id"),
+        "source_mode": str(source_mode),
+        "record_shard_receipts": list(record_shard_receipts or ()),
+        "source_receipts": list(source_receipts or ()),
         "status": (
             "pass"
             if all(row["status"] == "pass" for row in track_audits)
@@ -650,6 +719,58 @@ def build_audit(registry, *, root):
         "summaries": summarize_records(records),
         "records": records,
     }
+
+
+def build_audit(registry, *, root):
+    records, receipts = extract_registry_records(registry, root=root)
+    return build_audit_from_records(
+        registry,
+        records,
+        source_mode="local_result_files",
+        source_receipts=receipts,
+    )
+
+
+def _canonical_sha256(payload):
+    serialized = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+
+
+def load_record_shards(paths, *, registry):
+    registry_fingerprint = _canonical_sha256(registry)
+    records = []
+    receipts = []
+    source_receipts = []
+    for path in map(Path, paths):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if payload.get("schema_version") != 1:
+            raise ValueError(f"unsupported record shard schema: {path}")
+        if payload.get("registry_id") != registry.get("registry_id"):
+            raise ValueError(f"record shard registry identity mismatch: {path}")
+        if payload.get("registry_sha256") != registry_fingerprint:
+            raise ValueError(f"record shard registry hash mismatch: {path}")
+        shard_records = list(payload.get("records", ()))
+        expected = _canonical_sha256(shard_records)
+        if payload.get("records_sha256") != expected:
+            raise ValueError(f"record shard payload hash mismatch: {path}")
+        if not all(
+            row.get("content_verified_at_extraction") is True
+            and isinstance(row.get("result_sha256"), str)
+            and len(row["result_sha256"]) == 64
+            for row in shard_records
+        ):
+            raise ValueError(f"record shard lacks extraction receipts: {path}")
+        records.extend(shard_records)
+        source_receipts.extend(payload.get("source_receipts", ()))
+        receipts.append({
+            "path": str(path),
+            "sha256": _sha256(path),
+            "origin": payload.get("origin"),
+            "record_count": len(shard_records),
+            "records_sha256": expected,
+        })
+    return records, receipts, source_receipts
 
 
 def _atomic_json(path, payload):
@@ -678,12 +799,33 @@ def _write_csv(path, rows):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--registry", required=True)
-    parser.add_argument("--root", required=True)
+    parser.add_argument("--root")
+    parser.add_argument(
+        "--record-shard",
+        action="append",
+        default=[],
+        help="Compact record shard generated beside remote result files.",
+    )
     parser.add_argument("--out", required=True)
     parser.add_argument("--summary-csv", required=True)
     args = parser.parse_args()
     registry = json.loads(Path(args.registry).read_text(encoding="utf-8"))
-    audit = build_audit(registry, root=args.root)
+    if bool(args.root) == bool(args.record_shard):
+        parser.error("provide exactly one of --root or --record-shard")
+    if args.record_shard:
+        records, receipts, source_receipts = load_record_shards(
+            args.record_shard,
+            registry=registry,
+        )
+        audit = build_audit_from_records(
+            registry,
+            records,
+            source_mode="remote_compact_record_shards",
+            record_shard_receipts=receipts,
+            source_receipts=source_receipts,
+        )
+    else:
+        audit = build_audit(registry, root=args.root)
     _atomic_json(args.out, audit)
     _write_csv(args.summary_csv, audit["summaries"])
     print(json.dumps({
