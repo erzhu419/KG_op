@@ -33,7 +33,7 @@ BOTORCH_OVERLAY = Path(
 SUMO_PKG = Path(
     "/home/zhengliang01/scheduleurm_work/python_pkgs/eclipse_sumo_1_25")
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
-GPU_NODES = ("jtl110gpu", "node007")
+GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
 
 
 def _sumo_env(cpu):
@@ -81,7 +81,7 @@ def build_specs(args):
         )
     gpu_cpu = int(getattr(args, "gpu_cpu", 12))
     gpu_ram_mb = int(getattr(args, "gpu_ram_mb", 32768))
-    gpu_vram_mb = int(getattr(args, "gpu_vram_mb", 8192))
+    gpu_vram_mb = int(getattr(args, "gpu_vram_mb", 2048))
     deploy = Path(args.deploy)
     project = deploy / "SC-OLH-KG"
     gpr_code = deploy / "Final_Submission" / "GPR_KG_Code"
@@ -295,7 +295,7 @@ def main():
     parser.add_argument("--gpu-nodes", default=",".join(GPU_NODES))
     parser.add_argument("--gpu-cpu", type=int, default=12)
     parser.add_argument("--gpu-ram-mb", type=int, default=32768)
-    parser.add_argument("--gpu-vram-mb", type=int, default=8192)
+    parser.add_argument("--gpu-vram-mb", type=int, default=2048)
     parser.add_argument(
         "--sync-remote",
         action=argparse.BooleanOptionalAction,
