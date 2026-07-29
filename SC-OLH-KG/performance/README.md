@@ -17,6 +17,11 @@ Faster wall time alone is not a valid algorithmic improvement.
 
 Final paper artifacts are fail-closed. `paper_result_audit.py` hashes the full
 target problem contract before pairing methods.
+The final synthetic replay is also code-frozen: every result carries the full
+Git commit, the `SC-OLH-KG`, `proof`, and `scripts` tree hashes, and its
+method/theory contract. `materialize_scolhkg_git_snapshot.py` builds the
+tracked-code-only snapshot; no historical result row is reused in the frozen
+source-informed or common-Sobol matrices.
 `paper_convergence_extract.py` then reconstructs true-feasible incumbent
 curves from `result.json` only. It exports point fingerprints rather than
 policy vectors, excludes all terminal-verification samples from the search
@@ -24,7 +29,10 @@ curve, and marks target truth as post-run diagnostics that were unavailable to
 the optimizer. `finalize_paper_submission_release.py` refuses to freeze a
 release unless every registered headline result has every charged search call,
 its terminal truth matches the registered problem contract, and the compact
-audit receipts agree byte-for-byte.
+audit receipts agree byte-for-byte. The release additionally requires the
+registered HVD causal decision, a 20-seed dimension/budget frontier, the
+descriptor-conditioned traffic holdout plus its domain-blind negative
+control, a successful Lean build, and hash-verified rendered outputs.
 SC feasibility is recorded by default, but is only a hard gate when
 `--require-sc-feasible` is passed because SC coupling is a separate improvement
 stage from the primary single-objective OLH-KG baseline.

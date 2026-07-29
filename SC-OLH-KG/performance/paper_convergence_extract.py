@@ -26,7 +26,7 @@ from problems.single_objective import ScalarizedProblem  # noqa: E402
 
 
 CONTRACT_ID = "post_run_search_convergence_v1"
-FINAL_TRACK_ID = "final_frontend_backend_factorial_d1000_n13"
+FINAL_TRACK_ID = "final_frozen_source_frontend_backend_d1000_n13"
 FLOAT_TOLERANCE = 1e-9
 
 CSV_FIELDS = (
@@ -223,6 +223,47 @@ def _history_events(payload, result, record):
                 "truth": direct_truth,
                 "target_oracle_used_for_decision": bool(
                     action.get("target_oracle_used_for_decision", False)),
+            })
+        return events
+    information = payload.get("information_contract") or {}
+    frozen_points = information.get("frozen_initial_points")
+    truth_audit = result.get("initial_truth_audit") or {}
+    truth_rows = truth_audit.get("rows")
+    if (
+        isinstance(frozen_points, list)
+        and isinstance(truth_rows, list)
+        and len(frozen_points) == len(truth_rows)
+    ):
+        events = []
+        for index, (raw_point, raw_truth) in enumerate(zip(
+            frozen_points,
+            truth_rows,
+        )):
+            point = _point(raw_point, dimension)
+            audited_point = _point(
+                raw_truth.get("x_recommended"), dimension)
+            if point != audited_point:
+                raise ValueError(
+                    "proposal truth audit does not match the frozen design")
+            truth = {
+                "objective": _finite(raw_truth.get("true_objective")),
+                "chance_margin": _finite(
+                    raw_truth.get("true_chance_margin")),
+                "feasible": raw_truth.get("true_feasible"),
+            }
+            if (
+                truth["objective"] is None
+                or truth["chance_margin"] is None
+                or truth["feasible"] is None
+            ):
+                raise ValueError(
+                    "proposal truth audit is missing post-run truth")
+            events.append({
+                "target_call": index + 1,
+                "action_kind": "frozen_initial_design",
+                "point": point,
+                "truth": truth,
+                "target_oracle_used_for_decision": False,
             })
         return events
     raise ValueError("unsupported result schema for convergence extraction")

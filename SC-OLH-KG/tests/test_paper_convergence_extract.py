@@ -53,7 +53,7 @@ def _truth(problem, point):
 def _record(path, contract, fingerprint, *, method, calls):
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
     return {
-        "track_id": "final_frontend_backend_factorial_d1000_n13",
+        "track_id": "final_frozen_source_frontend_backend_d1000_n13",
         "path": str(path),
         "result_sha256": digest,
         "status": "ok",
@@ -170,6 +170,59 @@ def test_reconstructs_sc_initial_design_and_post_run_action(tmp_path):
         "initial_design", "initial_design", "adaptive_search"]
     assert rows[-1]["point_fingerprint"] == integer_design_fingerprint([
         action])
+
+
+def test_reconstructs_frozen_proposal_truth_audit(tmp_path):
+    domain = "InventorySupplyChain"
+    dimension = 6
+    problem = _problem(domain, dimension)
+    points = [
+        [58, 58, 36, 36, 42, 42],
+        [62, 62, 38, 38, 50, 50],
+    ]
+    truths = []
+    for point in points:
+        objective, margin, feasible = _truth(problem, point)
+        truths.append({
+            "x_recommended": point,
+            "true_objective": objective,
+            "true_chance_margin": margin,
+            "true_feasible": feasible,
+        })
+    payload = {
+        "status": "ok",
+        "method": "frozen_crossdim_proposal_only",
+        "information_contract": {
+            "frozen_initial_points": points,
+        },
+        "n_search_simulations": 2,
+        "x_recommended": points[0],
+        **truths[0],
+        "feasible_regret": 0.05,
+        "initial_truth_audit": {
+            "computed_after_shortlist_freeze_and_verification": True,
+            "used_for_selection_or_certification": False,
+            "rows": truths,
+        },
+    }
+    path = tmp_path / "proposal.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    contract, fingerprint = _contract(domain, dimension)
+    audit = {"records": [_record(
+        path,
+        contract,
+        fingerprint,
+        method="frozen_crossdim_proposal_only",
+        calls=2,
+    )]}
+
+    rows, manifest = build_convergence(audit)
+
+    assert manifest["status"] == "complete"
+    assert manifest["trace_row_count"] == 2
+    assert all(row["phase"] == "initial_design" for row in rows)
+    assert all(
+        row["target_truth_used_post_run_only"] is True for row in rows)
 
 
 def test_problem_contract_mismatch_fails_terminal_validation(tmp_path):

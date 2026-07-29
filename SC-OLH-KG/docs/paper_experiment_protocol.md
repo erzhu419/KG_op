@@ -20,6 +20,24 @@
 Manifold and Transformer encoders are representation-background ablations, not
 main contributions.
 
+## Immutable final replay
+
+The manuscript-lock synthetic tables do not reuse V51/V64/V69 result rows.
+Both `Frozen Source-Informed` and `Common Sobol` are rerun from the tracked-only
+Git snapshot `27d55e0d5f265034f91ee7b3f7988dd8233881e5`. Each contains 20 paired
+seeds, three held-out domains, and proposal-only, Stacked GP, and canonical
+SAASBO backends. The execution result records the exact source/proof/scripts
+tree hashes and a backend-specific method contract. Later analysis commits may
+change audit or rendering code, but cannot silently relabel the executed
+algorithm.
+
+The proposal-only backend is charged `N=10`; Stacked GP and canonical SAASBO
+are charged `N=13`. Source-informed rows are charged 384 source calls.
+Common-Sobol proposal-only and SAASBO rows use zero source calls, whereas its
+Stacked GP row still receives the registered 384-call source archive. These
+budgets are checked per method rather than hidden behind one table-level
+number.
+
 Orthogonality, adaptive sparsity, and additive groups remain members of the
 unified structural hypothesis class and must appear in causal ablations. They
 are promoted to headline claims only if independently retrained source
