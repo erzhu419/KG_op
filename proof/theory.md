@@ -31,6 +31,11 @@ For a genuinely randomized proposal backend, the separate IID corollary remains
 `paper_frontend_transfer_coverage_and_certificate`.  The older
 evaluate-or-replicate umbrella remains a backend ablation theorem.
 
+`ProposalNoFreeLunch.lean` proves why an explicit transfer assumption cannot
+be removed: any proper finite atlas that is frozen before target labels are
+seen misses some nonempty target feasible set. Thus the geometric discrepancy
+condition is an identifiability assumption, not a tunable proof artifact.
+
 This is a behavior-preserving theorem upgrade, not a retrospective relabeling
 of experiments. The exact version policy and unresolved empirical obligations
 are recorded in `SC-OLH-KG/docs/math_v1_gap_audit.md`.

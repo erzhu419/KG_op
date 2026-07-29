@@ -95,6 +95,10 @@ mathlib and its cache; later builds should be fast.
   positive feasible mass to prove existence of a feasible support member;
   a separate randomized backend may use the explicit
   `1-(1-p_lower)^n0` IID hit bound.
+- `SCOLHKG/Real/ProposalNoFreeLunch.lean`: proves that every proper finite
+  target-label-free atlas misses some nonempty target feasible set. A
+  source-to-target structural/discrepancy assumption is therefore necessary,
+  not an artifact of the proof technique.
 - `SCOLHKG/Real/RankAlignedAtlasCoverage.lean`: the headline deterministic
   rank-transfer candidate. Uniform normalized risk-rank alignment, one-sided
   source-rank atlas coverage, and target safe-rank interior depth imply a
@@ -862,6 +866,9 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 166. The backend-independent paper theorem composes source-label invariance,
      proposal coverage, the observable coordinate quotient, cumulative HVD,
      and conservative terminal certification.
+167. Every deterministic atlas with budget `n0` below the policy-space
+     cardinality misses some nonempty target feasible set, so unconditional
+     cross-domain finite-budget coverage is impossible.
 
 Remaining work is empirical/binding and assumption validation:
 

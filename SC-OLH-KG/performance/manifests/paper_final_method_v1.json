@@ -86,6 +86,10 @@
       "atlas support size n0"
     ],
     "empirical_obligation": "Measure source support, atlas covering radius, and coordinate approximation error before target observations; audit ideal-coordinate domain shift, safe depth, and a valid Lipschitz upper bound post-run without using them for selection.",
+    "necessity_theorem": {
+      "lean_theorem": "SCOLHKG.Real.finite_budget_no_unconditional_target_coverage",
+      "statement": "Every proper finite target-label-free atlas misses some nonempty heldout feasible set; an explicit transfer or structural coverage assumption is unavoidable."
+    },
     "rank_alignment_candidate_rejected_as_headline": {
       "contract_id": "source_target_rank_aligned_atlas_coverage_v1",
       "reason": "source-only finite-sample rank-alignment bound was vacuous in all three d=1000 heldout domains"

@@ -107,3 +107,9 @@ error before target observations, then audit domain shift, safe depth, and a
 justified Lipschitz upper bound only after the decision is frozen. A finite
 candidate-library safe radius is diagnostic evidence, not a substitute for the
 global Lipschitz condition.
+
+There is no honest assumption-free replacement:
+`SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` proves that any
+proper finite target-label-free atlas can miss a nonempty held-out feasible
+set. The explicit transfer geometry is therefore the necessary identifiability
+contract behind the low target budget.

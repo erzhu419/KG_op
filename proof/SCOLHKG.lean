@@ -73,6 +73,7 @@ import SCOLHKG.Real.OrthogonalSemiparametric
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.PromotedV51Closure
 import SCOLHKG.Real.ProposalCoverage
+import SCOLHKG.Real.ProposalNoFreeLunch
 import SCOLHKG.Real.RankAlignedAtlasCoverage
 import SCOLHKG.Real.PaperMainline
 import SCOLHKG.Real.RidgeHVD

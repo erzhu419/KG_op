@@ -95,6 +95,12 @@ randomized-IID proposal contract.
 ablation theorem. The supporting probability, estimation, information-gain,
 and safe-regret results remain in their specialized files.
 
+`SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` is the matching
+necessity result: when `n0` is smaller than the policy-space cardinality, some
+nonempty held-out feasible set avoids the complete frozen atlas. Therefore a
+source-to-target discrepancy or structural coverage assumption is
+mathematically unavoidable.
+
 ## Empirical obligations
 
 The theorem package is conditionally complete, not an unconditional statement
