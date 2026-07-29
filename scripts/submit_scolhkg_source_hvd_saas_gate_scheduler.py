@@ -27,6 +27,8 @@ DOMAINS = (
     "QueueResourceControl",
 )
 MODES = ("pooled", "cumulative_factor")
+SNAPSHOT_MARKER = ".scolhkg_execution_snapshot.json"
+METHOD_CONTRACT_ID = "or_transfer_frontend_saas_hvd_causal_v1"
 
 
 def _parse_csv(value):
@@ -36,6 +38,54 @@ def _parse_csv(value):
 
 def _read_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _execution_snapshot(args):
+    code_root = getattr(args, "code_root", None)
+    required = bool(getattr(args, "require_frozen_snapshot", False))
+    if code_root in (None, ""):
+        if required:
+            raise ValueError(
+                "--require-frozen-snapshot needs --code-root")
+        return None
+    marker = Path(code_root) / SNAPSHOT_MARKER
+    if not marker.is_file():
+        raise FileNotFoundError(
+            f"frozen code snapshot marker is missing: {marker}")
+    snapshot = _read_json(marker)
+    required_fields = (
+        "repository_commit",
+        "scolhkg_tree",
+        "proof_tree",
+        "scripts_tree",
+        "theory_contract_id",
+        "snapshot_root",
+    )
+    missing = [field for field in required_fields if not snapshot.get(field)]
+    if missing:
+        raise ValueError(
+            f"frozen code snapshot is incomplete: {missing}")
+    if Path(snapshot["snapshot_root"]).resolve() != Path(code_root).resolve():
+        raise ValueError("snapshot marker/root mismatch")
+    if snapshot.get("status") != "frozen":
+        raise ValueError("code snapshot is not frozen")
+    return snapshot
+
+
+def _execution_env(snapshot):
+    if snapshot is None:
+        return []
+    values = {
+        "SCOLHKG_EXECUTION_PROVENANCE_REQUIRED": "1",
+        "SCOLHKG_EXECUTION_COMMIT": snapshot["repository_commit"],
+        "SCOLHKG_SCOLHKG_TREE": snapshot["scolhkg_tree"],
+        "SCOLHKG_PROOF_TREE": snapshot["proof_tree"],
+        "SCOLHKG_SCRIPTS_TREE": snapshot["scripts_tree"],
+        "SCOLHKG_METHOD_CONTRACT_ID": METHOD_CONTRACT_ID,
+        "SCOLHKG_THEORY_CONTRACT_ID": snapshot["theory_contract_id"],
+        "SCOLHKG_CODE_SNAPSHOT_ROOT": snapshot["snapshot_root"],
+    }
+    return [f"{key}={value}" for key, value in values.items()]
 
 
 def _terminal_flags():
@@ -106,8 +156,14 @@ def validate_contract(args):
 
 def build_specs(args):
     deploy_project = Path(args.deploy) / "SC-OLH-KG"
+    code_project = (
+        Path(args.code_root) / "SC-OLH-KG"
+        if getattr(args, "code_root", None)
+        else deploy_project
+    )
     manifest = (
-        deploy_project / "performance/manifests/v18b_exactkg_mcdiag.json")
+        code_project / "performance/manifests/v18b_exactkg_mcdiag.json")
+    execution_snapshot = _execution_snapshot(args)
     specs = []
     for mode in _parse_csv(args.modes):
         if mode not in MODES:
@@ -139,6 +195,7 @@ def build_specs(args):
                     f"OMP_NUM_THREADS={int(args.cpu)}",
                     f"MKL_NUM_THREADS={int(args.cpu)}",
                     f"OPENBLAS_NUM_THREADS={int(args.cpu)}",
+                    *_execution_env(execution_snapshot),
                     "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
                     "SCOLHKG_TORCH_DETERMINISTIC=1",
                     "CUBLAS_WORKSPACE_CONFIG=:4096:8",
@@ -173,7 +230,7 @@ def build_specs(args):
                         f"seed={seed}"
                     ),
                     "cmd": f"{shlex.join(command)} && echo DONE",
-                    "cwd": str(deploy_project),
+                    "cwd": str(code_project),
                     "signature": (
                         f"KG_op/source_hvd_saas_gate/{args.run_id}/"
                         f"{mode}/{heldout}/seed{seed:04d}"
@@ -199,6 +256,20 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
     parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
+    parser.add_argument(
+        "--code-root",
+        type=Path,
+        default=None,
+        help=(
+            "Immutable repository snapshot root. Runtime data and outputs "
+            "continue to use --deploy."
+        ),
+    )
+    parser.add_argument(
+        "--require-frozen-snapshot",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
     parser.add_argument("--run-id", default=(
         "paper_source_hvd_saas_gate_d50_d1000_n13_s80_84_"
         f"{time.strftime('%Y%m%d_%H%M%S')}"))
@@ -231,6 +302,7 @@ def main():
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    execution_snapshot = _execution_snapshot(args)
     audit = validate_contract(args)
     specs = build_specs(args)
     expected = (
@@ -287,7 +359,9 @@ def main():
             "modes": list(_parse_csv(args.modes)),
             "target_oracle_used_during_search": False,
             "post_run_variance_audit_used_for_selection": False,
+            "historical_result_rows_reused": 0,
         },
+        "execution_snapshot": execution_snapshot,
         "checkpoint_results_synced_locally": False,
     }
     registration_path = (
@@ -314,4 +388,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
