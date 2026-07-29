@@ -92,7 +92,7 @@ def build_specs(args):
         / selection.source_split_heldout
         / f"heldout_{selection.source_split_heldout}.json"
     )
-    gpu_runner = deploy / "scripts/run_scolhkg_traffic_gpu_python.sh"
+    gpu_runner = project / "runners/run_traffic_gpu_python.sh"
     design = (
         project / "archives" / args.run_id / "traffic"
         / "source_initial_designs.json"

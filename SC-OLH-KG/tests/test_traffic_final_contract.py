@@ -99,7 +99,7 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
     assert all(spec["project"] == "KG-SYNTH" for spec in search)
     assert all("--torch-device cuda" in spec["cmd"] for spec in search)
     assert all(
-        "run_scolhkg_traffic_gpu_python.sh" in spec["cmd"]
+        "runners/run_traffic_gpu_python.sh" in spec["cmd"]
         for spec in search
     )
     assert all("--method-label PaperFinal-DescriptorProposal-SAAS" in (
