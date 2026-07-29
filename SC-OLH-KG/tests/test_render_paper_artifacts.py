@@ -107,9 +107,16 @@ def test_registered_paper_variants_have_stable_labels_and_colors():
         "new_point_only",
         "pooled_variance",
         "frozen_source_discrepancy",
+        "frozen_crossdim_proposal_only",
+        "stacked_transfer_gp_cbo:official_transfergpbo_code",
+        "canonical_saasbo_every_iteration",
+        "scolh:v69_feasible_first_verified_initial_incumbent",
     ):
         assert MODULE._label(method) != method.replace("_", " ")
         assert method in MODULE.METHOD_COLORS
+    assert MODULE._method({
+        "method_identity": "canonical_saasbo_every_iteration",
+    }) == "canonical_saasbo_every_iteration"
 
 
 def test_renders_hvd_and_evaluate_or_replicate_diagnostics(tmp_path):

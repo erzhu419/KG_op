@@ -47,6 +47,10 @@ METHOD_LABELS = {
     "rgpe_cbo": "RGPE-CBO",
     "fsbo_cbo": "FSBO-CBO",
     "malibo_cbo": "MALIBO-CBO",
+    "frozen_crossdim_proposal_only": "Frozen structural proposal",
+    "stacked_transfer_gp_cbo:official_transfergpbo_code": "Stacked GP",
+    "canonical_saasbo_every_iteration": "Canonical SAASBO",
+    "scolh:v69_feasible_first_verified_initial_incumbent": "SC-V69",
 }
 
 METHOD_COLORS = {
@@ -74,6 +78,10 @@ METHOD_COLORS = {
     "rgpe_cbo": "#9467BD",
     "fsbo_cbo": "#17BECF",
     "malibo_cbo": "#BCBD22",
+    "frozen_crossdim_proposal_only": "#666666",
+    "stacked_transfer_gp_cbo:official_transfergpbo_code": "#9467BD",
+    "canonical_saasbo_every_iteration": "#000000",
+    "scolh:v69_feasible_first_verified_initial_incumbent": "#0072B2",
 }
 
 
@@ -139,7 +147,12 @@ def bootstrap_interval(
 
 
 def _method(row: dict) -> str:
-    return str(row.get("method") or row.get("variant") or "unknown")
+    return str(
+        row.get("method")
+        or row.get("variant")
+        or row.get("method_identity")
+        or "unknown"
+    )
 
 
 def _label(method: str) -> str:
