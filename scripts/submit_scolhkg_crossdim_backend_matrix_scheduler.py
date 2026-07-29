@@ -49,6 +49,43 @@ def _read_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def _load_only_cells(args):
+    path = getattr(args, "only_cells_file", None)
+    if path in (None, ""):
+        return None
+    payload = _read_json(path)
+    rows = payload.get("cells") if isinstance(payload, dict) else payload
+    if not isinstance(rows, list):
+        raise ValueError("only-cells file must contain a list or {cells: [...]}")
+    selected = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ValueError("each only-cells row must be an object")
+        cell = (
+            str(row["backend"]),
+            str(row["heldout"]),
+            int(row["seed"]),
+        )
+        if cell in selected:
+            raise ValueError(f"duplicate only-cells row: {cell}")
+        selected.add(cell)
+
+    configured = {
+        (backend, heldout, seed)
+        for backend in _parse_csv(args.backends)
+        for heldout in _parse_csv(args.heldouts)
+        for seed in range(
+            int(args.seed_start),
+            int(args.seed_start) + int(args.n_seeds),
+        )
+    }
+    outside = sorted(selected - configured)
+    if outside:
+        raise ValueError(
+            f"only-cells rows fall outside the configured matrix: {outside}")
+    return selected
+
+
 def _terminal_verification_flags(args):
     profile = str(
         getattr(args, "terminal_profile", "v7")
@@ -239,6 +276,7 @@ def build_specs(args):
         deploy_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     domains = _parse_csv(args.heldouts)
     backends = _parse_csv(args.backends)
+    selected_cells = _load_only_cells(args)
     initial_design_mode = str(getattr(
         args, "initial_design_mode", "source_informed"
     )).strip().lower()
@@ -263,7 +301,13 @@ def build_specs(args):
             int(args.seed_start),
             int(args.seed_start) + int(args.n_seeds),
         ):
-            if "proposal_only" in backends:
+            if (
+                "proposal_only" in backends
+                and (
+                    selected_cells is None
+                    or ("proposal_only", heldout, seed) in selected_cells
+                )
+            ):
                 execution_result = (
                     deploy_project / "profiles" / args.run_id
                     / "proposal_only" / heldout / f"seed{seed:04d}"
@@ -312,7 +356,13 @@ def build_specs(args):
                 )
                 specs.append(spec)
 
-            if "stacked_gp" in backends:
+            if (
+                "stacked_gp" in backends
+                and (
+                    selected_cells is None
+                    or ("stacked_gp", heldout, seed) in selected_cells
+                )
+            ):
                 execution_result = (
                     deploy_project / "profiles" / args.run_id
                     / "stacked_gp" / heldout / f"seed{seed:04d}"
@@ -372,7 +422,13 @@ def build_specs(args):
                     spec["wait_for_files"].append(str(local_design))
                 specs.append(spec)
 
-            if "saasbo" in backends:
+            if (
+                "saasbo" in backends
+                and (
+                    selected_cells is None
+                    or ("saasbo", heldout, seed) in selected_cells
+                )
+            ):
                 execution_result = (
                     deploy_project / "profiles" / args.run_id
                     / "saasbo" / heldout / f"seed{seed:04d}"
@@ -452,6 +508,26 @@ def build_specs(args):
                     pass
             filtered.append(spec)
         specs = filtered
+    if selected_cells is not None:
+        produced = {
+            (
+                next(
+                    backend for backend in BACKENDS
+                    if f"/{backend}/" in spec["signature"]
+                ),
+                next(
+                    heldout for heldout in domains
+                    if f"/{heldout}/" in spec["signature"]
+                ),
+                int(spec["signature"].rsplit("seed", 1)[1]),
+            )
+            for spec in specs
+        }
+        if not bool(getattr(args, "skip_existing_success", False)):
+            missing = sorted(selected_cells - produced)
+            if missing:
+                raise RuntimeError(
+                    f"only-cells rows were not materialized: {missing}")
     return specs
 
 
@@ -519,15 +595,31 @@ def main():
             "missing or does not have status=ok."
         ),
     )
+    parser.add_argument(
+        "--only-cells-file",
+        type=Path,
+        default=None,
+        help=(
+            "Optional JSON list (or {cells: [...]}) of exact "
+            "{backend, heldout, seed} logical cells to submit. This is the "
+            "preferred recovery path when successful remote results are not "
+            "synced locally."
+        ),
+    )
     parser.add_argument("--dispatch", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     audit = validate_contract(args)
     specs = build_specs(args)
+    selected_cells = _load_only_cells(args)
     expected = (
-        len(_parse_csv(args.heldouts))
-        * int(args.n_seeds)
-        * len(_parse_csv(args.backends))
+        len(selected_cells)
+        if selected_cells is not None
+        else (
+            len(_parse_csv(args.heldouts))
+            * int(args.n_seeds)
+            * len(_parse_csv(args.backends))
+        )
     )
     if not args.skip_existing_success and len(specs) != expected:
         raise RuntimeError(
@@ -572,6 +664,11 @@ def main():
         "new_task_count": int(len(specs)),
         "skip_existing_success": bool(args.skip_existing_success),
         "candidate_task_count_before_success_filter": int(expected),
+        "only_cells_file": (
+            None
+            if args.only_cells_file is None
+            else str(args.only_cells_file)
+        ),
         "reused_v64_result_count": int(
             audit["v64_reused_result_count"]),
         "matrix_cell_count": int(

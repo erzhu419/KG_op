@@ -190,3 +190,65 @@ def test_crossdim_recovery_skips_only_compact_success_results(tmp_path):
 
     assert len(specs) == 1
     assert specs[0]["signature"].endswith("seed0081")
+
+
+def test_crossdim_recovery_can_select_exact_remote_missing_cells(tmp_path):
+    args = _args(tmp_path)
+    args.only_cells_file = tmp_path / "missing.json"
+    args.only_cells_file.write_text(
+        """
+        {
+          "cells": [
+            {
+              "backend": "saasbo",
+              "heldout": "FactorShockStatePolicyRZDT1",
+              "seed": 81
+            },
+            {
+              "backend": "saasbo",
+              "heldout": "QueueResourceControl",
+              "seed": 80
+            }
+          ]
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    specs = SUBMIT.build_specs(args)
+
+    assert len(specs) == 2
+    assert {
+        tuple(spec["signature"].rsplit("/", 2)[-2:])
+        for spec in specs
+    } == {
+        ("FactorShockStatePolicyRZDT1", "seed0081"),
+        ("QueueResourceControl", "seed0080"),
+    }
+
+
+def test_crossdim_recovery_rejects_cells_outside_configured_matrix(tmp_path):
+    args = _args(tmp_path)
+    args.backends = "saasbo"
+    args.only_cells_file = tmp_path / "outside.json"
+    args.only_cells_file.write_text(
+        """
+        {
+          "cells": [
+            {
+              "backend": "stacked_gp",
+              "heldout": "QueueResourceControl",
+              "seed": 80
+            }
+          ]
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    try:
+        SUBMIT.build_specs(args)
+    except ValueError as error:
+        assert "outside the configured matrix" in str(error)
+    else:
+        raise AssertionError("an out-of-contract recovery cell was accepted")
