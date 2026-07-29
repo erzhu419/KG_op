@@ -53,8 +53,18 @@ def load_frozen_source_informed_design(
         raise ValueError("source-informed design must not use target labels")
     if payload.get("target_oracle_used") is not False:
         raise ValueError("source-informed design must not use target oracle")
+    proposal_component_mode = str(
+        payload.get("proposal_component_mode", "combined")
+    )
+    if proposal_component_mode not in {
+        "combined",
+        "universal_only",
+        "source_templates_only",
+    }:
+        raise ValueError("unknown proposal component mode")
+    uses_source_archive = proposal_component_mode != "universal_only"
     source_fingerprint = str(payload.get("source_archive_fingerprint") or "")
-    if not source_fingerprint:
+    if uses_source_archive and not source_fingerprint:
         raise ValueError("source-informed design is missing archive fingerprint")
 
     design = (payload.get("designs") or {}).get(str(int(seed)))
@@ -71,12 +81,16 @@ def load_frozen_source_informed_design(
     return points, {
         "design_kind": str(payload["design_kind"]),
         "proposal_mode": str(payload.get("proposal_mode", "rank_spanning")),
+        "proposal_component_mode": proposal_component_mode,
         "structural_prior_profile": str(
             payload.get("structural_prior_profile", "inherit")),
         "source_dimension": int(payload.get("source_dimension", dimension)),
         "target_dimension": int(payload.get("dimension", dimension)),
         "fingerprint": fingerprint,
-        "source_archive_fingerprint": source_fingerprint,
+        "source_archive_fingerprint": (
+            source_fingerprint if uses_source_archive else None
+        ),
+        "uses_source_archive": uses_source_archive,
         "source_archive_oracle_aided": False,
         "target_labels_used": False,
         "target_oracle_used": False,

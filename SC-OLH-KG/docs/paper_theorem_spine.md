@@ -55,10 +55,13 @@ claims only if their independently retrained rows show an incremental effect.
 1. **Source invariance.** A source-only proposal is unchanged under every
    change of held-out target labels.
 2. **Source-to-target proposal coverage.** A finite-task PAC-Bayes miss-risk
-   bound, with explicit domain discrepancy and effective structural dimension,
-   yields a held-out feasible-mass lower bound `p_lower`.  For `n0`
-   independent frozen proposal draws, the probability of at least one
-   feasible initial policy is at least `1-(1-p_lower)^n0`.
+   analysis is retained as a special case, but the deployed deterministic
+   atlas uses geometric coverage in the dimension-equivariant coordinate.
+   If chance margin is `L`-Lipschitz there and
+   `L*(cover_radius+support_shift) <= safe_depth`, at least one of at most
+   `n0` atlas policies is feasible. A separate genuinely randomized proposal
+   may use the IID corollary
+   `P(hit) >= 1-(1-p_lower)^n0`.
 3. **Coordinate quotient.** Policies sharing both `eta` and `psi` have the
    same modeled mean, epistemic variance, cumulative certification variance,
    and chance margin. Complexity is therefore tied to the observable
@@ -79,11 +82,14 @@ claims only if their independently retrained rows show an incremental effect.
    is truly feasible and has safe simple regret at most `epsilon` on the joint
    confidence event.
 
-The umbrella Lean theorem is
-`SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate` in
+The implementation-matched umbrella Lean theorem is
+`SCOLHKG.Real.paper_frontend_lipschitz_geometric_atlas_and_certificate` in
 `proof/SCOLHKG/Real/PaperMainline.lean`. It composes source noninterference,
-effective-dimension proposal coverage, cumulative HVD, coordinate quotienting,
+geometric deterministic-atlas coverage, cumulative HVD, coordinate quotienting,
 and terminal certification without assuming a particular online backend.
+The rank-alignment and raw feasible-mass theorems remain audited special cases;
+`paper_frontend_transfer_coverage_and_certificate` is retained only for the
+randomized-IID proposal contract.
 `paper_mainline_finite_closure` remains the separate evaluate-or-replicate VOI
 ablation theorem. The supporting probability, estimation, information-gain,
 and safe-regret results remain in their specialized files.

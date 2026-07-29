@@ -6001,6 +6001,33 @@ class LearnedMetaPrior:
         rows.extend(library)
         return unique_candidates(rows)[:n_take]
 
+    def risk_objective_template_initial_candidates(
+        self, problem, n=0, rng=None,
+    ):
+        """Return only source-learned members of the risk-objective atlas.
+
+        The deployed combined atlas reserves its first slot for one
+        target-label-free universal shape. Requesting ``n + 1`` combined
+        candidates therefore makes the selector choose ``n`` source templates;
+        removing that known universal seed yields a clean causal ablation
+        without changing source scores, Pareto roles, or maximin geometry.
+        """
+
+        n_take = max(0, int(n))
+        if n_take <= 0:
+            return []
+        candidates = self.risk_objective_initial_candidates(
+            problem, n=n_take + 1, rng=rng)
+        universal = self.universal_shape_candidates(
+            problem, n=10000, rng=rng, force=True)
+        universal_seed = universal[1] if len(universal) > 1 else (
+            universal[0] if universal else None)
+        rows = [
+            point for point in candidates
+            if universal_seed is None or point != universal_seed
+        ]
+        return unique_candidates(rows)[:n_take]
+
     def source_coverage_candidates(self, problem, n=0):
         """Return the deterministic source-only design protected at target time."""
 

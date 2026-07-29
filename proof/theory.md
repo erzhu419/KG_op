@@ -14,12 +14,20 @@ true safe optimum while retaining every representation, HVD, transfer, pool,
 shortlist, MC, and sequential error; and `StatisticalClosure.lean` supplies the
 joint high-probability wrapper. `TransferGeneralization.lean` instantiates the
 transfer term by a source-task PAC-Bayes radius plus explicit domain shift.
-`ProposalCoverage.lean` now converts that miss-risk bound, an explicit
-effective-dimension complexity term, and the finite IID proposal law into the
-held-out feasible-basin guarantee
-`P(hit by n0) >= 1 - (1 - p_lower)^n0`.  The backend-independent umbrella
-theorem is
-`SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate`; the older
+`GeometricAtlasCoverage.lean` gives the headline bridge for the deployed
+deterministic `risk_objective_atlas`: the atlas covers the frozen
+source-consensus plus universal structural support within `coverRadius`, a
+held-out safe center lies within `supportShift`, and chance margin is
+`L`-Lipschitz in the same coordinate with
+`L*(coverRadius+supportShift) <= safeDepth`. These conditions force a feasible
+atlas member without assuming independent atlas points or using nominal policy
+dimension. The implementation-matched umbrella theorem is
+`SCOLHKG.Real.paper_frontend_lipschitz_geometric_atlas_and_certificate`.
+`RankAlignedAtlasCoverage.lean` and `ProposalCoverage.lean` retain rank and raw
+feasible-mass alternatives; their failed/vacuous audits prevent post-hoc use.
+For a genuinely randomized proposal backend, the separate IID corollary remains
+`P(hit by n0) >= 1 - (1 - p_lower)^n0` through
+`paper_frontend_transfer_coverage_and_certificate`.  The older
 evaluate-or-replicate umbrella remains a backend ablation theorem.
 
 This is a behavior-preserving theorem upgrade, not a retrospective relabeling

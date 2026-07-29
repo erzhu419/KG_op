@@ -141,6 +141,38 @@ def test_source_informed_contract_accepts_risk_objective_atlas(tmp_path):
     assert loaded == points
     assert contract["proposal_mode"] == "risk_objective_atlas"
     assert contract["structural_prior_profile"] == "orthogonality_only"
+    assert contract["proposal_component_mode"] == "combined"
+    assert contract["uses_source_archive"] is True
+
+
+def test_frozen_universal_design_has_no_source_archive_contract(tmp_path):
+    points = ((5, 5, 5, 5), (25, 25, 25, 25), (45, 45, 45, 45))
+    payload = _payload(
+        points,
+        integer_design_fingerprint(points),
+        archive_fingerprint=None,
+    )
+    payload.update({
+        "design_kind": "frozen_source_informed_risk_objective_atlas",
+        "proposal_mode": "risk_objective_atlas",
+        "proposal_component_mode": "universal_only",
+        "source_dimension": 4,
+    })
+    path = tmp_path / "universal_atlas.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    loaded, contract = load_frozen_source_informed_design(
+        path,
+        heldout="FactorShockStatePolicyRZDT1",
+        seed=7,
+        n0=3,
+        dimension=4,
+    )
+
+    assert loaded == points
+    assert contract["proposal_component_mode"] == "universal_only"
+    assert contract["uses_source_archive"] is False
+    assert contract["source_archive_fingerprint"] is None
 
 
 def test_lodo_rejects_source_archive_mismatch_before_target_calls(monkeypatch):

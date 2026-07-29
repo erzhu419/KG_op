@@ -197,7 +197,12 @@ def _load_initial_design(args, problem):
             n0=args.n0,
             dimension=args.d,
         )
-        return points, contract, int(args.offline_source_calls)
+        offline_source_calls = (
+            int(args.offline_source_calls)
+            if contract.get("uses_source_archive", True)
+            else 0
+        )
+        return points, contract, offline_source_calls
     if mode == "common_sobol":
         points = tuple(common_sobol_integer_design(
             problem,
@@ -208,11 +213,13 @@ def _load_initial_design(args, problem):
         return points, {
             "design_kind": "common_sobol",
             "proposal_mode": "none",
+            "proposal_component_mode": "none",
             "structural_prior_profile": "none",
             "source_dimension": int(args.d),
             "target_dimension": int(args.d),
             "fingerprint": fingerprint,
             "source_archive_fingerprint": None,
+            "uses_source_archive": False,
             "source_archive_oracle_aided": False,
             "target_labels_used": False,
             "target_oracle_used": False,
@@ -318,11 +325,19 @@ def run_one(args):
         if row["feasible_regret"] is not None
     ]
     verification_calls = int(verification["verification_budget"])
+    proposal_component_mode = str(
+        design_contract.get("proposal_component_mode", "combined")
+    )
+    source_method_by_component = {
+        "combined": "frozen_crossdim_proposal_only",
+        "universal_only": "frozen_universal_proposal_only",
+        "source_templates_only": "frozen_source_templates_proposal_only",
+    }
     return {
         "schema_version": 1,
         "status": "ok",
         "method": (
-            "frozen_crossdim_proposal_only"
+            source_method_by_component[proposal_component_mode]
             if initial_design_mode == "source_informed"
             else "common_sobol_proposal_only"
         ),
@@ -336,8 +351,9 @@ def run_one(args):
         "initial_design_fingerprint": str(design_contract["fingerprint"]),
         "information_contract": {
             "initial_design": initial_design_mode,
+            "proposal_component_mode": proposal_component_mode,
             "uses_source_archive": bool(
-                initial_design_mode == "source_informed"),
+                design_contract.get("uses_source_archive", False)),
             "source_dimension": int(
                 design_contract.get("source_dimension", args.source_d)),
             "target_dimension": int(args.d),

@@ -44,6 +44,7 @@ import SCOLHKG.Real.FeatureKernelDeterminantCap
 import SCOLHKG.Real.FiniteKernelInformationGain
 import SCOLHKG.Real.FinalistReplication
 import SCOLHKG.Real.FiniteSampleHVD
+import SCOLHKG.Real.GeometricAtlasCoverage
 import SCOLHKG.Real.GPRUpdate
 import SCOLHKG.Real.GaussianReplicationCertificate
 import SCOLHKG.Real.GuardDecompositionPolicy
@@ -72,6 +73,7 @@ import SCOLHKG.Real.OrthogonalSemiparametric
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.PromotedV51Closure
 import SCOLHKG.Real.ProposalCoverage
+import SCOLHKG.Real.RankAlignedAtlasCoverage
 import SCOLHKG.Real.PaperMainline
 import SCOLHKG.Real.RidgeHVD
 import SCOLHKG.Real.SourceShapeMixtureHVD

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -36,6 +37,14 @@ def _float_or_none(value):
         return None
     value = float(value)
     return value if math.isfinite(value) else None
+
+
+def _sha256(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def _saas_identity(result):
@@ -125,6 +134,7 @@ def extract_result_record(path, *, track_id):
     adaptation_info = result.get("source_target_adaptation_contract") or {}
     target_info = result.get("target_information_contract") or {}
     verification = result.get("terminal_verification") or {}
+    aleatoric_audit = result.get("post_run_aleatoric_audit") or {}
     status = str(
         payload.get("status")
         or result.get("status")
@@ -192,6 +202,7 @@ def extract_result_record(path, *, track_id):
     return {
         "track_id": str(track_id),
         "path": str(path),
+        "result_sha256": _sha256(path),
         "status": status,
         "domain": str(_first(
             payload.get("heldout"),
@@ -243,6 +254,23 @@ def extract_result_record(path, *, track_id):
             )),
         "constraint_violation": _float_or_none(
             result.get("constraint_violation")),
+        "aleatoric_log_variance_rmse": _float_or_none(
+            aleatoric_audit.get("log_variance_rmse")),
+        "aleatoric_variance_rmse": _float_or_none(
+            aleatoric_audit.get("variance_rmse")),
+        "aleatoric_upper_coverage": _float_or_none(
+            aleatoric_audit.get("upper_coverage")),
+        "aleatoric_variance_shape_correlation": _float_or_none(
+            aleatoric_audit.get("variance_shape_correlation")),
+        "aleatoric_audit_size": _int_or_none(
+            aleatoric_audit.get("audit_size")),
+        "aleatoric_audit_post_run_only": bool(
+            aleatoric_audit
+            and aleatoric_audit.get("target_oracle_used_post_run_only")
+            is True
+            and aleatoric_audit.get("used_for_search_or_selection")
+            is False
+        ),
         "failure_type": payload.get("failure_type"),
         "failure_message": payload.get("failure_message"),
     }
@@ -300,6 +328,20 @@ def summarize_records(records):
             "mean_source_plus_target_total_calls": _mean([
                 row["source_plus_target_total_calls"] for row in ok
             ]),
+            "mean_aleatoric_log_variance_rmse": _mean([
+                row["aleatoric_log_variance_rmse"] for row in ok
+            ]),
+            "mean_aleatoric_variance_rmse": _mean([
+                row["aleatoric_variance_rmse"] for row in ok
+            ]),
+            "mean_aleatoric_upper_coverage": _mean([
+                row["aleatoric_upper_coverage"] for row in ok
+            ]),
+            "mean_aleatoric_variance_shape_correlation": _mean([
+                row["aleatoric_variance_shape_correlation"] for row in ok
+            ]),
+            "post_run_aleatoric_audit_count": sum(
+                row["aleatoric_audit_post_run_only"] for row in ok),
         })
     return summaries
 
@@ -411,6 +453,34 @@ def audit_track(records, specification):
         if bad:
             failures.append({
                 "kind": "source_budget_mismatch",
+                "count": len(bad),
+            })
+    required_source_calls_by_method = {
+        str(method): int(value)
+        for method, value in specification.get(
+            "required_source_calls_by_method", {}
+        ).items()
+    }
+    if required_source_calls_by_method:
+        missing_budget_contracts = (
+            expected_methods - set(required_source_calls_by_method)
+        )
+        if missing_budget_contracts:
+            failures.append({
+                "kind": "missing_method_source_budget_contract",
+                "methods": sorted(missing_budget_contracts),
+            })
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row["method_identity"] in required_source_calls_by_method
+            if row["source_calls"] != required_source_calls_by_method[
+                row["method_identity"]
+            ]
+        ]
+        if bad:
+            failures.append({
+                "kind": "method_source_budget_mismatch",
                 "count": len(bad),
             })
     required_search_calls = specification.get("required_search_calls")

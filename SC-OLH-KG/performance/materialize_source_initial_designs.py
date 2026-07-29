@@ -37,6 +37,7 @@ from performance.structural_ablation import (  # noqa: E402
     STRUCTURAL_PRIOR_PROFILES,
     apply_structural_prior_profile,
 )
+from representation.meta_prior import LearnedMetaPrior  # noqa: E402
 
 
 def _atomic_json(path, payload):
@@ -63,6 +64,7 @@ def materialize_source_designs(
     n_seeds=20,
     structural_prior_profile="inherit",
     proposal_mode="rank_spanning",
+    proposal_component_mode="combined",
     source_design_mode=None,
 ):
     """Build designs from the same frozen, oracle-free source observations.
@@ -75,27 +77,6 @@ def materialize_source_designs(
     target_config = oracle_free_lodo_config(manifest)
     if dimension is not None:
         target_config["d"] = int(dimension)
-    archive = FrozenTransferArchive.load(archive_path)
-    archive_dimension = int(archive.tasks[0].X.shape[1])
-    source_dimension = (
-        archive_dimension if source_dimension is None else int(source_dimension)
-    )
-    archive.validate(expected_dimension=source_dimension)
-    source_config = dict(target_config)
-    source_config["d"] = int(source_dimension)
-    source_config["meta_source_dimension"] = int(source_dimension)
-    if source_design_mode is not None:
-        source_config["meta_source_design_mode"] = str(source_design_mode)
-    apply_structural_prior_profile(source_config, structural_prior_profile)
-    prior = train_meta_prior(source_config, heldout, 0, teacher=False)
-    reconstructed = frozen_archive_from_meta_prior(
-        prior, source_seed=int(archive.source_seed))
-    if reconstructed.fingerprint != archive.fingerprint:
-        raise ValueError(
-            "source-informed proposal archive does not match frozen archive: "
-            f"{reconstructed.fingerprint} != {archive.fingerprint}"
-        )
-
     problem = build_scalarized_problem(
         heldout,
         int(target_config["d"]),
@@ -112,9 +93,67 @@ def materialize_source_designs(
     }:
         raise ValueError(f"unknown source proposal mode {proposal_mode!r}")
     designs = {}
+    proposal_component_mode = str(proposal_component_mode)
+    if proposal_component_mode not in {
+        "combined",
+        "universal_only",
+        "source_templates_only",
+    }:
+        raise ValueError(
+            "proposal_component_mode must be combined, universal_only, "
+            "or source_templates_only")
+    source_config = dict(target_config)
+    archive = None
+    archive_fingerprint = None
+    if proposal_component_mode == "universal_only":
+        source_dimension = (
+            int(problem.d)
+            if source_dimension is None
+            else int(source_dimension)
+        )
+        source_config["d"] = int(source_dimension)
+        source_config["meta_source_dimension"] = int(source_dimension)
+        if source_design_mode is not None:
+            source_config["meta_source_design_mode"] = str(source_design_mode)
+        apply_structural_prior_profile(source_config, structural_prior_profile)
+        prior = LearnedMetaPrior(seed=0)
+    else:
+        archive = FrozenTransferArchive.load(archive_path)
+        archive_dimension = int(archive.tasks[0].X.shape[1])
+        source_dimension = (
+            archive_dimension
+            if source_dimension is None
+            else int(source_dimension)
+        )
+        archive.validate(expected_dimension=source_dimension)
+        source_config["d"] = int(source_dimension)
+        source_config["meta_source_dimension"] = int(source_dimension)
+        if source_design_mode is not None:
+            source_config["meta_source_design_mode"] = str(source_design_mode)
+        apply_structural_prior_profile(source_config, structural_prior_profile)
+        prior = train_meta_prior(source_config, heldout, 0, teacher=False)
+        reconstructed = frozen_archive_from_meta_prior(
+            prior, source_seed=int(archive.source_seed))
+        if reconstructed.fingerprint != archive.fingerprint:
+            raise ValueError(
+                "source-informed proposal archive does not match frozen "
+                f"archive: {reconstructed.fingerprint} != "
+                f"{archive.fingerprint}"
+            )
+        archive_fingerprint = archive.fingerprint
+
     for offset in range(int(n_seeds)):
         seed = int(seed_start) + offset
-        if proposal_mode == "risk_objective_atlas":
+        if proposal_component_mode == "universal_only":
+            generator = lambda problem, n, rng: (
+                prior.universal_shape_candidates(
+                    problem, n=n, rng=rng, force=True))
+        elif proposal_component_mode == "source_templates_only":
+            if proposal_mode != "risk_objective_atlas":
+                raise ValueError(
+                    "source_templates_only requires risk_objective_atlas")
+            generator = prior.risk_objective_template_initial_candidates
+        elif proposal_mode == "risk_objective_atlas":
             generator = prior.risk_objective_initial_candidates
         elif proposal_mode == "risk_coordinate_atlas":
             generator = prior.dimension_equivariant_initial_candidates
@@ -142,6 +181,7 @@ def materialize_source_designs(
             )
         ),
         "proposal_mode": proposal_mode,
+        "proposal_component_mode": proposal_component_mode,
         "structural_prior_profile": str(structural_prior_profile),
         "structural_prior_active_components": list(source_config.get(
             "structural_prior_active_components", [])),
@@ -154,7 +194,18 @@ def materialize_source_designs(
         "n0": int(n0),
         "seed_start": int(seed_start),
         "n_seeds": int(n_seeds),
-        "source_archive_fingerprint": archive.fingerprint,
+        "source_archive_fingerprint": archive_fingerprint,
+        "uses_source_archive": bool(
+            proposal_component_mode != "universal_only"),
+        "offline_source_calls": (
+            0
+            if proposal_component_mode == "universal_only"
+            else sum(
+                len(row)
+                for task in archive.tasks
+                for row in task.Y_replicates
+            )
+        ),
         "source_archive_oracle_aided": False,
         "target_labels_used": False,
         "target_oracle_used": False,
@@ -162,6 +213,7 @@ def materialize_source_designs(
             FRONTEND_CONTRACT_ID
             if (
                 proposal_mode == "risk_objective_atlas"
+                and proposal_component_mode == "combined"
                 and str(structural_prior_profile) == "low_frequency_only"
             )
             else None
@@ -216,6 +268,11 @@ def main():
         default="rank_spanning",
     )
     parser.add_argument(
+        "--proposal-component-mode",
+        choices=("combined", "universal_only", "source_templates_only"),
+        default="combined",
+    )
+    parser.add_argument(
         "--source-design-mode",
         choices=("random", "universal_mixture", "shared_uniform"),
         default=None,
@@ -233,6 +290,7 @@ def main():
         n_seeds=args.n_seeds,
         structural_prior_profile=args.structural_prior_profile,
         proposal_mode=args.proposal_mode,
+        proposal_component_mode=args.proposal_component_mode,
         source_design_mode=args.source_design_mode,
     )
     print(json.dumps({

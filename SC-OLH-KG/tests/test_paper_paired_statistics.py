@@ -7,7 +7,15 @@ from performance.paper_paired_statistics import (
 )
 
 
-def _row(method, seed, *, feasible, regret, certified):
+def _row(
+    method,
+    seed,
+    *,
+    feasible,
+    regret,
+    certified,
+    log_variance_rmse=None,
+):
     return {
         "track_id": "track",
         "method_identity": method,
@@ -26,6 +34,10 @@ def _row(method, seed, *, feasible, regret, certified):
         "target_search_calls": 13,
         "target_verification_calls": 100,
         "optimization_calls_excluding_verification": 397,
+        "aleatoric_log_variance_rmse": log_variance_rmse,
+        "aleatoric_variance_rmse": None,
+        "aleatoric_upper_coverage": None,
+        "aleatoric_variance_shape_correlation": None,
     }
 
 
@@ -113,3 +125,38 @@ def test_paired_statistics_refuses_mismatched_information_contract():
         failure["kind"] == "paired_initial_design_fingerprint_mismatch"
         for failure in result["comparison_audits"][0]["failures"]
     )
+
+
+def test_paired_statistics_reports_post_run_variance_calibration():
+    records = []
+    for seed in range(4):
+        records.extend([
+            _row(
+                "left",
+                seed,
+                feasible=True,
+                regret=0.1,
+                certified=True,
+                log_variance_rmse=0.2 + 0.01 * seed,
+            ),
+            _row(
+                "right",
+                seed,
+                feasible=True,
+                regret=0.1,
+                certified=True,
+                log_variance_rmse=0.5 + 0.01 * seed,
+            ),
+        ])
+    result = analyze(
+        {"status": "pass", "records": records},
+        _registry(),
+        bootstrap_samples=100,
+    )
+    row = next(item for item in result["rows"] if item["stratum"] == "all")
+    assert row["aleatoric_log_variance_rmse_pair_count"] == 4
+    assert row["left_aleatoric_log_variance_rmse_win_count"] == 4
+    assert row["right_aleatoric_log_variance_rmse_win_count"] == 0
+    assert row[
+        "median_paired_aleatoric_log_variance_rmse_difference_left_minus_right"
+    ] < 0.0

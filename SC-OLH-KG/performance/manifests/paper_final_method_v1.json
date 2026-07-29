@@ -70,19 +70,37 @@
     "same-source-archive and total-cost baseline comparisons"
   ],
   "proposal_coverage_theory": {
-    "contract_id": "source_target_proposal_coverage_v1",
-    "lean_theorem": "SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate",
-    "finite_product_bridge": "SCOLHKG.Measure.iid_at_least_one_hit_probability",
-    "bound": "P(at least one feasible proposal) >= 1-(1-p_lower)^n0",
-    "p_lower_inputs": [
-      "posterior-weighted source miss risk",
-      "source-to-target domain discrepancy",
-      "effective structural dimension",
-      "finite proposal-library complexity",
-      "source sample count",
-      "confidence level"
+    "contract_id": "source_target_geometric_atlas_coverage_v1",
+    "deployed_proposal_contract": "deterministic_finite_atlas",
+    "lean_theorem": "SCOLHKG.Real.paper_frontend_lipschitz_geometric_atlas_and_certificate",
+    "bound": "L*(source_support_atlas_cover_radius + source_target_support_shift) <= target_safe_depth implies the frozen atlas contains a feasible policy",
+    "atlas_support_size_upper_bound": "n0",
+    "independent_proposal_draws_assumed": false,
+    "geometric_coverage_inputs": [
+      "source consensus templates union target-label-free universal structural support",
+      "maximin atlas covering radius in the dimension-equivariant coordinate",
+      "source-to-target support shift in the same coordinate",
+      "chance-margin Lipschitz constant in that coordinate",
+      "heldout safe-center depth",
+      "atlas support size n0"
     ],
-    "empirical_obligation": "Calibrate domain discrepancy and all numeric constants using source-only inner LODO folds."
+    "empirical_obligation": "Measure source support and atlas covering radius before target observations; audit support shift, safe depth, and a valid Lipschitz upper bound post-run without using them for selection.",
+    "rank_alignment_candidate_rejected_as_headline": {
+      "contract_id": "source_target_rank_aligned_atlas_coverage_v1",
+      "reason": "source-only finite-sample rank-alignment bound was vacuous in all three d=1000 heldout domains"
+    },
+    "raw_feasible_mass_special_case": {
+      "contract_id": "source_target_finite_atlas_coverage_v1",
+      "lean_theorem": "SCOLHKG.Real.paper_frontend_atlas_coverage_and_certificate",
+      "used_by_headline_rank_normalized_atlas": false
+    },
+    "randomized_iid_corollary": {
+      "contract_id": "source_target_proposal_coverage_v1",
+      "lean_theorem": "SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate",
+      "finite_product_bridge": "SCOLHKG.Measure.iid_at_least_one_hit_probability",
+      "bound": "P(at least one feasible proposal) >= 1-(1-p_lower)^n0",
+      "used_by_deployed_risk_objective_atlas": false
+    }
   },
   "supporting_evidence": {
     "source_informed_common_sobol_factorial_manifest": "v9_equal_terminal_verifier_crossdim_gate_v1.json",

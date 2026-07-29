@@ -151,6 +151,59 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
         ]
         return None if not values else float(np.mean(values))
 
+    def paired_metric(field, *, higher_is_better):
+        values = [
+            (float(left[field]), float(right[field]))
+            for left, right in pairs
+            if left.get(field) is not None
+            and right.get(field) is not None
+        ]
+        differences = np.asarray([
+            left - right for left, right in values
+        ], dtype=float)
+        oriented = (
+            differences if higher_is_better else -differences
+        )
+        tolerance = 1e-12
+        left_wins = int(np.sum(oriented > tolerance))
+        right_wins = int(np.sum(oriented < -tolerance))
+        ties = int(len(oriented) - left_wins - right_wins)
+        interval = _paired_bootstrap_interval(
+            differences,
+            statistic=np.median,
+            samples=samples,
+            seed=_seed_for(comparison_id, stratum, field),
+        )
+        return {
+            f"{field}_pair_count": int(len(values)),
+            f"left_mean_{field}": (
+                None if not values else float(np.mean([
+                    value[0] for value in values
+                ]))
+            ),
+            f"right_mean_{field}": (
+                None if not values else float(np.mean([
+                    value[1] for value in values
+                ]))
+            ),
+            f"median_paired_{field}_difference_left_minus_right": (
+                None
+                if len(differences) == 0
+                else float(np.median(differences))
+            ),
+            f"median_paired_{field}_difference_ci_low": interval[0],
+            f"median_paired_{field}_difference_ci_high": interval[1],
+            f"left_{field}_win_count": left_wins,
+            f"right_{field}_win_count": right_wins,
+            f"{field}_tie_count": ties,
+            f"{field}_exact_sign_p": (
+                None
+                if not values
+                else _exact_two_sided_sign_p(left_wins, right_wins)
+            ),
+            f"{field}_higher_is_better": bool(higher_is_better),
+        }
+
     left_feasible = np.asarray([
         row[0]["true_feasible"] is True for row in pairs
     ], dtype=float)
@@ -211,7 +264,7 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
             / non_tied_regret
         )
     )
-    return {
+    summary = {
         "comparison_id": str(comparison_id),
         "stratum": str(stratum),
         "pair_count": int(len(pairs)),
@@ -267,6 +320,15 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
         "regret_exact_sign_p": _exact_two_sided_sign_p(
             left_regret_wins, right_regret_wins),
     }
+    for field, higher_is_better in (
+        ("aleatoric_log_variance_rmse", False),
+        ("aleatoric_variance_rmse", False),
+        ("aleatoric_upper_coverage", True),
+        ("aleatoric_variance_shape_correlation", True),
+    ):
+        summary.update(paired_metric(
+            field, higher_is_better=higher_is_better))
+    return summary
 
 
 def analyze(audit, registry, *, bootstrap_samples=10000):
@@ -350,6 +412,10 @@ def analyze(audit, registry, *, bootstrap_samples=10000):
         "feasibility_mcnemar_exact_p",
         "certificate_mcnemar_exact_p",
         "regret_exact_sign_p",
+        "aleatoric_log_variance_rmse_exact_sign_p",
+        "aleatoric_variance_rmse_exact_sign_p",
+        "aleatoric_upper_coverage_exact_sign_p",
+        "aleatoric_variance_shape_correlation_exact_sign_p",
     )
     hypotheses = [
         (row, field)

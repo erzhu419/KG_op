@@ -98,7 +98,7 @@ def test_track_audit_requires_paired_information_contracts(tmp_path):
         }],
     }
     audit = build_audit(registry, root=tmp_path)
-    assert audit["status"] == "pass"
+    assert audit["status"] == "pass", audit
     assert audit["record_count"] == 2
     assert audit["track_audits"][0]["status"] == "pass"
 
@@ -135,6 +135,7 @@ def test_result_level_source_calls_and_total_optimization_contract(tmp_path):
     record = audit["records"][0]
     assert record["source_calls"] == 384
     assert record["optimization_calls_excluding_verification"] == 397
+    assert len(record["result_sha256"]) == 64
 
     registry["tracks"][0]["required_optimization_calls"] = 398
     failed = build_audit(registry, root=tmp_path)
@@ -143,3 +144,51 @@ def test_result_level_source_calls_and_total_optimization_contract(tmp_path):
         "kind": "optimization_budget_mismatch",
         "count": 1,
     }]
+
+
+def test_track_audit_enforces_method_specific_source_budgets(tmp_path):
+    universal = tmp_path / "causal" / "universal" / "result.json"
+    source = tmp_path / "causal" / "source" / "result.json"
+    _write_result(universal, method="universal", seed=80)
+    _write_result(source, method="source", seed=80)
+    universal_payload = json.loads(universal.read_text(encoding="utf-8"))
+    universal_payload["information_contract"]["offline_source_calls"] = 0
+    universal_payload["information_contract"]["target_search_calls"] = 10
+    universal_payload["result"]["n_search_simulations"] = 10
+    universal_payload["result"].pop("algorithm_fidelity")
+    universal_payload["result"].pop("saas_nuts_schedule")
+    universal.write_text(
+        json.dumps(universal_payload), encoding="utf-8")
+    source_payload = json.loads(source.read_text(encoding="utf-8"))
+    source_payload["information_contract"]["target_search_calls"] = 10
+    source_payload["result"]["n_search_simulations"] = 10
+    source_payload["result"].pop("algorithm_fidelity")
+    source_payload["result"].pop("saas_nuts_schedule")
+    source.write_text(json.dumps(source_payload), encoding="utf-8")
+
+    registry = {
+        "registry_id": "causal",
+        "tracks": [{
+            "track_id": "causal",
+            "result_root": "causal",
+            "expected_method_identities": ["universal", "source"],
+            "expected_domains": ["QueueResourceControl"],
+            "expected_seeds": [80],
+            "required_source_calls_by_method": {
+                "universal": 0,
+                "source": 384,
+            },
+            "required_search_calls": 10,
+            "paired_equality_fields": ["verifier_signature"],
+        }],
+    }
+    audit = build_audit(registry, root=tmp_path)
+    assert audit["status"] == "pass", audit
+
+    registry["tracks"][0]["required_source_calls_by_method"]["universal"] = 1
+    failed = build_audit(registry, root=tmp_path)
+    assert failed["status"] == "incomplete_or_failed"
+    assert any(
+        row["kind"] == "method_source_budget_mismatch"
+        for row in failed["track_audits"][0]["failures"]
+    )

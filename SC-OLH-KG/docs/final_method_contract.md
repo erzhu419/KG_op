@@ -63,25 +63,44 @@ component.
 
 ## Proposal coverage theorem
 
-`SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate` now makes the
-front-end claim quantitative.  PAC-Bayes transfer gives a held-out one-draw
-feasible-mass lower bound
+The deployed `risk_objective_atlas` is a deterministic finite atlas: its
+target-seed replications share one frozen design fingerprint.  Therefore its
+main implementation bridge is
+`SCOLHKG.Real.paper_frontend_lipschitz_geometric_atlas_and_certificate`, not
+an IID-draw or raw cross-domain threshold claim.  Let `psi` be the frozen
+dimension-equivariant coordinate, `epsilon_cover` the maximin atlas radius on
+the source-consensus plus universal structural support, `delta_shift` the
+held-out support shift, `L` a chance-margin Lipschitz bound in `psi`, and
+`d_safe` the held-out safe-center depth. If
 
 ```text
-p_lower = max(0, 1 - source_miss - domain_shift - complexity_radius),
+L * (epsilon_cover + delta_shift) <= d_safe,
 ```
 
-where the complexity radius depends on the effective structural dimension,
-the finite proposal library, source sample count, and confidence level.  For
-`n0` IID frozen proposal draws, the probability of at least one feasible
-initial policy is at least
+then the atlas contains a feasible policy. The atlas has at most `n0` members,
+and nominal policy dimension does not enter this implication. No independence
+is assumed between atlas members.
+
+A normalized rank-alignment theorem was also formalized, then rejected as the
+headline bridge because its source-only finite-sample bound was vacuous in all
+three `d=1000` held-out domains. This negative audit is retained rather than
+silently choosing a theorem after seeing target results.
+
+`SCOLHKG.Real.paper_frontend_atlas_coverage_and_certificate` remains a raw
+feasible-mass special case for domains where absolute feasibility is
+transferable.  It is not used to explain the headline synthetic result.
+
+For an optional genuinely randomized proposal backend,
+`SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate` separately
+proves the IID corollary
 
 ```text
 1 - (1 - p_lower)^n0.
 ```
 
-`SCOLHKG.Measure.iid_at_least_one_hit_probability` proves the finite-product
-identity in mathlib.  `performance/proposal_coverage.py` is the numerical
-bridge.  A paper table must report every input, including a source-only
-inner-LODO estimate or upper bound for `domain_shift`; an uncalibrated zero
-shift is not permitted.
+`SCOLHKG.Measure.iid_at_least_one_hit_probability` proves that finite-product
+identity in mathlib, but the deterministic paper results do not use it.
+The paper must report the source-only atlas radius before target observations,
+then audit support shift, safe depth, and a justified Lipschitz upper bound
+only after the decision is frozen. A finite candidate-library safe radius is
+diagnostic evidence, not a substitute for the global Lipschitz condition.

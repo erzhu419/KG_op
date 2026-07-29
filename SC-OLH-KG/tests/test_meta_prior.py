@@ -1602,6 +1602,13 @@ class MetaPriorTests(unittest.TestCase):
             proposal_diag["robust_source_feasible_template_count"], 0)
         self.assertFalse(proposal_diag["target_data_used"])
         self.assertFalse(proposal_diag["target_oracle_used"])
+        source_only = prior.risk_objective_template_initial_candidates(
+            high_dim_target, n=5, rng=np.random.default_rng(521))
+        universal = prior.universal_shape_candidates(
+            high_dim_target, n=10000,
+            rng=np.random.default_rng(521), force=True)
+        self.assertEqual(len(source_only), 5)
+        self.assertNotIn(universal[1], source_only)
 
         rng = np.random.default_rng(520)
         sequential = [

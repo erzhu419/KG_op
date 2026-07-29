@@ -90,8 +90,20 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/TransferGeneralization.lean`: source-task PAC-Bayes target-risk
   bound with an explicit held-out-domain discrepancy term.
 - `SCOLHKG/Real/ProposalCoverage.lean`: composes the source-to-target
-  PAC-Bayes miss-risk bound, effective structural dimension, and IID proposal
-  draws into the explicit `1-(1-p_lower)^n0` feasible-basin hit bound.
+  PAC-Bayes miss-risk bound and effective structural dimension with two
+  distinct proposal contracts.  The deployed deterministic finite atlas uses
+  positive feasible mass to prove existence of a feasible support member;
+  a separate randomized backend may use the explicit
+  `1-(1-p_lower)^n0` IID hit bound.
+- `SCOLHKG/Real/RankAlignedAtlasCoverage.lean`: the headline deterministic
+  rank-transfer candidate. Uniform normalized risk-rank alignment, one-sided
+  source-rank atlas coverage, and target safe-rank interior depth imply a
+  feasible atlas member. Its source-only finite-sample audit was vacuous, so
+  it is not the headline empirical bridge.
+- `SCOLHKG/Real/GeometricAtlasCoverage.lean`: the deployed maximin-atlas
+  contract. Source-support covering radius plus source/target support shift
+  must fit inside either a complete safe coordinate ball or a Lipschitz
+  chance-margin depth. Nominal policy dimension is absent.
 - `SCOLHKG/Measure/ProposalCoverage.lean`: proves the exact finite-product
   probability of missing a measurable feasible set in all IID proposal draws.
 - `SCOLHKG/Real/MeanRiskCoordinateSeparation.lean`: formal separation of the
@@ -831,9 +843,20 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 161. A finite-task PAC-Bayes source miss-risk bound with explicit
      source-to-target discrepancy and effective structural dimension yields a
      conservative held-out feasible-mass lower bound.
-162. Under the finite IID product proposal law, `n0` frozen draws hit the
+162. If chance margin is `L`-Lipschitz in the transferable coordinate and
+     `L*(atlas_cover_radius+support_shift) <= safe_depth`, the deterministic
+     atlas contains a feasible policy; nominal policy dimension is irrelevant.
+163. If source and target normalized risk ranks align within `epsilon`, the
+     deterministic atlas covers source rank within `coverError`, and a target
+     safe policy is deeper than `2*epsilon+coverError`, the atlas contains a
+     feasible policy. This alternative was empirically vacuous.
+164. If a deterministic frozen atlas has at most `n0` members and its raw
+     transferred feasible-mass lower bound is strictly positive, at least one
+     atlas support member is feasible; this is a special case, not the
+     headline cross-threshold contract.
+165. Under a separate finite IID randomized proposal law, `n0` draws hit the
      feasible basin with probability at least `1-(1-p_lower)^n0`.
-163. The backend-independent paper theorem composes source-label invariance,
+166. The backend-independent paper theorem composes source-label invariance,
      proposal coverage, the observable coordinate quotient, cumulative HVD,
      and conservative terminal certification.
 

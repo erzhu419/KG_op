@@ -207,6 +207,32 @@
       ]
     },
     {
+      "track_id": "frontend_component_causal_ablation_d1000_n10",
+      "result_root": "paper_frontend_component_ablation_d50_d1000_n10_s80_99_v1",
+      "expected_method_identities": [
+        "frozen_universal_proposal_only",
+        "frozen_source_templates_proposal_only",
+        "frozen_crossdim_proposal_only"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [1000],
+      "expected_seeds": [
+        80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+        90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+      ],
+      "required_source_calls_by_method": {
+        "frozen_universal_proposal_only": 0,
+        "frozen_source_templates_proposal_only": 384,
+        "frozen_crossdim_proposal_only": 384
+      },
+      "required_search_calls": 10,
+      "paired_equality_fields": ["verifier_signature"]
+    },
+    {
       "track_id": "legacy_related_family_bridge_d5_n13",
       "result_root": "paper_final_legacy_bridge_d5_n13_s80_99_v1",
       "expected_method_identities": [
@@ -352,6 +378,54 @@
         "initial_design_fingerprint",
         "verifier_signature"
       ]
+    },
+    {
+      "comparison_id": "frontend_combined_vs_universal_only",
+      "left_track": "frontend_component_causal_ablation_d1000_n10",
+      "left_method": "frozen_crossdim_proposal_only",
+      "right_track": "frontend_component_causal_ablation_d1000_n10",
+      "right_method": "frozen_universal_proposal_only",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": ["verifier_signature"]
+    },
+    {
+      "comparison_id": "frontend_combined_vs_source_templates_only",
+      "left_track": "frontend_component_causal_ablation_d1000_n10",
+      "left_method": "frozen_crossdim_proposal_only",
+      "right_track": "frontend_component_causal_ablation_d1000_n10",
+      "right_method": "frozen_source_templates_proposal_only",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "frontend_source_templates_vs_universal_only",
+      "left_track": "frontend_component_causal_ablation_d1000_n10",
+      "left_method": "frozen_source_templates_proposal_only",
+      "right_track": "frontend_component_causal_ablation_d1000_n10",
+      "right_method": "frozen_universal_proposal_only",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [1000],
+      "expected_pairs": 60,
+      "required_equal_fields": ["verifier_signature"]
     },
     {
       "comparison_id": "target_only_scbo_vs_turbo_n397",
