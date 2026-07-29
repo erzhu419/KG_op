@@ -75,6 +75,19 @@ def _fixtures(tmp_path):
         "source_calls_per_run": 384,
         "target_search_calls_per_run": 13,
         "target_verification_calls_per_run": 300,
+        "information_contract": {
+            "track": "domain_blind_external_holdout",
+            "source_domains": [
+                "FactorShockStatePolicyRZDT1",
+                "InventorySupplyChain",
+            ],
+            "excluded_nearest_source_analogue": "QueueResourceControl",
+            "target_domain": "Ingolstadt21Traffic",
+            "heldout_task_family_identifier_used_by_proposal": False,
+            "target_labels_used_to_fit_proposal": False,
+            "target_oracle_used": False,
+            "historical_target_anchor_used": False,
+        },
         "rows": traffic_rows,
     })
     proposal_coverage = _write(tmp_path / "proposal_coverage.json", {

@@ -112,6 +112,21 @@ def validate_release_inputs(
         "traffic source/search budgets differ from the registered contract",
         failures,
     )
+    traffic_information = traffic.get("information_contract", {})
+    _require(
+        traffic_information.get("track")
+        == "domain_blind_external_holdout"
+        and traffic_information.get(
+            "heldout_task_family_identifier_used_by_proposal") is False
+        and traffic_information.get(
+            "target_labels_used_to_fit_proposal") is False
+        and traffic_information.get("target_oracle_used") is False
+        and traffic_information.get(
+            "excluded_nearest_source_analogue")
+        == "QueueResourceControl",
+        "traffic experiment is not the registered domain-blind holdout",
+        failures,
+    )
     _require(
         proposal_coverage.get("contract_id")
         == "source_target_geometric_atlas_coverage_v1",
@@ -311,6 +326,7 @@ def build_release(
                 traffic["target_search_calls_per_run"]),
             "target_verification_calls_per_run": int(
                 traffic["target_verification_calls_per_run"]),
+            "information_contract": traffic["information_contract"],
         },
         "proposal_coverage": {
             "contract_id": proposal_coverage["contract_id"],

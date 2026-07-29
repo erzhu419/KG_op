@@ -122,7 +122,18 @@ def audit_oos_payload(
     }
 
 
-def analyze(paths, *, target_probability=0.95, familywise_delta=0.05):
+def analyze(
+    paths,
+    *,
+    target_probability=0.95,
+    familywise_delta=0.05,
+    source_domains=(
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+    ),
+    excluded_nearest_source_analogue="QueueResourceControl",
+    target_domain="Ingolstadt21Traffic",
+):
     rows = [
         audit_oos_payload(
             json.loads(Path(path).read_text(encoding="utf-8")),
@@ -155,6 +166,17 @@ def analyze(paths, *, target_probability=0.95, familywise_delta=0.05):
             row["verification_calls"] for row in rows)),
         "total_calls_per_run": int(384 + 13 + statistics.median(
             row["verification_calls"] for row in rows)),
+        "information_contract": {
+            "track": "domain_blind_external_holdout",
+            "source_domains": list(map(str, source_domains)),
+            "excluded_nearest_source_analogue": str(
+                excluded_nearest_source_analogue),
+            "target_domain": str(target_domain),
+            "heldout_task_family_identifier_used_by_proposal": False,
+            "target_labels_used_to_fit_proposal": False,
+            "target_oracle_used": False,
+            "historical_target_anchor_used": False,
+        },
         "rows": sorted(rows, key=lambda row: row["run_seed"]),
     }
 
@@ -176,11 +198,28 @@ def main():
     parser.add_argument("--out", required=True)
     parser.add_argument("--target-probability", type=float, default=0.95)
     parser.add_argument("--familywise-delta", type=float, default=0.05)
+    parser.add_argument(
+        "--source-domains",
+        default="FactorShockStatePolicyRZDT1,InventorySupplyChain",
+    )
+    parser.add_argument(
+        "--excluded-nearest-source-analogue",
+        default="QueueResourceControl",
+    )
+    parser.add_argument("--target-domain", default="Ingolstadt21Traffic")
     args = parser.parse_args()
     payload = analyze(
         args.paths,
         target_probability=args.target_probability,
         familywise_delta=args.familywise_delta,
+        source_domains=tuple(
+            value.strip()
+            for value in args.source_domains.split(",")
+            if value.strip()
+        ),
+        excluded_nearest_source_analogue=(
+            args.excluded_nearest_source_analogue),
+        target_domain=args.target_domain,
     )
     _atomic_json(args.out, payload)
     print(json.dumps({

@@ -220,6 +220,10 @@ def build_specs(args):
         "--out", str(audit_path),
         "--target-probability", "0.95",
         "--familywise-delta", "0.05",
+        "--source-domains",
+        "FactorShockStatePolicyRZDT1,InventorySupplyChain",
+        "--excluded-nearest-source-analogue", "QueueResourceControl",
+        "--target-domain", "Ingolstadt21Traffic",
     ]
     specs.append({
         "description": "paper final external traffic aggregate audit",

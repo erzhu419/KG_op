@@ -1,3 +1,4 @@
+import json
 import math
 from pathlib import Path
 import sys
@@ -9,6 +10,7 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "SC-OLH-KG"))
 
 from performance.analyze_traffic_final_contract import (  # noqa: E402
+    analyze,
     audit_oos_payload,
     exact_binomial_lower,
 )
@@ -100,3 +102,44 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
     assert all("--source-indexes 0,1,2" in spec["cmd"] for spec in oos)
     assert all(
         "checkpoints" in spec["stage_excludes"] for spec in specs)
+    aggregate = next(
+        spec for spec in specs if spec["signature"].endswith("/audit"))
+    assert (
+        "--source-domains "
+        "FactorShockStatePolicyRZDT1,InventorySupplyChain"
+        in aggregate["cmd"]
+    )
+    assert (
+        "--excluded-nearest-source-analogue QueueResourceControl"
+        in aggregate["cmd"]
+    )
+
+
+def test_traffic_aggregate_records_domain_blind_information_contract(
+    tmp_path,
+):
+    paths = []
+    for seed in (80, 81):
+        path = tmp_path / f"seed{seed}.json"
+        path.write_text(
+            json.dumps({
+                "candidates": [
+                    _candidate(0, 99, seed=seed),
+                    _candidate(1, 100, seed=seed),
+                    _candidate(2, 100, seed=seed),
+                ]
+            }),
+            encoding="utf-8",
+        )
+        paths.append(path)
+    payload = analyze(paths)
+    contract = payload["information_contract"]
+    assert contract["track"] == "domain_blind_external_holdout"
+    assert contract[
+        "heldout_task_family_identifier_used_by_proposal"] is False
+    assert contract["source_domains"] == [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+    ]
+    assert contract["excluded_nearest_source_analogue"] == (
+        "QueueResourceControl")
