@@ -303,6 +303,101 @@
       "required_source_calls": 384,
       "required_search_calls": 13,
       "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "dimension_budget_frontier_gate_proposal_d200_d1000_n10",
+      "result_root": "paper_dimension_budget_frontier_066d8b2_d200_d1000_n20_n40_n80_s80_84_v1",
+      "glob": "d*/N10/proposal_only/**/result.json",
+      "expected_method_identities": [
+        "frozen_crossdim_proposal_only"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [200, 1000],
+      "expected_seeds": [80, 81, 82, 83, 84],
+      "required_source_calls": 384,
+      "required_search_calls": 10,
+      "paired_equality_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "track_id": "dimension_budget_frontier_gate_saas_d200_d1000_n20",
+      "result_root": "paper_dimension_budget_frontier_066d8b2_d200_d1000_n20_n40_n80_s80_84_v1",
+      "glob": "d*/N20/saasbo/**/result.json",
+      "expected_method_identities": [
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [200, 1000],
+      "expected_seeds": [80, 81, 82, 83, 84],
+      "required_source_calls": 384,
+      "required_search_calls": 20,
+      "paired_equality_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "dimension_budget_frontier_gate_saas_d200_d1000_n40",
+      "result_root": "paper_dimension_budget_frontier_066d8b2_d200_d1000_n20_n40_n80_s80_84_v1",
+      "glob": "d*/N40/saasbo/**/result.json",
+      "expected_method_identities": [
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [200, 1000],
+      "expected_seeds": [80, 81, 82, 83, 84],
+      "required_source_calls": 384,
+      "required_search_calls": 40,
+      "paired_equality_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "dimension_budget_frontier_gate_saas_d200_d1000_n80",
+      "result_root": "paper_dimension_budget_frontier_066d8b2_d200_d1000_n20_n40_n80_s80_84_v1",
+      "glob": "d*/N80/saasbo/**/result.json",
+      "expected_method_identities": [
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [200, 1000],
+      "expected_seeds": [80, 81, 82, 83, 84],
+      "required_source_calls": 384,
+      "required_search_calls": 80,
+      "paired_equality_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
     }
   ],
   "primary_comparisons": [
