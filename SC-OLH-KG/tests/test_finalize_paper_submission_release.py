@@ -77,6 +77,20 @@ def _fixtures(tmp_path):
         "target_verification_calls_per_run": 300,
         "rows": traffic_rows,
     })
+    proposal_coverage = _write(tmp_path / "proposal_coverage.json", {
+        "status": "complete_with_conditional_global_bound",
+        "contract_id": "source_target_geometric_atlas_coverage_v1",
+        "domain_count": 3,
+        "finite_library_condition_pass_count": 3,
+        "global_lipschitz_certified_count": 0,
+        "global_theorem_claim_mode": "conditional_theorem_only",
+        "unconditional_global_coverage_claim_allowed": False,
+        "rows": [{
+            "deterministic_atlas": True,
+            "target_truth_used_post_run_only": True,
+            "target_truth_used_for_proposal_or_selection": False,
+        } for _ in range(3)],
+    })
     proof = _write(tmp_path / "proof.json", {
         "status": "pass",
         "lean_source_count": 10,
@@ -84,7 +98,15 @@ def _fixtures(tmp_path):
         "forbidden_declaration_count": 0,
         "build": {"executed": True, "returncode": 0},
     })
-    return method, registry, audit, statistics, traffic, proof
+    return (
+        method,
+        registry,
+        audit,
+        statistics,
+        traffic,
+        proposal_coverage,
+        proof,
+    )
 
 
 def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
@@ -95,7 +117,8 @@ def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
         audit_path=paths[2],
         statistics_path=paths[3],
         traffic_path=paths[4],
-        proof_receipt_path=paths[5],
+        proposal_coverage_path=paths[5],
+        proof_receipt_path=paths[6],
         repository_commit="commit",
     )
     assert release["status"] == "ready_for_manuscript_lock"
@@ -113,6 +136,7 @@ def test_release_finalizer_is_fail_closed_and_hash_addressed(tmp_path):
             audit_path=paths[2],
             statistics_path=paths[3],
             traffic_path=paths[4],
-            proof_receipt_path=paths[5],
+            proposal_coverage_path=paths[5],
+            proof_receipt_path=paths[6],
             repository_commit="commit",
         )

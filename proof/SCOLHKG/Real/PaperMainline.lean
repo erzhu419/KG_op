@@ -239,11 +239,10 @@ theorem paper_frontend_atlas_coverage_and_certificate
       hz hMean hSigma hMargin
 
 /-!
-Headline implementation contract for domains whose absolute chance thresholds
-differ.  The source and target share a normalized risk rank up to `epsilon`;
-the finite frozen atlas covers source rank up to `coverError`; and the held-out
-task contains a safe policy deeper than the combined alignment/coverage
-radius.  This is the rank-based bridge used by the paper experiments.
+Audited rank-transfer alternative for domains whose absolute chance thresholds
+differ.  Its source-only finite-sample calibration was vacuous in the paper
+domains, so this theorem is retained as a negative-control contract rather
+than the headline empirical bridge.
 -/
 
 theorem paper_frontend_rank_aligned_atlas_and_certificate
@@ -411,6 +410,77 @@ theorem paper_frontend_lipschitz_geometric_atlas_and_certificate
   obtain ⟨hCard, hExists⟩ := finite_geometric_lipschitz_atlas_coverage
     hAtlasSize hCover hSupportProxy hLipschitz hLNonnegative
     hCenterDepth hDepth
+  refine ⟨sourceOnlyProposal_targetLabel_invariant
+    fitProposal sourceRecords leftTargetLabels rightTargetLabels,
+    hCard, hExists, ?_, fixedTrajectoryVarianceDecomposition risk, ?_⟩
+  · exact joint_coordinate_equivalence_preserves_margin
+      model beta z tau hEta hPsi
+  · exact implementation_certifies_true_quantile
+      hz hMean hSigma hMargin
+
+/-!
+Fully decomposed headline contract. The learned coordinate approximates an
+ideal transferable coordinate within `coordinateError`; source and target safe
+support differ by `domainShift`; and the deterministic atlas covers learned
+source support within `coverRadius`. The factor two is the representation error
+at the source proxy and target-safe center. Nominal policy dimension remains
+absent.
+-/
+
+theorem paper_frontend_aligned_geometric_atlas_and_certificate
+    {SourceRecords Proposal TargetLabels : Type}
+    {X Eta Psi : Type*}
+    {Expert Z : Type*} [DecidableEq Expert] [PseudoMetricSpace Z]
+    (fitProposal : SourceRecords → Proposal)
+    (sourceRecords : SourceRecords)
+    (leftTargetLabels rightTargetLabels : TargetLabels)
+    (risk : CumulativeRisk)
+    (model : SeparatedMeanRiskModel X Eta Psi)
+    (x y : X)
+    (hEta : model.eta x = model.eta y)
+    (hPsi : model.psi x = model.psi y)
+    (learnedCoordinate truthCoordinate : Expert → Z)
+    (atlas support : Finset Expert)
+    (margin : Expert → ℝ)
+    (center : Expert)
+    (coverRadius domainShift coordinateError L safeDepth : ℝ)
+    (n0 : ℕ)
+    (hAtlasSize : atlas.card ≤ n0)
+    (hCover :
+      CoordinateAtlasCovers learnedCoordinate atlas support coverRadius)
+    (hApproximation :
+      UniformCoordinateApproximation
+        learnedCoordinate truthCoordinate coordinateError)
+    (hTruthProxy :
+      TruthCoordinateSupportProxy
+        truthCoordinate support center domainShift)
+    (hLipschitz :
+      CoordinateMarginOneSidedLipschitz learnedCoordinate margin L)
+    (hLNonnegative : 0 ≤ L)
+    (hCenterDepth : margin center + safeDepth ≤ 0)
+    (hDepth :
+      L * (coverRadius + domainShift + 2 * coordinateError) ≤ safeDepth)
+    {trueMean postMean epistemicVar trueSigma vC beta z tau : ℝ}
+    (hz : 0 ≤ z)
+    (hMean : trueMean ≤ postMean
+      + implementationEpistemicSlack beta epistemicVar)
+    (hSigma : trueSigma ≤ implementationCertSigma vC)
+    (hMargin : theoryCertificationMargin
+      postMean beta epistemicVar z vC tau ≤ 0) :
+    sourceOnlyProposal fitProposal sourceRecords leftTargetLabels =
+        sourceOnlyProposal fitProposal sourceRecords rightTargetLabels
+      ∧ atlas.card ≤ n0
+      ∧ (∃ candidate ∈ atlas, margin candidate ≤ 0)
+      ∧ separatedCertificationMargin model beta z tau x =
+        separatedCertificationMargin model beta z tau y
+      ∧ totalVariance risk =
+        risk.floor + independentRisk risk + sharedShockRisk risk
+          + linearRisk risk
+      ∧ trueMean + z * trueSigma ≤ tau := by
+  obtain ⟨hCard, hExists⟩ :=
+    finite_aligned_geometric_lipschitz_atlas_coverage
+      hAtlasSize hCover hApproximation hTruthProxy hLipschitz
+      hLNonnegative hCenterDepth hDepth
   refine ⟨sourceOnlyProposal_targetLabel_invariant
     fitProposal sourceRecords leftTargetLabels rightTargetLabels,
     hCard, hExists, ?_, fixedTrajectoryVarianceDecomposition risk, ?_⟩

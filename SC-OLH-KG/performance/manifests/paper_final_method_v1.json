@@ -72,19 +72,20 @@
   "proposal_coverage_theory": {
     "contract_id": "source_target_geometric_atlas_coverage_v1",
     "deployed_proposal_contract": "deterministic_finite_atlas",
-    "lean_theorem": "SCOLHKG.Real.paper_frontend_lipschitz_geometric_atlas_and_certificate",
-    "bound": "L*(source_support_atlas_cover_radius + source_target_support_shift) <= target_safe_depth implies the frozen atlas contains a feasible policy",
+    "lean_theorem": "SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate",
+    "bound": "L*(source_support_atlas_cover_radius + ideal_coordinate_domain_shift + 2*coordinate_approximation_error) <= target_safe_depth implies the frozen atlas contains a feasible policy",
     "atlas_support_size_upper_bound": "n0",
     "independent_proposal_draws_assumed": false,
     "geometric_coverage_inputs": [
       "source consensus templates union target-label-free universal structural support",
       "maximin atlas covering radius in the dimension-equivariant coordinate",
-      "source-to-target support shift in the same coordinate",
+      "inner-LODO coordinate approximation error",
+      "source-to-target support shift in the ideal transferable coordinate",
       "chance-margin Lipschitz constant in that coordinate",
       "heldout safe-center depth",
       "atlas support size n0"
     ],
-    "empirical_obligation": "Measure source support and atlas covering radius before target observations; audit support shift, safe depth, and a valid Lipschitz upper bound post-run without using them for selection.",
+    "empirical_obligation": "Measure source support, atlas covering radius, and coordinate approximation error before target observations; audit ideal-coordinate domain shift, safe depth, and a valid Lipschitz upper bound post-run without using them for selection.",
     "rank_alignment_candidate_rejected_as_headline": {
       "contract_id": "source_target_rank_aligned_atlas_coverage_v1",
       "reason": "source-only finite-sample rank-alignment bound was vacuous in all three d=1000 heldout domains"

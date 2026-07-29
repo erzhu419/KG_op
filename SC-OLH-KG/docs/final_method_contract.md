@@ -66,15 +66,17 @@ component.
 The deployed `risk_objective_atlas` is a deterministic finite atlas: its
 target-seed replications share one frozen design fingerprint.  Therefore its
 main implementation bridge is
-`SCOLHKG.Real.paper_frontend_lipschitz_geometric_atlas_and_certificate`, not
+`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`, not
 an IID-draw or raw cross-domain threshold claim.  Let `psi` be the frozen
 dimension-equivariant coordinate, `epsilon_cover` the maximin atlas radius on
-the source-consensus plus universal structural support, `delta_shift` the
-held-out support shift, `L` a chance-margin Lipschitz bound in `psi`, and
-`d_safe` the held-out safe-center depth. If
+the source-consensus plus universal structural support, `epsilon_psi` its
+uniform approximation error to an ideal transferable coordinate,
+`delta_domain` the ideal-coordinate source/target support shift, `L` a
+chance-margin Lipschitz bound in `psi`, and `d_safe` the held-out safe-center
+depth. If
 
 ```text
-L * (epsilon_cover + delta_shift) <= d_safe,
+L * (epsilon_cover + delta_domain + 2 epsilon_psi) <= d_safe,
 ```
 
 then the atlas contains a feasible policy. The atlas has at most `n0` members,
@@ -100,7 +102,8 @@ proves the IID corollary
 
 `SCOLHKG.Measure.iid_at_least_one_hit_probability` proves that finite-product
 identity in mathlib, but the deterministic paper results do not use it.
-The paper must report the source-only atlas radius before target observations,
-then audit support shift, safe depth, and a justified Lipschitz upper bound
-only after the decision is frozen. A finite candidate-library safe radius is
-diagnostic evidence, not a substitute for the global Lipschitz condition.
+The paper must report the source-only atlas radius and inner-LODO coordinate
+error before target observations, then audit domain shift, safe depth, and a
+justified Lipschitz upper bound only after the decision is frozen. A finite
+candidate-library safe radius is diagnostic evidence, not a substitute for the
+global Lipschitz condition.

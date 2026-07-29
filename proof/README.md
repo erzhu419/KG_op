@@ -103,7 +103,9 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/Real/GeometricAtlasCoverage.lean`: the deployed maximin-atlas
   contract. Source-support covering radius plus source/target support shift
   must fit inside either a complete safe coordinate ball or a Lipschitz
-  chance-margin depth. Nominal policy dimension is absent.
+  chance-margin depth. The fully decomposed version adds twice the learned
+  coordinate approximation error to the ideal-coordinate domain shift.
+  Nominal policy dimension is absent.
 - `SCOLHKG/Measure/ProposalCoverage.lean`: proves the exact finite-product
   probability of missing a measurable feasible set in all IID proposal draws.
 - `SCOLHKG/Real/MeanRiskCoordinateSeparation.lean`: formal separation of the
@@ -843,9 +845,10 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 161. A finite-task PAC-Bayes source miss-risk bound with explicit
      source-to-target discrepancy and effective structural dimension yields a
      conservative held-out feasible-mass lower bound.
-162. If chance margin is `L`-Lipschitz in the transferable coordinate and
-     `L*(atlas_cover_radius+support_shift) <= safe_depth`, the deterministic
-     atlas contains a feasible policy; nominal policy dimension is irrelevant.
+162. If chance margin is `L`-Lipschitz in the learned coordinate and
+     `L*(atlas_cover_radius+domain_shift+2*coordinate_error) <= safe_depth`,
+     the deterministic atlas contains a feasible policy; nominal policy
+     dimension is irrelevant.
 163. If source and target normalized risk ranks align within `epsilon`, the
      deterministic atlas covers source rank within `coverError`, and a target
      safe policy is deeper than `2*epsilon+coverError`, the atlas contains a

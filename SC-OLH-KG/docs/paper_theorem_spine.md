@@ -57,10 +57,11 @@ claims only if their independently retrained rows show an incremental effect.
 2. **Source-to-target proposal coverage.** A finite-task PAC-Bayes miss-risk
    analysis is retained as a special case, but the deployed deterministic
    atlas uses geometric coverage in the dimension-equivariant coordinate.
-   If chance margin is `L`-Lipschitz there and
-   `L*(cover_radius+support_shift) <= safe_depth`, at least one of at most
-   `n0` atlas policies is feasible. A separate genuinely randomized proposal
-   may use the IID corollary
+   If the learned coordinate has error `epsilon_psi`, ideal source/target
+   support shift is `delta_domain`, and chance margin is `L`-Lipschitz, then
+   `L*(cover_radius+delta_domain+2*epsilon_psi) <= safe_depth` makes at least
+   one of at most `n0` atlas policies feasible. A separate genuinely
+   randomized proposal may use the IID corollary
    `P(hit) >= 1-(1-p_lower)^n0`.
 3. **Coordinate quotient.** Policies sharing both `eta` and `psi` have the
    same modeled mean, epistemic variance, cumulative certification variance,
@@ -83,7 +84,7 @@ claims only if their independently retrained rows show an incremental effect.
    confidence event.
 
 The implementation-matched umbrella Lean theorem is
-`SCOLHKG.Real.paper_frontend_lipschitz_geometric_atlas_and_certificate` in
+`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate` in
 `proof/SCOLHKG/Real/PaperMainline.lean`. It composes source noninterference,
 geometric deterministic-atlas coverage, cumulative HVD, coordinate quotienting,
 and terminal certification without assuming a particular online backend.

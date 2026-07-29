@@ -38,6 +38,7 @@ def validate_release_inputs(
     audit,
     statistics,
     traffic,
+    proposal_coverage,
     proof_receipt,
 ):
     failures = []
@@ -111,6 +112,49 @@ def validate_release_inputs(
         "traffic source/search budgets differ from the registered contract",
         failures,
     )
+    _require(
+        proposal_coverage.get("contract_id")
+        == "source_target_geometric_atlas_coverage_v1",
+        "proposal coverage audit uses the wrong theory contract",
+        failures,
+    )
+    _require(
+        proposal_coverage.get("status") in {
+            "complete",
+            "complete_with_conditional_global_bound",
+        },
+        "proposal coverage audit is incomplete",
+        failures,
+    )
+    proposal_rows = list(proposal_coverage.get("rows", ()))
+    _require(
+        len(proposal_rows) == 3
+        and int(proposal_coverage.get(
+            "finite_library_condition_pass_count", 0)) == 3,
+        "proposal coverage audit lacks three passing finite-library domains",
+        failures,
+    )
+    _require(
+        bool(proposal_rows)
+        and all(
+            row.get("deterministic_atlas") is True
+            and row.get("target_truth_used_post_run_only") is True
+            and row.get(
+                "target_truth_used_for_proposal_or_selection") is False
+            for row in proposal_rows
+        ),
+        "proposal coverage audit violates the frozen post-run truth contract",
+        failures,
+    )
+    if proposal_coverage.get(
+        "unconditional_global_coverage_claim_allowed"
+    ) is not True:
+        _require(
+            proposal_coverage.get("global_theorem_claim_mode")
+            == "conditional_theorem_only",
+            "uncertified global proposal coverage is not labelled conditional",
+            failures,
+        )
     traffic_rows = list(traffic.get("rows", ()))
     _require(
         bool(traffic_rows)
@@ -194,6 +238,7 @@ def build_release(
     audit_path,
     statistics_path,
     traffic_path,
+    proposal_coverage_path,
     proof_receipt_path,
     repository_commit,
 ):
@@ -202,6 +247,7 @@ def build_release(
     audit = _load(audit_path)
     statistics = _load(statistics_path)
     traffic = _load(traffic_path)
+    proposal_coverage = _load(proposal_coverage_path)
     proof_receipt = _load(proof_receipt_path)
     failures = validate_release_inputs(
         method_contract,
@@ -209,6 +255,7 @@ def build_release(
         audit,
         statistics,
         traffic,
+        proposal_coverage,
         proof_receipt,
     )
     if failures:
@@ -220,6 +267,7 @@ def build_release(
         "compact_audit": Path(audit_path),
         "paired_statistics": Path(statistics_path),
         "external_traffic_audit": Path(traffic_path),
+        "proposal_coverage_audit": Path(proposal_coverage_path),
         "lean_proof_receipt": Path(proof_receipt_path),
     }
     records = _record_receipts(audit)
@@ -264,6 +312,21 @@ def build_release(
             "target_verification_calls_per_run": int(
                 traffic["target_verification_calls_per_run"]),
         },
+        "proposal_coverage": {
+            "contract_id": proposal_coverage["contract_id"],
+            "domain_count": int(proposal_coverage["domain_count"]),
+            "finite_library_condition_pass_count": int(
+                proposal_coverage[
+                    "finite_library_condition_pass_count"]),
+            "global_lipschitz_certified_count": int(
+                proposal_coverage[
+                    "global_lipschitz_certified_count"]),
+            "global_theorem_claim_mode": proposal_coverage[
+                "global_theorem_claim_mode"],
+            "unconditional_global_coverage_claim_allowed": bool(
+                proposal_coverage[
+                    "unconditional_global_coverage_claim_allowed"]),
+        },
         "proof": {
             "lean_source_count": int(
                 proof_receipt["lean_source_count"]),
@@ -300,6 +363,7 @@ def main():
     parser.add_argument("--audit", required=True)
     parser.add_argument("--statistics", required=True)
     parser.add_argument("--traffic", required=True)
+    parser.add_argument("--proposal-coverage", required=True)
     parser.add_argument("--proof-receipt", required=True)
     parser.add_argument("--repository-root", default=".")
     parser.add_argument("--out", required=True)
@@ -315,6 +379,7 @@ def main():
         audit_path=args.audit,
         statistics_path=args.statistics,
         traffic_path=args.traffic,
+        proposal_coverage_path=args.proposal_coverage,
         proof_receipt_path=args.proof_receipt,
         repository_commit=commit,
     )

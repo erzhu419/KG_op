@@ -17,12 +17,13 @@ transfer term by a source-task PAC-Bayes radius plus explicit domain shift.
 `GeometricAtlasCoverage.lean` gives the headline bridge for the deployed
 deterministic `risk_objective_atlas`: the atlas covers the frozen
 source-consensus plus universal structural support within `coverRadius`, a
-held-out safe center lies within `supportShift`, and chance margin is
-`L`-Lipschitz in the same coordinate with
-`L*(coverRadius+supportShift) <= safeDepth`. These conditions force a feasible
-atlas member without assuming independent atlas points or using nominal policy
-dimension. The implementation-matched umbrella theorem is
-`SCOLHKG.Real.paper_frontend_lipschitz_geometric_atlas_and_certificate`.
+learned coordinate is within `coordinateError` of an ideal transferable
+coordinate, the ideal source/target safe support differs by `domainShift`, and
+chance margin is `L`-Lipschitz in the learned coordinate with
+`L*(coverRadius+domainShift+2*coordinateError) <= safeDepth`. These conditions
+force a feasible atlas member without assuming independent atlas points or
+using nominal policy dimension. The implementation-matched umbrella theorem is
+`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`.
 `RankAlignedAtlasCoverage.lean` and `ProposalCoverage.lean` retain rank and raw
 feasible-mass alternatives; their failed/vacuous audits prevent post-hoc use.
 For a genuinely randomized proposal backend, the separate IID corollary remains
