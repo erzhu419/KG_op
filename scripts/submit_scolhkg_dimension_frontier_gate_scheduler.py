@@ -30,6 +30,8 @@ DOMAINS = (
     "QueueResourceControl",
 )
 BACKENDS = ("proposal_only", "saasbo")
+SNAPSHOT_MARKER = ".scolhkg_execution_snapshot.json"
+METHOD_CONTRACT_ID = "or_transfer_frontend_saas_v1"
 
 
 def _parse_csv(value):
@@ -53,6 +55,56 @@ def _target_budgets(args):
 
 def _read_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _execution_snapshot(args):
+    code_root = getattr(args, "code_root", None)
+    required = bool(getattr(args, "require_frozen_snapshot", False))
+    if code_root in (None, ""):
+        if required:
+            raise ValueError(
+                "--require-frozen-snapshot needs --code-root")
+        return None
+    marker = Path(code_root) / SNAPSHOT_MARKER
+    if not marker.is_file():
+        raise FileNotFoundError(
+            f"frozen code snapshot marker is missing: {marker}")
+    snapshot = _read_json(marker)
+    required_fields = (
+        "repository_commit",
+        "scolhkg_tree",
+        "proof_tree",
+        "scripts_tree",
+        "theory_contract_id",
+        "snapshot_root",
+    )
+    missing = [
+        field for field in required_fields if not snapshot.get(field)
+    ]
+    if missing:
+        raise ValueError(
+            f"frozen code snapshot is incomplete: {missing}")
+    if Path(snapshot["snapshot_root"]).resolve() != Path(code_root).resolve():
+        raise ValueError("snapshot marker/root mismatch")
+    if snapshot.get("status") != "frozen":
+        raise ValueError("code snapshot is not frozen")
+    return snapshot
+
+
+def _execution_env(snapshot):
+    if snapshot is None:
+        return []
+    values = {
+        "SCOLHKG_EXECUTION_PROVENANCE_REQUIRED": "1",
+        "SCOLHKG_EXECUTION_COMMIT": snapshot["repository_commit"],
+        "SCOLHKG_SCOLHKG_TREE": snapshot["scolhkg_tree"],
+        "SCOLHKG_PROOF_TREE": snapshot["proof_tree"],
+        "SCOLHKG_SCRIPTS_TREE": snapshot["scripts_tree"],
+        "SCOLHKG_METHOD_CONTRACT_ID": METHOD_CONTRACT_ID,
+        "SCOLHKG_THEORY_CONTRACT_ID": snapshot["theory_contract_id"],
+        "SCOLHKG_CODE_SNAPSHOT_ROOT": snapshot["snapshot_root"],
+    }
+    return [f"{key}={value}" for key, value in values.items()]
 
 
 def _terminal_flags():
@@ -103,8 +155,14 @@ def validate_archives(args):
 
 def build_specs(args):
     deploy_project = Path(args.deploy) / "SC-OLH-KG"
+    code_project = (
+        Path(args.code_root) / "SC-OLH-KG"
+        if getattr(args, "code_root", None)
+        else deploy_project
+    )
+    execution_snapshot = _execution_snapshot(args)
     manifest = (
-        deploy_project / "performance/manifests/v18b_exactkg_mcdiag.json")
+        code_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     dimensions = tuple(int(value) for value in _parse_csv(args.dimensions))
     target_budgets = _target_budgets(args)
     backends = _parse_csv(args.backends)
@@ -127,8 +185,11 @@ def build_specs(args):
                 f"OMP_NUM_THREADS={int(args.cpu)}",
                 f"MKL_NUM_THREADS={int(args.cpu)}",
                 f"OPENBLAS_NUM_THREADS={int(args.cpu)}",
+                *_execution_env(execution_snapshot),
                 str(REMOTE_PYTHON),
-                "performance/materialize_source_initial_designs.py",
+                str(
+                    code_project
+                    / "performance/materialize_source_initial_designs.py"),
                 "--manifest", str(manifest),
                 "--heldout", heldout,
                 "--archive", str(archive),
@@ -146,7 +207,7 @@ def build_specs(args):
                 "description": (
                     f"frontier design d={dimension} {heldout}"),
                 "cmd": f"{shlex.join(design_command)} && echo DONE",
-                "cwd": str(deploy_project),
+                "cwd": str(code_project),
                 "signature": (
                     f"KG_op/dimension_frontier/{args.run_id}/design/"
                     f"d{dimension}/{heldout}"
@@ -178,8 +239,11 @@ def build_specs(args):
                         "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
                         "OMP_NUM_THREADS=1", "MKL_NUM_THREADS=1",
                         "OPENBLAS_NUM_THREADS=1",
+                        *_execution_env(execution_snapshot),
                         str(REMOTE_PYTHON),
-                        "performance/benchmark_frozen_proposal_only.py",
+                        str(
+                            code_project
+                            / "performance/benchmark_frozen_proposal_only.py"),
                         "--heldout", heldout,
                         "--seed", str(seed),
                         "--initial-design", "source_informed",
@@ -198,7 +262,7 @@ def build_specs(args):
                             f"seed={seed}"
                         ),
                         "cmd": f"{shlex.join(command)} && echo DONE",
-                        "cwd": str(deploy_project),
+                        "cwd": str(code_project),
                         "signature": (
                             f"KG_op/dimension_frontier/{args.run_id}/"
                             f"d{dimension}/proposal/{heldout}/seed{seed:04d}"
@@ -238,9 +302,12 @@ def build_specs(args):
                             "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
                             "SCOLHKG_TORCH_DETERMINISTIC=1",
                             "CUBLAS_WORKSPACE_CONFIG=:4096:8",
+                            *_execution_env(execution_snapshot),
                             f"PYTHONPATH={BOTORCH_OVERLAY}",
                             str(SAAS_PYTHON),
-                            "performance/benchmark_sota_fairness.py",
+                            str(
+                                code_project
+                                / "performance/benchmark_sota_fairness.py"),
                             "--protocol", "shared_archive_n13",
                             "--method", "botorch_saasbo",
                             "--heldout", heldout,
@@ -265,7 +332,7 @@ def build_specs(args):
                                 f"N={target_budget} {heldout} seed={seed}"
                             ),
                             "cmd": f"{shlex.join(command)} && echo DONE",
-                            "cwd": str(deploy_project),
+                            "cwd": str(code_project),
                             "signature": (
                                 f"KG_op/dimension_frontier/{args.run_id}/"
                                 f"d{dimension}/N{target_budget}/saas/"
@@ -294,6 +361,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
     parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
+    parser.add_argument("--code-root", type=Path)
+    parser.add_argument(
+        "--require-frozen-snapshot",
+        action="store_true",
+    )
     parser.add_argument("--run-id", default=(
         "paper_dimension_frontier_gate_d200_d10000_n13_s80_84_"
         f"{time.strftime('%Y%m%d_%H%M%S')}"))
@@ -356,7 +428,11 @@ def main():
         }, indent=2))
         return
     if args.sync_remote:
-        subprocess.run([str(SYNC)], cwd=ROOT, check=True)
+        if args.require_frozen_snapshot and args.code_root is None:
+            raise ValueError(
+                "--require-frozen-snapshot needs --code-root")
+        if args.code_root is None:
+            subprocess.run([str(SYNC)], cwd=ROOT, check=True)
     output = subprocess.check_output(
         [
             sys.executable,
@@ -395,6 +471,11 @@ def main():
             "backend": "canonical_saasbo_every_iteration",
             "verifier": "v69_independent_three_policy_objective_guard",
             "target_oracle_used": False,
+            "execution_snapshot": (
+                _execution_snapshot(args)
+                if args.code_root is not None
+                else {"status": "unregistered"}
+            ),
         },
         "checkpoint_results_synced_locally": False,
     }

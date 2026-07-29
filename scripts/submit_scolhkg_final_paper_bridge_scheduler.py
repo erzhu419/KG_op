@@ -25,6 +25,62 @@ BOTORCH_OVERLAY = Path(
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
 GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
 TARGETS = ("PaperRZDT1", "PaperRZDT2", "PaperRZDT5_RR")
+SNAPSHOT_MARKER = ".scolhkg_execution_snapshot.json"
+METHOD_CONTRACT_ID = "or_transfer_frontend_saas_v1"
+
+
+def _read_json(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def _execution_snapshot(args):
+    code_root = getattr(args, "code_root", None)
+    required = bool(getattr(args, "require_frozen_snapshot", False))
+    if code_root in (None, ""):
+        if required:
+            raise ValueError(
+                "--require-frozen-snapshot needs --code-root")
+        return None
+    marker = Path(code_root) / SNAPSHOT_MARKER
+    if not marker.is_file():
+        raise FileNotFoundError(
+            f"frozen code snapshot marker is missing: {marker}")
+    snapshot = _read_json(marker)
+    required_fields = (
+        "repository_commit",
+        "scolhkg_tree",
+        "proof_tree",
+        "scripts_tree",
+        "theory_contract_id",
+        "snapshot_root",
+    )
+    missing = [
+        field for field in required_fields if not snapshot.get(field)
+    ]
+    if missing:
+        raise ValueError(
+            f"frozen code snapshot is incomplete: {missing}")
+    if Path(snapshot["snapshot_root"]).resolve() != Path(code_root).resolve():
+        raise ValueError("snapshot marker/root mismatch")
+    if snapshot.get("status") != "frozen":
+        raise ValueError("code snapshot is not frozen")
+    return snapshot
+
+
+def _execution_env(snapshot):
+    if snapshot is None:
+        return []
+    values = {
+        "SCOLHKG_EXECUTION_PROVENANCE_REQUIRED": "1",
+        "SCOLHKG_EXECUTION_COMMIT": snapshot["repository_commit"],
+        "SCOLHKG_SCOLHKG_TREE": snapshot["scolhkg_tree"],
+        "SCOLHKG_PROOF_TREE": snapshot["proof_tree"],
+        "SCOLHKG_SCRIPTS_TREE": snapshot["scripts_tree"],
+        "SCOLHKG_METHOD_CONTRACT_ID": METHOD_CONTRACT_ID,
+        "SCOLHKG_THEORY_CONTRACT_ID": snapshot["theory_contract_id"],
+        "SCOLHKG_CODE_SNAPSHOT_ROOT": snapshot["snapshot_root"],
+    }
+    return [f"{key}={value}" for key, value in values.items()]
 
 
 def _terminal_flags():
@@ -49,24 +105,33 @@ def _terminal_flags():
 
 def build_specs(args):
     deploy = Path(args.deploy)
-    project = deploy / "SC-OLH-KG"
+    deploy_project = deploy / "SC-OLH-KG"
+    code_project = (
+        Path(args.code_root) / "SC-OLH-KG"
+        if getattr(args, "code_root", None)
+        else deploy_project
+    )
+    execution_snapshot = _execution_snapshot(args)
     manifest = (
-        project / "performance/manifests/v18b_exactkg_mcdiag.json")
+        code_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     archive = (
-        project / "archives" / args.archive_run_id
+        deploy_project / "archives" / args.archive_run_id
         / "QueueResourceControl"
         / "heldout_QueueResourceControl.json"
     )
     design_root = (
-        project / "archives" / args.run_id / "paper_bridge")
+        deploy_project / "archives" / args.run_id / "paper_bridge")
     design_cmd = [
         "env", "LC_ALL=C", "LANG=C", "SCOLHKG_OFFLINE=1",
         "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
         f"OMP_NUM_THREADS={int(args.cpu)}",
         f"MKL_NUM_THREADS={int(args.cpu)}",
         f"OPENBLAS_NUM_THREADS={int(args.cpu)}",
+        *_execution_env(execution_snapshot),
         str(REMOTE_PYTHON),
-        "performance/materialize_external_paper_bridge_designs.py",
+        str(
+            code_project
+            / "performance/materialize_external_paper_bridge_designs.py"),
         "--manifest", str(manifest),
         "--archive", str(archive),
         "--out-dir", str(design_root),
@@ -79,7 +144,7 @@ def build_specs(args):
     specs = [{
         "description": "paper final legacy RZDT bridge proposals",
         "cmd": f"{shlex.join(design_cmd)} && echo DONE",
-        "cwd": str(project),
+        "cwd": str(code_project),
         "signature": f"KG_op/final_paper_bridge/{args.run_id}/design",
         "project": "KG-SYNTH",
         "vram": 0,
@@ -99,11 +164,11 @@ def build_specs(args):
             int(args.seed_start) + int(args.n_seeds),
         ):
             result_dir = (
-                project / "profiles" / args.run_id / target
+                deploy_project / "profiles" / args.run_id / target
                 / f"seed{seed:04d}"
             )
             checkpoint_dir = (
-                project / "checkpoints" / args.run_id / target
+                deploy_project / "checkpoints" / args.run_id / target
                 / f"seed{seed:04d}"
             )
             command = [
@@ -115,9 +180,12 @@ def build_specs(args):
                 "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
                 "SCOLHKG_TORCH_DETERMINISTIC=1",
                 "CUBLAS_WORKSPACE_CONFIG=:4096:8",
+                *_execution_env(execution_snapshot),
                 f"PYTHONPATH={BOTORCH_OVERLAY}",
                 str(SAAS_PYTHON),
-                "performance/benchmark_sota_fairness.py",
+                str(
+                    code_project
+                    / "performance/benchmark_sota_fairness.py"),
                 "--protocol", "shared_archive_n13",
                 "--method", "botorch_saasbo",
                 "--heldout", target,
@@ -140,7 +208,7 @@ def build_specs(args):
                 "description": (
                     f"paper final legacy bridge {target} seed={seed}"),
                 "cmd": f"{shlex.join(command)} && echo DONE",
-                "cwd": str(project),
+                "cwd": str(code_project),
                 "signature": (
                     f"KG_op/final_paper_bridge/{args.run_id}/"
                     f"{target}/seed{seed:04d}"
@@ -165,6 +233,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
     parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
+    parser.add_argument("--code-root", type=Path)
+    parser.add_argument(
+        "--require-frozen-snapshot",
+        action="store_true",
+    )
     parser.add_argument("--run-id", default=(
         "paper_final_legacy_bridge_d5_n13_s80_99_"
         f"{time.strftime('%Y%m%d_%H%M%S')}"))
@@ -205,7 +278,11 @@ def main():
         }, indent=2))
         return
     if args.sync_remote:
-        subprocess.run([str(SYNC)], cwd=ROOT, check=True)
+        if args.require_frozen_snapshot and args.code_root is None:
+            raise ValueError(
+                "--require-frozen-snapshot needs --code-root")
+        if args.code_root is None:
+            subprocess.run([str(SYNC)], cwd=ROOT, check=True)
     output = subprocess.check_output(
         [
             sys.executable,
@@ -245,6 +322,11 @@ def main():
             "metric_bridge": (
                 "new scalarized regret; legacy HV/IGD/CVR context only"),
             "direct_metric_equality_claim_allowed": False,
+            "execution_snapshot": (
+                _execution_snapshot(args)
+                if args.code_root is not None
+                else {"status": "unregistered"}
+            ),
         },
         "checkpoint_results_synced_locally": False,
     }
