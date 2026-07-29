@@ -150,6 +150,31 @@ class BoTorchAdapterTests(unittest.TestCase):
         self.assertFalse(shortlist[1]["target_oracle_used"])
         self.assertFalse(shortlist[1]["verification_samples_used"])
 
+    def test_botorch_can_skip_all_truth_metrics_after_freezing_decision(self):
+        config = BoTorchBaselineConfig(
+            N=4,
+            n0=4,
+            seed=19,
+            method="botorch_scbo",
+            raw_samples=8,
+            num_restarts=2,
+            maxiter=10,
+            ts_candidates=32,
+        )
+        optimizer = BoTorchBaseline(self._problem(), config)
+        with patch.object(
+            optimizer,
+            "_evaluate_recommendation",
+            side_effect=AssertionError("truth path must remain unreachable"),
+        ):
+            result = optimizer.run(evaluate_truth=False)
+        self.assertFalse(result["truth_metrics_evaluated"])
+        self.assertFalse(result["target_oracle_used"])
+        self.assertEqual(
+            result["truth_metrics_status"],
+            "skipped_before_independent_terminal_verification",
+        )
+
     def test_botorch_v9_freezes_three_policy_objective_challenger(self):
         problem = ScalarizedProblem(
             FactorShockStatePolicyRZDT1(d=5, L=100, sigma=0.04))

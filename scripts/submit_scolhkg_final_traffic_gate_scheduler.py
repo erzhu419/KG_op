@@ -1,0 +1,337 @@
+#!/usr/bin/env python3
+"""Submit the strict no-history external SUMO gate for the final method."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+import shlex
+import subprocess
+import sys
+import time
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SYNC = ROOT / "scripts/sync_scolhkg_scheduler_deploy.sh"
+DEFAULT_SCHEDULER = Path.home() / "mine_code/scheduleurm/skill/scheduler.py"
+DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
+REMOTE_PYTHON = Path(
+    "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python")
+BOTORCH_OVERLAY = Path(
+    "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310")
+SUMO_PKG = Path(
+    "/home/zhengliang01/scheduleurm_work/python_pkgs/eclipse_sumo_1_25")
+CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
+METHOD_LABEL = "PaperFinal-SourceProposal-SAAS"
+
+
+def _sumo_env(cpu):
+    return [
+        "env",
+        "LC_ALL=C",
+        "LANG=C",
+        "PYTHONUNBUFFERED=1",
+        "PYTHONDONTWRITEBYTECODE=1",
+        f"OMP_NUM_THREADS={int(cpu)}",
+        f"MKL_NUM_THREADS={int(cpu)}",
+        f"OPENBLAS_NUM_THREADS={int(cpu)}",
+        f"SUMO_PKG={SUMO_PKG}",
+        f"SUMO_HOME={SUMO_PKG / 'sumo'}",
+        (
+            f"PATH={SUMO_PKG / 'sumo/bin'}:/usr/local/sbin:"
+            "/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ),
+        (
+            f"LD_LIBRARY_PATH={SUMO_PKG / 'libsumo.libs'}:"
+            f"{SUMO_PKG / 'eclipse_sumo.libs'}"
+        ),
+        (
+            f"PYTHONPATH={BOTORCH_OVERLAY}:{SUMO_PKG}:"
+            f"{SUMO_PKG / 'sumo/tools'}"
+        ),
+    ]
+
+
+def build_specs(args):
+    deploy = Path(args.deploy)
+    project = deploy / "SC-OLH-KG"
+    gpr_code = deploy / "Final_Submission" / "GPR_KG_Code"
+    manifest = (
+        project / "performance/manifests/v18b_exactkg_mcdiag.json")
+    archive = (
+        project / "archives" / args.archive_run_id
+        / "QueueResourceControl"
+        / "heldout_QueueResourceControl.json"
+    )
+    design = (
+        project / "archives" / args.run_id / "traffic"
+        / "source_initial_designs.json"
+    )
+    design_cmd = [
+        *_sumo_env(args.cpu),
+        str(REMOTE_PYTHON),
+        "performance/materialize_external_traffic_design.py",
+        "--manifest", str(manifest),
+        "--archive", str(archive),
+        "--out", str(design),
+        "--source-d", str(args.source_d),
+        "--n0", str(args.n0),
+        "--seed-start", str(args.seed_start),
+        "--n-seeds", str(args.n_seeds),
+    ]
+    specs = [{
+        "description": "paper final external traffic source proposal",
+        "cmd": f"{shlex.join(design_cmd)} && echo DONE",
+        "cwd": str(project),
+        "signature": f"KG_op/final_traffic/{args.run_id}/design",
+        "project": "KG-SUMO",
+        "vram": 0,
+        "cpu": int(args.cpu),
+        "ram_mb": int(args.ram_mb),
+        "allowed_nodes": list(CPU_NODES),
+        "wait_for_files": [str(archive)],
+        "result_dir": str(design.parent),
+        "local_result_dir": str(design.parent),
+        "stage_excludes": ["checkpoints", "profiles", "results"],
+        "allow_duplicate": True,
+    }]
+    oos_paths = []
+    for seed in range(
+        int(args.seed_start),
+        int(args.seed_start) + int(args.n_seeds),
+    ):
+        partition = f"paper_final_external_v1_seed{seed:04d}"
+        run_dir = (
+            gpr_code / "results" / "ingolstadt21"
+            / f"PaperFinal_SourceProposal_SAAS_{partition}_seed{seed}"
+        )
+        checkpoint_dir = (
+            project / "checkpoints" / args.run_id / "traffic"
+            / f"seed{seed:04d}"
+        )
+        search_cmd = [
+            *_sumo_env(args.cpu),
+            "SCOLHKG_TORCH_DETERMINISTIC=1",
+            "CUBLAS_WORKSPACE_CONFIG=:4096:8",
+            str(REMOTE_PYTHON),
+            "performance/benchmark_traffic_final_contract.py",
+            "--initial-design-file", str(design),
+            "--output-dir", str(run_dir),
+            "--checkpoint-dir", str(checkpoint_dir),
+            "--seed", str(seed),
+            "--N", str(args.N),
+            "--n0", str(args.n0),
+            "--torch-device", "cpu",
+            "--torch-deterministic",
+            "--saas-parallel-threads-per-model",
+            str(max(1, int(args.cpu) // 2)),
+            "--resume",
+        ]
+        specs.append({
+            "description": f"paper final traffic SAAS seed={seed}",
+            "cmd": f"{shlex.join(search_cmd)} && echo DONE",
+            "cwd": str(project),
+            "signature": (
+                f"KG_op/final_traffic/{args.run_id}/search/seed{seed:04d}"
+            ),
+            "project": "KG-SUMO",
+            "vram": 0,
+            "cpu": int(args.cpu),
+            "ram_mb": int(args.ram_mb),
+            "allowed_nodes": list(CPU_NODES),
+            "wait_for_files": [str(design)],
+            "result_dir": str(run_dir),
+            "local_result_dir": str(run_dir),
+            "stage_excludes": ["checkpoints", "profiles", "results"],
+            "allow_duplicate": True,
+        })
+        oos_path = (
+            project / "profiles" / args.run_id / "traffic"
+            / f"seed{seed:04d}" / f"oos_R{int(args.R)}.json"
+        )
+        oos_paths.append(oos_path)
+        oos_cmd = [
+            *_sumo_env(args.cpu),
+            str(REMOTE_PYTHON),
+            "-m", "experiments.ingolstadt21.validate_oos_feasibility",
+            "--method", METHOD_LABEL,
+            "--partition", partition,
+            "--R", str(args.R),
+            "--seed-start", str(
+                int(args.verification_seed_start) + 1000 * seed),
+            "--seed-mode", "common",
+            "--source-indexes", "0,1,2",
+            "--max-points", "3",
+            "--dedupe", "none",
+            "--jobs", str(args.cpu),
+            "--backend", "libsumo",
+            "--progress-every", str(max(1, int(args.R) // 2)),
+            "--out", str(oos_path),
+            "--resume",
+        ]
+        specs.append({
+            "description": (
+                f"paper final traffic fresh OOS R={args.R} seed={seed}"),
+            "cmd": f"{shlex.join(oos_cmd)} && echo DONE",
+            "cwd": str(gpr_code),
+            "signature": (
+                f"KG_op/final_traffic/{args.run_id}/oos/seed{seed:04d}"
+            ),
+            "project": "KG-SUMO",
+            "vram": 0,
+            "cpu": int(args.cpu),
+            "ram_mb": int(args.ram_mb),
+            "allowed_nodes": list(CPU_NODES),
+            "wait_for_files": [str(run_dir / "summary.json")],
+            "result_dir": str(oos_path.parent),
+            "local_result_dir": str(oos_path.parent),
+            "stage_excludes": ["checkpoints", "profiles", "results"],
+            "allow_duplicate": True,
+        })
+
+    audit_path = (
+        project / "profiles" / args.run_id / "traffic"
+        / "external_traffic_audit.json"
+    )
+    analyze_cmd = [
+        "env", "LC_ALL=C", "LANG=C", "SCOLHKG_OFFLINE=1",
+        "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
+        str(REMOTE_PYTHON),
+        "performance/analyze_traffic_final_contract.py",
+        *map(str, oos_paths),
+        "--out", str(audit_path),
+        "--target-probability", "0.95",
+        "--familywise-delta", "0.05",
+    ]
+    specs.append({
+        "description": "paper final external traffic aggregate audit",
+        "cmd": f"{shlex.join(analyze_cmd)} && echo DONE",
+        "cwd": str(project),
+        "signature": f"KG_op/final_traffic/{args.run_id}/audit",
+        "project": "KG-SYNTH",
+        "vram": 0,
+        "cpu": 1,
+        "ram_mb": 4096,
+        "allowed_nodes": list(CPU_NODES),
+        "wait_for_files": [str(path) for path in oos_paths],
+        "result_dir": str(audit_path.parent),
+        "local_result_dir": str(audit_path.parent),
+        "stage_excludes": ["checkpoints", "profiles", "results"],
+        "allow_duplicate": True,
+    })
+    return specs
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
+    parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
+    parser.add_argument("--run-id", default=(
+        "paper_final_external_traffic_s80_84_R100_"
+        f"{time.strftime('%Y%m%d_%H%M%S')}"))
+    parser.add_argument(
+        "--archive-run-id",
+        default="transfer_source_informed_official_n20_s20_20260716",
+    )
+    parser.add_argument("--source-d", type=int, default=50)
+    parser.add_argument("--seed-start", type=int, default=80)
+    parser.add_argument("--n-seeds", type=int, default=5)
+    parser.add_argument("--N", type=int, default=13)
+    parser.add_argument("--n0", type=int, default=10)
+    parser.add_argument("--R", type=int, default=100)
+    parser.add_argument("--verification-seed-start", type=int, default=900000)
+    parser.add_argument("--cpu", type=int, default=12)
+    parser.add_argument("--ram-mb", type=int, default=24576)
+    parser.add_argument(
+        "--sync-remote",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+    )
+    parser.add_argument("--dispatch", action="store_true")
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+    specs = build_specs(args)
+    expected = 2 * int(args.n_seeds) + 2
+    if len(specs) != expected:
+        raise RuntimeError(f"built {len(specs)} tasks, expected {expected}")
+    signatures = [spec["signature"] for spec in specs]
+    if len(signatures) != len(set(signatures)):
+        raise RuntimeError("traffic gate signatures are not unique")
+    if args.dry_run:
+        print(json.dumps({
+            "run_id": args.run_id,
+            "task_count": len(specs),
+            "specs": specs,
+        }, indent=2))
+        return
+    if args.sync_remote:
+        subprocess.run([str(SYNC)], cwd=ROOT, check=True)
+    output = subprocess.check_output(
+        [
+            sys.executable,
+            str(args.scheduler),
+            "submit-jsonl",
+            "--stdin",
+            "--trusted",
+            "--json",
+            "--intent-label",
+            f"paper-final-traffic-{args.run_id}",
+        ],
+        input=json.dumps(specs),
+        text=True,
+    )
+    response = json.loads(output)
+    task_ids = [
+        row["id"] for row in response.get("submitted", [])
+        if row.get("id")
+    ]
+    registration = {
+        "schema_version": 1,
+        "run_id": args.run_id,
+        "submitted_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
+        "task_count": len(specs),
+        "task_ids": task_ids,
+        "contract": {
+            "source_domains": [
+                "FactorShockStatePolicyRZDT1",
+                "InventorySupplyChain",
+            ],
+            "excluded_nearest_source_analogue": "QueueResourceControl",
+            "source_calls": 384,
+            "target_domain": "Ingolstadt21Traffic",
+            "target_search_calls": int(args.N),
+            "target_verification_calls": int(3 * args.R),
+            "historical_traffic_anchor_used": False,
+            "target_labels_used_to_fit_proposal": False,
+            "target_oracle_used": False,
+            "backend": "canonical_saasbo_every_iteration",
+            "verifier": (
+                "fresh_seed_familywise_exact_binomial_shortlist_v1"),
+        },
+        "checkpoint_results_synced_locally": False,
+    }
+    registration_path = (
+        Path(args.deploy) / "SC-OLH-KG" / "profiles" / args.run_id
+        / "submission_manifest.json"
+    )
+    registration_path.parent.mkdir(parents=True, exist_ok=True)
+    registration_path.write_text(
+        json.dumps(registration, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    if args.dispatch and task_ids:
+        subprocess.run(
+            [
+                sys.executable,
+                str(args.scheduler),
+                "dispatch",
+                *sum((["--task-id", task_id] for task_id in task_ids), []),
+            ],
+            check=True,
+        )
+    print(json.dumps(registration, indent=2))
+
+
+if __name__ == "__main__":
+    main()

@@ -1697,6 +1697,7 @@ class BoTorchBaseline:
         self,
         *,
         freeze_terminal_shortlist=False,
+        evaluate_truth=True,
         terminal_probability_slack=0.05,
         terminal_require_provider=True,
         terminal_shortlist_mode="posterior_primary_safe_interior",
@@ -1749,7 +1750,15 @@ class BoTorchBaseline:
                 maximum_violation_probability=(
                     terminal_maximum_violation_probability),
             )
-        result = self._evaluate_recommendation(x_best)
+        if evaluate_truth:
+            result = self._evaluate_recommendation(x_best)
+        else:
+            result = {
+                "x_recommended": list(map(int, x_best)),
+                "truth_metrics_status": (
+                    "skipped_before_independent_terminal_verification"),
+                "target_oracle_used": False,
+            }
         runtime = botorch_runtime_fingerprint(self._torch_device)
         runtime["torch_device"] = str(
             self._last_models[0].train_inputs[0].device
@@ -1761,6 +1770,7 @@ class BoTorchBaseline:
             "frozen_terminal_shortlist": frozen_terminal_shortlist,
             "terminal_shortlist_frozen_before_truth_metrics": bool(
                 freeze_terminal_shortlist),
+            "truth_metrics_evaluated": bool(evaluate_truth),
             "total_time_sec": float(time.time() - t_start),
             "n_simulations": int(len(self.history)),
             "n_distinct_solutions": int(len(set(x for x, _ in self.history))),
