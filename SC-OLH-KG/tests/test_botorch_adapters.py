@@ -531,6 +531,43 @@ class BoTorchAdapterTests(unittest.TestCase):
         self.assertIn("eta_model=growing_iter_cost", line)
         self.assertGreater(projected_eta, 1.5 * naive_eta)
 
+    def test_saas_progress_eta_excludes_initial_design_and_counts_terminal_fit(
+        self,
+    ):
+        config = BoTorchBaselineConfig(
+            N=40,
+            n0=10,
+            seed=9,
+            method="botorch_saasbo",
+            progress_logging=True,
+        )
+        baseline = BoTorchBaseline(self._problem(), config)
+        baseline._progress_start_unit = 0
+        baseline._progress_timing = [
+            (current, 0.01 * current) for current in range(1, 11)
+        ] + [
+            (11, 825.0),
+            (12, 1663.3),
+            (13, 2350.0),
+        ]
+        baseline.history = [None] * 14
+        stream = io.StringIO()
+        with patch(
+            "baselines.botorch_adapters.time.time",
+            return_value=2967.4,
+        ):
+            with redirect_stdout(stream):
+                baseline._emit_progress(0.0)
+
+        line = stream.getvalue()
+        match = re.search(r"ETA ([0-9.]+)s", line)
+        self.assertIsNotNone(match)
+        projected_eta = float(match.group(1))
+        self.assertIn(
+            "eta_model=recent_adaptive_cost_plus_terminal", line)
+        self.assertGreater(projected_eta, 4.0 * 3600.0)
+        self.assertLess(projected_eta, 8.0 * 3600.0)
+
     def test_resumed_capped_saas_eta_excludes_one_off_rebuild(self):
         config = BoTorchBaselineConfig(
             N=397,

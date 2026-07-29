@@ -19,11 +19,14 @@ DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
 DEFAULT_PYTHON = (
     "/home/erzhu419/.venvs/scheduleurm-torch-bench/bin/python"
 )
+DEFAULT_CPU_PYTHON = (
+    "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python"
+)
 BOTORCH_OVERLAY = (
     "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310"
 )
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
-GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
+GPU_NODES = ("jtl110gpu", "jtl110gpu2", "jtl311linux", "node007")
 CUDA_METHODS = (
     "botorch_turbo",
     "botorch_scbo",
@@ -52,6 +55,9 @@ def build_specs(args):
         "gpu_ram_mb": 32768,
         "gpu_vram_mb": 8192,
         "gpu_vram_resource_family": "",
+        "cpu_python": DEFAULT_CPU_PYTHON,
+        "saas_device": "auto",
+        "saas_cpu_max_d": 10000,
         "source_run_id": "",
         "saas_refit_schedule": "every_iteration",
         "saas_refit_interval": 16,
@@ -91,6 +97,16 @@ def build_specs(args):
             for method in methods:
                 for offset in range(int(args.n_seeds)):
                     use_gpu = method in gpu_methods
+                    if method == "botorch_saasbo":
+                        saas_device = str(args.saas_device).strip().lower()
+                        if saas_device not in {"auto", "cpu", "cuda"}:
+                            raise ValueError(
+                                "saas-device must be auto, cpu, or cuda")
+                        if saas_device == "auto":
+                            use_gpu = (
+                                int(args.d) > int(args.saas_cpu_max_d))
+                        else:
+                            use_gpu = saas_device == "cuda"
                     task_cpu = (
                         int(args.gpu_cpu) if use_gpu else int(args.cpu))
                     task_ram_mb = (
@@ -98,6 +114,10 @@ def build_specs(args):
                         if use_gpu else int(args.ram_mb)
                     )
                     torch_device = "cuda" if use_gpu else "cpu"
+                    task_python = (
+                        str(args.python)
+                        if use_gpu else str(args.cpu_python)
+                    )
                     seed = int(args.seed_start) + offset
                     result_dir = (
                         profile_root / protocol / heldout / method
@@ -132,11 +152,14 @@ def build_specs(args):
                         f"OPENBLAS_NUM_THREADS={task_cpu}",
                     ]
                     if use_gpu:
-                        command.append(
-                            "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True")
+                        command.extend([
+                            "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
+                            "CUBLAS_WORKSPACE_CONFIG=:4096:8",
+                        ])
+                    command.append("SCOLHKG_TORCH_DETERMINISTIC=1")
                     command.extend([
                         f"PYTHONPATH={BOTORCH_OVERLAY}",
-                        str(args.python),
+                        task_python,
                         "performance/benchmark_sota_fairness.py",
                         "--protocol", protocol,
                         "--method", method,
@@ -151,6 +174,7 @@ def build_specs(args):
                         "--candidate-timeout-sec",
                         str(args.candidate_timeout_sec),
                         "--torch-device", torch_device,
+                        "--torch-deterministic",
                     ])
                     if method == "botorch_saasbo":
                         command.extend([
@@ -211,7 +235,7 @@ def build_specs(args):
                         if periodic_saas
                         else "canonical SOTA fairness"
                     )
-                    specs.append({
+                    spec = {
                         "description": (
                             f"{experiment_label} {protocol} {heldout} "
                             f"{method} seed={seed}"
@@ -244,7 +268,17 @@ def build_specs(args):
                         "local_result_dir": str(result_dir),
                         "stage_excludes": ["checkpoints", "profiles", "results"],
                         "allow_duplicate": True,
-                    })
+                    }
+                    if method == "botorch_saasbo" and not use_gpu:
+                        spec.update({
+                            "allow_cpu_training": True,
+                            "cpu_training_justification": (
+                                "Canonical SAAS through d=10000 has higher "
+                                "aggregate throughput on node001-node006 "
+                                "without changing NUTS or refit settings."
+                            ),
+                        })
+                    specs.append(spec)
     if bool(args.skip_existing_success):
         filtered = []
         for spec in specs:
@@ -274,6 +308,7 @@ def main():
     parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
     parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
     parser.add_argument("--python", default=DEFAULT_PYTHON)
+    parser.add_argument("--cpu-python", default=DEFAULT_CPU_PYTHON)
     parser.add_argument(
         "--manifest", type=Path,
         default=DEFAULT_DEPLOY /
@@ -326,6 +361,12 @@ def main():
     parser.add_argument("--gpu-cpu", type=int, default=12)
     parser.add_argument("--gpu-ram-mb", type=int, default=32768)
     parser.add_argument("--gpu-vram-mb", type=int, default=8192)
+    parser.add_argument(
+        "--saas-device",
+        choices=("auto", "cpu", "cuda"),
+        default="auto",
+    )
+    parser.add_argument("--saas-cpu-max-d", type=int, default=10000)
     parser.add_argument(
         "--gpu-vram-resource-family",
         default="",

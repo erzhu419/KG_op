@@ -91,10 +91,13 @@ def test_crossdim_backend_contracts_keep_backend_information_explicit(
     assert "--method botorch_saasbo" in saas["cmd"]
     assert "--target-budget 13" in saas["cmd"]
     assert "SCOLHKG_TORCH_DETERMINISTIC=1" in saas["cmd"]
-    assert "CUBLAS_WORKSPACE_CONFIG=:4096:8" in saas["cmd"]
+    assert "CUBLAS_WORKSPACE_CONFIG=:4096:8" not in saas["cmd"]
     assert "--torch-deterministic" in saas["cmd"]
-    assert saas["allowed_nodes"] == list(SUBMIT.GPU_NODES)
-    assert saas["vram"] == 2048
+    assert "--torch-device cpu" in saas["cmd"]
+    assert str(SUBMIT.REMOTE_PYTHON) in saas["cmd"]
+    assert saas["allowed_nodes"] == list(SUBMIT.CPU_NODES)
+    assert saas["vram"] == 0
+    assert saas["allow_cpu_training"] is True
     assert str(
         tmp_path / "SC-OLH-KG/performance/manifests/"
         "v18b_exactkg_mcdiag.json"
@@ -102,6 +105,31 @@ def test_crossdim_backend_contracts_keep_backend_information_explicit(
     assert str(SUBMIT.REMOTE_ROOT / "SC-OLH-KG/performance/manifests") not in (
         saas["cmd"])
     assert saas["result_dir"].startswith(str(tmp_path / "SC-OLH-KG"))
+
+
+def test_crossdim_auto_route_uses_cpu_through_d10000(tmp_path):
+    args = _args(tmp_path)
+    args.d = 10000
+    specs = SUBMIT.build_specs(args)
+    saas = next(
+        spec for spec in specs if "/saasbo/" in spec["signature"])
+    assert "--torch-device cpu" in saas["cmd"]
+    assert "CUBLAS_WORKSPACE_CONFIG=:4096:8" not in saas["cmd"]
+    assert saas["allowed_nodes"] == list(SUBMIT.CPU_NODES)
+    assert saas["vram"] == 0
+
+
+def test_crossdim_explicit_cuda_override_keeps_gpu_route(tmp_path):
+    args = _args(tmp_path)
+    args.d = 10000
+    args.saas_device = "cuda"
+    specs = SUBMIT.build_specs(args)
+    saas = next(
+        spec for spec in specs if "/saasbo/" in spec["signature"])
+    assert "--torch-device cuda" in saas["cmd"]
+    assert "CUBLAS_WORKSPACE_CONFIG=:4096:8" in saas["cmd"]
+    assert saas["allowed_nodes"] == list(SUBMIT.GPU_NODES)
+    assert saas["vram"] == 2048
 
 
 def test_crossdim_frozen_snapshot_separates_code_from_runtime_data(

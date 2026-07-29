@@ -38,8 +38,13 @@ def test_source_hvd_submitter_pairs_only_the_aleatoric_head(tmp_path):
     specs = build_specs(args)
     assert len(specs) == 4
     assert all(spec["allowed_nodes"] == [
-        "jtl110gpu", "jtl110gpu2", "node007"] for spec in specs)
+        "node001", "node002", "node003",
+        "node004", "node005", "node006",
+    ] for spec in specs)
     assert all(spec["cpu"] == 12 for spec in specs)
+    assert all(spec["vram"] == 0 for spec in specs)
+    assert all("--torch-device cpu" in spec["cmd"] for spec in specs)
+    assert all(spec["allow_cpu_training"] is True for spec in specs)
     assert all("--protocol shared_archive_hvd_n13" in spec["cmd"]
                for spec in specs)
     assert sum("--aleatoric-head-mode pooled" in spec["cmd"]

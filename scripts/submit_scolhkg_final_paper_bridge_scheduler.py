@@ -23,10 +23,39 @@ SAAS_PYTHON = Path(
 BOTORCH_OVERLAY = Path(
     "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310")
 CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
-GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
+GPU_NODES = ("jtl110gpu", "jtl110gpu2", "jtl311linux", "node007")
 TARGETS = ("PaperRZDT1", "PaperRZDT2", "PaperRZDT5_RR")
 SNAPSHOT_MARKER = ".scolhkg_execution_snapshot.json"
 METHOD_CONTRACT_ID = "or_transfer_frontend_saas_v1"
+
+
+def _saas_route(args):
+    mode = str(getattr(args, "saas_device", "auto")).strip().lower()
+    if mode not in {"auto", "cpu", "cuda"}:
+        raise ValueError("saas-device must be auto, cpu, or cuda")
+    if mode == "auto":
+        mode = (
+            "cpu"
+            if int(args.d) <= int(getattr(args, "saas_cpu_max_d", 10000))
+            else "cuda"
+        )
+    if mode == "cpu":
+        return {
+            "device": "cpu",
+            "python": REMOTE_PYTHON,
+            "cpu": int(args.cpu),
+            "ram_mb": int(args.ram_mb),
+            "vram_mb": 0,
+            "nodes": CPU_NODES,
+        }
+    return {
+        "device": "cuda",
+        "python": SAAS_PYTHON,
+        "cpu": int(args.gpu_cpu),
+        "ram_mb": int(args.gpu_ram_mb),
+        "vram_mb": int(args.vram_mb),
+        "nodes": GPU_NODES,
+    }
 
 
 def _read_json(path):
@@ -112,6 +141,7 @@ def build_specs(args):
         else deploy_project
     )
     execution_snapshot = _execution_snapshot(args)
+    saas_route = _saas_route(args)
     manifest = (
         code_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     archive = (
@@ -174,15 +204,21 @@ def build_specs(args):
             command = [
                 "env", "LC_ALL=C", "LANG=C", "SCOLHKG_OFFLINE=1",
                 "PYTHONUNBUFFERED=1", "PYTHONDONTWRITEBYTECODE=1",
-                f"OMP_NUM_THREADS={int(args.gpu_cpu)}",
-                f"MKL_NUM_THREADS={int(args.gpu_cpu)}",
-                f"OPENBLAS_NUM_THREADS={int(args.gpu_cpu)}",
-                "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
+                f"OMP_NUM_THREADS={saas_route['cpu']}",
+                f"MKL_NUM_THREADS={saas_route['cpu']}",
+                f"OPENBLAS_NUM_THREADS={saas_route['cpu']}",
                 "SCOLHKG_TORCH_DETERMINISTIC=1",
-                "CUBLAS_WORKSPACE_CONFIG=:4096:8",
                 *_execution_env(execution_snapshot),
+                *(
+                    [
+                        "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
+                        "CUBLAS_WORKSPACE_CONFIG=:4096:8",
+                    ]
+                    if saas_route["device"] == "cuda"
+                    else []
+                ),
                 f"PYTHONPATH={BOTORCH_OVERLAY}",
-                str(SAAS_PYTHON),
+                str(saas_route["python"]),
                 str(
                     code_project
                     / "performance/benchmark_sota_fairness.py"),
@@ -199,12 +235,12 @@ def build_specs(args):
                 "--d", str(args.d),
                 "--n0", str(args.n0),
                 "--candidate-timeout-sec", "3600",
-                "--torch-device", "cuda",
+                "--torch-device", saas_route["device"],
                 "--torch-deterministic",
                 "--saas-refit-schedule", "every_iteration",
                 *_terminal_flags(),
             ]
-            specs.append({
+            spec = {
                 "description": (
                     f"paper final legacy bridge {target} seed={seed}"),
                 "cmd": f"{shlex.join(command)} && echo DONE",
@@ -214,18 +250,31 @@ def build_specs(args):
                     f"{target}/seed{seed:04d}"
                 ),
                 "project": "KG-SYNTH",
-                "vram": int(args.vram_mb),
-                "cpu": int(args.gpu_cpu),
-                "ram_mb": int(args.gpu_ram_mb),
-                "allowed_nodes": list(GPU_NODES),
+                "vram": saas_route["vram_mb"],
+                "cpu": saas_route["cpu"],
+                "ram_mb": saas_route["ram_mb"],
+                "allowed_nodes": list(saas_route["nodes"]),
                 "wait_for_files": [str(design)],
                 "result_dir": str(result_dir),
                 "local_result_dir": str(result_dir),
                 "stage_excludes": ["checkpoints", "profiles", "results"],
                 "allow_duplicate": True,
                 "vram_resource_family": (
-                    f"KG-SYNTH/final-paper-bridge/{target}"),
-            })
+                    f"KG-SYNTH/final-paper-bridge/{target}"
+                    if saas_route["device"] == "cuda"
+                    else None
+                ),
+            }
+            if saas_route["device"] == "cpu":
+                spec.update({
+                    "allow_cpu_training": True,
+                    "cpu_training_justification": (
+                        "Canonical low-dimensional paper bridge SAAS has "
+                        "higher aggregate throughput on node001-node006 "
+                        "without changing NUTS or refit settings."
+                    ),
+                })
+            specs.append(spec)
     return specs
 
 
@@ -256,6 +305,12 @@ def main():
     parser.add_argument("--gpu-cpu", type=int, default=12)
     parser.add_argument("--gpu-ram-mb", type=int, default=24576)
     parser.add_argument("--vram-mb", type=int, default=2048)
+    parser.add_argument(
+        "--saas-device",
+        choices=("auto", "cpu", "cuda"),
+        default="auto",
+    )
+    parser.add_argument("--saas-cpu-max-d", type=int, default=10000)
     parser.add_argument(
         "--sync-remote",
         action=argparse.BooleanOptionalAction,

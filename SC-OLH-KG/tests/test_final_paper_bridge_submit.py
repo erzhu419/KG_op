@@ -12,7 +12,7 @@ from scripts.submit_scolhkg_final_paper_bridge_scheduler import (  # noqa: E402
 )
 
 
-def test_final_paper_bridge_is_final_contract_and_gpu_sharded(tmp_path):
+def test_final_paper_bridge_is_final_contract_and_cpu_sharded(tmp_path):
     args = SimpleNamespace(
         deploy=tmp_path,
         run_id="unit",
@@ -38,9 +38,11 @@ def test_final_paper_bridge_is_final_contract_and_gpu_sharded(tmp_path):
         "node004", "node005", "node006",
     ]
     assert all(spec["allowed_nodes"] == [
-        "jtl110gpu", "jtl110gpu2", "node007",
+        "node001", "node002", "node003",
+        "node004", "node005", "node006",
     ] for spec in runs)
-    assert all("jtl311linux" not in str(spec) for spec in specs)
+    assert all("--torch-device cpu" in spec["cmd"] for spec in runs)
+    assert all(spec["vram"] == 0 for spec in runs)
     assert all(
         "--offline-source-calls-override 384" in spec["cmd"]
         for spec in runs

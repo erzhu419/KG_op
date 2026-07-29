@@ -1644,27 +1644,46 @@ class BoTorchBaseline:
         if (
             self.config.method == "botorch_saasbo"
             and saas_schedule == "every_iteration"
-            and len(self._progress_timing) >= 12
         ):
+            # Initial-design simulations are nearly free in synthetic gates.
+            # Mixing them with NUTS refits creates a spurious positive slope
+            # and can inflate a four-hour run into a hundred-hour ETA.
+            adaptive_floor = max(
+                int(self.config.n0),
+                int(self._progress_start_unit),
+            )
             points = [
                 point for point in self._progress_timing
-                if point[0] >= 0.25 * current
+                if int(point[0]) >= adaptive_floor
             ]
-            if len(points) < 12:
-                points = self._progress_timing
+            adjacent_rates = []
+            for left, right in zip(points, points[1:]):
+                delta_units = int(right[0]) - int(left[0])
+                delta_sec = float(right[1]) - float(left[1])
+                if delta_units > 0 and delta_sec > 0:
+                    adjacent_rates.append(delta_sec / float(delta_units))
+            remaining_refits = float(max(0, total - current) + 1)
+            if adjacent_rates:
+                recent = sorted(
+                    adjacent_rates[-min(5, len(adjacent_rates)):])
+                recent_rate = recent[len(recent) // 2]
+                eta_sec = recent_rate * remaining_refits
+                eta_model = "recent_adaptive_cost_plus_terminal"
+
             stride = max(2, len(points) // 24)
-            rates = []
+            growth_rates = []
             for start in range(0, len(points) - stride, stride):
                 left = points[start]
                 right = points[min(len(points) - 1, start + stride)]
-                delta_units = right[0] - left[0]
-                delta_sec = right[1] - left[1]
+                delta_units = int(right[0]) - int(left[0])
+                delta_sec = float(right[1]) - float(left[1])
                 if delta_units > 0 and delta_sec > 0:
-                    rates.append((
+                    growth_rates.append((
                         (left[0] + right[0]) / 2.0,
                         delta_sec / float(delta_units),
                     ))
-            if len(rates) >= 4:
+            if len(points) >= 12 and len(growth_rates) >= 4:
+                rates = growth_rates
                 mean_x = sum(x for x, _ in rates) / len(rates)
                 mean_y = sum(y for _, y in rates) / len(rates)
                 variance_x = sum((x - mean_x) ** 2 for x, _ in rates)
@@ -1681,12 +1700,12 @@ class BoTorchBaseline:
                         slope,
                         2.0 * current_rate / max(1.0, float(current)),
                     )
-                    remaining = float(max(0, total - current))
+                    remaining = remaining_refits
                     eta_sec = (
                         current_rate * remaining
                         + 0.5 * slope * remaining * remaining
                     )
-                    eta_model = "growing_iter_cost"
+                    eta_model = "growing_iter_cost_plus_terminal"
         fidelity_label = (
             "botorch-canonical"
             if (

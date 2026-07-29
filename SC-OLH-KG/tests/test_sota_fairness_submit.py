@@ -32,8 +32,15 @@ def test_fairness_scheduler_builds_three_contracts_by_twenty_seeds():
     assert len(specs) == 3 * 3 * 3 * 20
     assert all(spec["require_node"] is None for spec in specs)
     assert all(spec["cpu"] == 12 for spec in specs)
-    assert all(spec["vram"] == 8192 for spec in specs)
-    assert all("--torch-device cuda" in spec["cmd"] for spec in specs)
+    saas = [
+        spec for spec in specs if "/botorch_saasbo/" in spec["signature"]]
+    other = [spec for spec in specs if spec not in saas]
+    assert all(spec["vram"] == 0 for spec in saas)
+    assert all("--torch-device cpu" in spec["cmd"] for spec in saas)
+    assert all(spec["allowed_nodes"] == list(submit.CPU_NODES)
+               for spec in saas)
+    assert all(spec["vram"] == 8192 for spec in other)
+    assert all("--torch-device cuda" in spec["cmd"] for spec in other)
     assert all("checkpoint" in spec["ckpt_dir"] for spec in specs)
     assert all("SCOLHKG_OFFLINE=1" in spec["cmd"] for spec in specs)
     assert all("botorch_saasbo" not in spec["description"] or
@@ -89,6 +96,7 @@ def test_long_saas_periodic_run_is_explicitly_labelled():
         "saas_refit_interval": 16,
         "saas_refit_growth_factor": 2.0,
         "saas_refit_max_history": 80,
+        "saas_device": "cuda",
     })()
 
     [spec] = submit.build_specs(parser_args)

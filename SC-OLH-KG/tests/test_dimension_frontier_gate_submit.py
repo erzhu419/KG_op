@@ -46,9 +46,22 @@ def test_frontier_gate_is_sharded_and_uses_correct_node_families(tmp_path):
         "node001", "node002", "node003",
         "node004", "node005", "node006",
     ] for spec in designs + proposal)
+    saas_d200 = [
+        spec for spec in saas if "/d200/" in spec["signature"]]
+    saas_d10000 = [
+        spec for spec in saas if "/d10000/" in spec["signature"]]
     assert all(spec["allowed_nodes"] == [
-        "jtl110gpu", "jtl110gpu2", "node007",
-    ] for spec in saas)
+        "node001", "node002", "node003",
+        "node004", "node005", "node006",
+    ] for spec in saas_d200)
+    assert all("--torch-device cpu" in spec["cmd"] for spec in saas_d200)
+    assert all(spec["vram"] == 0 for spec in saas_d200)
+    assert all(spec["allowed_nodes"] == [
+        "node001", "node002", "node003",
+        "node004", "node005", "node006",
+    ] for spec in saas_d10000)
+    assert all("--torch-device cpu" in spec["cmd"] for spec in saas_d10000)
+    assert all(spec["vram"] == 0 for spec in saas_d10000)
     assert all("--proposal-mode risk_objective_atlas" in spec["cmd"]
                for spec in designs)
     assert sum("--target-budget 13" in spec["cmd"] for spec in saas) == 4

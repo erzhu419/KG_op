@@ -16,11 +16,14 @@ ROOT = Path(__file__).resolve().parents[1]
 SYNC = ROOT / "scripts/sync_scolhkg_scheduler_deploy.sh"
 DEFAULT_SCHEDULER = Path.home() / "mine_code/scheduleurm/skill/scheduler.py"
 DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
+REMOTE_PYTHON = Path(
+    "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python")
 SAAS_PYTHON = Path(
     "/home/erzhu419/.venvs/scheduleurm-torch-bench/bin/python")
 BOTORCH_OVERLAY = Path(
     "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310")
-GPU_NODES = ("jtl110gpu", "jtl110gpu2", "node007")
+CPU_NODES = tuple(f"node{i:03d}" for i in range(1, 7))
+GPU_NODES = ("jtl110gpu", "jtl110gpu2", "jtl311linux", "node007")
 DOMAINS = (
     "FactorShockStatePolicyRZDT1",
     "InventorySupplyChain",
@@ -34,6 +37,31 @@ METHOD_CONTRACT_ID = "or_transfer_frontend_saas_hvd_causal_v1"
 def _parse_csv(value):
     return tuple(
         item.strip() for item in str(value).split(",") if item.strip())
+
+
+def _saas_route(args):
+    mode = str(getattr(args, "saas_device", "auto")).strip().lower()
+    if mode not in {"auto", "cpu", "cuda"}:
+        raise ValueError("saas-device must be auto, cpu, or cuda")
+    if mode == "auto":
+        mode = (
+            "cpu"
+            if int(args.d) <= int(getattr(args, "saas_cpu_max_d", 10000))
+            else "cuda"
+        )
+    if mode == "cpu":
+        return {
+            "device": "cpu",
+            "python": REMOTE_PYTHON,
+            "vram_mb": 0,
+            "nodes": CPU_NODES,
+        }
+    return {
+        "device": "cuda",
+        "python": SAAS_PYTHON,
+        "vram_mb": int(args.vram_mb),
+        "nodes": GPU_NODES,
+    }
 
 
 def _read_json(path):
@@ -164,6 +192,7 @@ def build_specs(args):
     manifest = (
         code_project / "performance/manifests/v18b_exactkg_mcdiag.json")
     execution_snapshot = _execution_snapshot(args)
+    saas_route = _saas_route(args)
     specs = []
     for mode in _parse_csv(args.modes):
         if mode not in MODES:
@@ -196,11 +225,17 @@ def build_specs(args):
                     f"MKL_NUM_THREADS={int(args.cpu)}",
                     f"OPENBLAS_NUM_THREADS={int(args.cpu)}",
                     *_execution_env(execution_snapshot),
-                    "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
+                    *(
+                        [
+                            "PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True",
+                            "CUBLAS_WORKSPACE_CONFIG=:4096:8",
+                        ]
+                        if saas_route["device"] == "cuda"
+                        else []
+                    ),
                     "SCOLHKG_TORCH_DETERMINISTIC=1",
-                    "CUBLAS_WORKSPACE_CONFIG=:4096:8",
                     f"PYTHONPATH={BOTORCH_OVERLAY}",
-                    str(SAAS_PYTHON),
+                    str(saas_route["python"]),
                     "performance/benchmark_sota_fairness.py",
                     "--protocol", "shared_archive_hvd_n13",
                     "--method", "botorch_saasbo",
@@ -219,12 +254,12 @@ def build_specs(args):
                     "--d", str(args.d),
                     "--n0", str(args.n0),
                     "--candidate-timeout-sec", "3600",
-                    "--torch-device", "cuda",
+                    "--torch-device", saas_route["device"],
                     "--torch-deterministic",
                     "--saas-refit-schedule", "every_iteration",
                     *_terminal_flags(),
                 ]
-                specs.append({
+                spec = {
                     "description": (
                         f"source HVD SAAS gate {mode} {heldout} "
                         f"seed={seed}"
@@ -236,10 +271,10 @@ def build_specs(args):
                         f"{mode}/{heldout}/seed{seed:04d}"
                     ),
                     "project": "KG-SYNTH",
-                    "vram": int(args.vram_mb),
+                    "vram": saas_route["vram_mb"],
                     "cpu": int(args.cpu),
                     "ram_mb": int(args.ram_mb),
-                    "allowed_nodes": list(GPU_NODES),
+                    "allowed_nodes": list(saas_route["nodes"]),
                     "result_dir": str(result_dir),
                     "local_result_dir": str(result_dir),
                     "wait_for_files": [str(archive), str(design)],
@@ -247,8 +282,22 @@ def build_specs(args):
                         "checkpoints", "profiles", "results"],
                     "allow_duplicate": True,
                     "vram_resource_family": (
-                        f"KG-SYNTH/source-hvd-saas/{heldout}"),
-                })
+                        f"KG-SYNTH/source-hvd-saas/{heldout}"
+                        if saas_route["device"] == "cuda"
+                        else None
+                    ),
+                }
+                if saas_route["device"] == "cpu":
+                    spec.update({
+                        "allow_cpu_training": True,
+                        "cpu_training_justification": (
+                            "Canonical SAAS through d=10000 has higher "
+                            "aggregate "
+                            "throughput on node001-node006 without changing "
+                            "the paired HVD experiment contract."
+                        ),
+                    })
+                specs.append(spec)
     return specs
 
 
@@ -294,6 +343,12 @@ def main():
     parser.add_argument("--cpu", type=int, default=12)
     parser.add_argument("--ram-mb", type=int, default=24576)
     parser.add_argument("--vram-mb", type=int, default=2048)
+    parser.add_argument(
+        "--saas-device",
+        choices=("auto", "cpu", "cuda"),
+        default="auto",
+    )
+    parser.add_argument("--saas-cpu-max-d", type=int, default=10000)
     parser.add_argument(
         "--sync-remote",
         action=argparse.BooleanOptionalAction,
