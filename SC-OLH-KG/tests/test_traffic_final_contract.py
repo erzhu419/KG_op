@@ -316,6 +316,51 @@ def test_traffic_aggregate_records_domain_blind_information_contract(
     assert contract["evaluation_outcomes_used_for_method_selection"] is False
 
 
+def test_traffic_reaudit_preserves_source_and_analysis_provenance(
+    tmp_path,
+    monkeypatch,
+):
+    source = {
+        "status": "frozen",
+        "repository_commit": "source-commit",
+        "method_contract_id": "source-contract",
+    }
+    paths = []
+    for seed in (80, 81):
+        path = tmp_path / f"seed{seed}.json"
+        path.write_text(json.dumps({
+            "execution_provenance": source,
+            "candidates": [
+                _candidate(0, 99, seed=seed),
+                _candidate(1, 100, seed=seed),
+                _candidate(2, 100, seed=seed),
+            ],
+        }), encoding="utf-8")
+        paths.append(path)
+    monkeypatch.setenv("SCOLHKG_EXECUTION_PROVENANCE_REQUIRED", "1")
+    monkeypatch.setenv("SCOLHKG_EXECUTION_COMMIT", "a" * 40)
+    monkeypatch.setenv("SCOLHKG_SCOLHKG_TREE", "b" * 40)
+    monkeypatch.setenv("SCOLHKG_PROOF_TREE", "c" * 40)
+    monkeypatch.setenv("SCOLHKG_SCRIPTS_TREE", "d" * 40)
+    monkeypatch.setenv("SCOLHKG_LEGACY_TRAFFIC_TREE", "e" * 40)
+    monkeypatch.setenv(
+        "SCOLHKG_TRAFFIC_DECISION_SPACE_BLOB",
+        "f" * 40,
+    )
+    monkeypatch.setenv("SCOLHKG_TRAFFIC_BASELINE_BLOB", "1" * 40)
+    monkeypatch.setenv("SCOLHKG_METHOD_CONTRACT_ID", "analysis-contract")
+    monkeypatch.setenv("SCOLHKG_THEORY_CONTRACT_ID", "theory-contract")
+    monkeypatch.setenv("SCOLHKG_CODE_SNAPSHOT_ROOT", str(tmp_path))
+
+    payload = analyze(paths)
+
+    assert payload["source_execution_provenance"] == source
+    assert payload["execution_provenance"]["repository_commit"] == "a" * 40
+    assert payload["execution_provenance"]["method_contract_id"] == (
+        "analysis-contract"
+    )
+
+
 def test_confirmatory_traffic_requires_a_disjoint_seed_split(tmp_path):
     path = tmp_path / "seed100.json"
     path.write_text(json.dumps({

@@ -27,6 +27,17 @@ def _frontier_payload(mode, budget):
             "historical_target_anchor_used": False,
             "evidence_phase": "development_gate",
         },
+        "source_execution_provenance": {
+            "status": "frozen",
+            "repository_commit": (
+                "7f796cd6989c76051f3a30c135f848de04a0cc84"
+            ),
+            "method_contract_id": "external_cpu_frontend_budget_frontier_v1",
+        },
+        "execution_provenance": {
+            "status": "frozen",
+            "repository_commit": "analysis-commit",
+        },
     }
 
 

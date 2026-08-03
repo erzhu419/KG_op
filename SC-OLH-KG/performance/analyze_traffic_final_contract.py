@@ -259,6 +259,11 @@ def analyze(
         },
         "rows": sorted(rows, key=lambda row: row["run_seed"]),
     }
+    if provenances[0] is not None:
+        # Re-auditing an immutable run may use a newer analysis script.  Keep
+        # the producer snapshot separate from the analysis provenance added
+        # below so a metadata-only repair cannot masquerade as a new run.
+        payload["source_execution_provenance"] = provenances[0]
     attach_execution_provenance(payload)
     return payload
 

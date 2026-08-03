@@ -87,6 +87,20 @@ def _validate_frontier_cell(mode, budget, payload):
         information.get("evidence_phase") == "development_gate",
         "frontier evidence phase drifted",
     )
+    source_execution = payload.get("source_execution_provenance", {})
+    _require(
+        source_execution.get("status") == "frozen"
+        and source_execution.get("repository_commit")
+        == "7f796cd6989c76051f3a30c135f848de04a0cc84"
+        and source_execution.get("method_contract_id")
+        == "external_cpu_frontend_budget_frontier_v1",
+        "frontier source execution provenance drifted",
+    )
+    analysis_execution = payload.get("execution_provenance", {})
+    _require(
+        analysis_execution.get("status") == "frozen",
+        "frontier analysis provenance is not frozen",
+    )
     return {
         "source_selection_mode": mode,
         "target_search_calls": budget,
@@ -109,6 +123,10 @@ def _validate_frontier_cell(mode, budget, payload):
         ),
         "source_plus_target_total_calls_per_run": int(
             payload.get("source_plus_target_total_calls_per_run", 0)
+        ),
+        "source_execution_commit": source_execution["repository_commit"],
+        "analysis_execution_commit": analysis_execution.get(
+            "repository_commit"
         ),
     }
 
