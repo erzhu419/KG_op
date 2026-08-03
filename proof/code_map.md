@@ -261,6 +261,9 @@ instead of presenting additive as the main mathematical object.
    ranking-and-selection; the new `two_stage_decision` result block audits this
    implementation contract without pretending the full run is exact KG.
 5. The traffic encoder/log parser, SUMO trajectory logger, schema-row
-   contract, and finite traffic-risk Lean model are implemented.  The remaining
-   work is to generate the server-side fresh-seed CSV artifact and include its
-   encoded table in the paper package.
+   contract, and finite traffic-risk Lean model are implemented. The
+   strict-no-history fresh-seed study is also complete, but it failed the
+   preregistered external-validity gate. The compact disposition artifact
+   therefore forbids a positive SUMO transfer claim; the Lean traffic model is
+   a conditional semantic bridge, not evidence that the frozen atlas covers
+   this held-out traffic domain.

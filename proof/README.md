@@ -896,26 +896,30 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
      cardinality misses some nonempty target feasible set, so unconditional
      cross-domain finite-budget coverage is impossible.
 
-Remaining work is empirical/binding and assumption validation:
+Remaining limitations and assumption-validation obligations are:
 
 1. Validate or conservatively upper-bound the source-task exponential-moment
    slack used by the proved finite PAC-Bayes radius; sharp domain-specific
    constants are empirical/model assumptions, not free theorems.
-2. Generate and archive the real fresh-seed trajectory CSV logs with the SUMO
-   logger now implemented in `sumo_sim.py`.
-3. Separate model-based certificate nonvacuity from independent deployment
-   certification. The internal posterior theory certificate remained empty in
-   the earlier 60-run V51 audit, but V64's frozen independent 80/96
-   noncentral-t protocol certified all 60 fresh deployments with zero false
-   certificates. Paper tables must continue to report both quantities rather
-   than using terminal replication to conceal a vacuous model certificate.
-4. Freeze the final feature-map numeric constants using source-only held-out
-   episodes before target evaluation.
-5. Validate the two-antithetic-sample exact-MC schedule and shortlist coverage
-   separately. The numerical path is an estimator with the proved
-   `epsilon_shortlist + 2 eta_MC` bound, not an exact integral evaluation.
-6. If the final manuscript chooses a less conservative traffic feature map
-   than the current ingolstadt21 cap, add that sharper numeric cap.
+2. The strict no-history fresh-seed SUMO study has been executed and audited.
+   It failed the preregistered five-seed development gate: neither V1 nor V2
+   produced a certified seed. A separate posthoc diagnostic evaluated a frozen
+   target-label-free library of 111 policies with 200 fresh replications per
+   policy; no policy reached empirical feasibility probability `0.95`, and no
+   policy was familywise certified. Those posthoc outcomes did not select or
+   modify the method. External traffic validity is therefore a disclosed
+   failure, not missing data or positive evidence.
+3. Keep model-based certificate nonvacuity separate from independent
+   deployment certification. The final V69 verifier certified all 60 frozen
+   d=1000 deployments with zero false certificates, but this does not turn an
+   empty internal posterior certificate into a nonempty one. Both quantities
+   must remain separately reported.
+4. The final feature map and numeric constants are frozen by the immutable
+   execution snapshots. Any new traffic coordinate or less conservative cap
+   is a new method version and requires a new preregistered external study.
+5. Exact-MC remains a formally bounded backend ablation. The frozen headline
+   uses canonical SAASBO, so validating a two-antithetic-sample KG estimator is
+   not a release obligation for the structural-front-end claim.
 
 The observed-terminal behavior repair itself is now revalidated: all 60 paired
 runs completed, retained `60/60` true-feasible recommendations and zero

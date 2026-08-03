@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "immutable_final_replays_registered_external_gates_in_progress",
+  "status": "immutable_final_replays_complete_external_validity_failed",
   "contract_id": "or_transfer_frontend_saas_v1",
   "primary_claim": "A source-only, target-label-invariant structural proposal raises heldout feasible-basin coverage in a dimension-equivariant policy coordinate.",
   "novel_frontend": {
@@ -62,7 +62,8 @@
     "saasbo": "standard backend, not claimed as novel",
     "manifold_and_transformer": "background representation ablations",
     "orthogonality_sparsity_additivity": "hypothesis-class ablations without current coequal causal support",
-    "cumulative_hvd": "optional risk-calibration diagnostic, not part of the primary optimizer; the corrected 20-seed provider-coordinate gate improved variance RMSE and shape correlation in every domain but did not improve feasibility or regret and increased verification cost in Inventory and Queue"
+    "cumulative_hvd": "optional risk-calibration diagnostic, not part of the primary optimizer; the corrected 20-seed provider-coordinate gate improved variance RMSE and shape correlation in every domain but did not improve feasibility or regret and increased verification cost in Inventory and Queue",
+    "external_traffic": "strict no-history SUMO external validity failed its development gate; no positive traffic generalization claim is allowed"
   },
   "registered_stress_tests": [
     "domain-blind proposal without heldout task-family identifier",
@@ -178,6 +179,8 @@
       "final_decision": "demote_to_optional_risk_diagnostic"
     },
     "external_validity_contract": {
+      "status": "failed_not_promoted",
+      "disposition_artifact": "paper_artifacts/external_traffic/strict_no_history_disposition_v1.json",
       "main_track": "descriptor_conditional_external_holdout",
       "main_source_selection": "observable task descriptor before target outcomes",
       "main_required_seed_count_after_gate": 20,
@@ -185,13 +188,40 @@
       "negative_control_seed_count": 5,
       "target_labels_used_to_fit_proposal": false,
       "target_oracle_used": false,
-      "historical_target_anchor_used": false
+      "historical_target_anchor_used": false,
+      "confirmatory_external_traffic_evidence_available": false,
+      "posthoc_universal_library_diagnostic": {
+        "run_id": "traffic_universal_library_posthoc_68be50c_R200_s1200000_v1",
+        "library_size": 111,
+        "fresh_seed_replications_per_candidate": 200,
+        "point_feasible_candidate_count": 0,
+        "familywise_certified_candidate_count": 0,
+        "admissible_for_method_selection": false,
+        "admissible_for_confirmatory_claim": false
+      }
+    },
+    "final_dimension_budget_evidence": {
+      "artifact": "paper_artifacts/final_dimension_budget_evidence_v1.json",
+      "contract_id": "stratified_final_dimension_budget_evidence_v1",
+      "primary_dimension": 1000,
+      "primary_seed_count": 20,
+      "extreme_dimension": 10000,
+      "extreme_seed_count": 10,
+      "d200_role": "descriptive_only"
+    },
+    "final_evidence_readiness": {
+      "artifact": "paper_artifacts/paper_submission_readiness_v1.json",
+      "registry_status_overlay": "paper_artifacts/experiment_registry_status_overlay_v1.json",
+      "status": "blocked_by_external_validity",
+      "non_external_failure_count": 0,
+      "manuscript_generation_performed": false
     },
     "artifact_release_contract": {
       "release_contract_id": "or_submission_evidence_release_v2",
       "compact_result_format": "result.json only",
       "runtime_checkpoints_or_model_weights_included": false,
-      "search_convergence_contract_id": "post_run_search_convergence_v1",
+      "search_convergence_contract_id": "post_run_search_convergence_distributed_v1",
+      "search_convergence_source_contract_id": "post_run_search_convergence_v1",
       "search_convergence_excludes_verification_samples": true,
       "search_convergence_exports_policy_vectors": false,
       "search_convergence_truth_timing": "post_run_only",

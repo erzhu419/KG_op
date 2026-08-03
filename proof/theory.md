@@ -1172,10 +1172,13 @@ head executes the literal V51 fallback.
    exposed 49 mean/HVD product experts and was cancelled as a runtime reference,
    not reported as evidence. The next gate uses nested factorized RQMC and
    reports both score fidelity and selector L1 discrepancy.
-6. The traffic trajectory encoder and SUMO logger exist, but the final table
-   still requires real fresh-seed trajectory CSV and out-of-sample replication
-   certification. Missing logs must remain `missing_data`, never synthetic
-   evidence.
+6. The strict no-history SUMO trajectory path and fresh out-of-sample
+   replication study are complete, but the transfer claim failed its
+   preregistered development gate. V1 and V2 certified no development seed.
+   A posthoc frozen-library certifiability audit found no policy with empirical
+   feasibility probability at least `0.95`; it is diagnostic only and cannot
+   alter the method. The external-validity claim is therefore rejected rather
+   than reported as `missing_data` or positive evidence.
 7. The legacy TCB-V2--V5 gates are historical negative results: their formal
    envelopes were sound but empirically vacuous or inaccurate. They are not
    part of promoted V51 and should move to an appendix failure analysis rather

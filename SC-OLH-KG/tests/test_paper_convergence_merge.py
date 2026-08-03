@@ -70,6 +70,12 @@ def test_distributed_convergence_requires_exact_master_receipt_coverage(
 
     assert manifest["status"] == "complete"
     assert manifest["result_count"] == 2
+    assert manifest["completed_trace_count"] == 2
+    assert manifest["method_identities"] == ["method"]
+    expected_receipt = hashlib.sha256(json.dumps(
+        ["a" * 64, "b" * 64], separators=(",", ":")
+    ).encode("utf-8")).hexdigest()
+    assert manifest["result_receipts_sha256"] == expected_receipt
     assert manifest["trace_row_count"] == 2
     assert [int(row["seed"]) for row in rows] == [80, 81]
     assert manifest["policy_vectors_exported"] is False

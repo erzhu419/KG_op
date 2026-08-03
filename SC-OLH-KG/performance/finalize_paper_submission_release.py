@@ -195,6 +195,93 @@ def _hvd_release_role(hvd_causal_gate):
     return "mechanistic_negative_control_and_certification_ablation"
 
 
+def _convergence_contract_is_valid(convergence):
+    contract_id = convergence.get("contract_id")
+    if contract_id == "post_run_search_convergence_v1":
+        return True
+    return bool(
+        contract_id == "post_run_search_convergence_distributed_v1"
+        and convergence.get("source_contract_id")
+        == "post_run_search_convergence_v1"
+    )
+
+
+def _dimension_evidence_summary(dimension_frontier):
+    if dimension_frontier.get("contract_id") == (
+            "stratified_final_dimension_budget_evidence_v1"):
+        headline_dimensions = {
+            int(value)
+            for value in dimension_frontier.get("headline_dimensions", ())
+        }
+        seed_counts = {
+            int(key): int(value)
+            for key, value in dimension_frontier.get(
+                "headline_seed_counts", {}).items()
+        }
+        cells = dimension_frontier.get("cells", {})
+        release_cells = [
+            row for row in cells.values()
+            if int(row.get("dimension", -1)) in headline_dimensions
+        ]
+        complete = bool(
+            dimension_frontier.get("status") == "complete"
+            and headline_dimensions == {1000, 10000}
+            and seed_counts.get(1000) == 20
+            and seed_counts.get(10000) == 10
+            and int(dimension_frontier.get("release_cell_count", -1))
+            == len(release_cells) == 6
+            and not dimension_frontier.get("failures")
+            and not dimension_frontier.get("missing_keys")
+            and not dimension_frontier.get("unexpected_keys")
+            and not dimension_frontier.get("duplicate_keys")
+            and dimension_frontier.get(
+                "all_release_rows_ok") is True
+            and dimension_frontier.get(
+                "all_release_rows_false_certificate_free") is True
+            and dimension_frontier.get(
+                "all_release_rows_frozen") is True
+            and all(
+                row.get("all_rows_ok") is True
+                and int(row.get("false_certificate_count", -1)) == 0
+                and row.get("frozen_execution_provenance_pass") is True
+                for row in release_cells
+            )
+        )
+        return {
+            "complete": complete,
+            "contract_id": dimension_frontier["contract_id"],
+            "dimensions": sorted(headline_dimensions),
+            "seed_counts": {
+                str(key): seed_counts[key] for key in sorted(seed_counts)
+            },
+            "release_cell_count": len(release_cells),
+            "d200_role": "descriptive_only",
+        }
+
+    expected = dimension_frontier.get("expected", {})
+    gates = list(dimension_frontier.get("gates", {}).values())
+    complete = bool(
+        dimension_frontier.get("status") == "complete"
+        and set(expected.get("dimensions", ())) >= {200, 1000}
+        and set(expected.get("budgets", ())) >= {10, 20, 40, 80}
+        and len(expected.get("seeds", ())) >= 20
+        and gates
+        and all(
+            gate.get("all_rows_ok") is True
+            and gate.get("false_certification_free") is True
+            for gate in gates
+        )
+    )
+    return {
+        "complete": complete,
+        "contract_id": "legacy_uniform_dimension_budget_frontier",
+        "dimensions": list(expected.get("dimensions", ())),
+        "budgets": list(expected.get("budgets", ())),
+        "seed_count": len(expected.get("seeds", ())),
+        "release_cell_count": len(gates),
+    }
+
+
 def validate_release_inputs(
     method_contract,
     registry,
@@ -288,10 +375,23 @@ def validate_release_inputs(
         "one or more registered experiment tracks are incomplete or failed",
         failures,
     )
+    explicit_required_track_audits = [
+        row for row in audit.get("track_audits", ())
+        if row.get("release_required") is True
+    ]
+    required_track_audits = (
+        explicit_required_track_audits
+        if explicit_required_track_audits
+        else list(audit.get("track_audits", ()))
+    )
     _require(
-        all(row.get("status") == "pass"
-            for row in audit.get("track_audits", ())),
-        "one or more track audits failed",
+        len(required_track_audits)
+        == int(audit.get(
+            "release_required_track_count", len(required_track_audits)))
+        and bool(required_track_audits)
+        and all(row.get("status") == "pass"
+                for row in required_track_audits),
+        "one or more release-required track audits failed",
         failures,
     )
     _require(
@@ -299,10 +399,24 @@ def validate_release_inputs(
         "paired statistics are incomplete",
         failures,
     )
+    explicit_required_comparison_audits = [
+        row for row in statistics.get("comparison_audits", ())
+        if row.get("release_required") is True
+    ]
+    required_comparison_audits = (
+        explicit_required_comparison_audits
+        if explicit_required_comparison_audits
+        else list(statistics.get("comparison_audits", ()))
+    )
     _require(
-        all(row.get("status") == "pass"
-            for row in statistics.get("comparison_audits", ())),
-        "one or more preregistered comparisons are incomplete",
+        len(required_comparison_audits)
+        == int(statistics.get(
+            "release_required_comparison_count",
+            len(required_comparison_audits)))
+        and bool(required_comparison_audits)
+        and all(row.get("status") == "pass"
+                for row in required_comparison_audits),
+        "one or more release-required comparisons are incomplete",
         failures,
     )
     registered_family_ids = {
@@ -355,8 +469,7 @@ def validate_release_inputs(
         failures,
     )
     _require(
-        convergence.get("contract_id")
-        == "post_run_search_convergence_v1"
+        _convergence_contract_is_valid(convergence)
         and convergence.get("status") == "complete",
         "final search convergence artifact is incomplete",
         failures,
@@ -679,38 +792,34 @@ def validate_release_inputs(
         "uniform total-cost comparison uses different verifiers",
         failures,
     )
-    hvd_gate = hvd_causal_gate.get("gate", {})
     try:
         _hvd_release_role(hvd_causal_gate)
+        hvd_summary = _hvd_gate_summary(hvd_causal_gate)
         hvd_decision_consistent = True
     except ValueError:
+        hvd_summary = {}
         hvd_decision_consistent = False
+    hvd_computed = hvd_summary.get("computed_gate")
+    hvd_safety_ok = (
+        hvd_computed.get(
+            "false_certification_noninferior_in_all_domains") is True
+        if hvd_computed is not None
+        else hvd_causal_gate.get("gate", {}).get(
+            "false_certification_not_harmed") is True
+    )
     _require(
-        int(hvd_gate.get("complete_pair_count", 0)) == 60
-        and hvd_gate.get("all_expected_pairs_present") is True
-        and hvd_gate.get("all_rows_paired") is True
-        and hvd_gate.get("false_certification_not_harmed") is True
+        int(hvd_summary.get("complete_pair_count", 0)) == 60
+        and hvd_safety_ok
         and hvd_decision_consistent,
         "HVD causal gate is incomplete, unsafe, or inconsistent with the "
         "preregistered all-domain decision rule",
         failures,
     )
-    expected_frontier = dimension_frontier.get("expected", {})
-    frontier_gates = list(
-        dimension_frontier.get("gates", {}).values())
+    dimension_summary = _dimension_evidence_summary(dimension_frontier)
     _require(
-        dimension_frontier.get("status") == "complete"
-        and set(expected_frontier.get("dimensions", ())) >= {200, 1000}
-        and set(expected_frontier.get("budgets", ())) >= {10, 20, 40, 80}
-        and len(expected_frontier.get("seeds", ())) >= 20
-        and bool(frontier_gates)
-        and all(
-            gate.get("all_rows_ok") is True
-            and gate.get("false_certification_free") is True
-            for gate in frontier_gates
-        ),
-        "dimension/budget frontier lacks the complete 20-seed registered "
-        "matrix",
+        dimension_summary["complete"],
+        "dimension/budget evidence is incomplete or violates its registered "
+        "stratified design",
         failures,
     )
     output_rows = list(artifact_manifest.get("outputs", ()))
@@ -889,6 +998,7 @@ def build_release(
             "paper release validation failed:\n- " + "\n- ".join(failures))
     hvd_release_role = _hvd_release_role(hvd_causal_gate)
     hvd_gate_summary = _hvd_gate_summary(hvd_causal_gate)
+    dimension_summary = _dimension_evidence_summary(dimension_frontier)
     traffic_execution = traffic["execution_provenance"]
     paths = {
         "method_contract": Path(method_contract_path),
@@ -1033,12 +1143,7 @@ def build_release(
             "numeric_gate_recomputed": (
                 hvd_gate_summary["computed_gate"] is not None),
         },
-        "dimension_budget_frontier": {
-            "dimensions": dimension_frontier["expected"]["dimensions"],
-            "budgets": dimension_frontier["expected"]["budgets"],
-            "seed_count": len(
-                dimension_frontier["expected"]["seeds"]),
-        },
+        "dimension_budget_frontier": dimension_summary,
         "rendered_artifact_count": len(
             artifact_manifest["outputs"]),
         "artifact_sha256": {

@@ -129,6 +129,10 @@ def merge_convergence_shards(
         str(row["domain"]),
         int(row["seed"]),
     ))
+    result_receipts_sha256 = hashlib.sha256(json.dumps(
+        sorted(observed_shas),
+        separators=(",", ":"),
+    ).encode("utf-8")).hexdigest()
     manifest = {
         "schema_version": 1,
         "contract_id": MERGED_CONTRACT_ID,
@@ -136,6 +140,11 @@ def merge_convergence_shards(
         "status": "complete",
         "track_id": str(track_id),
         "result_count": len(master_records),
+        "completed_trace_count": len(validations),
+        "method_identities": sorted({
+            str(row["method_identity"]) for row in validations
+        }),
+        "result_receipts_sha256": result_receipts_sha256,
         "trace_row_count": len(rows),
         "expected_trace_row_count": expected_rows,
         "target_truth_used_post_run_only": True,
@@ -163,7 +172,8 @@ def _write_csv(path, rows):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
     with temporary.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=CSV_FIELDS)
+        writer = csv.DictWriter(
+            handle, fieldnames=CSV_FIELDS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     temporary.replace(path)
