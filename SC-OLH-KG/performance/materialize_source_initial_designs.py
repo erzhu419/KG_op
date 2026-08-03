@@ -32,6 +32,7 @@ from performance.paper_method_contract import (  # noqa: E402
     FORBIDDEN_TARGET_INFORMATION,
     FRONTEND_CONTRACT_ID,
     FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID,
+    FRONTEND_MONOTONE_ENVELOPE_CHALLENGER_ID,
     validate_frozen_proposal_payload,
 )
 from performance.structural_ablation import (  # noqa: E402
@@ -68,6 +69,7 @@ def materialize_source_designs(
     proposal_component_mode="combined",
     source_design_mode=None,
     protect_lower_envelope_sentinel=False,
+    protect_source_monotone_envelope=False,
 ):
     """Build designs from the same frozen, oracle-free source observations.
 
@@ -106,13 +108,25 @@ def materialize_source_designs(
             "or source_templates_only")
     protect_lower_envelope_sentinel = bool(
         protect_lower_envelope_sentinel)
-    if protect_lower_envelope_sentinel and not (
+    protect_source_monotone_envelope = bool(
+        protect_source_monotone_envelope)
+    if (
+        protect_lower_envelope_sentinel
+        and protect_source_monotone_envelope
+    ):
+        raise ValueError(
+            "the V2 lower-envelope and V3 source-monotone interventions "
+            "are mutually exclusive")
+    if (
+        protect_lower_envelope_sentinel
+        or protect_source_monotone_envelope
+    ) and not (
         proposal_mode == "risk_objective_atlas"
         and proposal_component_mode == "combined"
     ):
         raise ValueError(
-            "the lower-envelope sentinel is defined only for the combined "
-            "risk_objective_atlas")
+            "front-end envelope interventions are defined only for the "
+            "combined risk_objective_atlas")
     source_config = dict(target_config)
     archive = None
     archive_fingerprint = None
@@ -172,6 +186,8 @@ def materialize_source_designs(
                     rng=rng,
                     protect_lower_envelope_sentinel=(
                         protect_lower_envelope_sentinel),
+                    protect_source_monotone_envelope=(
+                        protect_source_monotone_envelope),
                 )
             )
         elif proposal_mode == "risk_coordinate_atlas":
@@ -230,11 +246,17 @@ def materialize_source_designs(
         "target_oracle_used": False,
         "universal_lower_envelope_sentinel": bool(
             protect_lower_envelope_sentinel),
+        "source_monotone_envelope": bool(
+            protect_source_monotone_envelope),
         "paper_frontend_contract_id": (
             (
-                FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID
-                if protect_lower_envelope_sentinel
-                else FRONTEND_CONTRACT_ID
+                FRONTEND_MONOTONE_ENVELOPE_CHALLENGER_ID
+                if protect_source_monotone_envelope
+                else (
+                    FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID
+                    if protect_lower_envelope_sentinel
+                    else FRONTEND_CONTRACT_ID
+                )
             )
             if (
                 proposal_mode == "risk_objective_atlas"
@@ -306,6 +328,10 @@ def main():
         "--protect-lower-envelope-sentinel",
         action="store_true",
     )
+    parser.add_argument(
+        "--protect-source-monotone-envelope",
+        action="store_true",
+    )
     args = parser.parse_args()
     payload = materialize_source_designs(
         args.manifest,
@@ -323,6 +349,8 @@ def main():
         source_design_mode=args.source_design_mode,
         protect_lower_envelope_sentinel=(
             args.protect_lower_envelope_sentinel),
+        protect_source_monotone_envelope=(
+            args.protect_source_monotone_envelope),
     )
     print(json.dumps({
         "status": "ok",

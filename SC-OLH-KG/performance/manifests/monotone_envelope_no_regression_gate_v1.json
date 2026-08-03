@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "gate_id": "source_monotone_envelope_no_regression_v1",
+  "status": "preregistered_before_paired_target_replay",
+  "baseline_frontend": "lodo_low_frequency_risk_objective_atlas_v1",
+  "challenger_frontend": "lodo_low_frequency_risk_objective_atlas_dc_envelope_v3",
+  "intervention": "Protect one normalized endpoint only when every source domain agrees on the sign and minimum magnitude of the rank correlation between the DC policy coordinate and observed chance margin.",
+  "domains": [
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl"
+  ],
+  "source_only_equivalence_gate": {
+    "source_dimension": 50,
+    "target_dimension": 1000,
+    "source_calls": 384,
+    "n0": 10,
+    "seed_start": 80,
+    "n_seeds": 20,
+    "pass_rule": "If the intervention rejects source-only and both front ends emit identical ordered target point sets for every registered seed, deterministic paired target replay is exactly redundant and no target calls are made."
+  },
+  "paired_target_fallback_gate": {
+    "run_only_for_domains_with_nonidentical_frozen_designs": true,
+    "backend": "proposal_only",
+    "terminal_verification_candidate_budgets": [80, 128, 128],
+    "terminal_verification_familywise_delta": 0.05,
+    "require_no_true_feasible_count_loss": true,
+    "maximum_median_paired_feasible_regret_increase": 0.005,
+    "maximum_false_certificate_count_increase": 0
+  },
+  "information_contract": {
+    "source_archive_oracle_aided": false,
+    "target_labels_used_to_construct_proposal": false,
+    "target_oracle_used": false,
+    "target_outcomes_may_not_select_between_v1_and_v3": true
+  },
+  "resource_contract": {
+    "saas_used": false,
+    "gpu_used": false,
+    "paired_target_replay_allowed_nodes": [
+      "node001", "node002", "node003",
+      "node004", "node005", "node006"
+    ]
+  }
+}
