@@ -36,7 +36,10 @@ def _write_result(
         "source_archive_fingerprint": "archive",
         "information_contract": {
             "offline_source_calls": 384,
+            "target_initial_calls_n0": 10,
             "target_search_calls": 13,
+            "target_safety_verification_calls": 64,
+            "target_objective_comparison_calls": 16,
             "target_verification_calls": 80,
             "target_total_calls": 93,
             "source_oracle_aided": False,
@@ -96,6 +99,10 @@ def test_result_audit_keeps_canonical_and_periodic_saas_separate(tmp_path):
         "canonical_saasbo_every_iteration")
     assert periodic_row["method_identity"] == "saasbo_periodic_capped"
     assert canonical_row["source_plus_target_total_calls"] == 477
+    assert canonical_row["target_initial_design_calls"] == 10
+    assert canonical_row["target_adaptive_search_calls"] == 3
+    assert canonical_row["target_safety_verification_calls"] == 64
+    assert canonical_row["target_objective_comparison_calls"] == 16
     assert canonical_row["problem_contract"]["shared_shock_scale"] is None
     assert len(canonical_row["problem_contract_fingerprint"]) == 64
 
@@ -161,6 +168,8 @@ def test_track_audit_requires_paired_information_contracts(tmp_path):
             "expected_domains": ["QueueResourceControl"],
             "expected_seeds": [80, 81],
             "required_source_calls": 384,
+            "required_initial_calls": 10,
+            "required_adaptive_calls": 3,
             "required_search_calls": 13,
             "paired_equality_fields": [
                 "source_archive_fingerprint",
@@ -173,6 +182,29 @@ def test_track_audit_requires_paired_information_contracts(tmp_path):
     assert audit["status"] == "pass", audit
     assert audit["record_count"] == 2
     assert audit["track_audits"][0]["status"] == "pass"
+
+
+def test_result_audit_separates_scbo_hvd_heads(tmp_path):
+    pooled = tmp_path / "pooled" / "result.json"
+    factor = tmp_path / "factor" / "result.json"
+    _write_result(pooled, method="botorch_scbo", seed=80)
+    _write_result(factor, method="botorch_scbo", seed=80)
+    for path, mode in (
+        (pooled, "pooled"),
+        (factor, "provider_cumulative_factor"),
+    ):
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["information_contract"]["aleatoric_head_mode"] = mode
+        path.write_text(json.dumps(payload), encoding="utf-8")
+
+    pooled_row = extract_result_record(pooled, track_id="hvd")
+    factor_row = extract_result_record(factor, track_id="hvd")
+
+    assert pooled_row["method_identity"] == (
+        "botorch_scbo:canonical_scbo_constrained_ts+hvd:pooled")
+    assert factor_row["method_identity"] == (
+        "botorch_scbo:canonical_scbo_constrained_ts"
+        "+hvd:provider_cumulative_factor")
 
 
 def test_track_audit_requires_frozen_execution_contract(tmp_path):

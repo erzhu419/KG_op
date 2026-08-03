@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "paper_submission_experiment_registry_v1",
-  "status": "runs_in_progress",
+  "status": "external_cpu_validity_frontier_in_progress",
   "tracks": [
     {
       "track_id": "final_frontend_backend_factorial_d1000_n13",
@@ -26,6 +26,19 @@
         90, 91, 92, 93, 94, 95, 96, 97, 98, 99
       ],
       "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_search_calls_by_method": {
+        "scolh:v69_feasible_first_verified_initial_incumbent": 13,
+        "frozen_crossdim_proposal_only": 10,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 13,
+        "canonical_saasbo_every_iteration": 13
+      },
+      "required_adaptive_calls_by_method": {
+        "scolh:v69_feasible_first_verified_initial_incumbent": 3,
+        "frozen_crossdim_proposal_only": 0,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 3,
+        "canonical_saasbo_every_iteration": 3
+      },
       "paired_equality_fields": [
         "source_archive_fingerprint",
         "initial_design_fingerprint",
@@ -52,6 +65,22 @@
         80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
         90, 91, 92, 93, 94, 95, 96, 97, 98, 99
       ],
+      "required_source_calls_by_method": {
+        "common_sobol_proposal_only": 0,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 384,
+        "canonical_saasbo_every_iteration": 0
+      },
+      "required_initial_calls": 10,
+      "required_search_calls_by_method": {
+        "common_sobol_proposal_only": 10,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 13,
+        "canonical_saasbo_every_iteration": 13
+      },
+      "required_adaptive_calls_by_method": {
+        "common_sobol_proposal_only": 0,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 3,
+        "canonical_saasbo_every_iteration": 3
+      },
       "paired_equality_fields": [
         "initial_design_fingerprint",
         "verifier_signature"
@@ -101,6 +130,8 @@
         90, 91, 92, 93, 94, 95, 96, 97, 98, 99
       ],
       "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 3,
       "required_search_calls": 13,
       "paired_equality_fields": [
         "source_archive_fingerprint",
@@ -117,10 +148,10 @@
     },
     {
       "track_id": "source_hvd_causal_gate_d1000_n13",
-      "result_root": "paper_final_frozen_hvd_623cf78_d1000_n13_s80_99_v1",
+      "result_root": "provider_hvd_scbo_cpu_8adb033_d1000_n13_s80_99_v2",
       "expected_method_identities": [
-        "canonical_saasbo_every_iteration+hvd:pooled",
-        "canonical_saasbo_every_iteration+hvd:cumulative_factor"
+        "botorch_scbo:canonical_scbo_constrained_ts+hvd:pooled",
+        "botorch_scbo:canonical_scbo_constrained_ts+hvd:provider_cumulative_factor"
       ],
       "expected_domains": [
         "FactorShockStatePolicyRZDT1",
@@ -133,6 +164,8 @@
         90, 91, 92, 93, 94, 95, 96, 97, 98, 99
       ],
       "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 3,
       "required_search_calls": 13,
       "paired_equality_fields": [
         "source_archive_fingerprint",
@@ -140,22 +173,12 @@
         "problem_contract_fingerprint",
         "verifier_signature"
       ],
-      "required_execution_provenance_status": "frozen",
-      "allowed_execution_commits": [
-        "623cf78d23262f41478a5eabebf6c7c04b895daf"
-      ],
-      "required_scolhkg_tree": "95b34d540c020ec29959019049dabc49022f632d",
-      "required_proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
-      "required_scripts_tree": "9e300ecf5c22127b1279229f0b718c4b4f6e5eef",
-      "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
-      "required_method_contract_id": "or_transfer_frontend_saas_hvd_causal_v1",
       "required_false_fields": [
         "source_oracle_aided",
         "target_oracle_used_for_selection",
         "terminal_verification_updates_optimizer",
         "terminal_verification_target_oracle_used"
-      ],
-      "disallowed_method_identities": ["saasbo_periodic_capped"]
+      ]
     },
     {
       "track_id": "dimension_frontier_d200_d10000_n13",
@@ -201,6 +224,15 @@
       "expected_dimensions": [200, 10000],
       "expected_seeds": [80, 81, 82, 83, 84],
       "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_search_calls_by_method": {
+        "frozen_crossdim_proposal_only": 10,
+        "canonical_saasbo_every_iteration": 13
+      },
+      "required_adaptive_calls_by_method": {
+        "frozen_crossdim_proposal_only": 0,
+        "canonical_saasbo_every_iteration": 3
+      },
       "paired_equality_fields": [
         "source_archive_fingerprint",
         "initial_design_fingerprint",
@@ -228,6 +260,8 @@
         90, 91, 92, 93, 94, 95, 96, 97, 98, 99
       ],
       "required_source_calls": 0,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 387,
       "required_search_calls": 397,
       "exclude_methods": ["botorch_saasbo"],
       "paired_equality_fields": ["verifier_signature"],
@@ -251,6 +285,8 @@
         90, 91, 92, 93, 94, 95, 96, 97, 98, 99
       ],
       "required_source_calls": 0,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 387,
       "required_search_calls": 397,
       "paired_equality_fields": ["verifier_signature"],
       "disallowed_method_identities": [
@@ -276,6 +312,25 @@
         80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
         90, 91, 92, 93, 94, 95, 96, 97, 98, 99
       ],
+      "required_source_calls_by_method": {
+        "uniform_verified::canonical_saasbo_every_iteration": 384,
+        "uniform_verified::botorch_turbo:canonical_turbo1_ts": 0,
+        "uniform_verified::botorch_scbo:canonical_scbo_constrained_ts": 0,
+        "uniform_verified::saasbo_periodic_capped": 0
+      },
+      "required_initial_calls": 10,
+      "required_search_calls_by_method": {
+        "uniform_verified::canonical_saasbo_every_iteration": 13,
+        "uniform_verified::botorch_turbo:canonical_turbo1_ts": 397,
+        "uniform_verified::botorch_scbo:canonical_scbo_constrained_ts": 397,
+        "uniform_verified::saasbo_periodic_capped": 397
+      },
+      "required_adaptive_calls_by_method": {
+        "uniform_verified::canonical_saasbo_every_iteration": 3,
+        "uniform_verified::botorch_turbo:canonical_turbo1_ts": 387,
+        "uniform_verified::botorch_scbo:canonical_scbo_constrained_ts": 387,
+        "uniform_verified::saasbo_periodic_capped": 387
+      },
       "required_optimization_calls": 397,
       "paired_equality_fields": [
         "verifier_signature",
@@ -305,6 +360,8 @@
         "frozen_source_templates_proposal_only": 384,
         "frozen_crossdim_proposal_only": 384
       },
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 0,
       "required_search_calls": 10,
       "paired_equality_fields": ["verifier_signature"]
     },
@@ -325,6 +382,8 @@
         90, 91, 92, 93, 94, 95, 96, 97, 98, 99
       ],
       "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 3,
       "required_search_calls": 13,
       "required_execution_provenance_status": "frozen",
       "allowed_execution_commits": [
@@ -358,6 +417,8 @@
       "expected_dimensions": [200, 1000],
       "expected_seeds": [80, 81, 82, 83, 84],
       "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 0,
       "required_search_calls": 10,
       "paired_equality_fields": [
         "source_archive_fingerprint",
@@ -381,6 +442,8 @@
       "expected_dimensions": [200, 1000],
       "expected_seeds": [80, 81, 82, 83, 84],
       "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 10,
       "required_search_calls": 20,
       "paired_equality_fields": [
         "source_archive_fingerprint",
@@ -405,6 +468,8 @@
       "expected_dimensions": [200, 1000],
       "expected_seeds": [80, 81, 82, 83, 84],
       "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 30,
       "required_search_calls": 40,
       "paired_equality_fields": [
         "source_archive_fingerprint",
@@ -429,6 +494,8 @@
       "expected_dimensions": [200, 1000],
       "expected_seeds": [80, 81, 82, 83, 84],
       "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 70,
       "required_search_calls": 80,
       "paired_equality_fields": [
         "source_archive_fingerprint",
@@ -461,6 +528,12 @@
         "frozen_crossdim_proposal_only": 10,
         "stacked_transfer_gp_cbo:official_transfergpbo_code": 13,
         "canonical_saasbo_every_iteration": 13
+      },
+      "required_initial_calls": 10,
+      "required_adaptive_calls_by_method": {
+        "frozen_crossdim_proposal_only": 0,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 3,
+        "canonical_saasbo_every_iteration": 3
       },
       "paired_equality_fields": [
         "source_archive_fingerprint",
@@ -516,6 +589,12 @@
         "common_sobol_proposal_only": 10,
         "stacked_transfer_gp_cbo:official_transfergpbo_code": 13,
         "canonical_saasbo_every_iteration": 13
+      },
+      "required_initial_calls": 10,
+      "required_adaptive_calls_by_method": {
+        "common_sobol_proposal_only": 0,
+        "stacked_transfer_gp_cbo:official_transfergpbo_code": 3,
+        "canonical_saasbo_every_iteration": 3
       },
       "paired_equality_fields": [
         "initial_design_fingerprint",
@@ -637,9 +716,9 @@
     {
       "comparison_id": "cumulative_factor_hvd_vs_pooled",
       "left_track": "source_hvd_causal_gate_d1000_n13",
-      "left_method": "canonical_saasbo_every_iteration+hvd:cumulative_factor",
+      "left_method": "botorch_scbo:canonical_scbo_constrained_ts+hvd:provider_cumulative_factor",
       "right_track": "source_hvd_causal_gate_d1000_n13",
-      "right_method": "canonical_saasbo_every_iteration+hvd:pooled",
+      "right_method": "botorch_scbo:canonical_scbo_constrained_ts+hvd:pooled",
       "domains": [
         "FactorShockStatePolicyRZDT1",
         "InventorySupplyChain",
@@ -1189,21 +1268,44 @@
       "historical_result_rows_reused": 0
     },
     {
-      "gate_id": "final_immutable_hvd_causal_replay",
-      "run_id": "paper_final_frozen_hvd_623cf78_d1000_n13_s80_99_v1",
-      "code_commit": "623cf78d23262f41478a5eabebf6c7c04b895daf",
-      "task_id_range": ["t61551", "t61670"],
+      "gate_id": "provider_coordinate_hvd_causal_replay",
+      "run_id": "provider_hvd_scbo_cpu_8adb033_d1000_n13_s80_99_v2",
+      "code_commit": "8adb033",
+      "task_id_range": ["t65242", "t65361"],
       "expected_task_count": 120,
       "expected_pair_count": 60,
       "expected_search_seed_count": 20,
-      "historical_result_rows_reused": 0
+      "historical_result_rows_reused": 0,
+      "status": "complete_not_promoted",
+      "decision_artifact": "paper_artifacts/provider_cumulative_hvd_cpu_gate_d1000_n13_v2.json"
+    },
+    {
+      "gate_id": "strict_no_history_external_traffic_cpu_frontier",
+      "run_id": "external_traffic_cpu_frontier_7f796cd_scbo_s80_84_N13_40_80_R100_v1",
+      "code_commit": "7f796cd6989c76051f3a30c135f848de04a0cc84",
+      "task_id_range": ["t65385", "t65452"],
+      "expected_task_count": 68,
+      "source_selection_modes": [
+        "descriptor_nearest",
+        "domain_blind_exclude_nearest"
+      ],
+      "target_search_budgets": [13, 40, 80],
+      "expected_search_seed_count": 5,
+      "fresh_seed_replications_per_shortlist_policy": 100,
+      "saas_used": false,
+      "gpu_used": false,
+      "allowed_nodes": [
+        "node001", "node002", "node003",
+        "node004", "node005", "node006"
+      ],
+      "execution_snapshot_method_contract_id": "external_cpu_frontend_budget_frontier_v1"
     }
   ],
   "separate_non_gaussian_external_artifacts": {
     "reason": "SUMO uses a familywise exact binomial fresh-seed verifier rather than the synthetic Gaussian verifier",
     "main_descriptor_conditioned_track": {
       "run_id": "paper_final_external_traffic_descriptor_ed0fe90_s80_84_R100_v1",
-      "status": "five_seed_gate_submitted",
+      "status": "complete_failed_external_validity_gate",
       "required_gate_seeds": [80, 81, 82, 83, 84],
       "required_final_seed_count_after_gate": 20,
       "source_selection_mode": "descriptor_nearest",
@@ -1217,6 +1319,23 @@
       "target_oracle_used": false,
       "historical_target_anchor_used": false,
       "backend": "canonical_saasbo_every_iteration",
+      "verifier": "fresh_seed_familywise_exact_binomial_shortlist_v1"
+    },
+    "registered_cpu_budget_frontier": {
+      "run_id": "external_traffic_cpu_frontier_7f796cd_scbo_s80_84_N13_40_80_R100_v1",
+      "status": "in_progress",
+      "source_selection_modes": [
+        "descriptor_nearest",
+        "domain_blind_exclude_nearest"
+      ],
+      "target_search_budgets": [13, 40, 80],
+      "seed_count": 5,
+      "backend": "botorch_scbo:canonical_scbo_constrained_ts",
+      "saas_used": false,
+      "gpu_used": false,
+      "historical_target_anchor_used": false,
+      "target_labels_used_to_fit_proposal": false,
+      "target_oracle_used": false,
       "verifier": "fresh_seed_familywise_exact_binomial_shortlist_v1"
     },
     "domain_blind_negative_control": {

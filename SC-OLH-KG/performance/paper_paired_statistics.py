@@ -328,6 +328,14 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
         "pair_count": int(len(pairs)),
         "left_mean_source_calls": mean_field(0, "source_calls"),
         "right_mean_source_calls": mean_field(1, "source_calls"),
+        "left_mean_target_initial_design_calls": mean_field(
+            0, "target_initial_design_calls"),
+        "right_mean_target_initial_design_calls": mean_field(
+            1, "target_initial_design_calls"),
+        "left_mean_target_adaptive_search_calls": mean_field(
+            0, "target_adaptive_search_calls"),
+        "right_mean_target_adaptive_search_calls": mean_field(
+            1, "target_adaptive_search_calls"),
         "left_mean_target_search_calls": mean_field(
             0, "target_search_calls"),
         "right_mean_target_search_calls": mean_field(
@@ -336,6 +344,22 @@ def _summarize_pairs(pairs, *, comparison_id, stratum, samples):
             0, "target_verification_calls"),
         "right_mean_target_verification_calls": mean_field(
             1, "target_verification_calls"),
+        "left_mean_target_safety_verification_calls": mean_field(
+            0, "target_safety_verification_calls"),
+        "right_mean_target_safety_verification_calls": mean_field(
+            1, "target_safety_verification_calls"),
+        "left_mean_target_objective_comparison_calls": mean_field(
+            0, "target_objective_comparison_calls"),
+        "right_mean_target_objective_comparison_calls": mean_field(
+            1, "target_objective_comparison_calls"),
+        "left_mean_target_total_calls": mean_field(
+            0, "target_total_calls"),
+        "right_mean_target_total_calls": mean_field(
+            1, "target_total_calls"),
+        "left_mean_source_plus_target_total_calls": mean_field(
+            0, "source_plus_target_total_calls"),
+        "right_mean_source_plus_target_total_calls": mean_field(
+            1, "source_plus_target_total_calls"),
         "left_mean_optimization_calls_excluding_verification": mean_field(
             0, "optimization_calls_excluding_verification"),
         "right_mean_optimization_calls_excluding_verification": mean_field(

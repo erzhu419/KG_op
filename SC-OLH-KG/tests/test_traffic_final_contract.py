@@ -118,6 +118,56 @@ def test_traffic_submitter_separates_cuda_search_from_cpu_sumo(tmp_path):
     assert all("--source-indexes 0,1,2" in spec["cmd"] for spec in oos)
     assert all(
         "checkpoints" in spec["stage_excludes"] for spec in specs)
+
+
+def test_external_traffic_frozen_snapshot_keeps_tracked_static_results(
+    tmp_path,
+):
+    code_root = tmp_path / "snapshot"
+    code_root.mkdir()
+    marker = {
+        "status": "frozen",
+        "repository_commit": "a" * 40,
+        "scolhkg_tree": "b" * 40,
+        "proof_tree": "c" * 40,
+        "scripts_tree": "d" * 40,
+        "legacy_traffic_tree": "e" * 40,
+        "traffic_decision_space_blob": "f" * 40,
+        "traffic_baseline_blob": "1" * 40,
+        "theory_contract_id": "theory-v1",
+        "snapshot_root": str(code_root),
+    }
+    (code_root / ".scolhkg_execution_snapshot.json").write_text(
+        json.dumps(marker), encoding="utf-8")
+    args = SimpleNamespace(
+        deploy=tmp_path / "deploy",
+        code_root=code_root,
+        require_frozen_snapshot=True,
+        run_id="frozen_cpu_frontier",
+        archive_run_id="archive",
+        source_selection_modes=DESCRIPTOR_NEAREST,
+        backend="botorch_scbo",
+        budgets="13",
+        source_d=50,
+        seed_start=80,
+        n_seeds=1,
+        n0=10,
+        R=100,
+        verification_seed_start=900000,
+        raw_samples=1024,
+        num_restarts=10,
+        maxiter=100,
+        ts_candidates=2000,
+        candidate_timeout_sec=3600.0,
+        cpu=12,
+        ram_mb=24576,
+    )
+
+    specs, _snapshot = build_cpu_frontier_specs(args)
+
+    assert all("results" not in spec["stage_excludes"] for spec in specs)
+    assert all("checkpoints" in spec["stage_excludes"] for spec in specs)
+    assert all("profiles" in spec["stage_excludes"] for spec in specs)
     aggregate = next(
         spec for spec in specs if spec["signature"].endswith("/audit"))
     assert (

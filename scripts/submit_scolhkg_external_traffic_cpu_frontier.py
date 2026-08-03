@@ -159,6 +159,11 @@ def build_specs(args):
             f"source modes must be drawn from {SOURCE_SELECTION_MODES}")
 
     snapshot = _execution_snapshot(args)
+    stage_excludes = (
+        ["checkpoints", "profiles"]
+        if snapshot is not None
+        else ["checkpoints", "profiles", "results"]
+    )
     deploy = Path(args.deploy)
     deploy_project = deploy / "SC-OLH-KG"
     deploy_gpr_code = deploy / "Final_Submission" / "GPR_KG_Code"
@@ -208,7 +213,7 @@ def build_specs(args):
             "wait_for_files": [str(archive)],
             "result_dir": str(design.parent),
             "local_result_dir": str(design.parent),
-            "stage_excludes": ["checkpoints", "profiles", "results"],
+            "stage_excludes": list(stage_excludes),
             "allow_duplicate": True,
         })
 
@@ -279,7 +284,7 @@ def build_specs(args):
                     "wait_for_files": [str(design)],
                     "result_dir": str(run_dir),
                     "local_result_dir": str(run_dir),
-                    "stage_excludes": ["checkpoints", "profiles", "results"],
+                    "stage_excludes": list(stage_excludes),
                     "allow_duplicate": True,
                 })
 
@@ -333,7 +338,7 @@ def build_specs(args):
                     "wait_for_files": [str(run_dir / "summary.json")],
                     "result_dir": str(oos_path.parent),
                     "local_result_dir": str(oos_path.parent),
-                    "stage_excludes": ["checkpoints", "profiles", "results"],
+                    "stage_excludes": list(stage_excludes),
                     "allow_duplicate": True,
                 })
 
@@ -379,7 +384,7 @@ def build_specs(args):
                 "wait_for_files": [str(path) for path in oos_paths],
                 "result_dir": str(audit_path.parent),
                 "local_result_dir": str(audit_path.parent),
-                "stage_excludes": ["checkpoints", "profiles", "results"],
+                "stage_excludes": list(stage_excludes),
                 "allow_duplicate": True,
             })
     return specs, snapshot

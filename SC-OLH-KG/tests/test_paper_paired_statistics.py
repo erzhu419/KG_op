@@ -33,8 +33,14 @@ def _row(
         "false_certificate": certified and not feasible,
         "feasible_regret": regret,
         "source_calls": 384,
+        "target_initial_design_calls": 10,
+        "target_adaptive_search_calls": 3,
         "target_search_calls": 13,
+        "target_safety_verification_calls": 84,
+        "target_objective_comparison_calls": 16,
         "target_verification_calls": 100,
+        "target_total_calls": 113,
+        "source_plus_target_total_calls": 497,
         "optimization_calls_excluding_verification": 397,
         "aleatoric_log_variance_rmse": log_variance_rmse,
         "aleatoric_variance_rmse": None,
@@ -110,6 +116,12 @@ def test_paired_statistics_count_rescue_loss_and_regret_direction():
     ] < 0.0
     assert row["regret_wilcoxon_nonzero_pair_count"] == 1
     assert row["regret_wilcoxon_p"] == 1.0
+    assert row["left_mean_target_initial_design_calls"] == 10.0
+    assert row["left_mean_target_adaptive_search_calls"] == 3.0
+    assert row["left_mean_target_safety_verification_calls"] == 84.0
+    assert row["left_mean_target_objective_comparison_calls"] == 16.0
+    assert row["left_mean_target_total_calls"] == 113.0
+    assert row["left_mean_source_plus_target_total_calls"] == 497.0
 
     repeated = analyze(
         {"status": "pass", "records": copy.deepcopy(records)},

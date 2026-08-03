@@ -71,6 +71,13 @@ def _method_identity(payload, result):
     ))
     if method == "botorch_saasbo":
         identity = _saas_identity(result)
+    elif method == "botorch_turbo":
+        identity = "botorch_turbo:canonical_turbo1_ts"
+    elif method == "botorch_scbo":
+        identity = "botorch_scbo:canonical_scbo_constrained_ts"
+    else:
+        identity = None
+    if identity is not None:
         head_mode = str(_first(
             _nested(payload, "information_contract", "aleatoric_head_mode"),
             result.get("aleatoric_head_mode"),
@@ -79,10 +86,6 @@ def _method_identity(payload, result):
         if head_mode != "nominal":
             identity += f"+hvd:{head_mode}"
         return identity
-    if method == "botorch_turbo":
-        return "botorch_turbo:canonical_turbo1_ts"
-    if method == "botorch_scbo":
-        return "botorch_scbo:canonical_scbo_constrained_ts"
     implementation_contract = result.get("implementation_contract_id")
     if method == "unknown" and implementation_contract:
         return f"scolh:{implementation_contract}"
@@ -222,6 +225,50 @@ def extract_result_record(path, *, track_id):
         target_info.get("target_verification_calls"),
         0,
     )
+    initial_points = _first(
+        payload.get("initial_points"),
+        result.get("initial_points"),
+        _nested(result, "initial_design", "points"),
+    )
+    initial_point_count = (
+        len(initial_points)
+        if isinstance(initial_points, (list, tuple))
+        else None
+    )
+    initial_calls = _first(
+        info.get("target_initial_calls_n0"),
+        info.get("target_initial_design_calls"),
+        comparison.get("target_initial_calls_n0"),
+        target_info.get("target_initial_calls_n0"),
+        result.get("n0"),
+        _nested(payload, "config", "n0"),
+        initial_point_count,
+    )
+    adaptive_calls = (
+        None
+        if search_calls is None or initial_calls is None
+        else int(search_calls) - int(initial_calls)
+    )
+    if adaptive_calls is not None and adaptive_calls < 0:
+        raise ValueError(
+            f"target search calls are below n0 in {path}")
+    safety_verification_calls = _first(
+        info.get("target_safety_verification_calls"),
+        comparison.get("target_safety_verification_calls"),
+        target_info.get("target_safety_verification_calls"),
+    )
+    objective_comparison_calls = _first(
+        info.get("target_objective_comparison_calls"),
+        comparison.get("target_objective_comparison_calls"),
+        target_info.get("target_objective_comparison_calls"),
+    )
+    if (
+        safety_verification_calls is None
+        and objective_comparison_calls is None
+        and verification_calls is not None
+    ):
+        safety_verification_calls = verification_calls
+        objective_comparison_calls = 0
     target_total = _first(
         result.get("n_target_simulations_total"),
         info.get("target_total_calls"),
@@ -354,7 +401,13 @@ def extract_result_record(path, *, track_id):
             else bool(terminal_verification_target_oracle_used)
         ),
         "source_calls": _int_or_none(source_calls),
+        "target_initial_design_calls": _int_or_none(initial_calls),
+        "target_adaptive_search_calls": _int_or_none(adaptive_calls),
         "target_search_calls": _int_or_none(search_calls),
+        "target_safety_verification_calls": _int_or_none(
+            safety_verification_calls),
+        "target_objective_comparison_calls": _int_or_none(
+            objective_comparison_calls),
         "target_verification_calls": _int_or_none(verification_calls),
         "target_total_calls": _int_or_none(target_total),
         "optimization_calls_excluding_verification": _int_or_none(
@@ -519,8 +572,16 @@ def summarize_records(records):
             "mean_feasible_regret": _mean(regret),
             "mean_source_calls": _mean(
                 [row["source_calls"] for row in ok]),
+            "mean_target_initial_design_calls": _mean(
+                [row["target_initial_design_calls"] for row in ok]),
+            "mean_target_adaptive_search_calls": _mean(
+                [row["target_adaptive_search_calls"] for row in ok]),
             "mean_target_search_calls": _mean(
                 [row["target_search_calls"] for row in ok]),
+            "mean_target_safety_verification_calls": _mean(
+                [row["target_safety_verification_calls"] for row in ok]),
+            "mean_target_objective_comparison_calls": _mean(
+                [row["target_objective_comparison_calls"] for row in ok]),
             "mean_target_verification_calls": _mean(
                 [row["target_verification_calls"] for row in ok]),
             "mean_target_total_calls": _mean(
@@ -703,6 +764,69 @@ def audit_track(records, specification):
         if bad:
             failures.append({
                 "kind": "target_search_budget_mismatch",
+                "count": len(bad),
+            })
+    required_initial_calls = specification.get("required_initial_calls")
+    if required_initial_calls is not None:
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row["target_initial_design_calls"]
+            != int(required_initial_calls)
+        ]
+        if bad:
+            failures.append({
+                "kind": "target_initial_budget_mismatch",
+                "count": len(bad),
+            })
+    required_adaptive_calls = specification.get("required_adaptive_calls")
+    if required_adaptive_calls is not None:
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row["target_adaptive_search_calls"]
+            != int(required_adaptive_calls)
+        ]
+        if bad:
+            failures.append({
+                "kind": "target_adaptive_budget_mismatch",
+                "count": len(bad),
+            })
+    for contract_key, row_key, missing_kind, mismatch_kind in (
+        (
+            "required_initial_calls_by_method",
+            "target_initial_design_calls",
+            "missing_method_initial_budget_contract",
+            "method_initial_budget_mismatch",
+        ),
+        (
+            "required_adaptive_calls_by_method",
+            "target_adaptive_search_calls",
+            "missing_method_adaptive_budget_contract",
+            "method_adaptive_budget_mismatch",
+        ),
+    ):
+        contract = {
+            str(method): int(value)
+            for method, value in specification.get(contract_key, {}).items()
+        }
+        if not contract:
+            continue
+        missing_contracts = expected_methods - set(contract)
+        if missing_contracts:
+            failures.append({
+                "kind": missing_kind,
+                "methods": sorted(missing_contracts),
+            })
+        bad = [
+            row for row in rows
+            if row["status"] == "ok"
+            if row["method_identity"] in contract
+            if row.get(row_key) != contract[row["method_identity"]]
+        ]
+        if bad:
+            failures.append({
+                "kind": mismatch_kind,
                 "count": len(bad),
             })
     required_search_calls_by_method = {
