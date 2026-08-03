@@ -7,6 +7,32 @@ external proof directory.
 Lean4 is the source of truth for formal proofs.  Markdown files are only the
 human-readable roadmap and code-to-theory map.
 
+## Current Claim Disposition
+
+The frozen primary claim no longer requires HVD or KG to be the optimization
+engine.  Its formal spine is:
+
+1. a source-only, target-label-free finite structural atlas;
+2. an explicit source-to-target geometric coverage condition in an effective
+   coordinate whose dimension does not grow with the raw policy dimension;
+3. a replaceable online backend; and
+4. an optimizer-independent terminal verifier with separate search and
+   verification budgets.
+
+`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate` is the
+headline umbrella theorem, while
+`SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` states the
+matching limitation: no proper frozen finite atlas can cover every possible
+held-out feasible set without a transfer/structure condition.
+
+The cumulative-HVD theorems remain fully checked mechanistic results.  The
+registered 20-seed provider-coordinate causal gate improved variance recovery
+in all three synthetic domains but did not improve feasibility or regret and
+was not verification-cost noninferior in every domain.  HVD is therefore an
+optional risk-calibration and certification ablation, not a coequal primary
+optimization contribution.  This empirical disposition changes the claim,
+not the validity of the Lean theorems.
+
 ## Build
 
 ```bash

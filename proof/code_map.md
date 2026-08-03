@@ -1,5 +1,21 @@
 # Code-To-Theory Map
 
+## Frozen Claim Boundary
+
+The primary release maps the source-only structural atlas to
+`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`, then
+uses the optimizer-agnostic terminal verifier.  Canonical SAASBO, SC-OLH/KG,
+SCBO, and posterior sampling are interchangeable backend comparisons rather
+than theorem identities.  The matching no-free-lunch result is
+`SCOLHKG.Real.finite_budget_no_unconditional_target_coverage`.
+
+Provider-coordinate cumulative HVD is retained below because its algebra,
+estimation, and certification bridges are formally valid and its variance
+recovery improved in the registered causal replay.  That replay did not show
+an operational feasibility/regret gain, so HVD is mapped as an optional
+calibration/certification component rather than a required part of the primary
+optimizer.
+
 ## Statistical Closure V2
 
 The behavior-preserving theory contract `v51_statistical_closure_v2` is mapped

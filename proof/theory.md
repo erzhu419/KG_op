@@ -1,5 +1,40 @@
 # SC-OLH-KG Theory Skeleton
 
+## Frozen Primary Theorem Identity
+
+The current primary mathematical object is the source-learned finite proposal
+atlas, not a particular acquisition backend.  Let `S_source` be source-only
+support, `A_n0` the frozen atlas of at most `n0` target policies, `eta` the
+learned dimension-equivariant coordinate, and `F_target` the held-out feasible
+set.  The deployed geometric contract is
+
+```text
+L * (sourceCoverRadius + idealDomainShift
+     + 2 * coordinateApproximationError) <= targetSafeDepth.
+```
+
+Under this condition the atlas contains a target-feasible policy; the nominal
+raw policy dimension is absent.  A replaceable online backend may improve the
+objective but is not needed for the coverage witness.  A separate fixed
+shortlist verifier controls false deployment and charges every independent
+replication outside the search budget.  The implementation-matched umbrella
+theorem is
+`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`.
+
+The condition is necessary in kind, not a proof convenience:
+`SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` constructs a
+nonempty held-out feasible set missed by every proper finite target-label-free
+atlas.  Consequently, a failed external-domain coverage audit is evidence
+against the transfer condition for that domain, not permission to tune a new
+target-specific sentinel after observing outcomes.
+
+The cumulative-risk/HVD theory below is retained as an optional mechanistic
+calibration layer.  Its registered provider-coordinate replay improved
+variance RMSE and shape correlation but produced no paired feasibility or
+regret gain and failed all-domain verification-cost noninferiority.  None of
+the headline atlas-coverage or method-independent verification conclusions
+depends on promoting HVD as a core optimization contribution.
+
 ## Statistical Closure V2 Status
 
 The promoted V51 behavior now has a separate finite-sample analysis contract.
