@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "energy_lodo_frontend_screen_pass_online_gate_pending",
+  "status": "development_gate_pass_confirmatory_preregistered",
   "contract_id": "opsd_storage_reliability_external_replacement_v1",
   "replaces_positive_external_domain": "Ingolstadt21Traffic",
   "sumo_disposition": "retained_as_failed_not_promoted_external_result",
@@ -113,18 +113,39 @@
     "common_sobol_verification_objective": 0.0937610519686326,
     "false_certificates": 0
   },
+  "development_gate_result": {
+    "status": "pass",
+    "tracked_aggregate": "performance/manifests/external_energy_development_gate_v1.json",
+    "seeds": [80, 81, 82, 83, 84],
+    "frozen_independently_certified": 5,
+    "common_independently_certified": 5,
+    "frozen_false_certificates": 0,
+    "common_false_certificates": 0,
+    "frozen_median_true_feasible_objective": 0.0182439550024744,
+    "common_median_true_feasible_objective": 0.09256216925493764,
+    "paired_median_relative_objective_improvement": 0.793897630031969,
+    "confirmatory_target_was_unopened": true
+  },
   "next_registered_gate": {
-    "contract_id": "opsd_energy_stochastic_online_development_gate_v1",
+    "contract_id": "opsd_energy_gb_gbn_confirmatory_v1",
     "arms": [
       "energy_lodo_frozen_proposal",
       "common_sobol"
     ],
-    "seeds": [80, 81, 82, 83, 84],
+    "target": "GB_GBN:2018",
+    "seeds": [
+      100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+      110, 111, 112, 113, 114, 115, 116, 117, 118, 119
+    ],
     "n0": 10,
     "target_search_calls": 13,
     "verification_candidate_budgets": [80, 128, 128],
-    "minimum_certified_frozen_seeds": 4,
+    "minimum_certified_frozen_seeds": 16,
     "maximum_false_certificates": 0,
+    "certification_count_must_not_be_worse_than_common": true,
+    "paired_primary_endpoint": "safe certified deployment first; lower objective second",
+    "paired_test": "one-sided exact sign test",
+    "paired_alpha": 0.05,
     "cpu_nodes_only": [
       "node001",
       "node002",
@@ -133,7 +154,7 @@
       "node005",
       "node006"
     ],
-    "confirmatory_target_may_open_only_after_pass": true
+    "method_repair_after_target_opened": false
   },
   "post_gate_no_regression_requirement": {
     "required_before_frontend_promotion": true,

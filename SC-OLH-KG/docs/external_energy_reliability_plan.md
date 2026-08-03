@@ -172,6 +172,32 @@ total calls separately.
 4. **Twenty-seed confirmation:** run GB_GBN only after step 3 freezes the
    method. No failed method is repaired on GB_GBN.
 
+The development gate passed on seeds 80--84: both arms obtained five of five
+independent certificates with zero false certificates and the frozen proposal
+reduced the median deployment objective from 0.09256 to 0.01824. The tracked
+aggregate is
+`performance/manifests/external_energy_development_gate_v1.json`.
+
+The earlier prose phrase "no worse feasible regret than proposal-only" had no
+registered proposal-only arm; the JSON manifest registered certification no
+worse than common Sobol. This discrepancy is recorded rather than silently
+rewriting the completed gate. Objective performance is descriptive at the
+development stage.
+
+Before opening GB_GBN, the confirmatory contract is frozen as follows:
+
+- paired seeds 100--119, `d=1000`, `n0=10`, and `N=13`;
+- frozen energy-LODO proposal versus common Sobol, followed by the same neutral
+  Sobol continuation and familywise exact verifier;
+- at least 16/20 independently certified frozen deployments;
+- zero frozen false certificates and certification count no worse than common;
+- a one-sided exact paired sign test at 0.05 on the lexicographic endpoint:
+  safe certified deployment first, lower objective second.
+
+Failure on any criterion is retained without target-specific repair. The
+confirmatory seeds, thresholds, target, and analyzer are committed before the
+GB_GBN outcome array is opened by any policy evaluation.
+
 The first CPU gate compares frozen energy-LODO initialization against common
 Sobol, both with the same neutral Sobol continuation and independent verifier.
 Only after this paired gate passes are SCBO and Stacked GP added. SAASBO is

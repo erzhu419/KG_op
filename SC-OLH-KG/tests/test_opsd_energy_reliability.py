@@ -17,6 +17,12 @@ from performance.audit_opsd_energy_certifiability import (  # noqa: E402
     audit_problem,
 )
 from performance.analyze_external_energy_gate import analyze  # noqa: E402
+from performance.analyze_external_energy_confirmation import (  # noqa: E402
+    analyze as analyze_confirmation,
+)
+from performance.benchmark_external_energy_confirmation import (  # noqa: E402
+    CONFIRMATORY_CONTRACT_ID,
+)
 from performance.benchmark_external_energy_gate import (  # noqa: E402
     _binomial_lower,
     run_gate,
@@ -395,3 +401,58 @@ def test_energy_gate_analysis_requires_paired_five_seed_evidence(tmp_path):
     result = analyze(paths)
     assert result["status"] == "pass"
     assert result["next_action"] == "freeze_and_open_gb_gbn_confirmatory_target"
+
+
+def test_energy_confirmation_requires_safe_paired_advantage(tmp_path):
+    paths = []
+    for arm in ("frozen_proposal", "common_sobol"):
+        for seed in range(100, 120):
+            path = tmp_path / f"{arm}_{seed}.json"
+            objective = 0.02 if arm == "frozen_proposal" else 0.08
+            path.write_text(json.dumps({
+                "status": "ok",
+                "contract_id": CONFIRMATORY_CONTRACT_ID,
+                "market": "GB_GBN",
+                "year": 2018,
+                "arm": arm,
+                "seed": seed,
+                "independently_certified": True,
+                "false_certificate": False,
+                "verification_calls": 80,
+                "deployment_truth_audit": {
+                    "truly_chance_feasible": True,
+                    "true_objective_mean": objective,
+                },
+            }), encoding="utf-8")
+            paths.append(path)
+    result = analyze_confirmation(paths)
+    assert result["status"] == "pass"
+    assert result["paired_primary_endpoint"]["frozen_wins"] == 20
+    assert result["checks"]["frozen_has_zero_false_certificates"] is True
+
+
+def test_energy_confirmation_fails_incomplete_pairing(tmp_path):
+    paths = []
+    for arm in ("frozen_proposal", "common_sobol"):
+        for seed in range(100, 119):
+            path = tmp_path / f"{arm}_{seed}.json"
+            path.write_text(json.dumps({
+                "status": "ok",
+                "contract_id": CONFIRMATORY_CONTRACT_ID,
+                "market": "GB_GBN",
+                "year": 2018,
+                "arm": arm,
+                "seed": seed,
+                "independently_certified": True,
+                "false_certificate": False,
+                "verification_calls": 80,
+                "deployment_truth_audit": {
+                    "truly_chance_feasible": True,
+                    "true_objective_mean": (
+                        0.02 if arm == "frozen_proposal" else 0.08),
+                },
+            }), encoding="utf-8")
+            paths.append(path)
+    result = analyze_confirmation(paths)
+    assert result["status"] == "fail"
+    assert result["checks"]["complete_twenty_seed_pairing"] is False

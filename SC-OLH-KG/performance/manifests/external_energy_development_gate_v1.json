@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "contract_id": "opsd_energy_stochastic_online_development_gate_v1",
+  "status": "pass",
+  "development_only": true,
+  "confirmatory_target_opened": false,
+  "target": "DK_2:2018",
+  "dimension": 1000,
+  "n0": 10,
+  "target_search_calls": 13,
+  "seeds": [80, 81, 82, 83, 84],
+  "source_calls_for_frozen_proposal": 384,
+  "verification_candidate_budgets": [80, 128, 128],
+  "arms": {
+    "common_sobol": {
+      "independently_certified_count": 5,
+      "false_certificate_count": 0,
+      "median_true_feasible_objective": 0.09256216925493764,
+      "mean_verification_calls": 80.0
+    },
+    "frozen_proposal": {
+      "independently_certified_count": 5,
+      "false_certificate_count": 0,
+      "median_true_feasible_objective": 0.0182439550024744,
+      "mean_verification_calls": 80.0
+    }
+  },
+  "paired_relative_objective_improvement": {
+    "lower_is_better": true,
+    "per_seed": [
+      0.8054207518002481,
+      0.7882033729614414,
+      0.8000128249044485,
+      0.7779867209362515,
+      0.793897630031969
+    ],
+    "median": 0.793897630031969
+  },
+  "scheduler_task_ids": [
+    "t67282", "t67283", "t67284", "t67285", "t67286",
+    "t67287", "t67288", "t67289", "t67290", "t67291"
+  ],
+  "scheduler_accounting_note": "Eight tasks were falsely labelled failed after exit 0 because the first runner revision omitted the scheduler DONE marker; all ten result artifacts were independently checked and synced. The runner now emits DONE.",
+  "target_oracle_used_during_search": false,
+  "target_outcomes_used_to_fit_proposal": false,
+  "next_action": "open_preregistered_gb_gbn_confirmatory_target"
+}

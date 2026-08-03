@@ -185,7 +185,7 @@ def materialize_energy_lodo(
         "source_archive_oracle_aided": False,
         "source_domains": list(archive.source_domains),
         "source_selection_mode": "registered_energy_lodo",
-        "source_split_rule": "AT_and_DK1_to_heldout_DK2",
+        "source_split_rule": f"AT_and_DK1_to_heldout_{market}",
         "target_labels_used": False,
         "target_oracle_used": False,
         "target_actual_error_used_during_materialization": False,

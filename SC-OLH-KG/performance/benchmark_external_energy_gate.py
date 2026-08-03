@@ -330,6 +330,7 @@ def main():
         "false_certificate": result["false_certificate"],
         "verification_calls": result["verification_calls"],
     }, indent=2, sort_keys=True))
+    print("DONE", flush=True)
 
 
 if __name__ == "__main__":
