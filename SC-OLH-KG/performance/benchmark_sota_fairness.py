@@ -716,7 +716,12 @@ def main():
     )
     parser.add_argument(
         "--aleatoric-head-mode",
-        choices=("nominal", "pooled", "cumulative_factor"),
+        choices=(
+            "nominal",
+            "pooled",
+            "cumulative_factor",
+            "provider_cumulative_factor",
+        ),
         default="nominal",
     )
     parser.add_argument(

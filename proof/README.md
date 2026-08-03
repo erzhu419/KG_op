@@ -947,3 +947,13 @@ auditable shortlist coverage error and a uniform MC error; it does not claim
 that four new arms approximate an arbitrary continuous action space for free.
 The paired three-domain closure gate decides whether the implementation repair
 retains the promoted empirical advantage.
+
+The provider-cumulative HVD repair is now a separate formal object from the
+failed raw-profile proxy. `ProviderCumulativeHVDCalibration.lean` proves the
+aggregate lower-quantile inversion, multiplication by a nonnegative cumulative
+risk shape, and the two-source Bonferroni maximum used by the implementation.
+Its probability theorem is conditional on the declared lower-tail coverage of
+the aggregate replication statistic; the independent terminal verifier, not
+this source head, remains the final safety authority. The provider schema is a
+descriptor-conditional assumption and must retain a domain-blind control in
+the empirical package.

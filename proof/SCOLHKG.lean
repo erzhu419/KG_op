@@ -13,6 +13,7 @@ import SCOLHKG.Measure.PosteriorCoefficientSampler
 import SCOLHKG.Measure.PosteriorMultivariateGaussian
 import SCOLHKG.Measure.PosteriorSamplingCandidates
 import SCOLHKG.Measure.ProposalCoverage
+import SCOLHKG.Measure.ProviderCumulativeHVDCalibration
 import SCOLHKG.Measure.ResidualSquareConcentration
 import SCOLHKG.Measure.ResidualSquareTail
 import SCOLHKG.Measure.SubGaussianConfidence
@@ -72,6 +73,7 @@ import SCOLHKG.Real.OrderedCumulativeExposure
 import SCOLHKG.Real.OrthogonalSemiparametric
 import SCOLHKG.Real.PosteriorRecommendation
 import SCOLHKG.Real.PromotedV51Closure
+import SCOLHKG.Real.ProviderCumulativeHVDCalibration
 import SCOLHKG.Real.ProposalCoverage
 import SCOLHKG.Real.ProposalNoFreeLunch
 import SCOLHKG.Real.RankAlignedAtlasCoverage

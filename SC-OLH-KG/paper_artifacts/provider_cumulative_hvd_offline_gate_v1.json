@@ -1,0 +1,554 @@
+{
+  "advance_to_cpu_sequential_gate": true,
+  "all_domains_pass": true,
+  "config": {
+    "audit_size": 256,
+    "calibration_delta": 0.05,
+    "d": 1000,
+    "domains": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "modes": [
+      "pooled",
+      "cumulative_factor",
+      "provider_cumulative_factor"
+    ],
+    "provider_ridge_per_source_row": 1.0,
+    "seeds": [
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+    ]
+  },
+  "decisions": {
+    "FactorShockStatePolicyRZDT1": {
+      "checks": {
+        "finite_calibration_multiplier": true,
+        "log_rmse_strictly_better_than_pooled": true,
+        "shape_correlation_at_least_0_5": true,
+        "shape_correlation_gain_at_least_0_25": true,
+        "upper_coverage_at_least_0_95": true
+      },
+      "paired_median_log_rmse_improvement": 0.9391835206016226,
+      "paired_median_shape_correlation_gain": 0.9190108509115433,
+      "pass": true
+    },
+    "InventorySupplyChain": {
+      "checks": {
+        "finite_calibration_multiplier": true,
+        "log_rmse_strictly_better_than_pooled": true,
+        "shape_correlation_at_least_0_5": true,
+        "shape_correlation_gain_at_least_0_25": true,
+        "upper_coverage_at_least_0_95": true
+      },
+      "paired_median_log_rmse_improvement": 0.22840013008984167,
+      "paired_median_shape_correlation_gain": 0.9529642897361064,
+      "pass": true
+    },
+    "QueueResourceControl": {
+      "checks": {
+        "finite_calibration_multiplier": true,
+        "log_rmse_strictly_better_than_pooled": true,
+        "shape_correlation_at_least_0_5": true,
+        "shape_correlation_gain_at_least_0_25": true,
+        "upper_coverage_at_least_0_95": true
+      },
+      "paired_median_log_rmse_improvement": 0.24745758517334904,
+      "paired_median_shape_correlation_gain": 0.9952680400736422,
+      "pass": true
+    }
+  },
+  "gate_id": "provider_cumulative_hvd_offline_causal_gate_v1",
+  "information_contract": {
+    "final_safety_role": "independent_terminal_verifier",
+    "provider_track": "descriptor_conditional_observable_A_N_schema",
+    "source_archive_frozen_before_target_audit": true,
+    "source_oracle_labels_used": false,
+    "target_audit_simulator_calls": 0,
+    "target_oracle_used_to_fit": false,
+    "target_outcomes_used_to_fit": false,
+    "target_truth_timing": "post_fit_audit_only"
+  },
+  "rows": [
+    {
+      "calibration_id": "source_task_lodo_chi_square_upper_v1",
+      "calibration_multiplier": 59.29588804108738,
+      "coordinate_id": "dimension_equivariant_profile_psi_v1",
+      "fit_wall_time_sec": 2.044020716999512,
+      "heldout": "FactorShockStatePolicyRZDT1",
+      "mode": "pooled",
+      "source_archive_fingerprint": "40a2813576c8efe392f84b1250c53f37f85b55207836d888d5116d6718551e08",
+      "source_simulator_calls": 384,
+      "summary": {
+        "log_variance_rmse": {
+          "maximum": 1.159246597660409,
+          "mean": 1.157898272022957,
+          "median": 1.1578647008413485,
+          "minimum": 1.1572899981947993
+        },
+        "mean_predicted_to_true_ratio": {
+          "maximum": 0.31320508850532675,
+          "mean": 0.3130100474388012,
+          "median": 0.3130126014525579,
+          "minimum": 0.3125624700452579
+        },
+        "mean_upper_to_true_ratio": {
+          "maximum": 18.571773861910717,
+          "mean": 18.560208728666602,
+          "median": 18.56036017118037,
+          "minimum": 18.533669229649334
+        },
+        "upper_coverage": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "minimum": 1.0
+        },
+        "variance_rmse": {
+          "maximum": 0.00373847723430456,
+          "mean": 0.0037258329252854105,
+          "median": 0.00372647322475433,
+          "minimum": 0.0037174949694191353
+        },
+        "variance_shape_correlation": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "minimum": 0.0
+        }
+      },
+      "target_audit_calls": 0,
+      "target_oracle_used_to_fit": false,
+      "target_outcomes_used_to_fit": false
+    },
+    {
+      "calibration_id": "source_task_lodo_chi_square_upper_v1",
+      "calibration_multiplier": 59.79175020844129,
+      "coordinate_id": "dimension_equivariant_profile_psi_v1",
+      "fit_wall_time_sec": 3.1836425730034534,
+      "heldout": "FactorShockStatePolicyRZDT1",
+      "mode": "cumulative_factor",
+      "source_archive_fingerprint": "40a2813576c8efe392f84b1250c53f37f85b55207836d888d5116d6718551e08",
+      "source_simulator_calls": 384,
+      "summary": {
+        "log_variance_rmse": {
+          "maximum": 0.45797475641007435,
+          "mean": 0.4509946754629457,
+          "median": 0.449747371601266,
+          "minimum": 0.4473762655801262
+        },
+        "mean_predicted_to_true_ratio": {
+          "maximum": 0.6699729434669698,
+          "mean": 0.6667959324341014,
+          "median": 0.6671640199446995,
+          "minimum": 0.662892639550044
+        },
+        "mean_upper_to_true_ratio": {
+          "maximum": 40.05885488219122,
+          "mean": 39.868895832104485,
+          "median": 39.89090442859302,
+          "minimum": 39.635511118990536
+        },
+        "upper_coverage": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "minimum": 1.0
+        },
+        "variance_rmse": {
+          "maximum": 0.0021398524557318553,
+          "mean": 0.002114123155044194,
+          "median": 0.002109976276374318,
+          "minimum": 0.0020934045005825495
+        },
+        "variance_shape_correlation": {
+          "maximum": 0.10224268060110969,
+          "mean": -0.000541908500401855,
+          "median": 0.005916966116167373,
+          "minimum": -0.11088199306878739
+        }
+      },
+      "target_audit_calls": 0,
+      "target_oracle_used_to_fit": false,
+      "target_outcomes_used_to_fit": false
+    },
+    {
+      "calibration_id": "source_task_lodo_aggregate_chi_square_upper_v1",
+      "calibration_multiplier": 1.0957240233077703,
+      "coordinate_id": "observable_provider_psi_A_N_v1",
+      "fit_wall_time_sec": 2.181083930998284,
+      "heldout": "FactorShockStatePolicyRZDT1",
+      "mode": "provider_cumulative_factor",
+      "source_archive_fingerprint": "40a2813576c8efe392f84b1250c53f37f85b55207836d888d5116d6718551e08",
+      "source_simulator_calls": 384,
+      "summary": {
+        "log_variance_rmse": {
+          "maximum": 0.2197944475723941,
+          "mean": 0.2185826831228165,
+          "median": 0.21868118023972594,
+          "minimum": 0.21751967362706628
+        },
+        "mean_predicted_to_true_ratio": {
+          "maximum": 1.2072351300550321,
+          "mean": 1.2070312884855292,
+          "median": 1.2070322788910277,
+          "minimum": 1.2067390112706626
+        },
+        "mean_upper_to_true_ratio": {
+          "maximum": 1.3227965337823793,
+          "mean": 1.3225731796777263,
+          "median": 1.3225742648888235,
+          "minimum": 1.3222529245119314
+        },
+        "upper_coverage": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "minimum": 1.0
+        },
+        "variance_rmse": {
+          "maximum": 0.0011935016279084935,
+          "mean": 0.0011886918162631256,
+          "median": 0.0011882630637314782,
+          "minimum": 0.0011849191804404117
+        },
+        "variance_shape_correlation": {
+          "maximum": 0.9228598104376492,
+          "mean": 0.9188848338194322,
+          "median": 0.9190108509115433,
+          "minimum": 0.9157213601096219
+        }
+      },
+      "target_audit_calls": 0,
+      "target_oracle_used_to_fit": false,
+      "target_outcomes_used_to_fit": false
+    },
+    {
+      "calibration_id": "source_task_lodo_chi_square_upper_v1",
+      "calibration_multiplier": 58.891897361987894,
+      "coordinate_id": "dimension_equivariant_profile_psi_v1",
+      "fit_wall_time_sec": 2.1282145449986274,
+      "heldout": "InventorySupplyChain",
+      "mode": "pooled",
+      "source_archive_fingerprint": "710ab75022cd67c45c2523e14d70b324e311751f1f6595b22e6224509afcf145",
+      "source_simulator_calls": 384,
+      "summary": {
+        "log_variance_rmse": {
+          "maximum": 0.5782536037149844,
+          "mean": 0.5773285235607022,
+          "median": 0.5773337079655388,
+          "minimum": 0.5762847178078813
+        },
+        "mean_predicted_to_true_ratio": {
+          "maximum": 1.7782808086000914,
+          "mean": 1.7767119276234182,
+          "median": 1.776808062877838,
+          "minimum": 1.7747883138252267
+        },
+        "mean_upper_to_true_ratio": {
+          "maximum": 104.72633086086938,
+          "mean": 104.63393648341795,
+          "median": 104.63959807095412,
+          "minimum": 104.52065121705077
+        },
+        "upper_coverage": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "minimum": 1.0
+        },
+        "variance_rmse": {
+          "maximum": 0.0007013601606007,
+          "mean": 0.0007005470407352292,
+          "median": 0.0007005633497267974,
+          "minimum": 0.0006998013732871823
+        },
+        "variance_shape_correlation": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "minimum": 0.0
+        }
+      },
+      "target_audit_calls": 0,
+      "target_oracle_used_to_fit": false,
+      "target_outcomes_used_to_fit": false
+    },
+    {
+      "calibration_id": "source_task_lodo_chi_square_upper_v1",
+      "calibration_multiplier": 64.03148653306593,
+      "coordinate_id": "dimension_equivariant_profile_psi_v1",
+      "fit_wall_time_sec": 3.2591990000000806,
+      "heldout": "InventorySupplyChain",
+      "mode": "cumulative_factor",
+      "source_archive_fingerprint": "710ab75022cd67c45c2523e14d70b324e311751f1f6595b22e6224509afcf145",
+      "source_simulator_calls": 384,
+      "summary": {
+        "log_variance_rmse": {
+          "maximum": 1.0057560860333923,
+          "mean": 1.0007665646191635,
+          "median": 1.000929342821521,
+          "minimum": 0.994308571252732
+        },
+        "mean_predicted_to_true_ratio": {
+          "maximum": 2.729410429172131,
+          "mean": 2.7155878135088853,
+          "median": 2.7158993635871824,
+          "minimum": 2.6984228064797193
+        },
+        "mean_upper_to_true_ratio": {
+          "maximum": 174.768207138745,
+          "mean": 173.88312451005217,
+          "median": 173.903073524695,
+          "minimum": 172.7840235936241
+        },
+        "upper_coverage": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "minimum": 1.0
+        },
+        "variance_rmse": {
+          "maximum": 0.001562274736511517,
+          "mean": 0.0015489350091055297,
+          "median": 0.0015494855799784457,
+          "minimum": 0.0015319160586410004
+        },
+        "variance_shape_correlation": {
+          "maximum": 0.13698089759362594,
+          "mean": 0.06054680434199013,
+          "median": 0.06969318784494923,
+          "minimum": -0.01745926834699859
+        }
+      },
+      "target_audit_calls": 0,
+      "target_oracle_used_to_fit": false,
+      "target_outcomes_used_to_fit": false
+    },
+    {
+      "calibration_id": "source_task_lodo_aggregate_chi_square_upper_v1",
+      "calibration_multiplier": 1.2694471496075272,
+      "coordinate_id": "observable_provider_psi_A_N_v1",
+      "fit_wall_time_sec": 2.4625301740015857,
+      "heldout": "InventorySupplyChain",
+      "mode": "provider_cumulative_factor",
+      "source_archive_fingerprint": "710ab75022cd67c45c2523e14d70b324e311751f1f6595b22e6224509afcf145",
+      "source_simulator_calls": 384,
+      "summary": {
+        "log_variance_rmse": {
+          "maximum": 0.3493677070014038,
+          "mean": 0.34891806948674786,
+          "median": 0.3489335778756972,
+          "minimum": 0.34841188175453425
+        },
+        "mean_predicted_to_true_ratio": {
+          "maximum": 1.4148575070576193,
+          "mean": 1.414235338161081,
+          "median": 1.4142763428608718,
+          "minimum": 1.4136117034789968
+        },
+        "mean_upper_to_true_ratio": {
+          "maximum": 1.796086829435107,
+          "mean": 1.7952970189028215,
+          "median": 1.7953490722020913,
+          "minimum": 1.7945053476332533
+        },
+        "upper_coverage": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "minimum": 1.0
+        },
+        "variance_rmse": {
+          "maximum": 0.0003740722282834552,
+          "mean": 0.0003738521949126958,
+          "median": 0.000373833470584884,
+          "minimum": 0.00037373810495304824
+        },
+        "variance_shape_correlation": {
+          "maximum": 0.971563536364278,
+          "mean": 0.9530653303009183,
+          "median": 0.9529642897361064,
+          "minimum": 0.9265469270683161
+        }
+      },
+      "target_audit_calls": 0,
+      "target_oracle_used_to_fit": false,
+      "target_outcomes_used_to_fit": false
+    },
+    {
+      "calibration_id": "source_task_lodo_chi_square_upper_v1",
+      "calibration_multiplier": 55.78145984216272,
+      "coordinate_id": "dimension_equivariant_profile_psi_v1",
+      "fit_wall_time_sec": 2.1948651150014484,
+      "heldout": "QueueResourceControl",
+      "mode": "pooled",
+      "source_archive_fingerprint": "5222c52f779d343ec92d5886627a9969ceadf4c8d0255d887c7846fb0d9b503c",
+      "source_simulator_calls": 384,
+      "summary": {
+        "log_variance_rmse": {
+          "maximum": 0.502234464596519,
+          "mean": 0.5014180511726625,
+          "median": 0.501346228678812,
+          "minimum": 0.5007672370634949
+        },
+        "mean_predicted_to_true_ratio": {
+          "maximum": 1.6444751947682956,
+          "mean": 1.6442733849691227,
+          "median": 1.6443232550252014,
+          "minimum": 1.6438785257686064
+        },
+        "mean_upper_to_true_ratio": {
+          "maximum": 91.73122703840036,
+          "mean": 91.71996979319205,
+          "median": 91.72275161772251,
+          "minimum": 91.69794397055513
+        },
+        "upper_coverage": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "minimum": 1.0
+        },
+        "variance_rmse": {
+          "maximum": 0.0006293186461718438,
+          "mean": 0.0006289885790709495,
+          "median": 0.0006289689087484738,
+          "minimum": 0.0006286976400226244
+        },
+        "variance_shape_correlation": {
+          "maximum": 0.0,
+          "mean": 0.0,
+          "median": 0.0,
+          "minimum": 0.0
+        }
+      },
+      "target_audit_calls": 0,
+      "target_oracle_used_to_fit": false,
+      "target_outcomes_used_to_fit": false
+    },
+    {
+      "calibration_id": "source_task_lodo_chi_square_upper_v1",
+      "calibration_multiplier": 56.660849383419475,
+      "coordinate_id": "dimension_equivariant_profile_psi_v1",
+      "fit_wall_time_sec": 3.223928438997973,
+      "heldout": "QueueResourceControl",
+      "mode": "cumulative_factor",
+      "source_archive_fingerprint": "5222c52f779d343ec92d5886627a9969ceadf4c8d0255d887c7846fb0d9b503c",
+      "source_simulator_calls": 384,
+      "summary": {
+        "log_variance_rmse": {
+          "maximum": 0.9450892543263198,
+          "mean": 0.9397639663652422,
+          "median": 0.9399911578668649,
+          "minimum": 0.9324040112899269
+        },
+        "mean_predicted_to_true_ratio": {
+          "maximum": 2.566063255106946,
+          "mean": 2.551997842840634,
+          "median": 2.5526863531310413,
+          "minimum": 2.5341804012789555
+        },
+        "mean_upper_to_true_ratio": {
+          "maximum": 145.39532360594177,
+          "mean": 144.59836540000452,
+          "median": 144.63737697786829,
+          "minimum": 143.5888140272804
+        },
+        "upper_coverage": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "minimum": 1.0
+        },
+        "variance_rmse": {
+          "maximum": 0.0015290206956961106,
+          "mean": 0.0015149893361824055,
+          "median": 0.0015156188695325636,
+          "minimum": 0.0014967149792095107
+        },
+        "variance_shape_correlation": {
+          "maximum": 0.08137401754731391,
+          "mean": 0.006462903029119835,
+          "median": 0.017110913057432356,
+          "minimum": -0.0889984376596552
+        }
+      },
+      "target_audit_calls": 0,
+      "target_oracle_used_to_fit": false,
+      "target_outcomes_used_to_fit": false
+    },
+    {
+      "calibration_id": "source_task_lodo_aggregate_chi_square_upper_v1",
+      "calibration_multiplier": 1.5548734235230321,
+      "coordinate_id": "observable_provider_psi_A_N_v1",
+      "fit_wall_time_sec": 2.36561489900123,
+      "heldout": "QueueResourceControl",
+      "mode": "provider_cumulative_factor",
+      "source_archive_fingerprint": "5222c52f779d343ec92d5886627a9969ceadf4c8d0255d887c7846fb0d9b503c",
+      "source_simulator_calls": 384,
+      "summary": {
+        "log_variance_rmse": {
+          "maximum": 0.2546688897685426,
+          "mean": 0.2539659497031278,
+          "median": 0.2538886435054629,
+          "minimum": 0.2533950130547977
+        },
+        "mean_predicted_to_true_ratio": {
+          "maximum": 1.2846547315980625,
+          "mean": 1.2845350563867233,
+          "median": 1.2845648177403062,
+          "minimum": 1.2842962408904557
+        },
+        "mean_upper_to_true_ratio": {
+          "maximum": 1.9974755005649416,
+          "mean": 1.9972894207593754,
+          "median": 1.9973356958971098,
+          "minimum": 1.9969180928911034
+        },
+        "upper_coverage": {
+          "maximum": 1.0,
+          "mean": 1.0,
+          "median": 1.0,
+          "minimum": 1.0
+        },
+        "variance_rmse": {
+          "maximum": 0.000278568400631666,
+          "mean": 0.00027834427469081694,
+          "median": 0.00027831891427584844,
+          "minimum": 0.0002781373253827224
+        },
+        "variance_shape_correlation": {
+          "maximum": 0.9960080594875622,
+          "mean": 0.995162367168296,
+          "median": 0.9952680400736422,
+          "minimum": 0.9934124277388086
+        }
+      },
+      "target_audit_calls": 0,
+      "target_oracle_used_to_fit": false,
+      "target_outcomes_used_to_fit": false
+    }
+  ],
+  "schema_version": 1,
+  "status": "complete"
+}
