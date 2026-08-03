@@ -48,3 +48,9 @@ def test_posthoc_submitter_is_cpu_only_and_diagnostic(tmp_path):
     assert not any("saas" in spec["cmd"].lower() for spec in specs)
     assert sum("--num-shards 3" in spec["cmd"] for spec in specs) == 3
     assert "--redact-policy-vectors" in specs[-1]["cmd"]
+    oos_specs = specs[1:-1]
+    assert all(".json.done" in spec["cmd"] for spec in oos_specs)
+    assert all(
+        path.endswith(".json.done")
+        for path in specs[-1]["wait_for_files"]
+    )

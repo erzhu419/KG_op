@@ -160,12 +160,15 @@ def build_specs(args):
     }]
 
     shard_paths = []
+    shard_done_markers = []
     for shard_index in range(int(args.num_shards)):
         out = (
             profile_root / "oos_shards"
             / f"shard{shard_index:03d}.json"
         )
+        done_marker = out.with_suffix(out.suffix + ".done")
         shard_paths.append(out)
+        shard_done_markers.append(done_marker)
         command = [
             *_sumo_env(args.cpu),
             *_execution_env(snapshot),
@@ -187,12 +190,24 @@ def build_specs(args):
             "--out", str(out),
             "--resume",
         ]
+        marker_command = [
+            str(REMOTE_PYTHON),
+            "-c",
+            (
+                "from pathlib import Path; "
+                f"Path({str(done_marker)!r}).write_text('done\\n', "
+                "encoding='utf-8')"
+            ),
+        ]
         specs.append({
             "description": (
                 "posthoc traffic universal-library OOS "
                 f"shard={shard_index}/{args.num_shards}"
             ),
-            "cmd": f"{shlex.join(command)} && echo DONE",
+            "cmd": (
+                f"{shlex.join(command)} && "
+                f"{shlex.join(marker_command)} && echo DONE"
+            ),
             "cwd": str(code_root),
             "signature": (
                 f"KG_op/traffic_universal_posthoc/{args.run_id}/"
@@ -236,7 +251,7 @@ def build_specs(args):
         "cpu": 1,
         "ram_mb": 4096,
         "allowed_nodes": list(CPU_NODES),
-        "wait_for_files": [str(path) for path in shard_paths],
+        "wait_for_files": [str(path) for path in shard_done_markers],
         "stage_input_paths": [static_input],
         "result_dir": str(audit_path.parent),
         "local_result_dir": str(audit_path.parent),
