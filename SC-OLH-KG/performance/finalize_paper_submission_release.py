@@ -51,7 +51,128 @@ def _require(condition, message, failures):
         failures.append(str(message))
 
 
+def _fraction_numerator(value):
+    numerator, separator, denominator = str(value).partition("/")
+    if not separator or int(denominator) <= 0:
+        raise ValueError("invalid HVD count fraction")
+    return int(numerator)
+
+
+def _compact_hvd_decision(hvd_causal_gate):
+    summaries = hvd_causal_gate.get("domain_summaries", {})
+    decision = hvd_causal_gate.get("decision", {})
+    if not summaries or not decision:
+        return None
+    if (
+        hvd_causal_gate.get("status") != "complete"
+        or int(hvd_causal_gate.get("paired_cells", 0)) != 60
+        or len(hvd_causal_gate.get("target_seeds", ())) != 20
+    ):
+        raise ValueError("compact HVD causal gate is incomplete")
+    contract = hvd_causal_gate.get("paired_contract", {})
+    if not (
+        contract.get("same_frozen_proposal") is True
+        and contract.get("same_source_archive") is True
+        and contract.get("same_independent_terminal_verifier") is True
+        and contract.get("only_changed_object") == "aleatoric_variance_head"
+        and contract.get("saas_used") is False
+        and contract.get("gpu_used") is False
+    ):
+        raise ValueError("compact HVD causal contract drifted")
+
+    calibration = []
+    feasibility = []
+    regret = []
+    false_certification = []
+    verification_cost = []
+    operational_gain = []
+    for domain, modes in sorted(summaries.items()):
+        pooled = modes.get("pooled", {})
+        factor = modes.get("provider_cumulative_factor", {})
+        if not pooled or not factor:
+            raise ValueError(f"compact HVD modes missing for {domain}")
+        calibration.append(bool(
+            float(factor["median_log_variance_rmse"])
+            < float(pooled["median_log_variance_rmse"])
+            and float(factor["median_variance_shape_correlation"])
+            > float(pooled["median_variance_shape_correlation"])
+        ))
+        pooled_feasible = _fraction_numerator(pooled["true_feasible"])
+        factor_feasible = _fraction_numerator(factor["true_feasible"])
+        feasibility.append(factor_feasible >= pooled_feasible)
+        pooled_regret = float(pooled["median_feasible_regret"])
+        factor_regret = float(factor["median_feasible_regret"])
+        regret.append(factor_regret <= pooled_regret + 1e-12)
+        pooled_false = int(pooled["false_certification_count"])
+        factor_false = int(factor["false_certification_count"])
+        false_certification.append(factor_false <= pooled_false)
+        pooled_cost = float(pooled["mean_verification_calls"])
+        factor_cost = float(factor["mean_verification_calls"])
+        verification_cost.append(factor_cost <= pooled_cost + 1e-12)
+        operational_gain.append(bool(
+            factor_feasible > pooled_feasible
+            or factor_regret < pooled_regret - 1e-12
+            or factor_false < pooled_false
+            or factor_cost < pooled_cost - 1e-12
+        ))
+    computed = {
+        "variance_calibration_and_shape_recovered_in_all_domains": all(
+            calibration),
+        "feasibility_noninferior_in_all_domains": all(feasibility),
+        "regret_noninferior_in_all_domains": all(regret),
+        "false_certification_noninferior_in_all_domains": all(
+            false_certification),
+        "verification_cost_noninferior_in_all_domains": all(
+            verification_cost),
+        "operational_gain_present": any(operational_gain),
+    }
+    expected_promotion = bool(all(computed.values()))
+    observed_promotion = bool(
+        decision.get("promote_hvd_as_core_contribution"))
+    if observed_promotion != expected_promotion:
+        raise ValueError(
+            "compact HVD promotion decision does not match numeric gate")
+    if (
+        decision.get(
+            "variance_calibration_and_shape_recovered_in_all_domains")
+        is not computed[
+            "variance_calibration_and_shape_recovered_in_all_domains"]
+        or decision.get("verification_cost_noninferior_in_all_domains")
+        is not computed[
+            "verification_cost_noninferior_in_all_domains"]
+    ):
+        raise ValueError("compact HVD decision summary disagrees with rows")
+    return {
+        "complete_pair_count": int(hvd_causal_gate["paired_cells"]),
+        "promote_hvd_as_core": expected_promotion,
+        "retain_optional": bool(
+            decision.get("retain_as_optional_risk_diagnostic")),
+        "computed_gate": computed,
+    }
+
+
+def _hvd_gate_summary(hvd_causal_gate):
+    compact = _compact_hvd_decision(hvd_causal_gate)
+    if compact is not None:
+        return compact
+    gate = hvd_causal_gate.get("gate", {})
+    return {
+        "complete_pair_count": int(gate.get("complete_pair_count", 0)),
+        "promote_hvd_as_core": bool(gate.get("promote_hvd_as_core")),
+        "retain_optional": bool(
+            gate.get("retain_as_domain_conditional_calibration_component")),
+        "computed_gate": None,
+    }
+
+
 def _hvd_release_role(hvd_causal_gate):
+    compact = _compact_hvd_decision(hvd_causal_gate)
+    if compact is not None:
+        if compact["promote_hvd_as_core"]:
+            return "core_cumulative_risk_calibration_contribution"
+        if compact["retain_optional"]:
+            return "optional_risk_calibration_and_certification_ablation"
+        return "mechanistic_negative_control_and_certification_ablation"
     gate = hvd_causal_gate.get("gate", {})
     domain_gates = hvd_causal_gate.get("domain_gates", {})
     expected_promotion = bool(
@@ -767,6 +888,7 @@ def build_release(
         raise ValueError(
             "paper release validation failed:\n- " + "\n- ".join(failures))
     hvd_release_role = _hvd_release_role(hvd_causal_gate)
+    hvd_gate_summary = _hvd_gate_summary(hvd_causal_gate)
     traffic_execution = traffic["execution_provenance"]
     paths = {
         "method_contract": Path(method_contract_path),
@@ -904,10 +1026,12 @@ def build_release(
         },
         "hvd_causal_decision": {
             "complete_pair_count": int(
-                hvd_causal_gate["gate"]["complete_pair_count"]),
+                hvd_gate_summary["complete_pair_count"]),
             "promote_hvd_as_core": bool(
-                hvd_causal_gate["gate"]["promote_hvd_as_core"]),
+                hvd_gate_summary["promote_hvd_as_core"]),
             "paper_role": hvd_release_role,
+            "numeric_gate_recomputed": (
+                hvd_gate_summary["computed_gate"] is not None),
         },
         "dimension_budget_frontier": {
             "dimensions": dimension_frontier["expected"]["dimensions"],

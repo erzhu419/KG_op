@@ -3,7 +3,11 @@ from pathlib import Path
 
 import pytest
 
-from performance.finalize_paper_submission_release import build_release
+from performance.finalize_paper_submission_release import (
+    _hvd_gate_summary,
+    _hvd_release_role,
+    build_release,
+)
 
 
 def _write(path, payload):
@@ -517,6 +521,54 @@ def test_release_accepts_preregistered_positive_hvd_decision(tmp_path):
     assert release["hvd_causal_decision"]["promote_hvd_as_core"] is True
     assert release["hvd_causal_decision"]["paper_role"] == (
         "core_cumulative_risk_calibration_contribution")
+
+
+def test_release_recomputes_compact_hvd_demotion_from_numeric_rows():
+    payload = {
+        "status": "complete",
+        "paired_cells": 60,
+        "target_seeds": list(range(80, 100)),
+        "paired_contract": {
+            "same_frozen_proposal": True,
+            "same_source_archive": True,
+            "same_independent_terminal_verifier": True,
+            "only_changed_object": "aleatoric_variance_head",
+            "saas_used": False,
+            "gpu_used": False,
+        },
+        "domain_summaries": {
+            "A": {
+                "pooled": {
+                    "true_feasible": "20/20",
+                    "false_certification_count": 0,
+                    "median_feasible_regret": 0.01,
+                    "mean_verification_calls": 100.0,
+                    "median_log_variance_rmse": 0.8,
+                    "median_variance_shape_correlation": 0.0,
+                },
+                "provider_cumulative_factor": {
+                    "true_feasible": "20/20",
+                    "false_certification_count": 0,
+                    "median_feasible_regret": 0.01,
+                    "mean_verification_calls": 101.0,
+                    "median_log_variance_rmse": 0.2,
+                    "median_variance_shape_correlation": 0.9,
+                },
+            },
+        },
+        "decision": {
+            "variance_calibration_and_shape_recovered_in_all_domains": True,
+            "verification_cost_noninferior_in_all_domains": False,
+            "promote_hvd_as_core_contribution": False,
+            "retain_as_optional_risk_diagnostic": True,
+        },
+    }
+    summary = _hvd_gate_summary(payload)
+    assert summary["promote_hvd_as_core"] is False
+    assert summary["computed_gate"][
+        "variance_calibration_and_shape_recovered_in_all_domains"] is True
+    assert _hvd_release_role(payload) == (
+        "optional_risk_calibration_and_certification_ablation")
 
 
 def test_release_rejects_unregistered_traffic_snapshot(tmp_path):
