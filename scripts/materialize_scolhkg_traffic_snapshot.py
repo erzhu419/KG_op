@@ -41,7 +41,12 @@ def _git(root, *args):
     ).strip()
 
 
-def snapshot_contract(repository_root, commit="HEAD"):
+def snapshot_contract(
+    repository_root,
+    commit="HEAD",
+    *,
+    method_contract_id=METHOD_CONTRACT_ID,
+):
     repository_root = Path(repository_root).resolve()
     full_commit = _git(repository_root, "rev-parse", str(commit))
     return {
@@ -70,7 +75,7 @@ def snapshot_contract(repository_root, commit="HEAD"):
             "rev-parse",
             f"{full_commit}:{TRAFFIC_BASELINE}",
         ),
-        "method_contract_id": METHOD_CONTRACT_ID,
+        "method_contract_id": str(method_contract_id),
         "theory_contract_id": THEORY_CONTRACT_ID,
         "tracked_paths": list(TRACKED_PATHS),
         "runtime_results_included": False,
@@ -89,7 +94,13 @@ def _validate_existing(path, expected):
     return observed
 
 
-def materialize(repository_root, output_root, *, commit="HEAD"):
+def materialize(
+    repository_root,
+    output_root,
+    *,
+    commit="HEAD",
+    method_contract_id=METHOD_CONTRACT_ID,
+):
     repository_root = Path(repository_root).resolve()
     output_root = Path(output_root).resolve()
     dirty = _git(
@@ -101,8 +112,19 @@ def materialize(repository_root, output_root, *, commit="HEAD"):
     if dirty:
         raise RuntimeError(
             "tracked worktree must be clean before freezing a snapshot")
-    contract = snapshot_contract(repository_root, commit)
-    target = output_root / contract["repository_commit"]
+    contract = snapshot_contract(
+        repository_root,
+        commit,
+        method_contract_id=method_contract_id,
+    )
+    suffix = ""
+    if str(method_contract_id) != METHOD_CONTRACT_ID:
+        normalized = "".join(
+            character if character.isalnum() or character in "-_" else "_"
+            for character in str(method_contract_id)
+        )
+        suffix = f"--{normalized}"
+    target = output_root / f"{contract['repository_commit']}{suffix}"
     contract = {**contract, "snapshot_root": str(target)}
     if target.exists():
         return _validate_existing(target, contract)
@@ -153,11 +175,16 @@ def main():
             "KG_op_traffic_code_snapshots"),
     )
     parser.add_argument("--commit", default="HEAD")
+    parser.add_argument(
+        "--method-contract-id",
+        default=METHOD_CONTRACT_ID,
+    )
     args = parser.parse_args()
     contract = materialize(
         args.repository_root,
         args.output_root,
         commit=args.commit,
+        method_contract_id=args.method_contract_id,
     )
     print(json.dumps(contract, indent=2, sort_keys=True))
 

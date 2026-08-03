@@ -60,6 +60,17 @@ def test_sparse_traffic_snapshot_contains_code_and_static_assets(tmp_path):
     assert (target / SNAPSHOT.TRAFFIC_BASELINE).is_file()
     assert not (target / "checkpoints").exists()
 
+    external = SNAPSHOT.materialize(
+        repository,
+        tmp_path / "snapshots",
+        method_contract_id="external_cpu_frontier_v1",
+    )
+    external_target = Path(external["snapshot_root"])
+    assert external["method_contract_id"] == "external_cpu_frontier_v1"
+    assert external_target != target
+    assert external_target.name.endswith("--external_cpu_frontier_v1")
+    assert (external_target / SNAPSHOT.MARKER).is_file()
+
     _write(repository / "SC-OLH-KG/tracked.txt", "dirty")
     with pytest.raises(RuntimeError, match="tracked worktree"):
         SNAPSHOT.materialize(repository, tmp_path / "snapshots")
