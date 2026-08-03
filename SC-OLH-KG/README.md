@@ -1,6 +1,11 @@
-# SC-OLH-KG
+# Transferable Risk-Objective Atlas
 
-State-Coupled Orthogonal Latent Heteroscedastic Knowledge Gradient prototype.
+This directory grew from the SC-OLH-KG prototype, but the frozen Operations
+Research method is now deliberately narrower.  Its novel component is a
+source-learned, dimension-equivariant risk-objective proposal atlas.  The
+online optimizer is replaceable, and deployment is decided by an independent
+terminal verifier.  KG, cumulative HVD, manifold, and transformer variants are
+retained as ablations rather than headline contributions.
 
 This directory is intentionally separate from the original `KG_op` code.  It
 contains a minimal, testable implementation path:
@@ -20,33 +25,36 @@ contains a minimal, testable implementation path:
 Generated outputs should go under `results/`, `profiles/`, or `checkpoints/`;
 those directories are ignored by git.
 
-## Promoted Baselines
+## Frozen Paper Method
 
-V51 `balanced4` remains the equal-search-budget performance baseline:
-posterior-central, posterior-nominal exact joint evaluate-or-replicate VOI
-with four candidate new actions and up to four eligible replications. Its
-machine-readable record is `performance/promoted_baseline.json`.
+The immutable method contract is
+`performance/manifests/paper_final_method_v1.json`:
 
-V64 is the promoted certified-deployment baseline. It freezes V51's posterior
-primary plus one cumulative-risk safe-interior support, then applies
-independent noncentral-t Gaussian-quantile verification with precommitted
-80/96 replication budgets and familywise error 0.05. Its record is
-`performance/promoted_certificate_baseline.json`; its profile key is
-`v64_powered_safe_interior_verification` in
-`scripts/submit_scolhkg_v53_constrained_certificate_gate_scheduler.py`.
+1. two source domains, 64 policies per domain, and three replications per
+   policy give 384 source calls;
+2. a low-frequency risk-objective atlas is learned under leave-one-domain-out
+   transfer and frozen before target outcomes;
+3. V3 admits a normalized endpoint only when every source task agrees on the
+   chance-margin direction, otherwise it fails closed to the V1 atlas;
+4. the target receives `n0=10` atlas points and 13 total search calls;
+5. canonical BoTorch SAASBO is the registered replaceable backend;
+6. an independent ordered three-policy verifier controls familywise unsafe
+   deployment and separately guards an already safe objective incumbent.
 
-Across FactorShock, Inventory, and Queue at `d=1000`, `N=20`, `n0=10`, and 20
-seeds per domain, V51 produced 60/60 truly feasible recommendations, zero
-adaptive losses, and 19 improvements over the source-informed initial design.
-The source archive uses 384 oracle-free source calls and no target label or
-target oracle enters the frozen proposal or online decision.
+At `d=1000`, the frozen atlas gives 60/60 independently certified deployments
+with zero false certificates in FactorShock, Inventory, and Queue.  The same
+front end remains 30/30 certified at `d=10000`.  An untouched 20-seed OPSD
+storage-reliability confirmation gives 20/20 certificates, zero false
+certificates, and 20/20 paired objective wins against common Sobol under the
+same neutral continuation and verifier.
 
-On untouched seeds 60--79 at `d=1000`, `N_search=13`, and `n0=10`, V64
-certified 60/60 deployments with zero false certificates. Against its
-identical-search V51 control it produced 14 wins, 0 losses, 46 ties, and three
-feasibility rescues. Verification used 102.4 calls on average and at most 176;
-these calls are separate from the search budget and must be included in total
-simulation-cost reporting.
+Every result must report source, initial target, adaptive search,
+verification, and total calls separately.  `N=13` is the target search budget,
+not the total data cost.
+
+The final proof spine is summarized in `../proof/final_or_theory.md`.  Legacy
+V51/V64 and SC-OLH-KG acquisition results remain reproducible historical
+ablations; they are not the frozen paper method.
 
 ## Quick Commands
 

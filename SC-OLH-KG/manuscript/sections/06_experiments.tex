@@ -1,0 +1,119 @@
+\section{Experimental Design}\label{sec:experiments}
+
+\subsection{Evaluation Questions}
+
+The experiment matrix is organized around five preregistered questions.
+
+\begin{enumerate}[label=Q\arabic*.]
+\item Does the frozen atlas, rather than the online backend, cause feasible-
+basin coverage?
+\item Are both universal support and source templates needed?
+\item How does the method compare with transfer methods receiving the same
+source archive and target budget, and with target-only methods receiving the
+same total search cost?
+\item Does performance persist as raw dimension and the ratio $d/N$ increase?
+\item Does the structural coordinate transfer to a held-out real-data control
+problem, and what happens against an obvious structured control?
+\end{enumerate}
+
+A sixth diagnostic asks whether cumulative factor-HVD improves variance fit or
+operational optimization.  It was governed by a promotion rule requiring both
+calibration improvement and at least one operational gain without harm.
+
+\subsection{Synthetic Task Family}
+
+We use three chance-constrained policy families.  Each policy has integer
+entries in $\{0,\ldots,100\}$, giving $101^d$ raw alternatives.
+
+\begin{description}[leftmargin=1.2em,style=nextline]
+\item[FactorShock.] The objective and constraint depend on coarse policy level,
+tail level, and dispersion.  Constraint noise contains three local exposures
+(level gap, tail gap, and spread) and two correlated shared-shock exposures
+(oscillation and tail shock), with the exact cumulative form in
+\eqref{eq:hvd}.
+
+\item[Inventory.] The policy is divided into stock, reorder, and safety-stock
+blocks.  The objective balances holding, backlog, reorder, and safety losses;
+the chance constraint represents service reliability.  Local variance
+exposures are backlog, holding, and stockout, while demand level and demand
+volatility are shared shocks.
+
+\item[Queue.] The policy is divided into capacity, priority, and smoothing
+blocks.  The objective balances waiting and resource costs, and the chance
+constraint defines a safe operating pocket.  Local exposures are queue, wait,
+and utilization; shared exposures are arrival bursts and common load.
+\end{description}
+
+These are not arbitrary high-dimensional functions.  They deliberately embed
+different operations mechanisms in normalized, low-dimensional policy
+summaries and heteroscedastic noise.  Their role is to test whether a
+dimension-equivariant profile learned from two mechanisms transfers to the
+third.  In each leave-one-domain-out fold, the other two domains form the
+source archive.  Each target domain uses 20 independent simulation seeds
+(80--99) at $d=1000$ and fixed registered geometry.  Truth is evaluated only
+post-run.  The extreme-dimension study uses ten seeds per domain at $d=10000$.
+
+\subsection{External Electricity-Storage Holdout}
+
+The external study uses hourly load, forecast, and price series from Open Power
+System Data \citep{OPSD2020}.  A $d=1000$ integer profile controls storage
+reserve and state-of-charge behavior.  The simulator includes charge and
+discharge limits, round-trip efficiency, reserve floor, cycling cost, spill,
+and unserved-energy penalties.  The chance constraint limits the fraction of
+unserved demand windows.
+
+The source markets are Austria 2017 and Denmark DK1 2017.  Denmark DK2 2018 is
+the development target.  Great Britain 2018 is opened once as the untouched
+20-seed confirmatory target.  The source-monotone endpoint rule is decided
+before Great Britain outcomes.  Search, audit, and verification use separated
+calendar samples.  We compare the frozen atlas at $N=13$ with (i) a natural
+constant-policy low-frequency grid at $N=13$, added as a post-confirmatory
+fairness audit, and (ii) common Sobol with $N=397$, equal to 384 source plus 13
+target-search calls.
+
+\subsection{Methods and Fairness Contracts}
+
+The frontend/backend factorial uses two initial designs: the frozen atlas and
+common Sobol.  Each is paired with proposal-only selection, a stacked transfer
+GP, and canonical SAASBO.  Canonical means a BoTorch
+\texttt{SaasFullyBayesianSingleTaskGP} refit at every adaptive iteration
+\citep{BalandatEtAl2020,ErikssonJankowiak2021}; periodic-capped SAAS appears
+only as a separately named target-only computational control.
+
+Archive-fair transfer comparisons receive the same 384 source calls, frozen
+$n_0=10$ initial design, target seeds, $N=13$ target-search calls, and terminal
+verifier.  They include Safe F-PACOH, RGPE, stacked GP, transfer multi-task GP,
+FSBO, HyperBO, MetaBO, and MALIBO.  Official code paths are used with documented
+compatibility adaptations to the scalar constrained interface.  Target-only
+TuRBO, SCBO, and periodic-capped SAAS receive $N=397$ target-search calls, equal
+to the final method's source-plus-target search cost.  All final comparisons
+use the same independent verifier.
+
+The frontend component ablation retrains and regenerates every proposal from
+the same source archive.  It compares universal support only, source templates
+only, and their combined maximin atlas.  This is the supported structural
+ablation.  Earlier orthogonality, sparsity, additive, manifold, transformer,
+KG, and Thompson-sampling variants remain development diagnostics and are not
+recast as coequal contributions.
+
+\subsection{Verification, Metrics, and Inference}
+
+The synthetic verifier uses an ordered three-policy shortlist with candidate
+budgets 80, 128, and 128, familywise error 0.05, and a fresh paired objective
+guard when switching incumbents.  It may stop after the first candidate.
+Consequently, verification calls are variable and are reported as a cost,
+not normalized away.  The energy verifier uses 80 fresh windows in its first
+stage and the exact binomial/Clopper--Pearson rule in Proposition
+\ref{prop:binomial}.
+
+We report true-feasible recommendations, independently certified
+recommendations, false certificates, feasible regret conditional on true
+feasibility, and verification cost.  Post-run HVD diagnostics report
+log-variance RMSE and variance-shape correlation over a fixed audit set.  The
+statistical plan uses paired seeds, 10,000-sample bootstrap intervals for
+median paired differences, exact McNemar tests for paired binary outcomes,
+Wilcoxon signed-rank tests for paired continuous outcomes, and Holm adjustment
+within preregistered confirmatory families.  Domain strata are descriptive
+heterogeneity analyses, not separate confirmatory families.  Failed and timed-
+out runs remain in the immutable registry; all release-required cells used
+below are complete.

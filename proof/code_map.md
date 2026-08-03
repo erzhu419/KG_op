@@ -9,6 +9,15 @@ SCBO, and posterior sampling are interchangeable backend comparisons rather
 than theorem identities.  The matching no-free-lunch result is
 `SCOLHKG.Real.finite_budget_no_unconditional_target_coverage`.
 
+The promoted V3 endpoint is mapped separately rather than hidden inside that
+umbrella theorem.  `source_monotone_envelope_candidate` reads only frozen
+source margins and an unlabeled target descriptor.  Source disagreement
+returns `None`, so the materialized V3 design is exactly V1; agreement admits
+one endpoint, whose target safety is conditional on transferred monotonicity.
+The corresponding Lean contracts are
+`paper_final_v3_fail_closed_contract` and
+`paper_final_v3_admitted_endpoint_contract`.
+
 Provider-coordinate cumulative HVD is retained below because its algebra,
 estimation, and certification bridges are formally valid and its variance
 recovery improved in the registered causal replay.  That replay did not show
@@ -36,6 +45,10 @@ a per-replicate error proxy to the uniform variance-target event consumed by
 | Theory object | Current code object | Status |
 | --- | --- | --- |
 | Decision vector `x` | `problem` candidates, integer tuples | Implemented |
+| V3 source-monotone endpoint | `LearnedMetaPrior.source_monotone_envelope_candidate` and `protect_source_monotone_envelope=True` | `SourceMonotoneEnvelope.lean` proves source-label noninterference, exact fail-closed identity, fixed-cardinality replacement, and endpoint safety under explicit transferred monotonicity |
+| Final three-policy safety verifier | `core.terminal_verification.verify_frozen_shortlist` with candidate budgets `80,128,128` | `optimizer_agnostic_three_policy_false_deployment_probability_le` proves method-independent familywise control from candidate-wise allocations |
+| V69 objective incumbent guard | `verify_paired_objective_dominance` and `terminal_objective_incumbent_guard=True` | `objective_guard_switch_is_correct_on_upper_coverage`, `false_objective_switch_probability_le`, and the joint three-policy/objective theorem bound incorrect deployment or switching |
+| OPSD exact-binomial verifier | `performance.benchmark_external_energy_gate._binomial_lower` on independent calendar-year windows | `ExactBinomialCertificate.lean` proves the exact binomial all-success mass, unsafe-policy bound, and finite familywise spending; Python regression tests bind the registered Clopper--Pearson threshold to the all-success first-stage rule |
 | Policy-state summary `s(x)` | `policy_state(x)`, `SyntheticPolicyStateEncoder`, `SelfSupervisedPolicyStateEncoder` | Synthetic and learned encoder paths implemented |
 | Provider coordinate `psi(x)=(A(x),N(x))` | `core.cumulative_risk.CumulativeRiskFeatureProvider` / `RiskExposure` | Implemented as the main interface |
 | Observable state/trajectory record `e(x)` | `representation.observable_exposure.ObservableStateExposure` and each domain's `observable_state_exposure` adapter | Reads only declared control/state groups, occupancy, transitions, and low-frequency trajectory summaries; no target outcome or target risk provider |

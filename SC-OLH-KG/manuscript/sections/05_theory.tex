@@ -1,0 +1,199 @@
+\section{Coverage and Verification Guarantees}\label{sec:theory}
+
+This section separates three claims that are often conflated: a finite
+proposal cannot cover arbitrary targets; it can cover targets satisfying a
+structural transfer condition; and a recommendation can be verified without
+assuming the search model is correct.  Complete machine-checked statements are
+mapped to the implementation in Appendix \ref{app:lean}.
+
+\subsection{Why an Explicit Transfer Condition Is Necessary}
+
+\begin{theorem}[Finite-atlas no-free-lunch]\label{thm:nfl}
+Let $\cX$ be finite and let $\cA\subsetneq\cX$ be any proper proposal atlas
+frozen before target labels.  There exists a nonempty feasible set
+$\cF\subseteq\cX$ such that $\cA\cap\cF=\varnothing$.
+\end{theorem}
+
+\begin{proof}
+Choose $x_0\in\cX\setminus\cA$ and set $\cF=\{x_0\}$.  Then $\cF$ is
+nonempty and is missed by $\cA$.
+\end{proof}
+
+Theorem \ref{thm:nfl} is elementary but decisive.  Neither source learning nor
+a nonlinear encoder can guarantee that ten target-label-free proposals hit an
+arbitrary feasible set.  A positive result must identify what transfers.
+
+\subsection{Aligned Geometric Atlas Coverage}
+
+Let $\etaStar$ be an ideal transferable coordinate and $\etaHat$ the coordinate
+learned from source information.  Let $\cS$ be the finite source-support
+library and $\atlas\subseteq\cS$ the selected atlas.  Distances below are in
+the common coordinate space.
+
+\begin{assumption}[Atlas coverage]\label{ass:atlas-cover}
+For every $s\in\cS$, there is $a\in\atlas$ such that
+$\|\etaHat(s)-\etaHat(a)\|\le r_{\mathrm{cover}}$, with
+$|\atlas|\le n_0$.
+\end{assumption}
+
+\begin{assumption}[Coordinate approximation]\label{ass:coordinate}
+For each relevant policy $x$,
+$\|\etaHat(x)-\etaStar(x)\|\le\epsilon_\eta$.
+\end{assumption}
+
+\begin{assumption}[Source-target support]\label{ass:support}
+There exists a target-safe center $x_c$ and a source-support policy
+$s_c\in\cS$ such that
+$\|\etaStar(x_c)-\etaStar(s_c)\|\le\Delta_{\mathrm{task}}$.
+\end{assumption}
+
+\begin{assumption}[One-sided margin regularity and safe depth]
+\label{ass:margin}
+The target chance margin satisfies
+\begin{equation}\label{eq:lipschitz}
+ m_q(x)\le m_q(y)+L_m\|\etaHat(x)-\etaHat(y)\|
+\end{equation}
+for relevant $x,y$, and $m_q(x_c)+\gamma\le0$ for some $\gamma>0$.
+\end{assumption}
+
+\begin{theorem}[Aligned finite-atlas coverage]\label{thm:coverage}
+Under Assumptions \ref{ass:atlas-cover}--\ref{ass:margin}, if
+\begin{equation}\label{eq:coverage-condition}
+ L_m\bigl(r_{\mathrm{cover}}+\Delta_{\mathrm{task}}
+       +2\epsilon_\eta\bigr)\le\gamma,
+\end{equation}
+then at least one $a\in\atlas$ is feasible for the target task.
+\end{theorem}
+
+\begin{proof}
+Assumptions \ref{ass:coordinate} and \ref{ass:support}, followed by the
+triangle inequality, place $s_c$ within
+$\Delta_{\mathrm{task}}+2\epsilon_\eta$ of $x_c$ in the learned coordinate.
+Assumption \ref{ass:atlas-cover} supplies $a\in\atlas$ at an additional
+distance at most $r_{\mathrm{cover}}$.  By \eqref{eq:lipschitz} and
+\eqref{eq:coverage-condition},
+\[
+ m_q(a)\le m_q(x_c)+L_m(r_{\mathrm{cover}}+Delta_{\mathrm{task}}
+ +2\epsilon_\eta)\le -\gamma+\gamma=0.
+\]
+Thus $a$ is feasible.
+\end{proof}
+
+\begin{corollary}[Nominal-dimension independence]\label{cor:dimension}
+If $r_{\mathrm{cover}}$, $\Delta_{\mathrm{task}}$, $\epsilon_\eta$, $L_m$,
+and $\gamma$ remain controlled as $d$ changes, the sufficient condition
+\eqref{eq:coverage-condition} does not depend on $d$.
+\end{corollary}
+
+Corollary \ref{cor:dimension} is a conditional effective-dimension result, not
+an assertion that the constants are automatically stable.  The finite-library
+post-run audit verifies positive slack in all three synthetic domains (Table
+\ref{tab:coverage-audit}) under registered library quantities.  It does not
+certify a global Lipschitz constant for every policy, so the global theorem
+remains an explicit modeling condition.
+
+\begin{table}[t]
+\centering
+\caption{Post-run finite-library coverage audit.  Slack is safe radius minus
+the audited atlas/support radius.  These diagnostics were not used for target
+selection.}
+\label{tab:coverage-audit}
+\input{tables/coverage_audit}
+\end{table}
+
+\subsection{Fail-Closed Monotone Extension}
+
+Let $U$ and $L$ denote the upper and lower normalized constant policies.  The
+source-monotone test of Section \ref{sec:atlas} either replaces one atlas entry
+with an admitted endpoint or returns the base atlas unchanged.
+
+\begin{proposition}[Fail-closed identity and budget]\label{prop:failclosed}
+If neither source direction satisfies the admission threshold, the extension
+returns the base atlas exactly.  In all cases its cardinality is at most $n_0$.
+\end{proposition}
+
+\begin{proposition}[Transferred endpoint safety]\label{prop:endpoint}
+Suppose all source tasks admit $U$, the target margin is nonincreasing in the
+zero-frequency coordinate, and $U$ is coordinate-wise maximal.  If any target
+policy is feasible, then $U$ is feasible.  A symmetric statement holds for
+the admitted lower endpoint and a nondecreasing target margin.
+\end{proposition}
+
+\begin{proof}
+For a feasible witness $x_s$, maximality gives
+$\bar z(x_s)\le\bar z(U)$.  Target monotonicity gives
+$m_q(U)\le m_q(x_s)\le0$.  The lower-endpoint case reverses the order.
+\end{proof}
+
+The source rank statistic is only the admission rule.  Target monotonicity is
+the additional identifiability condition and is not inferred by logic alone.
+
+\subsection{Optimizer-Independent Terminal Verification}
+
+After search, the backend freezes an ordered shortlist of at most three
+policies: an objective challenger, the backend recommendation, and a
+safe-interior support policy.  Candidate $j$ is tested with fresh samples and
+error allocation $\delta_j$.  Let $E_j$ be the event that candidate $j$ is
+certified even though it is unsafe.
+
+\begin{theorem}[Ordered-shortlist safety]\label{thm:verifier}
+If $\Prob(E_j)\le\delta_j$ for every frozen candidate, then the probability
+that the first certified shortlist member is unsafe is at most
+$\sum_j\delta_j$.
+\end{theorem}
+
+\begin{proof}
+Unsafe deployment implies $E_j$ for at least one candidate that could be
+selected.  The union bound yields the result; no property of the optimizer is
+used.
+\end{proof}
+
+The challenger can replace a certified incumbent only if a one-sided upper
+confidence bound on their paired objective difference is negative.  Let
+$\delta_{\mathrm{obj}}$ bound failure of that objective upper bound.
+
+\begin{corollary}[Joint deployment and switch bound]\label{cor:joint}
+If $\sum_j\delta_j\le\delta_{\mathrm{safe}}$, then the probability of unsafe
+deployment or an incorrect objective switch is at most
+$\delta_{\mathrm{safe}}+\delta_{\mathrm{obj}}$.
+\end{corollary}
+
+The implementation spends familywise error $0.05$ across the frozen shortlist
+and uses eight fresh paired objective replications per compared policy when an
+objective switch is attempted.  Verification samples never update the search
+posterior.
+
+For the external energy experiment, one verification replication is a fresh
+calendar window and success means satisfying the reliability requirement in
+that window.  If $K\sim\mathrm{Binomial}(n,p)$, the probability of $n$ successes
+is $p^n$.
+
+\begin{proposition}[Exact all-success certificate]\label{prop:binomial}
+For any infeasible reliability probability $p\le p_{\mathrm{req}}$,
+\begin{equation}
+ \Prob_p(K=n)=p^n\le p_{\mathrm{req}}^n.
+\end{equation}
+Error spending over a frozen finite shortlist gives the corresponding
+familywise bound.
+\end{proposition}
+
+The registered first stage uses 80 independent windows.  At the 0.95 required
+probability and registered confidence level, the one-sided Clopper--Pearson
+rule certifies only the all-success count; the implementation equivalence is
+regression tested and Proposition \ref{prop:binomial} is machine checked from
+the binomial law.
+
+\subsection{Optional Cumulative Heteroscedastic Calibration}
+
+Some simulation tasks provide observable local exposures $A(x)$ and shared
+shock exposures $N(x)$.  The optional cumulative factor model is
+\begin{equation}\label{eq:hvd}
+ v_C(x)=A(x)^\top\Lambda A(x)+N(x)^\top B N(x)
+       +N(x)^\top\omega+v_0,
+\end{equation}
+with nonnegative diagonal $\Lambda$, positive-semidefinite $B$, and projected
+nonnegative linear/floor terms.  This decomposition recovers local,
+shared-shock, linear, and floor contributions and is used only in the HVD
+diagnostic.  The primary atlas and verifier do not require it.  The distinction
+matters because better variance fit is not the same as better optimization;
+Section \ref{sec:hvd-results} reports both outcomes.

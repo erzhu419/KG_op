@@ -18,6 +18,7 @@ import SCOLHKG.Measure.ResidualSquareConcentration
 import SCOLHKG.Measure.ResidualSquareTail
 import SCOLHKG.Measure.SubGaussianConfidence
 import SCOLHKG.Measure.TaskPACBayes
+import SCOLHKG.Measure.ExactBinomialCertificate
 import SCOLHKG.Measure.TwoStageDecision
 import SCOLHKG.Measure.PosteriorKG
 import SCOLHKG.Measure.ProbabilityEvents
@@ -33,6 +34,7 @@ import SCOLHKG.Real.BoundaryFamilySemiparametricCertificate
 import SCOLHKG.Real.BoundaryExcitation
 import SCOLHKG.Real.BoundaryCoordinateSufficiency
 import SCOLHKG.Real.SourceConsensusCommit
+import SCOLHKG.Real.SourceMonotoneEnvelope
 import SCOLHKG.Real.Certification
 import SCOLHKG.Real.ConstrainedCertificateDeficit
 import SCOLHKG.Real.CertificationImplementation

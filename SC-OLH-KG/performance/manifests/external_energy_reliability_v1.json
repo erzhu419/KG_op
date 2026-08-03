@@ -180,6 +180,25 @@
     "paired_median_relative_objective_improvement": 0.36158802769476317,
     "method_repair_after_target_opened": false
   },
+  "postconfirmatory_fairness_audit": {
+    "status": "complete_retained_without_method_repair",
+    "artifact": "performance/manifests/external_energy_postconfirmatory_fairness_result_v1.json",
+    "confirmatory_claim_eligible": false,
+    "frozen_source_atlas_vs_natural_low_frequency_grid": {
+      "frozen_wins": 9,
+      "frozen_losses": 11,
+      "one_sided_exact_sign_pvalue": 0.7482776641845703,
+      "median_frozen_minus_grid_objective": 0.0009446176071231938,
+      "interpretation": "No external source-learning superiority claim is supported over this domain-natural structural control."
+    },
+    "frozen_source_atlas_vs_equal_total_cost_common_sobol": {
+      "frozen_wins": 20,
+      "frozen_losses": 0,
+      "one_sided_exact_sign_pvalue": 9.5367431640625e-07,
+      "median_frozen_minus_sobol_objective": -0.05331366820773416,
+      "interpretation": "The frozen structural atlas retains a target-performance advantage over unstructured Sobol even when all 384 source calls are reassigned to target search."
+    }
+  },
   "post_gate_no_regression_requirement": {
     "required_before_frontend_promotion": true,
     "domains": [
@@ -200,7 +219,9 @@
   "decision_contract": {
     "confirmatory_target_frozen_before_outcomes": true,
     "posthoc_outcomes_do_not_select_or_modify_the_method": true,
-    "sumo_negative_result_retained": true
+    "sumo_negative_result_retained": true,
+    "postconfirmatory_structured_control_retained": true,
+    "external_source_learning_superiority_over_natural_grid_claim_allowed": false
   },
   "hvd_role": "secondary_pooled_vs_cumulative_calibration_ablation_only",
   "manuscript_generation_performed": false

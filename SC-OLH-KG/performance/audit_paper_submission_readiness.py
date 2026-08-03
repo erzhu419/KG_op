@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed audit of the frozen evidence without drafting a manuscript."""
+"""Fail-closed audit of frozen evidence and an optional manuscript receipt."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ except ModuleNotFoundError:
     )
 
 
-CONTRACT_ID = "or_submission_readiness_without_manuscript_v1"
+CONTRACT_ID = "or_submission_readiness_v2"
 
 
 def _sha256(path):
@@ -67,6 +67,8 @@ def build_readiness(
     hvd_causal_gate_path,
     dimension_evidence_path,
     external_disposition_path,
+    external_fairness_path,
+    manuscript_receipt_path=None,
 ):
     paths = {
         "method_contract": Path(method_contract_path),
@@ -79,7 +81,10 @@ def build_readiness(
         "hvd_causal_gate": Path(hvd_causal_gate_path),
         "dimension_evidence": Path(dimension_evidence_path),
         "external_disposition": Path(external_disposition_path),
+        "external_fairness": Path(external_fairness_path),
     }
+    if manuscript_receipt_path is not None:
+        paths["manuscript_receipt"] = Path(manuscript_receipt_path)
     payloads = {name: _read(path) for name, path in paths.items()}
     method = payloads["method_contract"]
     registry = payloads["experiment_registry"]
@@ -91,6 +96,8 @@ def build_readiness(
     hvd = payloads["hvd_causal_gate"]
     dimension = payloads["dimension_evidence"]
     external = payloads["external_disposition"]
+    external_fairness = payloads["external_fairness"]
+    manuscript_receipt = payloads.get("manuscript_receipt")
 
     failures = []
     explicit_required_tracks = [
@@ -251,12 +258,32 @@ def build_readiness(
         and external.get("decision_contract", {}).get(
             "posthoc_outcomes_do_not_select_or_modify_the_method") is True
     )
+    external_fairness_closed = bool(
+        external_fairness.get("status") == "complete"
+        and external_fairness.get("confirmatory_claim_eligible") is False
+        and len(external_fairness.get("compact_rows", ())) == 60
+        and external_fairness.get("decision", {}).get(
+            "method_repair_allowed") is False
+        and external_fairness.get("decision", {}).get(
+            "source_atlas_superior_to_natural_low_frequency_control")
+        is False
+        and external_fairness.get("decision", {}).get(
+            "source_atlas_superior_to_target_only_sobol_at_equal_source_plus_search_cost")
+        is True
+        and sum(bool(row.get("false_certificate"))
+                for row in external_fairness.get("compact_rows", ())) == 0
+    )
     _check(
         legacy_external_failed or external_energy_passed,
         "external-validity disposition is neither fail-closed nor confirmed",
         failures,
     )
     if external_energy_passed:
+        _check(
+            external_fairness_closed,
+            "post-confirmatory external-energy fairness audit is incomplete",
+            failures,
+        )
         _check(
             method.get("claim_boundaries", {}).get("external_energy")
             and method.get("supporting_evidence", {}).get(
@@ -291,6 +318,22 @@ def build_readiness(
         status = "blocked_by_external_validity"
     else:
         status = "evidence_complete"
+    manuscript_complete = bool(
+        manuscript_receipt is not None
+        and manuscript_receipt.get("contract_id")
+        == "or_manuscript_compilation_receipt_v1"
+        and manuscript_receipt.get("status") == "pass"
+        and manuscript_receipt.get("compile", {}).get("executed") is True
+        and int(manuscript_receipt.get("compile", {}).get(
+            "returncode", -1)) == 0
+        and not manuscript_receipt.get("failures")
+        and int(manuscript_receipt.get(
+            "journal_format_checks", {}).get(
+                "abstract_word_count", 10**9)) <= 200
+        and int(manuscript_receipt.get(
+            "journal_format_checks", {}).get(
+                "body_pages_excluding_references", 10**9)) <= 30
+    )
 
     registry_sha256 = _sha256(registry_path)
     return {
@@ -298,7 +341,9 @@ def build_readiness(
         "contract_id": CONTRACT_ID,
         "status": status,
         "ready_for_manuscript_lock": status == "evidence_complete",
-        "manuscript_generation_performed": False,
+        "manuscript_generation_performed": manuscript_complete,
+        "ready_for_submission_packaging": bool(
+            status == "evidence_complete" and manuscript_complete),
         "non_external_failure_count": len(failures),
         "non_external_failures": failures,
         "external_blockers": external_blockers,
@@ -350,6 +395,18 @@ def build_readiness(
                     int(confirmation.get("frozen_false_certificates", 0))
                     if external_energy_passed else None
                 ),
+                "postconfirmatory_fairness_closed": bool(
+                    external_fairness_closed),
+                "source_atlas_beats_natural_low_frequency_control": (
+                    external_fairness.get("decision", {}).get(
+                        "source_atlas_superior_to_natural_low_frequency_control")
+                    if external_energy_passed else None
+                ),
+                "source_atlas_beats_equal_total_cost_sobol": (
+                    external_fairness.get("decision", {}).get(
+                        "source_atlas_superior_to_target_only_sobol_at_equal_source_plus_search_cost")
+                    if external_energy_passed else None
+                ),
             },
             "lean": {
                 "source_count": int(proof.get("lean_source_count", 0)),
@@ -358,6 +415,23 @@ def build_readiness(
                 "lake_build_returncode": int(
                     proof.get("build", {}).get("returncode", -1)),
             },
+            "manuscript": (
+                {
+                    "status": manuscript_receipt.get("status"),
+                    "abstract_word_count": manuscript_receipt.get(
+                        "journal_format_checks", {}).get(
+                            "abstract_word_count"),
+                    "body_pages_excluding_references": (
+                        manuscript_receipt.get(
+                            "journal_format_checks", {}).get(
+                                "body_pages_excluding_references")
+                    ),
+                    "pdf_sha256": manuscript_receipt.get(
+                        "pdf", {}).get("sha256"),
+                }
+                if manuscript_receipt is not None
+                else {"status": "not_supplied"}
+            ),
         },
         "artifact_sha256": {
             name: _sha256(path) for name, path in paths.items()
@@ -384,6 +458,8 @@ def main():
     parser.add_argument("--hvd-causal-gate", required=True)
     parser.add_argument("--dimension-evidence", required=True)
     parser.add_argument("--external-disposition", required=True)
+    parser.add_argument("--external-fairness", required=True)
+    parser.add_argument("--manuscript-receipt")
     parser.add_argument("--out", required=True)
     parser.add_argument("--out-registry-overlay", required=True)
     args = parser.parse_args()
@@ -398,6 +474,8 @@ def main():
         hvd_causal_gate_path=args.hvd_causal_gate,
         dimension_evidence_path=args.dimension_evidence,
         external_disposition_path=args.external_disposition,
+        external_fairness_path=args.external_fairness,
+        manuscript_receipt_path=args.manuscript_receipt,
     )
     _atomic_json(args.out, readiness)
     _atomic_json(args.out_registry_overlay, readiness["registry_status_overlay"])

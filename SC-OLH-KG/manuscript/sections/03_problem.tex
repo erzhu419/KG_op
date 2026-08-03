@@ -1,0 +1,87 @@
+\section{Problem and Information Contract}\label{sec:problem}
+
+\subsection{Held-Out Chance-Constrained Task}
+
+Let $q$ index a simulation task and let
+$\cX_{q,d}=\{0,1,\ldots,L_q\}^{d}$ be its finite integer policy space.  A
+simulation at $\x\in\cX_{q,d}$ returns a noisy objective $F_q(\x)$ and a noisy
+constraint response $G_q(\x)$.  The target task is
+\begin{equation}\label{eq:target-problem}
+ \min_{\x\in\cX_{q,d}} f_q(\x):=\E[F_q(\x)]
+ \quad\text{subject to}\quad
+ \Prob\{G_q(\x)\le 0\}\ge 1-\alpha .
+\end{equation}
+For the Gaussian synthetic environments, the equivalent population chance
+margin is
+\begin{equation}\label{eq:true-margin}
+ m_q(\x)=\mu_{G,q}(\x)+z_{1-\alpha}\sigma_{G,q}(\x),
+ \qquad \x\text{ is feasible iff }m_q(\x)\le 0,
+\end{equation}
+where $z_{1-\alpha}$ is the standard normal quantile.  The experiments use
+$\alpha=0.05$.  Two simulated objective outputs are scalarized with fixed
+weights $(1/2,1/2)$; neither the weights nor the chance threshold is tuned by
+target seed.
+
+The known synthetic oracle is used only after each run to score true
+feasibility and feasible regret,
+\begin{equation}\label{eq:regret}
+ r_q(\widehat\x)=f_q(\widehat\x)-
+ \min_{\x:m_q(\x)\le0}f_q(\x),
+\end{equation}
+and never for proposal construction, target search, or verification.  Regret
+is undefined when the recommendation is truly infeasible, so feasibility
+counts and conditional regret are always reported together.
+
+\subsection{Source, Search, and Verification Information}
+
+Suppose $Q_s$ source tasks have been completed before target task $q$ is
+opened.  Their archive is
+\begin{equation}
+ \cD_{\mathrm{src}}=
+ \{(q',\x_{q'i},Y^F_{q'ir},Y^G_{q'ir}):q'\ne q\},
+\end{equation}
+with observed simulation outputs but no source optimizer, source feasible
+oracle, or target label.  The final leave-one-domain-out protocol uses two
+source domains, 64 shared normalized profiles per source domain, and three
+independent replications per profile, for $S=384$ source simulator calls.
+
+Before observing a target response, a deterministic training map produces an
+atlas of at most $n_0$ target policies,
+\begin{equation}
+ \atlas=T(\cD_{\mathrm{src}},d,L_q,\mathsf{schema}_q),
+ \qquad |\atlas|\le n_0.
+\end{equation}
+The target schema may identify dimension, integer bounds, and unlabeled policy
+or state channels.  It may not contain target objective values, constraint
+values, feasible labels, target optimizers, or terminal verification outcomes.
+The atlas is immutable once the target stage begins.
+
+The target optimizer first evaluates $n_0$ atlas points and may then request
+$N-n_0$ adaptive target evaluations.  In the primary experiment $n_0=10$ and
+$N=13$.  After search, it freezes an ordered shortlist $O_N$ and terminates.
+An independent verifier draws $V$ additional target samples.  These samples do
+not update the optimizer or the shortlist.  Thus the exact simulation cost is
+\begin{equation}\label{eq:budget}
+ C_{\mathrm{total}}=S+N+V,
+\end{equation}
+and not $N$.  We report source calls, target-search calls, objective-comparison
+calls, safety-verification calls, and total calls as separate fields.
+
+\subsection{Three-Part Decision Protocol}
+
+The protocol has three interfaces.
+
+\begin{enumerate}[label=\arabic*.]
+\item The \emph{frontend} maps source observations and target descriptors to
+the frozen atlas $\atlas$.
+\item The \emph{backend} maps atlas and adaptive target observations to a
+shortlist.  It may be proposal-only, a transfer GP, SC-V69, or canonical
+SAASBO.
+\item The \emph{verifier} maps the frozen shortlist and fresh samples to a
+deployment recommendation or no certificate.
+\end{enumerate}
+
+This factorization is central to both theory and experiment.  Atlas coverage
+does not depend on the backend.  The verifier's error bound does not depend on
+either the atlas or the backend.  Conversely, success under a strong initial
+design cannot automatically be attributed to the online acquisition rule.

@@ -1,0 +1,218 @@
+\section{Results}\label{sec:results}
+
+\subsection{The Frontend Determines Feasible-Basin Coverage}
+
+Table \ref{tab:frontend-backend} gives the main causal comparison.  With the
+frozen atlas, all three backends produce true-feasible and independently
+certified recommendations in all 60 domain-seed pairs, with no false
+certificate.  Replacing only the frontend by common Sobol reduces these counts
+to 0/60 for proposal-only, 1/60 for stacked GP, and 0/60 for canonical SAASBO.
+For the preregistered proposal-only and SAAS comparisons, the Holm-adjusted
+McNemar $p$-value is $6.94\times10^{-18}$ for both feasibility and
+certification.  Figure \ref{fig:frontend-backend} shows the aggregate contrast.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Frontend/backend factorial at $d=1000$.  Frozen-atlas arms use
+$n_0=10$ and at most three adaptive calls; proposal-only stops at ten.  Every
+arm uses the same independent verifier.}
+\label{tab:frontend-backend}
+\resizebox{\textwidth}{!}{\input{tables/frontend_backend}}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.82\textwidth]{frontend_backend.pdf}
+\caption{Feasible-basin coverage is driven by the frozen structural frontend,
+not by the backend.  Counts aggregate 20 seeds in each of three domains.}
+\label{fig:frontend-backend}
+\end{figure}
+
+Once coverage is established, the backend affects objective quality.  Across
+all 60 frozen-atlas pairs, canonical SAASBO improves regret over proposal-only
+in 29 seeds, loses in two, and ties in 29; the Holm-adjusted Wilcoxon
+$p$-value is $1.16\times10^{-6}$.  It improves over stacked GP in 29 seeds,
+loses in three, and ties in 28 ($p_{\mathrm{Holm}}=1.49\times10^{-6}$).
+The median paired difference is zero because FactorShock and many other pairs
+tie, while Inventory and Queue contain the improvements.  The target-stage
+convergence paths in Figure \ref{fig:convergence} make the decomposition clear:
+the initial atlas reaches the feasible region, and the three adaptive calls
+occasionally improve its objective.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\textwidth]{target_convergence.pdf}
+\caption{Median best true-feasible objective gap during target search.  Missing
+early values mean that no evaluated point was truly feasible at that call.
+Verification samples are excluded.}
+\label{fig:convergence}
+\end{figure}
+
+\subsection{Both Atlas Components Matter}
+
+Universal structural support alone reaches 27/60 feasible trials; source
+templates alone reach 40/60; their combined maximin atlas reaches 60/60
+(Table \ref{tab:components} and Figure \ref{fig:components}).  Universal
+support is particularly important as a source-misspecification fallback,
+whereas source templates concentrate probability mass around empirically safe,
+low-cost profiles.  The combined atlas is therefore not merely the best source
+profile copied to a new dimension.
+
+\begin{table}[t]
+\centering
+\caption{Causal frontend component ablation with the same source archive,
+target seeds, proposal budget, and verifier.}
+\label{tab:components}
+\input{tables/frontend_components}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.70\textwidth]{frontend_components.pdf}
+\caption{Feasible and independently certified recommendations under the
+frontend component ablation.}
+\label{fig:components}
+\end{figure}
+
+\subsection{Archive-Fair Transfer and Total-Cost Controls}
+
+Table \ref{tab:transfer} compares transfer methods under exactly the same
+source archive, frozen initial design, target budget, seeds, and verifier.
+Because every method receives the strong atlas, most achieve high feasible
+coverage.  Safe F-PACOH reaches 56/60, RGPE and FSBO 59/60, transfer MTGP
+57/60, and stacked GP, HyperBO, MetaBO, MALIBO, and canonical SAASBO 60/60.
+Canonical SAASBO has the lowest aggregate median feasible regret (0.0038),
+whereas the other displayed methods have 0.0082.  Verification cost differs
+materially, demonstrating why the 60/60 coverage count alone is insufficient.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Archive-fair transfer comparison at $d=1000$, $S=384$, $n_0=10$,
+and $N=13$.  Mean verification includes safety and any fresh objective-
+comparison calls.}
+\label{tab:transfer}
+\input{tables/transfer_baselines}
+\end{table}
+
+The equal-total-search-cost comparison is more severe.  Target-only TuRBO and
+SCBO receive 397 target-search calls and find no feasible recommendation in 60
+trials.  Periodic-capped target-only SAAS finds two, both certified.  The atlas
+plus canonical SAASBO uses 384 source calls and 13 target-search calls and
+certifies all 60 (Table \ref{tab:totalcost}).  The Holm-adjusted McNemar
+$p$-values for the final method versus each target-only control are below
+$3\times10^{-17}$.  These results support reuse of related source simulations;
+they do not imply that source calls are free or that the frontend is uniformly
+better than every task-specific structured design.
+
+\begin{table}[t]
+\centering
+\caption{Equal source-plus-search-cost comparison.  Verification is applied
+after search and reported separately.  ``Target-only SAASBO'' denotes the
+audited periodic-capped control, not canonical every-iteration SAASBO.}
+\label{tab:totalcost}
+\input{tables/total_cost_controls}
+\end{table}
+
+\subsection{Dimension and Target-Budget Frontier}
+
+At $d=1000$, proposal-only at ten search calls and canonical SAASBO at 13 both
+certify all 60 trials; aggregate median regret improves from 0.00825 to 0.00383.
+At $d=10000$, all 30 trials are feasible and certified with zero false
+certificates at search budgets 10, 13, 20, and 40 (Table
+\ref{tab:dimension}).  The corresponding $d/N$ ratios range from 1,000 to 250.
+Median regret is 0.00825, 0.00825, 0.00451, and 0.00579.  The deterioration
+from $N=20$ to $N=40$ is retained rather than smoothed away; additional
+adaptive search is not monotonically beneficial under this finite stochastic
+protocol.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Dimension and target-search budget.  Source archive size remains
+384; verification is additional and variable.}
+\label{tab:dimension}
+\input{tables/dimension_budget}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.90\textwidth]{dimension_budget.pdf}
+\caption{Dimension/budget frontier: aggregate median feasible regret (left)
+and mean verification calls (right).  The $d=10000$ result is an effective-
+dimension stress test under the registered structural family.}
+\label{fig:dimension}
+\end{figure}
+
+The result is consistent with Corollary \ref{cor:dimension}: the raw dimension
+can grow while the profile coordinate remains fixed.  It is not evidence that
+SAASBO or the atlas can identify an arbitrary sparse set of raw coordinates in
+ten calls.  Indeed, the common-Sobol negative controls show that the same
+backend without structural coverage fails at $d=1000$.
+
+\subsection{External Electricity Holdout}\label{sec:energy-results}
+
+All three energy arms are independently certified in 20/20 seeds with no false
+certificate (Table \ref{tab:energy}).  The frozen atlas at $N=13$ beats
+equal-total-cost common Sobol at $N=397$ in all 20 paired seeds.  The median
+objective difference (atlas minus Sobol) is $-0.05331$, with bootstrap 95\%
+interval $[-0.05408,-0.05058]$ and one-sided exact sign
+$p=9.54\times10^{-7}$.
+
+The natural low-frequency grid changes the interpretation.  The atlas wins
+9/20 and loses 11/20; the median difference is $0.000945$, with 95\% interval
+$[-0.00108,0.00180]$ and one-sided sign $p=0.748$.  Thus the external result
+supports low-frequency structural compression and a large advantage over
+unstructured total-cost search.  It does not establish that source learning
+outperforms an obvious domain-specific low-frequency control.
+
+\begin{table}[t]
+\centering
+\caption{Untouched Great Britain electricity-storage holdout and retained
+post-confirmatory fairness controls.}
+\label{tab:energy}
+\input{tables/external_energy}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.90\textwidth]{external_energy.pdf}
+\caption{External energy paired differences.  Negative values favor the
+frozen atlas.  The left panel is a retained negative result; the right panel
+is the equal-total-cost unstructured control.}
+\label{fig:energy}
+\end{figure}
+
+\subsection{Heteroscedastic Decomposition Is a Calibration Diagnostic}
+\label{sec:hvd-results}
+
+The cumulative factor model sharply improves variance-shape recovery under a
+matched proposal, canonical SCBO backend, verifier, and 20-seed design.  Mean
+log-variance RMSE falls from 1.158 to 0.219 in FactorShock, 0.577 to 0.349 in
+Inventory, and 0.501 to 0.254 in Queue.  Shape correlation rises from zero
+under pooled variance to 0.919, 0.953, and 0.995.  The Holm-adjusted Wilcoxon
+$p$-value is $1.14\times10^{-10}$ for both log-RMSE and shape correlation.
+
+Operationally, however, both models produce 59/60 feasible and certified
+recommendations, zero false certificates, and identical median paired regret.
+The HVD model also increases mean verification cost in Inventory and Queue.
+It therefore fails the preregistered promotion rule and remains an optional
+risk-calibration diagnostic.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Pooled versus cumulative factor-HVD.  Variance diagnostics are
+post-run only; they do not enter target selection.}
+\label{tab:hvd}
+\input{tables/hvd_diagnostic}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.78\textwidth]{hvd_diagnostic.pdf}
+\caption{Cumulative factor-HVD recovers variance shape but does not improve
+feasible recovery or regret in the matched causal experiment.}
+\label{fig:hvd}
+\end{figure}

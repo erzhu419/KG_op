@@ -25,6 +25,7 @@ from performance.benchmark_external_energy_confirmation import (  # noqa: E402
 )
 from performance.benchmark_external_energy_gate import (  # noqa: E402
     _binomial_lower,
+    low_frequency_constant_design,
     run_gate,
 )
 from core.designs import integer_design_fingerprint  # noqa: E402
@@ -327,6 +328,20 @@ def test_exact_binomial_certificate_reaches_point95_only_with_enough_successes()
     delta = 0.05 / 3.0
     assert _binomial_lower(80, 80, delta) >= 0.95
     assert _binomial_lower(79, 80, delta) < 0.95
+
+
+def test_low_frequency_constant_design_is_bound_only_and_dimension_equivariant():
+    class Problem:
+        d = 7
+        L = 100
+
+    points = low_frequency_constant_design(Problem(), 10)
+    assert len(points) == 10
+    assert len(set(points)) == 10
+    assert all(len(point) == Problem.d for point in points)
+    assert all(len(set(point)) == 1 for point in points)
+    assert points[0] == (0,) * Problem.d
+    assert points[-1] == (100,) * Problem.d
 
 
 def test_stochastic_gate_keeps_search_and_verification_separate(tmp_path):

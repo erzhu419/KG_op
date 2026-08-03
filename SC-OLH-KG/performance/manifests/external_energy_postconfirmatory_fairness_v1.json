@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "complete_retained_without_method_repair",
+  "contract_id": "opsd_energy_postconfirmatory_fairness_v1",
+  "registration_timing": "after_GB_GBN_confirmatory_target_opened",
+  "confirmatory_claim_eligible": false,
+  "purpose": "Test whether common Sobol was an artificially weak external control and report source-plus-search cost fairness without changing the frozen method.",
+  "target": "GB_GBN:2018",
+  "dimension": 1000,
+  "seeds": [
+    100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+    110, 111, 112, 113, 114, 115, 116, 117, 118, 119
+  ],
+  "arms": {
+    "low_frequency_grid_n13": {
+      "source_calls": 0,
+      "n0": 10,
+      "target_search_calls": 13,
+      "initial_design": "ten constant integer policies at equally spaced declared levels from 0 to 100",
+      "continuation": "three common-Sobol points",
+      "target_outcomes_used_to_construct_design": false,
+      "target_descriptor_used": "dimension and integer bounds only"
+    },
+    "common_sobol_n397": {
+      "source_calls": 0,
+      "n0": 10,
+      "target_search_calls": 397,
+      "initial_design": "common Sobol",
+      "continuation": "common Sobol",
+      "cost_match": "384 frozen source calls plus 13 target search calls"
+    }
+  },
+  "shared_verifier": {
+    "contract_id": "opsd_energy_familywise_exact_binomial_shortlist_v1",
+    "candidate_budgets": [80, 128, 128],
+    "familywise_delta": 0.05,
+    "verification_split": "calendar_year_2019",
+    "updates_optimizer": false
+  },
+  "decision_rule": {
+    "method_promotion_or_repair_allowed": false,
+    "all_results_retained": true,
+    "if_low_frequency_grid_matches_or_beats_frozen": "Energy is reported as feasibility-transfer evidence and a limitation, not source-learning superiority over a domain-natural structural control.",
+    "if_common_sobol_n397_matches_or_beats_frozen": "The external result does not support total-cost superiority and is reported only in the archive-available regime."
+  },
+  "result_artifact": "performance/manifests/external_energy_postconfirmatory_fairness_result_v1.json",
+  "result_disposition": {
+    "source_atlas_superior_to_natural_low_frequency_control": false,
+    "source_atlas_superior_to_equal_total_cost_unstructured_sobol": true,
+    "method_repaired_after_audit": false,
+    "manuscript_obligation": "Report the natural low-frequency control as statistically indistinguishable from the frozen atlas on GB_GBN; do not claim external source-learning superiority."
+  }
+}

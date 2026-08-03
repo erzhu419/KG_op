@@ -148,6 +148,18 @@ def _fixture(tmp_path):
                 "posthoc_outcomes_do_not_select_or_modify_the_method": True,
             },
         }),
+        "external_fairness_path": _write(tmp_path / "fairness.json", {
+            "status": "complete",
+            "confirmatory_claim_eligible": False,
+            "compact_rows": [
+                {"false_certificate": False} for _ in range(60)
+            ],
+            "decision": {
+                "method_repair_allowed": False,
+                "source_atlas_superior_to_natural_low_frequency_control": False,
+                "source_atlas_superior_to_target_only_sobol_at_equal_source_plus_search_cost": True,
+            },
+        }),
     }
     return paths
 
@@ -158,6 +170,7 @@ def test_readiness_closes_internal_evidence_but_fails_external(tmp_path):
     assert readiness["non_external_failure_count"] == 0
     assert len(readiness["external_blockers"]) == 1
     assert readiness["ready_for_manuscript_lock"] is False
+    assert readiness["ready_for_submission_packaging"] is False
     assert readiness["registry_status_overlay"]["base_registry_modified"] is False
 
 
@@ -203,9 +216,25 @@ def test_confirmed_external_energy_closes_external_blocker(tmp_path):
         },
     }
     paths["external_disposition_path"].write_text(json.dumps(energy))
+    paths["manuscript_receipt_path"] = _write(
+        tmp_path / "manuscript_receipt.json",
+        {
+            "contract_id": "or_manuscript_compilation_receipt_v1",
+            "status": "pass",
+            "failures": [],
+            "compile": {"executed": True, "returncode": 0},
+            "journal_format_checks": {
+                "abstract_word_count": 197,
+                "body_pages_excluding_references": 26,
+            },
+            "pdf": {"sha256": "a" * 64},
+        },
+    )
     readiness = build_readiness(**paths)
     assert readiness["status"] == "evidence_complete"
     assert readiness["external_blockers"] == []
     assert readiness["ready_for_manuscript_lock"] is True
+    assert readiness["manuscript_generation_performed"] is True
+    assert readiness["ready_for_submission_packaging"] is True
     assert readiness["evidence"]["external_validity"]["status"] == (
         "passed_confirmatory_energy")

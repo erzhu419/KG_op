@@ -1,0 +1,113 @@
+\appendix
+
+\section{Additional Implementation Details}\label{app:implementation}
+
+\subsection{Synthetic Population Interfaces}
+
+All synthetic simulators return three Gaussian observations: two objective
+components and one constraint component.  The scalar objective is the equal-
+weight average of the first two.  The chance constraint uses the population
+mean and heteroscedastic standard deviation of the third as in
+\eqref{eq:true-margin}.  Each raw coordinate is integer valued between 0 and
+100.  The domain summaries are deterministic functions of the normalized
+policy and are available to the simulator; analytic target optima and
+feasibility labels are unavailable to the algorithm.
+
+FactorShock uses a policy-level summary $(u,q,s)$ and the cumulative exposure
+blocks
+\[
+ A=(u\text{-gap},q\text{-gap},\text{spread}),\qquad
+ N=(\text{oscillation},\text{tail shock}).
+\]
+Inventory partitions the policy into stock, reorder, and safety blocks; Queue
+partitions it into capacity, priority, and smoothing blocks.  Each objective
+and safety pocket is smooth in its block means and dispersion, but the centers,
+loss weights, and variance mechanisms differ by domain.  The post-run oracle
+enumerates the low-dimensional summary grid to compute the feasible optimum.
+
+\subsection{Canonical Backend and Discretization}
+
+Canonical SAASBO is implemented in BoTorch with a fully Bayesian single-task
+GP and sparse axis-aligned shrinkage prior.  The model is refit after each of
+the three adaptive target evaluations.  Proposed normalized policies are
+rounded to the target integer cube before simulation.  The source archive is
+not appended as 384 pseudo-target observations; its primary role is to train
+the atlas.  Transfer baselines use the archive according to their own model
+contracts.
+
+\subsection{Terminal Verifier}
+
+The synthetic verifier freezes, deduplicates, and orders up to three policies:
+an objective challenger, the backend recommendation, and a safe-interior
+support candidate.  Safety is evaluated with fresh Gaussian replications under
+a one-sided mean/scale tolerance rule and familywise error spending.  Candidate
+budgets are 80, 128, and 128, and the verifier stops at the first certificate.
+When a challenger and incumbent are both admissible, each receives eight fresh
+objective replications and the challenger switches only when the one-sided
+upper bound on its paired cost difference is below zero.  No verifier sample
+is returned to the surrogate, acquisition, shortlist construction, or source
+model.
+
+\section{Machine-Checked Proof Map}\label{app:lean}
+
+The Lean 4 project contains 102 source files and builds against mathlib without
+\texttt{sorry}, \texttt{admit}, or project-defined \texttt{axiom}.  Table
+\ref{tab:lean-map} maps the claims used in the manuscript to their principal
+files.  Lean proves the displayed implications; empirical assumptions such as
+source-target support shift remain scientific premises rather than axioms
+asserting that every domain satisfies them.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Principal Lean proof files.}
+\label{tab:lean-map}
+\begin{tabular}{p{0.39\textwidth}p{0.52\textwidth}}
+\toprule
+Claim & File under \texttt{proof/SCOLHKG/} \\
+\midrule
+Finite-atlas no-free-lunch & \texttt{Real/ProposalNoFreeLunch.lean} \\
+Aligned geometric atlas coverage & \texttt{Real/GeometricAtlasCoverage.lean} \\
+Source-label noninterference & \texttt{Real/RiskAlignedRepresentation.lean} \\
+Fail-closed monotone envelope & \texttt{Real/SourceMonotoneEnvelope.lean} \\
+Shortlist safety and objective guard &
+\texttt{Real/MethodIndependent}\newline
+\texttt{TerminalVerification.lean} \\
+Exact binomial all-success certificate & \texttt{Measure/ExactBinomialCertificate.lean} \\
+Composed paper interfaces and budget identity & \texttt{Real/PaperMainline.lean} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The final source-tree SHA-256 recorded by the proof receipt is:
+\begin{center}
+\small\texttt{536ca1d10e971f8001f4d38b}\\
+\texttt{050508e2448ce31fb51ec8a9}\\
+\texttt{abfdb0d6f343a710}.
+\end{center}
+The receipt is regenerated only after a successful \texttt{lake build} and a
+zero-placeholder scan.
+
+\section{Reproducibility and Data Contracts}\label{app:reproducibility}
+
+Each result row records the task fingerprint, source-archive fingerprint,
+initial-design fingerprint, method identity, implementation commit, verifier
+signature, source/search/verification counts, and terminal truth reconstruction.
+The release audit requires every registered cell exactly once, identical
+problem fingerprints within paired comparisons, complete target-search traces,
+and agreement between stored and reconstructed truth.
+
+Manuscript tables and figures are generated only from compact audited JSON and
+CSV artifacts.  The renderer explicitly excludes runtime checkpoints, pickle
+files, model weights, and policy vectors, and writes SHA-256 hashes for every
+input and output.  The experiment registry also retains named algorithm
+variants: periodic-capped SAAS is never relabeled as canonical SAASBO, and
+failed or incomplete development tracks are not silently merged into release
+results.
+
+The code release includes the final method manifest, compact result records,
+paired-statistics artifact, convergence summaries, external energy data
+contract, proof receipt, and executable tests.  The OPSD source data are cited
+by version and DOI \citep{OPSD2020}.  Runtime checkpoints and model weights are
+not required to reproduce the audited numerical tables and are excluded from
+the compact release.

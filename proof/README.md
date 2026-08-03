@@ -25,6 +25,25 @@ headline umbrella theorem, while
 matching limitation: no proper frozen finite atlas can cover every possible
 held-out feasible set without a transfer/structure condition.
 
+The promoted V3 endpoint has its own implementation-matched contract in
+`SCOLHKG/Real/SourceMonotoneEnvelope.lean`.  Source sign agreement is not
+treated as target truth: endpoint safety additionally assumes the same
+monotone direction transfers to the held-out task.  If source agreement fails,
+the challenger is proved to return the original atlas exactly and preserve its
+fixed budget.  `SCOLHKG/Real/PaperMainline.lean` exposes these as
+`paper_final_v3_fail_closed_contract` and
+`paper_final_v3_admitted_endpoint_contract`.
+
+The final V69 deployment rule is covered by the three-policy theorem and
+paired objective-switch theorem in
+`SCOLHKG/Real/MethodIndependentTerminalVerification.lean`.  Their joint event
+has error at most the safety and objective allocations added together.  The
+OPSD verifier's exact all-success binomial law is formalized separately in
+`SCOLHKG/Measure/ExactBinomialCertificate.lean`.
+
+For a concise human-readable theorem sequence and proof arguments, see
+`final_or_theory.md`.
+
 The cumulative-HVD theorems remain fully checked mechanistic results.  The
 registered 20-seed provider-coordinate causal gate improved variance recovery
 in all three synthetic domains but did not improve feasibility or regret and
@@ -61,6 +80,15 @@ mathlib and its cache; later builds should be fast.
 - `SCOLHKG/KG.lean`: exact KG maximizer bookkeeping and the condition under
   which an additive KG proxy is exact.
 - `SCOLHKG/Real/CumulativeRisk.lean`: real-valued cumulative-risk algebra.
+- `SCOLHKG/Real/SourceMonotoneEnvelope.lean`: source-only V3 admission,
+  fail-closed identity, fixed-cardinality replacement, and endpoint safety
+  under an explicit transferred monotonicity condition.
+- `SCOLHKG/Real/MethodIndependentTerminalVerification.lean`: optimizer-agnostic
+  two/three-policy familywise safety, exact budget decomposition, and the
+  posterior-safe objective-incumbent switch contract.
+- `SCOLHKG/Measure/ExactBinomialCertificate.lean`: mathlib-binomial `HasLaw`
+  bridge and familywise all-success certificate bound used by the external
+  reliability verifier.
 - `SCOLHKG/Real/ConditionalVariance.lean`: finite-partition law of total
   variance over real numbers, proved by algebraic expansion.
 - `SCOLHKG/Real/GPRUpdate.lean`: code-level rank-one GPR update bridge, showing

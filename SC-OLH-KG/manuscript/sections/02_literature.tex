@@ -1,0 +1,70 @@
+\section{Related Literature}\label{sec:literature}
+
+\subsection{Stochastic and Chance-Constrained Simulation Optimization}
+
+Simulation optimization allocates a finite evaluation budget among noisy
+alternatives when analytic objective and constraint functions are unavailable
+\citep{Fu2002,AmaranEtAl2016}.  Stochastic kriging makes the simulation noise
+explicit and permits heteroscedastic metamodels
+\citep{AnkenmanNelsonStaum2010}.  Constrained Bayesian optimization extends
+surrogate-guided search to noisy feasibility observations
+\citep{LethamEtAl2019}.  Our departure is to make feasible-basin coverage a
+separate transferred design problem and to reserve fresh samples for terminal
+verification.  The online optimizer can therefore change without changing the
+frontend or the deployment certificate.
+
+\subsection{High-Dimensional Bayesian Optimization}
+
+High-dimensional Bayesian optimization relies on structural restrictions.
+TuRBO localizes the search in adaptive trust regions
+\citep{ErikssonEtAl2019}; SCBO combines trust regions with constrained
+posterior sampling \citep{ErikssonPoloczek2021}; and SAASBO imposes sparse
+axis-aligned length-scale priors \citep{ErikssonJankowiak2021}.  These methods
+are strong target-only backends when enough target evaluations reveal relevant
+directions.  They do not, by themselves, ensure that an initial design of ten
+points intersects a small chance-feasible basin in a thousand-dimensional
+integer cube.  We use canonical SAASBO as the strongest audited backend, not
+as a methodological contribution, and compare against target-only TuRBO,
+SCBO, and SAASBO under both equal target budget and equal total simulation
+cost.
+
+\subsection{Transfer and Meta-Learning for Bayesian Optimization}
+
+Several lines of work transfer source information at different levels.  FSBO
+learns a deep-kernel surrogate from source tasks
+\citep{WistubaGrabocka2021}.  PACOH and Safe F-PACOH learn function-space
+priors with reliability guarantees \citep{RothfussEtAl2021,RothfussEtAl2023}.
+HyperBO pretrains Gaussian-process priors from historical functions
+\citep{WangEtAl2024HyperBO}.  Transfer GP methods model source-target
+discrepancy, while RGPE combines source experts according to target evidence
+\citep{TighineanuEtAl2022,FeurerEtAl2018}.  MetaBO and MALIBO transfer query
+utilities or acquisition behavior rather than only the surrogate
+\citep{VolppEtAl2020,PanEtAl2024}.
+
+Our learning target is different.  We transfer a finite \emph{proposal
+measure} over normalized policy shapes before target observations, then expose
+the same initial design to multiple backend families.  This makes the
+frontend's causal contribution observable.  It also provides a fair
+archive-level comparison: all transfer methods receive the same 384-call
+source archive, the same target budget, and the same independent terminal
+verifier.
+
+\subsection{Structural Priors, Coverage, and Certification}
+
+No-free-lunch results imply that optimization gains require assumptions about
+the function class or the distribution of tasks
+\citep{WolpertMacready1997}.  Our theory makes that point concrete for finite
+target-label-free proposal sets and then states a positive geometric coverage
+condition.  The dimension-equivariant coordinate is not claimed to be a
+universal representation; it is a low-frequency task hypothesis that can be
+audited and falsified.
+
+Final safety introduces a second distinction.  Posterior feasibility used
+during search is model dependent, whereas deployment certification should be
+auditable independently of the acquisition rule.  We use candidate-wise
+fresh-sample bounds and familywise error spending.  For the external
+electricity experiment, an exact binomial bridge connects the all-success rule
+to the classical one-sided Clopper--Pearson lower confidence bound
+\citep{ClopperPearson1934}.  This verification layer is deliberately more
+conservative and more expensive than a posterior label; its cost is reported
+rather than absorbed into the search budget.

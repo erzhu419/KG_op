@@ -1,0 +1,95 @@
+\section{Discussion}\label{sec:discussion}
+
+\subsection{What the Experiments Identify}
+
+The central empirical finding is an attribution result.  Under a target budget
+of 13 calls, the structural frontend determines whether the search observes a
+feasible basin; the online backend determines a smaller, conditional objective
+improvement after coverage.  This distinction explains why several transfer
+baselines become strong when supplied with the same frozen atlas and why a
+powerful high-dimensional optimizer can fail under common Sobol.  The proposed
+object is therefore not ``SAASBO plus a warm start.''  It is a reusable,
+source-trained experimental design whose value can be measured with the
+backend held fixed.
+
+The component ablation also refines the structural story.  A universal low-
+frequency library alone is too generic, and source templates alone are too
+brittle.  Their union, followed by source-risk/objective ranking and maximin
+coverage, is robust across the three synthetic mechanisms.  The external
+energy audit then reveals an important boundary: in a domain with an obvious
+constant-profile control, a natural low-frequency grid is as good as the
+source-trained atlas.  Source learning is valuable when it identifies a
+nontrivial transferable profile family, not merely because historical data
+exist.
+
+\subsection{Operational Meaning of the Cost Decomposition}
+
+The method trades reusable offline cost and explicit verification cost for a
+small target search budget.  In a one-off target problem, $S=384$ source calls
+must be counted in full.  In a repeated deployment program, the same archive
+can support many target tasks and its per-target cost decreases, but this
+amortization is an operational decision rather than a statistical free pass.
+Likewise, independent verification often costs far more than the 13 search
+calls.  That is not a defect hidden by the analysis: it is the price of a
+deployment statement that does not trust the optimizer's posterior.
+
+This decomposition is useful for managers choosing among protocols.  If the
+decision is exploratory and no deployment certificate is required, proposal-
+only or atlas-plus-Sobol may be sufficient.  If objective quality matters after
+coverage, canonical SAASBO adds value at higher computation cost.  If an unsafe
+deployment has material consequences, verification should be budgeted as a
+separate final experiment rather than borrowed from search data.
+
+\subsection{Why the High-Dimensional Result Is Plausible}
+
+The raw search spaces are enormous, but the benchmark policies affect system
+behavior through coarse profile summaries.  The source archive identifies
+which low-frequency profiles should be transferred, and the inverse map
+constructs those profiles at a new dimension.  The relevant statistical
+dimension is therefore the geometry of $\etaHat$, not the number of integer
+entries.  Theorem \ref{thm:coverage} captures precisely this mechanism.
+
+This mechanism is also falsifiable.  If target safety depends on isolated
+high-frequency coordinates, if source and target safe supports are far apart,
+or if coordinate error consumes the safe depth, condition
+\eqref{eq:coverage-condition} fails.  The finite-atlas no-free-lunch theorem
+then applies.  We regard that explicit failure mode as preferable to an opaque
+claim of universal meta-learning.
+
+\subsection{Heteroscedasticity and Certification}
+
+The HVD diagnostic shows that variance structure can be statistically
+recoverable without changing the selected policy.  This is unsurprising when
+the atlas already places a deep feasible point in the initial design and the
+terminal verifier can spend more samples.  The decomposition may matter in
+applications where shared shocks dominate, safe depth is narrow, or
+verification is more expensive; the present data do not establish such an
+optimization gain.  We therefore keep Equation \eqref{eq:hvd} and its formal
+properties as a secondary risk-modeling result, not as a reason to enlarge the
+paper's main claim.
+
+\subsection{Limitations}
+
+Five limitations delimit external validity.
+
+\begin{enumerate}[label=(\roman*)]
+\item The three primary domains are synthetic and intentionally satisfy a
+related structural family.  Their different operations interpretations do not
+replace independent real systems.
+\item The energy study contains one untouched market-year target.  It supports
+low-frequency structural compression but not superiority to a natural
+structured control.
+\item The global margin Lipschitz constant and ideal-coordinate error are
+assumptions.  The registered finite-library audit passes in all three domains,
+but a global certificate is unavailable.
+\item Verification controls its declared statistical event under fresh-sample
+independence.  Distribution shift after deployment is outside that contract.
+\item The source archive is fixed at two domains and 384 calls.  Richer task
+collections could improve or destabilize the atlas; learning curves in the
+number and diversity of source tasks remain future work.
+\end{enumerate}
+
+The failed traffic development gate is retained in the experiment registry and
+supports the same caution: not every domain exposes a transferable feasible
+profile at the chosen fidelity.  We do not use that failed development study as
+positive evidence in this paper.

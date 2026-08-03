@@ -1,0 +1,26 @@
+\section{Conclusion}\label{sec:conclusion}
+
+High-dimensional chance-constrained simulation optimization cannot be made
+sample efficient by acquisition design alone when a tiny target design misses
+the feasible region.  We addressed that bottleneck with a source-learned,
+dimension-equivariant structural proposal atlas, a replaceable online backend,
+and an independent terminal verifier.  The theoretical analysis first rules
+out unconditional finite-atlas coverage and then gives an explicit geometric
+condition under which coverage is independent of nominal policy dimension.
+
+The experiments identify the atlas as the dominant source of feasible-basin
+coverage.  At dimension 1,000 it succeeds across three backends and all 60
+trials, while matched common-Sobol designs almost always fail.  Canonical
+SAASBO improves objective quality after coverage, but is not essential to
+feasibility and is not a methodological contribution.  The dimension-10,000
+and external energy studies support transfer of low-frequency structure, with
+the important qualification that source learning does not beat an obvious
+structured energy control.  Cumulative heteroscedastic decomposition improves
+variance calibration but not optimization in the registered causal test.
+
+The broader lesson is that historical simulations should be evaluated as an
+experimental-design resource: what policy geometry do they cover, what target
+assumption makes that geometry transferable, and how much independent evidence
+is required before deployment?  Separating those questions from the optimizer
+produces stronger attribution, more honest cost accounting, and a method whose
+limits are as explicit as its gains.

@@ -35,6 +35,23 @@ regret gain and failed all-domain verification-cost noninferiority.  None of
 the headline atlas-coverage or method-independent verification conclusions
 depends on promoting HVD as a core optimization contribution.
 
+The promoted V3 endpoint is not folded into the geometric theorem by an
+unstated inference. `SourceMonotoneEnvelope.lean` separates three facts:
+source-only sign agreement triggers admission; disagreement fails closed to
+the exact V1 atlas; and endpoint feasibility follows only when the agreed
+monotone direction is also valid on the held-out task.  The implementation
+bridges are `paper_final_v3_fail_closed_contract` and
+`paper_final_v3_admitted_endpoint_contract`.
+
+Terminal deployment is likewise backend independent.  V69's ordered
+three-policy verifier has familywise unsafe-deployment control, while its
+paired objective-incumbent comparison has a separate upper-coverage error.
+`optimizer_agnostic_three_policy_and_objective_guard_failure_le` bounds their
+union by the sum of the two declared allocations.  The external OPSD
+all-success certificate is bridged to mathlib's exact binomial law in
+`Measure/ExactBinomialCertificate.lean`.  See `final_or_theory.md` for the
+paper-facing theorem sequence.
+
 ## Statistical Closure V2 Status
 
 The promoted V51 behavior now has a separate finite-sample analysis contract.

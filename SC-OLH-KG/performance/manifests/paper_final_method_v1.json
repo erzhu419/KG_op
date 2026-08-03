@@ -36,7 +36,10 @@
     "objective_incumbent_guard": true,
     "objective_comparison_replications_per_policy": 8,
     "objective_comparison_delta": 0.016666666666666666,
-    "verification_updates_optimizer": false
+    "verification_updates_optimizer": false,
+    "lean_safety_theorem": "SCOLHKG.Measure.optimizer_agnostic_three_policy_false_deployment_probability_le",
+    "lean_objective_guard_theorem": "SCOLHKG.Measure.false_objective_switch_probability_le",
+    "lean_joint_theorem": "SCOLHKG.Measure.optimizer_agnostic_three_policy_and_objective_guard_failure_le"
   },
   "primary_target_protocol": {
     "n0": 10,
@@ -66,7 +69,7 @@
     "orthogonality_sparsity_additivity": "hypothesis-class ablations without current coequal causal support",
     "cumulative_hvd": "optional risk-calibration diagnostic, not part of the primary optimizer; the corrected 20-seed provider-coordinate gate improved variance RMSE and shape correlation in every domain but did not improve feasibility or regret and increased verification cost in Inventory and Queue",
     "external_traffic": "strict no-history SUMO external validity failed its development gate; no positive traffic generalization claim is allowed",
-    "external_energy": "OPSD storage reliability passed an untouched 20-seed GB_GBN confirmation after DK_2 development; the result establishes the structural front end, not an HVD or KG increment"
+    "external_energy": "OPSD storage reliability passed an untouched 20-seed GB_GBN confirmation after DK_2 development and beat equal-total-cost unstructured Sobol 20/20; a retained post-confirmatory audit found no advantage over a natural constant-policy low-frequency grid (9/20 wins), so the external result supports dimension-equivariant structural compression but not source-learning superiority over that structured control"
   },
   "registered_stress_tests": [
     "domain-blind proposal without heldout task-family identifier",
@@ -80,6 +83,12 @@
     "bound": "L*(source_support_atlas_cover_radius + ideal_coordinate_domain_shift + 2*coordinate_approximation_error) <= target_safe_depth implies the frozen atlas contains a feasible policy",
     "atlas_support_size_upper_bound": "n0",
     "independent_proposal_draws_assumed": false,
+    "v3_source_monotone_bridge": {
+      "fail_closed_theorem": "SCOLHKG.Real.paper_final_v3_fail_closed_contract",
+      "admitted_endpoint_theorem": "SCOLHKG.Real.paper_final_v3_admitted_endpoint_contract",
+      "source_agreement_is_target_guarantee": false,
+      "additional_identifiability_condition": "the source-agreed monotone chance-margin direction transfers to the heldout task"
+    },
     "geometric_coverage_inputs": [
       "source consensus templates union target-label-free universal structural support",
       "maximin atlas covering radius in the dimension-equivariant coordinate",
@@ -218,7 +227,13 @@
       "paired_frontend_wins": "20/20",
       "paired_one_sided_exact_sign_pvalue": 9.5367431640625e-07,
       "median_relative_safe_objective_improvement": 0.36158802769476317,
-      "sumo_failure_retained_as_negative_result": true
+      "postconfirmatory_fairness_artifact": "performance/manifests/external_energy_postconfirmatory_fairness_result_v1.json",
+      "natural_low_frequency_grid_result": "no_detectable_source_atlas_advantage_9_wins_11_losses",
+      "equal_total_cost_unstructured_sobol_result": "source_atlas_wins_20_of_20",
+      "external_source_learning_superiority_claim_allowed": false,
+      "sumo_failure_retained_as_negative_result": true,
+      "lean_binomial_bridge": "SCOLHKG.Measure.ExactBinomialCertificate",
+      "registered_first_stage_certificate": "80 independent windows; Clopper-Pearson lower bound reaches 0.95 only at 80 successes"
     },
     "final_dimension_budget_evidence": {
       "artifact": "paper_artifacts/final_dimension_budget_evidence_v1.json",
@@ -231,10 +246,11 @@
     },
     "final_evidence_readiness": {
       "artifact": "paper_artifacts/paper_submission_readiness_v1.json",
+      "manuscript_receipt": "paper_artifacts/or_manuscript_receipt_v1.json",
       "registry_status_overlay": "paper_artifacts/experiment_registry_status_overlay_v1.json",
       "status": "evidence_complete",
       "non_external_failure_count": 0,
-      "manuscript_generation_performed": false
+      "manuscript_generation_performed": true
     },
     "artifact_release_contract": {
       "release_contract_id": "or_submission_evidence_release_v2",

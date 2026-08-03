@@ -6,6 +6,7 @@ import SCOLHKG.Real.PromotedV51Closure
 import SCOLHKG.Real.ProposalCoverage
 import SCOLHKG.Real.RankAlignedAtlasCoverage
 import SCOLHKG.Real.RiskAlignedRepresentation
+import SCOLHKG.Real.SourceMonotoneEnvelope
 
 namespace SCOLHKG.Real
 
@@ -19,6 +20,55 @@ posterior decision.  The result deliberately retains the statistical coverage
 and finite-action approximation hypotheses; those are measured experiment
 obligations, not hidden axioms.
 -/
+
+/-!
+The historical theorems below retain the SC-OLH-KG acquisition and HVD
+ablations.  The final Operations Research method identity is narrower: a
+source-frozen proposal atlas, a replaceable backend, and method-independent
+terminal verification.  Its V3 source-monotone endpoint is governed by
+`SourceMonotoneEnvelope.lean`; it fails closed when source directions disagree
+and is safe only under an explicit transferred monotonicity condition.
+-/
+
+theorem paper_final_v3_fail_closed_contract
+    {SourceRecords Descriptor TargetLabels X : Type*}
+    (select : SourceRecords -> Descriptor -> Option X)
+    (source : SourceRecords) (descriptor : Descriptor)
+    (leftLabels rightLabels : TargetLabels)
+    (baseline : List X) (endpoint : X) :
+    sourceEnvelopeFromFrozenRecords
+        select source descriptor leftLabels =
+      sourceEnvelopeFromFrozenRecords
+        select source descriptor rightLabels
+      ∧ failClosedEnvelopeProposal baseline endpoint false = baseline
+      ∧ (failClosedEnvelopeProposal baseline endpoint false).length =
+        baseline.length := by
+  exact ⟨
+    source_envelope_target_label_noninterference
+      select source descriptor leftLabels rightLabels,
+    rejected_envelope_preserves_baseline baseline endpoint,
+    fail_closed_envelope_preserves_budget baseline endpoint false⟩
+
+theorem paper_final_v3_admitted_endpoint_contract
+    {Source X : Type*} [Fintype Source]
+    {correlation : Source -> Real} {threshold : Real}
+    {coordinate margin : X -> Real} {lower upper : X}
+    (hAdmitted :
+      SourceMonotoneEnvelopeAdmitted correlation threshold)
+    (hUpper : forall x, coordinate x <= coordinate upper)
+    (hLower : forall x, coordinate lower <= coordinate x)
+    (hNegativeTransfer :
+      SourceNegativeAgreement correlation threshold ->
+        CoordinateNonincreasingMargin coordinate margin)
+    (hPositiveTransfer :
+      SourcePositiveAgreement correlation threshold ->
+        CoordinateNondecreasingMargin coordinate margin)
+    (hSafeWitness : exists x, margin x <= 0) :
+    (SourceNegativeAgreement correlation threshold ∧ margin upper <= 0)
+      ∨
+    (SourcePositiveAgreement correlation threshold ∧ margin lower <= 0) := by
+  exact admitted_source_envelope_safe_under_transferred_direction
+    hAdmitted hUpper hLower hNegativeTransfer hPositiveTransfer hSafeWitness
 
 theorem paper_mainline_finite_closure
     {SourceRecords Proposal TargetLabels : Type}

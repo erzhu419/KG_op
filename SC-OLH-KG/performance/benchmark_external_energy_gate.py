@@ -51,6 +51,22 @@ def _policy_summary(problem, point):
     }
 
 
+def low_frequency_constant_design(problem, n):
+    """Return a target-label-free constant-policy grid over declared bounds."""
+
+    n = int(n)
+    if n <= 0:
+        return tuple()
+    if n > int(problem.L) + 1:
+        raise ValueError("constant grid exceeds the number of integer levels")
+    levels = np.rint(np.linspace(0, int(problem.L), n)).astype(int)
+    if len(set(map(int, levels))) != n:
+        raise RuntimeError("constant policy grid contains duplicate levels")
+    return tuple(
+        tuple([int(level)] * int(problem.d)) for level in levels
+    )
+
+
 def _select_shortlist(problem, records, size=3):
     """Objective, safe-interior, and Bayes-risk empirical roles."""
 
@@ -165,8 +181,12 @@ def run_gate(
     verification_budgets=(80, 128, 128),
 ):
     arm = str(arm)
-    if arm not in {"frozen_proposal", "common_sobol"}:
-        raise ValueError("energy gate arm must be frozen_proposal or common_sobol")
+    if arm not in {
+        "frozen_proposal", "common_sobol", "low_frequency_grid",
+    }:
+        raise ValueError(
+            "energy gate arm must be frozen_proposal, common_sobol, or "
+            "low_frequency_grid")
     if int(N) < int(n0):
         raise ValueError("N must be at least n0")
     problem = OPSDStorageReliabilityProblem(
@@ -186,9 +206,11 @@ def run_gate(
         )
         payload = json.loads(Path(design_path).read_text(encoding="utf-8"))
         source_calls = int(payload["source_archive_simulator_calls"])
-    else:
+    elif arm == "common_sobol":
         points = tuple(common_sobol_integer_design(
             problem, int(n0), int(seed)))
+    else:
+        points = low_frequency_constant_design(problem, int(n0))
 
     rng = np.random.default_rng(int(seed) + 1_909_117)
     records = []
@@ -297,7 +319,10 @@ def main():
     parser.add_argument("--data", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument(
-        "--arm", choices=("frozen_proposal", "common_sobol"), required=True)
+        "--arm",
+        choices=("frozen_proposal", "common_sobol", "low_frequency_grid"),
+        required=True,
+    )
     parser.add_argument("--design")
     parser.add_argument("--market", default="DK_2")
     parser.add_argument("--year", type=int, default=2018)

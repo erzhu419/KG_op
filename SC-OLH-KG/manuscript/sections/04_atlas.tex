@@ -1,0 +1,91 @@
+\section{Dimension-Equivariant Structural Proposal Atlas}\label{sec:atlas}
+
+\subsection{Low-Frequency Policy Coordinate}
+
+Write $z_i=x_i/L_q\in[0,1]$ for the normalized policy.  The raw policy length
+changes across tasks, so direct coordinate-wise transfer is not well defined.
+For a fixed frequency cap $K$, define
+\begin{align}
+ \bar z &= d^{-1}\sum_{i=0}^{d-1}z_i,\qquad
+ s_z=\left[d^{-1}\sum_{i=0}^{d-1}(z_i-\bar z)^2\right]^{1/2},\label{eq:dc}\\
+ c_k(z)&=\frac{2}{d}\sum_{i=0}^{d-1}(z_i-\bar z)
+ \cos\left(\frac{\pi k(i+1/2)}{d}\right),\quad k=1,\ldots,K.\label{eq:dct}
+\end{align}
+The implemented coordinate $\etaHat_d(\x)$ contains $\bar z$, $s_z$, and a
+frequency-penalized selection of the coefficients in
+\eqref{eq:dct}, followed by a fixed diagonal quadratic expansion.  We use
+$K\le 8$.  Its dimension depends on $K$, not on $d$.  The cosine basis also
+admits an inverse map: a coordinate is reconstructed as a constant profile plus
+the selected modes, clipped to $[0,1]$, and rounded to the target integer
+bounds.
+
+This coordinate encodes a specific structural hypothesis: slowly varying
+policy profiles and their coarse shape transfer more reliably than the identity
+of a raw coordinate.  It does not assert that every high-dimensional problem
+is low frequency.  Domain- and dimension-holdout experiments test whether this
+hypothesis remains useful.
+
+\subsection{Universal Support and Source Templates}
+
+The candidate library is the union of two components.  The \emph{universal
+structural support} contains target-label-free constant, monotone, and
+low-frequency profiles generated from $(d,L_q)$ alone.  It supplies coverage
+when source outcomes are misleading or do not include a useful endpoint.  The
+\emph{source templates} are normalized profiles observed in every source task.
+
+For each source task, replicated observations estimate an objective score and
+a chance-margin score.  Scores are converted to within-task percentiles before
+aggregation, avoiding a common numerical scale assumption across domains.
+Profiles that are robustly source feasible are preferred.  Candidate templates
+on the source objective--risk Pareto frontier are selected under five fixed
+scalarizations: risk-only, objective-only, and three intermediate weights.
+This ranking uses observed source data only.  It never uses a source analytic
+optimizer or a target outcome.
+
+After the extreme Pareto templates are included, the remaining slots are
+filled by a maximin rule in $\etaHat$: at each step we select the candidate
+whose minimum coordinate distance to the current atlas is largest, with fixed
+penalties for source risk and objective rank.  The result is a deterministic
+risk-objective atlas of size at most $n_0$.
+
+\subsection{Fail-Closed Source-Monotone Envelope}
+
+A final source-only extension tests whether the zero-frequency coefficient
+$\bar z$ has a common chance-margin direction.  For each source task $q'$, let
+$\rho_{q'}$ be the rank correlation between $\bar z$ and observed chance
+margin.  With threshold $\kappa=0.25$, the upper constant endpoint is admitted
+only if at least two source tasks all satisfy $\rho_{q'}\le-\kappa$; the lower
+endpoint is admitted only if all satisfy $\rho_{q'}\ge\kappa$.  Admission
+replaces an existing slot, so the budget remains $n_0$.  If neither condition
+holds, the update is the identity.
+
+The original three synthetic domains reject this extension in all 60 primary
+cells, making the final version exactly equal to the base atlas there.  The
+electricity family admits it using source markets before the confirmatory
+market is opened.  Source agreement is evidence for a transferable direction,
+not proof that the target shares it; Section \ref{sec:theory} states the
+additional target monotonicity condition explicitly.
+
+\subsection{Training and Deployment Algorithm}
+
+The full frontend is summarized below.
+
+\begin{enumerate}[label=\textbf{A\arabic*.},leftmargin=3.2em]
+\item Normalize the 64 shared profiles in each source task and compute
+replication-based objective and chance-margin summaries.
+\item Convert summaries to within-source percentile ranks; retain robust
+source-feasible Pareto templates under the fixed risk-objective weights.
+\item Form the candidate union of source templates and universal structural
+support; map all candidates into $\etaHat_d$.
+\item Seed the atlas with selected Pareto extremes and fill remaining slots by
+the penalized maximin rule.
+\item Apply the fail-closed source-monotone endpoint test without changing
+atlas size.
+\item Freeze the atlas before the first target simulation.  Evaluate its
+$n_0$ policies, then pass the observations to the chosen online backend.
+\end{enumerate}
+
+The proposal is learned offline but is not free: its 384 source simulations
+are included in archive-fair and total-cost comparisons.  When the same archive
+is reused for many targets, this cost may be amortized operationally; our
+tables do not assume such amortization.
