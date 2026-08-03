@@ -1,3 +1,4 @@
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -15,6 +16,12 @@ from performance.paper_result_audit import (  # noqa: E402
 from performance.paper_result_record_shard import (  # noqa: E402
     build_record_shard,
 )
+
+
+def _canonical_sha256_for_test(payload):
+    serialized = json.dumps(
+        payload, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
 
 def _write_result(
@@ -577,3 +584,159 @@ def test_remote_compact_record_shard_is_hash_bound(tmp_path):
         assert "payload hash mismatch" in str(error)
     else:
         raise AssertionError("tampered compact record shard was accepted")
+
+
+def test_remote_compact_record_shards_deduplicate_only_identical_results(
+        tmp_path):
+    _write_result(
+        tmp_path / "track" / "result.json",
+        method="botorch_turbo",
+        seed=80,
+    )
+    registry = {
+        "registry_id": "remote-deduplication",
+        "tracks": [{
+            "track_id": "track",
+            "result_root": "track",
+            "expected_method_identities": [
+                "botorch_turbo:canonical_turbo1_ts"
+            ],
+            "expected_domains": ["QueueResourceControl"],
+            "expected_seeds": [80],
+        }],
+    }
+    first_payload = build_record_shard(
+        registry,
+        root=tmp_path,
+        origin="node001",
+    )
+    second_payload = json.loads(json.dumps(first_payload))
+    second_payload["origin"] = "node002"
+    second_payload["records"][0]["extraction_origin"] = "node002"
+    second_payload["records_sha256"] = _canonical_sha256_for_test(
+        second_payload["records"]
+    )
+    first = tmp_path / "first.json"
+    second = tmp_path / "second.json"
+    first.write_text(json.dumps(first_payload), encoding="utf-8")
+    second.write_text(json.dumps(second_payload), encoding="utf-8")
+
+    records, receipts, _ = load_record_shards(
+        [first, second],
+        registry=registry,
+    )
+
+    assert len(records) == 1
+    assert receipts[0]["accepted_record_count"] == 1
+    assert receipts[0]["identical_records_deduplicated"] == 0
+    assert receipts[1]["accepted_record_count"] == 0
+    assert receipts[1]["identical_records_deduplicated"] == 1
+
+    conflicting_payload = json.loads(json.dumps(second_payload))
+    conflicting_payload["records"][0]["result_sha256"] = "f" * 64
+    conflicting_payload["records_sha256"] = _canonical_sha256_for_test(
+        conflicting_payload["records"]
+    )
+    conflicting = tmp_path / "conflicting.json"
+    conflicting.write_text(
+        json.dumps(conflicting_payload), encoding="utf-8")
+
+    conflicting_records, _, _ = load_record_shards(
+        [first, conflicting],
+        registry=registry,
+    )
+    assert len(conflicting_records) == 2
+
+
+def test_remote_compact_record_shard_precedence_is_registry_bound(tmp_path):
+    _write_result(
+        tmp_path / "track" / "result.json",
+        method="botorch_turbo",
+        seed=80,
+    )
+    registry = {
+        "registry_id": "remote-overlay",
+        "record_shard_origin_precedence": ["shared", "recovery"],
+        "tracks": [{
+            "track_id": "track",
+            "result_root": "track",
+            "expected_method_identities": [
+                "botorch_turbo:canonical_turbo1_ts"
+            ],
+            "expected_domains": ["QueueResourceControl"],
+            "expected_seeds": [80],
+        }],
+    }
+    shared_payload = build_record_shard(
+        registry,
+        root=tmp_path,
+        origin="shared",
+    )
+    recovery_payload = json.loads(json.dumps(shared_payload))
+    recovery_payload["origin"] = "recovery"
+    recovery_payload["records"][0]["extraction_origin"] = "recovery"
+    recovery_payload["records"][0]["result_sha256"] = "f" * 64
+    recovery_payload["records_sha256"] = _canonical_sha256_for_test(
+        recovery_payload["records"]
+    )
+    shared = tmp_path / "shared.json"
+    recovery = tmp_path / "recovery.json"
+    shared.write_text(json.dumps(shared_payload), encoding="utf-8")
+    recovery.write_text(json.dumps(recovery_payload), encoding="utf-8")
+
+    records, receipts, _ = load_record_shards(
+        [recovery, shared],
+        registry=registry,
+    )
+
+    assert len(records) == 1
+    assert records[0]["extraction_origin"] == "shared"
+    assert [row["origin"] for row in receipts] == ["shared", "recovery"]
+    assert receipts[1]["shadowed_conflicting_record_count"] == 1
+    conflict = receipts[1]["shadowed_conflicting_cells"][0]
+    assert conflict["selected_origin"] == "shared"
+    assert conflict["shadowed_result_sha256"] == "f" * 64
+
+
+def test_release_audit_reports_but_does_not_gate_excluded_history(tmp_path):
+    _write_result(
+        tmp_path / "required" / "result.json",
+        method="botorch_turbo",
+        seed=80,
+    )
+    registry = {
+        "registry_id": "release-gate",
+        "tracks": [
+            {
+                "track_id": "required",
+                "result_root": "required",
+                "expected_method_identities": [
+                    "botorch_turbo:canonical_turbo1_ts"
+                ],
+                "expected_domains": ["QueueResourceControl"],
+                "expected_seeds": [80],
+            },
+            {
+                "track_id": "stopped-history",
+                "result_root": "stopped-history",
+                "release_required": False,
+                "release_exclusion_reason": "pre-registered run stopped",
+                "expected_method_identities": [
+                    "botorch_turbo:canonical_turbo1_ts"
+                ],
+                "expected_domains": ["QueueResourceControl"],
+                "expected_seeds": [80],
+            },
+        ],
+    }
+
+    audit = build_audit(registry, root=tmp_path)
+
+    assert audit["status"] == "pass"
+    assert audit["release_required_track_count"] == 1
+    assert audit["excluded_track_failures"] == ["stopped-history"]
+    excluded = audit["track_audits"][1]
+    assert excluded["status"] == "fail"
+    assert excluded["release_required"] is False
+    assert excluded["release_exclusion_reason"] == (
+        "pre-registered run stopped")

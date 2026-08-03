@@ -649,6 +649,7 @@ def summarize_records(records):
 
 def audit_track(records, specification):
     track_id = str(specification["track_id"])
+    release_required = bool(specification.get("release_required", True))
     rows = [row for row in records if row["track_id"] == track_id]
     expected_methods = set(map(str, specification.get(
         "expected_method_identities", ())))
@@ -1029,6 +1030,9 @@ def audit_track(records, specification):
         })
     return {
         "track_id": track_id,
+        "release_required": release_required,
+        "release_exclusion_reason": specification.get(
+            "release_exclusion_reason"),
         "status": "pass" if not failures else "fail",
         "row_count": len(rows),
         "successful_count": sum(
@@ -1055,6 +1059,13 @@ def build_audit_from_records(
     track_audits = []
     for specification in registry["tracks"]:
         track_audits.append(audit_track(records, specification))
+    required_tracks = [
+        row for row in track_audits if row["release_required"]
+    ]
+    excluded_failures = [
+        row["track_id"] for row in track_audits
+        if not row["release_required"] and row["status"] != "pass"
+    ]
     return {
         "schema_version": 1,
         "registry_id": registry.get("registry_id"),
@@ -1063,9 +1074,11 @@ def build_audit_from_records(
         "source_receipts": list(source_receipts or ()),
         "status": (
             "pass"
-            if all(row["status"] == "pass" for row in track_audits)
+            if all(row["status"] == "pass" for row in required_tracks)
             else "incomplete_or_failed"
         ),
+        "release_required_track_count": len(required_tracks),
+        "excluded_track_failures": excluded_failures,
         "record_count": len(records),
         "track_audits": track_audits,
         "summaries": summarize_records(records),
@@ -1091,9 +1104,7 @@ def _canonical_sha256(payload):
 
 def load_record_shards(paths, *, registry):
     registry_fingerprint = _canonical_sha256(registry)
-    records = []
-    receipts = []
-    source_receipts = []
+    loaded_shards = []
     for path in map(Path, paths):
         payload = json.loads(path.read_text(encoding="utf-8"))
         if payload.get("schema_version") != 1:
@@ -1113,13 +1124,88 @@ def load_record_shards(paths, *, registry):
             for row in shard_records
         ):
             raise ValueError(f"record shard lacks extraction receipts: {path}")
-        records.extend(shard_records)
+        loaded_shards.append((path, payload, shard_records, expected))
+
+    origin_precedence = list(registry.get(
+        "record_shard_origin_precedence", ()))
+    if origin_precedence:
+        precedence_index = {
+            str(origin): index
+            for index, origin in enumerate(origin_precedence)
+        }
+        origins = [str(payload.get("origin"))
+                   for _, payload, _, _ in loaded_shards]
+        if len(origins) != len(set(origins)):
+            raise ValueError("record shard origins must be unique")
+        unknown = sorted(set(origins) - set(precedence_index))
+        if unknown:
+            raise ValueError(
+                f"record shard origin missing from precedence: {unknown}")
+        loaded_shards.sort(
+            key=lambda item: precedence_index[str(item[1].get("origin"))])
+
+    records = []
+    seen_exact_results = {}
+    selected_cells = {}
+    receipts = []
+    source_receipts = []
+    for path, payload, shard_records, expected in loaded_shards:
+        origin = str(payload.get("origin"))
+        accepted_records = []
+        identical_records_deduplicated = 0
+        shadowed_conflicting_cells = []
+        for row in shard_records:
+            cell_key = (
+                row.get("track_id"),
+                row.get("method_identity"),
+                row.get("domain"),
+                row.get("target_dimension"),
+                row.get("seed"),
+            )
+            exact_result_key = (
+                *cell_key,
+                row.get("result_sha256"),
+            )
+            exact_origin = seen_exact_results.get(exact_result_key)
+            if exact_origin is not None and exact_origin != origin:
+                identical_records_deduplicated += 1
+                continue
+            seen_exact_results.setdefault(exact_result_key, origin)
+            selected = selected_cells.get(cell_key)
+            if (
+                origin_precedence
+                and selected is not None
+                and selected["origin"] != origin
+            ):
+                shadowed_conflicting_cells.append({
+                    "track_id": cell_key[0],
+                    "method_identity": cell_key[1],
+                    "domain": cell_key[2],
+                    "target_dimension": cell_key[3],
+                    "seed": cell_key[4],
+                    "selected_origin": selected["origin"],
+                    "selected_result_sha256": selected["result_sha256"],
+                    "shadowed_result_sha256": row.get("result_sha256"),
+                })
+                continue
+            selected_cells.setdefault(cell_key, {
+                "origin": origin,
+                "result_sha256": row.get("result_sha256"),
+            })
+            accepted_records.append(row)
+        records.extend(accepted_records)
         source_receipts.extend(payload.get("source_receipts", ()))
         receipts.append({
             "path": str(path),
             "sha256": _sha256(path),
             "origin": payload.get("origin"),
             "record_count": len(shard_records),
+            "accepted_record_count": len(accepted_records),
+            "identical_records_deduplicated": (
+                identical_records_deduplicated),
+            "shadowed_conflicting_record_count": len(
+                shadowed_conflicting_cells),
+            "shadowed_conflicting_cells": shadowed_conflicting_cells,
             "records_sha256": expected,
         })
     return records, receipts, source_receipts

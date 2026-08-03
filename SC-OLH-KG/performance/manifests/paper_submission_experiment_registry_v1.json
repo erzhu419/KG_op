@@ -2,6 +2,12 @@
   "schema_version": 1,
   "registry_id": "paper_submission_experiment_registry_v1",
   "status": "external_cpu_validity_frontier_in_progress",
+  "record_shard_origin_precedence": [
+    "hpc_shared",
+    "jtl110gpu2",
+    "jtl110gpu",
+    "jtl311linux"
+  ],
   "tracks": [
     {
       "track_id": "final_frontend_backend_factorial_d1000_n13",
@@ -183,6 +189,8 @@
     },
     {
       "track_id": "dimension_frontier_d200_d10000_n13",
+      "release_required": false,
+      "release_exclusion_reason": "Superseded by the complete immutable d=200 and 10-seed d=10000 tracks; retained to expose the stopped historical gate.",
       "result_sources": [
         {
           "result_root": "paper_dimension_frontier_gate_d200_d10000_n13_s80_84_v1",
@@ -244,6 +252,8 @@
     },
     {
       "track_id": "target_only_total_cost_n397",
+      "release_required": false,
+      "release_exclusion_reason": "Raw pre-verifier recovery history; the complete uniform_external_total_cost_d1000_n397 track is the release comparison.",
       "result_root": "paper_certified_sota_d1000_n13_s80_99_v1",
       "glob": "target_cost_matched_n397/**/result.json",
       "expected_method_identities": [
@@ -273,6 +283,8 @@
     },
     {
       "track_id": "target_only_periodic_capped_saas_n397",
+      "release_required": false,
+      "release_exclusion_reason": "Raw periodic-capped recovery history; the complete uniform external verifier track is the release comparison.",
       "result_root": "paper_certified_saas_periodic_capped_exclusive_v5_d1000_n397_s80_99",
       "expected_method_identities": ["saasbo_periodic_capped"],
       "expected_domains": [
@@ -431,6 +443,8 @@
     },
     {
       "track_id": "dimension_budget_frontier_gate_saas_d200_d1000_n20",
+      "release_required": false,
+      "release_exclusion_reason": "Pre-registered canonical-SAAS gate was stopped for prohibitive runtime and is superseded by the completed immutable d=10000 budget frontier.",
       "result_root": "paper_dimension_budget_frontier_066d8b2_d200_d1000_n20_n40_n80_s80_84_v1",
       "glob": "d*/N20/saasbo/**/result.json",
       "expected_method_identities": [
@@ -457,6 +471,8 @@
     },
     {
       "track_id": "dimension_budget_frontier_gate_saas_d200_d1000_n40",
+      "release_required": false,
+      "release_exclusion_reason": "Pre-registered canonical-SAAS gate was stopped for prohibitive runtime and is superseded by the completed immutable d=10000 budget frontier.",
       "result_root": "paper_dimension_budget_frontier_066d8b2_d200_d1000_n20_n40_n80_s80_84_v1",
       "glob": "d*/N40/saasbo/**/result.json",
       "expected_method_identities": [
@@ -483,6 +499,8 @@
     },
     {
       "track_id": "dimension_budget_frontier_gate_saas_d200_d1000_n80",
+      "release_required": false,
+      "release_exclusion_reason": "Pre-registered canonical-SAAS gate was stopped for prohibitive runtime and is superseded by the completed immutable d=10000 budget frontier.",
       "result_root": "paper_dimension_budget_frontier_066d8b2_d200_d1000_n20_n40_n80_s80_84_v1",
       "glob": "d*/N80/saasbo/**/result.json",
       "expected_method_identities": [
@@ -504,6 +522,146 @@
         "initial_design_fingerprint",
         "problem_contract_fingerprint",
         "verifier_signature"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "final_dimension_frontier_d10000_proposal_n10",
+      "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
+      "glob": "d10000/N10/proposal_only/**/result.json",
+      "expected_method_identities": [
+        "frozen_crossdim_proposal_only"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [10000],
+      "expected_seeds": [80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 0,
+      "required_search_calls": 10,
+      "required_execution_provenance_status": "frozen",
+      "allowed_execution_commits": [
+        "da01f40dfce175cd9bb723ba680ef6c719ec7ad6"
+      ],
+      "required_scolhkg_tree": "17f40e0c2105b6aae5aa0f2dfe373ad3cec2a2a3",
+      "required_proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
+      "required_scripts_tree": "c766fb254d4d6e588726c4c3edf532bae2e84913",
+      "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
+      "required_method_contract_id": "or_transfer_frontend_saas_v1",
+      "required_false_fields": [
+        "source_oracle_aided",
+        "target_oracle_used_for_selection",
+        "terminal_verification_updates_optimizer",
+        "terminal_verification_target_oracle_used"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "final_dimension_frontier_d10000_saas_n13",
+      "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
+      "glob": "d10000/N13/saasbo/**/result.json",
+      "expected_method_identities": [
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [10000],
+      "expected_seeds": [80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 3,
+      "required_search_calls": 13,
+      "required_execution_provenance_status": "frozen",
+      "allowed_execution_commits": [
+        "da01f40dfce175cd9bb723ba680ef6c719ec7ad6"
+      ],
+      "required_scolhkg_tree": "17f40e0c2105b6aae5aa0f2dfe373ad3cec2a2a3",
+      "required_proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
+      "required_scripts_tree": "c766fb254d4d6e588726c4c3edf532bae2e84913",
+      "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
+      "required_method_contract_id": "or_transfer_frontend_saas_v1",
+      "required_false_fields": [
+        "source_oracle_aided",
+        "target_oracle_used_for_selection",
+        "terminal_verification_updates_optimizer",
+        "terminal_verification_target_oracle_used"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "final_dimension_frontier_d10000_saas_n20",
+      "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
+      "glob": "d10000/N20/saasbo/**/result.json",
+      "expected_method_identities": [
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [10000],
+      "expected_seeds": [80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 10,
+      "required_search_calls": 20,
+      "required_execution_provenance_status": "frozen",
+      "allowed_execution_commits": [
+        "da01f40dfce175cd9bb723ba680ef6c719ec7ad6"
+      ],
+      "required_scolhkg_tree": "17f40e0c2105b6aae5aa0f2dfe373ad3cec2a2a3",
+      "required_proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
+      "required_scripts_tree": "c766fb254d4d6e588726c4c3edf532bae2e84913",
+      "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
+      "required_method_contract_id": "or_transfer_frontend_saas_v1",
+      "required_false_fields": [
+        "source_oracle_aided",
+        "target_oracle_used_for_selection",
+        "terminal_verification_updates_optimizer",
+        "terminal_verification_target_oracle_used"
+      ],
+      "disallowed_method_identities": ["saasbo_periodic_capped"]
+    },
+    {
+      "track_id": "final_dimension_frontier_d10000_saas_n40",
+      "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
+      "glob": "d10000/N40/saasbo/**/result.json",
+      "expected_method_identities": [
+        "canonical_saasbo_every_iteration"
+      ],
+      "expected_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "expected_dimensions": [10000],
+      "expected_seeds": [80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      "required_source_calls": 384,
+      "required_initial_calls": 10,
+      "required_adaptive_calls": 30,
+      "required_search_calls": 40,
+      "required_execution_provenance_status": "frozen",
+      "allowed_execution_commits": [
+        "da01f40dfce175cd9bb723ba680ef6c719ec7ad6"
+      ],
+      "required_scolhkg_tree": "17f40e0c2105b6aae5aa0f2dfe373ad3cec2a2a3",
+      "required_proof_tree": "599afca4e01c8d4528e695855dad1beae90385ae",
+      "required_scripts_tree": "c766fb254d4d6e588726c4c3edf532bae2e84913",
+      "required_theory_contract_id": "source_target_geometric_atlas_coverage_v1",
+      "required_method_contract_id": "or_transfer_frontend_saas_v1",
+      "required_false_fields": [
+        "source_oracle_aided",
+        "target_oracle_used_for_selection",
+        "terminal_verification_updates_optimizer",
+        "terminal_verification_target_oracle_used"
       ],
       "disallowed_method_identities": ["saasbo_periodic_capped"]
     },
@@ -1127,6 +1285,66 @@
         "problem_contract_fingerprint",
         "verifier_signature"
       ]
+    },
+    {
+      "comparison_id": "d10000_saas_n13_vs_proposal_n10",
+      "left_track": "final_dimension_frontier_d10000_saas_n13",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_dimension_frontier_d10000_proposal_n10",
+      "right_method": "frozen_crossdim_proposal_only",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [10000],
+      "expected_pairs": 30,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "d10000_saas_n20_vs_n13",
+      "left_track": "final_dimension_frontier_d10000_saas_n20",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_dimension_frontier_d10000_saas_n13",
+      "right_method": "canonical_saasbo_every_iteration",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [10000],
+      "expected_pairs": 30,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ]
+    },
+    {
+      "comparison_id": "d10000_saas_n40_vs_n20",
+      "left_track": "final_dimension_frontier_d10000_saas_n40",
+      "left_method": "canonical_saasbo_every_iteration",
+      "right_track": "final_dimension_frontier_d10000_saas_n20",
+      "right_method": "canonical_saasbo_every_iteration",
+      "domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "dimensions": [10000],
+      "expected_pairs": 30,
+      "required_equal_fields": [
+        "source_archive_fingerprint",
+        "initial_design_fingerprint",
+        "problem_contract_fingerprint",
+        "verifier_signature"
+      ]
     }
   ],
   "paper_render_tracks": [
@@ -1137,11 +1355,11 @@
     "uniform_external_total_cost_d1000_n397",
     "frontend_component_causal_ablation_d1000_n10",
     "legacy_related_family_bridge_d5_n13",
-    "dimension_frontier_d200_d10000_n13",
     "dimension_budget_frontier_gate_proposal_d200_d1000_n10",
-    "dimension_budget_frontier_gate_saas_d200_d1000_n20",
-    "dimension_budget_frontier_gate_saas_d200_d1000_n40",
-    "dimension_budget_frontier_gate_saas_d200_d1000_n80"
+    "final_dimension_frontier_d10000_proposal_n10",
+    "final_dimension_frontier_d10000_saas_n13",
+    "final_dimension_frontier_d10000_saas_n20",
+    "final_dimension_frontier_d10000_saas_n40"
   ],
   "inference_families": [
     {
@@ -1195,6 +1413,15 @@
         "aleatoric_upper_coverage",
         "aleatoric_variance_shape_correlation"
       ]
+    },
+    {
+      "family_id": "d10000_budget_frontier_confirmatory",
+      "comparison_ids": [
+        "d10000_saas_n13_vs_proposal_n10",
+        "d10000_saas_n20_vs_n13",
+        "d10000_saas_n40_vs_n20"
+      ],
+      "metrics": ["feasibility", "certificate", "regret"]
     }
   ],
   "active_gate_runs": [
@@ -1224,6 +1451,7 @@
       "gate_id": "dimension_budget_frontier_d200_d1000",
       "run_id": "paper_dimension_budget_frontier_066d8b2_d200_d1000_n20_n40_n80_s80_84_v1",
       "code_commit": "066d8b2",
+      "status": "stopped_for_prohibitive_canonical_saas_runtime",
       "task_id_range": ["t61059", "t61184"],
       "target_dimensions": [200, 1000],
       "target_search_budgets": [20, 40, 80],
@@ -1234,10 +1462,24 @@
       "gate_id": "dimension_frontier_d10000_n13",
       "run_id": "paper_dimension_frontier_d10000_chunked_3f8e46c_n13_s80_84_v2",
       "code_commit": "3f8e46c",
+      "status": "superseded_by_immutable_ten_seed_budget_frontier",
       "target_dimensions": [10000],
       "target_search_budgets": [13],
       "expected_search_seed_count": 5,
       "next_budgets_on_pass": [20, 40]
+    },
+    {
+      "gate_id": "final_immutable_dimension_frontier_d10000",
+      "run_id": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
+      "code_commit": "da01f40dfce175cd9bb723ba680ef6c719ec7ad6",
+      "status": "complete",
+      "target_dimensions": [10000],
+      "target_search_budgets": [13, 20, 40],
+      "expected_search_seed_count": 10,
+      "expected_proposal_row_count": 30,
+      "expected_backend_row_count": 90,
+      "historical_result_rows_reused": 0,
+      "execution_snapshot": "paper_artifacts/execution_snapshots/da01f40dfce175cd9bb723ba680ef6c719ec7ad6.json"
     },
     {
       "gate_id": "legacy_related_family_bridge",
