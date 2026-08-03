@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT))
 from performance.paper_method_contract import (  # noqa: E402
     FRONTEND_CONTRACT_ID,
     FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID,
+    FRONTEND_MONOTONE_ENVELOPE_CHALLENGER_ID,
     PAPER_METHOD_CONTRACT_ID,
     paper_method_contract,
     validate_final_protocol,
@@ -71,6 +72,21 @@ def test_lower_envelope_challenger_has_a_distinct_contract():
 
     payload["universal_lower_envelope_sentinel"] = False
     with pytest.raises(ValueError, match="requires its universal sentinel"):
+        validate_frozen_proposal_payload(payload)
+
+
+def test_source_monotone_envelope_challenger_has_a_distinct_contract():
+    payload = _proposal_payload()
+    payload.update({
+        "paper_frontend_contract_id": (
+            FRONTEND_MONOTONE_ENVELOPE_CHALLENGER_ID),
+        "source_monotone_envelope": True,
+    })
+    audit = validate_frozen_proposal_payload(payload)
+    assert audit["contract_id"] == FRONTEND_MONOTONE_ENVELOPE_CHALLENGER_ID
+
+    payload["source_monotone_envelope"] = False
+    with pytest.raises(ValueError, match="requires its DC envelope"):
         validate_frozen_proposal_payload(payload)
 
 

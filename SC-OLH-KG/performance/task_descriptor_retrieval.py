@@ -16,6 +16,7 @@ SOURCE_DOMAIN_POOL = (
     "QueueResourceControl",
 )
 TRAFFIC_TARGET = "Ingolstadt21Traffic"
+ENERGY_TARGET = "OPSDStorageReliability"
 
 DOMAIN_BLIND_CONTROL = "domain_blind_exclude_nearest"
 DESCRIPTOR_NEAREST = "descriptor_nearest"
@@ -67,6 +68,15 @@ _OBSERVABLE_ROLES = {
         "event_driven_dynamics",
         "network_flow_balance",
         "queue_state",
+        "shared_exogenous_shock",
+        "state_action_exposure",
+        "cumulative_safety_output",
+    }),
+    "OPSDStorageReliability": frozenset({
+        "bounded_integer_policy",
+        "event_driven_dynamics",
+        "network_flow_balance",
+        "stock_state",
         "shared_exogenous_shock",
         "state_action_exposure",
         "cumulative_safety_output",
@@ -150,9 +160,9 @@ def source_selection_contract(
     source_pool = tuple(map(str, source_pool))
     if set(source_pool) != set(SOURCE_DOMAIN_POOL):
         raise ValueError(
-            "paper traffic source pool must be the registered three domains")
+            "external-domain source pool must be the registered three domains")
     if int(source_count) != 2:
-        raise ValueError("paper traffic contract requires exactly two sources")
+        raise ValueError("external-domain contract requires exactly two sources")
 
     if mode == DOMAIN_BLIND_CONTROL:
         source_domains = (

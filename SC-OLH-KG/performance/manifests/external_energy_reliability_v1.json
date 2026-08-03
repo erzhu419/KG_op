@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "status": "energy_lodo_frontend_screen_pass_online_gate_pending",
+  "contract_id": "opsd_storage_reliability_external_replacement_v1",
+  "replaces_positive_external_domain": "Ingolstadt21Traffic",
+  "sumo_disposition": "retained_as_failed_not_promoted_external_result",
+  "data": {
+    "provider": "Open Power System Data",
+    "package": "time_series",
+    "version": "2020-10-06",
+    "doi": "10.25832/time_series/2020-10-06",
+    "official_url": "https://data.open-power-system-data.org/time_series/2020-10-06/time_series_60min_singleindex.csv",
+    "raw_content_length": 130339665,
+    "raw_sha256": "6a7f2bc571314cbf9c321cc03437691cd4be95c3a6f075e60ff99e8035c704c8",
+    "compact_content_length": 1286988,
+    "compact_sha256": "eeb587d26d3461dd2164c5d4ec3e57b4a6a3b5ef106ed082f578714968817fda",
+    "raw_file_retained": false,
+    "compact_data_committed": false
+  },
+  "registered_tasks": {
+    "cross_family_sources": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "energy_lodo_sources": [
+      "AT:2017",
+      "DK_1:2017"
+    ],
+    "development_target": "DK_2:2018",
+    "confirmatory_target": "GB_GBN:2018",
+    "confirmatory_policy_evaluations_completed": 0
+  },
+  "chronological_target_split": {
+    "search": "calendar year y-1",
+    "development_audit": "calendar year y",
+    "independent_verification": "calendar year y+1"
+  },
+  "problem": {
+    "decision": "integer reserve/SOC trajectory",
+    "dimension": 1000,
+    "integer_upper_bound": 100,
+    "alpha": 0.05,
+    "maximum_unserved_fraction": 0.11,
+    "energy_capacity_normalized_load_hours": 0.4,
+    "power_capacity_normalized_load": 0.4,
+    "efficiency": 0.92,
+    "target_actual_error_used_by_observable_coordinate": false,
+    "target_actual_error_used_only_by_charged_evaluation_or_verifier": true
+  },
+  "development_certifiability_audit": {
+    "contract_id": "opsd_energy_certifiability_dk2_development_v1",
+    "status": "pass",
+    "window_count": 7761,
+    "registered_policy_count": 17,
+    "chance_feasible_policy_count": 2,
+    "chance_infeasible_policy_count": 15,
+    "clearly_infeasible_policy_count": 6,
+    "best_registered_feasible_policy": "constant_090",
+    "best_registered_feasible_probability": 0.9527122793454452,
+    "best_registered_feasible_objective": 0.03328259402305704,
+    "objective_spread_among_feasible": 0.0015638999553539215
+  },
+  "cross_family_frontend_truth_audit": {
+    "development_only": true,
+    "frozen_atlas_is_deterministic": true,
+    "descriptor_conditioned": {
+      "source_domains": [
+        "InventorySupplyChain",
+        "QueueResourceControl"
+      ],
+      "contains_chance_feasible_in_512_window_screen": false
+    },
+    "domain_blind": {
+      "source_domains": [
+        "FactorShockStatePolicyRZDT1",
+        "InventorySupplyChain"
+      ],
+      "contains_chance_feasible_in_512_window_screen": false
+    },
+    "common_sobol": {
+      "design_count": 5,
+      "designs_containing_chance_feasible": 0
+    },
+    "target_outcomes_used_to_fit_or_materialize_frozen_atlas": false,
+    "status": "negative_control_failed_not_tuned"
+  },
+  "energy_lodo_frontend_screen": {
+    "status": "pass",
+    "frontend_contract_id": "lodo_low_frequency_risk_objective_atlas_dc_envelope_v3",
+    "source_domains": [
+      "AT:search_2017",
+      "DK_1:search_2017"
+    ],
+    "source_profiles_per_domain": 64,
+    "source_replicates_per_profile": 3,
+    "source_simulator_calls": 384,
+    "source_design_mode": "shared_low_frequency",
+    "source_monotone_envelope": {
+      "coordinate": "zero_frequency_normalized_policy_mean",
+      "minimum_absolute_rank_correlation": 0.25,
+      "requires_all_source_directions_to_agree": true
+    },
+    "frozen_atlas_contains_chance_feasible_in_512_window_screen": true,
+    "common_sobol_designs_containing_chance_feasible": 0,
+    "target_outcome_array_loaded_during_materialization": false,
+    "target_simulator_calls_during_materialization": 0
+  },
+  "single_seed_smoke_not_inferential": {
+    "seed": 80,
+    "both_arms_independently_certified": true,
+    "energy_lodo_verification_objective": 0.0182439550024744,
+    "common_sobol_verification_objective": 0.0937610519686326,
+    "false_certificates": 0
+  },
+  "next_registered_gate": {
+    "contract_id": "opsd_energy_stochastic_online_development_gate_v1",
+    "arms": [
+      "energy_lodo_frozen_proposal",
+      "common_sobol"
+    ],
+    "seeds": [80, 81, 82, 83, 84],
+    "n0": 10,
+    "target_search_calls": 13,
+    "verification_candidate_budgets": [80, 128, 128],
+    "minimum_certified_frozen_seeds": 4,
+    "maximum_false_certificates": 0,
+    "cpu_nodes_only": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "confirmatory_target_may_open_only_after_pass": true
+  },
+  "post_gate_no_regression_requirement": {
+    "required_before_frontend_promotion": true,
+    "domains": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "comparison": "V1 versus V3 with identical source archives and target seeds"
+  },
+  "hvd_role": "secondary_pooled_vs_cumulative_calibration_ablation_only",
+  "manuscript_generation_performed": false
+}

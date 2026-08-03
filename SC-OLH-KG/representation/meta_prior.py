@@ -18,7 +18,7 @@ from dataclasses import dataclass
 from itertools import permutations
 
 import numpy as np
-from scipy.stats import norm
+from scipy.stats import norm, rankdata
 
 from core.admissibility import (
     domain_tuned_audit,
@@ -693,10 +693,11 @@ class LearnedMetaPrior:
             "random",
             "universal_mixture",
             "shared_uniform",
+            "shared_low_frequency",
         }:
             raise ValueError(
-                "source_design_mode must be random, universal_mixture, or "
-                "shared_uniform"
+                "source_design_mode must be one of random, universal_mixture, "
+                "shared_uniform, or shared_low_frequency"
             )
         self.source_universal_fraction = float(np.clip(
             source_universal_fraction, 0.0, 1.0))
@@ -727,6 +728,12 @@ class LearnedMetaPrior:
         }
         self.risk_objective_proposal_diagnostics = {
             "status": "not_materialized",
+            "source_only": True,
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+        self.source_monotone_envelope_diagnostics = {
+            "status": "not_requested",
             "source_only": True,
             "target_data_used": False,
             "target_oracle_used": False,
@@ -1866,6 +1873,16 @@ class LearnedMetaPrior:
                 seen.add(x)
                 rows.append((x, "universal_shared_uniform"))
             return rows
+        if self.source_design_mode == "shared_low_frequency":
+            # Reinitialize the source-design RNG for every domain so each
+            # source evaluates exactly the same formula-free low-frequency
+            # profiles. Outcomes remain independent simulator draws.
+            shared_rng = np.random.default_rng(self.seed + 104729)
+            return [
+                (_as_tuple(x), "universal_shared_low_frequency")
+                for x in self._source_universal_design(
+                    problem, n, shared_rng)
+            ]
         n_universal = min(
             n,
             max(1, int(round(n * self.source_universal_fraction))),
@@ -1935,11 +1952,10 @@ class LearnedMetaPrior:
                 "target_oracle_used": False,
             }
             return
-        consensus_origin = (
-            "universal_shared_uniform"
-            if self.source_design_mode == "shared_uniform"
-            else "universal_low_frequency"
-        )
+        consensus_origin = {
+            "shared_uniform": "universal_shared_uniform",
+            "shared_low_frequency": "universal_shared_low_frequency",
+        }.get(self.source_design_mode, "universal_low_frequency")
         usable = [
             rec for rec in records
             if rec.origin == consensus_origin and rec.profile is not None
@@ -2374,6 +2390,7 @@ class LearnedMetaPrior:
                 rec.origin in {
                     "universal_low_frequency",
                     "universal_shared_uniform",
+                    "universal_shared_low_frequency",
                 }
                 for rec in records
             )),
@@ -2387,6 +2404,7 @@ class LearnedMetaPrior:
                     "random",
                     "universal_low_frequency",
                     "universal_shared_uniform",
+                    "universal_shared_low_frequency",
                 }
             )),
         }
@@ -5832,6 +5850,7 @@ class LearnedMetaPrior:
         rng=None,
         *,
         protect_lower_envelope_sentinel=False,
+        protect_source_monotone_envelope=False,
     ):
         """Build a source-only safety-objective Pareto proposal atlas.
 
@@ -5848,18 +5867,30 @@ class LearnedMetaPrior:
         rng = rng or np.random.default_rng(self.seed)
         library = self.universal_shape_candidates(
             problem, n=10000, rng=rng, force=True)
+        rows = []
+        if protect_source_monotone_envelope:
+            envelope = self.source_monotone_envelope_candidate(problem)
+            if envelope is not None:
+                rows.append(envelope)
         sentinel_indices = []
-        if protect_lower_envelope_sentinel and library and n_take > 0:
+        if (
+            protect_lower_envelope_sentinel
+            and library
+            and len(rows) < n_take
+        ):
             # The lowest constant policy is defined solely by normalized
             # bounds and dimension.  It restores support for a domain whose
             # safe direction lies below every source template without using
             # any held-out response or target-specific anchor.
             sentinel_indices.append(0)
-        if len(library) > 1 and len(sentinel_indices) < n_take:
+        if (
+            len(library) > 1
+            and len(rows) + len(sentinel_indices) < n_take
+        ):
             sentinel_indices.append(1)
-        elif library and not sentinel_indices:
+        elif library and not sentinel_indices and len(rows) < n_take:
             sentinel_indices.append(0)
-        rows = [library[index] for index in sentinel_indices]
+        rows.extend(library[index] for index in sentinel_indices)
 
         unique = {}
         for item in self.source_consensus_templates:
@@ -5988,6 +6019,8 @@ class LearnedMetaPrior:
                 "universal_sentinel_indices": list(sentinel_indices),
                 "universal_lower_envelope_sentinel": bool(
                     protect_lower_envelope_sentinel),
+                "source_monotone_envelope": dict(
+                    self.source_monotone_envelope_diagnostics),
                 "selected_roles": list(selected_roles),
                 "selected_safety_scores": [
                     float(safety[index]) for index in selected
@@ -6021,9 +6054,83 @@ class LearnedMetaPrior:
                 "universal_sentinel_indices": list(sentinel_indices),
                 "universal_lower_envelope_sentinel": bool(
                     protect_lower_envelope_sentinel),
+                "source_monotone_envelope": dict(
+                    self.source_monotone_envelope_diagnostics),
             }
         rows.extend(library)
         return unique_candidates(rows)[:n_take]
+
+    def source_monotone_envelope_candidate(
+        self,
+        problem,
+        *,
+        minimum_absolute_rank_correlation=0.25,
+    ):
+        """Extrapolate the source-agreed DC safety direction to one bound.
+
+        The zero-frequency policy coefficient is the normalized profile mean.
+        Each source domain independently estimates its rank correlation with
+        the observed chance margin. An endpoint is admitted only when every
+        source has the same direction and clears a fixed strength threshold.
+        The held-out target contributes only its dimension and bounds.
+        """
+
+        by_domain = {}
+        for record in self.source_records_:
+            if record.profile is None:
+                continue
+            by_domain.setdefault(str(record.domain), []).append(record)
+        rows = []
+        threshold = max(float(minimum_absolute_rank_correlation), 0.0)
+        for domain, records in sorted(by_domain.items()):
+            if len(records) < 3:
+                continue
+            dc = np.asarray([
+                float(np.mean(record.profile)) for record in records
+            ], dtype=float)
+            margins = np.asarray([
+                self._source_margin(record) for record in records
+            ], dtype=float)
+            dc_rank = rankdata(dc, method="average")
+            margin_rank = rankdata(margins, method="average")
+            dc_centered = dc_rank - float(np.mean(dc_rank))
+            margin_centered = margin_rank - float(np.mean(margin_rank))
+            denominator = float(np.linalg.norm(dc_centered) * np.linalg.norm(
+                margin_centered))
+            correlation = (
+                float(dc_centered @ margin_centered) / denominator
+                if denominator > 1e-12 else 0.0
+            )
+            rows.append({
+                "domain": domain,
+                "rank_correlation": correlation,
+                "record_count": int(len(records)),
+            })
+        correlations = np.asarray([
+            row["rank_correlation"] for row in rows
+        ], dtype=float)
+        same_negative = bool(
+            len(rows) >= 2 and np.all(correlations <= -threshold))
+        same_positive = bool(
+            len(rows) >= 2 and np.all(correlations >= threshold))
+        admitted = bool(same_negative or same_positive)
+        endpoint = 1.0 if same_negative else (0.0 if same_positive else None)
+        self.source_monotone_envelope_diagnostics = {
+            "status": "admitted" if admitted else "rejected",
+            "coordinate": "zero_frequency_normalized_policy_mean",
+            "minimum_absolute_rank_correlation": threshold,
+            "source_rows": rows,
+            "source_direction_agreement": admitted,
+            "selected_normalized_endpoint": endpoint,
+            "source_only": True,
+            "target_data_used": False,
+            "target_oracle_used": False,
+        }
+        if not admitted:
+            return None
+        dimension = max(1, int(getattr(problem, "d", 1)))
+        profile = np.full(dimension, endpoint, dtype=float)
+        return _as_tuple(problem.continuous_to_int(profile))
 
     def risk_objective_template_initial_candidates(
         self, problem, n=0, rng=None,
