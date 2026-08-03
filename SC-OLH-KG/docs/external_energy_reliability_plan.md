@@ -211,6 +211,14 @@ domain. It does not establish an HVD or KG increment because both arms used
 the same neutral continuation and independent verifier. HVD remains subject to
 the separately registered causal comparison.
 
+The registered V1/V3 no-regression gate also passed without spending target
+simulator calls. On each original LODO split, the two source tasks did not
+agree strongly enough on the DC chance-margin direction, so V3 failed closed.
+For all three domains and all 20 registered seeds, V1 and V3 emitted the same
+ordered `d=1000`, `n0=10` point sets. Since the downstream runner is a
+deterministic function of those points and the target seed, paired target
+replay would be exactly redundant rather than merely underpowered.
+
 The first CPU gate compares frozen energy-LODO initialization against common
 Sobol, both with the same neutral Sobol continuation and independent verifier.
 Only after this paired gate passes are SCBO and Stacked GP added. SAASBO is

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "gate_id": "source_monotone_envelope_no_regression_v1",
+  "status": "pass",
+  "method_commit": "cec14e36273700e05308bd3f7979c40e8ce65a25",
+  "decision": "v3_no_regression_by_exact_frozen_design_equivalence",
+  "source_dimension": 50,
+  "target_dimension": 1000,
+  "n0": 10,
+  "seeds": [
+    80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+    90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+  ],
+  "domain_count": 3,
+  "identical_domain_seed_designs": 60,
+  "target_simulator_calls_used": 0,
+  "saas_used": false,
+  "gpu_used": false,
+  "domains": {
+    "FactorShockStatePolicyRZDT1": {
+      "source_archive_fingerprint": "40a2813576c8efe392f84b1250c53f37f85b55207836d888d5116d6718551e08",
+      "source_rank_correlations": {
+        "InventorySupplyChain": 0.45307746169027147,
+        "QueueResourceControl": -0.02588359614307415
+      },
+      "source_intervention_status": "rejected",
+      "ordered_point_sets_identical": "20/20",
+      "baseline_artifact_sha256": "0d0acbe145a4dbfe20ab946ee11e799ebb82580e86d25189021804572567a78a",
+      "challenger_artifact_sha256": "b0b1de1131c4d8a69e91e2c4c6e69a69c4db91ca7afbc64ad273b1f11df887ad"
+    },
+    "InventorySupplyChain": {
+      "source_archive_fingerprint": "710ab75022cd67c45c2523e14d70b324e311751f1f6595b22e6224509afcf145",
+      "source_rank_correlations": {
+        "FactorShockStatePolicyRZDT1": -0.5840072276670961,
+        "QueueResourceControl": -0.02588359614307415
+      },
+      "source_intervention_status": "rejected",
+      "ordered_point_sets_identical": "20/20",
+      "baseline_artifact_sha256": "8d03099718d2b68c8a3af7c214eabd77819e50ae07c655adc3e2666da9901074",
+      "challenger_artifact_sha256": "da861705d2bf7d8cc4752fba1eeb897bd7b019288bcdb31496770aeefa3470ca"
+    },
+    "QueueResourceControl": {
+      "source_archive_fingerprint": "5222c52f779d343ec92d5886627a9969ceadf4c8d0255d887c7846fb0d9b503c",
+      "source_rank_correlations": {
+        "FactorShockStatePolicyRZDT1": -0.5840072276670961,
+        "InventorySupplyChain": 0.4340885225729188
+      },
+      "source_intervention_status": "rejected",
+      "ordered_point_sets_identical": "20/20",
+      "baseline_artifact_sha256": "c8406426f855c8f4afe10fc9caf16843cc2a5a84712091e9261701e4e383fb97",
+      "challenger_artifact_sha256": "dd3855944c1f3fd33c0bfff5d74a8c5ae4532de115a0a1e818793a8fea328f74"
+    }
+  },
+  "interpretation": "The V3 intervention fails closed on all three original source splits. V1 and V3 emit exactly the same ordered d=1000 target point sets for all 60 registered domain-seed cells, so deterministic paired target replay is redundant."
+}

@@ -13,6 +13,7 @@ from performance.paper_method_contract import (  # noqa: E402
     FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID,
     FRONTEND_MONOTONE_ENVELOPE_CHALLENGER_ID,
     PAPER_METHOD_CONTRACT_ID,
+    PROMOTED_FRONTEND_CONTRACT_ID,
     paper_method_contract,
     validate_final_protocol,
     validate_frozen_proposal_payload,
@@ -41,6 +42,8 @@ def test_final_contract_names_frontend_as_novel_and_backend_as_replaceable():
     assert contract["contract_id"] == PAPER_METHOD_CONTRACT_ID
     assert contract["novel_component"]["role"] == (
         "transferable structural front end")
+    assert contract["novel_component"]["contract_id"] == (
+        PROMOTED_FRONTEND_CONTRACT_ID)
     assert contract["online_backend"]["headline_novelty_claim"] is False
     assert contract["claim_boundary"]["kg_is_main_contribution"] is False
     assert contract["information_contract"]["target_oracle_used"] is False

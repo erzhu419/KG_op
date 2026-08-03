@@ -1,13 +1,15 @@
 {
   "schema_version": 1,
-  "status": "immutable_final_replays_complete_external_validity_failed",
+  "status": "immutable_final_replays_complete_external_energy_pass",
   "contract_id": "or_transfer_frontend_saas_v1",
-  "primary_claim": "A source-only, target-label-invariant structural proposal raises heldout feasible-basin coverage in a dimension-equivariant policy coordinate.",
+  "primary_claim": "A source-only, target-label-invariant structural proposal with a fail-closed source-consensus envelope raises heldout feasible-basin coverage in a dimension-equivariant policy coordinate.",
   "novel_frontend": {
-    "contract_id": "lodo_low_frequency_risk_objective_atlas_v1",
+    "contract_id": "lodo_low_frequency_risk_objective_atlas_dc_envelope_v3",
     "source_training": "leave-one-domain-out",
     "structural_prior_profile": "low_frequency_only",
     "proposal_mode": "risk_objective_atlas",
+    "source_monotone_envelope": "admit a normalized endpoint only when every source task agrees in sign with absolute rank correlation at least 0.25",
+    "v1_equivalence_on_original_domains": "60/60 registered domain-seed designs",
     "source_domains_per_heldout": 2,
     "source_profiles_per_domain": 64,
     "replications_per_profile": 3,
@@ -63,7 +65,8 @@
     "manifold_and_transformer": "background representation ablations",
     "orthogonality_sparsity_additivity": "hypothesis-class ablations without current coequal causal support",
     "cumulative_hvd": "optional risk-calibration diagnostic, not part of the primary optimizer; the corrected 20-seed provider-coordinate gate improved variance RMSE and shape correlation in every domain but did not improve feasibility or regret and increased verification cost in Inventory and Queue",
-    "external_traffic": "strict no-history SUMO external validity failed its development gate; no positive traffic generalization claim is allowed"
+    "external_traffic": "strict no-history SUMO external validity failed its development gate; no positive traffic generalization claim is allowed",
+    "external_energy": "OPSD storage reliability passed an untouched 20-seed GB_GBN confirmation after DK_2 development; the result establishes the structural front end, not an HVD or KG increment"
   },
   "registered_stress_tests": [
     "domain-blind proposal without heldout task-family identifier",
@@ -200,6 +203,23 @@
         "admissible_for_confirmatory_claim": false
       }
     },
+    "external_energy_validity_contract": {
+      "status": "passed_confirmatory",
+      "artifact": "performance/manifests/external_energy_reliability_v1.json",
+      "confirmatory_result": "performance/manifests/external_energy_confirmation_result_v1.json",
+      "no_regression_result": "performance/manifests/monotone_envelope_no_regression_result_v1.json",
+      "development_target": "DK_2:2018",
+      "untouched_confirmatory_target": "GB_GBN:2018",
+      "source_markets": ["AT:2017", "DK_1:2017"],
+      "target_labels_used_to_fit_proposal": false,
+      "target_oracle_used": false,
+      "confirmatory_certified": "20/20",
+      "confirmatory_false_certificates": 0,
+      "paired_frontend_wins": "20/20",
+      "paired_one_sided_exact_sign_pvalue": 9.5367431640625e-07,
+      "median_relative_safe_objective_improvement": 0.36158802769476317,
+      "sumo_failure_retained_as_negative_result": true
+    },
     "final_dimension_budget_evidence": {
       "artifact": "paper_artifacts/final_dimension_budget_evidence_v1.json",
       "contract_id": "stratified_final_dimension_budget_evidence_v1",
@@ -212,7 +232,7 @@
     "final_evidence_readiness": {
       "artifact": "paper_artifacts/paper_submission_readiness_v1.json",
       "registry_status_overlay": "paper_artifacts/experiment_registry_status_overlay_v1.json",
-      "status": "blocked_by_external_validity",
+      "status": "evidence_complete",
       "non_external_failure_count": 0,
       "manuscript_generation_performed": false
     },
@@ -230,7 +250,7 @@
         "every paired comparison has an identical target problem fingerprint",
         "every headline result contributes every target search call",
         "terminal truth reconstructed from the problem contract matches the stored result",
-        "paired statistics, proof receipt, traffic holdout, and proposal coverage audits pass"
+        "paired statistics, proof receipt, external energy holdout, and proposal coverage audits pass"
       ]
     }
   }

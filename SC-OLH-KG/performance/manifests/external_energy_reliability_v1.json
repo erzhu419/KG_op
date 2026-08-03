@@ -1,7 +1,10 @@
 {
   "schema_version": 1,
-  "status": "confirmatory_external_energy_pass_no_regression_pending",
+  "status": "complete_confirmatory_external_energy_pass",
   "contract_id": "opsd_storage_reliability_external_replacement_v1",
+  "external_validity_status": "passed_confirmatory",
+  "submission_release_status": "evidence_complete",
+  "confirmatory_external_energy_evidence_available": true,
   "replaces_positive_external_domain": "Ingolstadt21Traffic",
   "sumo_disposition": "retained_as_failed_not_promoted_external_result",
   "data": {
@@ -185,6 +188,19 @@
       "QueueResourceControl"
     ],
     "comparison": "V1 versus V3 with identical source archives and target seeds"
+  },
+  "post_gate_no_regression_result": {
+    "status": "pass",
+    "tracked_aggregate": "performance/manifests/monotone_envelope_no_regression_result_v1.json",
+    "domain_count": 3,
+    "identical_domain_seed_designs": 60,
+    "target_simulator_calls_used": 0,
+    "reason": "The source-monotone intervention failed closed in every original source split, and V1/V3 emitted exactly identical ordered point sets for all registered seeds."
+  },
+  "decision_contract": {
+    "confirmatory_target_frozen_before_outcomes": true,
+    "posthoc_outcomes_do_not_select_or_modify_the_method": true,
+    "sumo_negative_result_retained": true
   },
   "hvd_role": "secondary_pooled_vs_cumulative_calibration_ablation_only",
   "manuscript_generation_performed": false

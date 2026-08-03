@@ -11,6 +11,8 @@ FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID = (
     "lodo_low_frequency_risk_objective_atlas_lower_envelope_v2")
 FRONTEND_MONOTONE_ENVELOPE_CHALLENGER_ID = (
     "lodo_low_frequency_risk_objective_atlas_dc_envelope_v3")
+PROMOTED_FRONTEND_CONTRACT_ID = (
+    FRONTEND_MONOTONE_ENVELOPE_CHALLENGER_ID)
 BACKEND_CONTRACT_ID = "canonical_botorch_saasbo_every_iteration_v1"
 VERIFIER_CONTRACT_ID = "v69_independent_three_policy_objective_guard_v1"
 
@@ -54,10 +56,13 @@ def paper_method_contract():
         "contract_id": PAPER_METHOD_CONTRACT_ID,
         "novel_component": {
             "role": "transferable structural front end",
-            "contract_id": FRONTEND_CONTRACT_ID,
+            "contract_id": PROMOTED_FRONTEND_CONTRACT_ID,
             "source_training": "leave-one-domain-out",
             "structural_prior_profile": "low_frequency_only",
             "proposal_mode": "risk_objective_atlas",
+            "source_monotone_envelope": (
+                "fail closed unless every source task agrees on the DC "
+                "chance-margin direction"),
             "dimension_equivariant": True,
             "frozen_before_target_observations": True,
         },

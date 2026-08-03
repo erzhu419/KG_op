@@ -3,10 +3,10 @@
     "compact_result_audit": "6dcdd7363f20a285a1488130cb9a89290bccc978b39ab3f4bac48db0ad5f7dfd",
     "dimension_evidence": "43fb39945dd7e307c3d87eb4e00d9c1bc5de3685aab3be7c543e9416aab55e3f",
     "experiment_registry": "383c515c01720d762bca5d95aa9cfa6897e710d75ece91995496c6c7edf99d84",
-    "external_disposition": "f02ba4b6a6d001af84ddacd8875b02b5b4a4964f5493a9ee86590dbc5c81ec33",
+    "external_disposition": "46830c9475ba75c825677e2b02d661869036fd803a5de1d1191b4c6f75d22761",
     "hvd_causal_gate": "89867e9f030663995ff233490cba372aa3f2d2458d99e389e9da87cfe909b409",
     "lean_proof_receipt": "a224377c578d22ed99bef25d3d901ca2dbdbed0cf8c7248ef97723fe074bcf91",
-    "method_contract": "2a9b70c8f9dab3e86b6b11e5d244af636b257ad47d1530a750665dfb27279e44",
+    "method_contract": "92bb91d60a58b88c6c9172b605b4cdd071a6cfec1ffe3ff86c2e440569656b68",
     "paired_statistics": "29cea121bd17dda40037c936f1e15e9e5e6432b6a65da888fbbfabf5487394fa",
     "proposal_coverage": "d133ebaccf11c3a1838138f744d20db211a1aab0beac4c956987c6371feb239c",
     "search_convergence": "d612f6f9b1a645107c0183bd9588617cec6ae50d5ecf607994be82e4bd8d2575"
@@ -30,6 +30,11 @@
         "10000": 10
       }
     },
+    "external_validity": {
+      "confirmatory_energy_seed_count": 20,
+      "false_certificate_count": 0,
+      "status": "passed_confirmatory_energy"
+    },
     "hvd": {
       "paper_role": "optional_risk_calibration_and_certification_ablation",
       "promote_as_core": false,
@@ -46,14 +51,7 @@
     "proposal_coverage_status": "complete_with_conditional_global_bound",
     "registered_tracks": 20
   },
-  "external_blockers": [
-    {
-      "confirmatory_claim_allowed": false,
-      "id": "strict_no_history_sumo_external_validity",
-      "reason": "The preregistered V2 development gate certified 0/5 seeds; a diagnostic frozen 111-policy library contained no policy with empirical feasibility probability at least 0.95.",
-      "status": "failed_not_promoted"
-    }
-  ],
+  "external_blockers": [],
   "information_contract": {
     "policy_vectors_exported": false,
     "posthoc_external_outcomes_used_to_change_method": false,
@@ -64,7 +62,7 @@
   "manuscript_generation_performed": false,
   "non_external_failure_count": 0,
   "non_external_failures": [],
-  "ready_for_manuscript_lock": false,
+  "ready_for_manuscript_lock": true,
   "registry_status_overlay": {
     "audited_record_count": 2243,
     "base_registry_id": "paper_submission_experiment_registry_v1",
@@ -73,8 +71,8 @@
     "contract_id": "immutable_registry_status_overlay_v1",
     "registered_track_count": 20,
     "schema_version": 1,
-    "status": "blocked_by_external_validity"
+    "status": "evidence_complete"
   },
   "schema_version": 1,
-  "status": "blocked_by_external_validity"
+  "status": "evidence_complete"
 }

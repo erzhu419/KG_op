@@ -217,7 +217,7 @@ def build_readiness(
         failures,
     )
 
-    external_failed = bool(
+    legacy_external_failed = bool(
         external.get("status") == "complete"
         and external.get("external_validity_status")
         == "failed_not_promoted"
@@ -230,19 +230,50 @@ def build_readiness(
         and external.get("decision_contract", {}).get(
             "posthoc_outcomes_do_not_select_or_modify_the_method") is True
     )
-    _check(
-        external_failed,
-        "external-validity disposition is missing or not fail-closed",
-        failures,
+    confirmation = external.get("confirmatory_result", {})
+    no_regression = external.get("post_gate_no_regression_result", {})
+    external_energy_passed = bool(
+        external.get("external_validity_status") == "passed_confirmatory"
+        and external.get("submission_release_status") == "evidence_complete"
+        and external.get(
+            "confirmatory_external_energy_evidence_available") is True
+        and confirmation.get("status") == "pass"
+        and int(confirmation.get("frozen_independently_certified", 0)) == 20
+        and int(confirmation.get("frozen_false_certificates", -1)) == 0
+        and int(confirmation.get("paired_frozen_wins", 0)) == 20
+        and confirmation.get("method_repair_after_target_opened") is False
+        and no_regression.get("status") == "pass"
+        and int(no_regression.get("domain_count", 0)) == 3
+        and int(no_regression.get("identical_domain_seed_designs", 0)) == 60
+        and int(no_regression.get("target_simulator_calls_used", -1)) == 0
+        and external.get("decision_contract", {}).get(
+            "confirmatory_target_frozen_before_outcomes") is True
+        and external.get("decision_contract", {}).get(
+            "posthoc_outcomes_do_not_select_or_modify_the_method") is True
     )
     _check(
-        method.get("claim_boundaries", {}).get("external_traffic")
-        and method.get("supporting_evidence", {}).get(
-            "external_validity_contract", {}).get("status")
-        == "failed_not_promoted",
-        "method contract does not disclose the external-validity failure",
+        legacy_external_failed or external_energy_passed,
+        "external-validity disposition is neither fail-closed nor confirmed",
         failures,
     )
+    if external_energy_passed:
+        _check(
+            method.get("claim_boundaries", {}).get("external_energy")
+            and method.get("supporting_evidence", {}).get(
+                "external_energy_validity_contract", {}).get("status")
+            == "passed_confirmatory",
+            "method contract does not bind the confirmed energy evidence",
+            failures,
+        )
+    else:
+        _check(
+            method.get("claim_boundaries", {}).get("external_traffic")
+            and method.get("supporting_evidence", {}).get(
+                "external_validity_contract", {}).get("status")
+            == "failed_not_promoted",
+            "method contract does not disclose the external-validity failure",
+            failures,
+        )
 
     external_blockers = ([{
         "id": "strict_no_history_sumo_external_validity",
@@ -253,7 +284,7 @@ def build_readiness(
             "a diagnostic frozen 111-policy library contained no policy "
             "with empirical feasibility probability at least 0.95."
         ),
-    }] if external_failed else [])
+    }] if legacy_external_failed else [])
     if failures:
         status = "blocked_by_internal_evidence"
     elif external_blockers:
@@ -304,6 +335,21 @@ def build_readiness(
                 "promote_as_core": bool(
                     hvd_summary.get("promote_hvd_as_core")),
                 "retain_optional": bool(hvd_summary.get("retain_optional")),
+            },
+            "external_validity": {
+                "status": (
+                    "passed_confirmatory_energy"
+                    if external_energy_passed
+                    else "failed_not_promoted_sumo"
+                ),
+                "confirmatory_energy_seed_count": (
+                    int(confirmation.get("frozen_independently_certified", 0))
+                    if external_energy_passed else 0
+                ),
+                "false_certificate_count": (
+                    int(confirmation.get("frozen_false_certificates", 0))
+                    if external_energy_passed else None
+                ),
             },
             "lean": {
                 "source_count": int(proof.get("lean_source_count", 0)),

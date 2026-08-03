@@ -169,3 +169,43 @@ def test_readiness_fails_closed_on_receipt_drift(tmp_path):
     readiness = build_readiness(**paths)
     assert readiness["status"] == "blocked_by_internal_evidence"
     assert readiness["non_external_failure_count"] == 1
+
+
+def test_confirmed_external_energy_closes_external_blocker(tmp_path):
+    paths = _fixture(tmp_path)
+    method = json.loads(paths["method_contract_path"].read_text())
+    method["claim_boundaries"]["external_energy"] = "confirmed"
+    method["supporting_evidence"]["external_energy_validity_contract"] = {
+        "status": "passed_confirmatory",
+    }
+    paths["method_contract_path"].write_text(json.dumps(method))
+    energy = {
+        "status": "complete_confirmatory_external_energy_pass",
+        "external_validity_status": "passed_confirmatory",
+        "submission_release_status": "evidence_complete",
+        "confirmatory_external_energy_evidence_available": True,
+        "confirmatory_result": {
+            "status": "pass",
+            "frozen_independently_certified": 20,
+            "frozen_false_certificates": 0,
+            "paired_frozen_wins": 20,
+            "method_repair_after_target_opened": False,
+        },
+        "post_gate_no_regression_result": {
+            "status": "pass",
+            "domain_count": 3,
+            "identical_domain_seed_designs": 60,
+            "target_simulator_calls_used": 0,
+        },
+        "decision_contract": {
+            "confirmatory_target_frozen_before_outcomes": True,
+            "posthoc_outcomes_do_not_select_or_modify_the_method": True,
+        },
+    }
+    paths["external_disposition_path"].write_text(json.dumps(energy))
+    readiness = build_readiness(**paths)
+    assert readiness["status"] == "evidence_complete"
+    assert readiness["external_blockers"] == []
+    assert readiness["ready_for_manuscript_lock"] is True
+    assert readiness["evidence"]["external_validity"]["status"] == (
+        "passed_confirmatory_energy")
