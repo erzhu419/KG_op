@@ -152,6 +152,44 @@ def test_paired_statistics_refuses_mismatched_information_contract():
     )
 
 
+def test_paired_statistics_keeps_excluded_history_out_of_release_gate():
+    records = [
+        _row("left", seed, feasible=True, regret=0.1, certified=True)
+        for seed in range(4)
+    ] + [
+        _row("right", seed, feasible=True, regret=0.2, certified=True)
+        for seed in range(4)
+    ]
+    registry = _registry()
+    registry["primary_comparisons"].append({
+        "comparison_id": "stopped_history",
+        "release_required": False,
+        "release_exclusion_reason": "stopped run",
+        "left_track": "missing",
+        "left_method": "left",
+        "right_track": "missing",
+        "right_method": "right",
+        "domains": ["Domain"],
+        "dimensions": [1000],
+        "expected_pairs": 4,
+    })
+
+    result = analyze(
+        {"status": "pass", "records": records},
+        registry,
+        bootstrap_samples=20,
+    )
+
+    assert result["status"] == "complete"
+    assert result["release_required_comparison_count"] == 1
+    assert result["excluded_incomplete_comparisons"] == [
+        "stopped_history"
+    ]
+    excluded = result["comparison_audits"][1]
+    assert excluded["release_required"] is False
+    assert excluded["release_exclusion_reason"] == "stopped run"
+
+
 def test_paired_statistics_reports_post_run_variance_calibration():
     records = []
     for seed in range(4):

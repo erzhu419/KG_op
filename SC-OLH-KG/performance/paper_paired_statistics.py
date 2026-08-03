@@ -494,6 +494,8 @@ def analyze(audit, registry, *, bootstrap_samples=10000):
     comparison_audits = []
     for specification in registry.get("primary_comparisons", ()):
         comparison_id = str(specification["comparison_id"])
+        release_required = bool(specification.get(
+            "release_required", True))
         pairs, missing_left, missing_right, equality_failures = (
             _paired_rows(records, specification)
         )
@@ -522,6 +524,9 @@ def analyze(audit, registry, *, bootstrap_samples=10000):
             })
         comparison_audits.append({
             "comparison_id": comparison_id,
+            "release_required": release_required,
+            "release_exclusion_reason": specification.get(
+                "release_exclusion_reason"),
             "status": "pass" if not failure_reasons else "incomplete",
             "pair_count": len(pairs),
             "failures": failure_reasons,
@@ -573,13 +578,22 @@ def analyze(audit, registry, *, bootstrap_samples=10000):
         "audit_status": audit.get("status"),
         "status": (
             "complete"
-            if comparison_audits
+            if any(
+                row["release_required"] for row in comparison_audits)
             and all(
                 row["status"] == "pass"
                 for row in comparison_audits
+                if row["release_required"]
             )
             else "incomplete"
         ),
+        "release_required_comparison_count": sum(
+            row["release_required"] for row in comparison_audits),
+        "excluded_incomplete_comparisons": [
+            row["comparison_id"] for row in comparison_audits
+            if not row["release_required"]
+            and row["status"] != "pass"
+        ],
         "bootstrap_samples": int(bootstrap_samples),
         "holm_family": (
             "preregistered confirmatory families; global stratum only"
