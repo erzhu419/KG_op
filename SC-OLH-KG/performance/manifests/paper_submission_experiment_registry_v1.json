@@ -527,8 +527,11 @@
     },
     {
       "track_id": "final_dimension_frontier_d10000_proposal_n10",
-      "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
-      "glob": "d10000/N10/proposal_only/**/result.json",
+      "result_sources": [{
+        "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
+        "glob": "d10000/N10/proposal_only/**/result.json",
+        "include_method_identities": ["frozen_crossdim_proposal_only"]
+      }],
       "expected_method_identities": [
         "frozen_crossdim_proposal_only"
       ],
@@ -562,8 +565,11 @@
     },
     {
       "track_id": "final_dimension_frontier_d10000_saas_n13",
-      "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
-      "glob": "d10000/N13/saasbo/**/result.json",
+      "result_sources": [{
+        "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
+        "glob": "d10000/N13/saasbo/**/result.json",
+        "include_method_identities": ["canonical_saasbo_every_iteration"]
+      }],
       "expected_method_identities": [
         "canonical_saasbo_every_iteration"
       ],
@@ -597,8 +603,11 @@
     },
     {
       "track_id": "final_dimension_frontier_d10000_saas_n20",
-      "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
-      "glob": "d10000/N20/saasbo/**/result.json",
+      "result_sources": [{
+        "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
+        "glob": "d10000/N20/saasbo/**/result.json",
+        "include_method_identities": ["canonical_saasbo_every_iteration"]
+      }],
       "expected_method_identities": [
         "canonical_saasbo_every_iteration"
       ],
@@ -632,8 +641,11 @@
     },
     {
       "track_id": "final_dimension_frontier_d10000_saas_n40",
-      "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
-      "glob": "d10000/N40/saasbo/**/result.json",
+      "result_sources": [{
+        "result_root": "paper_final_frozen_dimension_budget_da01f40_d10000_n13_n20_n40_s80_89_v1",
+        "glob": "d10000/N40/saasbo/**/result.json",
+        "include_method_identities": ["canonical_saasbo_every_iteration"]
+      }],
       "expected_method_identities": [
         "canonical_saasbo_every_iteration"
       ],
