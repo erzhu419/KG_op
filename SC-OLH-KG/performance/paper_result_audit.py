@@ -402,6 +402,8 @@ def extract_result_record(path, *, track_id):
         ),
         "source_calls": _int_or_none(source_calls),
         "target_initial_design_calls": _int_or_none(initial_calls),
+        "target_initial_design_calls_source": (
+            "result_payload" if initial_calls is not None else "missing"),
         "target_adaptive_search_calls": _int_or_none(adaptive_calls),
         "target_search_calls": _int_or_none(search_calls),
         "target_safety_verification_calls": _int_or_none(
@@ -454,21 +456,34 @@ def extract_result_record(path, *, track_id):
 
 
 def _result_sources(specification):
+    declared_n0 = specification.get(
+        "declared_target_initial_design_calls")
     sources = specification.get("result_sources")
     if sources is not None:
         if not isinstance(sources, list) or not sources:
             raise ValueError("result_sources must be a nonempty list")
-        return [dict(source) for source in sources]
+        rows = [dict(source) for source in sources]
+        if declared_n0 is not None:
+            for row in rows:
+                row.setdefault(
+                    "declared_target_initial_design_calls",
+                    int(declared_n0),
+                )
+        return rows
     roots = specification.get("result_roots")
     if roots is None:
         roots = [specification["result_root"]]
-    return [
+    rows = [
         {
             "result_root": root,
             "glob": specification.get("glob", "**/result.json"),
         }
         for root in roots
     ]
+    if declared_n0 is not None:
+        for row in rows:
+            row["declared_target_initial_design_calls"] = int(declared_n0)
+    return rows
 
 
 def _source_accepts(row, source):
@@ -518,6 +533,25 @@ def extract_registry_records(registry, *, root, origin=None):
                     continue
                 if not _source_accepts(row, source):
                     continue
+                declared_n0 = source.get(
+                    "declared_target_initial_design_calls")
+                if (
+                    row["target_initial_design_calls"] is None
+                    and declared_n0 is not None
+                ):
+                    row["target_initial_design_calls"] = int(declared_n0)
+                    row["target_initial_design_calls_source"] = (
+                        "registry_declared_static_contract")
+                    if row["target_search_calls"] is not None:
+                        adaptive = (
+                            int(row["target_search_calls"])
+                            - int(declared_n0)
+                        )
+                        if adaptive < 0:
+                            raise ValueError(
+                                f"declared n0 exceeds target search calls: "
+                                f"{path}")
+                        row["target_adaptive_search_calls"] = adaptive
                 if origin is not None:
                     row["extraction_origin"] = str(origin)
                 records.append(row)
@@ -528,6 +562,8 @@ def extract_registry_records(registry, *, root, origin=None):
                 "glob": glob,
                 "matched_file_count": len(paths),
                 "accepted_record_count": accepted,
+                "declared_target_initial_design_calls": source.get(
+                    "declared_target_initial_design_calls"),
                 "origin": None if origin is None else str(origin),
             })
     return records, source_receipts

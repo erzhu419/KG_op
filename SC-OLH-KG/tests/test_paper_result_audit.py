@@ -334,6 +334,7 @@ def test_result_level_source_calls_and_total_optimization_contract(tmp_path):
     )
     payload = json.loads(path.read_text(encoding="utf-8"))
     payload["information_contract"].pop("offline_source_calls")
+    payload["information_contract"].pop("target_initial_calls_n0")
     payload["result"]["source_calls"] = 384
     payload["result"].pop("algorithm_fidelity")
     payload["result"].pop("saas_nuts_schedule")
@@ -349,6 +350,9 @@ def test_result_level_source_calls_and_total_optimization_contract(tmp_path):
             ],
             "expected_domains": ["QueueResourceControl"],
             "expected_seeds": [80],
+            "declared_target_initial_design_calls": 10,
+            "required_initial_calls": 10,
+            "required_adaptive_calls": 3,
             "required_optimization_calls": 397,
         }],
     }
@@ -356,6 +360,10 @@ def test_result_level_source_calls_and_total_optimization_contract(tmp_path):
     assert audit["status"] == "pass"
     record = audit["records"][0]
     assert record["source_calls"] == 384
+    assert record["target_initial_design_calls"] == 10
+    assert record["target_adaptive_search_calls"] == 3
+    assert record["target_initial_design_calls_source"] == (
+        "registry_declared_static_contract")
     assert record["optimization_calls_excluding_verification"] == 397
     assert len(record["result_sha256"]) == 64
 
