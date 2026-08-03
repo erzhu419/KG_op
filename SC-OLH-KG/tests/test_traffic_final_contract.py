@@ -379,3 +379,37 @@ def test_external_traffic_frontier_is_cpu_only_and_budget_separated(tmp_path):
         assert "--target-initial-design-calls 10" in spec["cmd"]
     assert all(
         "checkpoints" in spec["stage_excludes"] for spec in specs)
+
+
+def test_external_traffic_lower_envelope_challenger_is_explicit(tmp_path):
+    args = SimpleNamespace(
+        deploy=tmp_path,
+        code_root=None,
+        require_frozen_snapshot=False,
+        run_id="lower_envelope",
+        archive_run_id="archive",
+        source_selection_modes=DESCRIPTOR_NEAREST,
+        backend="botorch_scbo",
+        budgets="13",
+        source_d=50,
+        seed_start=80,
+        n_seeds=1,
+        n0=10,
+        R=100,
+        verification_seed_start=900000,
+        raw_samples=1024,
+        num_restarts=10,
+        maxiter=100,
+        ts_candidates=2000,
+        candidate_timeout_sec=3600.0,
+        cpu=12,
+        ram_mb=24576,
+        protect_lower_envelope_sentinel=True,
+    )
+
+    specs, _snapshot = build_cpu_frontier_specs(args)
+    design = next(
+        spec for spec in specs if spec["signature"].endswith("/design"))
+    search = next(spec for spec in specs if "/search/" in spec["signature"])
+    assert "--protect-lower-envelope-sentinel" in design["cmd"]
+    assert "ProposalLowerEnvelopeV2" in search["cmd"]

@@ -26,6 +26,13 @@ using nominal policy dimension. The implementation-matched umbrella theorem is
 `SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`.
 `RankAlignedAtlasCoverage.lean` and `ProposalCoverage.lean` retain rank and raw
 feasible-mass alternatives; their failed/vacuous audits prevent post-hoc use.
+The optional lower-envelope challenger is not treated as a free action-set
+superset. `finite_reserved_sentinel_coverage` proves a fixed-budget coverage
+reservation: a source atlas with at most `n0 - 1` members plus one
+target-label-free universal sentinel still has size at most `n0`, and supplies
+a feasible witness only when that sentinel is explicitly assumed to lie in the
+held-out safe basin. Promotion therefore also requires paired noninferiority
+on the original domains.
 For a genuinely randomized proposal backend, the separate IID corollary remains
 `P(hit by n0) >= 1 - (1 - p_lower)^n0` through
 `paper_frontend_transfer_coverage_and_certificate`.  The older

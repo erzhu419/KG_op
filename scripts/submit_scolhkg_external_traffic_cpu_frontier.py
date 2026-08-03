@@ -138,14 +138,25 @@ def _sumo_env(cpu):
     ]
 
 
-def _method_label(source_mode, backend, budget):
+def _method_label(
+    source_mode,
+    backend,
+    budget,
+    *,
+    protect_lower_envelope_sentinel=False,
+):
     source = (
         "Descriptor" if source_mode == DESCRIPTOR_NEAREST else "DomainBlind")
     name = {
         "botorch_scbo": "SCBO",
         "botorch_turbo": "TuRBO",
     }[backend]
-    return f"ExternalTraffic-{source}Proposal-{name}-N{int(budget)}"
+    proposal = (
+        f"{source}ProposalLowerEnvelopeV2"
+        if protect_lower_envelope_sentinel
+        else f"{source}Proposal"
+    )
+    return f"ExternalTraffic-{proposal}-{name}-N{int(budget)}"
 
 
 def build_specs(args):
@@ -197,6 +208,8 @@ def build_specs(args):
             "--n-seeds", str(args.n_seeds),
             "--source-selection-mode", source_mode,
         ]
+        if getattr(args, "protect_lower_envelope_sentinel", False):
+            design_cmd.append("--protect-lower-envelope-sentinel")
         specs.append({
             "description": f"external traffic CPU proposal {source_mode}",
             "cmd": f"{shlex.join(design_cmd)} && echo DONE",
@@ -219,7 +232,13 @@ def build_specs(args):
 
         for budget in budgets:
             oos_paths = []
-            method_label = _method_label(source_mode, backend, budget)
+            method_label = _method_label(
+                source_mode,
+                backend,
+                budget,
+                protect_lower_envelope_sentinel=getattr(
+                    args, "protect_lower_envelope_sentinel", False),
+            )
             for seed in range(
                 int(args.seed_start),
                 int(args.seed_start) + int(args.n_seeds),
@@ -419,6 +438,10 @@ def main():
     parser.add_argument("--seed-start", type=int, default=80)
     parser.add_argument("--n-seeds", type=int, default=5)
     parser.add_argument("--n0", type=int, default=10)
+    parser.add_argument(
+        "--protect-lower-envelope-sentinel",
+        action="store_true",
+    )
     parser.add_argument("--R", type=int, default=100)
     parser.add_argument("--verification-seed-start", type=int, default=900000)
     parser.add_argument("--raw-samples", type=int, default=1024)

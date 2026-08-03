@@ -5825,7 +5825,14 @@ class LearnedMetaPrior:
         rows.extend(library)
         return unique_candidates(rows)[:n_take]
 
-    def risk_objective_initial_candidates(self, problem, n=0, rng=None):
+    def risk_objective_initial_candidates(
+        self,
+        problem,
+        n=0,
+        rng=None,
+        *,
+        protect_lower_envelope_sentinel=False,
+    ):
         """Build a source-only safety-objective Pareto proposal atlas.
 
         Chance margins and objectives are ranked separately within every
@@ -5841,7 +5848,18 @@ class LearnedMetaPrior:
         rng = rng or np.random.default_rng(self.seed)
         library = self.universal_shape_candidates(
             problem, n=10000, rng=rng, force=True)
-        rows = [library[1]] if len(library) > 1 else list(library[:1])
+        sentinel_indices = []
+        if protect_lower_envelope_sentinel and library and n_take > 0:
+            # The lowest constant policy is defined solely by normalized
+            # bounds and dimension.  It restores support for a domain whose
+            # safe direction lies below every source template without using
+            # any held-out response or target-specific anchor.
+            sentinel_indices.append(0)
+        if len(library) > 1 and len(sentinel_indices) < n_take:
+            sentinel_indices.append(1)
+        elif library and not sentinel_indices:
+            sentinel_indices.append(0)
+        rows = [library[index] for index in sentinel_indices]
 
         unique = {}
         for item in self.source_consensus_templates:
@@ -5967,6 +5985,9 @@ class LearnedMetaPrior:
                 "robust_source_feasible_template_count": int(np.sum(robust)),
                 "pareto_template_count": int(len(pareto)),
                 "selected_template_count": int(len(selected)),
+                "universal_sentinel_indices": list(sentinel_indices),
+                "universal_lower_envelope_sentinel": bool(
+                    protect_lower_envelope_sentinel),
                 "selected_roles": list(selected_roles),
                 "selected_safety_scores": [
                     float(safety[index]) for index in selected
@@ -5997,6 +6018,9 @@ class LearnedMetaPrior:
                 "target_data_used": False,
                 "target_oracle_used": False,
                 "target_policy_dimension": int(getattr(problem, "d", 1)),
+                "universal_sentinel_indices": list(sentinel_indices),
+                "universal_lower_envelope_sentinel": bool(
+                    protect_lower_envelope_sentinel),
             }
         rows.extend(library)
         return unique_candidates(rows)[:n_take]

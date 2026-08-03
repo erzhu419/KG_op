@@ -7,6 +7,8 @@ from copy import deepcopy
 
 PAPER_METHOD_CONTRACT_ID = "or_transfer_frontend_saas_v1"
 FRONTEND_CONTRACT_ID = "lodo_low_frequency_risk_objective_atlas_v1"
+FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID = (
+    "lodo_low_frequency_risk_objective_atlas_lower_envelope_v2")
 BACKEND_CONTRACT_ID = "canonical_botorch_saasbo_every_iteration_v1"
 VERIFIER_CONTRACT_ID = "v69_independent_three_policy_objective_guard_v1"
 
@@ -131,6 +133,21 @@ def validate_frozen_proposal_payload(payload, *, expected_n0=TARGET_N0):
         if payload.get(key) != value:
             failures.append(
                 f"{key}={payload.get(key)!r}, expected {value!r}")
+    contract_id = payload.get(
+        "paper_frontend_contract_id", FRONTEND_CONTRACT_ID)
+    lower_envelope = bool(payload.get(
+        "universal_lower_envelope_sentinel", False))
+    if contract_id == FRONTEND_CONTRACT_ID and lower_envelope:
+        failures.append(
+            "the V1 front-end contract cannot enable the V2 lower-envelope "
+            "sentinel")
+    elif contract_id == FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID:
+        if not lower_envelope:
+            failures.append(
+                "the V2 lower-envelope contract requires its universal "
+                "sentinel")
+    elif contract_id != FRONTEND_CONTRACT_ID:
+        failures.append(f"unknown paper front-end contract {contract_id!r}")
     if int(payload.get("source_dimension", 0)) <= 0:
         failures.append("source_dimension must be positive")
     if int(payload.get("dimension", 0)) <= 0:
@@ -147,7 +164,7 @@ def validate_frozen_proposal_payload(payload, *, expected_n0=TARGET_N0):
         raise ValueError(
             "paper proposal contract violation: " + "; ".join(failures))
     return {
-        "contract_id": FRONTEND_CONTRACT_ID,
+        "contract_id": contract_id,
         "validated": True,
         "source_archive_calls": SOURCE_ARCHIVE_CALLS,
         "target_outcomes_used": False,

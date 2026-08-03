@@ -25,6 +25,7 @@ from performance.paper_method_contract import (  # noqa: E402
     ALLOWED_TARGET_DESCRIPTORS,
     FORBIDDEN_TARGET_INFORMATION,
     FRONTEND_CONTRACT_ID,
+    FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID,
     validate_frozen_proposal_payload,
 )
 from performance.execution_provenance import (  # noqa: E402
@@ -65,6 +66,7 @@ def materialize_external_traffic_design(
     seed_start=80,
     n_seeds=5,
     source_selection_mode=DOMAIN_BLIND_CONTROL,
+    protect_lower_envelope_sentinel=False,
 ):
     """Create target-label-free traffic designs from one frozen source archive."""
 
@@ -107,6 +109,8 @@ def materialize_external_traffic_design(
             problem,
             n=int(n0),
             rng=np.random.default_rng(seed),
+            protect_lower_envelope_sentinel=bool(
+                protect_lower_envelope_sentinel),
         )
         points = [tuple(map(int, point)) for point in points]
         if len(points) != int(n0) or len(set(points)) != int(n0):
@@ -142,9 +146,15 @@ def materialize_external_traffic_design(
         "source_split_heldout": selection.source_split_heldout,
         "target_labels_used": False,
         "target_oracle_used": False,
+        "universal_lower_envelope_sentinel": bool(
+            protect_lower_envelope_sentinel),
         "sumo_imported_for_bounds_only": True,
         "sumo_simulator_calls_during_materialization": 0,
-        "paper_frontend_contract_id": FRONTEND_CONTRACT_ID,
+        "paper_frontend_contract_id": (
+            FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID
+            if protect_lower_envelope_sentinel
+            else FRONTEND_CONTRACT_ID
+        ),
         "target_descriptor_contract": {
             "track": selection.track,
             "allowed": list(ALLOWED_TARGET_DESCRIPTORS),
@@ -183,6 +193,10 @@ def main():
         choices=SOURCE_SELECTION_MODES,
         default=DOMAIN_BLIND_CONTROL,
     )
+    parser.add_argument(
+        "--protect-lower-envelope-sentinel",
+        action="store_true",
+    )
     args = parser.parse_args()
     payload = materialize_external_traffic_design(
         args.manifest,
@@ -193,6 +207,8 @@ def main():
         seed_start=args.seed_start,
         n_seeds=args.n_seeds,
         source_selection_mode=args.source_selection_mode,
+        protect_lower_envelope_sentinel=(
+            args.protect_lower_envelope_sentinel),
     )
     print(json.dumps({
         "status": "ok",

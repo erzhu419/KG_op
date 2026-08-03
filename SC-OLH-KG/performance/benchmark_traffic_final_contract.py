@@ -34,7 +34,6 @@ from performance.materialize_external_traffic_design import (  # noqa: E402
     TARGET_DOMAIN,
 )
 from performance.paper_method_contract import (  # noqa: E402
-    FRONTEND_CONTRACT_ID,
     TARGET_N0,
     TARGET_SEARCH_CALLS,
     validate_frozen_proposal_payload,
@@ -183,7 +182,7 @@ def run_one(args):
         "target_oracle_used": False,
         "external_verification_pending": True,
         "external_verifier_contract": EXTERNAL_VERIFIER_CONTRACT,
-        "paper_frontend_contract_id": FRONTEND_CONTRACT_ID,
+        "paper_frontend_contract_id": design_contract["contract_id"],
         "paper_backend_contract_id": BACKEND_CONTRACTS[backend],
         "backend": backend,
         "canonical_final_backend": bool(

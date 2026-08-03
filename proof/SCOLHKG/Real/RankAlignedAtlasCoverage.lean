@@ -79,4 +79,56 @@ theorem finite_rank_aligned_atlas_coverage
   exact ⟨hAtlasSize, aligned_rank_atlas_contains_feasible
     hAlignment hCover hSafe hInterior⟩
 
+/-! ## Budgeted universal sentinel reservation
+
+The lower-envelope challenger reserves one of the fixed `n0` proposal slots
+for a policy defined only from normalized bounds. It does not enlarge the
+charged initial design: the remaining source atlas has at most `n0 - 1`
+members. The result below records both the budget and coverage consequences
+without claiming that replacing a source member is cost-free.
+-/
+
+def ReservedSentinelAtlas
+    {X : Type*} [DecidableEq X]
+    (sourceAtlas : Finset X) (sentinel : X) : Finset X :=
+  insert sentinel sourceAtlas
+
+theorem reserved_sentinel_atlas_card_le
+    {X : Type*} [DecidableEq X]
+    {sourceAtlas : Finset X}
+    {sentinel : X}
+    {n0 : ℕ}
+    (hReservedBudget : sourceAtlas.card + 1 ≤ n0) :
+    (ReservedSentinelAtlas sourceAtlas sentinel).card ≤ n0 := by
+  calc
+    (ReservedSentinelAtlas sourceAtlas sentinel).card
+        ≤ sourceAtlas.card + 1 := by
+          simpa [ReservedSentinelAtlas, Nat.add_comm] using
+            Finset.card_insert_le sentinel sourceAtlas
+    _ ≤ n0 := hReservedBudget
+
+theorem reserved_feasible_sentinel_establishes_atlas_coverage
+    {X : Type*} [DecidableEq X]
+    {sourceAtlas : Finset X}
+    {sentinel : X}
+    {feasible : X → Prop}
+    (hSentinelFeasible : feasible sentinel) :
+    ∃ x ∈ ReservedSentinelAtlas sourceAtlas sentinel, feasible x := by
+  exact ⟨sentinel, by simp [ReservedSentinelAtlas], hSentinelFeasible⟩
+
+theorem finite_reserved_sentinel_coverage
+    {X : Type*} [DecidableEq X]
+    {sourceAtlas : Finset X}
+    {sentinel : X}
+    {feasible : X → Prop}
+    {n0 : ℕ}
+    (hReservedBudget : sourceAtlas.card + 1 ≤ n0)
+    (hSentinelFeasible : feasible sentinel) :
+    (ReservedSentinelAtlas sourceAtlas sentinel).card ≤ n0 ∧
+      ∃ x ∈ ReservedSentinelAtlas sourceAtlas sentinel, feasible x := by
+  exact ⟨
+    reserved_sentinel_atlas_card_le hReservedBudget,
+    reserved_feasible_sentinel_establishes_atlas_coverage hSentinelFeasible,
+  ⟩
+
 end SCOLHKG.Real
