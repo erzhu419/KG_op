@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "gate_id": "provider_cumulative_hvd_cpu_sequential_gate_v1",
+  "implementation_commit": "8adb033",
+  "run_id": "provider_hvd_scbo_cpu_8adb033_d1000_n13_s80_99_v2",
+  "task_id_range": [
+    "t65242",
+    "t65361"
+  ],
+  "task_count": 120,
+  "paired_cells": 60,
+  "target_dimension": 1000,
+  "target_search_calls": 13,
+  "target_initial_design_calls": 10,
+  "target_seeds": [
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    98,
+    99
+  ],
+  "paired_contract": {
+    "same_frozen_proposal": true,
+    "same_source_archive": true,
+    "same_backend": "official_botorch_scbo_cpu",
+    "same_independent_terminal_verifier": true,
+    "only_changed_object": "aleatoric_variance_head",
+    "control": "pooled",
+    "challenger": "provider_cumulative_factor",
+    "source_or_target_oracle_used_for_selection": false,
+    "saas_used": false,
+    "gpu_used": false,
+    "execution_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ]
+  },
+  "domain_summaries": {
+    "FactorShockStatePolicyRZDT1": {
+      "pooled": {
+        "true_feasible": "20/20",
+        "independently_certified": "20/20",
+        "false_certification_count": 0,
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_verification_calls": 159.2,
+        "median_log_variance_rmse": 1.1578647008413485,
+        "median_variance_shape_correlation": 0.0
+      },
+      "provider_cumulative_factor": {
+        "true_feasible": "20/20",
+        "independently_certified": "20/20",
+        "false_certification_count": 0,
+        "median_feasible_regret": 0.00824999999999998,
+        "mean_verification_calls": 158.4,
+        "median_log_variance_rmse": 0.21868118023972594,
+        "median_variance_shape_correlation": 0.9190108509115433
+      }
+    },
+    "InventorySupplyChain": {
+      "pooled": {
+        "true_feasible": "20/20",
+        "independently_certified": "20/20",
+        "false_certification_count": 0,
+        "median_feasible_regret": 0.011556952461906411,
+        "mean_verification_calls": 182.4,
+        "median_log_variance_rmse": 0.5773337079655388,
+        "median_variance_shape_correlation": 0.0
+      },
+      "provider_cumulative_factor": {
+        "true_feasible": "20/20",
+        "independently_certified": "20/20",
+        "false_certification_count": 0,
+        "median_feasible_regret": 0.011556952461906411,
+        "mean_verification_calls": 184.0,
+        "median_log_variance_rmse": 0.3489335778756972,
+        "median_variance_shape_correlation": 0.9529642897361064
+      }
+    },
+    "QueueResourceControl": {
+      "pooled": {
+        "true_feasible": "19/20",
+        "independently_certified": "19/20",
+        "false_certification_count": 0,
+        "median_feasible_regret": 0.002876498493437518,
+        "mean_verification_calls": 190.4,
+        "median_log_variance_rmse": 0.501346228678812,
+        "median_variance_shape_correlation": 0.0
+      },
+      "provider_cumulative_factor": {
+        "true_feasible": "19/20",
+        "independently_certified": "19/20",
+        "false_certification_count": 0,
+        "median_feasible_regret": 0.002876498493437518,
+        "mean_verification_calls": 197.6,
+        "median_log_variance_rmse": 0.2538886435054629,
+        "median_variance_shape_correlation": 0.9952680400736422
+      }
+    }
+  },
+  "decision": {
+    "variance_calibration_and_shape_recovered_in_all_domains": true,
+    "feasibility_gain_present": false,
+    "regret_gain_present": false,
+    "false_certification_gain_present": false,
+    "verification_cost_noninferior_in_all_domains": false,
+    "promote_hvd_as_core_contribution": false,
+    "retain_in_primary_optimizer": false,
+    "retain_as_optional_risk_diagnostic": true,
+    "reason": "The corrected provider-coordinate HVD learns the variance shape, but it does not improve feasibility or regret and increases mean verification cost in Inventory and Queue under the paired contract."
+  }
+}

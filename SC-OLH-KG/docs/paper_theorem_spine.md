@@ -7,15 +7,16 @@ The revised method is described by one source-to-target decision model:
 ```text
 source-only archive
   -> frozen transferable proposal q0 and low-frequency coordinate
-  -> separated observable heads eta(x) and psi(x)=(A(x),N(x))
-  -> joint mean/cumulative-HVD target posterior
-  -> unit-cost evaluate-or-replicate posterior VOI
-  -> observed-action posterior Bayes decision
+  -> replaceable target optimizer
   -> separate conservative chance certificate.
 ```
 
 No weighted `KG_obj + KG_feas + KG_var + KG_coupling` expression is a main
-paper object. The legacy additive score remains an ablation only.
+paper object. The legacy additive score remains an ablation only.  The
+separated `eta` and `psi=(A,N)` cumulative-HVD posterior is retained as an
+optional, formally verified risk-calibration extension: its corrected
+20-seed causal gate learned variance shape but did not improve the optimizer's
+feasibility, regret, or verification cost.
 
 ## Supported structural claim
 
@@ -67,13 +68,13 @@ claims only if their independently retrained rows show an incremental effect.
    same modeled mean, epistemic variance, cumulative certification variance,
    and chance margin. Complexity is therefore tied to the observable
    coordinate rather than nominal policy dimension under A2.
-4. **Cumulative HVD decomposition.** The total risk separates exactly into
+4. **Optional cumulative HVD decomposition.** The total risk separates exactly into
    floor, independent exposure, PSD shared shock, and linear residual terms;
    low-rank truncation error is the nonnegative omitted risk tail.
 5. **Certificate soundness.** On A4,
    `m_g + sqrt(beta_g)s_g + z sqrt(v_C_plus) <= tau` implies true chance
    feasibility. Bayes-ranking variance cannot relax the certificate.
-6. **Approximate one-step Bayes optimality.** The selected evaluate-or-
+6. **Backend-ablation approximate one-step Bayes optimality.** The selected evaluate-or-
    replicate action is within `epsilon_shortlist + 2 eta_MC` of every action
    in the declared finite audit pool.
 7. **Finite-budget accounting.** One-step posterior value reductions telescope
@@ -92,8 +93,9 @@ The rank-alignment and raw feasible-mass theorems remain audited special cases;
 `paper_frontend_transfer_coverage_and_certificate` is retained only for the
 randomized-IID proposal contract.
 `paper_mainline_finite_closure` remains the separate evaluate-or-replicate VOI
-ablation theorem. The supporting probability, estimation, information-gain,
-and safe-regret results remain in their specialized files.
+ablation theorem. HVD, posterior VOI, information-gain, and safe-regret results
+remain valid conditional theorems in their specialized files; empirical
+nonpromotion does not turn them into claims about the frozen primary method.
 
 `SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` is the matching
 necessity result: when `n0` is smaller than the policy-space cardinality, some

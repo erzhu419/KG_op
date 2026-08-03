@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the frozen paper front end and canonical SAAS on fresh SUMO calls."""
+"""Run the frozen paper front end with an audited BoTorch SUMO backend."""
 
 from __future__ import annotations
 
@@ -34,7 +34,6 @@ from performance.materialize_external_traffic_design import (  # noqa: E402
     TARGET_DOMAIN,
 )
 from performance.paper_method_contract import (  # noqa: E402
-    BACKEND_CONTRACT_ID,
     FRONTEND_CONTRACT_ID,
     TARGET_N0,
     TARGET_SEARCH_CALLS,
@@ -47,6 +46,12 @@ from problems.traffic_ingolstadt21 import (  # noqa: E402
 
 EXTERNAL_VERIFIER_CONTRACT = (
     "fresh_seed_familywise_exact_binomial_shortlist_v1")
+
+BACKEND_CONTRACTS = {
+    "botorch_saasbo": "canonical_botorch_saasbo_every_iteration_v1",
+    "botorch_scbo": "official_botorch_scbo_cpu_external_v1",
+    "botorch_turbo": "official_botorch_turbo_cpu_external_v1",
+}
 
 
 def _atomic_json(path, payload):
@@ -76,8 +81,13 @@ def _load_design(path, *, seed, n0, dimension):
 
 
 def run_one(args):
-    if int(args.n0) != TARGET_N0 or int(args.N) != TARGET_SEARCH_CALLS:
-        raise ValueError("paper traffic gate requires n0=10 and N=13")
+    if int(args.n0) != TARGET_N0:
+        raise ValueError("traffic front-end contract requires n0=10")
+    if int(args.N) < int(args.n0):
+        raise ValueError("traffic search budget N must be at least n0")
+    backend = str(args.backend).strip().lower()
+    if backend not in BACKEND_CONTRACTS:
+        raise ValueError(f"unsupported traffic backend {backend!r}")
     problem = Ingolstadt21ScalarizedTrafficProblem(
         weights=(float(args.weight_f1), float(args.weight_f2)),
         seed=int(args.seed),
@@ -107,10 +117,11 @@ def run_one(args):
         N=int(args.N),
         n0=int(args.n0),
         seed=int(args.seed),
-        method="botorch_saasbo",
+        method=backend,
         raw_samples=int(args.raw_samples),
         num_restarts=int(args.num_restarts),
         maxiter=int(args.maxiter),
+        ts_candidates=int(args.ts_candidates),
         timeout_sec=float(args.candidate_timeout_sec),
         certification_beta=float(args.beta_g),
         saas_warmup_steps=int(args.saas_warmup_steps),
@@ -131,7 +142,7 @@ def run_one(args):
         progress_logging=True,
         progress_label=f"paper-traffic:seed={int(args.seed)}",
         torch_device=str(args.torch_device),
-        saas_parallel_models=True,
+        saas_parallel_models=bool(backend == "botorch_saasbo"),
         saas_parallel_min_total_steps=64,
         saas_parallel_threads_per_model=int(
             args.saas_parallel_threads_per_model),
@@ -173,7 +184,11 @@ def run_one(args):
         "external_verification_pending": True,
         "external_verifier_contract": EXTERNAL_VERIFIER_CONTRACT,
         "paper_frontend_contract_id": FRONTEND_CONTRACT_ID,
-        "paper_backend_contract_id": BACKEND_CONTRACT_ID,
+        "paper_backend_contract_id": BACKEND_CONTRACTS[backend],
+        "backend": backend,
+        "canonical_final_backend": bool(
+            backend == "botorch_saasbo"
+            and int(args.N) == TARGET_SEARCH_CALLS),
         "source_selection_mode": design_payload["source_selection_mode"],
         "initial_design_contract": design_contract,
         "runtime": botorch_runtime_fingerprint(str(args.torch_device)),
@@ -183,6 +198,7 @@ def run_one(args):
     summary = {
         "schema_version": 1,
         "method": method_label,
+        "backend": backend,
         "partition_method": partition,
         "problem": TARGET_DOMAIN,
         "N": int(args.N),
@@ -236,6 +252,11 @@ def main():
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--method-label", required=True)
     parser.add_argument("--partition-method", required=True)
+    parser.add_argument(
+        "--backend",
+        choices=tuple(BACKEND_CONTRACTS),
+        default="botorch_saasbo",
+    )
     parser.add_argument("--N", type=int, default=13)
     parser.add_argument("--n0", type=int, default=10)
     parser.add_argument("--weight-f1", type=float, default=0.5)
@@ -244,6 +265,7 @@ def main():
     parser.add_argument("--num-restarts", type=int, default=10)
     parser.add_argument("--maxiter", type=int, default=100)
     parser.add_argument("--candidate-timeout-sec", type=float, default=3600.0)
+    parser.add_argument("--ts-candidates", type=int, default=2000)
     parser.add_argument("--beta-g", type=float, default=2.0)
     parser.add_argument("--saas-warmup-steps", type=int, default=256)
     parser.add_argument("--saas-num-samples", type=int, default=128)

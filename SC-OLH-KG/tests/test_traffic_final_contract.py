@@ -17,6 +17,9 @@ from performance.analyze_traffic_final_contract import (  # noqa: E402
 from scripts.submit_scolhkg_final_traffic_gate_scheduler import (  # noqa: E402
     build_specs,
 )
+from scripts.submit_scolhkg_external_traffic_cpu_frontier import (  # noqa: E402
+    build_specs as build_cpu_frontier_specs,
+)
 from performance.task_descriptor_retrieval import (  # noqa: E402
     DESCRIPTOR_NEAREST,
     DOMAIN_BLIND_CONTROL,
@@ -254,3 +257,52 @@ def test_domain_blind_control_retains_registered_hard_split():
     )
     assert selection.source_split_heldout == "QueueResourceControl"
     assert not selection.heldout_task_family_identifier_used
+
+
+def test_external_traffic_frontier_is_cpu_only_and_budget_separated(tmp_path):
+    args = SimpleNamespace(
+        deploy=tmp_path,
+        code_root=None,
+        require_frozen_snapshot=False,
+        run_id="cpu_frontier",
+        archive_run_id="archive",
+        source_selection_modes=(
+            f"{DESCRIPTOR_NEAREST},{DOMAIN_BLIND_CONTROL}"),
+        backend="botorch_scbo",
+        budgets="13,40",
+        source_d=50,
+        seed_start=80,
+        n_seeds=1,
+        n0=10,
+        R=100,
+        verification_seed_start=900000,
+        raw_samples=1024,
+        num_restarts=10,
+        maxiter=100,
+        ts_candidates=2000,
+        candidate_timeout_sec=3600.0,
+        cpu=12,
+        ram_mb=24576,
+    )
+
+    specs, snapshot = build_cpu_frontier_specs(args)
+
+    assert snapshot is None
+    assert len(specs) == 14
+    assert all(spec["vram"] == 0 for spec in specs)
+    assert all(spec["allowed_nodes"] == [
+        "node001", "node002", "node003",
+        "node004", "node005", "node006",
+    ] for spec in specs)
+    search = [spec for spec in specs if "/search/" in spec["signature"]]
+    assert len(search) == 4
+    assert all(spec["project"] == "KG-SUMO" for spec in search)
+    assert all("--backend botorch_scbo" in spec["cmd"] for spec in search)
+    assert all("--torch-device cpu" in spec["cmd"] for spec in search)
+    assert all("--historical-anchor" not in spec["cmd"] for spec in search)
+    assert {13, 40} == {
+        int(spec["signature"].split("/N", 1)[1].split("/", 1)[0])
+        for spec in search
+    }
+    assert all(
+        "checkpoints" in spec["stage_excludes"] for spec in specs)

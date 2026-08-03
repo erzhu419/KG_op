@@ -104,7 +104,8 @@ def paper_method_contract():
             "kg_is_main_contribution": False,
             "saasbo_is_main_contribution": False,
             "manifold_or_transformer_is_main_contribution": False,
-            "hvd_optimization_gain_status": "registered_causal_gate",
+            "hvd_optimization_gain_status": (
+                "calibration_only_not_core_after_provider_20_seed_gate"),
             "supported_primary_claim": (
                 "A source-only, target-label-invariant structural proposal "
                 "raises heldout feasible-basin coverage in a "

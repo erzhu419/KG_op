@@ -62,7 +62,7 @@
     "saasbo": "standard backend, not claimed as novel",
     "manifold_and_transformer": "background representation ablations",
     "orthogonality_sparsity_additivity": "hypothesis-class ablations without current coequal causal support",
-    "cumulative_hvd": "role determined only after the immutable 20-seed paired replay by the preregistered all-domain calibration, feasibility, regret, and false-certification gate"
+    "cumulative_hvd": "optional risk-calibration diagnostic, not part of the primary optimizer; the corrected 20-seed provider-coordinate gate improved variance RMSE and shape correlation in every domain but did not improve feasibility or regret and increased verification cost in Inventory and Queue"
   },
   "registered_stress_tests": [
     "domain-blind proposal without heldout task-family identifier",
@@ -163,18 +163,19 @@
       "canonical_saasbo": "0/60"
     },
     "cumulative_hvd_causal_gate": {
-      "artifact": "paper_artifacts/source_hvd_causal_gate_d1000_n13.json",
-      "status": "final_20_seed_immutable_replay_registered",
-      "provisional_paired_cells": 15,
-      "required_final_paired_cells": 60,
-      "final_run_id": "paper_final_frozen_hvd_623cf78_d1000_n13_s80_99_v1",
-      "task_id_range": ["t61551", "t61670"],
+      "artifact": "paper_artifacts/provider_cumulative_hvd_cpu_gate_d1000_n13_v2.json",
+      "status": "complete_not_promoted",
+      "complete_paired_cells": 60,
+      "final_run_id": "provider_hvd_scbo_cpu_8adb033_d1000_n13_s80_99_v2",
+      "task_id_range": ["t65242", "t65361"],
       "task_count": 120,
-      "execution_snapshot": "paper_artifacts/execution_snapshots/623cf78d23262f41478a5eabebf6c7c04b895daf.json",
+      "implementation_commit": "8adb033",
       "same_source_archive_proposal_backend_and_verifier": true,
-      "decision_rule": "promote as a core contribution if and only if every registered domain improves log-variance calibration and variance-shape correlation without harming feasibility, regret, or false certification",
-      "final_decision_pending": true,
-      "pilot_result_is_not_the_final_claim": true
+      "decision_rule": "promote as a core contribution if and only if every registered domain improves variance calibration and shape without harming feasibility, regret, false certification, or verification cost, with at least one operational gain",
+      "variance_calibration_improved_in_all_domains": true,
+      "operational_gain_in_all_domains": false,
+      "verification_cost_noninferior_in_all_domains": false,
+      "final_decision": "demote_to_optional_risk_diagnostic"
     },
     "external_validity_contract": {
       "main_track": "descriptor_conditional_external_holdout",

@@ -59,11 +59,14 @@ source proposal is the dominant cause of held-out feasible-basin coverage at
 switches as coequal causes, nor does it establish KG as the strongest online
 backend.
 
-Cumulative HVD remains a registered risk-calibration contribution.  It enters
-the headline method only if the same-proposal, same-backend causal gate shows
-an incremental calibration, false-feasibility, certification, or regret
-benefit.  Otherwise it remains a secondary risk-estimation and certification
-component.
+The corrected provider-coordinate cumulative HVD passed its variance-shape
+audit but failed its operational promotion gate.  Across 60 paired cells it
+improved variance RMSE and shape correlation in every domain, while feasibility
+and regret were unchanged and verification cost increased in Inventory and
+Queue.  It is therefore an optional risk diagnostic, not part of the primary
+optimizer or a coequal contribution.  The algebra and implementation remain
+available as a falsifiable extension for domains where cumulative risk shape
+changes deployment decisions.
 
 ## Proposal coverage theorem
 
