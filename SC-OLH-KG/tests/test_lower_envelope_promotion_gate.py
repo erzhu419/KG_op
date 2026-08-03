@@ -95,3 +95,10 @@ def test_gate_rejects_incomplete_traffic_certification():
     result = evaluate_gate(_manifest(), _traffic(certified=1), _records())
     assert result["promote_lower_envelope_v2"] is False
     assert result["traffic_development_gate"]["outcome_pass"] is False
+
+
+def test_failed_traffic_gate_skips_the_costly_synthetic_gate():
+    result = evaluate_gate(_manifest(), _traffic(certified=1), [])
+    assert result["promote_lower_envelope_v2"] is False
+    assert result["synthetic_noninferiority_gate"]["status"] == (
+        "not_run_due_to_sequential_traffic_gate_failure")

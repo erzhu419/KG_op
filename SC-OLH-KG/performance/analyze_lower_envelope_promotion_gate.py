@@ -238,7 +238,16 @@ def evaluate_synthetic(manifest, records):
 
 def evaluate_gate(manifest, traffic, records):
     traffic_gate = evaluate_traffic(manifest, traffic)
-    synthetic_gate = evaluate_synthetic(manifest, records)
+    if traffic_gate["status"] != "pass" and not records:
+        synthetic_gate = {
+            "status": "not_run_due_to_sequential_traffic_gate_failure",
+            "global_failures": [],
+            "expected_record_count": 0,
+            "observed_record_count": 0,
+            "cells": {},
+        }
+    else:
+        synthetic_gate = evaluate_synthetic(manifest, records)
     promote = bool(
         traffic_gate["status"] == "pass"
         and synthetic_gate["status"] == "pass"
@@ -290,12 +299,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--traffic-development", required=True)
-    parser.add_argument("--synthetic-root", required=True)
+    parser.add_argument("--synthetic-root")
     parser.add_argument("--out", required=True)
     args = parser.parse_args()
     manifest = _read_json(args.manifest)
     traffic = _read_json(args.traffic_development)
-    records = load_synthetic_records(args.synthetic_root, manifest)
+    records = (
+        []
+        if args.synthetic_root is None
+        else load_synthetic_records(args.synthetic_root, manifest)
+    )
     payload = evaluate_gate(manifest, traffic, records)
     _atomic_json(args.out, payload)
     print(json.dumps(payload, indent=2, sort_keys=True))
