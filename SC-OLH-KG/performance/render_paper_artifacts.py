@@ -51,6 +51,10 @@ METHOD_LABELS = {
     "stacked_transfer_gp_cbo:official_transfergpbo_code": "Stacked GP",
     "canonical_saasbo_every_iteration": "Canonical SAASBO",
     "scolh:v69_feasible_first_verified_initial_incumbent": "SC-V69",
+    "botorch_scbo:canonical_scbo_constrained_ts+hvd:pooled": (
+        "SCBO + pooled variance"),
+    "botorch_scbo:canonical_scbo_constrained_ts+hvd:provider_cumulative_factor": (
+        "SCBO + cumulative HVD"),
 }
 
 METHOD_COLORS = {
@@ -82,6 +86,9 @@ METHOD_COLORS = {
     "stacked_transfer_gp_cbo:official_transfergpbo_code": "#9467BD",
     "canonical_saasbo_every_iteration": "#000000",
     "scolh:v69_feasible_first_verified_initial_incumbent": "#0072B2",
+    "botorch_scbo:canonical_scbo_constrained_ts+hvd:pooled": "#E69F00",
+    "botorch_scbo:canonical_scbo_constrained_ts+hvd:provider_cumulative_factor": (
+        "#0072B2"),
 }
 
 
@@ -606,7 +613,7 @@ def plot_hvd_identifiability(rows: list[dict], stem: Path) -> bool:
         and _number(row.get("shared_shock_scale")) is not None
     ]
     if not usable:
-        return False
+        return _plot_provider_hvd_gate(rows, stem)
     grouped = defaultdict(list)
     for row in usable:
         grouped[(_method(row), _integer(row.get("replicates_per_policy")))].append(row)
@@ -650,6 +657,66 @@ def plot_hvd_identifiability(rows: list[dict], stem: Path) -> bool:
     axes[1].set_ylim(-0.03, 1.03)
     for ax in axes:
         ax.grid(alpha=0.25)
+    axes[1].legend(loc="lower right", frameon=False)
+    _save(fig, stem)
+    plt.close(fig)
+    return True
+
+
+def _plot_provider_hvd_gate(rows: list[dict], stem: Path) -> bool:
+    import matplotlib.pyplot as plt
+
+    usable = [
+        row for row in rows
+        if str(row.get("track")) == "source_hvd_causal_gate_d1000_n13"
+        and _number(row.get("variance_rmse")) is not None
+        and _number(row.get("variance_shape_correlation")) is not None
+    ]
+    if not usable:
+        return False
+    domains = sorted({str(row.get("domain")) for row in usable})
+    methods = sorted({_method(row) for row in usable}, key=_label)
+    positions = np.arange(len(domains), dtype=float)
+    width = 0.8 / max(len(methods), 1)
+    fig, axes = plt.subplots(1, 2, figsize=(9.0, 3.5))
+    for index, method in enumerate(methods):
+        offsets = positions + (index - (len(methods) - 1) / 2.0) * width
+        rmse = []
+        correlations = []
+        for domain in domains:
+            selected = [
+                row for row in usable
+                if str(row.get("domain")) == domain
+                and _method(row) == method
+            ]
+            rmse_values = [
+                value for value in (
+                    _number(row.get("variance_rmse")) for row in selected
+                ) if value is not None
+            ]
+            correlation_values = [
+                value for value in (
+                    _number(row.get("variance_shape_correlation"))
+                    for row in selected
+                ) if value is not None
+            ]
+            rmse.append(
+                statistics.median(rmse_values) if rmse_values else np.nan)
+            correlations.append(
+                statistics.median(correlation_values)
+                if correlation_values else np.nan)
+        color = METHOD_COLORS.get(method, "#444444")
+        axes[0].bar(offsets, rmse, width=width, color=color,
+                    label=_label(method))
+        axes[1].bar(offsets, correlations, width=width, color=color,
+                    label=_label(method))
+    labels = [domain.replace("StatePolicyRZDT1", "") for domain in domains]
+    for axis in axes:
+        axis.set_xticks(positions, labels, rotation=18, ha="right")
+        axis.grid(axis="y", alpha=0.25)
+    axes[0].set_ylabel("Median variance RMSE")
+    axes[1].set_ylabel("Median variance-shape correlation")
+    axes[1].set_ylim(-0.03, 1.03)
     axes[1].legend(loc="lower right", frameon=False)
     _save(fig, stem)
     plt.close(fig)

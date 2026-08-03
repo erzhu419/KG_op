@@ -186,3 +186,45 @@ def test_renders_hvd_and_evaluate_or_replicate_diagnostics(tmp_path):
     assert hvd_stem.with_suffix(".svg").exists()
     assert hvd_stem.with_suffix(".tiff").exists()
     assert action_stem.with_suffix(".png").exists()
+
+
+def test_renders_provider_hvd_causal_gate_with_incomplete_method_grid(
+        tmp_path):
+    import matplotlib
+
+    matplotlib.use("Agg", force=True)
+    MODULE._plot_style()
+    pooled = "botorch_scbo:canonical_scbo_constrained_ts+hvd:pooled"
+    provider = (
+        "botorch_scbo:canonical_scbo_constrained_ts+"
+        "hvd:provider_cumulative_factor"
+    )
+    rows = [
+        {
+            "track": "source_hvd_causal_gate_d1000_n13",
+            "domain": "FactorShockStatePolicyRZDT1",
+            "method": pooled,
+            "variance_rmse": 1.1,
+            "variance_shape_correlation": 0.0,
+        },
+        {
+            "track": "source_hvd_causal_gate_d1000_n13",
+            "domain": "FactorShockStatePolicyRZDT1",
+            "method": provider,
+            "variance_rmse": 0.2,
+            "variance_shape_correlation": 0.9,
+        },
+        {
+            "track": "source_hvd_causal_gate_d1000_n13",
+            "domain": "QueueResourceControlStatePolicyRZDT1",
+            "method": provider,
+            "variance_rmse": 0.3,
+            "variance_shape_correlation": 0.95,
+        },
+    ]
+
+    stem = tmp_path / "provider_hvd"
+    assert MODULE.plot_hvd_identifiability(rows, stem) is True
+    assert stem.with_suffix(".pdf").exists()
+    assert stem.with_suffix(".svg").exists()
+    assert stem.with_suffix(".tiff").exists()
