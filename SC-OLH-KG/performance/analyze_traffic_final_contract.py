@@ -149,6 +149,9 @@ def analyze(
     redact_policy_vectors=True,
     target_search_calls=13,
     target_initial_design_calls=10,
+    evidence_phase="development_gate",
+    method_selected_using_target_domain_development_results=False,
+    confirmatory_holdout_seed_disjoint_from_development=False,
 ):
     target_search_calls = int(target_search_calls)
     target_initial_design_calls = int(target_initial_design_calls)
@@ -157,6 +160,19 @@ def analyze(
     if not 0 <= target_initial_design_calls <= target_search_calls:
         raise ValueError(
             "target initial-design calls must lie in [0, target search calls]")
+    evidence_phase = str(evidence_phase)
+    if evidence_phase not in {
+        "development_gate",
+        "confirmatory_holdout",
+        "diagnostic_control",
+    }:
+        raise ValueError("unknown traffic evidence phase")
+    if (
+        evidence_phase == "confirmatory_holdout"
+        and not confirmatory_holdout_seed_disjoint_from_development
+    ):
+        raise ValueError(
+            "confirmatory traffic evidence requires a disjoint seed split")
     source_payloads = [
         json.loads(Path(path).read_text(encoding="utf-8"))
         for path in paths
@@ -234,6 +250,12 @@ def analyze(
             "target_labels_used_to_fit_proposal": False,
             "target_oracle_used": False,
             "historical_target_anchor_used": False,
+            "evidence_phase": evidence_phase,
+            "method_selected_using_target_domain_development_results": bool(
+                method_selected_using_target_domain_development_results),
+            "evaluation_outcomes_used_for_method_selection": False,
+            "confirmatory_holdout_seed_disjoint_from_development": bool(
+                confirmatory_holdout_seed_disjoint_from_development),
         },
         "rows": sorted(rows, key=lambda row: row["run_seed"]),
     }
@@ -287,6 +309,23 @@ def main():
     )
     parser.add_argument("--target-search-calls", type=int, default=13)
     parser.add_argument("--target-initial-design-calls", type=int, default=10)
+    parser.add_argument(
+        "--evidence-phase",
+        choices=(
+            "development_gate",
+            "confirmatory_holdout",
+            "diagnostic_control",
+        ),
+        default="development_gate",
+    )
+    parser.add_argument(
+        "--method-selected-using-target-domain-development-results",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--confirmatory-holdout-seed-disjoint-from-development",
+        action="store_true",
+    )
     args = parser.parse_args()
     payload = analyze(
         args.paths,
@@ -309,6 +348,11 @@ def main():
         redact_policy_vectors=args.redact_policy_vectors,
         target_search_calls=args.target_search_calls,
         target_initial_design_calls=args.target_initial_design_calls,
+        evidence_phase=args.evidence_phase,
+        method_selected_using_target_domain_development_results=(
+            args.method_selected_using_target_domain_development_results),
+        confirmatory_holdout_seed_disjoint_from_development=(
+            args.confirmatory_holdout_seed_disjoint_from_development),
     )
     _atomic_json(args.out, payload)
     print(json.dumps({

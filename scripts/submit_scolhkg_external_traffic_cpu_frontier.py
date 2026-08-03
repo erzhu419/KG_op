@@ -396,7 +396,17 @@ def build_specs(args):
                 "--target-domain", "Ingolstadt21Traffic",
                 "--target-search-calls", str(budget),
                 "--target-initial-design-calls", str(args.n0),
+                "--evidence-phase", str(getattr(
+                    args, "evidence_phase", "development_gate")),
             ]
+            if getattr(args, "protect_lower_envelope_sentinel", False):
+                analyze_cmd.append(
+                    "--method-selected-using-target-domain-development-results")
+            if getattr(args, "evidence_phase", "development_gate") == (
+                "confirmatory_holdout"
+            ):
+                analyze_cmd.append(
+                    "--confirmatory-holdout-seed-disjoint-from-development")
             if selection.heldout_task_family_identifier_used:
                 analyze_cmd.append("--heldout-task-family-identifier-used")
             specs.append({
@@ -457,6 +467,15 @@ def main():
     )
     parser.add_argument("--R", type=int, default=100)
     parser.add_argument("--verification-seed-start", type=int, default=900000)
+    parser.add_argument(
+        "--evidence-phase",
+        choices=(
+            "development_gate",
+            "confirmatory_holdout",
+            "diagnostic_control",
+        ),
+        default="development_gate",
+    )
     parser.add_argument("--raw-samples", type=int, default=1024)
     parser.add_argument("--num-restarts", type=int, default=10)
     parser.add_argument("--maxiter", type=int, default=100)
@@ -543,6 +562,12 @@ def main():
             "historical_traffic_anchor_used": False,
             "target_labels_used_to_fit_proposal": False,
             "target_oracle_used": False,
+            "evidence_phase": str(args.evidence_phase),
+            "method_selected_using_target_domain_development_results": bool(
+                args.protect_lower_envelope_sentinel),
+            "evaluation_outcomes_used_for_method_selection": False,
+            "confirmatory_holdout_seed_disjoint_from_development": bool(
+                args.evidence_phase == "confirmatory_holdout"),
             "verifier": "fresh_seed_familywise_exact_binomial_shortlist_v1",
             "execution_snapshot": (
                 snapshot if snapshot is not None else {"status": "unregistered"}

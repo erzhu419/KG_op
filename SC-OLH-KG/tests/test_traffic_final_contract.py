@@ -4,6 +4,8 @@ from pathlib import Path
 import sys
 from types import SimpleNamespace
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -152,6 +154,8 @@ def test_external_traffic_frozen_snapshot_keeps_tracked_static_results(
         seed_start=80,
         n_seeds=1,
         n0=10,
+        protect_lower_envelope_sentinel=True,
+        evidence_phase="confirmatory_holdout",
         R=100,
         verification_seed_start=900000,
         raw_samples=1024,
@@ -190,6 +194,15 @@ def test_external_traffic_frozen_snapshot_keeps_tracked_static_results(
         in aggregate["cmd"]
     )
     assert "--heldout-task-family-identifier-used" in aggregate["cmd"]
+    assert "--evidence-phase confirmatory_holdout" in aggregate["cmd"]
+    assert (
+        "--method-selected-using-target-domain-development-results"
+        in aggregate["cmd"]
+    )
+    assert (
+        "--confirmatory-holdout-seed-disjoint-from-development"
+        in aggregate["cmd"]
+    )
 
 
 def test_traffic_submitter_binds_sparse_execution_snapshot(tmp_path):
@@ -297,6 +310,36 @@ def test_traffic_aggregate_records_domain_blind_information_contract(
     assert payload["target_total_calls_per_run"] == 340
     assert payload["source_plus_target_total_calls_per_run"] == 724
     assert payload["total_calls_per_run"] == 724
+    assert contract["evidence_phase"] == "development_gate"
+    assert contract[
+        "method_selected_using_target_domain_development_results"] is False
+    assert contract["evaluation_outcomes_used_for_method_selection"] is False
+
+
+def test_confirmatory_traffic_requires_a_disjoint_seed_split(tmp_path):
+    path = tmp_path / "seed100.json"
+    path.write_text(json.dumps({
+        "candidates": [
+            _candidate(0, 100, seed=100),
+            _candidate(1, 100, seed=100),
+            _candidate(2, 100, seed=100),
+        ],
+    }), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="disjoint seed split"):
+        analyze([path], evidence_phase="confirmatory_holdout")
+    payload = analyze(
+        [path],
+        evidence_phase="confirmatory_holdout",
+        method_selected_using_target_domain_development_results=True,
+        confirmatory_holdout_seed_disjoint_from_development=True,
+    )
+    contract = payload["information_contract"]
+    assert contract["evidence_phase"] == "confirmatory_holdout"
+    assert contract[
+        "method_selected_using_target_domain_development_results"] is True
+    assert contract[
+        "confirmatory_holdout_seed_disjoint_from_development"] is True
 
 
 def test_observable_descriptor_retrieval_is_target_label_free_and_stable():

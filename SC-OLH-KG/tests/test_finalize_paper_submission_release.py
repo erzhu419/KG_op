@@ -221,6 +221,10 @@ def _fixtures(tmp_path):
             "target_labels_used_to_fit_proposal": False,
             "target_oracle_used": False,
             "historical_target_anchor_used": False,
+            "evidence_phase": "confirmatory_holdout",
+            "method_selected_using_target_domain_development_results": True,
+            "evaluation_outcomes_used_for_method_selection": False,
+            "confirmatory_holdout_seed_disjoint_from_development": True,
         },
         "rows": traffic_rows,
     })

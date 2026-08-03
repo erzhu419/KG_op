@@ -393,6 +393,14 @@ def validate_release_inputs(
             "target_labels_used_to_fit_proposal") is False
         and traffic_information.get("target_oracle_used") is False
         and traffic_information.get("historical_target_anchor_used") is False
+        and traffic_information.get("evidence_phase")
+        == "confirmatory_holdout"
+        and traffic_information.get(
+            "method_selected_using_target_domain_development_results") is True
+        and traffic_information.get(
+            "evaluation_outcomes_used_for_method_selection") is False
+        and traffic_information.get(
+            "confirmatory_holdout_seed_disjoint_from_development") is True
         and traffic_information.get(
             "excluded_nearest_source_analogue")
         == "FactorShockStatePolicyRZDT1"
@@ -400,8 +408,8 @@ def validate_release_inputs(
         == "FactorShockStatePolicyRZDT1"
         and traffic_information.get("source_domains")
         == ["QueueResourceControl", "InventorySupplyChain"],
-        "traffic experiment is not the registered descriptor-conditioned "
-        "external holdout",
+        "traffic experiment is not the registered disjoint-seed, "
+        "descriptor-conditioned external holdout",
         failures,
     )
     _require(
