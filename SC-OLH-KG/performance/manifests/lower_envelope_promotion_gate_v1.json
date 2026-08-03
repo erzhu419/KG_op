@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "gate_id": "universal_lower_envelope_sentinel_promotion_v1",
+  "status": "preregistered_before_development_outcomes",
+  "registered_at_commit": "c71565225ccf1e0f70eb3f1db7b867f11d1bb25c",
+  "baseline_frontend": "lodo_low_frequency_risk_objective_atlas_v1",
+  "challenger_frontend": "lodo_low_frequency_risk_objective_atlas_lower_envelope_v2",
+  "theory_contract_id": "reserved_sentinel_atlas_coverage_v2",
+  "intervention": "Reserve two target-label-free universal atlas sentinels inside the fixed n0=10 budget and displace one source template.",
+  "information_contract": {
+    "target_outcomes_used_to_construct_sentinel": false,
+    "target_oracle_used": false,
+    "historical_target_anchor_used": false,
+    "development_results_may_select_between_v1_and_v2": true,
+    "confirmatory_results_may_change_the_selected_method": false
+  },
+  "resource_contract": {
+    "saas_used": false,
+    "gpu_used": false,
+    "allowed_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ]
+  },
+  "traffic_development_gate": {
+    "execution_commit": "3559de1e92ec052814dfa4f6c3af98222e0da523",
+    "run_id": "external_traffic_lower_envelope_v2_3559de1_descriptor_scbo_N13_s80_84_R100_v3",
+    "evidence_phase": "development_gate",
+    "source_selection_mode": "descriptor_nearest",
+    "backend": "botorch_scbo",
+    "search_seeds": [80, 81, 82, 83, 84],
+    "source_calls": 384,
+    "n0": 10,
+    "target_search_calls": 13,
+    "verification_replications_per_candidate": 100,
+    "minimum_certified_seed_count": 4,
+    "maximum_empirical_false_certificate_count": 0
+  },
+  "synthetic_noninferiority_gate": {
+    "execution_commit": "c71565225ccf1e0f70eb3f1db7b867f11d1bb25c",
+    "source_dimension": 50,
+    "target_dimension": 1000,
+    "source_calls": 384,
+    "n0": 10,
+    "target_search_calls": 13,
+    "seeds": [80, 81, 82, 83, 84],
+    "domains": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "backends": [
+      "proposal_only",
+      "botorch_scbo"
+    ],
+    "require_no_feasibility_count_loss": true,
+    "maximum_median_paired_regret_increase": 0.005,
+    "maximum_false_certificate_count_increase": 0
+  },
+  "promotion_rule": {
+    "promote_if_and_only_if": "traffic_development_gate_pass AND every_synthetic_backend_domain_cell_pass",
+    "failure_action": "retain_v1_and_stop_target_domain_tuning",
+    "success_action": "freeze_v2_then_run_disjoint_confirmatory_traffic_and_domain_blind_control"
+  },
+  "confirmatory_holdout": {
+    "descriptor_search_seeds": [
+      100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+      110, 111, 112, 113, 114, 115, 116, 117, 118, 119
+    ],
+    "domain_blind_search_seeds": [100, 101, 102, 103, 104],
+    "search_seed_disjoint_from_development": true,
+    "minimum_descriptor_certified_seed_count": 16,
+    "maximum_empirical_false_certificate_count": 0,
+    "method_changes_after_observing_holdout": false
+  }
+}
