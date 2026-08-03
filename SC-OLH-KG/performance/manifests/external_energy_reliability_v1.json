@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "development_gate_pass_confirmatory_preregistered",
+  "status": "confirmatory_external_energy_pass_no_regression_pending",
   "contract_id": "opsd_storage_reliability_external_replacement_v1",
   "replaces_positive_external_domain": "Ingolstadt21Traffic",
   "sumo_disposition": "retained_as_failed_not_promoted_external_result",
@@ -29,7 +29,7 @@
     ],
     "development_target": "DK_2:2018",
     "confirmatory_target": "GB_GBN:2018",
-    "confirmatory_policy_evaluations_completed": 0
+    "confirmatory_policy_evaluations_completed": 3720
   },
   "chronological_target_split": {
     "search": "calendar year y-1",
@@ -159,6 +159,22 @@
       "node005",
       "node006"
     ],
+    "method_repair_after_target_opened": false
+  },
+  "confirmatory_result": {
+    "status": "pass",
+    "tracked_aggregate": "performance/manifests/external_energy_confirmation_result_v1.json",
+    "method_commit": "938cf25e218b4af89e8225d02ebe3417ea7c9d13",
+    "frozen_independently_certified": 20,
+    "common_independently_certified": 20,
+    "frozen_false_certificates": 0,
+    "common_false_certificates": 0,
+    "frozen_median_safe_objective": 0.09755819897059756,
+    "common_median_safe_objective": 0.15170691905444067,
+    "paired_frozen_wins": 20,
+    "paired_frozen_losses": 0,
+    "paired_one_sided_exact_sign_pvalue": 9.5367431640625e-07,
+    "paired_median_relative_objective_improvement": 0.36158802769476317,
     "method_repair_after_target_opened": false
   },
   "post_gate_no_regression_requirement": {

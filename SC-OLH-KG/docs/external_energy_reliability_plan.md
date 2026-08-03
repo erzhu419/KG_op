@@ -198,6 +198,19 @@ Failure on any criterion is retained without target-specific repair. The
 confirmatory seeds, thresholds, target, and analyzer are committed before the
 GB_GBN outcome array is opened by any policy evaluation.
 
+The untouched GB_GBN confirmation passed all registered criteria. Both arms
+were independently certified in 20/20 seeds with zero false certificates. The
+frozen proposal won all 20 paired comparisons (`p=9.54e-7`) and reduced the
+median safe objective from 0.15171 to 0.09756. All 20 frozen deployments came
+from the initial source-informed design; the neutral continuation was never
+responsible for the deployed frozen policy. The tracked aggregate is
+`performance/manifests/external_energy_confirmation_result_v1.json`.
+
+This result supports the transferable structural front end in a real OR
+domain. It does not establish an HVD or KG increment because both arms used
+the same neutral continuation and independent verifier. HVD remains subject to
+the separately registered causal comparison.
+
 The first CPU gate compares frozen energy-LODO initialization against common
 Sobol, both with the same neutral Sobol continuation and independent verifier.
 Only after this paired gate passes are SCBO and Stacked GP added. SAASBO is

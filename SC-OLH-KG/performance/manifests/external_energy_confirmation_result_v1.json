@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "contract_id": "opsd_energy_gb_gbn_confirmatory_v1",
+  "status": "pass",
+  "evidence_phase": "confirmatory_holdout",
+  "target": "GB_GBN:2018",
+  "method_commit": "938cf25e218b4af89e8225d02ebe3417ea7c9d13",
+  "frozen_design_sha256": "756b4f27394493de3438d72c61b3df33c56f7d36ddcb968d60a6794ec5a779d6",
+  "raw_summary_sha256": "febeb41b0d98ac529f93642aaa40c1db44902bd9a393e919e819830538de2e57",
+  "dimension": 1000,
+  "n0": 10,
+  "target_search_calls_per_seed": 13,
+  "seeds": [
+    100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+    110, 111, 112, 113, 114, 115, 116, 117, 118, 119
+  ],
+  "arms": {
+    "common_sobol": {
+      "source_calls": 0,
+      "target_search_calls_total": 260,
+      "verification_calls_total": 1600,
+      "target_calls_total": 1860,
+      "independently_certified_count": 20,
+      "independently_certified_rate": 1.0,
+      "independently_certified_rate_exact_95ci": [
+        0.8315665290169146,
+        1.0
+      ],
+      "false_certificate_count": 0,
+      "median_safe_objective": 0.15170691905444067,
+      "deployed_from_initial_design_count": 15,
+      "deployed_from_neutral_continuation_count": 5
+    },
+    "frozen_proposal": {
+      "source_calls_once": 384,
+      "target_search_calls_total": 260,
+      "verification_calls_total": 1600,
+      "target_calls_total": 1860,
+      "source_plus_target_calls_total": 2244,
+      "independently_certified_count": 20,
+      "independently_certified_rate": 1.0,
+      "independently_certified_rate_exact_95ci": [
+        0.8315665290169146,
+        1.0
+      ],
+      "false_certificate_count": 0,
+      "median_safe_objective": 0.09755819897059756,
+      "deployed_from_initial_design_count": 20,
+      "deployed_from_neutral_continuation_count": 0
+    }
+  },
+  "paired_primary_endpoint": {
+    "comparison": "safe certified deployment first; lower objective second",
+    "frozen_wins": 20,
+    "frozen_losses": 0,
+    "ties": 0,
+    "one_sided_exact_sign_pvalue": 9.5367431640625e-07,
+    "median_common_minus_frozen_objective": 0.05523328754057654,
+    "median_relative_objective_improvement": 0.36158802769476317
+  },
+  "checks": {
+    "complete_twenty_seed_pairing": true,
+    "frozen_certifies_at_least_sixteen_of_twenty": true,
+    "frozen_has_zero_false_certificates": true,
+    "frozen_certification_not_worse_than_common": true,
+    "frozen_has_confirmatory_paired_advantage": true
+  },
+  "scheduler_task_ids": [
+    "t67612", "t67613", "t67614", "t67615", "t67616",
+    "t67617", "t67618", "t67619", "t67620", "t67621",
+    "t67622", "t67623", "t67624", "t67625", "t67626",
+    "t67627", "t67628", "t67629", "t67630", "t67631",
+    "t67632", "t67633", "t67634", "t67635", "t67636",
+    "t67637", "t67638", "t67639", "t67640", "t67641",
+    "t67642", "t67643", "t67644", "t67645", "t67646",
+    "t67647", "t67648", "t67649", "t67650", "t67651"
+  ],
+  "target_oracle_used_during_search": false,
+  "target_outcomes_used_to_fit_proposal": false,
+  "method_repair_after_target_opened": false,
+  "interpretation": "Confirmatory evidence supports the frozen source-learned structural proposal under a neutral online continuation and independent verifier. It does not establish an HVD or KG increment."
+}
