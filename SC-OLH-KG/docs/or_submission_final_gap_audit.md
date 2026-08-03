@@ -123,18 +123,22 @@ library condition in all three domains but does not certify a global Lipschitz
 constant.  The manuscript must not convert this conditional theorem into an
 universal transfer guarantee.
 
-## Remaining Work
+## Production Closure
 
-The remaining tasks are manuscript-production tasks, not missing science:
+The manuscript-production tasks identified by this audit are complete:
 
-1. render final tables and figures only from compact audited artifacts;
-2. freeze terminology and a claim-evidence map;
-3. draft a new manuscript without modifying the rejected legacy paper;
-4. report bootstrap intervals, Holm-adjusted paired tests, failures, timeouts,
-   and all budget components;
-5. compile and visually audit the PDF;
-6. release code, compact data, a README, and the immutable experiment manifest
-   in accordance with the journal's code and data policy.
+1. final tables and figures are rendered only from compact audited artifacts;
+2. terminology and the claim-evidence map are frozen;
+3. the new manuscript is independent of the rejected legacy paper;
+4. bootstrap intervals, Holm-adjusted paired tests, failures, timeouts, and all
+   budget components are reported;
+5. the 28-page PDF compiles without diagnostics and has passed visual review;
+6. code, compact evidence, environment overlays, a reproducibility README, and
+   the immutable experiment manifest are included in the tracked repository.
+
+Only submission metadata remains: author identities and affiliations,
+acknowledgments and disclosures, the cover letter, and journal-system upload.
+These items do not reopen the scientific evidence or Lean contracts.
 
 ## Claim Changes That Would Reopen Experiments
 
