@@ -31,6 +31,7 @@ from performance.paper_method_contract import (  # noqa: E402
     ALLOWED_TARGET_DESCRIPTORS,
     FORBIDDEN_TARGET_INFORMATION,
     FRONTEND_CONTRACT_ID,
+    FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID,
     validate_frozen_proposal_payload,
 )
 from performance.structural_ablation import (  # noqa: E402
@@ -66,6 +67,7 @@ def materialize_source_designs(
     proposal_mode="rank_spanning",
     proposal_component_mode="combined",
     source_design_mode=None,
+    protect_lower_envelope_sentinel=False,
 ):
     """Build designs from the same frozen, oracle-free source observations.
 
@@ -102,6 +104,15 @@ def materialize_source_designs(
         raise ValueError(
             "proposal_component_mode must be combined, universal_only, "
             "or source_templates_only")
+    protect_lower_envelope_sentinel = bool(
+        protect_lower_envelope_sentinel)
+    if protect_lower_envelope_sentinel and not (
+        proposal_mode == "risk_objective_atlas"
+        and proposal_component_mode == "combined"
+    ):
+        raise ValueError(
+            "the lower-envelope sentinel is defined only for the combined "
+            "risk_objective_atlas")
     source_config = dict(target_config)
     archive = None
     archive_fingerprint = None
@@ -154,7 +165,15 @@ def materialize_source_designs(
                     "source_templates_only requires risk_objective_atlas")
             generator = prior.risk_objective_template_initial_candidates
         elif proposal_mode == "risk_objective_atlas":
-            generator = prior.risk_objective_initial_candidates
+            generator = lambda problem, n, rng: (
+                prior.risk_objective_initial_candidates(
+                    problem,
+                    n=n,
+                    rng=rng,
+                    protect_lower_envelope_sentinel=(
+                        protect_lower_envelope_sentinel),
+                )
+            )
         elif proposal_mode == "risk_coordinate_atlas":
             generator = prior.dimension_equivariant_initial_candidates
         else:
@@ -209,8 +228,14 @@ def materialize_source_designs(
         "source_archive_oracle_aided": False,
         "target_labels_used": False,
         "target_oracle_used": False,
+        "universal_lower_envelope_sentinel": bool(
+            protect_lower_envelope_sentinel),
         "paper_frontend_contract_id": (
-            FRONTEND_CONTRACT_ID
+            (
+                FRONTEND_LOWER_ENVELOPE_CHALLENGER_ID
+                if protect_lower_envelope_sentinel
+                else FRONTEND_CONTRACT_ID
+            )
             if (
                 proposal_mode == "risk_objective_atlas"
                 and proposal_component_mode == "combined"
@@ -277,6 +302,10 @@ def main():
         choices=("random", "universal_mixture", "shared_uniform"),
         default=None,
     )
+    parser.add_argument(
+        "--protect-lower-envelope-sentinel",
+        action="store_true",
+    )
     args = parser.parse_args()
     payload = materialize_source_designs(
         args.manifest,
@@ -292,6 +321,8 @@ def main():
         proposal_mode=args.proposal_mode,
         proposal_component_mode=args.proposal_component_mode,
         source_design_mode=args.source_design_mode,
+        protect_lower_envelope_sentinel=(
+            args.protect_lower_envelope_sentinel),
     )
     print(json.dumps({
         "status": "ok",

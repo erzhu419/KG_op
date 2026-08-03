@@ -145,6 +145,34 @@ def test_source_informed_contract_accepts_risk_objective_atlas(tmp_path):
     assert contract["uses_source_archive"] is True
 
 
+def test_source_informed_contract_preserves_lower_envelope_identity(tmp_path):
+    points = ((5, 5, 5, 5), (25, 25, 25, 25), (45, 45, 45, 45))
+    payload = _payload(points, integer_design_fingerprint(points))
+    payload.update({
+        "design_kind": "frozen_source_informed_risk_objective_atlas",
+        "proposal_mode": "risk_objective_atlas",
+        "structural_prior_profile": "low_frequency_only",
+        "source_dimension": 12,
+        "paper_frontend_contract_id": (
+            "lodo_low_frequency_risk_objective_atlas_lower_envelope_v2"),
+        "universal_lower_envelope_sentinel": True,
+    })
+    path = tmp_path / "lower_envelope_atlas.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    _, contract = load_frozen_source_informed_design(
+        path,
+        heldout="FactorShockStatePolicyRZDT1",
+        seed=7,
+        n0=3,
+        dimension=4,
+    )
+
+    assert contract["paper_frontend_contract_id"].endswith(
+        "lower_envelope_v2")
+    assert contract["universal_lower_envelope_sentinel"] is True
+
+
 def test_frozen_universal_design_has_no_source_archive_contract(tmp_path):
     points = ((5, 5, 5, 5), (25, 25, 25, 25), (45, 45, 45, 45))
     payload = _payload(

@@ -94,6 +94,10 @@ def load_frozen_source_informed_design(
         "source_archive_oracle_aided": False,
         "target_labels_used": False,
         "target_oracle_used": False,
+        "paper_frontend_contract_id": payload.get(
+            "paper_frontend_contract_id"),
+        "universal_lower_envelope_sentinel": bool(payload.get(
+            "universal_lower_envelope_sentinel", False)),
     }
 
 

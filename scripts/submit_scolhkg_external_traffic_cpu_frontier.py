@@ -181,6 +181,7 @@ def build_specs(args):
     deploy_gpr_code = deploy / "Final_Submission" / "GPR_KG_Code"
     code_root = Path(args.code_root) if args.code_root else deploy
     code_project = code_root / "SC-OLH-KG"
+    task_cwd = code_root if snapshot is not None else code_project
     manifest = code_project / "performance/manifests/v18b_exactkg_mcdiag.json"
     specs = []
 
@@ -214,7 +215,7 @@ def build_specs(args):
         specs.append({
             "description": f"external traffic CPU proposal {source_mode}",
             "cmd": f"{shlex.join(design_cmd)} && echo DONE",
-            "cwd": str(code_project),
+            "cwd": str(task_cwd),
             "signature": (
                 f"KG_op/external_traffic_cpu/{args.run_id}/"
                 f"{source_mode}/design"
@@ -286,7 +287,7 @@ def build_specs(args):
                         f"N={budget} seed={seed}"
                     ),
                     "cmd": f"{shlex.join(search_cmd)} && echo DONE",
-                    "cwd": str(code_project),
+                    "cwd": str(task_cwd),
                     "signature": (
                         f"KG_op/external_traffic_cpu/{args.run_id}/"
                         f"{source_mode}/{backend}/N{budget}/search/seed{seed:04d}"
@@ -345,7 +346,7 @@ def build_specs(args):
                         f"N={budget} seed={seed} R={args.R}"
                     ),
                     "cmd": f"{shlex.join(oos_cmd)} && echo DONE",
-                    "cwd": str(code_project),
+                    "cwd": str(task_cwd),
                     "signature": (
                         f"KG_op/external_traffic_cpu/{args.run_id}/"
                         f"{source_mode}/{backend}/N{budget}/oos/seed{seed:04d}"
@@ -393,7 +394,7 @@ def build_specs(args):
                     f"external traffic audit {source_mode} {backend} N={budget}"
                 ),
                 "cmd": f"{shlex.join(analyze_cmd)} && echo DONE",
-                "cwd": str(code_project),
+                "cwd": str(task_cwd),
                 "signature": (
                     f"KG_op/external_traffic_cpu/{args.run_id}/"
                     f"{source_mode}/{backend}/N{budget}/audit"

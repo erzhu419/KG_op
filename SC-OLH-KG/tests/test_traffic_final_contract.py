@@ -168,6 +168,7 @@ def test_external_traffic_frozen_snapshot_keeps_tracked_static_results(
     assert all("results" not in spec["stage_excludes"] for spec in specs)
     assert all("checkpoints" in spec["stage_excludes"] for spec in specs)
     assert all("profiles" in spec["stage_excludes"] for spec in specs)
+    assert all(Path(spec["cwd"]) == code_root for spec in specs)
     aggregate = next(
         spec for spec in specs if spec["signature"].endswith("/audit"))
     assert all(
