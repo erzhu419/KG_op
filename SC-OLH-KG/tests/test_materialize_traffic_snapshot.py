@@ -71,6 +71,18 @@ def test_sparse_traffic_snapshot_contains_code_and_static_assets(tmp_path):
     assert external_target.name.endswith("--external_cpu_frontier_v1")
     assert (external_target / SNAPSHOT.MARKER).is_file()
 
+    challenger = SNAPSHOT.materialize(
+        repository,
+        tmp_path / "snapshots",
+        method_contract_id="external_cpu_frontier_v2",
+        theory_contract_id="reserved_sentinel_coverage_v2",
+    )
+    challenger_target = Path(challenger["snapshot_root"])
+    assert challenger["theory_contract_id"] == (
+        "reserved_sentinel_coverage_v2")
+    assert challenger_target.name.endswith(
+        "--external_cpu_frontier_v2--reserved_sentinel_coverage_v2")
+
     _write(repository / "SC-OLH-KG/tracked.txt", "dirty")
     with pytest.raises(RuntimeError, match="tracked worktree"):
         SNAPSHOT.materialize(repository, tmp_path / "snapshots")

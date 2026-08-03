@@ -46,6 +46,7 @@ def snapshot_contract(
     commit="HEAD",
     *,
     method_contract_id=METHOD_CONTRACT_ID,
+    theory_contract_id=THEORY_CONTRACT_ID,
 ):
     repository_root = Path(repository_root).resolve()
     full_commit = _git(repository_root, "rev-parse", str(commit))
@@ -76,7 +77,7 @@ def snapshot_contract(
             f"{full_commit}:{TRAFFIC_BASELINE}",
         ),
         "method_contract_id": str(method_contract_id),
-        "theory_contract_id": THEORY_CONTRACT_ID,
+        "theory_contract_id": str(theory_contract_id),
         "tracked_paths": list(TRACKED_PATHS),
         "runtime_results_included": False,
         "runtime_checkpoints_or_model_weights_included": False,
@@ -100,6 +101,7 @@ def materialize(
     *,
     commit="HEAD",
     method_contract_id=METHOD_CONTRACT_ID,
+    theory_contract_id=THEORY_CONTRACT_ID,
 ):
     repository_root = Path(repository_root).resolve()
     output_root = Path(output_root).resolve()
@@ -116,14 +118,21 @@ def materialize(
         repository_root,
         commit,
         method_contract_id=method_contract_id,
+        theory_contract_id=theory_contract_id,
     )
-    suffix = ""
-    if str(method_contract_id) != METHOD_CONTRACT_ID:
+    suffix_parts = []
+    for value, default in (
+        (method_contract_id, METHOD_CONTRACT_ID),
+        (theory_contract_id, THEORY_CONTRACT_ID),
+    ):
+        if str(value) == default:
+            continue
         normalized = "".join(
             character if character.isalnum() or character in "-_" else "_"
-            for character in str(method_contract_id)
+            for character in str(value)
         )
-        suffix = f"--{normalized}"
+        suffix_parts.append(normalized)
+    suffix = "".join(f"--{part}" for part in suffix_parts)
     target = output_root / f"{contract['repository_commit']}{suffix}"
     contract = {**contract, "snapshot_root": str(target)}
     if target.exists():
@@ -179,12 +188,17 @@ def main():
         "--method-contract-id",
         default=METHOD_CONTRACT_ID,
     )
+    parser.add_argument(
+        "--theory-contract-id",
+        default=THEORY_CONTRACT_ID,
+    )
     args = parser.parse_args()
     contract = materialize(
         args.repository_root,
         args.output_root,
         commit=args.commit,
         method_contract_id=args.method_contract_id,
+        theory_contract_id=args.theory_contract_id,
     )
     print(json.dumps(contract, indent=2, sort_keys=True))
 

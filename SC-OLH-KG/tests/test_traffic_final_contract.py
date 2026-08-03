@@ -170,6 +170,11 @@ def test_external_traffic_frozen_snapshot_keeps_tracked_static_results(
     assert all("profiles" in spec["stage_excludes"] for spec in specs)
     aggregate = next(
         spec for spec in specs if spec["signature"].endswith("/audit"))
+    assert all(
+        f"SCOLHKG_METHOD_CONTRACT_ID={marker.get('method_contract_id', 'external_cpu_frontend_budget_frontier_v1')}"
+        in spec["cmd"]
+        for spec in specs
+    )
     assert (
         "--source-domains "
         "QueueResourceControl,InventorySupplyChain"

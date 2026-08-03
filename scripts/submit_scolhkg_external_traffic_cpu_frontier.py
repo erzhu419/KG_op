@@ -103,7 +103,8 @@ def _execution_env(snapshot):
         "SCOLHKG_TRAFFIC_DECISION_SPACE_BLOB": (
             snapshot["traffic_decision_space_blob"]),
         "SCOLHKG_TRAFFIC_BASELINE_BLOB": snapshot["traffic_baseline_blob"],
-        "SCOLHKG_METHOD_CONTRACT_ID": METHOD_CONTRACT_ID,
+        "SCOLHKG_METHOD_CONTRACT_ID": snapshot.get(
+            "method_contract_id", METHOD_CONTRACT_ID),
         "SCOLHKG_THEORY_CONTRACT_ID": snapshot["theory_contract_id"],
         "SCOLHKG_CODE_SNAPSHOT_ROOT": snapshot["snapshot_root"],
     }
@@ -514,7 +515,10 @@ def main():
         "task_count": len(specs),
         "task_ids": task_ids,
         "contract": {
-            "contract_id": METHOD_CONTRACT_ID,
+            "contract_id": (
+                snapshot.get("method_contract_id", METHOD_CONTRACT_ID)
+                if snapshot is not None else METHOD_CONTRACT_ID
+            ),
             "source_selection_modes": list(modes),
             "source_calls": 384,
             "target_search_budgets": list(budgets),
