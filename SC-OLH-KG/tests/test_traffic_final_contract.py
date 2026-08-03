@@ -257,7 +257,11 @@ def test_traffic_aggregate_records_domain_blind_information_contract(
             encoding="utf-8",
         )
         paths.append(path)
-    payload = analyze(paths)
+    payload = analyze(
+        paths,
+        target_search_calls=40,
+        target_initial_design_calls=10,
+    )
     assert payload["policy_vectors_exported"] is False
     assert all("deployed_x" not in row for row in payload["rows"])
     assert all(
@@ -275,6 +279,14 @@ def test_traffic_aggregate_records_domain_blind_information_contract(
     ]
     assert contract["excluded_nearest_source_analogue"] == (
         "QueueResourceControl")
+    assert payload["source_calls_per_run"] == 384
+    assert payload["target_initial_design_calls_per_run"] == 10
+    assert payload["target_adaptive_search_calls_per_run"] == 30
+    assert payload["target_search_calls_per_run"] == 40
+    assert payload["target_verification_calls_per_run"] == 300
+    assert payload["target_total_calls_per_run"] == 340
+    assert payload["source_plus_target_total_calls_per_run"] == 724
+    assert payload["total_calls_per_run"] == 724
 
 
 def test_observable_descriptor_retrieval_is_target_label_free_and_stable():
@@ -354,5 +366,16 @@ def test_external_traffic_frontier_is_cpu_only_and_budget_separated(tmp_path):
         int(spec["signature"].split("/N", 1)[1].split("/", 1)[0])
         for spec in search
     }
+    audits = [
+        spec for spec in specs if spec["signature"].endswith("/audit")
+    ]
+    assert {13, 40} == {
+        int(spec["signature"].split("/N", 1)[1].split("/", 1)[0])
+        for spec in audits
+    }
+    for spec in audits:
+        budget = int(spec["signature"].split("/N", 1)[1].split("/", 1)[0])
+        assert f"--target-search-calls {budget}" in spec["cmd"]
+        assert "--target-initial-design-calls 10" in spec["cmd"]
     assert all(
         "checkpoints" in spec["stage_excludes"] for spec in specs)

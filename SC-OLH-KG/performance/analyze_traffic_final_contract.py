@@ -147,7 +147,16 @@ def analyze(
     source_split_heldout=None,
     heldout_task_family_identifier_used=False,
     redact_policy_vectors=True,
+    target_search_calls=13,
+    target_initial_design_calls=10,
 ):
+    target_search_calls = int(target_search_calls)
+    target_initial_design_calls = int(target_initial_design_calls)
+    if target_search_calls <= 0:
+        raise ValueError("target search calls must be positive")
+    if not 0 <= target_initial_design_calls <= target_search_calls:
+        raise ValueError(
+            "target initial-design calls must lie in [0, target search calls]")
     source_payloads = [
         json.loads(Path(path).read_text(encoding="utf-8"))
         for path in paths
@@ -178,6 +187,10 @@ def analyze(
             row.pop("deployed_x", None)
             for candidate in row.get("candidate_rows", ()):
                 candidate.pop("x", None)
+    verification_calls = int(statistics.median(
+        row["verification_calls"] for row in rows))
+    target_total_calls = target_search_calls + verification_calls
+    source_calls = 384
     payload = {
         "schema_version": 1,
         "status": "complete",
@@ -191,12 +204,18 @@ def analyze(
             row["deployed_feasible_probability"] for row in rows)),
         "median_deployed_familywise_exact_lower": float(statistics.median(
             row["deployed_familywise_exact_lower"] for row in rows)),
-        "source_calls_per_run": 384,
-        "target_search_calls_per_run": 13,
-        "target_verification_calls_per_run": int(statistics.median(
-            row["verification_calls"] for row in rows)),
-        "total_calls_per_run": int(384 + 13 + statistics.median(
-            row["verification_calls"] for row in rows)),
+        "source_calls_per_run": source_calls,
+        "target_initial_design_calls_per_run": target_initial_design_calls,
+        "target_adaptive_search_calls_per_run": (
+            target_search_calls - target_initial_design_calls),
+        "target_search_calls_per_run": target_search_calls,
+        "target_verification_calls_per_run": verification_calls,
+        "target_total_calls_per_run": target_total_calls,
+        "source_plus_target_total_calls_per_run": (
+            source_calls + target_total_calls),
+        # Backward-compatible alias. Unlike target_total_calls_per_run, this
+        # legacy field includes the frozen source archive cost.
+        "total_calls_per_run": source_calls + target_total_calls,
         "policy_vectors_exported": not bool(redact_policy_vectors),
         "information_contract": {
             "track": str(information_track),
@@ -266,6 +285,8 @@ def main():
         action=argparse.BooleanOptionalAction,
         default=True,
     )
+    parser.add_argument("--target-search-calls", type=int, default=13)
+    parser.add_argument("--target-initial-design-calls", type=int, default=10)
     args = parser.parse_args()
     payload = analyze(
         args.paths,
@@ -286,6 +307,8 @@ def main():
         heldout_task_family_identifier_used=(
             args.heldout_task_family_identifier_used),
         redact_policy_vectors=args.redact_policy_vectors,
+        target_search_calls=args.target_search_calls,
+        target_initial_design_calls=args.target_initial_design_calls,
     )
     _atomic_json(args.out, payload)
     print(json.dumps({

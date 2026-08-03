@@ -363,6 +363,8 @@ def build_specs(args):
                 "--source-selection-mode", selection.mode,
                 "--source-split-heldout", selection.source_split_heldout,
                 "--target-domain", "Ingolstadt21Traffic",
+                "--target-search-calls", str(budget),
+                "--target-initial-design-calls", str(args.n0),
             ]
             if selection.heldout_task_family_identifier_used:
                 analyze_cmd.append("--heldout-task-family-identifier-used")
