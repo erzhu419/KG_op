@@ -182,6 +182,13 @@ def build_specs(args):
     code_root = Path(args.code_root) if args.code_root else deploy
     code_project = code_root / "SC-OLH-KG"
     task_cwd = code_root if snapshot is not None else code_project
+    static_input_paths = (
+        [str(
+            code_root / "Final_Submission" / "GPR_KG_Code" / "results"
+            / "ingolstadt21"
+        )]
+        if snapshot is not None else []
+    )
     manifest = code_project / "performance/manifests/v18b_exactkg_mcdiag.json"
     specs = []
 
@@ -226,6 +233,7 @@ def build_specs(args):
             "ram_mb": int(args.ram_mb),
             "allowed_nodes": list(CPU_NODES),
             "wait_for_files": [str(archive)],
+            "stage_input_paths": list(static_input_paths),
             "result_dir": str(design.parent),
             "local_result_dir": str(design.parent),
             "stage_excludes": list(stage_excludes),
@@ -303,6 +311,7 @@ def build_specs(args):
                         "all GPU nodes are excluded by contract."
                     ),
                     "wait_for_files": [str(design)],
+                    "stage_input_paths": list(static_input_paths),
                     "result_dir": str(run_dir),
                     "local_result_dir": str(run_dir),
                     "stage_excludes": list(stage_excludes),
@@ -357,6 +366,7 @@ def build_specs(args):
                     "ram_mb": int(args.ram_mb),
                     "allowed_nodes": list(CPU_NODES),
                     "wait_for_files": [str(run_dir / "summary.json")],
+                    "stage_input_paths": list(static_input_paths),
                     "result_dir": str(oos_path.parent),
                     "local_result_dir": str(oos_path.parent),
                     "stage_excludes": list(stage_excludes),
@@ -405,6 +415,7 @@ def build_specs(args):
                 "ram_mb": 4096,
                 "allowed_nodes": list(CPU_NODES),
                 "wait_for_files": [str(path) for path in oos_paths],
+                "stage_input_paths": list(static_input_paths),
                 "result_dir": str(audit_path.parent),
                 "local_result_dir": str(audit_path.parent),
                 "stage_excludes": list(stage_excludes),

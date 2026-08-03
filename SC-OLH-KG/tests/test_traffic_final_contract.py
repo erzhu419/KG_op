@@ -169,6 +169,10 @@ def test_external_traffic_frozen_snapshot_keeps_tracked_static_results(
     assert all("checkpoints" in spec["stage_excludes"] for spec in specs)
     assert all("profiles" in spec["stage_excludes"] for spec in specs)
     assert all(Path(spec["cwd"]) == code_root for spec in specs)
+    static_results = (
+        code_root / "Final_Submission/GPR_KG_Code/results/ingolstadt21")
+    assert all(
+        spec["stage_input_paths"] == [str(static_results)] for spec in specs)
     aggregate = next(
         spec for spec in specs if spec["signature"].endswith("/audit"))
     assert all(
