@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_profile_all_in_analysis_v1",
+  "status": "frozen_before_outcome_access",
+  "method_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "raw_result_contract": "or_review_profile_evaluation_patch_v3",
+  "raw_result_run_id": "or_review_v2_evalpatch3",
+  "analysis_implementation_commit": "956f1ddd9e7ebcfb71254d265c2be0ca24e09490",
+  "reason": "The original all-in analyzer incorrectly combined independent certification with the best feasible point encountered anywhere during search. Before confirmatory outcomes were inspected, the endpoint was corrected to evaluate the independently certified deployed policy itself.",
+  "raw_data_invariance_contract": {
+    "method_changed": false,
+    "task_seeds_changed": false,
+    "source_archive_changed": false,
+    "initial_design_changed": false,
+    "target_search_changed": false,
+    "shortlist_changed": false,
+    "terminal_verifier_changed": false,
+    "rerun_required": false
+  },
+  "primary_endpoints": {
+    "certified_feasible_success": "the deployed policy is independently certified, truly feasible in the finite audit library, and is not a false certificate",
+    "certified_epsilon_optimal_success": "certified_feasible_success and deployed objective minus finite-audit-library oracle objective is at most 0.05",
+    "deployed_feasible_regret": "max(0, deployed objective minus finite-audit-library oracle objective) for certified feasible deployments",
+    "fixed_maximum_all_in_budget": 634,
+    "source_configuration": "384 source calls plus 10 target search calls plus at most 240 independent verification calls",
+    "target_only_configuration": "394 target search calls plus at most 240 independent verification calls"
+  },
+  "interpretation_contract": {
+    "search_contains_good_point_is_not_certified_success": true,
+    "search_best_regret_is_not_deployed_regret": true,
+    "failed_or_unsafe_deployment_counts_as_failure": true,
+    "negative_results_retained": true,
+    "post_outcome_endpoint_selection": false
+  }
+}
