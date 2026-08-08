@@ -56,7 +56,15 @@ def _paired_seed_outcome(first, second):
     return 0
 
 
-def analyze(paths):
+def analyze(
+    paths,
+    *,
+    accepted_contract_ids=ACCEPTED_CONTRACT_IDS,
+    controls=CONTROLS,
+    analysis_contract_id="opsd_region_heldout_profile_design_analysis_v2",
+):
+    accepted_contract_ids = set(accepted_contract_ids)
+    controls = tuple(str(value) for value in controls)
     rows = []
     failures = []
     keys = set()
@@ -67,7 +75,7 @@ def analyze(paths):
             failures.append(f"{path}: unreadable: {exc}")
             continue
         if (
-            row.get("contract_id") not in ACCEPTED_CONTRACT_IDS
+            row.get("contract_id") not in accepted_contract_ids
             or row.get("status") != "ok"
         ):
             failures.append(f"{path}: wrong contract or status")
@@ -130,7 +138,7 @@ def analyze(paths):
             int(row["target_seed"]): row for row in rows
             if row["target_market"] == market and row["arm"] == "source_atlas"
         }
-        for control in CONTROLS:
+        for control in controls:
             comparator = {
                 int(row["target_seed"]): row for row in rows
                 if row["target_market"] == market and row["arm"] == control
@@ -210,7 +218,7 @@ def analyze(paths):
             })
 
     region_direction = []
-    for control in CONTROLS:
+    for control in controls:
         wins = losses = ties = 0
         compared_regions = 0
         rate_differences = []
@@ -302,7 +310,7 @@ def analyze(paths):
     } for row in rows]
     return {
         "schema_version": 1,
-        "contract_id": "opsd_region_heldout_profile_design_analysis_v2",
+        "contract_id": str(analysis_contract_id),
         "status": "complete" if rows and not failures else "incomplete",
         "primary_generalization_unit": "geographic_region",
         "secondary_task_unit": "market",

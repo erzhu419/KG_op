@@ -22,12 +22,16 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from performance.benchmark_quality import json_safe  # noqa: E402
+from problems.energy_forecast_policy import (  # noqa: E402
+    OPSDForecastIndexedStorageProblem,
+)
 from problems.energy_reliability import OPSDStorageReliabilityProblem  # noqa: E402
 
 
 SOURCE_CONTRACTS = {
     "opsd_region_heldout_profile_design_v2",
     "opsd_region_heldout_functional_scbo_v1",
+    "opsd_forecast_indexed_region_holdout_v3",
 }
 AUDIT_CONTRACT = "opsd_postdecision_temporal_block_audit_v1"
 
@@ -99,7 +103,9 @@ def audit_frozen_policy(
             "last_start_index": int(sampled_starts[indices[-1]]),
         })
         blocks.append(summary)
-    disjoint_starts = nonoverlapping_window_starts(starts, problem.d)
+    physical_horizon = int(getattr(
+        problem, "verification_window_length", problem.d))
+    disjoint_starts = nonoverlapping_window_starts(starts, physical_horizon)
     disjoint_values = problem.evaluate_window_starts(point, disjoint_starts)
     block_probabilities = [row["feasibility_probability"] for row in blocks]
     return {
@@ -115,6 +121,7 @@ def audit_frozen_policy(
         "maximum_chronological_block_feasibility_probability": float(
             max(block_probabilities)),
         "nonoverlapping_start_count": int(len(disjoint_starts)),
+        "physical_window_horizon": physical_horizon,
         "nonoverlapping_summary": _summarize(
             disjoint_values, problem.tau),
         "inferential_certificate_claimed": False,
@@ -159,14 +166,21 @@ def audit_result(
     if not 1 <= int(selected_rank) <= len(shortlist):
         raise ValueError("certified result has no matching frozen shortlist member")
     point = tuple(int(value) for value in shortlist[int(selected_rank) - 1]["point"])
-    problem = OPSDStorageReliabilityProblem(
-        data_path,
-        market=row["target_market"],
-        year=int(row["year"]),
-        d=int(row["nominal_dimension"]),
-        alpha=float(row["alpha"]),
-        required_splits=("verification",),
+    problem_class = (
+        OPSDForecastIndexedStorageProblem
+        if row["contract_id"] == "opsd_forecast_indexed_region_holdout_v3"
+        else OPSDStorageReliabilityProblem
     )
+    problem_kwargs = {
+        "market": row["target_market"],
+        "year": int(row["year"]),
+        "d": int(row["nominal_dimension"]),
+        "alpha": float(row["alpha"]),
+        "required_splits": ("verification",),
+    }
+    if problem_class is OPSDForecastIndexedStorageProblem:
+        problem_kwargs["horizon"] = int(row["simulation_horizon_hours"])
+    problem = problem_class(data_path, **problem_kwargs)
     payload.update({
         "status": "complete",
         "selected_shortlist_rank": int(selected_rank),
