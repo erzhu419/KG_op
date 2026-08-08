@@ -52,6 +52,48 @@ all-success certificate is bridged to mathlib's exact binomial law in
 `Measure/ExactBinomialCertificate.lean`.  See `final_or_theory.md` for the
 paper-facing theorem sequence.
 
+## Explicit Profile-Atlas V2 Contract
+
+The review-response challenger replaces the legacy hidden atlas machinery by
+one reproducible finite algorithm. A shared outcome-free policy-profile
+library is evaluated with ordinary replicated simulations on source tasks.
+Within each source task, empirical chance margin and objective are converted
+to percentile ranks. The primary contract averages source ranks without a
+target-conditioned descriptor, standardizes a finite weighted-cosine profile
+coordinate, chooses the first center by the declared safety/objective rank,
+and fills the remaining `n0 - 1` centers by Gonzalez farthest-first traversal.
+
+The formal chain is deliberately conditional and modular:
+
+1. `ProfileCoordinateConsistency.lean` transfers a declared profile
+   reconstruction error into every retained coordinate. The inverse-grid
+   rate requires the explicit pointwise `C / d` premise.
+2. `Measure/SourceRankRecovery.lean` supplies a finite-profile source-score
+   concentration event; `Real/SourceRankRecovery.lean` turns a `2r` score gap
+   into correct ordering.
+3. `FarthestFirstKCenter.lean` gives the standard factor-two finite metric
+   guarantee from an exported assignment/separation certificate.
+4. Existing `GeometricAtlasCoverage.lean` converts cover radius, coordinate
+   error, source-target shift, and positive target safety depth into target
+   feasible coverage.
+5. `Measure/TaskAtlasCoverage.lean` calibrates the resulting frozen atlas on
+   independent held-out target tasks from a declared meta-distribution.
+
+The theorem chain does not say that every target belongs to that
+meta-distribution or satisfies low-frequency smoothness. The preregistered
+stress suite therefore includes growing-rank, support-shift, irregular-grid,
+piecewise, sparse-high-frequency, coordinate-permutation, and misspecified
+target regimes, plus outcome-free structured controls. Target task is the
+inferential unit; repeated simulations within one task only reduce observation
+noise. Descriptor-conditioned source weighting is an ablation because it was
+unstable with only two source tasks.
+
+For external energy verification, the binomial sampling unit is an iid draw
+with replacement from the fixed empirical distribution over admissible
+window-start indices. Physical windows may overlap. This supports an empirical
+reliability claim for that finite distribution, not iid future-calendar or
+process-level generalization.
+
 ## Statistical Closure V2 Status
 
 The promoted V51 behavior now has a separate finite-sample analysis contract.

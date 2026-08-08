@@ -19,6 +19,8 @@ import SCOLHKG.Measure.ResidualSquareTail
 import SCOLHKG.Measure.SubGaussianConfidence
 import SCOLHKG.Measure.TaskPACBayes
 import SCOLHKG.Measure.ExactBinomialCertificate
+import SCOLHKG.Measure.SourceRankRecovery
+import SCOLHKG.Measure.TaskAtlasCoverage
 import SCOLHKG.Measure.TwoStageDecision
 import SCOLHKG.Measure.PosteriorKG
 import SCOLHKG.Measure.ProbabilityEvents
@@ -48,6 +50,7 @@ import SCOLHKG.Real.FiniteKernelInformationGain
 import SCOLHKG.Real.FinalistReplication
 import SCOLHKG.Real.FiniteSampleHVD
 import SCOLHKG.Real.GeometricAtlasCoverage
+import SCOLHKG.Real.FarthestFirstKCenter
 import SCOLHKG.Real.GPRUpdate
 import SCOLHKG.Real.GaussianReplicationCertificate
 import SCOLHKG.Real.GuardDecompositionPolicy
@@ -79,6 +82,8 @@ import SCOLHKG.Real.ProviderCumulativeHVDCalibration
 import SCOLHKG.Real.ProposalCoverage
 import SCOLHKG.Real.ProposalNoFreeLunch
 import SCOLHKG.Real.RankAlignedAtlasCoverage
+import SCOLHKG.Real.ProfileCoordinateConsistency
+import SCOLHKG.Real.SourceRankRecovery
 import SCOLHKG.Real.PaperMainline
 import SCOLHKG.Real.RidgeHVD
 import SCOLHKG.Real.SourceShapeMixtureHVD

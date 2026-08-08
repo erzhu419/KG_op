@@ -56,6 +56,9 @@ class OPSDStorageReliabilityProblem(CumulativeRiskFeatureProvider):
 
     problem_name = "OPSDStorageReliability"
     simulation_noise_model = "iid_empirical_hourly_window"
+    verification_distribution_scope = (
+        "fixed_empirical_distribution_over_admissible_window_start_indices"
+    )
     variance_features = (0, 1, 2, 3)
     recommended_partition_features = variance_features
 
@@ -216,6 +219,10 @@ class OPSDStorageReliabilityProblem(CumulativeRiskFeatureProvider):
             "split_window_counts": {
                 name: int(len(starts)) for name, starts in self._starts.items()
             },
+            "window_sampling": "iid_start_indices_with_replacement",
+            "underlying_windows_may_overlap": True,
+            "certificate_scope": self.verification_distribution_scope,
+            "future_time_series_iid_claimed": False,
         }
 
     def int_bounds(self):

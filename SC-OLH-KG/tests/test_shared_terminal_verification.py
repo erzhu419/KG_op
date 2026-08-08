@@ -13,13 +13,18 @@ from algorithms.single_olhkg import (  # noqa: E402
 )
 from core.terminal_verification import (  # noqa: E402
     build_verification_aware_shortlist,
+    exact_all_success_power,
+    exact_binomial_lower,
     freeze_objective_incumbent_shortlist,
+    minimum_all_success_binomial_budget,
     parse_verification_candidate_budgets,
     select_initial_empirical_objective_incumbent,
     select_objective_verification_challenger,
     select_posterior_safe_interior,
     verify_frozen_policy,
+    verify_frozen_policy_binomial,
     verify_frozen_shortlist,
+    verify_frozen_shortlist_binomial,
     verify_paired_objective_dominance,
 )
 from problems.rzdt import (  # noqa: E402
@@ -53,6 +58,18 @@ class _ObjectiveGuardGaussianProblem:
         constraint_mean = 1.0 if index in {7, 8} else -1.0
         constraint = constraint_mean + rng.normal(0.0, 0.01)
         return np.asarray([objective, constraint], dtype=float)
+
+
+class _DeterministicBernoulliProblem:
+    d = 1
+    alpha = 0.05
+    tau = 0.0
+    verification_distribution_scope = "unit_test_iid_distribution"
+
+    def simulate(self, point, rng):
+        del rng
+        safe = int(point[0]) == 1
+        return np.asarray([float(point[0]), -1.0 if safe else 1.0])
 
 
 def _shortlist(*points):
@@ -224,6 +241,41 @@ def test_explicit_candidate_budget_parser_preserves_order():
     assert parse_verification_candidate_budgets(
         "", default=(80, 96)
     ) == (80, 96)
+
+
+def test_exact_all_success_binomial_candidate_contract():
+    delta = 0.05 / 3.0
+    assert minimum_all_success_binomial_budget(0.95, delta) == 80
+    assert np.isclose(
+        exact_binomial_lower(80, 80, delta), delta ** (1.0 / 80.0))
+    assert exact_all_success_power(0.99, 80) == 0.99 ** 80
+    audit = verify_frozen_policy_binomial(
+        _DeterministicBernoulliProblem(),
+        (1,),
+        seed=3,
+        search_evaluation_count=13,
+        verification_budget=80,
+        delta=delta,
+    )
+    assert audit["certified"] is True
+    assert audit["machine_checked_candidate_validity"] is True
+    assert audit["certification_scope"] == "unit_test_iid_distribution"
+
+
+def test_exact_binomial_shortlist_deploys_first_certified_policy():
+    deployed, audit = verify_frozen_shortlist_binomial(
+        _DeterministicBernoulliProblem(),
+        _shortlist(0, 1, 2),
+        seed=5,
+        search_evaluation_count=13,
+        candidate_budgets=(80, 80, 80),
+        familywise_delta=0.05,
+    )
+    assert deployed == (1,)
+    assert audit["selected_shortlist_rank"] == 2
+    assert audit["attempt_count"] == 2
+    assert audit["verification_budget"] == 160
+    assert audit["machine_checked_familywise_validity"] is True
 
 
 def test_shared_single_policy_verifier_is_v64_byte_equivalent():

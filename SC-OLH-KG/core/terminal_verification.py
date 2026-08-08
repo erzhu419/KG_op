@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from dataclasses import asdict
 import copy
+import math
 
 import numpy as np
+from scipy.stats import beta
 from scipy.stats import t as student_t
 
 from core.certification import (
@@ -19,6 +21,54 @@ from core.designs import integer_design_fingerprint
 TERMINAL_VERIFICATION_STREAM_TAG = 0x56455249
 TERMINAL_SHORTLIST_VERIFICATION_STREAM_TAG = 0x56534C54
 TERMINAL_OBJECTIVE_COMPARISON_STREAM_TAG = 0x4F424A44
+TERMINAL_BINOMIAL_VERIFICATION_STREAM_TAG = 0x42494E4F
+
+
+def exact_binomial_lower(successes, trials, delta):
+    """One-sided Clopper-Pearson lower confidence bound."""
+
+    successes = int(successes)
+    trials = int(trials)
+    delta = float(delta)
+    if trials < 1:
+        raise ValueError("binomial trials must be positive")
+    if successes < 0 or successes > trials:
+        raise ValueError("binomial successes must lie in [0, trials]")
+    if not 0.0 < delta < 1.0:
+        raise ValueError("binomial delta must lie in (0, 1)")
+    if successes == 0:
+        return 0.0
+    return float(beta.ppf(delta, successes, trials - successes + 1))
+
+
+def minimum_all_success_binomial_budget(required_probability, delta):
+    """Smallest ``n`` for which ``required_probability ** n <= delta``."""
+
+    required_probability = float(required_probability)
+    delta = float(delta)
+    if not 0.0 < required_probability < 1.0:
+        raise ValueError("required probability must lie in (0, 1)")
+    if not 0.0 < delta < 1.0:
+        raise ValueError("binomial delta must lie in (0, 1)")
+    budget = int(math.ceil(
+        math.log(delta) / math.log(required_probability)))
+    while required_probability ** budget > delta:
+        budget += 1
+    while budget > 1 and required_probability ** (budget - 1) <= delta:
+        budget -= 1
+    return budget
+
+
+def exact_all_success_power(true_probability, trials):
+    """Certification probability of the exact all-success rule."""
+
+    true_probability = float(true_probability)
+    trials = int(trials)
+    if not 0.0 <= true_probability <= 1.0:
+        raise ValueError("true probability must lie in [0, 1]")
+    if trials < 1:
+        raise ValueError("binomial trials must be positive")
+    return float(true_probability ** trials)
 
 
 def parse_verification_candidate_budgets(value, *, default):
@@ -853,6 +903,205 @@ def verify_frozen_shortlist(
             )
         ),
         "verification_samples_logged": False,
+    }
+
+
+def verify_frozen_policy_binomial(
+    problem,
+    point,
+    *,
+    seed,
+    search_evaluation_count,
+    verification_budget,
+    delta,
+    candidate_index=0,
+    split=None,
+    required_probability=None,
+    all_success_only=True,
+):
+    """Certify a fixed policy by iid Bernoulli feasibility indicators.
+
+    ``all_success_only=True`` is the machine-checked contract: every
+    replication must satisfy the threshold and ``p_required ** n <= delta``.
+    The general Clopper-Pearson branch is retained as a separately labeled
+    sensitivity analysis.
+    """
+
+    budget = int(verification_budget)
+    if budget < 1:
+        raise ValueError("binomial verification budget must be positive")
+    candidate_index = int(candidate_index)
+    if candidate_index < 0:
+        raise ValueError("candidate index must be nonnegative")
+    delta = float(delta)
+    if not 0.0 < delta < 1.0:
+        raise ValueError("candidate delta must lie in (0, 1)")
+    required = (
+        1.0 - float(problem.alpha)
+        if required_probability is None else float(required_probability)
+    )
+    if not 0.0 < required < 1.0:
+        raise ValueError("required feasibility probability must lie in (0, 1)")
+    point = tuple(int(value) for value in point)
+    successes = 0
+    objectives = []
+    for replication in range(budget):
+        rng = np.random.default_rng(np.random.SeedSequence([
+            int(seed),
+            candidate_index,
+            int(replication),
+            TERMINAL_BINOMIAL_VERIFICATION_STREAM_TAG,
+        ]))
+        if split is None:
+            sample = problem.simulate(point, rng)
+        else:
+            if not hasattr(problem, "simulate_from_split"):
+                raise TypeError(
+                    "split binomial verification requires simulate_from_split")
+            sample = problem.simulate_from_split(point, str(split), rng)
+        sample = np.asarray(sample, dtype=float).reshape(-1)
+        if len(sample) < 2 or not np.all(np.isfinite(sample[:2])):
+            raise RuntimeError(
+                "binomial verification requires finite objective and constraint outputs")
+        objectives.append(float(sample[0]))
+        successes += int(float(sample[1]) <= float(problem.tau))
+    lower = exact_binomial_lower(successes, budget, delta)
+    if all_success_only:
+        certified = bool(successes == budget and required ** budget <= delta)
+        method = "exact_binomial_all_success"
+        machine_checked_candidate_validity = True
+    else:
+        certified = bool(lower >= required)
+        method = "clopper_pearson_lower_bound"
+        machine_checked_candidate_validity = False
+    sampling_scope = str(getattr(
+        problem,
+        "verification_distribution_scope",
+        "declared_iid_simulator_replication_distribution",
+    ))
+    return {
+        "enabled": True,
+        "status": "certified" if certified else "not_certified",
+        "certified": certified,
+        "method": method,
+        "candidate_index": candidate_index,
+        "policy_fingerprint": integer_design_fingerprint([point]),
+        "policy_frozen_before_verification": True,
+        "search_samples_reused": False,
+        "posterior_updated_from_verification": False,
+        "verification_budget": budget,
+        "search_evaluation_count": int(search_evaluation_count),
+        "total_evaluation_count": int(search_evaluation_count) + budget,
+        "successes": int(successes),
+        "empirical_feasibility_probability": float(successes / budget),
+        "exact_lower_confidence_bound": lower,
+        "required_feasibility_probability": required,
+        "delta": delta,
+        "alpha": float(problem.alpha),
+        "tau": float(problem.tau),
+        "all_success_only": bool(all_success_only),
+        "unsafe_all_success_probability_upper_bound": float(required ** budget),
+        "minimum_all_success_budget": minimum_all_success_binomial_budget(
+            required, delta),
+        "machine_checked_candidate_validity": machine_checked_candidate_validity,
+        "objective_sample_mean": float(np.mean(objectives)),
+        "objective_sample_std": (
+            None if budget < 2 else float(np.std(objectives, ddof=1))),
+        "verification_stream_tag": int(
+            TERMINAL_BINOMIAL_VERIFICATION_STREAM_TAG),
+        "verification_samples_logged": False,
+        "verification_split": None if split is None else str(split),
+        "certification_scope": sampling_scope,
+        "target_oracle_used": False,
+    }
+
+
+def verify_frozen_shortlist_binomial(
+    problem,
+    frozen_shortlist,
+    *,
+    seed,
+    search_evaluation_count,
+    candidate_budgets=(80, 128, 128),
+    familywise_delta=0.05,
+    split=None,
+    required_probability=None,
+    all_success_only=True,
+):
+    """Deploy the first certified member of a pre-frozen ordered shortlist."""
+
+    records = [copy.deepcopy(record) for record in frozen_shortlist]
+    points = [tuple(int(value) for value in record["point"]) for record in records]
+    budgets = tuple(int(value) for value in candidate_budgets)
+    if not points:
+        raise ValueError("binomial shortlist cannot be empty")
+    if len(points) != len(set(points)):
+        raise ValueError("binomial shortlist candidates must be unique")
+    if len(points) != len(budgets):
+        raise ValueError("binomial shortlist and budget lengths differ")
+    if any(budget < 1 for budget in budgets):
+        raise ValueError("binomial shortlist budgets must be positive")
+    familywise_delta = float(familywise_delta)
+    if not 0.0 < familywise_delta < 1.0:
+        raise ValueError("familywise delta must lie in (0, 1)")
+    per_candidate_delta = familywise_delta / float(len(points))
+    attempts = []
+    deployed = None
+    selected_rank = None
+    for candidate_index, (point, budget) in enumerate(zip(points, budgets)):
+        attempt = verify_frozen_policy_binomial(
+            problem,
+            point,
+            seed=seed,
+            search_evaluation_count=search_evaluation_count,
+            verification_budget=budget,
+            delta=per_candidate_delta,
+            candidate_index=candidate_index,
+            split=split,
+            required_probability=required_probability,
+            all_success_only=all_success_only,
+        )
+        attempts.append(attempt)
+        if bool(attempt["certified"]):
+            deployed = point
+            selected_rank = candidate_index + 1
+            break
+    verification_calls = int(sum(
+        attempt["verification_budget"] for attempt in attempts))
+    required = (
+        1.0 - float(problem.alpha)
+        if required_probability is None else float(required_probability)
+    )
+    return deployed, {
+        "enabled": True,
+        "status": "certified" if deployed is not None else "abstained",
+        "certified": bool(deployed is not None),
+        "method": (
+            "ordered_exact_binomial_all_success"
+            if all_success_only else "ordered_clopper_pearson"),
+        "familywise_delta": familywise_delta,
+        "per_candidate_delta": per_candidate_delta,
+        "required_feasibility_probability": required,
+        "candidate_budgets": list(budgets),
+        "verification_budget": verification_calls,
+        "search_evaluation_count": int(search_evaluation_count),
+        "total_evaluation_count": int(search_evaluation_count) + verification_calls,
+        "attempt_count": int(len(attempts)),
+        "attempts": attempts,
+        "selected_shortlist_rank": selected_rank,
+        "selected_policy_fingerprint": (
+            None if deployed is None else integer_design_fingerprint([deployed])),
+        "shortlist_frozen_before_verification": True,
+        "verification_samples_used_to_reorder_shortlist": False,
+        "search_samples_reused": False,
+        "posterior_updated_from_verification": False,
+        "candidate_validity_contract": (
+            "unsafe_all_success_probability_at_most_candidate_delta"
+            if all_success_only else "clopper_pearson_exact_coverage"),
+        "familywise_contract": "bonferroni_over_frozen_shortlist",
+        "machine_checked_familywise_validity": bool(all_success_only),
+        "verification_split": None if split is None else str(split),
+        "target_oracle_used": False,
     }
 
 

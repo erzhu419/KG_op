@@ -153,6 +153,22 @@ mathlib and its cache; later builds should be fast.
   target-label-free atlas misses some nonempty target feasible set. A
   source-to-target structural/discrepancy assumption is therefore necessary,
   not an artifact of the proof technique.
+- `SCOLHKG/Real/ProfileCoordinateConsistency.lean`: controls the implemented
+  weighted finite cosine coordinates by the profile reconstruction sup error,
+  exposes the explicit `C / d` grid-rate bridge, and proves that the registered
+  frequency penalty cannot amplify coordinate error. It does not claim a
+  continuous DCT quadrature theorem without a reconstruction premise.
+- `SCOLHKG/Real/FarthestFirstKCenter.lean`: proves the metric factor-two
+  Gonzalez guarantee from an auditable finite witness/assignment/separation
+  certificate. The Python farthest-first implementation is tested against
+  that certificate; Lean does not execute the NumPy loop.
+- `SCOLHKG/Real/SourceRankRecovery.lean` and
+  `SCOLHKG/Measure/SourceRankRecovery.lean`: uniform replicated-source score
+  error recovers every ordering separated by twice its error radius, while a
+  finite-profile union bound supplies the source-only concentration event.
+- `SCOLHKG/Measure/TaskAtlasCoverage.lean`: calibrates a frozen atlas on
+  independent held-out tasks from one declared meta-distribution. Training
+  tasks cannot be reused as calibration tasks in this theorem.
 - `SCOLHKG/Real/RankAlignedAtlasCoverage.lean`: the headline deterministic
   rank-transfer candidate. Uniform normalized risk-rank alignment, one-sided
   source-rank atlas coverage, and target safe-rank interior depth imply a
@@ -923,6 +939,23 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
 167. Every deterministic atlas with budget `n0` below the policy-space
      cardinality misses some nonempty target feasible set, so unconditional
      cross-domain finite-budget coverage is impossible.
+168. A weighted finite profile coordinate changes by at most its basis mass
+     times the profile reconstruction sup error; a declared `C / d`
+     reconstruction premise therefore gives the same inverse-grid rate.
+169. Dividing retained coordinates by a frequency penalty of at least one
+     cannot amplify coordinate error.
+170. A finite Gonzalez witness set that satisfies the assignment and
+     pairwise-separation certificate has cover radius at most twice the
+     certified optimal radius.
+171. Uniform source-score error `r` preserves every source ordering whose true
+     gap exceeds `2r`, including a uniquely separated source minimizer.
+172. Independent sub-Gaussian source replications give a finite-library union
+     bound for the uniform score-error event.
+173. Independent held-out task hits obey the exact all-success binomial law;
+     a false lower coverage claim is bounded by the preregistered error spend.
+174. None of 168--173 yields unconditional target coverage: they expose the
+     profile smoothness, source-score separation, geometric support, and
+     task-distribution assumptions that the stress suite must test.
 
 Remaining limitations and assumption-validation obligations are:
 
@@ -948,6 +981,18 @@ Remaining limitations and assumption-validation obligations are:
 5. Exact-MC remains a formally bounded backend ablation. The frozen headline
    uses canonical SAASBO, so validating a two-antithetic-sample KG estimator is
    not a release obligation for the structural-front-end claim.
+6. The ordered-profile V2 atlas is a deliberately narrower, reproducible
+   challenger to the legacy atlas. Its primary source weighting is
+   domain-blind because descriptor-conditioned weighting was unstable with
+   only two source tasks. Descriptor conditioning remains an ablation until
+   independently supported.
+7. The external energy certificate concerns iid draws with replacement from
+   the fixed empirical distribution over admissible window-start indices.
+   Windows may overlap. It is not a certificate for iid future calendar time
+   or an untouched stochastic energy process.
+8. The randomized profile stress suite includes aligned and adverse regimes.
+   Sparse high-frequency and target-misspecified failures are part of the
+   claim boundary, not tuning targets to be hidden or optimized away.
 
 The observed-terminal behavior repair itself is now revalidated: all 60 paired
 runs completed, retained `60/60` true-feasible recommendations and zero
