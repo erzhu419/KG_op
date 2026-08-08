@@ -88,6 +88,27 @@ def _outcome_key(row):
     )
 
 
+def _initial_contains_true_feasible(row):
+    return bool(row.get(
+        "initial_design_contains_true_feasible",
+        row["contains_true_feasible"],
+    ))
+
+
+def _initial_regret(row):
+    return row.get(
+        "initial_design_finite_audit_library_regret",
+        row["finite_library_regret"],
+    )
+
+
+def _initial_penalized_loss(row):
+    return float(row.get(
+        "initial_design_penalized_loss",
+        row["penalized_loss"],
+    ))
+
+
 def _paired_comparison(
     first_rows,
     second_rows,
@@ -195,9 +216,18 @@ def analyze(paths):
     summaries = []
     for key, group in sorted(groups.items()):
         regime, arm, schema, descriptor, dimension, rank, configuration = key
+        initial_regrets = [
+            float(_initial_regret(row))
+            for row in group
+            if _initial_regret(row) is not None
+        ]
         regrets = [
             float(row["finite_library_regret"])
             for row in group if row["finite_library_regret"] is not None
+        ]
+        initial_losses = [
+            _initial_penalized_loss(row)
+            for row in group
         ]
         losses = [float(row["penalized_loss"]) for row in group]
         wall_times = [
@@ -207,6 +237,10 @@ def analyze(paths):
         task_count = int(len(group))
         feasible_count = int(sum(
             bool(row["contains_true_feasible"]) for row in group))
+        initial_feasible_count = int(sum(
+            _initial_contains_true_feasible(row)
+            for row in group
+        ))
         certified_count = int(sum(
             bool(row["independently_certified"]) for row in group))
         false_count = int(sum(
@@ -220,6 +254,24 @@ def analyze(paths):
             "effective_rank": rank,
             **_configuration_payload(configuration),
             "independent_task_count": task_count,
+            "initial_design_true_feasible_coverage_count": (
+                initial_feasible_count),
+            "initial_design_true_feasible_coverage_rate": float(
+                initial_feasible_count / task_count),
+            "initial_design_true_feasible_coverage_exact_95ci": (
+                exact_binomial_interval(initial_feasible_count, task_count)),
+            "initial_design_epsilon_optimal_005_count": int(sum(
+                bool(
+                    _initial_regret(row) is not None
+                    and _initial_regret(row) <= 0.05
+                )
+                for row in group
+            )),
+            "initial_design_median_feasible_regret": (
+                None if not initial_regrets
+                else float(np.median(initial_regrets))),
+            "initial_design_mean_penalized_loss": float(
+                np.mean(initial_losses)),
             "true_feasible_coverage_count": feasible_count,
             "true_feasible_coverage_rate": float(feasible_count / task_count),
             "true_feasible_coverage_exact_95ci": exact_binomial_interval(
@@ -412,10 +464,14 @@ def analyze(paths):
         "effective_rank": int(row["effective_rank"]),
         **_configuration_payload(_configuration(row)),
         "contains_true_feasible": bool(row["contains_true_feasible"]),
+        "initial_design_contains_true_feasible": (
+            _initial_contains_true_feasible(row)),
         "independently_certified": bool(row["independently_certified"]),
         "false_certificate": bool(row["false_certificate"]),
         "finite_library_regret": row["finite_library_regret"],
+        "initial_design_finite_audit_library_regret": _initial_regret(row),
         "penalized_loss": float(row["penalized_loss"]),
+        "initial_design_penalized_loss": _initial_penalized_loss(row),
         "source_calls": int(row["source_calls"]),
         "target_search_calls": int(row["target_search_calls"]),
         "verification_calls": int(row["verification_calls"]),

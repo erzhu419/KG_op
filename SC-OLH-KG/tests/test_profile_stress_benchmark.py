@@ -112,6 +112,18 @@ def test_neutral_continuation_changes_only_target_search_budget():
     assert [row["source"] for row in result["search_records"]] == (
         ["initial_design"] * 5 + ["neutral_sobol_continuation"] * 3
     )
+    assert result["initial_design_audit_point_count"] == 5
+    assert result["search_audit_point_count"] == 8
+    assert (
+        result["true_feasible_count_in_search"]
+        >= result["true_feasible_count_in_design"]
+    )
+    if result["initial_design_finite_audit_library_regret"] is not None:
+        assert result["finite_audit_library_regret"] is not None
+        assert (
+            result["finite_audit_library_regret"]
+            <= result["initial_design_finite_audit_library_regret"]
+        )
 
 
 def test_confirmatory_matrix_seed_and_sharding_are_deterministic(tmp_path):

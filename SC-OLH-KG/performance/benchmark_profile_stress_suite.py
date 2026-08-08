@@ -410,22 +410,41 @@ def run_task(
     # verification decision are complete. It is used solely for audit metrics.
     oracle_rows, oracle_best = _oracle_library(target, audit_library)
 
-    true_rows = [{
-        "point": tuple(point),
-        "feasible": bool(target.is_truly_feasible(point)),
-        "objective": float(target.true_objective(point)),
-        "margin": float(target.true_chance_margin(point)),
-        "feasibility_probability": float(
-            target.true_feasibility_probability(point)),
-    } for point in points]
-    feasible_rows = [row for row in true_rows if row["feasible"]]
-    best_design = (
-        None if not feasible_rows else min(
-            feasible_rows, key=lambda row: row["objective"])
+    def audit_point(point):
+        return {
+            "point": tuple(point),
+            "feasible": bool(target.is_truly_feasible(point)),
+            "objective": float(target.true_objective(point)),
+            "margin": float(target.true_chance_margin(point)),
+            "feasibility_probability": float(
+                target.true_feasibility_probability(point)),
+        }
+
+    initial_truth_rows = [audit_point(point) for point in points]
+    search_truth_rows = [
+        audit_point(row["point"]) for row in search_records
+    ]
+    initial_feasible_rows = [
+        row for row in initial_truth_rows if row["feasible"]
+    ]
+    search_feasible_rows = [
+        row for row in search_truth_rows if row["feasible"]
+    ]
+    best_initial = (
+        None if not initial_feasible_rows else min(
+            initial_feasible_rows, key=lambda row: row["objective"])
     )
-    regret = (
-        None if best_design is None else max(
-            0.0, float(best_design["objective"] - oracle_best["objective"]))
+    best_search = (
+        None if not search_feasible_rows else min(
+            search_feasible_rows, key=lambda row: row["objective"])
+    )
+    initial_regret = (
+        None if best_initial is None else max(
+            0.0, float(best_initial["objective"] - oracle_best["objective"]))
+    )
+    search_regret = (
+        None if best_search is None else max(
+            0.0, float(best_search["objective"] - oracle_best["objective"]))
     )
     deployed_truth = None
     if deployed is not None:
@@ -443,10 +462,19 @@ def run_task(
     all_in_budget_cap_unamortized = int(
         source_calls + N + maximum_verification_calls)
     amortized_source = float(source_calls / int(amortization_targets))
-    penalized_loss = (
-        float(regret)
-        if regret is not None else float(
-            1.0 + min(max(row["margin"], 0.0) for row in true_rows)
+    initial_penalized_loss = (
+        float(initial_regret)
+        if initial_regret is not None else float(
+            1.0 + min(
+                max(row["margin"], 0.0) for row in initial_truth_rows)
+            / max(target.safe_radius, 1e-12)
+        )
+    )
+    search_penalized_loss = (
+        float(search_regret)
+        if search_regret is not None else float(
+            1.0 + min(
+                max(row["margin"], 0.0) for row in search_truth_rows)
             / max(target.safe_radius, 1e-12)
         )
     )
@@ -503,21 +531,35 @@ def run_task(
         } for row in search_records],
         "shortlist": shortlist,
         "verification": verification,
-        "contains_true_feasible": bool(best_design is not None),
-        "true_feasible_count_in_design": int(len(feasible_rows)),
+        "initial_design_audit_point_count": int(len(initial_truth_rows)),
+        "search_audit_point_count": int(len(search_truth_rows)),
+        "initial_design_contains_true_feasible": bool(best_initial is not None),
+        "initial_design_true_feasible_count": int(len(initial_feasible_rows)),
+        "initial_design_best_true_feasible_objective": (
+            None if best_initial is None else float(best_initial["objective"])),
+        "initial_design_finite_audit_library_regret": initial_regret,
+        "initial_design_penalized_loss": initial_penalized_loss,
+        "contains_true_feasible": bool(best_search is not None),
+        "search_contains_true_feasible": bool(best_search is not None),
+        "true_feasible_count_in_design": int(len(initial_feasible_rows)),
+        "true_feasible_count_in_search": int(len(search_feasible_rows)),
         "best_true_feasible_objective": (
-            None if best_design is None else float(best_design["objective"])),
+            None if best_search is None else float(best_search["objective"])),
+        "search_best_true_feasible_objective": (
+            None if best_search is None else float(best_search["objective"])),
         "finite_library_oracle_objective": float(oracle_best["objective"]),
         "finite_audit_library_oracle_objective": float(
             oracle_best["objective"]),
         "finite_audit_library_size": int(len(audit_library)),
         "finite_audit_library_contract": (
             "task_safe_mass_calibration_library_v1"),
-        "finite_library_regret": regret,
-        "finite_audit_library_regret": regret,
+        "finite_library_regret": search_regret,
+        "finite_audit_library_regret": search_regret,
+        "search_finite_audit_library_regret": search_regret,
         "feasible_and_epsilon_optimal_005": bool(
-            regret is not None and regret <= 0.05),
-        "penalized_loss": penalized_loss,
+            search_regret is not None and search_regret <= 0.05),
+        "penalized_loss": search_penalized_loss,
+        "search_penalized_loss": search_penalized_loss,
         "independently_certified": bool(verification["certified"]),
         "deployed_truth": deployed_truth,
         "false_certificate": bool(

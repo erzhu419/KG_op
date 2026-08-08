@@ -21,11 +21,15 @@ def _row(arm, seed, *, feasible, certified, loss):
         "nominal_dimension": 1000,
         "effective_rank": 8,
         "contains_true_feasible": feasible,
+        "initial_design_contains_true_feasible": feasible,
         "independently_certified": certified,
         "false_certificate": False,
         "feasible_and_epsilon_optimal_005": bool(feasible and loss <= 0.05),
         "finite_library_regret": loss if feasible else None,
+        "initial_design_finite_audit_library_regret": (
+            loss if feasible else None),
         "penalized_loss": loss,
+        "initial_design_penalized_loss": loss,
         "verification_calls": 80,
         "all_in_calls_unamortized": 474,
         "all_in_calls_amortized": 109.2,
@@ -105,3 +109,22 @@ def test_analysis_reports_cell_wall_time_without_making_it_an_endpoint(tmp_path)
     payload = analyze([path])
     assert payload["summaries"][0]["median_wall_time_sec"] == 1.25
     assert payload["compact_rows"][0]["wall_time_sec"] == 1.25
+
+
+def test_analysis_separates_initial_design_from_full_search(tmp_path):
+    row = _row("raw_sobol", 0, feasible=True, certified=True, loss=0.02)
+    row.update({
+        "initial_design_contains_true_feasible": False,
+        "initial_design_finite_audit_library_regret": None,
+        "initial_design_penalized_loss": 1.4,
+        "target_search_calls": 394,
+    })
+    path = tmp_path / "target_only_continuation.json"
+    path.write_text(json.dumps(row), encoding="utf-8")
+
+    payload = analyze([path])
+    summary = payload["summaries"][0]
+    assert summary["initial_design_true_feasible_coverage_rate"] == 0.0
+    assert summary["true_feasible_coverage_rate"] == 1.0
+    assert summary["initial_design_mean_penalized_loss"] == 1.4
+    assert summary["mean_penalized_loss"] == 0.02
