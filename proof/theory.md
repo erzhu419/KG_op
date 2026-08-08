@@ -95,8 +95,11 @@ The formal chain is deliberately conditional and modular:
 5. `Measure/TaskAtlasCoverage.lean` calibrates the resulting frozen atlas on
    independent held-out target tasks from a declared meta-distribution. The
    result analyzer reports exact Clopper-Pearson intervals and the one-sided
-   95% lower coverage bound for every task group; neither quantity is
-   extrapolated beyond that registered task distribution.
+   95% lower coverage bound for every task group. The formal layer also proves
+   an arbitrary-hit-rate two-sided concentration inequality: the empirical
+   task-hit mean minus its meta-distribution expectation is sub-Gaussian with
+   parameter `1 / (4m)` for `m` independent bounded task indicators. Neither
+   quantity is extrapolated beyond that registered task distribution.
 
 The theorem chain does not say that every target belongs to that
 meta-distribution or satisfies low-frequency smoothness. The preregistered

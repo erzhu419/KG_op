@@ -182,7 +182,12 @@ mathlib and its cache; later builds should be fast.
   residual-tail contract rather than treating three replications as exact.
 - `SCOLHKG/Measure/TaskAtlasCoverage.lean`: calibrates a frozen atlas on
   independent held-out tasks from one declared meta-distribution. Training
-  tasks cannot be reused as calibration tasks in this theorem.
+  tasks cannot be reused as calibration tasks in this theorem. Besides the
+  exact all-success binomial statement, arbitrary bounded held-out hit rates
+  satisfy a two-sided sub-Gaussian deviation bound with explicit parameter
+  `1 / (4m)` for `m` independent calibration tasks. The result is finite-task
+  uncertainty for the registered meta-distribution, not universal task
+  coverage.
 - `SCOLHKG/Real/RankAlignedAtlasCoverage.lean`: the headline deterministic
   rank-transfer candidate. Uniform normalized risk-rank alignment, one-sided
   source-rank atlas coverage, and target safe-rank interior depth imply a
