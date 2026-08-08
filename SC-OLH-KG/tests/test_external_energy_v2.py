@@ -15,6 +15,12 @@ from performance.benchmark_external_energy_v2 import (  # noqa: E402
     region_heldout_source_markets,
     run_task,
 )
+from performance.run_external_energy_v2_matrix import (  # noqa: E402
+    build_target_cells,
+    design_filename,
+    materialize_design_matrix,
+    run_target_matrix,
+)
 
 
 def _write_energy_suite(path):
@@ -124,3 +130,63 @@ def test_energy_v2_analysis_separates_market_region_and_seed(tmp_path):
     comparison = payload["paired_algorithmic_repeatability"][0]
     assert comparison["first_wins"] == 1
     assert comparison["task_population_inference_claimed"] is False
+
+
+def test_energy_v2_registered_matrix_has_450_cells():
+    cells = build_target_cells()
+    assert len(cells) == 450
+    assert len({
+        (row["target_market"], row["target_seed"], row["arm"])
+        for row in cells
+    }) == 450
+
+
+def test_energy_v2_matrix_freezes_design_before_target_execution(tmp_path):
+    data = tmp_path / "energy_suite.npz"
+    _write_energy_suite(data)
+    designs = tmp_path / "designs"
+    outputs = tmp_path / "outputs"
+    freeze_commit = "frozen-method"
+    design_summary = materialize_design_matrix(
+        data_path=data,
+        output_dir=designs,
+        freeze_commit=freeze_commit,
+        markets=("DK_2",),
+        workers=1,
+        dimension=24,
+        n0=5,
+        library_size=16,
+        source_replications=1,
+    )
+    design_path = designs / design_filename("DK_2")
+    frozen = json.loads(design_path.read_text(encoding="utf-8"))
+    assert design_summary["completed_count"] == 1
+    assert frozen["confirmatory_freeze_commit"] == freeze_commit
+    assert frozen["target_outcomes_used"] is False
+
+    target_summary = run_target_matrix(
+        data_path=data,
+        design_dir=designs,
+        output_dir=outputs,
+        freeze_commit=freeze_commit,
+        markets=("DK_2",),
+        target_seeds=(0,),
+        arms=("source_atlas", "raw_sobol"),
+        workers=1,
+        dimension=24,
+        n0=5,
+        N=5,
+        library_size=16,
+        source_replications=1,
+        verification_budgets=(80, 80, 80),
+    )
+    assert target_summary["matrix_cell_count"] == 2
+    assert target_summary["completed_count"] == 2
+    rows = [
+        json.loads(path.read_text(encoding="utf-8"))
+        for path in outputs.glob("cell*.json")
+    ]
+    assert {row["arm"] for row in rows} == {"source_atlas", "raw_sobol"}
+    assert all(
+        row["confirmatory_freeze_commit"] == freeze_commit for row in rows
+    )
