@@ -234,3 +234,20 @@ def test_evaluation_patch_v2_freezes_full_search_credit():
         "equal_cost_target394_controls_receive_full_search_credit"] is True
     assert patch["interpretation_contract"][
         "frontend_attribution_uses_initial_design_fields"] is True
+
+
+def test_evaluation_patch_v3_freezes_inference_labels():
+    patch = json.loads((
+        ROOT / "performance" / "manifests"
+        / "or_review_profile_evaluation_patch_v3.json"
+    ).read_text(encoding="utf-8"))
+    assert patch["evaluation_implementation_commit"] == (
+        "594a88a415bcb93a798530dba6629bd684ea261c")
+    assert patch["method_invariance_contract"][
+        "atlas_selection_changed"] is False
+    assert patch["evaluation_changes"][
+        "primary_descriptor_mode"] == "domain_blind"
+    assert patch["evaluation_changes"][
+        "active_rank_override_recorded"] is True
+    assert patch["interpretation_contract"][
+        "holm_families_fixed_before_outcome_access"] is True

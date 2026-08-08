@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_profile_evaluation_patch_v3",
+  "status": "frozen_not_yet_interpreted",
+  "method_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "parent_evaluation_contract": "or_review_profile_evaluation_patch_v2",
+  "evaluation_implementation_commit": "594a88a415bcb93a798530dba6629bd684ea261c",
+  "result_run_id": "or_review_v2_evalpatch3",
+  "signature_version": "or_review_v2_evalpatch3",
+  "reason": "Before any confirmatory outcome was inspected, the analyzer was found to label descriptor-conditioned cells as the primary family, omit the active-rank override from result records, and treat the registered coupled n0=N budget intervention as two factors. These are inference-label defects, not method changes.",
+  "method_invariance_contract": {
+    "atlas_selection_changed": false,
+    "initial_design_changed": false,
+    "target_observations_changed": false,
+    "neutral_sobol_continuation_changed": false,
+    "shortlist_changed": false,
+    "terminal_verifier_changed": false,
+    "task_seed_derivation_changed": false
+  },
+  "evaluation_changes": {
+    "primary_descriptor_mode": "domain_blind",
+    "conditioned_descriptor_role": "supplementary_information_sensitivity",
+    "active_rank_override_recorded": true,
+    "coupled_n0_equals_N_intervention_axis": "n0",
+    "mixed_optional_configuration_sort_is_deterministic": true,
+    "all_four_profile_matrices_rerun": true,
+    "legacy_results_may_be_mixed_with_v3": false
+  },
+  "interpretation_contract": {
+    "primary_family_is_domain_blind": true,
+    "holm_families_fixed_before_outcome_access": true,
+    "one_factor_sensitivity_axes_fixed_before_outcome_access": true,
+    "post_outcome_method_repair": false,
+    "negative_regimes_retained": true,
+    "v1_v2_and_patch2_results_role": "development_and_evaluation_bug_audit_only"
+  }
+}
