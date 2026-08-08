@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_profile_evaluation_patch_v4",
+  "status": "frozen_not_yet_interpreted",
+  "method_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "parent_evaluation_contract": "or_review_profile_evaluation_patch_v3",
+  "evaluation_implementation_commit": "d514b61c98cb34cecf13e42ada1d262722a1def4",
+  "result_run_id": "or_review_v2_evalpatch4",
+  "signature_version": "or_review_v2_evalpatch4",
+  "reason": "Before any V3 confirmatory cell launched, the target-generation seed was found to be reused as the algorithm RNG index. Although independent NumPy streams prevented direct oracle access, V4 hash-domain-separates latent task generation from algorithm randomization and states the full strength of the declared semantic-to-raw mapping.",
+  "predecessor_execution_disposition": {
+    "v3_submitted_cells": 24,
+    "v3_started_cells": 0,
+    "v3_completed_cells": 0,
+    "v3_cells_to_cancel": 24,
+    "v3_results_may_be_mixed_with_v4": false
+  },
+  "method_invariance_contract": {
+    "atlas_selection_rule_changed": false,
+    "source_archive_changed": false,
+    "initial_design_family_changed": false,
+    "target_search_rule_changed": false,
+    "shortlist_rule_changed": false,
+    "terminal_verifier_changed": false,
+    "target_task_seeds_changed": false
+  },
+  "evaluation_changes": {
+    "algorithm_design_seed_hash_domain": "algorithm-design",
+    "algorithm_rng_domain_separated_from_target_generation": true,
+    "paired_arms_share_algorithm_randomization_seed": true,
+    "exact_semantic_to_raw_index_map_declared": true,
+    "latent_task_generation_seed_exposed_to_frontend": false,
+    "all_four_profile_matrices_rerun": true
+  },
+  "interpretation_contract": {
+    "shared_randomization_is_pairing_not_target_information": true,
+    "declared_schema_is_a_strong_known_semantics_assumption": true,
+    "schema_blind_results_are_required": true,
+    "negative_regimes_retained": true,
+    "post_outcome_method_repair": false
+  }
+}
