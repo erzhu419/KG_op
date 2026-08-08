@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from performance.analyze_external_energy_v2 import analyze  # noqa: E402
+from performance.benchmark_quality import json_safe  # noqa: E402
 from performance.audit_external_energy_temporal_blocks import (  # noqa: E402
     audit_frozen_policy,
     nonoverlapping_window_starts,
@@ -25,6 +26,9 @@ from performance.benchmark_external_energy_functional_scbo import (  # noqa: E40
 from performance.run_external_energy_functional_scbo_matrix import (  # noqa: E402
     _emit_terminal_status as emit_energy_functional_terminal_status,
     build_cells as build_functional_cells,
+)
+from performance.run_external_energy_temporal_audit_matrix import (  # noqa: E402
+    run_matrix as run_temporal_audit_matrix,
 )
 from performance.run_external_energy_v2_matrix import (  # noqa: E402
     build_target_cells,
@@ -93,6 +97,47 @@ def test_temporal_audit_separates_descriptive_blocks_and_disjoint_windows(tmp_pa
     assert audit["nonoverlapping_start_count"] == len(disjoint)
     assert audit["inferential_certificate_claimed"] is False
     assert audit["postdecision_only"] is True
+
+
+def test_temporal_audit_matrix_is_restartable_and_fail_closed(tmp_path):
+    data = tmp_path / "energy_suite.npz"
+    _write_energy_suite(data)
+    result_root = tmp_path / "results"
+    result_root.mkdir()
+    result = run_functional_task(
+        data_path=data,
+        target_market="DK_2",
+        target_seed=0,
+        dimension=24,
+        n0=5,
+        N=5,
+        verification_budgets=(80, 80, 80),
+    )
+    result_path = result_root / "cell0000.json"
+    result_path.write_text(json.dumps(json_safe(result)), encoding="utf-8")
+    output = tmp_path / "audit"
+    first = run_temporal_audit_matrix(
+        input_roots=(result_root,),
+        output_dir=output,
+        data_path=data,
+        workers=1,
+        expected_source_count=1,
+        maximum_sampled_starts=32,
+    )
+    second = run_temporal_audit_matrix(
+        input_roots=(result_root,),
+        output_dir=output,
+        data_path=data,
+        workers=1,
+        expected_source_count=1,
+        maximum_sampled_starts=32,
+    )
+    assert first["error_count"] == 0
+    assert second["skipped_count"] == 1
+    audit_path = next(output.glob("cell*.json"))
+    payload = json.loads(audit_path.read_text(encoding="utf-8"))
+    assert payload["contract_id"] == "opsd_postdecision_temporal_block_audit_v1"
+    assert payload["postdecision_only"] is True
 
 
 def test_frozen_energy_v2_design_replays_without_target_outcomes(tmp_path):

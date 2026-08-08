@@ -25,7 +25,10 @@ from performance.benchmark_quality import json_safe  # noqa: E402
 from problems.energy_reliability import OPSDStorageReliabilityProblem  # noqa: E402
 
 
-SOURCE_CONTRACT = "opsd_region_heldout_profile_design_v2"
+SOURCE_CONTRACTS = {
+    "opsd_region_heldout_profile_design_v2",
+    "opsd_region_heldout_functional_scbo_v1",
+}
 AUDIT_CONTRACT = "opsd_postdecision_temporal_block_audit_v1"
 
 
@@ -130,7 +133,10 @@ def audit_result(
 ):
     result_path = Path(result_path)
     row = json.loads(result_path.read_text(encoding="utf-8"))
-    if row.get("contract_id") != SOURCE_CONTRACT or row.get("status") != "ok":
+    if (
+        row.get("contract_id") not in SOURCE_CONTRACTS
+        or row.get("status") != "ok"
+    ):
         raise ValueError("temporal audit received an incompatible energy result")
     payload = {
         "schema_version": 1,
