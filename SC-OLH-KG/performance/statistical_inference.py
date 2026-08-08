@@ -3,6 +3,68 @@
 from __future__ import annotations
 
 import numpy as np
+from scipy.stats import beta
+
+
+def exact_binomial_interval(successes, trials, *, confidence_level=0.95):
+    """Two-sided Clopper-Pearson interval for independent Bernoulli units."""
+
+    successes = int(successes)
+    trials = int(trials)
+    confidence_level = float(confidence_level)
+    if trials < 1 or not 0 <= successes <= trials:
+        raise ValueError("binomial counts must satisfy 0 <= successes <= trials")
+    if not 0.0 < confidence_level < 1.0:
+        raise ValueError("confidence_level must lie in (0, 1)")
+    tail = 0.5 * (1.0 - confidence_level)
+    lower = (
+        0.0 if successes == 0
+        else float(beta.ppf(tail, successes, trials - successes + 1))
+    )
+    upper = (
+        1.0 if successes == trials
+        else float(beta.ppf(
+            1.0 - tail, successes + 1, trials - successes))
+    )
+    return [lower, upper]
+
+
+def exact_binomial_lower_bound(successes, trials, *, confidence_level=0.95):
+    """One-sided exact lower confidence bound for a Bernoulli success rate."""
+
+    successes = int(successes)
+    trials = int(trials)
+    confidence_level = float(confidence_level)
+    if trials < 1 or not 0 <= successes <= trials:
+        raise ValueError("binomial counts must satisfy 0 <= successes <= trials")
+    if not 0.0 < confidence_level < 1.0:
+        raise ValueError("confidence_level must lie in (0, 1)")
+    if successes == 0:
+        return 0.0
+    return float(beta.ppf(
+        1.0 - confidence_level,
+        successes,
+        trials - successes + 1,
+    ))
+
+
+def exact_binomial_upper_bound(successes, trials, *, confidence_level=0.95):
+    """One-sided exact upper confidence bound for a Bernoulli success rate."""
+
+    successes = int(successes)
+    trials = int(trials)
+    confidence_level = float(confidence_level)
+    if trials < 1 or not 0 <= successes <= trials:
+        raise ValueError("binomial counts must satisfy 0 <= successes <= trials")
+    if not 0.0 < confidence_level < 1.0:
+        raise ValueError("confidence_level must lie in (0, 1)")
+    if successes == trials:
+        return 1.0
+    return float(beta.ppf(
+        confidence_level,
+        successes + 1,
+        trials - successes,
+    ))
 
 
 def holm_adjust(p_values):

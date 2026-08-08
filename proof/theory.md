@@ -89,7 +89,10 @@ The formal chain is deliberately conditional and modular:
    error, source-target shift, and positive target safety depth into target
    feasible coverage.
 5. `Measure/TaskAtlasCoverage.lean` calibrates the resulting frozen atlas on
-   independent held-out target tasks from a declared meta-distribution.
+   independent held-out target tasks from a declared meta-distribution. The
+   result analyzer reports exact Clopper-Pearson intervals and the one-sided
+   95% lower coverage bound for every task group; neither quantity is
+   extrapolated beyond that registered task distribution.
 
 The theorem chain does not say that every target belongs to that
 meta-distribution or satisfies low-frequency smoothness. The preregistered

@@ -65,6 +65,16 @@ def test_analysis_uses_target_tasks_as_paired_units(tmp_path):
         macro[
             "mean_first_minus_second_penalized_loss_bootstrap_95ci"]
     ) == 2
+    source_summary = next(
+        row for row in payload["summaries"]
+        if row["arm"] == "source_atlas"
+    )
+    assert source_summary["true_feasible_coverage_rate"] == 1.0
+    assert 0.0 < source_summary[
+        "true_feasible_coverage_one_sided_95_lower"] < 1.0
+    assert source_summary["false_certificate_one_sided_95_upper"] > 0.0
+    assert source_summary["coverage_probability_scope"].startswith(
+        "declared registered")
 
 
 def test_analysis_never_pools_registered_sensitivity_settings(tmp_path):

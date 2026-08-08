@@ -15,6 +15,9 @@ from scipy.stats import binomtest
 from performance.statistical_inference import (
     apply_holm_family,
     bootstrap_mean_ci,
+    exact_binomial_interval,
+    exact_binomial_lower_bound,
+    exact_binomial_upper_bound,
 )
 
 
@@ -201,6 +204,13 @@ def analyze(paths):
             float(row["wall_time_sec"])
             for row in group if row.get("wall_time_sec") is not None
         ]
+        task_count = int(len(group))
+        feasible_count = int(sum(
+            bool(row["contains_true_feasible"]) for row in group))
+        certified_count = int(sum(
+            bool(row["independently_certified"]) for row in group))
+        false_count = int(sum(
+            bool(row["false_certificate"]) for row in group))
         summaries.append({
             "regime": regime,
             "arm": arm,
@@ -209,13 +219,25 @@ def analyze(paths):
             "nominal_dimension": dimension,
             "effective_rank": rank,
             **_configuration_payload(configuration),
-            "independent_task_count": len(group),
-            "true_feasible_coverage_count": int(sum(
-                bool(row["contains_true_feasible"]) for row in group)),
-            "independently_certified_count": int(sum(
-                bool(row["independently_certified"]) for row in group)),
-            "false_certificate_count": int(sum(
-                bool(row["false_certificate"]) for row in group)),
+            "independent_task_count": task_count,
+            "true_feasible_coverage_count": feasible_count,
+            "true_feasible_coverage_rate": float(feasible_count / task_count),
+            "true_feasible_coverage_exact_95ci": exact_binomial_interval(
+                feasible_count, task_count),
+            "true_feasible_coverage_one_sided_95_lower": (
+                exact_binomial_lower_bound(feasible_count, task_count)),
+            "independently_certified_count": certified_count,
+            "independently_certified_rate": float(certified_count / task_count),
+            "independently_certified_exact_95ci": exact_binomial_interval(
+                certified_count, task_count),
+            "independently_certified_one_sided_95_lower": (
+                exact_binomial_lower_bound(certified_count, task_count)),
+            "false_certificate_count": false_count,
+            "false_certificate_rate": float(false_count / task_count),
+            "false_certificate_one_sided_95_upper": (
+                exact_binomial_upper_bound(false_count, task_count)),
+            "coverage_probability_scope": (
+                "declared registered task meta-distribution only"),
             "epsilon_optimal_005_count": int(sum(
                 bool(row["feasible_and_epsilon_optimal_005"]) for row in group)),
             "median_feasible_regret": (
