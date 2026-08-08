@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_hvd_disposition_v1",
+  "status": "closed_from_existing_confirmatory_evidence",
+  "comparison_id": "cumulative_factor_hvd_vs_pooled",
+  "track_id": "source_hvd_causal_gate_d1000_n13",
+  "run_id": "provider_hvd_scbo_cpu_8adb033_d1000_n13_s80_99_v2",
+  "domains": [
+    "FactorShockStatePolicyRZDT1",
+    "InventorySupplyChain",
+    "QueueResourceControl"
+  ],
+  "paired_seeds_per_domain": 20,
+  "fixed_components": [
+    "source archive",
+    "initial design",
+    "canonical SCBO backend",
+    "target budget",
+    "terminal verifier"
+  ],
+  "intervention": "pooled variance versus provider-based cumulative factor-HVD",
+  "calibration_evidence": {
+    "mean_log_variance_rmse_pooled": {
+      "FactorShockStatePolicyRZDT1": 1.158,
+      "InventorySupplyChain": 0.577,
+      "QueueResourceControl": 0.501
+    },
+    "mean_log_variance_rmse_cumulative_factor": {
+      "FactorShockStatePolicyRZDT1": 0.219,
+      "InventorySupplyChain": 0.349,
+      "QueueResourceControl": 0.254
+    },
+    "cumulative_factor_variance_shape_correlation": {
+      "FactorShockStatePolicyRZDT1": 0.919,
+      "InventorySupplyChain": 0.953,
+      "QueueResourceControl": 0.995
+    }
+  },
+  "optimization_evidence": {
+    "feasible_recovery_improved": false,
+    "false_certificate_count_improved": false,
+    "feasible_regret_improved": false,
+    "verification_cost_improved": false,
+    "verification_cost_increased_in": [
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ]
+  },
+  "disposition": {
+    "core_method_contribution": false,
+    "main_optimization_claim": false,
+    "secondary_risk_calibration_result": true,
+    "paper_location": "appendix_or_omit_if_space_limited",
+    "further_tuning_before_submission": false
+  },
+  "evidence_sources": [
+    "performance/manifests/paper_submission_experiment_registry_v1.json",
+    "docs/or_submission_final_gap_audit.md",
+    "docs/hvd_decision_closure_gate.md"
+  ]
+}

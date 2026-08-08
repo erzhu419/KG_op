@@ -15,7 +15,7 @@ contributions without new causal evidence.
 
 | Review issue | Algorithm or experiment response | Current evidence status |
 |---|---|---|
-| Synthetic-method isomorphism | Eight randomized regimes vary effective rank, frequency support, coordinate order, grid regularity, smoothness, sparse high-frequency activity, and target misspecification. Nominal dimension and effective rank are reported separately. | Runner and frozen generator implemented; confirmatory matrix pending. |
+| Synthetic-method isomorphism | Eight randomized regimes vary effective rank, frequency support, coordinate order, grid regularity, smoothness, sparse high-frequency activity, and target misspecification. Nominal dimension and effective rank are reported separately. | Runner and frozen generator implemented; V4 domain-separates task generation from algorithm randomization. Confirmatory matrix pending. |
 | Energy does not establish source learning | Replace the single-market V1 interpretation with 18 markets in five geographic regions. Every target excludes its whole region from source training and compares the source atlas with generic DCT, random low-frequency, natural constant-grid, and raw Sobol designs. | Protocol and runner implemented; no V2 performance claim before execution. V1 remains a negative result. |
 | Development-level benchmark overfitting | Freeze and push code before deriving confirmatory task seeds. Use newly randomized stress tasks and adverse regimes; no post-outcome repair is allowed under the same version. | Freeze protocol implemented. This mitigates but cannot emulate a generator written by an independent collaborator. |
 | Atlas underspecified | The complete finite method is recorded in `profile_atlas_v2_method_spec.json`, including library, coefficient integral, rank statistic, augmented metric, first center, farthest-first rule, and tie breaking. | Implemented and unit tested; manuscript algorithm remains intentionally untouched. |
@@ -46,6 +46,12 @@ contributions without new causal evidence.
 5. HVD remains auxiliary unless a same-proposal, same-backend, same-verifier
    experiment shows an incremental optimization or certification benefit.
 
+The existing 60-pair provider-coordinate replay closes rule 5 negatively:
+cumulative factor-HVD improves variance calibration but not feasible recovery,
+false certification, regret, or verification cost. It is therefore frozen as
+a secondary appendix result under `or_review_hvd_disposition_v1.json` and is
+not part of the candidate method identity.
+
 ## Required frozen outputs before manuscript revision
 
 - Primary randomized stress matrix at dimensions 200, 1000, and 10000.
@@ -56,6 +62,7 @@ contributions without new causal evidence.
 - OPSD post-decision chronological-block/nonoverlap stability audit.
 - Exact verifier power table.
 - Native end-to-end transfer audit.
-- HVD causal disposition under a common proposal/backend/verifier.
+- HVD causal disposition under a common proposal/backend/verifier. Complete;
+  retained only as a secondary calibration result.
 - One immutable result registry containing commit, task seeds, budgets,
   failures, timeouts, and raw-result hashes for every paper table.
