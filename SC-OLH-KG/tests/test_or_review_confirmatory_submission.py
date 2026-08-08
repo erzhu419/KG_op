@@ -11,6 +11,7 @@ SPEC.loader.exec_module(MODULE)
 
 class Args:
     registration = MODULE.DEFAULT_REGISTRATION
+    deploy = MODULE.DEFAULT_DEPLOY
     python = MODULE.REMOTE_PYTHON
     matrices = ",".join(MODULE.MATRIX_SPECS)
     shards = 6
@@ -34,6 +35,14 @@ def test_confirmatory_specs_use_absolute_remote_python_and_full_coverage():
     assert all(spec["cpu"] == Args.workers for spec in specs)
     assert all(spec["allowed_nodes"] == list(MODULE.CPU_NODES) for spec in specs)
     assert all(spec["ram_mb"] == Args.ram_mb for spec in specs)
+    assert all(spec["cwd"] == str(Args.deploy) for spec in specs)
+    assert all(
+        spec["result_dir"].startswith(str(Args.deploy)) for spec in specs
+    )
+    assert all(
+        spec["local_result_dir"].startswith(str(ROOT / "SC-OLH-KG"))
+        for spec in specs
+    )
 
     for matrix, (total, _, _) in MODULE.MATRIX_SPECS.items():
         selected = [

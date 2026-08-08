@@ -12,7 +12,9 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SYNC = ROOT / "scripts/sync_scolhkg_scheduler_deploy.sh"
 DEFAULT_SCHEDULER = Path.home() / "mine_code/scheduleurm/skill/scheduler.py"
+DEFAULT_DEPLOY = Path.home() / "mine_code/KG_op_scheduler_deploy"
 DEFAULT_REGISTRATION = (
     ROOT
     / "SC-OLH-KG/performance/manifests/"
@@ -89,13 +91,18 @@ def build_specs(args, registration):
         raise ValueError("remote Python must be an absolute path")
 
     specs = []
+    deploy_root = Path(args.deploy)
     for matrix in requested:
         total, directory, dimensions = MATRIX_SPECS[matrix]
         for shard_index, (start, stop) in enumerate(
             _partition(total, args.shards)
         ):
-            output_dir = (
+            local_output_dir = (
                 ROOT / "SC-OLH-KG/results/or_review_v1"
+                / directory / f"shard_{shard_index}"
+            )
+            output_dir = (
+                deploy_root / "SC-OLH-KG/results/or_review_v1"
                 / directory / f"shard_{shard_index}"
             )
             command = [
@@ -132,7 +139,7 @@ def build_specs(args, registration):
                     f"{args.shards} [{start},{stop})"
                 ),
                 "cmd": f"{shlex.join(command)} && echo DONE",
-                "cwd": str(ROOT),
+                "cwd": str(deploy_root),
                 "signature": (
                     f"KG_op/or_review_v1_retry/{matrix}/"
                     f"shard{shard_index:02d}/{start}-{stop}"
@@ -150,7 +157,7 @@ def build_specs(args, registration):
                     "per worker."
                 ),
                 "result_dir": str(output_dir),
-                "local_result_dir": str(output_dir),
+                "local_result_dir": str(local_output_dir),
                 "stage_excludes": _stage_excludes(),
                 "allow_duplicate": True,
             })
@@ -159,7 +166,9 @@ def build_specs(args, registration):
 
 def build_preflight_spec(args, registration):
     freeze_commit = str(registration["method_freeze_commit"])
-    output_dir = ROOT / "SC-OLH-KG/results/or_review_v1/preflight"
+    deploy_root = Path(args.deploy)
+    local_output_dir = ROOT / "SC-OLH-KG/results/or_review_v1/preflight"
+    output_dir = deploy_root / "SC-OLH-KG/results/or_review_v1/preflight"
     command = [
         "env",
         "LC_ALL=C",
@@ -189,7 +198,7 @@ def build_preflight_spec(args, registration):
     return {
         "description": "OR review absolute-Python preflight",
         "cmd": f"{shlex.join(command)} && echo DONE",
-        "cwd": str(ROOT),
+        "cwd": str(deploy_root),
         "signature": "KG_op/or_review_v1_retry/preflight/absolute-python",
         "project": "KG-SYNTH",
         "vram": 0,
@@ -201,7 +210,7 @@ def build_preflight_spec(args, registration):
             "One-cell environment preflight for the frozen CPU matrix."
         ),
         "result_dir": str(output_dir),
-        "local_result_dir": str(output_dir),
+        "local_result_dir": str(local_output_dir),
         "stage_excludes": _stage_excludes(),
         "allow_duplicate": True,
     }
@@ -229,6 +238,7 @@ def submit_specs(args, specs):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--scheduler", type=Path, default=DEFAULT_SCHEDULER)
+    parser.add_argument("--deploy", type=Path, default=DEFAULT_DEPLOY)
     parser.add_argument("--registration", type=Path,
                         default=DEFAULT_REGISTRATION)
     parser.add_argument("--python", type=Path, default=REMOTE_PYTHON)
@@ -239,6 +249,7 @@ def main():
     parser.add_argument(
         "--intent-label", default="or_review_confirmatory_retry_v1")
     parser.add_argument("--preflight-only", action="store_true")
+    parser.add_argument("--no-sync", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     registration = load_registration(args.registration)
@@ -250,6 +261,8 @@ def main():
     if args.dry_run:
         print(json.dumps(specs, indent=2))
         return
+    if not args.no_sync:
+        subprocess.run([str(SYNC)], check=True, cwd=ROOT)
     submit_specs(args, specs)
 
 
