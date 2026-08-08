@@ -6,7 +6,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from performance.benchmark_profile_stress_suite import run_task  # noqa: E402
+from performance.benchmark_profile_stress_suite import (  # noqa: E402
+    _oracle_library,
+    _registered_audit_library,
+    run_task,
+)
+from problems.randomized_profiles import (  # noqa: E402
+    RandomizedOrderedProfileProblem,
+    generate_structural_profile_library,
+)
 from performance.run_profile_stress_matrix import (  # noqa: E402
     build_equal_preverification_cost_cells,
     build_primary_cells,
@@ -62,6 +70,29 @@ def test_oracle_arm_is_explicitly_labeled_upper_bound():
     assert result["target_outcomes_used_for_design"] is True
     assert result["source_calls"] == 0
     assert result["oracle_role"] == "finite_library_upper_bound"
+
+
+def test_audit_oracle_is_fixed_independently_of_source_library_size():
+    target = RandomizedOrderedProfileProblem(
+        regime="frequency_support_shift",
+        role="target",
+        task_seed=17,
+        family_seed=1234,
+        d=64,
+        active_rank=8,
+        safe_mass=0.03,
+    )
+    audit_library = _registered_audit_library(target)
+    _, audit_best = _oracle_library(target, audit_library)
+    assert target.is_truly_feasible(audit_best["point"])
+    assert len(audit_library) == 64
+
+    smaller_source_library = generate_structural_profile_library(
+        32, dimension=128, seed=999, maximum_frequency=40)
+    larger_source_library = generate_structural_profile_library(
+        128, dimension=128, seed=999, maximum_frequency=40)
+    assert len(smaller_source_library) != len(larger_source_library)
+    assert _registered_audit_library(target) == audit_library
 
 
 def test_neutral_continuation_changes_only_target_search_budget():

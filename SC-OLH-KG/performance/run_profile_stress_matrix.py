@@ -248,7 +248,32 @@ def _run_cell(index, cell, output_dir, freeze_commit):
     ):
         if name in cell:
             run_arguments[name] = cell[name]
-    payload = run_task(**run_arguments)
+    try:
+        payload = run_task(**run_arguments)
+    except Exception as error:
+        payload = {
+            "schema_version": 1,
+            "contract_id": "randomized_ordered_profile_stress_cell_error_v1",
+            "status": "error",
+            "error_type": type(error).__name__,
+            "error_message": str(error),
+            "cell_index": int(index),
+            "cell": dict(cell),
+            "confirmatory_freeze_commit": str(freeze_commit),
+            "confirmatory_replicate_index": int(cell["replicate_index"]),
+            "matrix_configuration_id": str(
+                cell.get("configuration_id", "primary")),
+            "wall_time_sec": float(time.perf_counter() - started),
+        }
+        _atomic_json(output, payload)
+        return {
+            "index": index,
+            "status": "error",
+            "out": str(output),
+            "error_type": type(error).__name__,
+            "error_message": str(error),
+            "wall_time_sec": payload["wall_time_sec"],
+        }
     payload["confirmatory_freeze_commit"] = str(freeze_commit)
     payload["confirmatory_replicate_index"] = int(cell["replicate_index"])
     payload["matrix_configuration_id"] = str(
@@ -344,10 +369,12 @@ def run_matrix(
                     f"PROFILE_STRESS_PROGRESS {completed}/{len(selected)}",
                     flush=True,
                 )
+    error_count = int(sum(row["status"] == "error" for row in results))
     summary = {
         "schema_version": 1,
         "contract_id": "randomized_ordered_profile_stress_matrix_v2",
-        "status": "complete",
+        "status": (
+            "complete" if error_count == 0 else "complete_with_cell_errors"),
         "freeze_commit": str(freeze_commit),
         "matrix": matrix,
         "matrix_cell_count": len(cells),
@@ -359,6 +386,15 @@ def run_matrix(
             row["status"] == "done" for row in results)),
         "skipped_count": int(sum(
             row["status"] == "skipped" for row in results)),
+        "error_count": error_count,
+        "cell_errors": [
+            {
+                "index": int(row["index"]),
+                "error_type": row.get("error_type"),
+                "error_message": row.get("error_message"),
+            }
+            for row in results if row["status"] == "error"
+        ],
         "wall_time_sec": float(time.perf_counter() - started),
     }
     summary_path = Path(output_dir) / f"shard_{start:05d}_{stop:05d}.summary.json"

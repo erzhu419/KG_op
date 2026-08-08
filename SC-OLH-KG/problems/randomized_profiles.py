@@ -82,6 +82,12 @@ PROFILE_STRESS_REGIMES = {
 }
 
 
+CALIBRATION_LIBRARY_SIZE = 64
+CALIBRATION_LIBRARY_DIMENSION = 128
+CALIBRATION_LIBRARY_SEED_OFFSET = 37
+CALIBRATION_LIBRARY_MAXIMUM_FREQUENCY = 32
+
+
 @dataclass(frozen=True)
 class StructuralProfile:
     profile_id: str
@@ -189,6 +195,22 @@ def generate_structural_profile_library(
     )
 
 
+def generate_calibration_profile_library(family_seed):
+    """Return the outcome-free library used to calibrate task safe mass.
+
+    Keeping this construction public and deterministic lets post-run auditors
+    use the same fixed reference set without depending on the source-design
+    library or any target observations.
+    """
+
+    return generate_structural_profile_library(
+        CALIBRATION_LIBRARY_SIZE,
+        dimension=CALIBRATION_LIBRARY_DIMENSION,
+        seed=int(family_seed) + CALIBRATION_LIBRARY_SEED_OFFSET,
+        maximum_frequency=CALIBRATION_LIBRARY_MAXIMUM_FREQUENCY,
+    )
+
+
 class RandomizedOrderedProfileProblem:
     """Chance-constrained profile problem with controlled latent complexity."""
 
@@ -257,8 +279,7 @@ class RandomizedOrderedProfileProblem:
         self._safe_center = self._features_semantic(self._safe_profile)
         self._objective_center = self._features_semantic(self._objective_profile)
         calibration_library = (
-            generate_structural_profile_library(
-                64, seed=self.family_seed + 37)
+            generate_calibration_profile_library(self.family_seed)
             if calibration_library is None else tuple(calibration_library)
         )
         distances = []

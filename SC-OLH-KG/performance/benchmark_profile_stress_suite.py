@@ -31,6 +31,7 @@ from problems.randomized_profiles import (  # noqa: E402
     PROFILE_STRESS_REGIMES,
     RandomizedOrderedProfileProblem,
     StructuralProfile,
+    generate_calibration_profile_library,
     generate_structural_profile_library,
     source_profile_records,
 )
@@ -198,6 +199,12 @@ def _oracle_library(target, library):
     return rows, best
 
 
+def _registered_audit_library(target):
+    """Reference library fixed independently of source-design hyperparameters."""
+
+    return generate_calibration_profile_library(target.family_seed)
+
+
 def run_task(
     *,
     regime,
@@ -260,6 +267,7 @@ def run_task(
         alpha=alpha,
         safe_mass=safe_mass,
     )
+    audit_library = _registered_audit_library(target)
     atlas = None
     frontend_diagnostics = {
         "contract_id": "not_applicable",
@@ -321,7 +329,8 @@ def run_task(
         }
     elif arm == "oracle_library_upper_bound":
         # This arm is an explicitly labeled unattainable upper bound.
-        oracle_rows, _oracle_best_for_design = _oracle_library(target, library)
+        oracle_rows, _oracle_best_for_design = _oracle_library(
+            target, audit_library)
         ranked = sorted(
             oracle_rows,
             key=lambda row: (
@@ -399,7 +408,7 @@ def run_task(
     # For every non-oracle arm, target truth becomes available only after the
     # design, noisy search observations, frozen shortlist, and independent
     # verification decision are complete. It is used solely for audit metrics.
-    oracle_rows, oracle_best = _oracle_library(target, library)
+    oracle_rows, oracle_best = _oracle_library(target, audit_library)
 
     true_rows = [{
         "point": tuple(point),
@@ -499,7 +508,13 @@ def run_task(
         "best_true_feasible_objective": (
             None if best_design is None else float(best_design["objective"])),
         "finite_library_oracle_objective": float(oracle_best["objective"]),
+        "finite_audit_library_oracle_objective": float(
+            oracle_best["objective"]),
+        "finite_audit_library_size": int(len(audit_library)),
+        "finite_audit_library_contract": (
+            "task_safe_mass_calibration_library_v1"),
         "finite_library_regret": regret,
+        "finite_audit_library_regret": regret,
         "feasible_and_epsilon_optimal_005": bool(
             regret is not None and regret <= 0.05),
         "penalized_loss": penalized_loss,
