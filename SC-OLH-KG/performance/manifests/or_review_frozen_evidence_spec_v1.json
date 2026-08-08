@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_frozen_evidence_spec_v1",
+  "status": "frozen_pending_raw_results",
+  "purpose": "Fail closed before any OR-review experiment enters a statistical analysis or manuscript table.",
+  "matrices": [
+    {
+      "name": "randomized_profile_primary",
+      "relative_glob": "or_review_v2_evalpatch4/profile_primary/**/cell*.json",
+      "expected_count": 2880,
+      "contract_ids": ["randomized_ordered_profile_stress_v2"],
+      "required_values": {
+        "status": "ok",
+        "confirmatory_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "evaluation_implementation_commit": "d514b61c98cb34cecf13e42ada1d262722a1def4",
+        "target_information_contract.target_oracle_available_to_algorithm": false,
+        "target_information_contract.latent_task_generation_seed_exposed_to_frontend": false
+      },
+      "unique_key_fields": [
+        "regime", "target_seed", "nominal_dimension", "arm",
+        "schema_mode", "descriptor_mode", "matrix_configuration_id"
+      ]
+    },
+    {
+      "name": "randomized_profile_sensitivity",
+      "relative_glob": "or_review_v2_evalpatch4/profile_sensitivity/**/cell*.json",
+      "expected_count": 8640,
+      "contract_ids": ["randomized_ordered_profile_stress_v2"],
+      "required_values": {
+        "status": "ok",
+        "confirmatory_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "evaluation_implementation_commit": "d514b61c98cb34cecf13e42ada1d262722a1def4",
+        "target_information_contract.target_oracle_available_to_algorithm": false,
+        "target_information_contract.latent_task_generation_seed_exposed_to_frontend": false
+      },
+      "unique_key_fields": [
+        "regime", "target_seed", "nominal_dimension", "arm",
+        "schema_mode", "descriptor_mode", "matrix_configuration_id"
+      ]
+    },
+    {
+      "name": "randomized_profile_schema_descriptor",
+      "relative_glob": "or_review_v2_evalpatch4/profile_schema_descriptor/**/cell*.json",
+      "expected_count": 1280,
+      "contract_ids": ["randomized_ordered_profile_stress_v2"],
+      "required_values": {
+        "status": "ok",
+        "confirmatory_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "evaluation_implementation_commit": "d514b61c98cb34cecf13e42ada1d262722a1def4",
+        "target_information_contract.target_oracle_available_to_algorithm": false,
+        "target_information_contract.latent_task_generation_seed_exposed_to_frontend": false
+      },
+      "unique_key_fields": [
+        "regime", "target_seed", "nominal_dimension", "arm",
+        "schema_mode", "descriptor_mode", "matrix_configuration_id"
+      ]
+    },
+    {
+      "name": "randomized_profile_equal_preverification_cost",
+      "relative_glob": "or_review_v2_evalpatch4/profile_equal_preverification_cost/**/cell*.json",
+      "expected_count": 800,
+      "contract_ids": ["randomized_ordered_profile_stress_v2"],
+      "required_values": {
+        "status": "ok",
+        "confirmatory_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "evaluation_implementation_commit": "d514b61c98cb34cecf13e42ada1d262722a1def4",
+        "target_information_contract.target_oracle_available_to_algorithm": false,
+        "target_information_contract.latent_task_generation_seed_exposed_to_frontend": false
+      },
+      "unique_key_fields": [
+        "regime", "target_seed", "nominal_dimension", "arm",
+        "schema_mode", "descriptor_mode", "matrix_configuration_id"
+      ]
+    },
+    {
+      "name": "opsd_region_holdout",
+      "relative_glob": "or_review_v1/energy_region_holdout/**/cell*.json",
+      "expected_count": 450,
+      "contract_ids": ["opsd_region_heldout_profile_design_v2"],
+      "required_values": {
+        "status": "ok",
+        "confirmatory_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "target_outcomes_used_to_fit_frontend": false,
+        "target_oracle_used_during_search": false,
+        "information_contract.future_time_series_iid_claimed": false,
+        "information_contract.certificate_scope": "fixed_empirical_distribution_over_admissible_window_start_indices"
+      },
+      "unique_key_fields": ["target_market", "target_seed", "arm"]
+    },
+    {
+      "name": "opsd_target_only_functional_scbo",
+      "relative_glob": "or_review_energy_functional_scbo_v2/**/cell*.json",
+      "expected_count": 90,
+      "contract_ids": ["opsd_region_heldout_functional_scbo_v1"],
+      "required_values": {
+        "status": "ok",
+        "confirmatory_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "functional_method_commit": "d1078e3ebe657ebe938e8e470d465143c977ae41",
+        "execution_commit": "b9eef508b6971e591b69266474e95e4c9b8341a8",
+        "functional_coordinate_contract.source_archive_used": false,
+        "functional_coordinate_contract.source_outcomes_used": false,
+        "functional_coordinate_contract.target_oracle_used": false,
+        "functional_coordinate_contract.target_outcomes_used_to_define_coordinate": false,
+        "backend_contract.target_oracle_used": false,
+        "information_contract.future_time_series_iid_claimed": false,
+        "information_contract.certificate_scope": "fixed_empirical_distribution_over_admissible_window_start_indices"
+      },
+      "unique_key_fields": ["target_market", "target_seed", "arm"]
+    },
+    {
+      "name": "target_only_functional_scbo_primary",
+      "relative_glob": "or_review_functional_scbo_v2/primary/**/cell*.json",
+      "expected_count": 480,
+      "contract_ids": ["target_only_functional_profile_scbo_v1"],
+      "required_values": {
+        "status": "ok",
+        "task_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "functional_method_commit": "d1078e3ebe657ebe938e8e470d465143c977ae41",
+        "execution_commit": "b9eef508b6971e591b69266474e95e4c9b8341a8",
+        "functional_coordinate_contract.source_archive_used": false,
+        "functional_coordinate_contract.source_outcomes_used": false,
+        "functional_coordinate_contract.target_oracle_used": false,
+        "functional_coordinate_contract.target_outcomes_used_to_define_coordinate": false,
+        "backend_contract.target_oracle_used": false
+      },
+      "unique_key_fields": [
+        "regime", "target_seed", "nominal_dimension", "arm",
+        "matrix_configuration_id"
+      ]
+    },
+    {
+      "name": "target_only_functional_scbo_rank_sensitivity",
+      "relative_glob": "or_review_functional_scbo_v2/rank_sensitivity/**/cell*.json",
+      "expected_count": 480,
+      "contract_ids": ["target_only_functional_profile_scbo_v1"],
+      "required_values": {
+        "status": "ok",
+        "task_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "functional_method_commit": "d1078e3ebe657ebe938e8e470d465143c977ae41",
+        "execution_commit": "b9eef508b6971e591b69266474e95e4c9b8341a8",
+        "functional_coordinate_contract.source_archive_used": false,
+        "functional_coordinate_contract.source_outcomes_used": false,
+        "functional_coordinate_contract.target_oracle_used": false,
+        "functional_coordinate_contract.target_outcomes_used_to_define_coordinate": false,
+        "backend_contract.target_oracle_used": false
+      },
+      "unique_key_fields": [
+        "regime", "target_seed", "nominal_dimension", "arm",
+        "matrix_configuration_id"
+      ]
+    },
+    {
+      "name": "target_only_functional_scbo_equal_preverification_cost",
+      "relative_glob": "or_review_functional_scbo_v2/equal_preverification_cost/**/cell*.json",
+      "expected_count": 160,
+      "contract_ids": ["target_only_functional_profile_scbo_v1"],
+      "required_values": {
+        "status": "ok",
+        "task_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "functional_method_commit": "d1078e3ebe657ebe938e8e470d465143c977ae41",
+        "execution_commit": "b9eef508b6971e591b69266474e95e4c9b8341a8",
+        "functional_coordinate_contract.source_archive_used": false,
+        "functional_coordinate_contract.source_outcomes_used": false,
+        "functional_coordinate_contract.target_oracle_used": false,
+        "functional_coordinate_contract.target_outcomes_used_to_define_coordinate": false,
+        "backend_contract.target_oracle_used": false
+      },
+      "unique_key_fields": [
+        "regime", "target_seed", "nominal_dimension", "arm",
+        "matrix_configuration_id"
+      ]
+    }
+  ]
+}
