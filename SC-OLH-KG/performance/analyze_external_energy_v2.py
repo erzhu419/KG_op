@@ -19,11 +19,16 @@ from performance.statistical_inference import (
 
 
 CONTRACT_ID = "opsd_region_heldout_profile_design_v2"
+ACCEPTED_CONTRACT_IDS = {
+    CONTRACT_ID,
+    "opsd_region_heldout_functional_scbo_v1",
+}
 CONTROLS = (
     "generic_dct_maximin",
     "random_low_frequency",
     "natural_constant_grid",
     "raw_sobol",
+    "target_only_dct_space_scbo",
 )
 
 
@@ -61,7 +66,10 @@ def analyze(paths):
         except Exception as exc:
             failures.append(f"{path}: unreadable: {exc}")
             continue
-        if row.get("contract_id") != CONTRACT_ID or row.get("status") != "ok":
+        if (
+            row.get("contract_id") not in ACCEPTED_CONTRACT_IDS
+            or row.get("status") != "ok"
+        ):
             failures.append(f"{path}: wrong contract or status")
             continue
         key = (row["target_market"], int(row["target_seed"]), row["arm"])

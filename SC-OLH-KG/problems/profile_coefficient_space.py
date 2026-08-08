@@ -52,8 +52,17 @@ class CosineCoefficientProfileProblem:
             raise ValueError("schema_mode must be declared or schema_blind")
         if self.L < 2:
             raise ValueError("lattice_level must be at least two")
-        if not hasattr(target, "nodes"):
-            raise TypeError("target problem must expose ordered profile nodes")
+        self.nodes = np.asarray(
+            getattr(
+                target,
+                "nodes",
+                (np.arange(int(target.d), dtype=float) + 0.5)
+                / float(target.d),
+            ),
+            dtype=float,
+        ).reshape(-1)
+        if len(self.nodes) != int(target.d):
+            raise ValueError("target profile grid dimension mismatch")
         self.problem_name = (
             f"CosineCoefficient[{target.problem_name}:K{self.coefficient_count}]"
         )
@@ -82,7 +91,7 @@ class CosineCoefficientProfileProblem:
         unit = self.normalize(x)
         lower, upper = self.level_bounds
         profile = np.full(
-            len(self.target.nodes),
+            len(self.nodes),
             lower + (upper - lower) * float(unit[0]),
             dtype=float,
         )
@@ -95,13 +104,15 @@ class CosineCoefficientProfileProblem:
             profile += (
                 math.sqrt(2.0)
                 * amplitude
-                * np.cos(np.pi * frequency * self.target.nodes)
+                * np.cos(np.pi * frequency * self.nodes)
             )
         return np.clip(profile, 0.0, 1.0)
 
     def raw_point(self, x):
         semantic = self.semantic_profile(x)
-        if self.schema_mode == "declared":
+        if self.schema_mode == "declared" and hasattr(
+            self.target, "encode_semantic_profile"
+        ):
             return tuple(self.target.encode_semantic_profile(semantic))
         return tuple(self.target.continuous_to_int(semantic))
 

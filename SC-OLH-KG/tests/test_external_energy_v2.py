@@ -19,6 +19,12 @@ from performance.benchmark_external_energy_v2 import (  # noqa: E402
     region_heldout_source_markets,
     run_task,
 )
+from performance.benchmark_external_energy_functional_scbo import (  # noqa: E402
+    run_task as run_functional_task,
+)
+from performance.run_external_energy_functional_scbo_matrix import (  # noqa: E402
+    build_cells as build_functional_cells,
+)
 from performance.run_external_energy_v2_matrix import (  # noqa: E402
     build_target_cells,
     design_filename,
@@ -171,6 +177,53 @@ def test_energy_v2_analysis_separates_market_region_and_seed(tmp_path):
     assert payload["market_summaries"][0]["median_wall_time_sec"] == 2.5
 
 
+def test_energy_analysis_accepts_separate_functional_scbo_contract(tmp_path):
+    paths = []
+    for arm, contract, objective in (
+        (
+            "source_atlas",
+            "opsd_region_heldout_profile_design_v2",
+            0.1,
+        ),
+        (
+            "target_only_dct_space_scbo",
+            "opsd_region_heldout_functional_scbo_v1",
+            0.2,
+        ),
+    ):
+        row = {
+            "contract_id": contract,
+            "status": "ok",
+            "target_market": "DK_2",
+            "target_region": "denmark",
+            "target_seed": 0,
+            "arm": arm,
+            "independently_certified": True,
+            "false_certificate": False,
+            "objective_if_certified": objective,
+            "source_calls": 768 if arm == "source_atlas" else 0,
+            "target_search_calls": 13,
+            "verification_calls": 80,
+            "all_in_calls_unamortized": (
+                861 if arm == "source_atlas" else 93),
+            "all_in_budget_cap_unamortized": (
+                1021 if arm == "source_atlas" else 253),
+            "all_in_calls_amortized": (
+                131.4 if arm == "source_atlas" else 93.0),
+            "all_in_budget_cap_amortized": (
+                291.4 if arm == "source_atlas" else 253.0),
+            "wall_time_sec": 2.5,
+        }
+        path = tmp_path / f"{arm}.json"
+        path.write_text(json.dumps(row), encoding="utf-8")
+        paths.append(path)
+    payload = analyze(paths)
+    assert payload["status"] == "complete"
+    comparison = payload["paired_algorithmic_repeatability"][0]
+    assert comparison["second"] == "target_only_dct_space_scbo"
+    assert comparison["first_wins"] == 1
+
+
 def test_energy_v2_registered_matrix_has_450_cells():
     cells = build_target_cells()
     assert len(cells) == 450
@@ -178,6 +231,42 @@ def test_energy_v2_registered_matrix_has_450_cells():
         (row["target_market"], row["target_seed"], row["arm"])
         for row in cells
     }) == 450
+    functional = build_functional_cells()
+    assert len(functional) == 90
+    assert len({
+        (row["target_market"], row["target_seed"])
+        for row in functional
+    }) == 90
+
+
+def test_energy_functional_scbo_is_source_free_and_uses_energy_verifier(
+    tmp_path,
+):
+    data = tmp_path / "energy_suite.npz"
+    _write_energy_suite(data)
+    result = run_functional_task(
+        data_path=data,
+        target_market="DK_2",
+        target_seed=0,
+        dimension=24,
+        n0=4,
+        N=5,
+        coefficient_count=3,
+        verification_budgets=(8, 8, 8),
+        raw_samples=8,
+        num_restarts=2,
+        maxiter=10,
+        batch_candidates=16,
+        ts_candidates=32,
+    )
+    assert result["status"] == "ok"
+    assert result["source_calls"] == 0
+    assert result["target_outcomes_used_to_define_coordinate"] is False
+    assert result["backend_contract"]["target_oracle_used"] is False
+    assert result["certificate_scope"] == (
+        "fixed_empirical_distribution_over_admissible_window_start_indices")
+    assert result["all_in_calls_unamortized"] == (
+        result["target_search_calls"] + result["verification_calls"])
 
 
 def test_energy_v2_matrix_freezes_design_before_target_execution(tmp_path):
