@@ -517,12 +517,15 @@ class RandomizedOrderedProfileProblem:
             "safe_mass_calibration_quantile": self.safe_mass,
             "chance_alpha": self.alpha,
             "grid_declared": True,
-            "channel_permutation_declared": bool(
+            "channel_permutation_present": bool(
                 PROFILE_STRESS_REGIMES[self.regime]["permuted"]),
+            "exact_semantic_to_raw_index_map_declared": True,
+            "declared_schema_strength": (
+                "complete semantic profile grid and semantic-to-raw map"),
             "hidden_basis_used_by_algorithm": False,
             "hidden_centers_used_by_algorithm": False,
             "hidden_radius_used_by_algorithm": False,
-            "task_seed_used_by_algorithm": False,
+            "latent_task_generation_seed_exposed_to_frontend": False,
             "target_oracle_available_to_algorithm": False,
         }
 

@@ -20,6 +20,7 @@ from performance.run_profile_stress_matrix import (  # noqa: E402
     build_primary_cells,
     build_schema_descriptor_cells,
     build_sensitivity_cells,
+    derived_design_seed,
     derived_target_seed,
     run_matrix,
 )
@@ -138,6 +139,10 @@ def test_confirmatory_matrix_seed_and_sharding_are_deterministic(tmp_path):
         regimes=("aligned_low_frequency",),
     )
     assert cells[0]["target_seed"] == seed
+    design_seed = derived_design_seed(
+        "bad2d97", "aligned_low_frequency", 0)
+    assert cells[0]["design_seed"] == design_seed
+    assert design_seed != seed
     summary = run_matrix(
         output_dir=tmp_path,
         freeze_commit="bad2d97",
@@ -156,6 +161,12 @@ def test_confirmatory_matrix_seed_and_sharding_are_deterministic(tmp_path):
     cell = next(tmp_path.glob("cell*.json"))
     assert json.loads(cell.read_text(encoding="utf-8"))[
         "evaluation_implementation_commit"] == "evaluation-patch"
+    payload = json.loads(cell.read_text(encoding="utf-8"))
+    assert payload["design_seed"] == design_seed
+    contract = payload["target_information_contract"]
+    assert contract["exact_semantic_to_raw_index_map_declared"] is True
+    assert contract[
+        "latent_task_generation_seed_exposed_to_frontend"] is False
 
 
 def test_registered_sensitivity_and_equal_cost_cells_are_paired():

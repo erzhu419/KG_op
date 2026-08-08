@@ -34,6 +34,15 @@ def derived_target_seed(freeze_commit, regime, replicate):
     return int(hashlib.sha256(token).hexdigest()[:8], 16) % 1_000_000_000
 
 
+def derived_design_seed(freeze_commit, regime, replicate):
+    """Domain-separate algorithm RNG from latent target generation."""
+
+    token = (
+        f"{freeze_commit}:algorithm-design:{regime}:{int(replicate)}"
+    ).encode("utf-8")
+    return int(hashlib.sha256(token).hexdigest()[:8], 16) % 1_000_000_000
+
+
 def build_primary_cells(
     *,
     freeze_commit,
@@ -47,10 +56,13 @@ def build_primary_cells(
         for regime in regimes:
             for replicate in range(int(task_count)):
                 seed = derived_target_seed(freeze_commit, regime, replicate)
+                design_seed = derived_design_seed(
+                    freeze_commit, regime, replicate)
                 for arm in arms:
                     cells.append({
                         "regime": regime,
                         "target_seed": seed,
+                        "design_seed": design_seed,
                         "replicate_index": replicate,
                         "arm": arm,
                         "dimension": dimension,
@@ -76,10 +88,13 @@ def _paired_task_cells(
         for regime in regimes:
             for replicate in range(int(task_count)):
                 seed = derived_target_seed(freeze_commit, regime, replicate)
+                design_seed = derived_design_seed(
+                    freeze_commit, regime, replicate)
                 for arm in arms:
                     cells.append({
                         "regime": regime,
                         "target_seed": seed,
+                        "design_seed": design_seed,
                         "replicate_index": replicate,
                         "arm": arm,
                         "dimension": int(dimension),
@@ -140,9 +155,12 @@ def build_equal_preverification_cost_cells(
     for regime in regimes:
         for replicate in range(int(task_count)):
             seed = derived_target_seed(freeze_commit, regime, replicate)
+            design_seed = derived_design_seed(
+                freeze_commit, regime, replicate)
             cells.append({
                 "regime": regime,
                 "target_seed": seed,
+                "design_seed": design_seed,
                 "replicate_index": replicate,
                 "arm": "source_atlas",
                 "dimension": int(dimension),
@@ -159,6 +177,7 @@ def build_equal_preverification_cost_cells(
                 cells.append({
                     "regime": regime,
                     "target_seed": seed,
+                    "design_seed": design_seed,
                     "replicate_index": replicate,
                     "arm": arm,
                     "dimension": int(dimension),
@@ -228,6 +247,7 @@ def _existing_ok(
         and evaluation_matches
         and payload.get("matrix_configuration_id")
             == str(cell.get("configuration_id", "primary"))
+        and int(payload.get("design_seed", -1)) == int(cell["design_seed"])
     )
 
 
@@ -249,6 +269,7 @@ def _run_cell(
     run_arguments = {
         "regime": cell["regime"],
         "target_seed": cell["target_seed"],
+        "design_seed": cell["design_seed"],
         "arm": cell["arm"],
         "dimension": cell["dimension"],
         "schema_mode": cell["schema_mode"],
