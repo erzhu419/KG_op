@@ -490,6 +490,8 @@ def run_task(
         "descriptor_mode": descriptor_mode,
         "nominal_dimension": int(target.d),
         "effective_rank": int(target.effective_rank),
+        "active_rank_override": (
+            None if active_rank is None else int(active_rank)),
         "alpha": float(target.alpha),
         "safe_mass": float(target.safe_mass),
         "n0": n0,

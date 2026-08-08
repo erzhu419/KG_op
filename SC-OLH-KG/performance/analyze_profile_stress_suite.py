@@ -31,6 +31,7 @@ PRIMARY_ARMS = (
 
 
 CONFIGURATION_DEFAULTS = {
+    "active_rank_override": None,
     "alpha": 0.05,
     "safe_mass": 0.08,
     "n0": 10,
@@ -59,6 +60,13 @@ def _configuration_payload(configuration):
     return dict(zip(CONFIGURATION_DEFAULTS, configuration))
 
 
+def _stable_sort_key(value):
+    """Order mixed optional configuration values deterministically."""
+
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), default=str)
+
+
 def _one_factor_sensitivity(configuration):
     payload = _configuration_payload(configuration)
     changed = [
@@ -67,9 +75,13 @@ def _one_factor_sensitivity(configuration):
     ]
     if not changed:
         return "baseline", None
+    if set(changed) == {"n0", "N"} and payload["N"] == payload["n0"]:
+        return "n0", payload["n0"]
     if len(changed) != 1:
         return None, None
     axis = changed[0]
+    if axis == "active_rank_override":
+        return "active_rank", payload[axis]
     return axis, payload[axis]
 
 
@@ -165,7 +177,7 @@ def _inference_family(schema, descriptor, configuration, *, prefix):
     if (
         configuration == default_configuration
         and schema == "declared"
-        and descriptor == "conditioned"
+        and descriptor == "domain_blind"
     ):
         scope = "primary"
     elif configuration == default_configuration:
@@ -214,7 +226,8 @@ def analyze(paths):
         )
         groups.setdefault(key, []).append(row)
     summaries = []
-    for key, group in sorted(groups.items()):
+    for key, group in sorted(
+        groups.items(), key=lambda item: _stable_sort_key(item[0])):
         regime, arm, schema, descriptor, dimension, rank, configuration = key
         initial_regrets = [
             float(_initial_regret(row))
@@ -317,7 +330,7 @@ def analyze(paths):
             _configuration(row),
         )
         for row in rows
-    })
+    }, key=_stable_sort_key)
     for context in contexts:
         context_rows = [
             row for row in rows
@@ -366,7 +379,7 @@ def analyze(paths):
             int(row["nominal_dimension"]), _configuration(row),
         )
         for row in rows
-    })
+    }, key=_stable_sort_key)
     for macro_index, context in enumerate(macro_contexts):
         context_rows = [
             row for row in rows
@@ -413,7 +426,8 @@ def analyze(paths):
     )
 
     configuration_macro = []
-    configurations = sorted({_configuration(row) for row in rows})
+    configurations = sorted(
+        {_configuration(row) for row in rows}, key=_stable_sort_key)
     for configuration in configurations:
         for arm in PRIMARY_ARMS:
             arm_summaries = [

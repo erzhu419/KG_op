@@ -17,7 +17,7 @@ def _row(arm, seed, *, feasible, certified, loss):
         "target_seed": seed,
         "arm": arm,
         "schema_mode": "declared",
-        "descriptor_mode": "conditioned",
+        "descriptor_mode": "domain_blind",
         "nominal_dimension": 1000,
         "effective_rank": 8,
         "contains_true_feasible": feasible,
@@ -99,6 +99,26 @@ def test_analysis_never_pools_registered_sensitivity_settings(tmp_path):
         row["sensitivity_axis"]
         for row in payload["one_factor_sensitivity_curves"]
     } == {"alpha"}
+
+
+def test_analysis_labels_rank_and_coupled_n0_budget_as_ofat(tmp_path):
+    rank = _row(
+        "source_atlas", 0, feasible=True, certified=True, loss=0.02)
+    rank.update({"active_rank_override": 16, "effective_rank": 16})
+    n0 = _row(
+        "source_atlas", 1, feasible=True, certified=True, loss=0.03)
+    n0.update({"n0": 20, "N": 20})
+    paths = []
+    for name, row in (("rank", rank), ("n0", n0)):
+        path = tmp_path / f"{name}.json"
+        path.write_text(json.dumps(row), encoding="utf-8")
+        paths.append(path)
+
+    payload = analyze(paths)
+    assert {
+        row["sensitivity_axis"]
+        for row in payload["one_factor_sensitivity_curves"]
+    } == {"active_rank", "n0"}
 
 
 def test_analysis_reports_cell_wall_time_without_making_it_an_endpoint(tmp_path):
