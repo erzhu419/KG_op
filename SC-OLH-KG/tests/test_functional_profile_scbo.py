@@ -112,6 +112,16 @@ def test_functional_matrix_contracts_have_registered_costs():
         "cell_count"] == len(build_equal_preverification_cost_cells(
             task_freeze_commit=manifest["task_seed_freeze_commit"]))
 
+    repaired = json.loads((
+        ROOT / "performance" / "manifests"
+        / "or_review_functional_profile_scbo_v2.json"
+    ).read_text(encoding="utf-8"))
+    assert repaired["v1_failure_audit"][
+        "performance_outcomes_observed_before_v2_freeze"] is False
+    assert repaired["execution_contract"]["cell_error_policy"] == (
+        "nonzero shard exit; no DONE marker")
+    assert repaired["matrices"] == manifest["matrices"]
+
 
 def test_functional_matrix_terminal_status_is_fail_closed(capsys):
     assert _emit_terminal_status({"error_count": 2}) is False

@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_functional_profile_scbo_v2",
+  "status": "frozen_not_yet_interpreted",
+  "parent_contract": "or_review_functional_profile_scbo_v1",
+  "task_seed_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "functional_method_commit": "d1078e3ebe657ebe938e8e470d465143c977ae41",
+  "execution_commit": "4cdb2e86827bbe18ea240b6cebde9b764d7148fb",
+  "result_run_id": "or_review_functional_scbo_v2",
+  "v1_failure_audit": {
+    "primary_cells_started": 0,
+    "rank_sensitivity_cells_started": 0,
+    "equal_preverification_cost_cells_attempted": 160,
+    "equal_preverification_cost_cells_with_target_evaluations": 0,
+    "equal_preverification_cost_cell_errors": 160,
+    "single_error_type": "ImportError",
+    "cause": "The scheduler command omitted the existing botorch_overlay_py310 path.",
+    "performance_outcomes_observed_before_v2_freeze": false,
+    "v1_results_eligible_for_inference": false
+  },
+  "method_contract": {
+    "arm": "target_only_dct_space_scbo",
+    "source_archive_used": false,
+    "source_outcomes_used": false,
+    "target_oracle_used_before_frozen_deployment": false,
+    "coordinate_family": "level plus cosine frequencies 1 through K",
+    "coefficient_count_primary": 8,
+    "coefficient_scale": 0.25,
+    "frequency_amplitude_decay": "inverse_sqrt_frequency",
+    "level_bounds": [0.05, 0.95],
+    "coefficient_lattice": 100,
+    "optimizer": "canonical BoTorch SCBO constrained posterior sampling",
+    "optimizer_initial_design": "target-only scrambled Sobol in coefficient space",
+    "terminal_shortlist": "frozen posterior objective challenger plus posterior-safe support",
+    "terminal_verifier": "candidate-wise independent binomial all-success verifier",
+    "verification_budgets": [80, 80, 80],
+    "familywise_delta": 0.05,
+    "raw_samples": 1024,
+    "num_restarts": 10,
+    "maxiter": 100,
+    "batch_candidates": 128,
+    "torch_device": "cpu"
+  },
+  "matrices": {
+    "primary": {
+      "dimensions": [200, 1000, 10000],
+      "registered_regimes": 8,
+      "independent_tasks_per_regime": 20,
+      "N": 13,
+      "n0": 10,
+      "coefficient_count": 8,
+      "cell_count": 480
+    },
+    "rank_sensitivity": {
+      "dimensions": [1000],
+      "registered_regimes": 8,
+      "independent_tasks_per_regime": 20,
+      "N": 13,
+      "n0": 10,
+      "coefficient_counts": [4, 8, 16],
+      "cell_count": 480
+    },
+    "equal_preverification_cost": {
+      "dimensions": [1000],
+      "registered_regimes": 8,
+      "independent_tasks_per_regime": 20,
+      "N": 394,
+      "n0": 10,
+      "coefficient_count": 8,
+      "comparison": "384 source plus 10 target calls for source atlas versus 394 target-only functional SCBO calls",
+      "cell_count": 160
+    }
+  },
+  "endpoint_contract": {
+    "primary": "independently certified deployed policy is truly feasible",
+    "search_best_may_substitute_for_deployed_policy": false,
+    "finite_audit_oracle_role": "post-run evaluation only",
+    "report_initial_search_and_deployment_separately": true
+  },
+  "interpretation_contract": {
+    "source_atlas_wins": "Supports source scoring beyond generic low-frequency functional optimization within the registered family.",
+    "functional_scbo_matches_or_wins": "Narrow the source-learning claim to structural functional compression.",
+    "adverse_regimes_fail": "Retain the negative regimes and restrict the stated scope.",
+    "post_outcome_retuning_allowed": false
+  },
+  "execution_contract": {
+    "allowed_nodes": ["node001", "node002", "node003", "node004", "node005", "node006"],
+    "python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python",
+    "pythonpath_prefix": "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310",
+    "validated_versions": {
+      "torch": "2.5.1+cu121",
+      "botorch": "0.16.1",
+      "gpytorch": "1.15.2"
+    },
+    "gpu_required": false,
+    "cell_error_policy": "nonzero shard exit; no DONE marker",
+    "completed_checkpoints_removed": true,
+    "checkpoint_files_synced_to_local": false
+  }
+}

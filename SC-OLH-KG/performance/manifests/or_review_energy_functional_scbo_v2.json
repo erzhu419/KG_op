@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_energy_functional_scbo_v2",
+  "status": "frozen_not_yet_interpreted",
+  "parent_contract": "or_review_energy_functional_scbo_v1",
+  "parent_energy_contract": "opsd_region_heldout_profile_design_v2",
+  "confirmatory_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "functional_method_commit": "d1078e3ebe657ebe938e8e470d465143c977ae41",
+  "execution_commit": "4cdb2e86827bbe18ea240b6cebde9b764d7148fb",
+  "result_run_id": "or_review_energy_functional_scbo_v2",
+  "freeze_timing": {
+    "energy_v2_target_cells_started": 0,
+    "energy_v2_target_cells_completed": 0,
+    "energy_functional_v1_cells_started": 0,
+    "new_region_holdout_outcomes_known": false
+  },
+  "purpose": "Distinguish source ranking from source-free adaptive optimization in the same low-frequency function space on the independent OPSD region holdout.",
+  "method_contract": {
+    "arm": "target_only_dct_space_scbo",
+    "source_archive_used": false,
+    "source_outcomes_used": false,
+    "coordinate_family": "level plus cosine frequencies 1 through 8",
+    "optimizer": "canonical BoTorch SCBO constrained posterior sampling",
+    "optimizer_initial_design": "target-only scrambled Sobol in coefficient space",
+    "target_search_calls": 13,
+    "initial_calls": 10,
+    "source_calls": 0,
+    "terminal_verifier": "frozen candidate-wise all-success binomial verifier on the 2019 empirical-window distribution",
+    "verification_budgets": [80, 80, 80],
+    "familywise_delta": 0.05
+  },
+  "matrix": {
+    "markets": 18,
+    "geographic_regions": 5,
+    "algorithmic_seeds_per_market": 5,
+    "cell_count": 90,
+    "nominal_dimension": 1000,
+    "search_year": 2018,
+    "verification_year": 2019
+  },
+  "comparison_contract": {
+    "primary": "source_atlas versus target_only_dct_space_scbo",
+    "same_target_markets": true,
+    "same_algorithmic_seeds": true,
+    "same_target_search_budget": true,
+    "same_terminal_verifier": true,
+    "source_archive_cost_reported_separately": true,
+    "geographic_region_is_primary_generalization_unit": true,
+    "seed_is_only_algorithmic_repeatability_unit": true
+  },
+  "interpretation_contract": {
+    "source_atlas_wins": "Supports source scoring beyond generic functional optimization on the registered region holdout.",
+    "functional_scbo_matches_or_wins": "Narrow the external claim to low-frequency functional compression.",
+    "both_fail": "Report the negative external gate without energy-specific repair.",
+    "post_outcome_energy_tuning_allowed": false
+  },
+  "execution_contract": {
+    "allowed_nodes": ["node001", "node002", "node003", "node004", "node005", "node006"],
+    "python": "/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python",
+    "pythonpath_prefix": "/home/zhengliang01/scheduleurm_work/python_pkgs/botorch_overlay_py310",
+    "validated_versions": {
+      "torch": "2.5.1+cu121",
+      "botorch": "0.16.1",
+      "gpytorch": "1.15.2"
+    },
+    "gpu_required": false,
+    "cell_error_policy": "nonzero shard exit; no DONE marker",
+    "completed_checkpoints_removed": true,
+    "checkpoint_files_synced_to_local": false
+  }
+}

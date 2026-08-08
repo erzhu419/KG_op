@@ -245,6 +245,15 @@ def test_energy_v2_registered_matrix_has_450_cells():
     assert manifest["matrix"]["cell_count"] == len(functional)
     assert manifest["comparison_contract"][
         "same_terminal_verifier"] is True
+    repaired = json.loads((
+        ROOT / "performance" / "manifests"
+        / "or_review_energy_functional_scbo_v2.json"
+    ).read_text(encoding="utf-8"))
+    assert repaired["matrix"] == manifest["matrix"]
+    assert repaired["freeze_timing"][
+        "new_region_holdout_outcomes_known"] is False
+    assert repaired["execution_contract"]["cell_error_policy"] == (
+        "nonzero shard exit; no DONE marker")
 
 
 def test_energy_functional_matrix_terminal_status_is_fail_closed(capsys):
