@@ -25,6 +25,9 @@ REMOTE_PYTHON = Path(
     "scomp-py310/bin/python"
 )
 CPU_NODES = tuple(f"node{index:03d}" for index in range(1, 7))
+DEFAULT_RESULT_RUN_ID = "or_review_v1"
+DEFAULT_SIGNATURE_VERSION = "or_review_v1_retry"
+DEFAULT_EVALUATION_COMMIT = "legacy_unspecified"
 MATRIX_SPECS = {
     "primary": (2880, "profile_primary", None),
     "sensitivity": (8640, "profile_sensitivity", "1000"),
@@ -83,6 +86,12 @@ def _stage_excludes():
 
 def build_specs(args, registration):
     freeze_commit = str(registration["method_freeze_commit"])
+    result_run_id = str(getattr(
+        args, "result_run_id", DEFAULT_RESULT_RUN_ID))
+    signature_version = str(getattr(
+        args, "signature_version", DEFAULT_SIGNATURE_VERSION))
+    evaluation_commit = str(getattr(
+        args, "evaluation_commit", DEFAULT_EVALUATION_COMMIT))
     requested = _csv(args.matrices)
     unknown = set(requested) - set(MATRIX_SPECS)
     if unknown:
@@ -98,11 +107,11 @@ def build_specs(args, registration):
             _partition(total, args.shards)
         ):
             local_output_dir = (
-                ROOT / "SC-OLH-KG/results" / args.result_run_id
+                ROOT / "SC-OLH-KG/results" / result_run_id
                 / directory / f"shard_{shard_index}"
             )
             output_dir = (
-                deploy_root / "SC-OLH-KG/results" / args.result_run_id
+                deploy_root / "SC-OLH-KG/results" / result_run_id
                 / directory / f"shard_{shard_index}"
             )
             command = [
@@ -123,7 +132,7 @@ def build_specs(args, registration):
                 "--freeze-commit",
                 freeze_commit,
                 "--evaluation-commit",
-                str(args.evaluation_commit),
+                evaluation_commit,
                 "--matrix",
                 matrix,
                 "--start",
@@ -143,7 +152,7 @@ def build_specs(args, registration):
                 "cmd": f"{shlex.join(command)} && echo DONE",
                 "cwd": str(deploy_root),
                 "signature": (
-                    f"KG_op/{args.signature_version}/{matrix}/"
+                    f"KG_op/{signature_version}/{matrix}/"
                     f"shard{shard_index:02d}/{start}-{stop}"
                 ),
                 "project": "KG-SYNTH",
@@ -168,11 +177,17 @@ def build_specs(args, registration):
 
 def build_preflight_spec(args, registration):
     freeze_commit = str(registration["method_freeze_commit"])
+    result_run_id = str(getattr(
+        args, "result_run_id", DEFAULT_RESULT_RUN_ID))
+    signature_version = str(getattr(
+        args, "signature_version", DEFAULT_SIGNATURE_VERSION))
+    evaluation_commit = str(getattr(
+        args, "evaluation_commit", DEFAULT_EVALUATION_COMMIT))
     deploy_root = Path(args.deploy)
     local_output_dir = (
-        ROOT / "SC-OLH-KG/results" / args.result_run_id / "preflight")
+        ROOT / "SC-OLH-KG/results" / result_run_id / "preflight")
     output_dir = (
-        deploy_root / "SC-OLH-KG/results" / args.result_run_id / "preflight")
+        deploy_root / "SC-OLH-KG/results" / result_run_id / "preflight")
     command = [
         "env",
         "LC_ALL=C",
@@ -191,7 +206,7 @@ def build_preflight_spec(args, registration):
         "--freeze-commit",
         freeze_commit,
         "--evaluation-commit",
-        str(args.evaluation_commit),
+        evaluation_commit,
         "--matrix",
         "primary",
         "--start",
@@ -206,7 +221,7 @@ def build_preflight_spec(args, registration):
         "cmd": f"{shlex.join(command)} && echo DONE",
         "cwd": str(deploy_root),
         "signature": (
-            f"KG_op/{args.signature_version}/preflight/absolute-python"),
+            f"KG_op/{signature_version}/preflight/absolute-python"),
         "project": "KG-SYNTH",
         "vram": 0,
         "cpu": 1,
@@ -253,11 +268,11 @@ def main():
     parser.add_argument("--shards", type=int, default=6)
     parser.add_argument("--workers", type=int, default=128)
     parser.add_argument("--ram-mb", type=int, default=65536)
-    parser.add_argument("--result-run-id", default="or_review_v1")
-    parser.add_argument("--signature-version", default="or_review_v1_retry")
+    parser.add_argument("--result-run-id", default=DEFAULT_RESULT_RUN_ID)
+    parser.add_argument("--signature-version", default=DEFAULT_SIGNATURE_VERSION)
     parser.add_argument(
         "--evaluation-commit",
-        default="legacy_unspecified",
+        default=DEFAULT_EVALUATION_COMMIT,
         help="Commit implementing post-run metrics; does not change the method freeze.",
     )
     parser.add_argument(

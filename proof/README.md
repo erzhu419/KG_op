@@ -155,23 +155,27 @@ mathlib and its cache; later builds should be fast.
   not an artifact of the proof technique.
 - `SCOLHKG/Real/ProfileCoordinateConsistency.lean`: controls the implemented
   weighted finite cosine coordinates and the continuous profile coefficients
-  by the profile reconstruction sup error, exposes the explicit `C / d`
-  grid-rate bridge, and proves that the registered frequency penalty cannot
-  amplify coordinate error. Python integrates each cosine basis exactly over
-  each Voronoi cell, so its coordinate is the continuous coefficient of the
-  piecewise-constant reconstruction. The remaining `C / d` premise is the
-  declared profile-reconstruction regularity condition.
+  by the profile reconstruction sup error and proves the explicit
+  `L * basisBound / (2d)` rate for an `L`-Lipschitz profile sampled on a regular
+  midpoint/Voronoi grid. Python integrates each cosine basis exactly over each
+  Voronoi cell, so its coordinate is the continuous coefficient of the
+  piecewise-constant reconstruction. Irregular grids require their observed
+  maximum Voronoi radius in place of `1/(2d)`; no regular-grid rate is claimed
+  for them. The registered frequency penalty cannot amplify coordinate error.
 - `SCOLHKG/Real/FarthestFirstKCenter.lean`: proves the metric factor-two
-  Gonzalez guarantee from an auditable finite witness/assignment/separation
-  certificate. The Python farthest-first implementation is tested against
-  that certificate; Lean does not execute the NumPy loop.
+  Gonzalez guarantee for every competing center set of no larger cardinality
+  from an auditable `k+1` witness/separation certificate. Python exports and
+  validates that certificate for every positive-radius run; a separate Lean
+  lemma covers the zero-radius optimum. Lean does not execute the NumPy loop.
 - `SCOLHKG/Real/SourceRankRecovery.lean` and
   `SCOLHKG/Measure/SourceRankRecovery.lean`: uniform replicated-source score
   error recovers every ordering separated by twice its error radius. The
-  deterministic bridge separately propagates mean and scale errors into the
-  empirical chance margin, while a finite-profile union bound supplies the
-  source-mean concentration event. Scale-error concentration remains tied to
-  the registered residual-square tail contract.
+  deterministic bridge proves the finite-sum identity for NumPy's `ddof=1`
+  sample variance, propagates replicated-mean and residual-second-moment error
+  through the variance floor and square root, and then bounds the empirical
+  chance-margin error. A finite-profile union bound supplies the source-mean
+  event; the scale term uses the registered Gaussian-square/sub-exponential
+  residual-tail contract rather than treating three replications as exact.
 - `SCOLHKG/Measure/TaskAtlasCoverage.lean`: calibrates a frozen atlas on
   independent held-out tasks from one declared meta-distribution. Training
   tasks cannot be reused as calibration tasks in this theorem.
@@ -946,17 +950,21 @@ Implemented in Lean4 without `sorry`, `admit`, or `axiom`:
      cardinality misses some nonempty target feasible set, so unconditional
      cross-domain finite-budget coverage is impossible.
 168. A weighted finite profile coordinate changes by at most its basis mass
-     times the profile reconstruction sup error; a declared `C / d`
-     reconstruction premise therefore gives the same inverse-grid rate.
+     times the profile reconstruction sup error. For an `L`-Lipschitz profile
+     sampled on the regular midpoint/Voronoi grid, Lean derives the explicit
+     coefficient error `L * basisBound / (2d)` rather than assuming `C / d`.
 169. Dividing retained coordinates by a frequency penalty of at least one
      cannot amplify coordinate error.
-170. A finite Gonzalez witness set that satisfies the assignment and
-     pairwise-separation certificate has cover radius at most twice the
-     certified optimal radius.
+170. A positive-radius Gonzalez run exports `k+1` pairwise-separated
+     witnesses; this certificate implies that its cover radius is at most
+     twice that of every competing set with at most `k` centers. A zero-radius
+     cover is already optimal.
 171. Uniform source-score error `r` preserves every source ordering whose true
      gap exceeds `2r`, including a uniquely separated source minimizer.
 172. Independent sub-Gaussian source replications give a finite-library union
-     bound for the uniform score-error event.
+     bound for the uniform mean-error event. For `n>1`, the proved finite-sum
+     identity for `ddof=1` variance converts mean and residual-square radii into
+     an explicit chance-margin radius, including the registered variance floor.
 173. Independent held-out task hits obey the exact all-success binomial law;
      a false lower coverage claim is bounded by the preregistered error spend.
 174. None of 168--173 yields unconditional target coverage: they expose the

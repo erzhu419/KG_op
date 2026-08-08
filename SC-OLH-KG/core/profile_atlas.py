@@ -221,6 +221,90 @@ def covering_radius(coordinates, center_indices):
     return float(np.max(np.min(distances, axis=1)))
 
 
+def gonzalez_witness_certificate(coordinates, center_indices, *, tolerance=1e-10):
+    """Return a finite, directly checkable farthest-first 2-approx certificate.
+
+    For a nonzero covering radius, the selected ``k`` centers plus one farthest
+    library point form ``k + 1`` witnesses separated by at least the achieved
+    radius.  This is exactly the finite certificate consumed by the Lean
+    factor-two theorem.  A zero-radius cover is recorded as a trivial optimum.
+    """
+
+    coordinates = np.asarray(coordinates, dtype=float)
+    centers = tuple(int(index) for index in center_indices)
+    tolerance = float(tolerance)
+    if coordinates.ndim != 2 or len(coordinates) < 1:
+        raise ValueError("coordinates must be a nonempty matrix")
+    if not np.all(np.isfinite(coordinates)):
+        raise ValueError("coordinates must be finite")
+    if (
+        not centers
+        or len(set(centers)) != len(centers)
+        or min(centers) < 0
+        or max(centers) >= len(coordinates)
+    ):
+        raise ValueError("center indices must be unique and valid")
+    if tolerance < 0.0 or not np.isfinite(tolerance):
+        raise ValueError("certificate tolerance must be finite and nonnegative")
+
+    distance_to_centers = np.linalg.norm(
+        coordinates[:, None, :] - coordinates[np.asarray(centers)][None, :, :],
+        axis=2,
+    )
+    nearest = np.min(distance_to_centers, axis=1)
+    witness_index = int(np.argmax(nearest))
+    radius = float(nearest[witness_index])
+    if radius <= tolerance:
+        return {
+            "contract_id": "gonzalez_farthest_first_witness_v1",
+            "status": "zero_radius_optimum",
+            "valid": True,
+            "center_count": int(len(centers)),
+            "witness_count": int(len(centers)),
+            "farthest_witness_index": witness_index,
+            "covering_radius": radius,
+            "minimum_witness_pair_distance": 0.0,
+            "minimum_insertion_radius": 0.0,
+            "tolerance": tolerance,
+        }
+
+    insertion_radii = []
+    for order in range(1, len(centers)):
+        previous = np.asarray(centers[:order], dtype=int)
+        insertion_radii.append(float(np.min(np.linalg.norm(
+            coordinates[previous] - coordinates[centers[order]][None, :],
+            axis=1,
+        ))))
+    witnesses = centers + (witness_index,)
+    distinct = len(set(witnesses)) == len(witnesses)
+    witness_coordinates = coordinates[np.asarray(witnesses, dtype=int)]
+    pairwise = np.linalg.norm(
+        witness_coordinates[:, None, :] - witness_coordinates[None, :, :],
+        axis=2,
+    )
+    upper = pairwise[np.triu_indices(len(witnesses), k=1)]
+    minimum_pairwise = float(np.min(upper))
+    minimum_insertion = float(min(insertion_radii + [radius]))
+    valid = bool(
+        distinct
+        and len(witnesses) == len(centers) + 1
+        and minimum_pairwise + tolerance >= radius
+        and minimum_insertion + tolerance >= radius
+    )
+    return {
+        "contract_id": "gonzalez_farthest_first_witness_v1",
+        "status": "certified" if valid else "invalid",
+        "valid": valid,
+        "center_count": int(len(centers)),
+        "witness_count": int(len(witnesses)),
+        "farthest_witness_index": witness_index,
+        "covering_radius": radius,
+        "minimum_witness_pair_distance": minimum_pairwise,
+        "minimum_insertion_radius": minimum_insertion,
+        "tolerance": tolerance,
+    }
+
+
 @dataclass(frozen=True)
 class SourceProfileRecord:
     """Replicated outcomes for one shared profile in one source task."""
@@ -509,6 +593,10 @@ class SourceScoredProfileAtlas:
         )
         selected = farthest_first_indices(
             augmented, self.config.n0, initial_index=initial_index)
+        gonzalez_certificate = gonzalez_witness_certificate(
+            augmented, selected)
+        if not gonzalez_certificate["valid"]:
+            raise RuntimeError("farthest-first witness certificate failed")
         members = tuple(
             AtlasMember(
                 profile_id=profile_ids[index],
@@ -555,6 +643,7 @@ class SourceScoredProfileAtlas:
                 member.robust_source_feasible for member in members)),
             "coordinate_dimension": int(augmented.shape[1]),
             "covering_radius": covering_radius(augmented, selected),
+            "gonzalez_witness_certificate": gonzalez_certificate,
             "first_center_rule": "minimum_weighted_source_rank",
             "remaining_center_rule": "gonzalez_farthest_first",
             "tie_breaking": "stable_profile_id_then_lowest_index",
@@ -607,6 +696,9 @@ def generic_dct_maximin(
     initial_index = int(np.argmin(np.mean(distances, axis=1)))
     selected = farthest_first_indices(
         coordinates, int(count), initial_index=initial_index)
+    gonzalez_certificate = gonzalez_witness_certificate(coordinates, selected)
+    if not gonzalez_certificate["valid"]:
+        raise RuntimeError("generic DCT farthest-first certificate failed")
     return selected, {
         "contract_id": "generic_dct_maximin_v1",
         "source_outcomes_used": False,
@@ -616,5 +708,6 @@ def generic_dct_maximin(
         "remaining_center_rule": "gonzalez_farthest_first",
         "selected_indices": list(selected),
         "covering_radius": covering_radius(coordinates, selected),
+        "gonzalez_witness_certificate": gonzalez_certificate,
         "coordinate_dimension": int(coordinates.shape[1]),
     }

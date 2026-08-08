@@ -74,4 +74,37 @@ theorem GonzalezKCenterCertificate.two_approx
     certificate.optimalCover
     certificate.greedySeparation
 
+structure GonzalezWitnessCertificate
+    {X : Type*} [PseudoMetricSpace X] [DecidableEq X]
+    (centers : Finset X) (greedyRadius : ℝ) where
+  witnessSet : Finset X
+  oneMoreWitness : witnessSet.card = centers.card + 1
+  greedySeparation : PairwiseRadiusSeparated witnessSet greedyRadius
+
+theorem GonzalezWitnessCertificate.two_approx_every_k_center
+    {X : Type*} [PseudoMetricSpace X] [DecidableEq X]
+    {centers optimalCenters : Finset X}
+    {assign : X → X}
+    {greedyRadius optimalRadius : ℝ}
+    (certificate : GonzalezWitnessCertificate centers greedyRadius)
+    (hOptimalBudget : optimalCenters.card ≤ centers.card)
+    (hOptimalCover : FiniteRadiusAssignment
+      certificate.witnessSet optimalCenters assign optimalRadius) :
+    greedyRadius ≤ 2 * optimalRadius := by
+  have hCard : optimalCenters.card < certificate.witnessSet.card := by
+    calc
+      optimalCenters.card ≤ centers.card := hOptimalBudget
+      _ < centers.card + 1 := Nat.lt_succ_self centers.card
+      _ = certificate.witnessSet.card := certificate.oneMoreWitness.symm
+  exact separated_witnesses_force_two_approx
+    hCard
+    hOptimalCover
+    certificate.greedySeparation
+
+theorem zero_greedy_radius_two_approx
+    {optimalRadius : ℝ}
+    (hOptimalRadius : 0 ≤ optimalRadius) :
+    (0 : ℝ) ≤ 2 * optimalRadius := by
+  positivity
+
 end SCOLHKG.Real

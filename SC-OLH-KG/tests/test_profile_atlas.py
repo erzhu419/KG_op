@@ -14,6 +14,7 @@ from core.profile_atlas import (  # noqa: E402
     SourceScoredProfileAtlas,
     covering_radius,
     farthest_first_indices,
+    gonzalez_witness_certificate,
     generic_dct_maximin,
     percentile_ranks,
     profile_cosine_coordinate,
@@ -106,6 +107,20 @@ def test_farthest_first_has_two_approx_radius_on_small_finite_metric():
         for centers in itertools.combinations(range(len(coordinates)), 2)
     )
     assert greedy_radius <= 2.0 * optimum + 1e-12
+    certificate = gonzalez_witness_certificate(coordinates, selected)
+    assert certificate["valid"] is True
+    assert certificate["witness_count"] == len(selected) + 1
+    assert certificate["minimum_witness_pair_distance"] >= (
+        certificate["covering_radius"] - certificate["tolerance"])
+
+
+def test_gonzalez_certificate_handles_zero_radius_cover():
+    coordinates = np.zeros((4, 2), dtype=float)
+    selected = farthest_first_indices(coordinates, 2, initial_index=0)
+    certificate = gonzalez_witness_certificate(coordinates, selected)
+    assert certificate["valid"] is True
+    assert certificate["status"] == "zero_radius_optimum"
+    assert certificate["covering_radius"] == 0.0
 
 
 def test_profile_atlas_is_source_only_deterministic_and_dimension_equivariant():
@@ -118,6 +133,7 @@ def test_profile_atlas_is_source_only_deterministic_and_dimension_equivariant():
     assert first.diagnostics["target_outcomes_used"] is False
     assert first.diagnostics["target_oracle_used"] is False
     assert first.diagnostics["descriptor_conditioned"] is True
+    assert first.diagnostics["gonzalez_witness_certificate"]["valid"] is True
     assert len(first.members) == 3
     low_dimension = first.target_profiles(17)
     high_dimension = first.target_profiles(1000)

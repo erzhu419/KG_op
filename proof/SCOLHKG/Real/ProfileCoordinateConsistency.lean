@@ -167,6 +167,51 @@ theorem lipschitz_sample_reconstruction_error
     |h x - h node| ≤ L * inverseDimension := by
   exact hLipschitz.trans (mul_le_mul_of_nonneg_left hNode hL)
 
+theorem lipschitz_voronoi_coefficient_inverse_grid_rate
+    {profile reconstruction basis node : ℝ → ℝ}
+    {L basisBound : ℝ}
+    {dimension : ℕ}
+    (hDimension : 0 < dimension)
+    (hL : 0 ≤ L)
+    (hProfile : IntervalIntegrable
+      (fun x => profile x * basis x) volume 0 1)
+    (hReconstructionIntegrable : IntervalIntegrable
+      (fun x => reconstruction x * basis x) volume 0 1)
+    (hReconstruction : ∀ x ∈ Set.uIoc (0 : ℝ) 1,
+      reconstruction x = profile (node x))
+    (hLipschitz : ∀ x ∈ Set.uIoc (0 : ℝ) 1,
+      |profile x - profile (node x)| ≤ L * |x - node x|)
+    (hVoronoiRadius : ∀ x ∈ Set.uIoc (0 : ℝ) 1,
+      |x - node x| ≤ 1 / (2 * (dimension : ℝ)))
+    (hBasis : ∀ x ∈ Set.uIoc (0 : ℝ) 1,
+      |basis x| ≤ basisBound) :
+    |continuousProfileCoefficient profile basis
+        - continuousProfileCoefficient reconstruction basis|
+      ≤ L * basisBound / (2 * dimension) := by
+  have hPointwise : ∀ x ∈ Set.uIoc (0 : ℝ) 1,
+      |profile x - reconstruction x| ≤ (L / 2) / dimension := by
+    intro x hx
+    rw [hReconstruction x hx]
+    calc
+      |profile x - profile (node x)|
+          ≤ L * |x - node x| := hLipschitz x hx
+      _ ≤ L * (1 / (2 * (dimension : ℝ))) :=
+        mul_le_mul_of_nonneg_left (hVoronoiRadius x hx) hL
+      _ = (L / 2) / dimension := by ring
+  have hRate := continuousProfileCoefficient_inverse_grid_rate
+    (constant := L / 2)
+    hDimension
+    (div_nonneg hL (by norm_num : (0 : ℝ) ≤ 2))
+    hProfile
+    hReconstructionIntegrable
+    hPointwise
+    hBasis
+  calc
+    |continuousProfileCoefficient profile basis
+        - continuousProfileCoefficient reconstruction basis|
+      ≤ (L / 2) * basisBound / dimension := hRate
+    _ = L * basisBound / (2 * dimension) := by ring
+
 theorem frequency_penalty_cannot_increase_coefficient_error
     {first second penalty : ℝ}
     (hPenalty : 1 ≤ penalty) :

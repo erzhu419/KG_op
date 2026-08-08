@@ -65,19 +65,26 @@ and fills the remaining `n0 - 1` centers by Gonzalez farthest-first traversal.
 
 The formal chain is deliberately conditional and modular:
 
-1. `ProfileCoordinateConsistency.lean` transfers a declared profile
-   reconstruction error into every retained continuous coefficient and gives
-   the inverse-grid rate under the explicit pointwise `C / d` premise. The
-   implementation analytically integrates each cosine basis over each Voronoi
-   cell, so it is the exact continuous coefficient of the cellwise-constant
+1. `ProfileCoordinateConsistency.lean` transfers profile reconstruction error
+   into every retained continuous coefficient. For an `L`-Lipschitz profile
+   sampled on the registered regular midpoint/Voronoi grid it derives the
+   explicit `L * basisBound / (2d)` rate from the Voronoi radius. The
+   implementation analytically integrates each cosine basis over each cell,
+   so it is the exact continuous coefficient of the cellwise-constant
    reconstruction rather than a midpoint approximation to the basis.
 2. `Measure/SourceRankRecovery.lean` supplies a finite-profile source-mean
    concentration event; `Real/SourceRankRecovery.lean` propagates separate
-   mean/scale errors into the chance margin and turns a `2r` score gap into
-   correct ordering. The scale term uses the registered residual-square tail
-   contract rather than pretending three replications reveal variance exactly.
+   errors into the chance margin and turns a `2r` score gap into correct
+   ordering. The latter file proves the exact finite-sum identity for the
+   implementation's `ddof=1` sample variance and propagates mean and
+   residual-second-moment radii through the variance floor and square root.
+   The probabilistic scale radius still uses the registered Gaussian-square or
+   sub-exponential residual-tail contract; three replications are not treated
+   as exact variance knowledge.
 3. `FarthestFirstKCenter.lean` gives the standard factor-two finite metric
-   guarantee from an exported assignment/separation certificate.
+   guarantee against every no-larger competing center set from the exported
+   `k+1` pairwise-separation witness. The zero-radius branch is separately
+   proved optimal.
 4. Existing `GeometricAtlasCoverage.lean` converts cover radius, coordinate
    error, source-target shift, and positive target safety depth into target
    feasible coverage.
