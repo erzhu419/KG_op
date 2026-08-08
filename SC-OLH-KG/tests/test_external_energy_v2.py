@@ -237,6 +237,13 @@ def test_energy_v2_registered_matrix_has_450_cells():
         (row["target_market"], row["target_seed"])
         for row in functional
     }) == 90
+    manifest = json.loads((
+        ROOT / "performance" / "manifests"
+        / "or_review_energy_functional_scbo_v1.json"
+    ).read_text(encoding="utf-8"))
+    assert manifest["matrix"]["cell_count"] == len(functional)
+    assert manifest["comparison_contract"][
+        "same_terminal_verifier"] is True
 
 
 def test_energy_functional_scbo_is_source_free_and_uses_energy_verifier(
