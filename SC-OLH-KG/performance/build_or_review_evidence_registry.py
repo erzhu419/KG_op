@@ -54,6 +54,13 @@ def _parse_named_path(value):
     return label, Path(path)
 
 
+def _portable_path(path):
+    """Keep repository-relative paths and strip machine-local prefixes."""
+
+    path = Path(path)
+    return path.name if path.is_absolute() else path.as_posix()
+
+
 def build_registry(
     audit,
     *,
@@ -112,7 +119,7 @@ def build_registry(
             )
         analysis_rows.append({
             "label": str(label),
-            "path": str(path),
+            "path": _portable_path(path),
             "sha256": _sha256(path),
             "contract_id": payload.get("contract_id"),
             "source_analysis_contract_id": payload.get(
@@ -140,7 +147,7 @@ def build_registry(
         "publication_ready": ready,
         "repository_commit": str(repository_commit),
         "frozen_evidence_audit": {
-            "path": str(audit_path),
+            "path": _portable_path(audit_path),
             "sha256": _sha256(audit_path),
             "contract_id": audit.get("contract_id"),
             "specification_id": audit.get("specification_id"),
@@ -152,11 +159,11 @@ def build_registry(
             ),
         },
         "frozen_evidence_specification": {
-            "path": str(specification_path),
+            "path": _portable_path(specification_path),
             "sha256": _sha256(specification_path),
         },
         "method_specification": {
-            "path": str(method_specification_path),
+            "path": _portable_path(method_specification_path),
             "sha256": _sha256(method_specification_path),
         },
         "matrices": matrices,

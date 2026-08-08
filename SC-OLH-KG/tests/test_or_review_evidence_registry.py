@@ -72,6 +72,8 @@ def test_registry_is_fail_closed_and_counts_algorithm_failure(tmp_path):
         "full-analysis"
     )
     assert payload["analyses"][0]["source_analysis_sha256"] == "c" * 64
+    assert payload["frozen_evidence_audit"]["path"] == "audit.json"
+    assert payload["frozen_evidence_specification"]["path"] == "spec.json"
 
 
 def test_registry_rejects_incomplete_analysis(tmp_path):
