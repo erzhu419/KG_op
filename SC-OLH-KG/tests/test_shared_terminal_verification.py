@@ -285,6 +285,7 @@ def test_all_success_power_table_exposes_boundary_power():
         budgets=(79, 80),
         true_probabilities=(0.95, 1.0),
     )
+    assert payload["status"] == "complete"
     assert payload["minimum_valid_budget"] == 80
     cells = {
         (row["verification_budget"], row["true_feasibility_probability"]): row

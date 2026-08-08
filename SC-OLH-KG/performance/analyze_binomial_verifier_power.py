@@ -79,6 +79,7 @@ def power_table(
     return {
         "schema_version": 1,
         "contract_id": "exact_binomial_verifier_power_comparison_v2",
+        "status": "complete",
         "methods": [
             "exact_binomial_all_success",
             "exact_clopper_pearson_lower_bound",
