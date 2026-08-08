@@ -437,8 +437,30 @@ class OPSDStorageReliabilityProblem(CumulativeRiskFeatureProvider):
     def simulate(self, x, rng=None):
         return self.simulate_from_split(x, "search", rng)
 
+    def split_window_starts(self, split):
+        """Return a defensive copy of admissible starts for an audit split."""
+
+        split = str(split)
+        if split not in self._starts:
+            raise ValueError(f"unknown OPSD split {split!r}")
+        return np.asarray(self._starts[split], dtype=np.int64).copy()
+
+    def evaluate_window_starts(self, x, starts, *, batch_size=512):
+        """Evaluate a frozen policy at caller-declared historical starts."""
+
+        starts = np.asarray(starts, dtype=np.int64).reshape(-1)
+        batch_size = int(batch_size)
+        if batch_size < 1:
+            raise ValueError("batch_size must be positive")
+        if len(starts) == 0:
+            return np.zeros((0, 2), dtype=float)
+        return np.vstack([
+            self._evaluate_start_batch(x, starts[begin:begin + batch_size])
+            for begin in range(0, len(starts), batch_size)
+        ])
+
     def split_population(self, x, split, *, maximum_windows=None, batch_size=512):
-        starts = self._starts[str(split)]
+        starts = self.split_window_starts(split)
         if maximum_windows is not None and len(starts) > int(maximum_windows):
             selected = np.linspace(
                 0, len(starts) - 1, int(maximum_windows)
@@ -447,10 +469,8 @@ class OPSDStorageReliabilityProblem(CumulativeRiskFeatureProvider):
         batch_size = int(batch_size)
         if batch_size < 1:
             raise ValueError("batch_size must be positive")
-        return np.vstack([
-            self._evaluate_start_batch(x, starts[begin:begin + batch_size])
-            for begin in range(0, len(starts), batch_size)
-        ])
+        return self.evaluate_window_starts(
+            x, starts, batch_size=batch_size)
 
     def true_outputs(self, x):
         return np.mean(self.split_population(x, "audit"), axis=0)

@@ -9,6 +9,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from performance.analyze_external_energy_v2 import analyze  # noqa: E402
+from performance.audit_external_energy_temporal_blocks import (  # noqa: E402
+    audit_frozen_policy,
+    nonoverlapping_window_starts,
+)
 from performance.benchmark_external_energy_v2 import (  # noqa: E402
     market_region,
     materialize_source_atlas,
@@ -56,6 +60,32 @@ def test_region_holdout_excludes_every_target_region_market():
     sources = region_heldout_source_markets("DK_2")
     assert sources == ("GB_GBN", "IT_NORD", "NO_1", "SE_1")
     assert all(market_region(source) != "denmark" for source in sources)
+
+
+def test_temporal_audit_separates_descriptive_blocks_and_disjoint_windows(tmp_path):
+    data = tmp_path / "energy_suite.npz"
+    _write_energy_suite(data)
+    from problems.energy_reliability import OPSDStorageReliabilityProblem
+
+    problem = OPSDStorageReliabilityProblem(
+        data, market="DK_2", year=2018, d=24,
+        required_splits=("verification",),
+    )
+    point = tuple([50] * problem.d)
+    starts = problem.split_window_starts("verification")
+    disjoint = nonoverlapping_window_starts(starts, problem.d)
+    assert np.all(np.diff(disjoint) >= problem.d)
+    audit = audit_frozen_policy(
+        problem,
+        point,
+        chronological_blocks=4,
+        maximum_sampled_starts=64,
+    )
+    assert audit["chronological_block_count"] == 4
+    assert audit["sampled_start_count"] == 64
+    assert audit["nonoverlapping_start_count"] == len(disjoint)
+    assert audit["inferential_certificate_claimed"] is False
+    assert audit["postdecision_only"] is True
 
 
 def test_frozen_energy_v2_design_replays_without_target_outcomes(tmp_path):

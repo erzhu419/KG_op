@@ -16,6 +16,8 @@ over admissible verification-window start indices. The indices are sampled iid
 with replacement; the underlying time-series windows may overlap. A future-
 process or independent-calendar-window claim is therefore prohibited. A
 nonoverlapping/block sensitivity audit will be reported separately.
+It is a post-decision descriptive stability audit: it cannot alter the frozen
+shortlist or certificate and does not claim a second iid guarantee.
 
 Energy V2 will use a preregistered expanded OPSD market suite. Its purpose is to
 test source learning across tasks, not to repair GB_GBN. Task descriptors,

@@ -91,5 +91,15 @@
     "market_level_results_are_secondary": true,
     "within_market_seeds_measure_algorithmic_repeatability_only": true,
     "pooled_market_seed_population_claims_prohibited": true
+  },
+  "postdecision_temporal_stability_audit": {
+    "contract_id": "opsd_postdecision_temporal_block_audit_v1",
+    "registered_before_target_results_interpreted": true,
+    "chronological_blocks": 4,
+    "maximum_evenly_spaced_start_indices": 512,
+    "also_report_physically_nonoverlapping_windows": true,
+    "may_change_shortlist_or_certificate": false,
+    "inferential_certificate_claimed": false,
+    "purpose": "describe temporal heterogeneity and expose instability hidden by the fixed empirical start-index distribution"
   }
 }
