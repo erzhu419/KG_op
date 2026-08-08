@@ -22,15 +22,29 @@ TARGET_CONFIGURATION = "target394"
 
 
 def _success(row):
+    deployed = row.get("deployed_truth")
     return bool(
-        row["contains_true_feasible"]
-        and row["independently_certified"]
+        row["independently_certified"]
+        and isinstance(deployed, dict)
+        and deployed.get("feasible") is True
         and not row["false_certificate"]
     )
 
 
+def _deployed_regret(row):
+    deployed = row.get("deployed_truth")
+    if not _success(row) or not isinstance(deployed, dict):
+        return None
+    return max(
+        0.0,
+        float(deployed["objective"])
+        - float(row["finite_audit_library_oracle_objective"]),
+    )
+
+
 def _epsilon_success(row):
-    return bool(_success(row) and row["feasible_and_epsilon_optimal_005"])
+    regret = _deployed_regret(row)
+    return bool(regret is not None and regret <= 0.05)
 
 
 def _outcome(row, *, prefix):
@@ -105,6 +119,8 @@ def analyze(paths):
                 "control_success": _success(second),
                 "source_epsilon_success": _epsilon_success(first),
                 "control_epsilon_success": _epsilon_success(second),
+                "source_deployed_feasible_regret": _deployed_regret(first),
+                "control_deployed_feasible_regret": _deployed_regret(second),
                 "source_actual_all_in_calls": int(
                     first["all_in_calls_unamortized"]),
                 "control_actual_all_in_calls": int(
@@ -215,6 +231,10 @@ def analyze(paths):
         "status": "complete" if paired and not failures else "incomplete",
         "fixed_budget_definition": (
             "source+target_search+maximum_frozen_shortlist_verification_calls"
+        ),
+        "certified_quality_definition": (
+            "the independently certified deployed policy itself is truly "
+            "feasible and has finite-audit-library regret at most epsilon"
         ),
         "primary_unit": "independent_target_task",
         "simulation_seed_role": "independent randomized target-task index",
