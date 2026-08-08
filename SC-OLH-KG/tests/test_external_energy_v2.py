@@ -23,6 +23,7 @@ from performance.benchmark_external_energy_functional_scbo import (  # noqa: E40
     run_task as run_functional_task,
 )
 from performance.run_external_energy_functional_scbo_matrix import (  # noqa: E402
+    _emit_terminal_status as emit_energy_functional_terminal_status,
     build_cells as build_functional_cells,
 )
 from performance.run_external_energy_v2_matrix import (  # noqa: E402
@@ -244,6 +245,11 @@ def test_energy_v2_registered_matrix_has_450_cells():
     assert manifest["matrix"]["cell_count"] == len(functional)
     assert manifest["comparison_contract"][
         "same_terminal_verifier"] is True
+
+
+def test_energy_functional_matrix_terminal_status_is_fail_closed(capsys):
+    assert emit_energy_functional_terminal_status({"error_count": 1}) is False
+    assert "ENERGY_FUNCTIONAL_SCBO_FAILED" in capsys.readouterr().out
 
 
 def test_energy_functional_scbo_is_source_free_and_uses_energy_verifier(

@@ -16,6 +16,7 @@ from problems.randomized_profiles import (  # noqa: E402
     generate_structural_profile_library,
 )
 from performance.run_profile_stress_matrix import (  # noqa: E402
+    _emit_terminal_status,
     build_equal_preverification_cost_cells,
     build_primary_cells,
     build_schema_descriptor_cells,
@@ -24,6 +25,11 @@ from performance.run_profile_stress_matrix import (  # noqa: E402
     derived_target_seed,
     run_matrix,
 )
+
+
+def test_profile_stress_matrix_terminal_status_is_fail_closed(capsys):
+    assert _emit_terminal_status({"error_count": 3}) is False
+    assert "PROFILE_STRESS_FAILED cell_errors=3" in capsys.readouterr().out
 
 
 def test_tiny_profile_stress_task_runs_without_oracle_leakage():

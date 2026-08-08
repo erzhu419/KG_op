@@ -459,8 +459,19 @@ def run_matrix(
         encoding="utf-8",
     )
     temporary.replace(summary_path)
-    print("DONE", flush=True)
     return summary
+
+
+def _emit_terminal_status(summary):
+    error_count = int(summary.get("error_count", 0))
+    if error_count:
+        print(
+            f"PROFILE_STRESS_FAILED cell_errors={error_count}",
+            flush=True,
+        )
+        return False
+    print("DONE", flush=True)
+    return True
 
 
 def _csv(value, cast=str):
@@ -495,7 +506,7 @@ def main():
         raise ValueError(
             f"unknown arms/regimes: {sorted(unknown_arms)}, "
             f"{sorted(unknown_regimes)}")
-    run_matrix(
+    summary = run_matrix(
         output_dir=args.output_dir,
         freeze_commit=args.freeze_commit,
         start=args.start,
@@ -508,6 +519,8 @@ def main():
         matrix=args.matrix,
         evaluation_commit=args.evaluation_commit,
     )
+    if not _emit_terminal_status(summary):
+        raise SystemExit(2)
 
 
 if __name__ == "__main__":

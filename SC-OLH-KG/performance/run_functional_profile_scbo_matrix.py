@@ -344,8 +344,19 @@ def run_matrix(
     summary_path = (
         Path(output_dir) / f"shard_{start:05d}_{stop:05d}.summary.json")
     _atomic_json(summary_path, summary)
-    print("DONE", flush=True)
     return summary
+
+
+def _emit_terminal_status(summary):
+    error_count = int(summary.get("error_count", 0))
+    if error_count:
+        print(
+            f"FUNCTIONAL_SCBO_FAILED cell_errors={error_count}",
+            flush=True,
+        )
+        return False
+    print("DONE", flush=True)
+    return True
 
 
 def _csv(value, cast=str):
@@ -376,7 +387,7 @@ def main():
     unknown = set(regimes) - set(PROFILE_STRESS_REGIMES)
     if unknown:
         raise ValueError(f"unknown regimes: {sorted(unknown)}")
-    run_matrix(
+    summary = run_matrix(
         output_dir=args.output_dir,
         checkpoint_dir=args.checkpoint_dir,
         task_freeze_commit=args.task_freeze_commit,
@@ -389,6 +400,8 @@ def main():
         task_count=args.task_count,
         regimes=regimes,
     )
+    if not _emit_terminal_status(summary):
+        raise SystemExit(2)
 
 
 if __name__ == "__main__":

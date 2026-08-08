@@ -14,6 +14,7 @@ from performance.benchmark_functional_profile_scbo import (  # noqa: E402
     run_task,
 )
 from performance.run_functional_profile_scbo_matrix import (  # noqa: E402
+    _emit_terminal_status,
     build_equal_preverification_cost_cells,
     build_primary_cells,
     build_rank_sensitivity_cells,
@@ -110,6 +111,13 @@ def test_functional_matrix_contracts_have_registered_costs():
     assert manifest["matrices"]["equal_preverification_cost"][
         "cell_count"] == len(build_equal_preverification_cost_cells(
             task_freeze_commit=manifest["task_seed_freeze_commit"]))
+
+
+def test_functional_matrix_terminal_status_is_fail_closed(capsys):
+    assert _emit_terminal_status({"error_count": 2}) is False
+    assert "FUNCTIONAL_SCBO_FAILED cell_errors=2" in capsys.readouterr().out
+    assert _emit_terminal_status({"error_count": 0}) is True
+    assert capsys.readouterr().out.strip() == "DONE"
 
 
 def test_functional_analysis_keeps_initial_search_and_deployment_separate(

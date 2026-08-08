@@ -226,8 +226,19 @@ def run_matrix(
         Path(output_dir) / f"shard_{start:04d}_{stop:04d}.summary.json",
         summary,
     )
-    print("DONE", flush=True)
     return summary
+
+
+def _emit_terminal_status(summary):
+    error_count = int(summary.get("error_count", 0))
+    if error_count:
+        print(
+            f"ENERGY_FUNCTIONAL_SCBO_FAILED cell_errors={error_count}",
+            flush=True,
+        )
+        return False
+    print("DONE", flush=True)
+    return True
 
 
 def _csv(value, cast=str):
@@ -252,7 +263,7 @@ def main():
     unknown = set(markets) - set(TARGET_MARKETS)
     if unknown:
         raise ValueError(f"unknown markets: {sorted(unknown)}")
-    run_matrix(
+    summary = run_matrix(
         data_path=args.data,
         output_dir=args.output_dir,
         checkpoint_dir=args.checkpoint_dir,
@@ -264,6 +275,8 @@ def main():
         markets=markets,
         target_seeds=_csv(args.target_seeds, int),
     )
+    if not _emit_terminal_status(summary):
+        raise SystemExit(2)
 
 
 if __name__ == "__main__":
