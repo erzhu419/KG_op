@@ -16,7 +16,7 @@ contributions without new causal evidence.
 | Review issue | Algorithm or experiment response | Current evidence status |
 |---|---|---|
 | Synthetic-method isomorphism | Eight randomized regimes vary effective rank, frequency support, coordinate order, grid regularity, smoothness, sparse high-frequency activity, and target misspecification. Nominal dimension and effective rank are reported separately. | Runner and frozen generator implemented; V4 domain-separates task generation from algorithm randomization. Confirmatory matrix pending. |
-| Energy does not establish source learning | Replace the single-market V1 interpretation with 18 markets in five geographic regions. Every target excludes its whole region from source training and compares the source atlas with generic DCT, random low-frequency, natural constant-grid, and raw Sobol designs. | Protocol and runner implemented; no V2 performance claim before execution. V1 remains a negative result. |
+| Energy does not establish source learning | V2 expands to 18 markets in five geographic regions and retains its negative structured-control result. V3 is frozen independently: the policy is a forecast-stress-to-reserve response function, the 1000-point decision grid is separated from a 168-hour physical horizon, and every target excludes its whole region from source training. Source atlas is compared with generic DCT, random low-frequency, natural constant-grid, raw Sobol, and target-only functional SCBO. | V2 is retained and cannot be pooled with V3. V3 code and claim gates were frozen before real V3 target outcomes under `or_review_energy_forecast_indexed_v3.json`. |
 | Development-level benchmark overfitting | Freeze and push code before deriving confirmatory task seeds. Use newly randomized stress tasks and adverse regimes; no post-outcome repair is allowed under the same version. | Freeze protocol implemented. This mitigates but cannot emulate a generator written by an independent collaborator. |
 | Atlas underspecified | The complete finite method is recorded in `profile_atlas_v2_method_spec.json`, including library, coefficient integral, rank statistic, augmented metric, first center, farthest-first rule, and tie breaking. | Implemented and unit tested; manuscript algorithm remains intentionally untouched. |
 | Coverage theorem assumes success | Add exact profile-coordinate integration, continuous coefficient error, inverse-grid transfer, finite source mean/scale error propagation, rank recovery, 2-approximate finite k-center coverage, and independent task-coverage calibration. | Lean builds without placeholders. Task-distribution coverage still requires independent calibration tasks and must be reported as conditional, not universal. |
@@ -59,6 +59,7 @@ not part of the candidate method identity.
 - Full OFAT sensitivity matrix.
 - Equal maximum all-in cost comparison and archive break-even analysis.
 - OPSD region-held-out V2 matrix.
+- OPSD forecast-indexed V3 matrix; V2 and V3 must be reported separately.
 - OPSD post-decision chronological-block/nonoverlap stability audit.
 - Exact verifier power table.
 - Native end-to-end transfer audit.

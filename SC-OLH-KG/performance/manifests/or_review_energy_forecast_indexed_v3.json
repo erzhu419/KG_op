@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_energy_forecast_indexed_v3",
+  "status": "preregistered_before_real_v3_target_outcomes",
+  "method_freeze_commit": "26e190552548abc7900d7145aa91e1cce604832d",
+  "execution_commit": "26e190552548abc7900d7145aa91e1cce604832d",
+  "scientific_role": "independent real-data external validity test and negative control; never a post-hoc replacement for unfavorable V2 outcomes",
+  "reason_for_v3": {
+    "v2_limitation": "V2 used the decision index as relative time inside a randomly sampled historical window, so the 1000 coordinates did not define a reusable state-feedback policy.",
+    "v3_correction": "V3 defines a 1000-point response profile from observable forecast stress to target state of charge and fixes the physical simulation horizon separately at 168 hours.",
+    "v2_retained": true,
+    "v2_and_v3_results_may_be_pooled": false
+  },
+  "decision_contract": {
+    "policy_semantics": "forecast_stress_to_target_state_of_charge",
+    "policy_grid_dimension": 1000,
+    "simulation_horizon_hours": 168,
+    "stress_coordinate": "max(level_05_95, absolute_ramp_q95)",
+    "stress_normalization_fit_period": "target_market_search_year_only",
+    "stress_weights_tuned_from_target_outcomes": false,
+    "realized_forecast_error_used_by_coordinate": false,
+    "realized_forecast_error_used_by_simulator": true
+  },
+  "source_contract": {
+    "target_region_excluded": true,
+    "source_regions_per_target": 4,
+    "source_markets_per_target": 4,
+    "shared_profile_library_size": 64,
+    "replications_per_source_profile_market": 3,
+    "source_calls_per_target_design": 768,
+    "target_outcomes_used_to_fit_frontend": false,
+    "target_oracle_used": false
+  },
+  "matrix": {
+    "target_markets": 18,
+    "geographic_regions": 5,
+    "target_seeds_per_market": 5,
+    "arms": [
+      "source_atlas",
+      "generic_dct_maximin",
+      "random_low_frequency",
+      "natural_constant_grid",
+      "raw_sobol",
+      "target_only_dct_space_scbo"
+    ],
+    "cell_count": 540,
+    "n0": 10,
+    "target_search_budget": 13,
+    "verification_budgets": [80, 80, 80],
+    "familywise_delta": 0.05,
+    "backend_for_initial_design_arms": "neutral_sobol_continuation",
+    "functional_control_backend": "canonical_botorch_scbo_in_9_coefficient_dimensions"
+  },
+  "sampling_and_certificate": {
+    "search_period": "2017",
+    "audit_period": "2018",
+    "verification_period": "2019",
+    "window_sampling": "iid_start_indices_with_replacement_from_fixed_empirical_split",
+    "physical_windows_may_overlap": true,
+    "certificate_scope": "fixed_empirical_distribution_over_admissible_window_start_indices",
+    "future_time_series_iid_claimed": false,
+    "postdecision_temporal_audit_changes_method_or_certificate": false
+  },
+  "primary_claim_gates": {
+    "source_learning_supported": "source_atlas improves on both generic_dct_maximin and natural_constant_grid at the geographic-region level without more false certificates and is not worse than target_only_dct_space_scbo on certified objective.",
+    "structural_compression_only": "structured controls improve on raw_sobol but source_atlas does not improve on both source-free structured controls.",
+    "external_failure": "source_atlas and source-free structured controls fail to produce reliable certified policies; retain V3 as a negative external-validity result and narrow the claim.",
+    "functional_control_wins": "source scoring is not established beyond target-only low-frequency functional optimization; narrow the contribution to ordered-profile compression."
+  },
+  "freeze_rules": {
+    "real_v3_target_outcomes_seen_before_method_freeze": false,
+    "post_outcome_algorithm_repair_allowed_under_this_contract": false,
+    "adverse_or_negative_results_must_be_retained": true,
+    "cell_errors_or_missing_cells_fail_closed": true,
+    "manuscript_may_use_results_only_after_evidence_audit": true
+  }
+}

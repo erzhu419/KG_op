@@ -108,6 +108,27 @@
       "unique_key_fields": ["target_market", "target_seed", "arm"]
     },
     {
+      "name": "opsd_forecast_indexed_region_holdout_v3",
+      "relative_glob": "or_review_energy_forecast_indexed_v3/**/cell*.json",
+      "expected_count": 540,
+      "contract_ids": ["opsd_forecast_indexed_region_holdout_v3"],
+      "required_values": {
+        "status": "ok",
+        "method_freeze_commit": "26e190552548abc7900d7145aa91e1cce604832d",
+        "execution_commit": "26e190552548abc7900d7145aa91e1cce604832d",
+        "target_outcomes_used_to_fit_frontend": false,
+        "target_oracle_used_during_search": false,
+        "information_contract.policy_semantics": "forecast_stress_to_target_state_of_charge",
+        "information_contract.policy_grid_dimension": 1000,
+        "information_contract.simulation_horizon_hours": 168,
+        "information_contract.decision_dimension_changes_simulation_horizon": false,
+        "information_contract.actual_target_error_used_by_observable_coordinate": false,
+        "information_contract.future_time_series_iid_claimed": false,
+        "information_contract.certificate_scope": "fixed_empirical_distribution_over_admissible_window_start_indices"
+      },
+      "unique_key_fields": ["target_market", "target_seed", "arm"]
+    },
+    {
       "name": "target_only_functional_scbo_primary",
       "relative_glob": "or_review_functional_scbo_v2/primary/**/cell*.json",
       "expected_count": 480,

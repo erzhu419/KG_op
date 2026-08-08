@@ -183,6 +183,15 @@ def test_energy_v3_source_and_functional_arms_share_contract(tmp_path):
 
 def test_energy_v3_matrix_is_complete_and_restartable(tmp_path):
     assert len(build_target_cells()) == 540
+    manifest = json.loads((
+        ROOT / "performance" / "manifests"
+        / "or_review_energy_forecast_indexed_v3.json"
+    ).read_text(encoding="utf-8"))
+    assert manifest["status"] == (
+        "preregistered_before_real_v3_target_outcomes")
+    assert manifest["matrix"]["cell_count"] == len(build_target_cells())
+    assert manifest["freeze_rules"][
+        "post_outcome_algorithm_repair_allowed_under_this_contract"] is False
     data = tmp_path / "energy.npz"
     _write_energy_suite(data)
     designs = tmp_path / "designs"
