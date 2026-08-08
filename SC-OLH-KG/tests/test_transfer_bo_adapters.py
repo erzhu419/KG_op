@@ -278,6 +278,57 @@ def test_transfer_consumes_frozen_source_informed_design_exactly():
     )
 
 
+def test_native_source_initialization_uses_method_posterior_not_sc_atlas():
+    archive = _archive()
+    config = TransferBOConfig(
+        method="hyperbo_cbo",
+        N=4,
+        n0=3,
+        seed=23,
+        candidate_pool_size=32,
+        initial_design="native_source_sequential",
+    )
+    result = TransferConstrainedBO(_problem(), archive, config).run()
+    initial = result["history"][:3]
+    assert all(
+        row["selection_reason"].startswith("native_source_sequential__")
+        for row in initial
+    )
+    assert all(row["source_scored_atlas_used"] is False for row in initial)
+    contract = result["target_information_contract"]
+    assert contract["native_source_sequential_initialization"] is True
+    assert contract["source_scored_atlas_initial_design"] is False
+    assert contract["source_informed_initial_design"] is False
+    assert contract["initial_design_fingerprint"] == (
+        integer_design_fingerprint([
+            tuple(row["x"]) for row in initial
+        ])
+    )
+
+
+@pytest.mark.parametrize("method", TRANSFER_METHODS)
+def test_every_paper_core_transfer_method_supports_native_initialization(method):
+    result = TransferConstrainedBO(
+        _problem(),
+        _archive(),
+        TransferBOConfig(
+            method=method,
+            N=2,
+            n0=2,
+            seed=7,
+            candidate_pool_size=16,
+            initial_design="native_source_sequential",
+            source_train_steps=2,
+            target_finetune_steps=1,
+        ),
+    ).run()
+    assert len(result["history"]) == 2
+    assert all(
+        row["selection_reason"].startswith("native_source_sequential__")
+        for row in result["history"]
+    )
+
+
 def test_transfer_freezes_method_specific_terminal_shortlist_before_truth():
     archive = _archive()
     runner = TransferConstrainedBO(

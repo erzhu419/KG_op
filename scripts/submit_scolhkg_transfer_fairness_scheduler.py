@@ -325,7 +325,11 @@ def main():
     parser.add_argument("--d", type=int, default=50)
     parser.add_argument(
         "--initial-design",
-        choices=("common_sobol", "source_informed"),
+        choices=(
+            "common_sobol",
+            "source_informed",
+            "native_source_sequential",
+        ),
         default="common_sobol",
     )
     parser.add_argument(

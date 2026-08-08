@@ -92,3 +92,24 @@ def test_source_informed_submit_freezes_three_design_files_for_all_methods():
                for spec in run_specs)
     assert all("--initial-design-file" in spec["cmd"] for spec in run_specs)
     assert all(len(spec["wait_for_files"]) == 2 for spec in run_specs)
+
+
+def test_native_transfer_submit_uses_archive_but_not_sc_design_files():
+    specs = submit.build_specs(_args(
+        initial_design="native_source_sequential"))
+    design_specs = [
+        spec for spec in specs
+        if "/transfer_initial_design/" in spec["signature"]
+    ]
+    run_specs = [
+        spec for spec in specs if "/transfer_fairness/" in spec["signature"]
+    ]
+    assert len(specs) == 3 + 3 * 8 * 20
+    assert design_specs == []
+    assert all(
+        "--initial-design native_source_sequential" in spec["cmd"]
+        for spec in run_specs
+    )
+    assert all("--initial-design-file" not in spec["cmd"]
+               for spec in run_specs)
+    assert all(len(spec["wait_for_files"]) == 1 for spec in run_specs)

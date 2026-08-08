@@ -118,16 +118,23 @@ class TransferBOConfig:
             raise ValueError("implementation must be paper_core or official")
         if self.N < 1 or self.n0 < 1 or self.n0 > self.N:
             raise ValueError("transfer BO requires 1 <= n0 <= N")
-        if self.initial_design not in {"common_sobol", "source_informed"}:
+        if self.initial_design not in {
+            "common_sobol",
+            "source_informed",
+            "native_source_sequential",
+        }:
             raise ValueError(
-                "initial_design must be common_sobol or source_informed")
+                "initial_design must be common_sobol, source_informed, or "
+                "native_source_sequential")
         if self.initial_points is not None:
             self.initial_points = tuple(
                 tuple(map(int, point)) for point in self.initial_points)
-        if self.initial_design == "common_sobol":
+        if self.initial_design in {
+            "common_sobol", "native_source_sequential",
+        }:
             if self.initial_points is not None:
                 raise ValueError(
-                    "common_sobol must not receive optimizer-specific points")
+                    f"{self.initial_design} must not receive explicit points")
         elif self.initial_points is None:
             raise ValueError(
                 "source_informed requires an explicit frozen initial design")
@@ -390,6 +397,8 @@ class TransferConstrainedBO:
     def _initial_design(self):
         if self.config.initial_design == "source_informed":
             return list(self.config.initial_points)
+        if self.config.initial_design == "native_source_sequential":
+            return []
         return self._common_initial_design()
 
     def _arrays(self):
@@ -801,8 +810,23 @@ class TransferConstrainedBO:
             if self.config.initial_design == "source_informed"
             else "common_sobol_initial_design"
         )
+        native_initialization = bool(
+            self.config.initial_design == "native_source_sequential")
+        if native_initialization and not self.history:
+            self._adapt_models()
         while len(self.history) < self.config.N:
-            if len(self.history) < self.config.n0:
+            if native_initialization and len(self.history) < self.config.n0:
+                point, selection = self._select_candidate()
+                selection = {
+                    **selection,
+                    "selection_reason": (
+                        "native_source_sequential__"
+                        + str(selection["selection_reason"])
+                    ),
+                    "native_source_initialization": True,
+                    "source_scored_atlas_used": False,
+                }
+            elif len(self.history) < self.config.n0:
                 point = initial[len(self.history)]
                 selection = {
                     "selection_reason": initial_reason,
@@ -815,6 +839,11 @@ class TransferConstrainedBO:
             self._observe(point, selection)
             self._save_checkpoint()
             self._emit_progress("target_call_done")
+        if native_initialization:
+            initial = [
+                tuple(map(int, row["x"]))
+                for row in self.history[: int(self.config.n0)]
+            ]
         recommended, posterior = self._recommend()
         frozen_terminal_shortlist = None
         if freeze_terminal_shortlist:
@@ -919,6 +948,10 @@ class TransferConstrainedBO:
                 "initial_points": [list(map(int, point)) for point in initial],
                 "source_informed_initial_design": bool(
                     self.config.initial_design == "source_informed"),
+                "source_scored_atlas_initial_design": bool(
+                    self.config.initial_design == "source_informed"),
+                "native_source_sequential_initialization": (
+                    native_initialization),
                 "source_dimension_adapter": str(
                     self.config.source_dimension_adapter),
                 "model_input_dimension": int(self.model_input_dimension),

@@ -386,10 +386,18 @@ def run_one(args):
             "common_target_initial_design": (
                 "frozen_source_informed_rank_spanning"
                 if args.initial_design == "source_informed"
-                else "scrambled_sobol"
+                else (
+                    "method_native_source_posterior_sequential"
+                    if args.initial_design == "native_source_sequential"
+                    else "scrambled_sobol"
+                )
             ),
             "source_informed_initial_proposal": bool(
                 args.initial_design == "source_informed"),
+            "source_scored_atlas_used": bool(
+                args.initial_design == "source_informed"),
+            "method_native_source_initialization": bool(
+                args.initial_design == "native_source_sequential"),
             "source_informed_initial_fingerprint": (
                 initial_design_fingerprint),
             "source_oracle_aided": False,
@@ -483,7 +491,11 @@ def main():
     parser.add_argument("--archive", required=True)
     parser.add_argument(
         "--initial-design",
-        choices=("common_sobol", "source_informed"),
+        choices=(
+            "common_sobol",
+            "source_informed",
+            "native_source_sequential",
+        ),
         default="common_sobol",
     )
     parser.add_argument("--initial-design-file", default="")
