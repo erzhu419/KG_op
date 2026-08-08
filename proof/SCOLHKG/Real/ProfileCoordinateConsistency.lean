@@ -206,6 +206,55 @@ theorem lipschitz_linear_interpolation_error
           + theta * |x - right|) := by ring
     _ ≤ L * radius := mul_le_mul_of_nonneg_left hWeightedDistance hL
 
+theorem regular_adjacent_linear_interpolation_weighted_radius
+    {x left right theta : ℝ}
+    {referenceDimension : ℕ}
+    (hReferenceDimension : 0 < referenceDimension)
+    (hThetaLower : 0 ≤ theta)
+    (hThetaUpper : theta ≤ 1)
+    (hSpacing :
+      right - left = 1 / (referenceDimension : ℝ))
+    (hInterpolation :
+      x = (1 - theta) * left + theta * right) :
+    (1 - theta) * |x - left| + theta * |x - right|
+      ≤ 1 / (2 * (referenceDimension : ℝ)) := by
+  have hDimensionReal : (0 : ℝ) < referenceDimension := by
+    exact_mod_cast hReferenceDimension
+  have hSpacingPositive : 0 < right - left := by
+    rw [hSpacing]
+    positivity
+  have hXMinusLeft : x - left = theta * (right - left) := by
+    rw [hInterpolation]
+    ring
+  have hRightMinusX : right - x = (1 - theta) * (right - left) := by
+    rw [hInterpolation]
+    ring
+  have hLeftX : left ≤ x := by
+    have : 0 ≤ x - left := by
+      rw [hXMinusLeft]
+      positivity
+    linarith
+  have hXRight : x ≤ right := by
+    have : 0 ≤ right - x := by
+      rw [hRightMinusX]
+      positivity
+    linarith
+  have hQuadratic : 2 * theta * (1 - theta) ≤ (1 : ℝ) / 2 := by
+    nlinarith [sq_nonneg (2 * theta - 1)]
+  have hInverseNonnegative :
+      0 ≤ 1 / (referenceDimension : ℝ) := by positivity
+  rw [abs_of_nonneg (sub_nonneg.mpr hLeftX)]
+  rw [abs_of_nonpos (sub_nonpos.mpr hXRight)]
+  rw [hXMinusLeft, neg_sub, hRightMinusX, hSpacing]
+  calc
+    (1 - theta) * (theta * (1 / (referenceDimension : ℝ)))
+          + theta * ((1 - theta) * (1 / (referenceDimension : ℝ)))
+        = (2 * theta * (1 - theta))
+            * (1 / (referenceDimension : ℝ)) := by ring
+    _ ≤ ((1 : ℝ) / 2) * (1 / (referenceDimension : ℝ)) :=
+      mul_le_mul_of_nonneg_right hQuadratic hInverseNonnegative
+    _ = 1 / (2 * (referenceDimension : ℝ)) := by ring
+
 theorem lipschitz_linear_interpolation_inverse_grid_rate
     {profile : ℝ → ℝ}
     {x left right theta L reconstruction : ℝ}

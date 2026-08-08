@@ -73,8 +73,9 @@ The formal chain is deliberately conditional and modular:
    so it is the exact continuous coefficient of the cellwise-constant
    reconstruction rather than a midpoint approximation to the basis. A
    separate interpolation theorem controls the actual target inverse map by
-   the convexly weighted source-node distance and yields `L/(2d_ref)` on the
-   registered regular reference grid.
+   the convexly weighted source-node distance. The regular adjacent-midpoint
+   arithmetic is proved rather than assumed, yielding `L/(2d_ref)` on the
+   registered reference grid.
 2. `Measure/SourceRankRecovery.lean` supplies a finite-profile source-mean
    concentration event; `Real/SourceRankRecovery.lean` propagates separate
    errors into the chance margin and turns a `2r` score gap into correct

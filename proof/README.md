@@ -162,9 +162,10 @@ mathlib and its cache; later builds should be fast.
   piecewise-constant reconstruction. Irregular grids require their observed
   maximum Voronoi radius in place of `1/(2d)`; no regular-grid rate is claimed
   for them. A separate theorem bounds the implemented convex linear inverse
-  interpolation by the weighted source-node distance and gives the registered
-  regular-reference-grid `L/(2d_ref)` rate. The frequency penalty cannot
-  amplify coordinate error.
+  interpolation by the weighted source-node distance. A further arithmetic
+  theorem derives the required half-cell radius directly from adjacent regular
+  midpoint nodes and convex interpolation weights, giving the registered
+  `L/(2d_ref)` rate. The frequency penalty cannot amplify coordinate error.
 - `SCOLHKG/Real/FarthestFirstKCenter.lean`: proves the metric factor-two
   Gonzalez guarantee for every competing center set of no larger cardinality
   from an auditable `k+1` witness/separation certificate. Python exports and
