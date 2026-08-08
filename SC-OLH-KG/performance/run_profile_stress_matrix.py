@@ -206,7 +206,9 @@ def _cell_name(index, cell):
     )
 
 
-def _existing_ok(path, *, freeze_commit, cell):
+def _existing_ok(
+    path, *, freeze_commit, cell, evaluation_commit=None,
+):
     path = Path(path)
     if not path.is_file():
         return False
@@ -214,21 +216,34 @@ def _existing_ok(path, *, freeze_commit, cell):
         payload = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         return False
+    evaluation_matches = (
+        evaluation_commit is None
+        or payload.get("evaluation_implementation_commit")
+            == str(evaluation_commit)
+    )
     return bool(
         payload.get("contract_id") == "randomized_ordered_profile_stress_v2"
         and payload.get("status") == "ok"
         and payload.get("confirmatory_freeze_commit") == str(freeze_commit)
+        and evaluation_matches
         and payload.get("matrix_configuration_id")
             == str(cell.get("configuration_id", "primary"))
     )
 
 
-def _run_cell(index, cell, output_dir, freeze_commit):
+def _run_cell(
+    index, cell, output_dir, freeze_commit, evaluation_commit=None,
+):
     os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
     os.environ.setdefault("OMP_NUM_THREADS", "1")
     os.environ.setdefault("MKL_NUM_THREADS", "1")
     output = Path(output_dir) / _cell_name(index, cell)
-    if _existing_ok(output, freeze_commit=freeze_commit, cell=cell):
+    if _existing_ok(
+        output,
+        freeze_commit=freeze_commit,
+        cell=cell,
+        evaluation_commit=evaluation_commit,
+    ):
         return {"index": index, "status": "skipped", "out": str(output)}
     started = time.perf_counter()
     run_arguments = {
@@ -260,6 +275,9 @@ def _run_cell(index, cell, output_dir, freeze_commit):
             "cell_index": int(index),
             "cell": dict(cell),
             "confirmatory_freeze_commit": str(freeze_commit),
+            "evaluation_implementation_commit": (
+                None if evaluation_commit is None
+                else str(evaluation_commit)),
             "confirmatory_replicate_index": int(cell["replicate_index"]),
             "matrix_configuration_id": str(
                 cell.get("configuration_id", "primary")),
@@ -275,6 +293,8 @@ def _run_cell(index, cell, output_dir, freeze_commit):
             "wall_time_sec": payload["wall_time_sec"],
         }
     payload["confirmatory_freeze_commit"] = str(freeze_commit)
+    payload["evaluation_implementation_commit"] = (
+        None if evaluation_commit is None else str(evaluation_commit))
     payload["confirmatory_replicate_index"] = int(cell["replicate_index"])
     payload["matrix_configuration_id"] = str(
         cell.get("configuration_id", "primary"))
@@ -300,6 +320,7 @@ def run_matrix(
     arms=ARMS,
     regimes=tuple(PROFILE_STRESS_REGIMES),
     matrix="primary",
+    evaluation_commit=None,
 ):
     matrix = str(matrix)
     if matrix == "primary":
@@ -350,7 +371,13 @@ def run_matrix(
     started = time.perf_counter()
     if workers == 1:
         for completed, (index, cell) in enumerate(selected, start=1):
-            results.append(_run_cell(index, cell, output_dir, freeze_commit))
+            results.append(_run_cell(
+                index,
+                cell,
+                output_dir,
+                freeze_commit,
+                evaluation_commit,
+            ))
             print(
                 f"PROFILE_STRESS_PROGRESS {completed}/{len(selected)}",
                 flush=True,
@@ -359,7 +386,12 @@ def run_matrix(
         with ProcessPoolExecutor(max_workers=workers) as executor:
             futures = {
                 executor.submit(
-                    _run_cell, index, cell, output_dir, freeze_commit
+                    _run_cell,
+                    index,
+                    cell,
+                    output_dir,
+                    freeze_commit,
+                    evaluation_commit,
                 ): index
                 for index, cell in selected
             }
@@ -376,6 +408,8 @@ def run_matrix(
         "status": (
             "complete" if error_count == 0 else "complete_with_cell_errors"),
         "freeze_commit": str(freeze_commit),
+        "evaluation_implementation_commit": (
+            None if evaluation_commit is None else str(evaluation_commit)),
         "matrix": matrix,
         "matrix_cell_count": len(cells),
         "shard_start": start,
@@ -416,6 +450,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--freeze-commit", required=True)
+    parser.add_argument("--evaluation-commit")
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--end", type=int)
     parser.add_argument("--workers", type=int, default=1)
@@ -450,6 +485,7 @@ def main():
         arms=_csv(args.arms),
         regimes=_csv(args.regimes),
         matrix=args.matrix,
+        evaluation_commit=args.evaluation_commit,
     )
 
 

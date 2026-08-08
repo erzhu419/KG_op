@@ -98,11 +98,11 @@ def build_specs(args, registration):
             _partition(total, args.shards)
         ):
             local_output_dir = (
-                ROOT / "SC-OLH-KG/results/or_review_v1"
+                ROOT / "SC-OLH-KG/results" / args.result_run_id
                 / directory / f"shard_{shard_index}"
             )
             output_dir = (
-                deploy_root / "SC-OLH-KG/results/or_review_v1"
+                deploy_root / "SC-OLH-KG/results" / args.result_run_id
                 / directory / f"shard_{shard_index}"
             )
             command = [
@@ -122,6 +122,8 @@ def build_specs(args, registration):
                 str(output_dir),
                 "--freeze-commit",
                 freeze_commit,
+                "--evaluation-commit",
+                str(args.evaluation_commit),
                 "--matrix",
                 matrix,
                 "--start",
@@ -141,7 +143,7 @@ def build_specs(args, registration):
                 "cmd": f"{shlex.join(command)} && echo DONE",
                 "cwd": str(deploy_root),
                 "signature": (
-                    f"KG_op/or_review_v1_retry/{matrix}/"
+                    f"KG_op/{args.signature_version}/{matrix}/"
                     f"shard{shard_index:02d}/{start}-{stop}"
                 ),
                 "project": "KG-SYNTH",
@@ -167,8 +169,10 @@ def build_specs(args, registration):
 def build_preflight_spec(args, registration):
     freeze_commit = str(registration["method_freeze_commit"])
     deploy_root = Path(args.deploy)
-    local_output_dir = ROOT / "SC-OLH-KG/results/or_review_v1/preflight"
-    output_dir = deploy_root / "SC-OLH-KG/results/or_review_v1/preflight"
+    local_output_dir = (
+        ROOT / "SC-OLH-KG/results" / args.result_run_id / "preflight")
+    output_dir = (
+        deploy_root / "SC-OLH-KG/results" / args.result_run_id / "preflight")
     command = [
         "env",
         "LC_ALL=C",
@@ -186,6 +190,8 @@ def build_preflight_spec(args, registration):
         str(output_dir),
         "--freeze-commit",
         freeze_commit,
+        "--evaluation-commit",
+        str(args.evaluation_commit),
         "--matrix",
         "primary",
         "--start",
@@ -199,7 +205,8 @@ def build_preflight_spec(args, registration):
         "description": "OR review absolute-Python preflight",
         "cmd": f"{shlex.join(command)} && echo DONE",
         "cwd": str(deploy_root),
-        "signature": "KG_op/or_review_v1_retry/preflight/absolute-python",
+        "signature": (
+            f"KG_op/{args.signature_version}/preflight/absolute-python"),
         "project": "KG-SYNTH",
         "vram": 0,
         "cpu": 1,
@@ -246,6 +253,13 @@ def main():
     parser.add_argument("--shards", type=int, default=6)
     parser.add_argument("--workers", type=int, default=128)
     parser.add_argument("--ram-mb", type=int, default=65536)
+    parser.add_argument("--result-run-id", default="or_review_v1")
+    parser.add_argument("--signature-version", default="or_review_v1_retry")
+    parser.add_argument(
+        "--evaluation-commit",
+        default="legacy_unspecified",
+        help="Commit implementing post-run metrics; does not change the method freeze.",
+    )
     parser.add_argument(
         "--intent-label", default="or_review_confirmatory_retry_v1")
     parser.add_argument("--preflight-only", action="store_true")

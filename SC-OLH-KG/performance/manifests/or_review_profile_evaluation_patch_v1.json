@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_profile_evaluation_patch_v1",
+  "status": "frozen_not_yet_interpreted",
+  "method_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "evaluation_implementation_commit": "812f1c1a836637bc7d472d3137051f1a5dd7af8a",
+  "result_run_id": "or_review_v2_evalpatch",
+  "signature_version": "or_review_v2_evalpatch",
+  "reason": "The source/design library was also being used as the post-run regret reference. Varying source library size therefore changed both the method input and its oracle denominator, and safe_mass=0.03 could leave that unrelated reference set empty.",
+  "method_invariance_contract": {
+    "atlas_selection_changed": false,
+    "initial_design_changed": false,
+    "target_observations_changed": false,
+    "shortlist_changed": false,
+    "terminal_verifier_changed": false,
+    "task_seed_derivation_changed": false
+  },
+  "evaluation_changes": {
+    "audit_reference": "the fixed outcome-free 64-profile calibration library used to define each task's safe mass",
+    "source_library_independent": true,
+    "cell_error_isolation": true,
+    "all_four_profile_matrices_rerun": true,
+    "legacy_results_may_be_mixed_with_v2": false
+  },
+  "interpretation_contract": {
+    "post_outcome_method_repair": false,
+    "negative_regimes_retained": true,
+    "cell_errors_reported_not_dropped": true,
+    "v1_results_role": "development_and_evaluation_bug_audit_only"
+  }
+}

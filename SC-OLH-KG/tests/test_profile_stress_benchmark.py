@@ -136,9 +136,14 @@ def test_confirmatory_matrix_seed_and_sharding_are_deterministic(tmp_path):
         task_count=1,
         arms=("raw_sobol",),
         regimes=("aligned_low_frequency",),
+        evaluation_commit="evaluation-patch",
     )
     assert summary["status"] == "complete"
     assert summary["completed_count"] == 1
+    assert summary["evaluation_implementation_commit"] == "evaluation-patch"
+    cell = next(tmp_path.glob("cell*.json"))
+    assert json.loads(cell.read_text(encoding="utf-8"))[
+        "evaluation_implementation_commit"] == "evaluation-patch"
 
 
 def test_registered_sensitivity_and_equal_cost_cells_are_paired():
