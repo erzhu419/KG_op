@@ -26,21 +26,41 @@ from performance.statistical_inference import (
 )
 
 
+CELL_ERROR_CONTRACT_ID = "target_only_functional_profile_scbo_cell_error_v1"
+
+
 def _receipt(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def _load(paths, contract_id):
+def _load(paths, contract_id, *, algorithmic_failure_contracts=()):
     rows = []
     failures = []
+    algorithmic_failures = []
     seen = set()
+    accepted_failure_contracts = set(algorithmic_failure_contracts)
     for path in map(Path, paths):
         try:
             row = json.loads(path.read_text(encoding="utf-8"))
         except Exception as error:
             failures.append(f"{path}: unreadable: {error}")
             continue
+        if row.get("contract_id") in accepted_failure_contracts:
+            if row.get("status") != "error" or not isinstance(
+                row.get("cell"), dict
+            ):
+                failures.append(f"{path}: malformed algorithmic failure")
+                continue
+            failure = dict(row)
+            failure["_path"] = str(path)
+            failure["_sha256"] = _receipt(path)
+            algorithmic_failures.append(failure)
+            continue
         if row.get("contract_id") != contract_id or row.get("status") != "ok":
+            failures.append(
+                f"{path}: unexpected contract/status "
+                f"{row.get('contract_id')}/{row.get('status')}"
+            )
             continue
         key = (
             row["regime"], int(row["target_seed"]),
@@ -54,7 +74,7 @@ def _load(paths, contract_id):
         row["_path"] = str(path)
         row["_sha256"] = _receipt(path)
         rows.append(row)
-    return rows, failures
+    return rows, failures, algorithmic_failures
 
 
 def _functional_group_key(row):
@@ -68,8 +88,10 @@ def _functional_group_key(row):
     )
 
 
-def _summary(group):
-    task_count = len(group)
+def _summary(group, algorithmic_failures=()):
+    successful_task_count = len(group)
+    algorithmic_failure_count = len(algorithmic_failures)
+    task_count = successful_task_count + algorithmic_failure_count
     initial_count = sum(_initial_contains_true_feasible(row) for row in group)
     search_count = sum(bool(row["search_contains_true_feasible"]) for row in group)
     certified_count = sum(_certified_deployed_success(row) for row in group)
@@ -89,6 +111,9 @@ def _summary(group):
     ]
     return {
         "independent_task_count": int(task_count),
+        "successful_task_count": int(successful_task_count),
+        "algorithmic_failure_count": int(algorithmic_failure_count),
+        "algorithmic_failures_count_as_unsuccessful_primary_outcomes": True,
         "initial_design_true_feasible_count": int(initial_count),
         "initial_design_true_feasible_rate": float(initial_count / task_count),
         "initial_design_true_feasible_exact_95ci": exact_binomial_interval(
@@ -113,12 +138,43 @@ def _summary(group):
         "median_certified_deployed_regret": (
             None if not deployed_regrets
             else float(np.median(deployed_regrets))),
+        "mean_verification_calls_successful_runs": float(np.mean([
+            row["verification_calls"] for row in group])),
         "mean_verification_calls": float(np.mean([
             row["verification_calls"] for row in group])),
+        "mean_all_in_calls_successful_runs": float(np.mean([
+            row["all_in_calls_unamortized"] for row in group])),
         "mean_all_in_calls": float(np.mean([
             row["all_in_calls_unamortized"] for row in group])),
+        "median_wall_time_sec_successful_runs": float(np.median([
+            row["wall_time_sec"] for row in group])),
         "median_wall_time_sec": float(np.median([
             row["wall_time_sec"] for row in group])),
+    }
+
+
+def _failure_group_key(row):
+    cell = row["cell"]
+    return (
+        str(cell["regime"]),
+        int(cell["dimension"]),
+        int(cell["coefficient_count"]),
+        int(cell["N"]),
+        str(cell["configuration_id"]),
+    )
+
+
+def _failure_deployment_row(row):
+    """Represent an optimizer crash as an unsuccessful deployment outcome."""
+
+    cell = row["cell"]
+    return {
+        "target_seed": int(cell["target_seed"]),
+        "independently_certified": False,
+        "false_certificate": False,
+        "deployed_truth": None,
+        "finite_audit_library_oracle_objective": 0.0,
+        "_algorithmic_failure": True,
     }
 
 
@@ -140,19 +196,31 @@ def _profile_counterparts(functional_row, profile_rows):
 
 
 def analyze(functional_paths, profile_paths):
-    functional_rows, failures = _load(functional_paths, CONTRACT_ID)
-    profile_rows, profile_failures = _load(
+    functional_rows, failures, algorithmic_failures = _load(
+        functional_paths,
+        CONTRACT_ID,
+        algorithmic_failure_contracts=(CELL_ERROR_CONTRACT_ID,),
+    )
+    profile_rows, profile_failures, profile_algorithmic_failures = _load(
         profile_paths, "randomized_ordered_profile_stress_v2")
     failures.extend(profile_failures)
+    if profile_algorithmic_failures:
+        failures.append("profile counterpart contains algorithmic failures")
     groups = {}
     for row in functional_rows:
         groups.setdefault(_functional_group_key(row), []).append(row)
+    failure_groups = {}
+    for row in algorithmic_failures:
+        failure_groups.setdefault(_failure_group_key(row), []).append(row)
+    all_group_keys = sorted(set(groups) | set(failure_groups))
     summaries = []
     initial_comparisons = []
     deployment_comparisons = []
-    for group_index, (key, group) in enumerate(sorted(groups.items())):
+    for group_index, key in enumerate(all_group_keys):
+        group = groups.get(key, [])
+        group_failures = failure_groups.get(key, [])
         regime, dimension, coefficient_count, N, configuration = key
-        summary = _summary(group)
+        summary = _summary(group, group_failures)
         summary.update({
             "regime": regime,
             "nominal_dimension": dimension,
@@ -161,7 +229,12 @@ def analyze(functional_paths, profile_paths):
             "configuration_id": configuration,
         })
         summaries.append(summary)
-        counterparts = _profile_counterparts(group[0], profile_rows)
+        reference_row = group[0] if group else {
+            "regime": regime,
+            "nominal_dimension": dimension,
+            "N": N,
+        }
+        counterparts = _profile_counterparts(reference_row, profile_rows)
         if not counterparts:
             continue
         initial = _paired_initial_comparison(
@@ -183,8 +256,11 @@ def analyze(functional_paths, profile_paths):
                 "functional_initial_design_by_registered_regime"),
         })
         initial_comparisons.append(initial)
+        deployment_rows = group + [
+            _failure_deployment_row(row) for row in group_failures
+        ]
         deployment = _paired_deployment_comparison(
-            group,
+            deployment_rows,
             counterparts,
             first_name="target_only_dct_space_scbo",
             second_name="source_atlas",
@@ -198,6 +274,9 @@ def analyze(functional_paths, profile_paths):
             "functional_target_search_budget": N,
             "source_atlas_target_search_budget": 10,
             "configuration_id": configuration,
+            "algorithmic_failure_count": len(group_failures),
+            "algorithmic_failures_count_as_unsuccessful_primary_outcomes": (
+                True),
             "preverification_cost_relation": (
                 "equal" if N == 394 else "functional_has_three_extra_target_calls"),
             "inference_family_id": (
@@ -217,7 +296,11 @@ def analyze(functional_paths, profile_paths):
     return {
         "schema_version": 1,
         "contract_id": "target_only_functional_profile_scbo_analysis_v1",
-        "status": "complete" if not failures else "complete_with_failures",
+        "status": (
+            "complete_with_failures" if failures
+            else "complete_with_algorithmic_failures"
+            if algorithmic_failures else "complete"
+        ),
         "analysis_scope": (
             "registered randomized profile generator only; regime-level task "
             "inference is separated from algorithmic seed repeatability"),
@@ -230,14 +313,27 @@ def analyze(functional_paths, profile_paths):
             "all_in_calls",
         ],
         "functional_cell_count": int(len(functional_rows)),
+        "observed_functional_cell_count": int(
+            len(functional_rows) + len(algorithmic_failures)),
+        "algorithmic_failure_count": int(len(algorithmic_failures)),
         "profile_counterpart_cell_count": int(len(profile_rows)),
         "failures": failures,
+        "algorithmic_failures": [
+            {
+                "path": row["_path"],
+                "sha256": row["_sha256"],
+                "cell": row["cell"],
+                "error_type": row.get("error_type"),
+                "error_message": row.get("error_message"),
+            }
+            for row in algorithmic_failures
+        ],
         "summaries": summaries,
         "paired_initial_design_comparisons": initial_comparisons,
         "paired_deployment_comparisons": deployment_comparisons,
         "result_receipts": [
             {"path": row["_path"], "sha256": row["_sha256"]}
-            for row in functional_rows
+            for row in functional_rows + algorithmic_failures
         ],
     }
 
@@ -262,6 +358,7 @@ def main():
     print(json.dumps({
         "status": payload["status"],
         "functional_cell_count": payload["functional_cell_count"],
+        "algorithmic_failure_count": payload["algorithmic_failure_count"],
         "failure_count": len(payload["failures"]),
         "out": str(output),
     }, indent=2, sort_keys=True))

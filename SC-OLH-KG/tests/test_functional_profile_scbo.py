@@ -217,6 +217,97 @@ def test_functional_analysis_keeps_initial_search_and_deployment_separate(
         "certified_true_feasible_deployed_policy")
 
 
+def test_functional_analysis_counts_algorithm_failure_as_unsuccessful_primary(
+    tmp_path,
+):
+    import json
+
+    functional = {
+        "contract_id": "target_only_functional_profile_scbo_v1",
+        "status": "ok",
+        "regime": "irregular_grid",
+        "target_seed": 17,
+        "nominal_dimension": 1000,
+        "arm": "target_only_dct_space_scbo",
+        "matrix_configuration_id": "target394-k8",
+        "N": 394,
+        "functional_coordinate_contract": {"coefficient_count": 8},
+        "initial_design_contains_true_feasible": False,
+        "initial_design_finite_audit_library_regret": None,
+        "contains_true_feasible": True,
+        "finite_library_regret": 0.1,
+        "penalized_loss": 0.1,
+        "search_contains_true_feasible": True,
+        "search_finite_audit_library_regret": 0.1,
+        "independently_certified": True,
+        "false_certificate": False,
+        "deployed_truth": {"feasible": True, "objective": 0.1},
+        "finite_audit_library_oracle_objective": 0.0,
+        "verification_calls": 80,
+        "all_in_calls_unamortized": 474,
+        "wall_time_sec": 1.0,
+    }
+    algorithm_failure = {
+        "contract_id": (
+            "target_only_functional_profile_scbo_cell_error_v1"),
+        "status": "error",
+        "cell": {
+            "regime": "irregular_grid",
+            "target_seed": 18,
+            "dimension": 1000,
+            "coefficient_count": 8,
+            "N": 394,
+            "configuration_id": "target394-k8",
+        },
+        "error_type": "RuntimeError",
+        "error_message": "duplicate candidate",
+    }
+    profiles = []
+    for seed in (17, 18):
+        profiles.append({
+            "contract_id": "randomized_ordered_profile_stress_v2",
+            "status": "ok",
+            "regime": "irregular_grid",
+            "target_seed": seed,
+            "nominal_dimension": 1000,
+            "arm": "source_atlas",
+            "matrix_configuration_id": "source384-target10",
+            "schema_mode": "declared",
+            "descriptor_mode": "domain_blind",
+            "N": 10,
+            "contains_true_feasible": True,
+            "finite_library_regret": 0.1,
+            "penalized_loss": 0.1,
+            "independently_certified": True,
+            "false_certificate": False,
+            "deployed_truth": {"feasible": True, "objective": 0.1},
+            "finite_audit_library_oracle_objective": 0.0,
+        })
+
+    paths = []
+    for index, payload in enumerate((functional, algorithm_failure)):
+        path = tmp_path / f"functional_{index}.json"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        paths.append(path)
+    profile_paths = []
+    for index, payload in enumerate(profiles):
+        path = tmp_path / f"profile_{index}.json"
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        profile_paths.append(path)
+
+    payload = analyze(paths, profile_paths)
+    assert payload["status"] == "complete_with_algorithmic_failures"
+    assert payload["algorithmic_failure_count"] == 1
+    assert payload["observed_functional_cell_count"] == 2
+    summary = payload["summaries"][0]
+    assert summary["independent_task_count"] == 2
+    assert summary["algorithmic_failure_count"] == 1
+    assert summary["certified_true_feasible_deployment_rate"] == 0.5
+    comparison = payload["paired_deployment_comparisons"][0]
+    assert comparison["paired_task_count"] == 2
+    assert comparison["algorithmic_failure_count"] == 1
+
+
 @pytest.mark.skipif(
     not is_botorch_available(), reason="BoTorch is not installed")
 def test_tiny_functional_scbo_freezes_before_truth_and_uses_common_verifier():

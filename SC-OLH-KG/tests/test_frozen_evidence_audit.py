@@ -6,7 +6,11 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from performance.audit_frozen_evidence import audit_spec  # noqa: E402
+from performance.audit_frozen_evidence import (  # noqa: E402
+    _sha256,
+    audit_spec,
+    load_specification,
+)
 
 
 def _write(path, payload):
@@ -82,3 +86,68 @@ def test_frozen_evidence_audit_fails_when_information_field_is_missing(tmp_path)
     )
     assert failure["field"] == "information.target_oracle_used"
     assert failure["field_missing"] is True
+
+
+def test_frozen_evidence_audit_counts_declared_algorithmic_failure(tmp_path):
+    specification = _spec()
+    matrix = specification["matrices"][0]
+    matrix["algorithmic_failure_contract_ids"] = ["cell_error_v1"]
+    matrix["algorithmic_failure_required_values"] = {
+        "status": "error",
+        "execution_commit": "abc123",
+    }
+    matrix["algorithmic_failure_unique_key_fields"] = [
+        "cell.regime", "cell.seed", "cell.arm",
+    ]
+    _write(tmp_path / "primary" / "cell0.json", _row(0))
+    _write(tmp_path / "primary" / "cell1.json", {
+        "contract_id": "cell_error_v1",
+        "status": "error",
+        "execution_commit": "abc123",
+        "error_type": "RuntimeError",
+        "error_message": "duplicate candidate",
+        "cell": {"regime": "test", "seed": 1, "arm": "method"},
+    })
+
+    result = audit_spec(tmp_path, specification)
+
+    assert result["status"] == "complete_with_algorithmic_failures"
+    assert result["publication_ready"] is True
+    assert result["failure_count"] == 0
+    assert result["algorithmic_failure_count"] == 1
+    matrix_result = result["matrices"][0]
+    assert matrix_result["successful_cell_count"] == 1
+    assert matrix_result["algorithmic_failure_cell_count"] == 1
+    assert matrix_result["accepted_cell_count"] == 2
+
+
+def test_frozen_evidence_overlay_verifies_parent_digest(tmp_path):
+    parent_path = tmp_path / "parent.json"
+    _write(parent_path, _spec(expected_count=1))
+    overlay_path = tmp_path / "overlay.json"
+    _write(overlay_path, {
+        "contract_id": "overlay_v1",
+        "parent_specification": {
+            "path": "parent.json",
+            "sha256": _sha256(parent_path),
+        },
+        "matrix_overrides": {
+            "primary": {"expected_count": 3},
+        },
+        "additional_matrices": [{
+            "name": "secondary",
+            "relative_glob": "secondary/cell*.json",
+            "expected_count": 2,
+            "required_values": {"status": "ok"},
+            "unique_key_fields": ["seed"],
+        }],
+    })
+
+    specification = load_specification(overlay_path)
+
+    matrices = {matrix["name"]: matrix for matrix in specification["matrices"]}
+    assert specification["contract_id"] == "overlay_v1"
+    assert matrices["primary"]["expected_count"] == 3
+    assert matrices["secondary"]["expected_count"] == 2
+    assert specification["resolved_parent_specification"]["sha256"] == _sha256(
+        parent_path)

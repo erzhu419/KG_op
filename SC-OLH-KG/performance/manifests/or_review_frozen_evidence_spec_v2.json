@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_frozen_evidence_spec_v2",
+  "status": "frozen_audit_overlay",
+  "purpose": "Preserve the preregistered V1 matrix definitions while counting observed algorithmic failures separately from missing or malformed evidence, adding the separately frozen native-transfer execution matrix, and auditing post-decision temporal stability without relabeling it as a certificate.",
+  "parent_specification": {
+    "path": "or_review_frozen_evidence_spec_v1.json",
+    "sha256": "a7f6cf78bd9518d5b4fa01b0fb9b2f0f135293de2662c66da38df8d2f0d30f59"
+  },
+  "matrix_overrides": {
+    "target_only_functional_scbo_equal_preverification_cost": {
+      "algorithmic_failure_contract_ids": [
+        "target_only_functional_profile_scbo_cell_error_v1"
+      ],
+      "algorithmic_failure_required_values": {
+        "status": "error",
+        "task_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+        "functional_method_commit": "d1078e3ebe657ebe938e8e470d465143c977ae41",
+        "execution_commit": "b9eef508b6971e591b69266474e95e4c9b8341a8",
+        "cell.configuration_id": "target394-k8",
+        "cell.dimension": 1000,
+        "cell.N": 394
+      },
+      "algorithmic_failure_unique_key_fields": [
+        "cell.regime",
+        "cell.target_seed",
+        "cell.dimension",
+        "cell.configuration_id"
+      ]
+    }
+  },
+  "additional_matrices": [
+    {
+      "name": "native_end_to_end_transfer",
+      "relative_glob": "or_review_native_transfer_official_d1000_n13_s80_99_v1/**/result.json",
+      "expected_count": 480,
+      "required_values": {
+        "status": "ok",
+        "implementation": "official",
+        "comparison_contract.target_initial_design": "native_source_sequential",
+        "comparison_contract.method_native_source_initialization": true,
+        "comparison_contract.source_archive_identical_across_methods": true,
+        "comparison_contract.source_archive_identical_across_target_seeds": true,
+        "comparison_contract.source_oracle_aided": false,
+        "comparison_contract.source_scored_atlas_used": false,
+        "comparison_contract.source_informed_initial_proposal": false,
+        "comparison_contract.source_simulator_calls": 384,
+        "comparison_contract.target_dimension": 1000,
+        "comparison_contract.target_initial_calls_n0": 10,
+        "comparison_contract.target_search_calls": 13,
+        "comparison_contract.terminal_verification_identical_across_methods": true,
+        "result.n_search_simulations": 13,
+        "result.terminal_shortlist_frozen_before_truth_metrics": true,
+        "result.terminal_verification.protocol": "ordered_frozen_shortlist",
+        "result.terminal_verification.shortlist_frozen_before_verification": true,
+        "result.terminal_verification.target_oracle_used": false,
+        "result.terminal_verification.posterior_updated_from_verification": false
+      },
+      "unique_key_fields": [
+        "heldout_target_domain",
+        "method",
+        "seed",
+        "implementation"
+      ]
+    },
+    {
+      "name": "opsd_region_holdout_temporal_audit",
+      "relative_glob": "or_review_energy_temporal_audit_v2/cell*.json",
+      "expected_count": 450,
+      "contract_ids": ["opsd_postdecision_temporal_block_audit_v1"],
+      "required_values": {
+        "postdecision_only": true,
+        "used_to_modify_method_or_certificate": false
+      },
+      "unique_key_fields": ["target_market", "target_seed", "arm"]
+    },
+    {
+      "name": "opsd_functional_scbo_temporal_audit",
+      "relative_glob": "or_review_energy_temporal_audit_functional_v2/cell*.json",
+      "expected_count": 90,
+      "contract_ids": ["opsd_postdecision_temporal_block_audit_v1"],
+      "required_values": {
+        "postdecision_only": true,
+        "used_to_modify_method_or_certificate": false
+      },
+      "unique_key_fields": ["target_market", "target_seed", "arm"]
+    },
+    {
+      "name": "opsd_forecast_indexed_temporal_audit",
+      "relative_glob": "or_review_energy_temporal_audit_v3/cell*.json",
+      "expected_count": 540,
+      "contract_ids": ["opsd_postdecision_temporal_block_audit_v1"],
+      "required_values": {
+        "postdecision_only": true,
+        "used_to_modify_method_or_certificate": false
+      },
+      "unique_key_fields": ["target_market", "target_seed", "arm"]
+    }
+  ],
+  "interpretation_contract": {
+    "algorithmic_failure_cells_are_outcomes_not_missing_evidence": true,
+    "algorithmic_failure_cells_must_be_reported_in_final_tables": true,
+    "native_transfer_is_not_a_common_atlas_backend_comparison": true,
+    "native_transfer_source_archive_and_target_budget_match_the_frozen_execution_manifest": true,
+    "no_failed_cell_is_imputed_or_silently_rerun": true
+  }
+}
