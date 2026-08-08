@@ -1,0 +1,648 @@
+{
+  "aggregate_analysis": {
+    "algorithmic_repeatability_unit": "seed_within_fixed_domain",
+    "common_atlas_backend_comparison": false,
+    "comparison_type": "native_end_to_end_transfer",
+    "contract_id": "or_review_native_transfer_analysis_v1",
+    "domain_method_summaries": [
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 6,
+        "certified_epsilon_optimal_005_count": 6,
+        "certified_safe_count": 6,
+        "certified_safe_rate_exact_95ci": [
+          0.11893159040572766,
+          0.5427891822764719
+        ],
+        "deployed_true_feasible_count": 6,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "FactorShockStatePolicyRZDT1",
+        "initial_design_coverage_count": 4,
+        "mean_all_in_calls_unamortized": 701.0,
+        "mean_verification_calls": 304.0,
+        "median_certified_feasible_regret": 0.00824999999999998,
+        "median_wall_time_sec": 9072.677877902985,
+        "method": "fsbo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "FactorShockStatePolicyRZDT1",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 2649.510290503502,
+        "method": "hyperbo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 12,
+        "certified_epsilon_optimal_005_count": 12,
+        "certified_safe_count": 12,
+        "certified_safe_rate_exact_95ci": [
+          0.3605425873072448,
+          0.8088099392744295
+        ],
+        "deployed_true_feasible_count": 12,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "FactorShockStatePolicyRZDT1",
+        "initial_design_coverage_count": 9,
+        "mean_all_in_calls_unamortized": 656.2,
+        "mean_verification_calls": 259.2,
+        "median_certified_feasible_regret": 0.00824999999999998,
+        "median_wall_time_sec": 61.827409863471985,
+        "method": "malibo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 19,
+        "certified_epsilon_optimal_005_count": 19,
+        "certified_safe_count": 19,
+        "certified_safe_rate_exact_95ci": [
+          0.7512672372279723,
+          0.998734910502044
+        ],
+        "deployed_true_feasible_count": 19,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "FactorShockStatePolicyRZDT1",
+        "initial_design_coverage_count": 14,
+        "mean_all_in_calls_unamortized": 560.2,
+        "mean_verification_calls": 163.2,
+        "median_certified_feasible_regret": 0.00824999999999998,
+        "median_wall_time_sec": 154.27939629554749,
+        "method": "metabo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 1,
+        "certified_epsilon_optimal_005_count": 1,
+        "certified_safe_count": 1,
+        "certified_safe_rate_exact_95ci": [
+          0.0012650894979560335,
+          0.24873276277202772
+        ],
+        "deployed_true_feasible_count": 1,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "FactorShockStatePolicyRZDT1",
+        "initial_design_coverage_count": 1,
+        "mean_all_in_calls_unamortized": 720.2,
+        "mean_verification_calls": 323.2,
+        "median_certified_feasible_regret": 0.00824999999999998,
+        "median_wall_time_sec": 35.34325087070465,
+        "method": "mtgp_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 14,
+        "certified_epsilon_optimal_005_count": 14,
+        "certified_safe_count": 14,
+        "certified_safe_rate_exact_95ci": [
+          0.4572108177235281,
+          0.8810684095942724
+        ],
+        "deployed_true_feasible_count": 14,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "FactorShockStatePolicyRZDT1",
+        "initial_design_coverage_count": 6,
+        "mean_all_in_calls_unamortized": 649.8,
+        "mean_verification_calls": 252.8,
+        "median_certified_feasible_regret": 0.00824999999999998,
+        "median_wall_time_sec": 72.27822268009186,
+        "method": "rgpe_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "FactorShockStatePolicyRZDT1",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 869.7134367227554,
+        "method": "safe_fpacoh_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "FactorShockStatePolicyRZDT1",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 96.32011473178864,
+        "method": "stacked_transfer_gp_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 2,
+        "certified_epsilon_optimal_005_count": 2,
+        "certified_safe_count": 2,
+        "certified_safe_rate_exact_95ci": [
+          0.012348527170295887,
+          0.3169827140190792
+        ],
+        "deployed_true_feasible_count": 3,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "InventorySupplyChain",
+        "initial_design_coverage_count": 1,
+        "mean_all_in_calls_unamortized": 726.6,
+        "mean_verification_calls": 329.6,
+        "median_certified_feasible_regret": 0.0025713042400000163,
+        "median_wall_time_sec": 8495.006261587143,
+        "method": "fsbo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "InventorySupplyChain",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 2679.8310182094574,
+        "method": "hyperbo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 1,
+        "certified_epsilon_optimal_005_count": 2,
+        "certified_safe_count": 2,
+        "certified_safe_rate_exact_95ci": [
+          0.012348527170295887,
+          0.3169827140190792
+        ],
+        "deployed_true_feasible_count": 9,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "InventorySupplyChain",
+        "initial_design_coverage_count": 1,
+        "mean_all_in_calls_unamortized": 726.6,
+        "mean_verification_calls": 329.6,
+        "median_certified_feasible_regret": 0.016545929989999986,
+        "median_wall_time_sec": 20.051384449005127,
+        "method": "malibo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 9,
+        "certified_epsilon_optimal_005_count": 9,
+        "certified_safe_count": 9,
+        "certified_safe_rate_exact_95ci": [
+          0.23057789677591792,
+          0.6847218669594515
+        ],
+        "deployed_true_feasible_count": 20,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "InventorySupplyChain",
+        "initial_design_coverage_count": 18,
+        "mean_all_in_calls_unamortized": 651.4,
+        "mean_verification_calls": 254.4,
+        "median_certified_feasible_regret": 0.0025713042400000163,
+        "median_wall_time_sec": 109.0780018568039,
+        "method": "metabo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 2,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "InventorySupplyChain",
+        "initial_design_coverage_count": 4,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 13.236351728439331,
+        "method": "mtgp_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 11,
+        "certified_epsilon_optimal_005_count": 16,
+        "certified_safe_count": 16,
+        "certified_safe_rate_exact_95ci": [
+          0.5633859970033314,
+          0.942666002949976
+        ],
+        "deployed_true_feasible_count": 16,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "InventorySupplyChain",
+        "initial_design_coverage_count": 19,
+        "mean_all_in_calls_unamortized": 652.2,
+        "mean_verification_calls": 255.2,
+        "median_certified_feasible_regret": 0.0025713042400000163,
+        "median_wall_time_sec": 50.32289743423462,
+        "method": "rgpe_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 5,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "InventorySupplyChain",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 844.606010556221,
+        "method": "safe_fpacoh_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 12,
+        "certified_epsilon_optimal_005_count": 13,
+        "certified_safe_count": 13,
+        "certified_safe_rate_exact_95ci": [
+          0.4078114654671718,
+          0.8460907952154588
+        ],
+        "deployed_true_feasible_count": 17,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "InventorySupplyChain",
+        "initial_design_coverage_count": 20,
+        "mean_all_in_calls_unamortized": 656.2,
+        "mean_verification_calls": 259.2,
+        "median_certified_feasible_regret": 0.0025713042400000163,
+        "median_wall_time_sec": 82.69877755641937,
+        "method": "stacked_transfer_gp_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "QueueResourceControl",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 7100.5183572769165,
+        "method": "fsbo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "QueueResourceControl",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 2319.0241655111313,
+        "method": "hyperbo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "QueueResourceControl",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 16.11419939994812,
+        "method": "malibo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "QueueResourceControl",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 68.31971371173859,
+        "method": "metabo_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "QueueResourceControl",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 11.892593622207642,
+        "method": "mtgp_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "QueueResourceControl",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 39.59394288063049,
+        "method": "rgpe_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "QueueResourceControl",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 1009.8383619785309,
+        "method": "safe_fpacoh_cbo",
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 20,
+        "certified_epsilon_optimal_001_count": 0,
+        "certified_epsilon_optimal_005_count": 0,
+        "certified_safe_count": 0,
+        "certified_safe_rate_exact_95ci": [
+          0.0,
+          0.16843347098308548
+        ],
+        "deployed_true_feasible_count": 0,
+        "false_certificate_count": 0,
+        "heldout_target_domain": "QueueResourceControl",
+        "initial_design_coverage_count": 0,
+        "mean_all_in_calls_unamortized": 733.0,
+        "mean_verification_calls": 336.0,
+        "median_certified_feasible_regret": null,
+        "median_wall_time_sec": 67.1184309720993,
+        "method": "stacked_transfer_gp_cbo",
+        "task_population_inference_claimed": false
+      }
+    ],
+    "expected_cell_count": 480,
+    "failures": [],
+    "method_summaries": [
+      {
+        "algorithmic_seed_count": 60,
+        "certified_safe_count": 0,
+        "domain_counts": {
+          "FactorShockStatePolicyRZDT1": 0,
+          "InventorySupplyChain": 0,
+          "QueueResourceControl": 0
+        },
+        "false_certificate_count": 0,
+        "fixed_domain_count": 3,
+        "method": "safe_fpacoh_cbo",
+        "minimum_domain_certified_safe_rate": 0.0,
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 60,
+        "certified_safe_count": 30,
+        "domain_counts": {
+          "FactorShockStatePolicyRZDT1": 14,
+          "InventorySupplyChain": 16,
+          "QueueResourceControl": 0
+        },
+        "false_certificate_count": 0,
+        "fixed_domain_count": 3,
+        "method": "rgpe_cbo",
+        "minimum_domain_certified_safe_rate": 0.0,
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 60,
+        "certified_safe_count": 13,
+        "domain_counts": {
+          "FactorShockStatePolicyRZDT1": 0,
+          "InventorySupplyChain": 13,
+          "QueueResourceControl": 0
+        },
+        "false_certificate_count": 0,
+        "fixed_domain_count": 3,
+        "method": "stacked_transfer_gp_cbo",
+        "minimum_domain_certified_safe_rate": 0.0,
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 60,
+        "certified_safe_count": 1,
+        "domain_counts": {
+          "FactorShockStatePolicyRZDT1": 1,
+          "InventorySupplyChain": 0,
+          "QueueResourceControl": 0
+        },
+        "false_certificate_count": 0,
+        "fixed_domain_count": 3,
+        "method": "mtgp_cbo",
+        "minimum_domain_certified_safe_rate": 0.0,
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 60,
+        "certified_safe_count": 8,
+        "domain_counts": {
+          "FactorShockStatePolicyRZDT1": 6,
+          "InventorySupplyChain": 2,
+          "QueueResourceControl": 0
+        },
+        "false_certificate_count": 0,
+        "fixed_domain_count": 3,
+        "method": "fsbo_cbo",
+        "minimum_domain_certified_safe_rate": 0.0,
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 60,
+        "certified_safe_count": 0,
+        "domain_counts": {
+          "FactorShockStatePolicyRZDT1": 0,
+          "InventorySupplyChain": 0,
+          "QueueResourceControl": 0
+        },
+        "false_certificate_count": 0,
+        "fixed_domain_count": 3,
+        "method": "hyperbo_cbo",
+        "minimum_domain_certified_safe_rate": 0.0,
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 60,
+        "certified_safe_count": 28,
+        "domain_counts": {
+          "FactorShockStatePolicyRZDT1": 19,
+          "InventorySupplyChain": 9,
+          "QueueResourceControl": 0
+        },
+        "false_certificate_count": 0,
+        "fixed_domain_count": 3,
+        "method": "metabo_cbo",
+        "minimum_domain_certified_safe_rate": 0.0,
+        "task_population_inference_claimed": false
+      },
+      {
+        "algorithmic_seed_count": 60,
+        "certified_safe_count": 14,
+        "domain_counts": {
+          "FactorShockStatePolicyRZDT1": 12,
+          "InventorySupplyChain": 2,
+          "QueueResourceControl": 0
+        },
+        "false_certificate_count": 0,
+        "fixed_domain_count": 3,
+        "method": "malibo_cbo",
+        "minimum_domain_certified_safe_rate": 0.0,
+        "task_population_inference_claimed": false
+      }
+    ],
+    "primary_task_generalization_unit": "heldout_target_domain",
+    "row_count": 480,
+    "schema_version": 1,
+    "source_archive_calls": 384,
+    "source_archive_fingerprints": {
+      "FactorShockStatePolicyRZDT1": [
+        "69705de909e15109d817b6f93bb12315ff191d5feb5bb589404b82413e642a8a"
+      ],
+      "InventorySupplyChain": [
+        "04af229d7d1cb36e39e584868b4be368a61ed4d82b67684ed7bbb899859eb6d9"
+      ],
+      "QueueResourceControl": [
+        "890c48c72baf5a5d00b2a9d4259f7e69bb3b4ddecffd9e0d34da622be4af11a8"
+      ]
+    },
+    "status": "complete",
+    "target_initialization_budget": 10,
+    "target_search_budget": 13,
+    "task_population_inference_claimed": false
+  },
+  "algorithmic_failure_count": 0,
+  "contract_id": "or_review_compact_analysis_v1",
+  "failures": [],
+  "interpretation_contract": {
+    "all_aggregate_endpoints_preserved": true,
+    "omitted_fields_are_row_level_only": true,
+    "raw_result_cells_committed_by_frozen_matrix_roots": true,
+    "raw_rows_committed_by_source_analysis_sha256": true
+  },
+  "schema_version": 1,
+  "source_analysis": {
+    "artifact_name": "or_review_native_transfer_analysis.json",
+    "contract_id": "or_review_native_transfer_analysis_v1",
+    "omitted_row_fields": {
+      "compact_rows": {
+        "container_type": "list",
+        "entry_count": 480
+      }
+    },
+    "schema_version": 1,
+    "sha256": "fc566aa8b3cf06db966171c08c024b90281c6ce76333c339ce43c913ce3d4e8d"
+  },
+  "status": "complete"
+}
