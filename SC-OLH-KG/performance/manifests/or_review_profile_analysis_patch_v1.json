@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_profile_analysis_patch_v1",
+  "status": "frozen_before_outcome_access",
+  "method_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "raw_result_contract": "or_review_profile_evaluation_patch_v3",
+  "raw_result_run_id": "or_review_v2_evalpatch3",
+  "analysis_implementation_commit": "446a17e9685396f7f463f946d553313d8b92eb78",
+  "reason": "Before confirmatory outcomes were inspected, the primary analyzer was found to combine a feasible point encountered during search with the final certification decision. The analysis now assigns frontend coverage, search quality, and deployed-policy quality to distinct endpoints.",
+  "raw_data_invariance_contract": {
+    "method_changed": false,
+    "task_seeds_changed": false,
+    "source_archive_changed": false,
+    "initial_design_changed": false,
+    "target_search_changed": false,
+    "shortlist_changed": false,
+    "terminal_verifier_changed": false,
+    "rerun_required": false
+  },
+  "endpoint_contract": {
+    "frontend_primary": "initial-design true-feasible coverage and initial-design penalized loss",
+    "search_diagnostic": "best true-feasible point encountered during the complete target search",
+    "full_pipeline_primary": "true feasibility and regret of the independently certified deployed policy",
+    "false_certificate": "a certified deployed policy that is infeasible under the finite audit library",
+    "cross_endpoint_credit": "prohibited"
+  },
+  "inference_contract": {
+    "paired_frontend_and_deployment_tests_are_separate": true,
+    "registered_generator_macro_and_task_context_tests_are_separate": true,
+    "holm_families_fixed_before_outcome_access": true,
+    "algorithmic_repeatability_is_not_task_population_generalization": true,
+    "negative_results_retained": true
+  }
+}
