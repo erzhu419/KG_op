@@ -90,13 +90,46 @@ def _receipt(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _outcome_key(row):
-    """Lexicographic safety-first outcome, larger is better."""
+def _certified_deployed_success(row):
+    deployed = row.get("deployed_truth")
+    return bool(
+        row["independently_certified"]
+        and isinstance(deployed, dict)
+        and deployed.get("feasible") is True
+        and not row["false_certificate"]
+    )
+
+
+def _deployed_regret(row):
+    deployed = row.get("deployed_truth")
+    if not _certified_deployed_success(row) or not isinstance(deployed, dict):
+        return None
+    return max(
+        0.0,
+        float(deployed["objective"])
+        - float(row["finite_audit_library_oracle_objective"]),
+    )
+
+
+def _deployment_outcome_key(row):
+    """Lexicographic deployed-policy outcome, larger is better."""
+
+    success = _certified_deployed_success(row)
+    regret = _deployed_regret(row)
+    return (
+        int(success),
+        int(not bool(row["false_certificate"])),
+        int(regret is not None and regret <= 0.05),
+        -float(regret) if regret is not None else 0.0,
+    )
+
+
+def _initial_outcome_key(row):
+    """Frontend-only outcome before continuation or verification."""
 
     return (
-        int(bool(row["contains_true_feasible"])),
-        int(bool(row["independently_certified"])),
-        -float(row["penalized_loss"]),
+        int(_initial_contains_true_feasible(row)),
+        -_initial_penalized_loss(row),
     )
 
 
@@ -121,7 +154,72 @@ def _initial_penalized_loss(row):
     ))
 
 
-def _paired_comparison(
+def _paired_deployment_comparison(
+    first_rows,
+    second_rows,
+    *,
+    first_name,
+    second_name,
+    pair_key=lambda row: int(row["target_seed"]),
+    bootstrap_seed=20260808,
+):
+    first = {pair_key(row): row for row in first_rows}
+    second = {pair_key(row): row for row in second_rows}
+    common = sorted(set(first) & set(second))
+    wins = losses = ties = 0
+    success_difference = []
+    regret_difference = []
+    for seed in common:
+        first_key = _deployment_outcome_key(first[seed])
+        second_key = _deployment_outcome_key(second[seed])
+        if first_key > second_key:
+            wins += 1
+        elif first_key < second_key:
+            losses += 1
+        else:
+            ties += 1
+        success_difference.append(
+            int(_certified_deployed_success(first[seed]))
+            - int(_certified_deployed_success(second[seed]))
+        )
+        first_regret = _deployed_regret(first[seed])
+        second_regret = _deployed_regret(second[seed])
+        if first_regret is not None and second_regret is not None:
+            regret_difference.append(first_regret - second_regret)
+    non_ties = wins + losses
+    return {
+        "endpoint": "certified_deployed_policy",
+        "first": first_name,
+        "second": second_name,
+        "paired_task_count": int(len(common)),
+        "first_wins": int(wins),
+        "first_losses": int(losses),
+        "ties": int(ties),
+        "one_sided_first_better_exact_sign_pvalue": (
+            1.0 if non_ties == 0 else float(binomtest(
+                wins, non_ties, p=0.5, alternative="greater").pvalue)
+        ),
+        "mean_first_minus_second_certified_success": (
+            None if not success_difference
+            else float(np.mean(success_difference))
+        ),
+        "mean_first_minus_second_certified_success_bootstrap_95ci": (
+            None if not success_difference
+            else bootstrap_mean_ci(success_difference, seed=bootstrap_seed)
+        ),
+        "paired_both_certified_safe_count": len(regret_difference),
+        "median_first_minus_second_deployed_regret_when_both_safe": (
+            None if not regret_difference
+            else float(np.median(regret_difference))
+        ),
+        "mean_first_minus_second_deployed_regret_when_both_safe": (
+            None if not regret_difference
+            else float(np.mean(regret_difference))
+        ),
+    }
+
+
+def _paired_initial_comparison(
     first_rows,
     second_rows,
     *,
@@ -135,21 +233,27 @@ def _paired_comparison(
     common = sorted(set(first) & set(second))
     wins = losses = ties = 0
     loss_difference = []
+    coverage_difference = []
     for seed in common:
-        first_key = _outcome_key(first[seed])
-        second_key = _outcome_key(second[seed])
+        first_key = _initial_outcome_key(first[seed])
+        second_key = _initial_outcome_key(second[seed])
         if first_key > second_key:
             wins += 1
         elif first_key < second_key:
             losses += 1
         else:
             ties += 1
+        coverage_difference.append(
+            int(_initial_contains_true_feasible(first[seed]))
+            - int(_initial_contains_true_feasible(second[seed]))
+        )
         loss_difference.append(
-            float(first[seed]["penalized_loss"])
-            - float(second[seed]["penalized_loss"])
+            _initial_penalized_loss(first[seed])
+            - _initial_penalized_loss(second[seed])
         )
     non_ties = wins + losses
     return {
+        "endpoint": "initial_design_true_feasible_coverage",
         "first": first_name,
         "second": second_name,
         "paired_task_count": int(len(common)),
@@ -160,14 +264,19 @@ def _paired_comparison(
             1.0 if non_ties == 0 else float(binomtest(
                 wins, non_ties, p=0.5, alternative="greater").pvalue)
         ),
-        "median_first_minus_second_penalized_loss": (
+        "mean_first_minus_second_initial_coverage": (
+            None if not coverage_difference
+            else float(np.mean(coverage_difference))
+        ),
+        "mean_first_minus_second_initial_coverage_bootstrap_95ci": (
+            None if not coverage_difference
+            else bootstrap_mean_ci(coverage_difference, seed=bootstrap_seed)
+        ),
+        "median_first_minus_second_initial_penalized_loss": (
             None if not loss_difference else float(np.median(loss_difference))
         ),
-        "mean_first_minus_second_penalized_loss": (
+        "mean_first_minus_second_initial_penalized_loss": (
             None if not loss_difference else float(np.mean(loss_difference))
-        ),
-        "mean_first_minus_second_penalized_loss_bootstrap_95ci": (
-            bootstrap_mean_ci(loss_difference, seed=bootstrap_seed)
         ),
     }
 
@@ -256,8 +365,14 @@ def analyze(paths):
         ))
         certified_count = int(sum(
             bool(row["independently_certified"]) for row in group))
+        certified_safe_count = int(sum(
+            _certified_deployed_success(row) for row in group))
         false_count = int(sum(
             bool(row["false_certificate"]) for row in group))
+        deployed_regrets = [
+            regret for row in group
+            if (regret := _deployed_regret(row)) is not None
+        ]
         summaries.append({
             "regime": regime,
             "arm": arm,
@@ -297,13 +412,23 @@ def analyze(paths):
                 certified_count, task_count),
             "independently_certified_one_sided_95_lower": (
                 exact_binomial_lower_bound(certified_count, task_count)),
+            "certified_true_feasible_deployment_count": certified_safe_count,
+            "certified_true_feasible_deployment_rate": float(
+                certified_safe_count / task_count),
+            "certified_true_feasible_deployment_exact_95ci": (
+                exact_binomial_interval(certified_safe_count, task_count)),
+            "certified_deployed_epsilon_optimal_005_count": int(sum(
+                regret <= 0.05 for regret in deployed_regrets)),
+            "median_certified_deployed_regret": (
+                None if not deployed_regrets
+                else float(np.median(deployed_regrets))),
             "false_certificate_count": false_count,
             "false_certificate_rate": float(false_count / task_count),
             "false_certificate_one_sided_95_upper": (
                 exact_binomial_upper_bound(false_count, task_count)),
             "coverage_probability_scope": (
                 "declared registered task meta-distribution only"),
-            "epsilon_optimal_005_count": int(sum(
+            "search_contains_epsilon_optimal_005_count": int(sum(
                 bool(row["feasible_and_epsilon_optimal_005"]) for row in group)),
             "median_feasible_regret": (
                 None if not regrets else float(np.median(regrets))),
@@ -322,7 +447,8 @@ def analyze(paths):
                 None if not wall_times else float(np.mean(wall_times))),
         })
 
-    comparisons = []
+    deployment_comparisons = []
+    initial_comparisons = []
     contexts = sorted({
         (
             row["regime"], row["schema_mode"], row["descriptor_mode"],
@@ -347,7 +473,7 @@ def analyze(paths):
         ):
             control_rows = [row for row in context_rows if row["arm"] == control]
             if source and control_rows:
-                comparison = _paired_comparison(
+                comparison = _paired_deployment_comparison(
                     source,
                     control_rows,
                     first_name="source_atlas",
@@ -364,15 +490,39 @@ def analyze(paths):
                         context[1], context[2], context[5],
                         prefix="task_level_context"),
                 })
-                comparisons.append(comparison)
+                deployment_comparisons.append(comparison)
+                initial = _paired_initial_comparison(
+                    source,
+                    control_rows,
+                    first_name="source_atlas",
+                    second_name=control,
+                )
+                initial.update({
+                    "regime": context[0],
+                    "schema_mode": context[1],
+                    "descriptor_mode": context[2],
+                    "nominal_dimension": context[3],
+                    "effective_rank": context[4],
+                    **_configuration_payload(context[5]),
+                    "inference_family_id": _inference_family(
+                        context[1], context[2], context[5],
+                        prefix="initial_design_context"),
+                })
+                initial_comparisons.append(initial)
 
     apply_holm_family(
-        comparisons,
+        deployment_comparisons,
+        pvalue_field="one_sided_first_better_exact_sign_pvalue",
+        family_field="inference_family_id",
+    )
+    apply_holm_family(
+        initial_comparisons,
         pvalue_field="one_sided_first_better_exact_sign_pvalue",
         family_field="inference_family_id",
     )
 
-    macro_comparisons = []
+    macro_deployment_comparisons = []
+    macro_initial_comparisons = []
     macro_contexts = sorted({
         (
             row["schema_mode"], row["descriptor_mode"],
@@ -394,7 +544,7 @@ def analyze(paths):
                 row for row in context_rows if row["arm"] == control]
             if not source or not control_rows:
                 continue
-            comparison = _paired_comparison(
+            comparison = _paired_deployment_comparison(
                 source,
                 control_rows,
                 first_name="source_atlas",
@@ -418,9 +568,39 @@ def analyze(paths):
                     "registered randomized generator only; no unrestricted "
                     "domain-population claim"),
             })
-            macro_comparisons.append(comparison)
+            macro_deployment_comparisons.append(comparison)
+            initial = _paired_initial_comparison(
+                source,
+                control_rows,
+                first_name="source_atlas",
+                second_name=control,
+                pair_key=lambda row: (
+                    str(row["regime"]), int(row["target_seed"])),
+                bootstrap_seed=(
+                    20270808 + 1000 * macro_index + control_index),
+            )
+            initial.update({
+                "schema_mode": context[0],
+                "descriptor_mode": context[1],
+                "nominal_dimension": context[2],
+                **_configuration_payload(context[3]),
+                "registered_regime_count": len({
+                    row["regime"] for row in context_rows}),
+                "inference_family_id": _inference_family(
+                    context[0], context[1], context[3],
+                    prefix="registered_generator_initial_macro"),
+                "population_claim": (
+                    "registered randomized generator only; no unrestricted "
+                    "domain-population claim"),
+            })
+            macro_initial_comparisons.append(initial)
     apply_holm_family(
-        macro_comparisons,
+        macro_deployment_comparisons,
+        pvalue_field="one_sided_first_better_exact_sign_pvalue",
+        family_field="inference_family_id",
+    )
+    apply_holm_family(
+        macro_initial_comparisons,
         pvalue_field="one_sided_first_better_exact_sign_pvalue",
         family_field="inference_family_id",
     )
@@ -447,7 +627,7 @@ def analyze(paths):
                 for row in arm_summaries
             ])),
             "mean_task_certificate_rate": float(np.mean([
-                row["independently_certified_count"]
+                row["certified_true_feasible_deployment_count"]
                 / row["independent_task_count"]
                 for row in arm_summaries
             ])),
@@ -481,7 +661,10 @@ def analyze(paths):
         "initial_design_contains_true_feasible": (
             _initial_contains_true_feasible(row)),
         "independently_certified": bool(row["independently_certified"]),
+        "certified_true_feasible_deployment": (
+            _certified_deployed_success(row)),
         "false_certificate": bool(row["false_certificate"]),
+        "deployed_feasible_regret": _deployed_regret(row),
         "finite_library_regret": row["finite_library_regret"],
         "initial_design_finite_audit_library_regret": _initial_regret(row),
         "penalized_loss": float(row["penalized_loss"]),
@@ -497,15 +680,27 @@ def analyze(paths):
         "raw_sha256": row["_sha256"],
     } for row in rows]
     return {
-        "schema_version": 2,
-        "contract_id": "randomized_ordered_profile_stress_analysis_v2",
+        "schema_version": 3,
+        "contract_id": "randomized_ordered_profile_stress_analysis_v3",
         "status": "complete" if rows and not failures else "incomplete",
         "inference_unit": "independent_target_task",
         "simulation_seed_role": "within_task_repeatability_only",
         "row_count": len(rows),
         "summaries": summaries,
-        "paired_task_level_comparisons": comparisons,
-        "registered_generator_macro_comparisons": macro_comparisons,
+        "primary_endpoint": "certified_deployed_policy",
+        "endpoint_separation": {
+            "frontend": "initial-design true-feasible coverage and loss",
+            "search": "best true-feasible point encountered during search",
+            "deployment": (
+                "quality of the independently certified deployed policy"),
+            "cross_credit_prohibited": True,
+        },
+        "paired_task_level_comparisons": deployment_comparisons,
+        "registered_generator_macro_comparisons": (
+            macro_deployment_comparisons),
+        "paired_initial_design_comparisons": initial_comparisons,
+        "registered_generator_initial_design_macro_comparisons": (
+            macro_initial_comparisons),
         "configuration_macro_summary": configuration_macro,
         "one_factor_sensitivity_curves": sensitivity_curves,
         "compact_rows": compact_rows,

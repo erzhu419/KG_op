@@ -10,6 +10,10 @@ from performance.analyze_profile_stress_suite import analyze  # noqa: E402
 
 
 def _row(arm, seed, *, feasible, certified, loss):
+    deployed_truth = (
+        {"feasible": True, "objective": loss}
+        if certified and feasible else None
+    )
     return {
         "contract_id": "randomized_ordered_profile_stress_v2",
         "status": "ok",
@@ -24,7 +28,9 @@ def _row(arm, seed, *, feasible, certified, loss):
         "initial_design_contains_true_feasible": feasible,
         "independently_certified": certified,
         "false_certificate": False,
+        "deployed_truth": deployed_truth,
         "feasible_and_epsilon_optimal_005": bool(feasible and loss <= 0.05),
+        "finite_audit_library_oracle_objective": 0.0,
         "finite_library_regret": loss if feasible else None,
         "initial_design_finite_audit_library_regret": (
             loss if feasible else None),
@@ -67,8 +73,11 @@ def test_analysis_uses_target_tasks_as_paired_units(tmp_path):
     assert macro["registered_regime_count"] == 1
     assert len(
         macro[
-            "mean_first_minus_second_penalized_loss_bootstrap_95ci"]
+            "mean_first_minus_second_certified_success_bootstrap_95ci"]
     ) == 2
+    initial = payload["paired_initial_design_comparisons"][0]
+    assert initial["first_wins"] == 3
+    assert initial["holm_family_id"] == "initial_design_context:primary"
     source_summary = next(
         row for row in payload["summaries"]
         if row["arm"] == "source_atlas"
@@ -77,6 +86,8 @@ def test_analysis_uses_target_tasks_as_paired_units(tmp_path):
     assert 0.0 < source_summary[
         "true_feasible_coverage_one_sided_95_lower"] < 1.0
     assert source_summary["false_certificate_one_sided_95_upper"] > 0.0
+    assert source_summary["certified_true_feasible_deployment_rate"] == 1.0
+    assert source_summary["certified_deployed_epsilon_optimal_005_count"] == 3
     assert source_summary["coverage_probability_scope"].startswith(
         "declared registered")
 
@@ -148,3 +159,31 @@ def test_analysis_separates_initial_design_from_full_search(tmp_path):
     assert summary["true_feasible_coverage_rate"] == 1.0
     assert summary["initial_design_mean_penalized_loss"] == 1.4
     assert summary["mean_penalized_loss"] == 0.02
+
+
+def test_analysis_does_not_credit_search_best_to_bad_deployment(tmp_path):
+    source = _row(
+        "source_atlas", 0, feasible=True, certified=True, loss=0.01)
+    source["deployed_truth"] = {"feasible": True, "objective": 0.25}
+    control = _row(
+        "generic_dct_maximin", 0,
+        feasible=True, certified=True, loss=0.02,
+    )
+    paths = []
+    for index, row in enumerate((source, control)):
+        path = tmp_path / f"deployment_{index}.json"
+        path.write_text(json.dumps(row), encoding="utf-8")
+        paths.append(path)
+
+    payload = analyze(paths)
+
+    comparison = payload["paired_task_level_comparisons"][0]
+    assert comparison["first_wins"] == 0
+    assert comparison["first_losses"] == 1
+    source_summary = next(
+        row for row in payload["summaries"]
+        if row["arm"] == "source_atlas"
+    )
+    assert source_summary["search_contains_epsilon_optimal_005_count"] == 1
+    assert source_summary["certified_deployed_epsilon_optimal_005_count"] == 0
+    assert source_summary["median_certified_deployed_regret"] == 0.25
