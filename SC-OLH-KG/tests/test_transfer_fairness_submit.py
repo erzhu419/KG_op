@@ -113,3 +113,29 @@ def test_native_transfer_submit_uses_archive_but_not_sc_design_files():
     assert all("--initial-design-file" not in spec["cmd"]
                for spec in run_specs)
     assert all(len(spec["wait_for_files"]) == 1 for spec in run_specs)
+
+
+def test_native_transfer_v69_uses_identical_final_verifier_contract():
+    specs = submit.build_specs(_args(
+        initial_design="native_source_sequential",
+        terminal_profile="v69",
+    ))
+    run_specs = [
+        spec for spec in specs if "/transfer_fairness/" in spec["signature"]
+    ]
+    assert all(
+        "--terminal-verification-candidate-budgets 80,128,128" in spec["cmd"]
+        for spec in run_specs
+    )
+    assert all(
+        "--terminal-verification-shortlist-size 3" in spec["cmd"]
+        for spec in run_specs
+    )
+    assert all(
+        "--terminal-objective-incumbent-guard" in spec["cmd"]
+        for spec in run_specs
+    )
+    assert all(
+        "--terminal-objective-comparison-budget 8" in spec["cmd"]
+        for spec in run_specs
+    )

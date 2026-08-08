@@ -75,6 +75,7 @@ def build_specs(args):
         "structural_prior_profile": "low_frequency_only",
         "proposal_mode": "risk_objective_atlas",
         "source_design_mode": "universal_mixture",
+        "terminal_profile": "legacy",
     }
     for name, value in terminal_defaults.items():
         if not hasattr(args, name):
@@ -236,19 +237,48 @@ def build_specs(args):
                     "--target-finetune-steps", str(args.target_finetune_steps),
                 ]
                 if args.terminal_verification:
+                    if args.terminal_profile == "v69":
+                        primary_budget = 80
+                        support_budget = 128
+                        shortlist_mode = (
+                            "posterior_objective_challenger_then_safe")
+                        shortlist_size = 3
+                    else:
+                        primary_budget = int(
+                            args.terminal_verification_primary_budget)
+                        support_budget = int(
+                            args.terminal_verification_support_budget)
+                        shortlist_mode = (
+                            "posterior_primary_safe_interior")
+                        shortlist_size = 2
                     command.extend([
                         "--terminal-verification",
                         "--terminal-verification-primary-budget",
-                        str(args.terminal_verification_primary_budget),
+                        str(primary_budget),
                         "--terminal-verification-support-budget",
-                        str(args.terminal_verification_support_budget),
+                        str(support_budget),
                         "--terminal-verification-delta",
                         str(args.terminal_verification_delta),
                         "--terminal-verification-method",
                         str(args.terminal_verification_method),
                         "--terminal-safe-interior-probability-slack",
                         str(args.terminal_safe_interior_probability_slack),
+                        "--terminal-verification-shortlist-mode",
+                        shortlist_mode,
+                        "--terminal-verification-shortlist-size",
+                        str(shortlist_size),
                     ])
+                    if args.terminal_profile == "v69":
+                        command.extend([
+                            "--terminal-verification-candidate-budgets",
+                            "80,128,128",
+                            "--terminal-objective-incumbent-guard",
+                            "--terminal-objective-comparison-budget", "8",
+                            "--terminal-objective-comparison-delta",
+                            str(0.05 / 3.0),
+                            "--terminal-objective-challenger-"
+                            "max-violation-probability", "0.5",
+                        ])
                 else:
                     command.append("--no-terminal-verification")
                 if args.initial_design == "source_informed":
@@ -367,6 +397,16 @@ def main():
         "--terminal-verification-method",
         choices=("component_bonferroni", "normal_quantile_tolerance"),
         default="normal_quantile_tolerance",
+    )
+    parser.add_argument(
+        "--terminal-profile",
+        choices=("legacy", "v69"),
+        default="legacy",
+        help=(
+            "v69 uses the frozen three-policy 80/128/128 verifier and "
+            "independent incumbent comparison; legacy reproduces earlier "
+            "transfer tables."
+        ),
     )
     parser.add_argument(
         "--terminal-safe-interior-probability-slack",

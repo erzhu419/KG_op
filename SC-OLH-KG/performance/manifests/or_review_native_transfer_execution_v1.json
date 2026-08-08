@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_native_transfer_execution_v1",
+  "status": "frozen_not_yet_interpreted",
+  "native_initialization_implementation_commit": "0d0140539017a77178115c04f0ca72d12abc99f4",
+  "source_manifest": {
+    "path": "SC-OLH-KG/performance/manifests/v18b_exactkg_mcdiag.json",
+    "sha256": "0ce0cb5d5e254453719c85224d11fe292764b0a60268367ddcc22cb82e714dc2"
+  },
+  "execution": {
+    "run_id": "or_review_native_transfer_official_d1000_n13_s80_99_v1",
+    "implementation": "official",
+    "initial_design": "native_source_sequential",
+    "terminal_profile": "v69",
+    "target_dimension": 1000,
+    "target_search_budget": 13,
+    "target_initialization_budget": 10,
+    "target_seeds": [
+      80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+      90, 91, 92, 93, 94, 95, 96, 97, 98, 99
+    ],
+    "heldout_domains": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "methods": [
+      "safe_fpacoh_cbo",
+      "rgpe_cbo",
+      "stacked_transfer_gp_cbo",
+      "mtgp_cbo",
+      "fsbo_cbo",
+      "hyperbo_cbo",
+      "metabo_cbo",
+      "malibo_cbo"
+    ],
+    "method_rows": 480
+  },
+  "information_contract": {
+    "source_domains_per_holdout": 2,
+    "source_profiles_per_domain": 64,
+    "source_repetitions_per_profile": 3,
+    "source_calls": 384,
+    "source_archive_identical_across_methods": true,
+    "source_archive_identical_across_target_seeds": true,
+    "source_oracle_labels_used": false,
+    "target_oracle_labels_used_for_selection": false,
+    "sc_profile_atlas_used": false,
+    "method_specific_source_posterior_selects_n0": true,
+    "target_observations_update_method_posterior_during_n0": true
+  },
+  "verifier_contract": {
+    "profile": "v69",
+    "candidate_budgets": [80, 128, 128],
+    "shortlist_size": 3,
+    "familywise_delta": 0.05,
+    "objective_incumbent_comparison_budget": 8,
+    "verification_updates_optimizer": false,
+    "search_verification_and_total_calls_reported_separately": true
+  },
+  "interpretation_contract": {
+    "native_end_to_end_comparison": true,
+    "no_post_outcome_method_changes": true,
+    "official_runtime_failures_and_timeouts_counted": true,
+    "paper_core_results_may_only_be_reported_as_implementation_sensitivity": true
+  }
+}
