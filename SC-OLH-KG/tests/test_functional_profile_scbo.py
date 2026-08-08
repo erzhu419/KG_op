@@ -96,6 +96,21 @@ def test_functional_matrix_contracts_have_registered_costs():
     assert len(equal_cost) == 2
     assert {row["N"] for row in equal_cost} == {394}
 
+    import json
+    manifest = json.loads((
+        ROOT / "performance" / "manifests"
+        / "or_review_functional_profile_scbo_v1.json"
+    ).read_text(encoding="utf-8"))
+    assert manifest["matrices"]["primary"]["cell_count"] == len(
+        build_primary_cells(
+            task_freeze_commit=manifest["task_seed_freeze_commit"]))
+    assert manifest["matrices"]["rank_sensitivity"]["cell_count"] == len(
+        build_rank_sensitivity_cells(
+            task_freeze_commit=manifest["task_seed_freeze_commit"]))
+    assert manifest["matrices"]["equal_preverification_cost"][
+        "cell_count"] == len(build_equal_preverification_cost_cells(
+            task_freeze_commit=manifest["task_seed_freeze_commit"]))
+
 
 def test_functional_analysis_keeps_initial_search_and_deployment_separate(
     tmp_path,

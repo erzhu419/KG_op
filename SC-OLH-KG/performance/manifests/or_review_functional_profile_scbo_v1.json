@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_functional_profile_scbo_v1",
+  "status": "frozen_not_yet_interpreted",
+  "task_seed_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "functional_method_commit": "c2e461aa3d0d77822745e11431a74a8aa9aa932d",
+  "result_run_id": "or_review_functional_scbo_v1",
+  "motivation": "Test whether a generic source-free optimizer in a fixed low-frequency function space explains the source-atlas advantage.",
+  "method_contract": {
+    "arm": "target_only_dct_space_scbo",
+    "source_archive_used": false,
+    "source_outcomes_used": false,
+    "target_oracle_used_before_frozen_deployment": false,
+    "coordinate_family": "level plus cosine frequencies 1 through K",
+    "coefficient_count_primary": 8,
+    "coefficient_scale": 0.25,
+    "frequency_amplitude_decay": "inverse_sqrt_frequency",
+    "level_bounds": [
+      0.05,
+      0.95
+    ],
+    "coefficient_lattice": 100,
+    "optimizer": "canonical BoTorch SCBO constrained posterior sampling",
+    "optimizer_initial_design": "target-only scrambled Sobol in coefficient space",
+    "nominal_aleatoric_sigma": 0.04,
+    "terminal_shortlist": "frozen posterior objective challenger plus posterior-safe support",
+    "terminal_verifier": "same candidate-wise independent binomial all-success verifier as profile V4",
+    "verification_budgets": [
+      80,
+      80,
+      80
+    ],
+    "familywise_delta": 0.05,
+    "raw_samples": 1024,
+    "num_restarts": 10,
+    "maxiter": 100,
+    "batch_candidates": 128,
+    "torch_device": "cpu"
+  },
+  "information_contract": {
+    "declared_schema_primary": true,
+    "exact_semantic_to_raw_index_map_available": true,
+    "latent_target_generation_seed_available": false,
+    "target_task_seed_and_algorithm_design_seed_domain_separated": true,
+    "paired_target_tasks_match_profile_v4": true
+  },
+  "matrices": {
+    "primary": {
+      "dimensions": [
+        200,
+        1000,
+        10000
+      ],
+      "registered_regimes": 8,
+      "independent_tasks_per_regime": 20,
+      "N": 13,
+      "n0": 10,
+      "coefficient_count": 8,
+      "cell_count": 480
+    },
+    "rank_sensitivity": {
+      "dimensions": [
+        1000
+      ],
+      "registered_regimes": 8,
+      "independent_tasks_per_regime": 20,
+      "N": 13,
+      "n0": 10,
+      "coefficient_counts": [
+        4,
+        8,
+        16
+      ],
+      "cell_count": 480
+    },
+    "equal_preverification_cost": {
+      "dimensions": [
+        1000
+      ],
+      "registered_regimes": 8,
+      "independent_tasks_per_regime": 20,
+      "N": 394,
+      "n0": 10,
+      "coefficient_count": 8,
+      "comparison": "384 source plus 10 target calls for source atlas versus 394 target-only functional SCBO calls",
+      "cell_count": 160
+    }
+  },
+  "endpoint_contract": {
+    "primary": "independently certified deployed policy is truly feasible",
+    "secondary": [
+      "initial-design true-feasible coverage",
+      "search true-feasible coverage",
+      "certified deployed finite-audit-library regret",
+      "false-certificate rate",
+      "verification calls",
+      "all-in calls",
+      "wall time"
+    ],
+    "search_best_may_substitute_for_deployed_policy": false,
+    "finite_audit_oracle_role": "post-run evaluation only",
+    "regime_level_and_algorithmic_repeatability_inference_separated": true,
+    "holm_families": [
+      "functional_initial_design_by_registered_regime",
+      "functional_deployment_by_registered_regime"
+    ]
+  },
+  "interpretation_contract": {
+    "if_source_atlas_beats_functional_scbo": "Supports source scoring beyond a generic low-frequency functional search space, within the registered generator and information contract.",
+    "if_functional_scbo_matches_or_beats_source_atlas": "The source-learning claim must be narrowed; evidence supports functional structural compression rather than source ranking.",
+    "if_both_fail_on_adverse_regimes": "Retain the negative regimes and restrict the scope to ordered profiles satisfying the disclosed low-frequency assumptions.",
+    "primary_results_may_be_tuned_after_observation": false,
+    "rank_sensitivity_may_select_a_new_primary_K": false,
+    "energy_v2_outcome_may_trigger_energy_specific_retuning": false
+  },
+  "execution_contract": {
+    "allowed_nodes": [
+      "node001",
+      "node002",
+      "node003",
+      "node004",
+      "node005",
+      "node006"
+    ],
+    "gpu_required": false,
+    "saasbo_used": false,
+    "completed_checkpoints_removed": true,
+    "checkpoint_files_synced_to_local": false
+  }
+}
