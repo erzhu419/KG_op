@@ -126,7 +126,8 @@ def _cell_name(index, cell):
 
 
 def _existing_ok(
-    path, *, task_freeze_commit, functional_method_commit, cell,
+    path, *, task_freeze_commit, functional_method_commit,
+    execution_commit, cell,
 ):
     path = Path(path)
     if not path.is_file():
@@ -141,6 +142,7 @@ def _existing_ok(
         and payload.get("task_freeze_commit") == str(task_freeze_commit)
         and payload.get("functional_method_commit")
             == str(functional_method_commit)
+        and payload.get("execution_commit") == str(execution_commit)
         and payload.get("matrix_configuration_id")
             == str(cell["configuration_id"])
         and int(payload.get("design_seed", -1)) == int(cell["design_seed"])
@@ -153,6 +155,7 @@ def _run_cell(
     output_dir,
     task_freeze_commit,
     functional_method_commit,
+    execution_commit,
     checkpoint_dir,
 ):
     output = Path(output_dir) / _cell_name(index, cell)
@@ -160,6 +163,7 @@ def _run_cell(
         output,
         task_freeze_commit=task_freeze_commit,
         functional_method_commit=functional_method_commit,
+        execution_commit=execution_commit,
         cell=cell,
     ):
         return {"index": int(index), "status": "skipped", "out": str(output)}
@@ -191,6 +195,7 @@ def _run_cell(
             "cell": dict(cell),
             "task_freeze_commit": str(task_freeze_commit),
             "functional_method_commit": str(functional_method_commit),
+            "execution_commit": str(execution_commit),
             "matrix_configuration_id": str(cell["configuration_id"]),
             "wall_time_sec": float(time.perf_counter() - started),
         }
@@ -204,6 +209,7 @@ def _run_cell(
         }
     payload["task_freeze_commit"] = str(task_freeze_commit)
     payload["functional_method_commit"] = str(functional_method_commit)
+    payload["execution_commit"] = str(execution_commit)
     payload["confirmatory_replicate_index"] = int(cell["replicate_index"])
     payload["matrix_configuration_id"] = str(cell["configuration_id"])
     payload["wall_time_sec"] = float(time.perf_counter() - started)
@@ -253,6 +259,7 @@ def run_matrix(
     checkpoint_dir,
     task_freeze_commit,
     functional_method_commit,
+    execution_commit,
     matrix="primary",
     start=0,
     end=None,
@@ -286,6 +293,7 @@ def run_matrix(
                 output_dir,
                 task_freeze_commit,
                 functional_method_commit,
+                execution_commit,
                 checkpoint_dir,
             ))
             print(
@@ -302,6 +310,7 @@ def run_matrix(
                     output_dir,
                     task_freeze_commit,
                     functional_method_commit,
+                    execution_commit,
                     checkpoint_dir,
                 ): index
                 for index, cell in selected
@@ -320,6 +329,7 @@ def run_matrix(
             "complete" if error_count == 0 else "complete_with_cell_errors"),
         "task_freeze_commit": str(task_freeze_commit),
         "functional_method_commit": str(functional_method_commit),
+        "execution_commit": str(execution_commit),
         "matrix": str(matrix),
         "matrix_cell_count": int(len(cells)),
         "shard_start": int(start),
@@ -370,6 +380,7 @@ def main():
     parser.add_argument("--checkpoint-dir", required=True)
     parser.add_argument("--task-freeze-commit", required=True)
     parser.add_argument("--functional-method-commit", required=True)
+    parser.add_argument("--execution-commit", required=True)
     parser.add_argument(
         "--matrix",
         choices=("primary", "rank_sensitivity", "equal_preverification_cost"),
@@ -392,6 +403,7 @@ def main():
         checkpoint_dir=args.checkpoint_dir,
         task_freeze_commit=args.task_freeze_commit,
         functional_method_commit=args.functional_method_commit,
+        execution_commit=args.execution_commit,
         matrix=args.matrix,
         start=args.start,
         end=args.end,

@@ -15,6 +15,7 @@ from performance.benchmark_functional_profile_scbo import (  # noqa: E402
 )
 from performance.run_functional_profile_scbo_matrix import (  # noqa: E402
     _emit_terminal_status,
+    _existing_ok,
     build_equal_preverification_cost_cells,
     build_primary_cells,
     build_rank_sensitivity_cells,
@@ -128,6 +129,36 @@ def test_functional_matrix_terminal_status_is_fail_closed(capsys):
     assert "FUNCTIONAL_SCBO_FAILED cell_errors=2" in capsys.readouterr().out
     assert _emit_terminal_status({"error_count": 0}) is True
     assert capsys.readouterr().out.strip() == "DONE"
+
+
+def test_functional_cell_resume_requires_exact_execution_commit(tmp_path):
+    import json
+
+    cell = {"configuration_id": "target13-k8", "design_seed": 19}
+    path = tmp_path / "cell.json"
+    path.write_text(json.dumps({
+        "contract_id": "target_only_functional_profile_scbo_v1",
+        "status": "ok",
+        "task_freeze_commit": "freeze",
+        "functional_method_commit": "method",
+        "execution_commit": "execution-a",
+        "matrix_configuration_id": "target13-k8",
+        "design_seed": 19,
+    }), encoding="utf-8")
+    assert _existing_ok(
+        path,
+        task_freeze_commit="freeze",
+        functional_method_commit="method",
+        execution_commit="execution-a",
+        cell=cell,
+    )
+    assert not _existing_ok(
+        path,
+        task_freeze_commit="freeze",
+        functional_method_commit="method",
+        execution_commit="execution-b",
+        cell=cell,
+    )
 
 
 def test_functional_analysis_keeps_initial_search_and_deployment_separate(
