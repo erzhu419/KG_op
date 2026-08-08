@@ -18,6 +18,7 @@ from core.profile_atlas import (  # noqa: E402
     percentile_ranks,
     profile_cosine_coordinate,
     profile_quadrature_weights,
+    profile_voronoi_edges,
     regular_profile_nodes,
 )
 
@@ -58,6 +59,23 @@ def test_irregular_quadrature_and_cosine_coordinate_are_finite_and_stable():
         profile, nodes=nodes, max_frequency=3)
     assert coordinate.shape == (8,)
     assert np.all(np.isfinite(coordinate))
+    edges = profile_voronoi_edges(nodes)
+    assert edges[0] == 0.0
+    assert edges[-1] == 1.0
+    assert np.all(np.diff(edges) > 0.0)
+
+
+def test_cell_integrated_cosine_coordinate_is_exact_for_constant_profile():
+    nodes = np.asarray([0.03, 0.11, 0.31, 0.72, 0.96])
+    coordinate = profile_cosine_coordinate(
+        np.full(len(nodes), 0.4),
+        nodes=nodes,
+        max_frequency=8,
+        frequency_penalty=0.0,
+        include_diagonal_quadratic=False,
+    )
+    assert np.isclose(coordinate[0], 0.4)
+    assert np.max(np.abs(coordinate[1:])) < 1e-14
 
 
 def test_cosine_coordinate_is_consistent_under_grid_refinement():

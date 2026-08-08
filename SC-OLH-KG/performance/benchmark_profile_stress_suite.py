@@ -14,7 +14,11 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from core.designs import common_sobol_integer_design, integer_design_fingerprint  # noqa: E402
+from core.designs import (  # noqa: E402
+    common_sobol_integer_design,
+    integer_design_fingerprint,
+    next_sobol_integer_candidate,
+)
 from core.profile_atlas import (  # noqa: E402
     ProfileAtlasConfig,
     SourceScoredProfileAtlas,
@@ -204,6 +208,7 @@ def run_task(
     alpha=0.05,
     safe_mass=0.08,
     n0=10,
+    N=None,
     source_task_count=2,
     library_size=64,
     source_replications=3,
@@ -216,6 +221,8 @@ def run_task(
     amortization_targets=20,
     atlas_max_frequency=8,
     atlas_frequency_penalty=0.25,
+    atlas_safety_metric_weight=1.0,
+    atlas_objective_metric_weight=1.0,
     atlas_first_center_safety_weight=0.5,
 ):
     regime = str(regime)
@@ -229,6 +236,9 @@ def run_task(
     if descriptor_mode not in {"conditioned", "domain_blind"}:
         raise ValueError("descriptor_mode must be conditioned or domain_blind")
     n0 = int(n0)
+    N = n0 if N is None else int(N)
+    if N < n0:
+        raise ValueError("stress benchmark requires N >= n0")
     design_seed = (
         int(design_seed)
         if design_seed is not None else 900_000 + int(target_seed)
@@ -285,8 +295,8 @@ def run_task(
             max_frequency=int(atlas_max_frequency),
             frequency_penalty=float(atlas_frequency_penalty),
             include_diagonal_quadratic=True,
-            safety_metric_weight=1.0,
-            objective_metric_weight=1.0,
+            safety_metric_weight=float(atlas_safety_metric_weight),
+            objective_metric_weight=float(atlas_objective_metric_weight),
             first_center_safety_weight=float(
                 atlas_first_center_safety_weight),
             descriptor_temperature=1.0,
@@ -298,8 +308,6 @@ def run_task(
             ),
         ).selected()
         frontend_diagnostics = dict(atlas.diagnostics)
-    oracle_rows, oracle_best = _oracle_library(target, library)
-
     target_oracle_used_for_design = arm == "oracle_library_upper_bound"
     if arm == "raw_sobol":
         points = tuple(common_sobol_integer_design(
@@ -312,6 +320,8 @@ def run_task(
             "target_oracle_used": False,
         }
     elif arm == "oracle_library_upper_bound":
+        # This arm is an explicitly labeled unattainable upper bound.
+        oracle_rows, _oracle_best_for_design = _oracle_library(target, library)
         ranked = sorted(
             oracle_rows,
             key=lambda row: (
@@ -345,6 +355,7 @@ def run_task(
         raise RuntimeError("stress design must contain n0 unique target points")
 
     search_records = []
+    observed = list(points)
     for index, point in enumerate(points):
         rng = np.random.default_rng(np.random.SeedSequence([
             design_seed, index, 2017,
@@ -354,17 +365,41 @@ def run_task(
             "point": point,
             "observation": observation,
             "evaluation_index": index,
+            "source": "initial_design",
+        })
+    while len(search_records) < N:
+        point = next_sobol_integer_candidate(
+            target,
+            design_seed,
+            observed=observed,
+            seed_offset=330_107,
+        )
+        index = len(search_records)
+        rng = np.random.default_rng(np.random.SeedSequence([
+            design_seed, index, 2017,
+        ]))
+        observed.append(tuple(point))
+        search_records.append({
+            "point": tuple(point),
+            "observation": np.asarray(target.simulate(point, rng), dtype=float),
+            "evaluation_index": index,
+            "source": "neutral_sobol_continuation",
         })
     shortlist = _select_shortlist(search_records, target.tau, size=3)
     deployed, verification = verify_frozen_shortlist_binomial(
         target,
         shortlist,
         seed=design_seed + 71_003,
-        search_evaluation_count=n0,
+        search_evaluation_count=N,
         candidate_budgets=tuple(int(value) for value in verification_budgets),
         familywise_delta=float(familywise_delta),
         all_success_only=True,
     )
+
+    # For every non-oracle arm, target truth becomes available only after the
+    # design, noisy search observations, frozen shortlist, and independent
+    # verification decision are complete. It is used solely for audit metrics.
+    oracle_rows, oracle_best = _oracle_library(target, library)
 
     true_rows = [{
         "point": tuple(point),
@@ -393,7 +428,11 @@ def run_task(
                 target.true_feasibility_probability(deployed)),
         }
     verification_calls = int(verification["verification_budget"])
-    all_in_unamortized = int(source_calls + n0 + verification_calls)
+    maximum_verification_calls = int(sum(
+        int(value) for value in verification_budgets))
+    all_in_unamortized = int(source_calls + N + verification_calls)
+    all_in_budget_cap_unamortized = int(
+        source_calls + N + maximum_verification_calls)
     amortized_source = float(source_calls / int(amortization_targets))
     penalized_loss = (
         float(regret)
@@ -417,21 +456,28 @@ def run_task(
         "alpha": float(target.alpha),
         "safe_mass": float(target.safe_mass),
         "n0": n0,
+        "N": N,
         "source_task_count": int(source_task_count),
         "source_profiles_per_task": int(library_size),
         "source_replications_per_profile": int(source_replications),
         "atlas_max_frequency": int(atlas_max_frequency),
         "atlas_frequency_penalty": float(atlas_frequency_penalty),
+        "atlas_safety_metric_weight": float(atlas_safety_metric_weight),
+        "atlas_objective_metric_weight": float(atlas_objective_metric_weight),
         "atlas_first_center_safety_weight": float(
             atlas_first_center_safety_weight),
         "source_calls": source_calls,
-        "target_search_calls": n0,
+        "target_search_calls": N,
         "verification_calls": verification_calls,
+        "maximum_verification_calls": maximum_verification_calls,
         "all_in_calls_unamortized": all_in_unamortized,
+        "all_in_budget_cap_unamortized": all_in_budget_cap_unamortized,
         "amortization_targets": int(amortization_targets),
         "amortized_source_calls_per_target": amortized_source,
         "all_in_calls_amortized": float(
-            amortized_source + n0 + verification_calls),
+            amortized_source + N + verification_calls),
+        "all_in_budget_cap_amortized": float(
+            amortized_source + N + maximum_verification_calls),
         "target_information_contract": target.information_contract(),
         "frontend_diagnostics": frontend_diagnostics,
         "atlas_diagnostics": (
@@ -442,6 +488,7 @@ def run_task(
         "target_outcomes_used_for_design": target_oracle_used_for_design,
         "search_records": [{
             "evaluation_index": row["evaluation_index"],
+            "source": row["source"],
             "point_fingerprint": integer_design_fingerprint([row["point"]]),
             "observation": row["observation"].tolist(),
         } for row in search_records],
@@ -491,6 +538,7 @@ def main():
     parser.add_argument("--alpha", type=float, default=0.05)
     parser.add_argument("--safe-mass", type=float, default=0.08)
     parser.add_argument("--n0", type=int, default=10)
+    parser.add_argument("--N", type=int)
     parser.add_argument("--source-task-count", type=int, default=2)
     parser.add_argument("--library-size", type=int, default=64)
     parser.add_argument("--source-replications", type=int, default=3)
@@ -505,6 +553,8 @@ def main():
     parser.add_argument("--amortization-targets", type=int, default=20)
     parser.add_argument("--atlas-max-frequency", type=int, default=8)
     parser.add_argument("--atlas-frequency-penalty", type=float, default=0.25)
+    parser.add_argument("--atlas-safety-metric-weight", type=float, default=1.0)
+    parser.add_argument("--atlas-objective-metric-weight", type=float, default=1.0)
     parser.add_argument(
         "--atlas-first-center-safety-weight", type=float, default=0.5)
     args = parser.parse_args()
@@ -517,6 +567,7 @@ def main():
         alpha=args.alpha,
         safe_mass=args.safe_mass,
         n0=args.n0,
+        N=args.N,
         source_task_count=args.source_task_count,
         library_size=args.library_size,
         source_replications=args.source_replications,
@@ -530,6 +581,8 @@ def main():
         amortization_targets=args.amortization_targets,
         atlas_max_frequency=args.atlas_max_frequency,
         atlas_frequency_penalty=args.atlas_frequency_penalty,
+        atlas_safety_metric_weight=args.atlas_safety_metric_weight,
+        atlas_objective_metric_weight=args.atlas_objective_metric_weight,
         atlas_first_center_safety_weight=(
             args.atlas_first_center_safety_weight),
     )

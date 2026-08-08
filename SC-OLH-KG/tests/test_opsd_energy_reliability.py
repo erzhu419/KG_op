@@ -116,6 +116,32 @@ def test_local_preprocessor_records_provenance_and_loads_without_pickle(tmp_path
     assert np.all(loaded.load_actual == 100.0)
 
 
+def test_preprocessor_accepts_core_only_market_when_renewables_are_unused(tmp_path):
+    source = tmp_path / "core_only.csv"
+    rows = [
+        "utc_timestamp,NO_1_load_actual_entsoe_transparency,"
+        "NO_1_load_forecast_entsoe_transparency,NO_1_price_day_ahead",
+    ]
+    for hour in range(8):
+        rows.append(
+            f"2018-01-01 {hour:02d}:00:00+00:00,100,99,40")
+    source.write_text("\n".join(rows) + "\n", encoding="utf-8")
+    output = tmp_path / "compact_core_only.npz"
+    metadata = preprocess_opsd(
+        output,
+        source=source,
+        markets=("NO_1",),
+        years=(2018,),
+    )
+    loaded = load_opsd_market(output, "NO_1")
+    assert metadata["schema_version"] == 2
+    assert metadata["market_metadata"]["NO_1"][
+        "absent_optional_fields"] == ["solar", "wind"]
+    assert loaded.solar is None
+    assert loaded.wind is None
+    assert np.all(loaded.price == 40.0)
+
+
 def test_chronological_splits_are_disjoint_and_hourly(tmp_path):
     archive = tmp_path / "energy.npz"
     _write_market_archive(archive)
@@ -206,6 +232,28 @@ def test_split_sampling_is_reproducible_and_split_specific(tmp_path):
         x, "verification", np.random.default_rng(91))
     assert first.shape == (2,)
     assert verification.shape == (2,)
+
+
+def test_batched_energy_windows_match_scalar_dynamics(tmp_path):
+    archive = tmp_path / "energy.npz"
+    _write_market_archive(archive)
+    problem = _problem(archive)
+    x = tuple(np.linspace(5, 95, problem.d).round().astype(int))
+    starts = problem._starts["verification"][::137][:17]
+    scalar = np.vstack([
+        problem._evaluate_start(x, start)[0] for start in starts
+    ])
+    batched = problem._evaluate_start_batch(x, starts)
+    np.testing.assert_allclose(batched, scalar, rtol=1e-12, atol=1e-12)
+    split = problem.split_population(
+        x, "verification", maximum_windows=17, batch_size=5)
+    selected = problem._starts["verification"][np.linspace(
+        0, len(problem._starts["verification"]) - 1, 17
+    ).round().astype(int)]
+    expected = np.vstack([
+        problem._evaluate_start(x, start)[0] for start in selected
+    ])
+    np.testing.assert_allclose(split, expected, rtol=1e-12, atol=1e-12)
 
 
 def test_registered_certifiability_gate_is_nonvacuous_on_fixture(tmp_path):

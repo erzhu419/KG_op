@@ -2,6 +2,7 @@ import Mathlib
 
 namespace SCOLHKG.Real
 
+open MeasureTheory
 open scoped BigOperators
 
 /-!
@@ -19,6 +20,76 @@ def weightedProfileCoefficient
     {ι : Type*} [Fintype ι]
     (weight profile basis : ι → ℝ) : ℝ :=
   ∑ i, weight i * profile i * basis i
+
+noncomputable def continuousProfileCoefficient
+    (profile basis : ℝ → ℝ) : ℝ :=
+  ∫ x in (0 : ℝ)..1, profile x * basis x ∂volume
+
+theorem continuousProfileCoefficient_error_le
+    {first second basis : ℝ → ℝ}
+    {epsilon basisBound : ℝ}
+    (hFirst : IntervalIntegrable
+      (fun x => first x * basis x) volume 0 1)
+    (hSecond : IntervalIntegrable
+      (fun x => second x * basis x) volume 0 1)
+    (hError : ∀ x ∈ Set.uIoc (0 : ℝ) 1,
+      |first x - second x| ≤ epsilon)
+    (hBasis : ∀ x ∈ Set.uIoc (0 : ℝ) 1, |basis x| ≤ basisBound)
+    (hEpsilon : 0 ≤ epsilon) :
+    |continuousProfileCoefficient first basis
+        - continuousProfileCoefficient second basis|
+      ≤ epsilon * basisBound := by
+  have hIntegral := intervalIntegral.norm_integral_le_of_norm_le_const
+    (a := (0 : ℝ)) (b := 1) (C := epsilon * basisBound)
+    (f := fun x => first x * basis x - second x * basis x)
+    (fun x hx => by
+      simp only [Real.norm_eq_abs]
+      rw [← sub_mul, abs_mul]
+      exact mul_le_mul
+        (hError x hx)
+        (hBasis x hx)
+        (abs_nonneg _)
+        hEpsilon)
+  have hSub := intervalIntegral.integral_sub hFirst hSecond
+  calc
+    |continuousProfileCoefficient first basis
+        - continuousProfileCoefficient second basis|
+      = |∫ x in (0 : ℝ)..1,
+          first x * basis x - second x * basis x ∂volume| := by
+            unfold continuousProfileCoefficient
+            exact congrArg (fun z : ℝ => |z|) hSub.symm
+    _ = ‖∫ x in (0 : ℝ)..1,
+          first x * basis x - second x * basis x ∂volume‖ := by
+            rw [Real.norm_eq_abs]
+    _ ≤ (epsilon * basisBound) * |(1 : ℝ) - 0| := hIntegral
+    _ = epsilon * basisBound := by ring
+
+theorem continuousProfileCoefficient_inverse_grid_rate
+    {first second basis : ℝ → ℝ}
+    {constant basisBound : ℝ}
+    {dimension : ℕ}
+    (hDimension : 0 < dimension)
+    (hConstant : 0 ≤ constant)
+    (hFirst : IntervalIntegrable
+      (fun x => first x * basis x) volume 0 1)
+    (hSecond : IntervalIntegrable
+      (fun x => second x * basis x) volume 0 1)
+    (hError : ∀ x ∈ Set.uIoc (0 : ℝ) 1,
+      |first x - second x| ≤ constant / dimension)
+    (hBasis : ∀ x ∈ Set.uIoc (0 : ℝ) 1, |basis x| ≤ basisBound) :
+    |continuousProfileCoefficient first basis
+        - continuousProfileCoefficient second basis|
+      ≤ constant * basisBound / dimension := by
+  have hDimensionReal : (0 : ℝ) < dimension := by exact_mod_cast hDimension
+  have hRateNonnegative : 0 ≤ constant / (dimension : ℝ) :=
+    div_nonneg hConstant hDimensionReal.le
+  have hBound := continuousProfileCoefficient_error_le
+    hFirst hSecond hError hBasis hRateNonnegative
+  calc
+    |continuousProfileCoefficient first basis
+        - continuousProfileCoefficient second basis|
+      ≤ (constant / (dimension : ℝ)) * basisBound := hBound
+    _ = constant * basisBound / dimension := by ring
 
 theorem weightedProfileCoefficient_error_le
     {ι : Type*} [Fintype ι]

@@ -27,6 +27,7 @@ from core.terminal_verification import (  # noqa: E402
     verify_frozen_shortlist_binomial,
     verify_paired_objective_dominance,
 )
+from performance.analyze_binomial_verifier_power import power_table  # noqa: E402
 from problems.rzdt import (  # noqa: E402
     FactorShockStatePolicyRZDT1,
     RZDT1,
@@ -260,6 +261,25 @@ def test_exact_all_success_binomial_candidate_contract():
     assert audit["certified"] is True
     assert audit["machine_checked_candidate_validity"] is True
     assert audit["certification_scope"] == "unit_test_iid_distribution"
+
+
+def test_all_success_power_table_exposes_boundary_power():
+    payload = power_table(
+        required_probability=0.95,
+        familywise_delta=0.05,
+        shortlist_size=3,
+        budgets=(79, 80),
+        true_probabilities=(0.95, 1.0),
+    )
+    assert payload["minimum_valid_budget"] == 80
+    cells = {
+        (row["verification_budget"], row["true_feasibility_probability"]): row
+        for row in payload["rows"]
+    }
+    assert cells[(79, 1.0)]["candidate_validity_enabled"] is False
+    assert cells[(80, 1.0)]["certification_probability"] == 1.0
+    assert np.isclose(
+        cells[(80, 0.95)]["certification_probability"], 0.95 ** 80)
 
 
 def test_exact_binomial_shortlist_deploys_first_certified_policy():

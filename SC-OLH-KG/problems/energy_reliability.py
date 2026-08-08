@@ -48,7 +48,7 @@ class StoragePhysics:
 class OPSDStorageReliabilityProblem(CumulativeRiskFeatureProvider):
     """High-dimensional reserve/SOC policy with empirical chance risk.
 
-    Actual load and renewable realization errors are read only by
+    Actual load forecast errors are read only by
     :meth:`simulate` or an explicitly selected post-search split.  The
     observable state and cumulative-risk coordinates use policy, forecast,
     price, calendar, and declared storage physics only.
@@ -329,6 +329,99 @@ class OPSDStorageReliabilityProblem(CumulativeRiskFeatureProvider):
             "mean_target_soc": reserve,
         }
 
+    def _evaluate_start_batch(self, x, starts):
+        """Evaluate independent window starts in parallel, preserving dynamics."""
+
+        if self._net_error is None:
+            raise RuntimeError(
+                "OPSD outcome access is disabled for this problem instance")
+        starts = np.asarray(starts, dtype=np.int64).reshape(-1)
+        if len(starts) == 0:
+            return np.zeros((0, 2), dtype=float)
+        if np.any(starts < 0) or np.any(starts + self.d > len(self._net_error)):
+            raise ValueError("incomplete OPSD evaluation window")
+
+        target = self._target_soc(x)
+        physics = self.physics
+        capacity = float(physics.energy_capacity)
+        power = float(physics.power_capacity)
+        efficiency = float(physics.efficiency)
+        count = len(starts)
+        soc = np.full(
+            count,
+            float(np.clip(target[0] * capacity, 0.0, capacity)),
+            dtype=float,
+        )
+        grid_charge = np.zeros(count, dtype=float)
+        throughput = np.zeros(count, dtype=float)
+        unserved = np.zeros(count, dtype=float)
+        spill = np.zeros(count, dtype=float)
+        positive_error = np.zeros(count, dtype=float)
+
+        for index in range(self.d):
+            desired = float(target[index] * capacity)
+            delta = desired - soc
+            charging = delta > 0.0
+            if np.any(charging):
+                charge = np.minimum(delta[charging] / efficiency, power)
+                soc[charging] = np.minimum(
+                    capacity, soc[charging] + efficiency * charge)
+                prices = self._normalized_price[starts[charging] + index]
+                grid_charge[charging] += np.maximum(prices, 0.0) * charge
+                throughput[charging] += charge
+            releasing = delta < 0.0
+            if np.any(releasing):
+                release = np.minimum.reduce([
+                    -delta[releasing] * efficiency,
+                    np.full(np.sum(releasing), power, dtype=float),
+                    soc[releasing] * efficiency,
+                ])
+                soc[releasing] = np.maximum(
+                    0.0, soc[releasing] - release / efficiency)
+                throughput[releasing] += release
+
+            shock = self._net_error[starts + index]
+            shortage = shock >= 0.0
+            if np.any(shortage):
+                positive = shock[shortage]
+                positive_error[shortage] += positive
+                discharge = np.minimum.reduce([
+                    positive,
+                    np.full(np.sum(shortage), power, dtype=float),
+                    soc[shortage] * efficiency,
+                ])
+                soc[shortage] = np.maximum(
+                    0.0, soc[shortage] - discharge / efficiency)
+                throughput[shortage] += discharge
+                unserved[shortage] += positive - discharge
+            surplus_mask = ~shortage
+            if np.any(surplus_mask):
+                surplus = -shock[surplus_mask]
+                charge = np.minimum.reduce([
+                    surplus,
+                    np.full(np.sum(surplus_mask), power, dtype=float),
+                    np.maximum(capacity - soc[surplus_mask], 0.0) / efficiency,
+                ])
+                soc[surplus_mask] = np.minimum(
+                    capacity, soc[surplus_mask] + efficiency * charge)
+                throughput[surplus_mask] += charge
+                spill[surplus_mask] += surplus - charge
+
+        horizon = float(self.d)
+        reserve = float(np.mean(target))
+        objective = (
+            physics.reserve_cost * reserve
+            + grid_charge / horizon
+            + physics.cycle_cost * throughput / horizon
+            + physics.unserved_cost * unserved / horizon
+            + physics.spill_cost * spill / horizon
+        )
+        denominator = np.maximum(positive_error, 1e-4 * horizon)
+        unserved_fraction = unserved / denominator
+        constraint = (
+            unserved_fraction - physics.maximum_unserved_fraction)
+        return np.column_stack([objective, constraint])
+
     def simulate_from_split(self, x, split, rng=None, *, return_diagnostics=False):
         split = str(split)
         if split not in self._starts:
@@ -344,14 +437,20 @@ class OPSDStorageReliabilityProblem(CumulativeRiskFeatureProvider):
     def simulate(self, x, rng=None):
         return self.simulate_from_split(x, "search", rng)
 
-    def split_population(self, x, split, *, maximum_windows=None):
+    def split_population(self, x, split, *, maximum_windows=None, batch_size=512):
         starts = self._starts[str(split)]
         if maximum_windows is not None and len(starts) > int(maximum_windows):
             selected = np.linspace(
                 0, len(starts) - 1, int(maximum_windows)
             ).round().astype(int)
             starts = starts[selected]
-        return np.vstack([self._evaluate_start(x, start)[0] for start in starts])
+        batch_size = int(batch_size)
+        if batch_size < 1:
+            raise ValueError("batch_size must be positive")
+        return np.vstack([
+            self._evaluate_start_batch(x, starts[begin:begin + batch_size])
+            for begin in range(0, len(starts), batch_size)
+        ])
 
     def true_outputs(self, x):
         return np.mean(self.split_population(x, "audit"), axis=0)

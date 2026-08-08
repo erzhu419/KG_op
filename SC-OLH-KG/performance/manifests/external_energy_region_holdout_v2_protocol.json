@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "contract_id": "opsd_region_heldout_profile_design_v2",
+  "status": "preregistered_before_target_outcomes",
+  "paper_role": "independent_real_data_source_learning_and_structured_control_audit",
+  "dataset": {
+    "name": "Open Power System Data time_series",
+    "version": "2020-10-06",
+    "doi": "10.25832/time_series/2020-10-06",
+    "official_source_sha256": "6a7f2bc571314cbf9c321cc03437691cd4be95c3a6f075e60ff99e8035c704c8",
+    "compact_archive_sha256": "b4c35b0c2ddf8e4fc1902bcc6b513d70524a1a5b1f346db90d60866316ad5fa6",
+    "outcome_dependent_market_filtering": false
+  },
+  "targets": {
+    "regions": ["denmark", "great_britain", "italy", "norway", "sweden"],
+    "markets": [
+      "DK_1", "DK_2", "GB_GBN",
+      "IT_CNOR", "IT_CSUD", "IT_NORD", "IT_SARD", "IT_SICI", "IT_SUD",
+      "NO_1", "NO_2", "NO_3", "NO_4", "NO_5",
+      "SE_1", "SE_2", "SE_3", "SE_4"
+    ],
+    "generalization_unit": "geographic region",
+    "secondary_task_unit": "market",
+    "algorithmic_repetitions_per_market": 5,
+    "target_region_excluded_from_source_archive": true
+  },
+  "source_archive_per_target_region": {
+    "rule": "one fixed representative market from each non-target region",
+    "representatives": {
+      "denmark": "DK_1",
+      "great_britain": "GB_GBN",
+      "italy": "IT_NORD",
+      "norway": "NO_1",
+      "sweden": "SE_1"
+    },
+    "source_tasks": 4,
+    "profiles_per_task": 64,
+    "replications_per_profile": 3,
+    "source_calls": 768,
+    "atlas_is_frozen_before_any_target_outcome": true
+  },
+  "target_protocol": {
+    "nominal_dimension": 1000,
+    "integer_levels": 101,
+    "search_year": 2017,
+    "audit_year": 2018,
+    "verification_year": 2019,
+    "n0": 10,
+    "target_search_calls": 13,
+    "continuation": "same neutral Sobol rule for every arm",
+    "chance_alpha": 0.05
+  },
+  "arms": [
+    "source_atlas",
+    "generic_dct_maximin",
+    "random_low_frequency",
+    "natural_constant_grid",
+    "raw_sobol"
+  ],
+  "verifier": {
+    "candidate_rule": "exact all-success binomial test",
+    "ordered_shortlist_size": 3,
+    "candidate_budgets": [80, 80, 80],
+    "familywise_delta": 0.05,
+    "required_empirical_feasibility_probability": 0.95,
+    "candidate_list_frozen_before_verification": true,
+    "sampling": "iid start-index draws with replacement from the fixed verification-year admissible-window set",
+    "physical_windows_may_overlap": true,
+    "claim_scope": "fixed empirical distribution over admissible verification-window start indices",
+    "future_calendar_process_iid_claimed": false
+  },
+  "cost_reporting": {
+    "columns": [
+      "source_calls",
+      "target_search_calls",
+      "verification_calls",
+      "actual_all_in_calls",
+      "maximum_all_in_budget",
+      "amortized_all_in_calls"
+    ],
+    "registered_archive_amortization_target_count": 20
+  },
+  "decision_rule": {
+    "source_learning_supported": "source_atlas beats generic_dct_maximin and natural_constant_grid in region-level direction without more false certificates",
+    "structure_only_supported": "structured arms beat raw_sobol but source_atlas does not beat both generic structured controls",
+    "negative_result": "no post-outcome method repair; retain as external limitation"
+  },
+  "inference": {
+    "region_count": 5,
+    "region_level_results_are_descriptive": true,
+    "market_level_results_are_secondary": true,
+    "within_market_seeds_measure_algorithmic_repeatability_only": true,
+    "pooled_market_seed_population_claims_prohibited": true
+  }
+}

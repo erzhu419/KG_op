@@ -57,9 +57,50 @@ OPSD_MARKET_COLUMNS = {
         "solar": "GB_GBN_solar_generation_actual",
         "wind": "GB_GBN_wind_generation_actual",
     },
+    "DE_LU": {
+        "load_actual": "DE_LU_load_actual_entsoe_transparency",
+        "load_forecast": "DE_LU_load_forecast_entsoe_transparency",
+        "price": "DE_LU_price_day_ahead",
+        "solar": "DE_LU_solar_generation_actual",
+        "wind": "DE_LU_wind_generation_actual",
+    },
+    "IE_sem": {
+        "load_actual": "IE_sem_load_actual_entsoe_transparency",
+        "load_forecast": "IE_sem_load_forecast_entsoe_transparency",
+        "price": "IE_sem_price_day_ahead",
+        "solar": None,
+        "wind": "IE_sem_wind_onshore_generation_actual",
+    },
+    **{
+        market: {
+            "load_actual": f"{market}_load_actual_entsoe_transparency",
+            "load_forecast": f"{market}_load_forecast_entsoe_transparency",
+            "price": f"{market}_price_day_ahead",
+            "solar": f"{market}_solar_generation_actual",
+            "wind": f"{market}_wind_onshore_generation_actual",
+        }
+        for market in (
+            "IT_CNOR", "IT_CSUD", "IT_NORD", "IT_SARD", "IT_SICI",
+            "IT_SUD",
+        )
+    },
+    **{
+        market: {
+            "load_actual": f"{market}_load_actual_entsoe_transparency",
+            "load_forecast": f"{market}_load_forecast_entsoe_transparency",
+            "price": f"{market}_price_day_ahead",
+            "solar": None,
+            "wind": f"{market}_wind_onshore_generation_actual",
+        }
+        for market in (
+            "NO_1", "NO_2", "NO_3", "NO_4", "NO_5",
+            "SE_1", "SE_2", "SE_3", "SE_4",
+        )
+    },
 }
 
 DEFAULT_MARKETS = ("AT", "DK_1", "DK_2", "GB_GBN")
+EXTENDED_MARKETS = tuple(OPSD_MARKET_COLUMNS)
 DEFAULT_YEARS = (2017, 2018, 2019)
 
 
@@ -159,7 +200,10 @@ def preprocess_opsd(
     interpolation_limit = max(0, int(interpolation_limit))
     wanted = {"utc_timestamp"}
     for market in markets:
-        wanted.update(OPSD_MARKET_COLUMNS[market].values())
+        wanted.update(
+            value for value in OPSD_MARKET_COLUMNS[market].values()
+            if value is not None
+        )
 
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -177,21 +221,39 @@ def preprocess_opsd(
         frame.sort_values("utc_timestamp", inplace=True)
         for market in markets:
             columns = OPSD_MARKET_COLUMNS[market]
-            local = frame[["utc_timestamp", *columns.values()]].rename(
-                columns={value: key for key, value in columns.items()}
+            available = {
+                key: value for key, value in columns.items()
+                if value is not None and value in frame.columns
+            }
+            required = ("load_actual", "load_forecast", "price")
+            missing_required = [
+                name for name in required if name not in available
+            ]
+            if missing_required:
+                raise ValueError(
+                    f"OPSD source lacks required {market} fields: "
+                    f"{missing_required}"
+                )
+            local = frame[["utc_timestamp", *available.values()]].rename(
+                columns={value: key for key, value in available.items()}
             ).copy()
-            required = ("load_actual", "load_forecast")
-            optional = ("price", "solar", "wind")
-            before = {name: int(local[name].isna().sum()) for name in optional}
+            optional = tuple(
+                name for name in ("solar", "wind") if name in available)
+            interpolated = ("price", *optional)
+            before = {
+                name: int(local[name].isna().sum()) for name in interpolated
+            }
             if interpolation_limit > 0:
-                local[list(optional)] = local[list(optional)].interpolate(
+                local[list(interpolated)] = local[list(interpolated)].interpolate(
                     method="linear",
                     limit=interpolation_limit,
                     limit_direction="both",
                     limit_area="inside",
                 )
-            after = {name: int(local[name].isna().sum()) for name in optional}
-            local.dropna(subset=[*required, *optional], inplace=True)
+            after = {
+                name: int(local[name].isna().sum()) for name in interpolated
+            }
+            local.dropna(subset=list(required), inplace=True)
             if local.empty:
                 raise ValueError(f"no complete OPSD rows remain for {market}")
             hours = (
@@ -202,6 +264,8 @@ def preprocess_opsd(
             arrays[prefix + "timestamp_hour"] = hours
             for name in (*required, *optional):
                 values = local[name].to_numpy(dtype=np.float64)
+                if name in optional:
+                    values = np.where(np.isfinite(values), values, 0.0)
                 if not np.all(np.isfinite(values)):
                     raise FloatingPointError(
                         f"non-finite OPSD values remain for {market}/{name}"
@@ -216,13 +280,19 @@ def preprocess_opsd(
                 "missing_before_interpolation": before,
                 "missing_after_interpolation": after,
                 "interpolated_counts": {
-                    name: int(before[name] - after[name]) for name in optional
+                    name: int(before[name] - after[name])
+                    for name in interpolated
                 },
-                "columns": dict(columns),
+                "columns": dict(available),
+                "unused_optional_fields": ["solar", "wind"],
+                "absent_optional_fields": [
+                    name for name in ("solar", "wind")
+                    if name not in available
+                ],
             }
 
         metadata = {
-            "schema_version": 1,
+            "schema_version": 2,
             "dataset": "Open Power System Data time_series",
             "version": OPSD_DATA_VERSION,
             "doi": OPSD_DATA_DOI,
@@ -265,14 +335,18 @@ class OPSDMarketSeries:
     load_actual: np.ndarray | None
     load_forecast: np.ndarray
     price: np.ndarray
-    solar: np.ndarray
-    wind: np.ndarray
+    solar: np.ndarray | None
+    wind: np.ndarray | None
     metadata: dict
 
     def __post_init__(self):
-        names = ["timestamp_hour", "load_forecast", "price", "solar", "wind"]
+        names = ["timestamp_hour", "load_forecast", "price"]
         if self.load_actual is not None:
             names.append("load_actual")
+        if self.solar is not None:
+            names.append("solar")
+        if self.wind is not None:
+            names.append("wind")
         lengths = []
         for name in names:
             value = np.asarray(getattr(self, name))
@@ -282,9 +356,13 @@ class OPSDMarketSeries:
             raise ValueError("OPSD market arrays must be nonempty and aligned")
         if np.any(np.diff(self.timestamp_hour.astype(np.int64)) <= 0):
             raise ValueError("OPSD timestamps must be strictly increasing")
-        numeric_columns = [self.load_forecast, self.price, self.solar, self.wind]
+        numeric_columns = [self.load_forecast, self.price]
         if self.load_actual is not None:
             numeric_columns.append(self.load_actual)
+        if self.solar is not None:
+            numeric_columns.append(self.solar)
+        if self.wind is not None:
+            numeric_columns.append(self.wind)
         numeric = np.column_stack(numeric_columns)
         if not np.all(np.isfinite(numeric)):
             raise ValueError("OPSD market arrays must be finite")
@@ -324,7 +402,7 @@ def load_opsd_market(path, market, *, include_outcomes=True):
         raise ValueError(f"unsupported OPSD market {market!r}")
     prefix = f"{market}__"
     with np.load(Path(path), allow_pickle=False) as archive:
-        names = ["timestamp_hour", "load_forecast", "price", "solar", "wind"]
+        names = ["timestamp_hour", "load_forecast", "price"]
         if include_outcomes:
             names.append("load_actual")
         required = [prefix + name for name in names]
@@ -335,6 +413,14 @@ def load_opsd_market(path, market, *, include_outcomes=True):
         arrays = {
             name: np.asarray(archive[prefix + name]).copy() for name in names
         }
+        arrays["solar"] = (
+            np.asarray(archive[prefix + "solar"]).copy()
+            if prefix + "solar" in archive else None
+        )
+        arrays["wind"] = (
+            np.asarray(archive[prefix + "wind"]).copy()
+            if prefix + "wind" in archive else None
+        )
         if not include_outcomes:
             arrays["load_actual"] = None
     if market not in metadata.get("markets", []):

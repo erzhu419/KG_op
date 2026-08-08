@@ -60,6 +60,22 @@ def profile_quadrature_weights(nodes):
     return weights / float(np.sum(weights))
 
 
+def profile_voronoi_edges(nodes):
+    """Voronoi cell edges on ``[0, 1]`` for ordered profile nodes."""
+
+    nodes = _finite_vector(nodes, name="profile nodes")
+    if np.any(nodes < 0.0) or np.any(nodes > 1.0):
+        raise ValueError("profile nodes must lie in [0, 1]")
+    if len(nodes) > 1 and np.any(np.diff(nodes) <= 0.0):
+        raise ValueError("profile nodes must be strictly increasing")
+    edges = np.empty(len(nodes) + 1, dtype=float)
+    edges[0] = 0.0
+    edges[-1] = 1.0
+    if len(nodes) > 1:
+        edges[1:-1] = 0.5 * (nodes[:-1] + nodes[1:])
+    return edges
+
+
 def profile_cosine_coordinate(
     profile,
     *,
@@ -70,10 +86,14 @@ def profile_cosine_coordinate(
 ):
     """Return a fixed-size weighted cosine coordinate.
 
-    For nodes ``t_i`` and Voronoi weights ``w_i``, the linear block is
+    For nodes ``t_i`` and Voronoi cells ``I_i``, the linear block is
 
-    ``c_0 = sum_i w_i h_i`` and
-    ``c_k = sqrt(2) sum_i w_i h_i cos(pi k t_i)``.
+    ``c_0 = sum_i h_i |I_i|`` and
+    ``c_k = sqrt(2) sum_i h_i int_{I_i} cos(pi k t) dt``.
+
+    Thus the implementation computes the exact continuous cosine coefficient
+    of the Voronoi piecewise-constant profile reconstruction, rather than a
+    midpoint approximation to the basis itself.
 
     Coefficient ``k`` is divided by ``1 + frequency_penalty * k``.  When
     requested, the complete diagonal expansion ``(c_0^2, ..., c_K^2)`` is
@@ -93,11 +113,22 @@ def profile_cosine_coordinate(
         nodes = _finite_vector(nodes, name="profile nodes")
     if len(nodes) != len(profile):
         raise ValueError("profile and node dimensions differ")
-    weights = profile_quadrature_weights(nodes)
+    edges = profile_voronoi_edges(nodes)
     frequencies = np.arange(max_frequency + 1, dtype=float)
-    basis = np.cos(np.pi * frequencies[:, None] * nodes[None, :])
-    basis[1:] *= np.sqrt(2.0)
-    coefficients = basis @ (weights * profile)
+    basis_integrals = np.empty(
+        (max_frequency + 1, len(nodes)), dtype=float)
+    basis_integrals[0] = np.diff(edges)
+    if max_frequency > 0:
+        positive = frequencies[1:, None]
+        basis_integrals[1:] = (
+            np.sqrt(2.0)
+            * (
+                np.sin(np.pi * positive * edges[None, 1:])
+                - np.sin(np.pi * positive * edges[None, :-1])
+            )
+            / (np.pi * positive)
+        )
+    coefficients = basis_integrals @ profile
     coefficients /= 1.0 + frequency_penalty * frequencies
     if include_diagonal_quadratic:
         return np.concatenate([coefficients, coefficients ** 2])

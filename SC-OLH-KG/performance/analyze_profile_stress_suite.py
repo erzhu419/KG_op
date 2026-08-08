@@ -26,11 +26,14 @@ CONFIGURATION_DEFAULTS = {
     "alpha": 0.05,
     "safe_mass": 0.08,
     "n0": 10,
+    "N": 10,
     "source_task_count": 2,
     "source_profiles_per_task": 64,
     "source_replications_per_profile": 3,
     "atlas_max_frequency": 8,
     "atlas_frequency_penalty": 0.25,
+    "atlas_safety_metric_weight": 1.0,
+    "atlas_objective_metric_weight": 1.0,
     "atlas_first_center_safety_weight": 0.5,
 }
 

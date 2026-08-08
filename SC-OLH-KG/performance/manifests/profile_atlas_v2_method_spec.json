@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "contract_id": "source_scored_profile_atlas_v2_method_specification",
+  "status": "method_frozen_before_confirmatory_outcomes",
+  "decision_class": "ordered bounded policy profiles h:[0,1]->[0,1] observed on declared ordered grids",
+  "shared_library": {
+    "construction": "outcome-free deterministic mixture",
+    "size": 64,
+    "families": [
+      "10 constant profiles",
+      "6 monotone ramps",
+      "seeded low-frequency cosine profiles",
+      "seeded piecewise-constant profiles",
+      "seeded high-frequency cosine profiles"
+    ],
+    "reference_grid": "128 regular cell midpoints",
+    "seed": 20260808,
+    "maximum_generated_frequency": 40,
+    "shared_across_source_tasks": true,
+    "target_outcomes_used": false
+  },
+  "profile_coordinate": {
+    "linear_coefficients": "exact integrals of cosine basis functions over the Voronoi cells of the piecewise-constant profile reconstruction",
+    "retained_frequencies": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    "frequency_scaling": "c_k/(1+0.25*k)",
+    "quadratic_expansion": "append c_k^2 for every retained coefficient; no cross-products",
+    "profile_coordinate_dimension": 18,
+    "target_inverse_map": "piecewise-linear interpolation from reference nodes to declared target nodes followed by deterministic integer rounding"
+  },
+  "source_score": {
+    "source_tasks": 2,
+    "replications_per_profile_per_task": 3,
+    "objective_statistic": "replication mean",
+    "chance_margin_statistic": "constraint replication mean + Phi^{-1}(1-alpha)*max(sample_sd,sqrt(1e-6)) - tau",
+    "within_task_transformation": "deterministic average-tie percentile rank in [0,1]",
+    "across_task_aggregation": "uniform average in the domain-blind primary method",
+    "robust_source_feasible": "estimated chance margin <= 0 in every source task",
+    "robust_source_feasible_role": "reported diagnostic only; it does not filter the finite library"
+  },
+  "selection": {
+    "augmented_coordinate": "z-scored profile coordinate concatenated with sqrt(1)*source safety rank and sqrt(1)*source objective rank",
+    "first_center": "minimum 0.5*safety_rank + 0.5*objective_rank",
+    "remaining_centers": "Gonzalez farthest-first in Euclidean augmented-coordinate distance",
+    "atlas_size": 10,
+    "tie_breaking": "stable profile identifier, then lowest finite-library index",
+    "endpoint_replacement": "none",
+    "hidden_scalarizations": "none"
+  },
+  "information_contract": {
+    "allowed_target_information_before_search": [
+      "ordered target grid",
+      "integer bounds",
+      "nominal dimension",
+      "declared channel ordering when schema_mode=declared"
+    ],
+    "forbidden_target_information_before_search": [
+      "target outcomes",
+      "target feasibility labels",
+      "target oracle parameters",
+      "target optimum",
+      "target safe-basin center or radius"
+    ]
+  }
+}

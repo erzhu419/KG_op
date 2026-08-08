@@ -15,6 +15,28 @@ def UniformFiniteScoreError
     {X : Type*} (estimate truth : X → ℝ) (radius : ℝ) : Prop :=
   ∀ x, |estimate x - truth x| ≤ radius
 
+theorem empirical_chance_margin_error_le
+    {estimatedMean trueMean estimatedScale trueScale z tau : ℝ}
+    {meanRadius scaleRadius : ℝ}
+    (hMean : |estimatedMean - trueMean| ≤ meanRadius)
+    (hScale : |estimatedScale - trueScale| ≤ scaleRadius)
+    (hZ : 0 ≤ z) :
+    |(estimatedMean + z * estimatedScale - tau)
+        - (trueMean + z * trueScale - tau)|
+      ≤ meanRadius + z * scaleRadius := by
+  calc
+    |(estimatedMean + z * estimatedScale - tau)
+        - (trueMean + z * trueScale - tau)|
+      = |(estimatedMean - trueMean)
+          + z * (estimatedScale - trueScale)| := by ring_nf
+    _ ≤ |estimatedMean - trueMean|
+          + |z * (estimatedScale - trueScale)| := abs_add_le _ _
+    _ = |estimatedMean - trueMean|
+          + z * |estimatedScale - trueScale| := by
+            rw [abs_mul, abs_of_nonneg hZ]
+    _ ≤ meanRadius + z * scaleRadius := by
+          gcongr
+
 theorem separated_source_pair_order_recovered
     {X : Type*}
     {estimate truth : X → ℝ}

@@ -66,11 +66,16 @@ and fills the remaining `n0 - 1` centers by Gonzalez farthest-first traversal.
 The formal chain is deliberately conditional and modular:
 
 1. `ProfileCoordinateConsistency.lean` transfers a declared profile
-   reconstruction error into every retained coordinate. The inverse-grid
-   rate requires the explicit pointwise `C / d` premise.
-2. `Measure/SourceRankRecovery.lean` supplies a finite-profile source-score
-   concentration event; `Real/SourceRankRecovery.lean` turns a `2r` score gap
-   into correct ordering.
+   reconstruction error into every retained continuous coefficient and gives
+   the inverse-grid rate under the explicit pointwise `C / d` premise. The
+   implementation analytically integrates each cosine basis over each Voronoi
+   cell, so it is the exact continuous coefficient of the cellwise-constant
+   reconstruction rather than a midpoint approximation to the basis.
+2. `Measure/SourceRankRecovery.lean` supplies a finite-profile source-mean
+   concentration event; `Real/SourceRankRecovery.lean` propagates separate
+   mean/scale errors into the chance margin and turns a `2r` score gap into
+   correct ordering. The scale term uses the registered residual-square tail
+   contract rather than pretending three replications reveal variance exactly.
 3. `FarthestFirstKCenter.lean` gives the standard factor-two finite metric
    guarantee from an exported assignment/separation certificate.
 4. Existing `GeometricAtlasCoverage.lean` converts cover radius, coordinate

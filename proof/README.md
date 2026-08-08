@@ -154,18 +154,24 @@ mathlib and its cache; later builds should be fast.
   source-to-target structural/discrepancy assumption is therefore necessary,
   not an artifact of the proof technique.
 - `SCOLHKG/Real/ProfileCoordinateConsistency.lean`: controls the implemented
-  weighted finite cosine coordinates by the profile reconstruction sup error,
-  exposes the explicit `C / d` grid-rate bridge, and proves that the registered
-  frequency penalty cannot amplify coordinate error. It does not claim a
-  continuous DCT quadrature theorem without a reconstruction premise.
+  weighted finite cosine coordinates and the continuous profile coefficients
+  by the profile reconstruction sup error, exposes the explicit `C / d`
+  grid-rate bridge, and proves that the registered frequency penalty cannot
+  amplify coordinate error. Python integrates each cosine basis exactly over
+  each Voronoi cell, so its coordinate is the continuous coefficient of the
+  piecewise-constant reconstruction. The remaining `C / d` premise is the
+  declared profile-reconstruction regularity condition.
 - `SCOLHKG/Real/FarthestFirstKCenter.lean`: proves the metric factor-two
   Gonzalez guarantee from an auditable finite witness/assignment/separation
   certificate. The Python farthest-first implementation is tested against
   that certificate; Lean does not execute the NumPy loop.
 - `SCOLHKG/Real/SourceRankRecovery.lean` and
   `SCOLHKG/Measure/SourceRankRecovery.lean`: uniform replicated-source score
-  error recovers every ordering separated by twice its error radius, while a
-  finite-profile union bound supplies the source-only concentration event.
+  error recovers every ordering separated by twice its error radius. The
+  deterministic bridge separately propagates mean and scale errors into the
+  empirical chance margin, while a finite-profile union bound supplies the
+  source-mean concentration event. Scale-error concentration remains tied to
+  the registered residual-square tail contract.
 - `SCOLHKG/Measure/TaskAtlasCoverage.lean`: calibrates a frozen atlas on
   independent held-out tasks from one declared meta-distribution. Training
   tasks cannot be reused as calibration tasks in this theorem.
