@@ -119,6 +119,8 @@ def test_functional_matrix_contracts_have_registered_costs():
     ).read_text(encoding="utf-8"))
     assert repaired["v1_failure_audit"][
         "performance_outcomes_observed_before_v2_freeze"] is False
+    assert repaired["v1_failure_audit"][
+        "total_v1_cells_with_target_evaluations"] == 0
     assert repaired["execution_contract"]["cell_error_policy"] == (
         "nonzero shard exit; no DONE marker")
     assert repaired["matrices"] == manifest["matrices"]
