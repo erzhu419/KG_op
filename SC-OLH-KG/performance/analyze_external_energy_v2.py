@@ -83,6 +83,10 @@ def analyze(paths):
             float(row["objective_if_certified"])
             for row in group if _successful(row)
         ]
+        wall_times = [
+            float(row["wall_time_sec"])
+            for row in group if row.get("wall_time_sec") is not None
+        ]
         market_summaries.append({
             "target_region": region,
             "target_market": market,
@@ -103,6 +107,10 @@ def analyze(paths):
                 row["all_in_calls_amortized"] for row in group])),
             "mean_all_in_budget_cap_amortized": float(np.mean([
                 row["all_in_budget_cap_amortized"] for row in group])),
+            "median_wall_time_sec": (
+                None if not wall_times else float(np.median(wall_times))),
+            "mean_wall_time_sec": (
+                None if not wall_times else float(np.mean(wall_times))),
         })
 
     paired = []
@@ -278,6 +286,9 @@ def analyze(paths):
         "all_in_calls_amortized": float(row["all_in_calls_amortized"]),
         "all_in_budget_cap_amortized": float(
             row["all_in_budget_cap_amortized"]),
+        "wall_time_sec": (
+            None if row.get("wall_time_sec") is None
+            else float(row["wall_time_sec"])),
         "raw_result": Path(row["_path"]).name,
         "raw_sha256": row["_sha256"],
     } for row in rows]

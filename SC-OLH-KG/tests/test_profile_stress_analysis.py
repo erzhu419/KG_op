@@ -81,3 +81,17 @@ def test_analysis_never_pools_registered_sensitivity_settings(tmp_path):
     assert payload["status"] == "complete"
     assert len(payload["summaries"]) == 2
     assert {row["alpha"] for row in payload["summaries"]} == {0.01, 0.10}
+    assert {
+        row["sensitivity_axis"]
+        for row in payload["one_factor_sensitivity_curves"]
+    } == {"alpha"}
+
+
+def test_analysis_reports_cell_wall_time_without_making_it_an_endpoint(tmp_path):
+    row = _row("source_atlas", 0, feasible=True, certified=True, loss=0.01)
+    row["wall_time_sec"] = 1.25
+    path = tmp_path / "source.json"
+    path.write_text(json.dumps(row), encoding="utf-8")
+    payload = analyze([path])
+    assert payload["summaries"][0]["median_wall_time_sec"] == 1.25
+    assert payload["compact_rows"][0]["wall_time_sec"] == 1.25

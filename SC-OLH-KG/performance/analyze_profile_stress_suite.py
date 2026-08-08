@@ -56,6 +56,20 @@ def _configuration_payload(configuration):
     return dict(zip(CONFIGURATION_DEFAULTS, configuration))
 
 
+def _one_factor_sensitivity(configuration):
+    payload = _configuration_payload(configuration)
+    changed = [
+        name for name, default in CONFIGURATION_DEFAULTS.items()
+        if payload[name] != default
+    ]
+    if not changed:
+        return "baseline", None
+    if len(changed) != 1:
+        return None, None
+    axis = changed[0]
+    return axis, payload[axis]
+
+
 def _receipt(path):
     path = Path(path)
     return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -183,6 +197,10 @@ def analyze(paths):
             for row in group if row["finite_library_regret"] is not None
         ]
         losses = [float(row["penalized_loss"]) for row in group]
+        wall_times = [
+            float(row["wall_time_sec"])
+            for row in group if row.get("wall_time_sec") is not None
+        ]
         summaries.append({
             "regime": regime,
             "arm": arm,
@@ -211,6 +229,10 @@ def analyze(paths):
                 row["all_in_calls_unamortized"] for row in group])),
             "mean_all_in_calls_amortized": float(np.mean([
                 row["all_in_calls_amortized"] for row in group])),
+            "median_wall_time_sec": (
+                None if not wall_times else float(np.median(wall_times))),
+            "mean_wall_time_sec": (
+                None if not wall_times else float(np.mean(wall_times))),
         })
 
     comparisons = []
@@ -346,6 +368,18 @@ def analyze(paths):
             ])),
             })
 
+    sensitivity_curves = []
+    for row in configuration_macro:
+        configuration = _configuration(row)
+        axis, value = _one_factor_sensitivity(configuration)
+        if axis is None:
+            continue
+        sensitivity_curves.append({
+            "sensitivity_axis": axis,
+            "sensitivity_value": value,
+            **row,
+        })
+
     compact_rows = [{
         "regime": row["regime"],
         "target_seed": int(row["target_seed"]),
@@ -364,6 +398,9 @@ def analyze(paths):
         "target_search_calls": int(row["target_search_calls"]),
         "verification_calls": int(row["verification_calls"]),
         "all_in_calls_unamortized": int(row["all_in_calls_unamortized"]),
+        "wall_time_sec": (
+            None if row.get("wall_time_sec") is None
+            else float(row["wall_time_sec"])),
         "raw_result": Path(row["_path"]).name,
         "raw_sha256": row["_sha256"],
     } for row in rows]
@@ -378,6 +415,7 @@ def analyze(paths):
         "paired_task_level_comparisons": comparisons,
         "registered_generator_macro_comparisons": macro_comparisons,
         "configuration_macro_summary": configuration_macro,
+        "one_factor_sensitivity_curves": sensitivity_curves,
         "compact_rows": compact_rows,
         "failures": failures,
     }

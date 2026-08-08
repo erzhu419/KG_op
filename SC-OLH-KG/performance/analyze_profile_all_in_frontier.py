@@ -8,6 +8,12 @@ import json
 from pathlib import Path
 
 import numpy as np
+from scipy.stats import binomtest
+
+from performance.statistical_inference import (
+    apply_holm_family,
+    bootstrap_mean_ci,
+)
 
 
 CONTRACT_ID = "randomized_ordered_profile_stress_v2"
@@ -25,6 +31,14 @@ def _success(row):
 
 def _epsilon_success(row):
     return bool(_success(row) and row["feasible_and_epsilon_optimal_005"])
+
+
+def _outcome(row, *, prefix):
+    return (
+        int(bool(row[f"{prefix}_success"])),
+        int(bool(row[f"{prefix}_epsilon_success"])),
+        -float(row[f"{prefix}_penalized_loss"]),
+    )
 
 
 def analyze(paths):
@@ -105,6 +119,7 @@ def analyze(paths):
         if not group:
             continue
         break_even = []
+        wins = losses = ties = 0
         for row in group:
             source_row = source[(
                 row["regime"], row["target_seed"], row["nominal_dimension"])]
@@ -116,6 +131,23 @@ def analyze(paths):
             denominator = control_operating - source_operating
             if denominator > 0:
                 break_even.append(float(source_row["source_calls"] / denominator))
+            source_outcome = _outcome(row, prefix="source")
+            control_outcome = _outcome(row, prefix="control")
+            if source_outcome > control_outcome:
+                wins += 1
+            elif source_outcome < control_outcome:
+                losses += 1
+            else:
+                ties += 1
+        loss_differences = [
+            row["source_penalized_loss"] - row["control_penalized_loss"]
+            for row in group
+        ]
+        call_differences = [
+            row["source_actual_all_in_calls"]
+            - row["control_actual_all_in_calls"]
+            for row in group
+        ]
         summaries.append({
             "control": control,
             "paired_independent_task_count": len(group),
@@ -129,6 +161,18 @@ def analyze(paths):
                 row["source_epsilon_success"] for row in group)),
             "control_epsilon_success_count": int(sum(
                 row["control_epsilon_success"] for row in group)),
+            "source_wins": wins,
+            "source_losses": losses,
+            "ties": ties,
+            "one_sided_source_better_exact_sign_pvalue": (
+                1.0 if wins + losses == 0 else float(binomtest(
+                    wins,
+                    wins + losses,
+                    p=0.5,
+                    alternative="greater",
+                ).pvalue)
+            ),
+            "inference_family_id": "equal_all_in_structured_controls",
             "median_source_actual_all_in_calls": float(np.median([
                 row["source_actual_all_in_calls"] for row in group])),
             "median_control_actual_all_in_calls": float(np.median([
@@ -137,6 +181,22 @@ def analyze(paths):
                 row["source_penalized_loss"] - row["control_penalized_loss"]
                 for row in group
             ])),
+            "mean_source_minus_control_penalized_loss": float(np.mean(
+                loss_differences)),
+            "mean_source_minus_control_penalized_loss_bootstrap_95ci": (
+                bootstrap_mean_ci(
+                    loss_differences,
+                    seed=20260808 + len(summaries),
+                )
+            ),
+            "mean_source_minus_control_actual_all_in_calls": float(np.mean(
+                call_differences)),
+            "mean_source_minus_control_actual_all_in_calls_bootstrap_95ci": (
+                bootstrap_mean_ci(
+                    call_differences,
+                    seed=20261808 + len(summaries),
+                )
+            ),
             "median_archive_break_even_target_count": (
                 None if not break_even else float(np.median(break_even))),
             "break_even_definition": (
@@ -144,6 +204,11 @@ def analyze(paths):
                 "source_target_search_and_verification_calls)"
             ),
         })
+    apply_holm_family(
+        summaries,
+        pvalue_field="one_sided_source_better_exact_sign_pvalue",
+        family_field="inference_family_id",
+    )
     return {
         "schema_version": 1,
         "contract_id": "profile_design_all_in_frontier_v1",
@@ -152,6 +217,7 @@ def analyze(paths):
             "source+target_search+maximum_frozen_shortlist_verification_calls"
         ),
         "primary_unit": "independent_target_task",
+        "simulation_seed_role": "independent randomized target-task index",
         "row_count": len(rows),
         "paired_row_count": len(paired),
         "summaries": summaries,

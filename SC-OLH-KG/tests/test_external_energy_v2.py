@@ -119,6 +119,7 @@ def test_energy_v2_analysis_separates_market_region_and_seed(tmp_path):
             "all_in_calls_amortized": 131.4 if arm == "source_atlas" else 93.0,
             "all_in_budget_cap_amortized": (
                 291.4 if arm == "source_atlas" else 253.0),
+            "wall_time_sec": 2.5,
         }
         path = tmp_path / f"{arm}.json"
         path.write_text(json.dumps(row), encoding="utf-8")
@@ -137,6 +138,7 @@ def test_energy_v2_analysis_separates_market_region_and_seed(tmp_path):
     assert region[
         "mean_source_minus_control_region_safe_rate_bootstrap_95ci"
     ] == [1.0, 1.0]
+    assert payload["market_summaries"][0]["median_wall_time_sec"] == 2.5
 
 
 def test_energy_v2_registered_matrix_has_450_cells():

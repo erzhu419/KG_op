@@ -50,3 +50,8 @@ def test_all_in_frontier_checks_maximum_budget_and_break_even(tmp_path):
     assert summary["source_certified_success_count"] == 1
     assert summary["control_certified_success_count"] == 0
     assert summary["median_archive_break_even_target_count"] == 1.0
+    assert summary["source_wins"] == 1
+    assert summary["holm_family_size"] == 1
+    assert summary[
+        "mean_source_minus_control_actual_all_in_calls_bootstrap_95ci"
+    ] == [0.0, 0.0]
