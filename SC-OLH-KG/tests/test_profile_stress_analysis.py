@@ -52,6 +52,19 @@ def test_analysis_uses_target_tasks_as_paired_units(tmp_path):
     comparison = payload["paired_task_level_comparisons"][0]
     assert comparison["paired_task_count"] == 3
     assert comparison["first_wins"] == 3
+    assert comparison["holm_family_id"] == "task_level_context:primary"
+    assert (
+        comparison[
+            "one_sided_first_better_exact_sign_pvalue_holm"]
+        >= comparison["one_sided_first_better_exact_sign_pvalue"]
+    )
+    macro = payload["registered_generator_macro_comparisons"][0]
+    assert macro["paired_task_count"] == 3
+    assert macro["registered_regime_count"] == 1
+    assert len(
+        macro[
+            "mean_first_minus_second_penalized_loss_bootstrap_95ci"]
+    ) == 2
 
 
 def test_analysis_never_pools_registered_sensitivity_settings(tmp_path):

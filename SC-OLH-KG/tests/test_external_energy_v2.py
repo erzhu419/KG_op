@@ -130,6 +130,13 @@ def test_energy_v2_analysis_separates_market_region_and_seed(tmp_path):
     comparison = payload["paired_algorithmic_repeatability"][0]
     assert comparison["first_wins"] == 1
     assert comparison["task_population_inference_claimed"] is False
+    assert comparison["holm_family_size"] == 1
+    region = payload["region_level_directional_audit"][0]
+    assert region["region_count"] == 1
+    assert region["holm_family_size"] == 1
+    assert region[
+        "mean_source_minus_control_region_safe_rate_bootstrap_95ci"
+    ] == [1.0, 1.0]
 
 
 def test_energy_v2_registered_matrix_has_450_cells():

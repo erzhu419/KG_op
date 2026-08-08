@@ -12,6 +12,11 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import binomtest
 
+from performance.statistical_inference import (
+    apply_holm_family,
+    bootstrap_mean_ci,
+)
+
 
 PRIMARY_ARMS = (
     "source_atlas",
@@ -56,16 +61,6 @@ def _receipt(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _bootstrap_mean(values, *, seed, repetitions=10_000):
-    values = np.asarray(values, dtype=float)
-    if len(values) == 0:
-        return None
-    rng = np.random.default_rng(int(seed))
-    samples = rng.choice(values, size=(int(repetitions), len(values)), replace=True)
-    means = np.mean(samples, axis=1)
-    return [float(value) for value in np.quantile(means, [0.025, 0.975])]
-
-
 def _outcome_key(row):
     """Lexicographic safety-first outcome, larger is better."""
 
@@ -76,9 +71,17 @@ def _outcome_key(row):
     )
 
 
-def _paired_comparison(first_rows, second_rows, *, first_name, second_name):
-    first = {int(row["target_seed"]): row for row in first_rows}
-    second = {int(row["target_seed"]): row for row in second_rows}
+def _paired_comparison(
+    first_rows,
+    second_rows,
+    *,
+    first_name,
+    second_name,
+    pair_key=lambda row: int(row["target_seed"]),
+    bootstrap_seed=20260808,
+):
+    first = {pair_key(row): row for row in first_rows}
+    second = {pair_key(row): row for row in second_rows}
     common = sorted(set(first) & set(second))
     wins = losses = ties = 0
     loss_difference = []
@@ -110,7 +113,28 @@ def _paired_comparison(first_rows, second_rows, *, first_name, second_name):
         "median_first_minus_second_penalized_loss": (
             None if not loss_difference else float(np.median(loss_difference))
         ),
+        "mean_first_minus_second_penalized_loss": (
+            None if not loss_difference else float(np.mean(loss_difference))
+        ),
+        "mean_first_minus_second_penalized_loss_bootstrap_95ci": (
+            bootstrap_mean_ci(loss_difference, seed=bootstrap_seed)
+        ),
     }
+
+
+def _inference_family(schema, descriptor, configuration, *, prefix):
+    default_configuration = tuple(CONFIGURATION_DEFAULTS.values())
+    if (
+        configuration == default_configuration
+        and schema == "declared"
+        and descriptor == "conditioned"
+    ):
+        scope = "primary"
+    elif configuration == default_configuration:
+        scope = "schema_descriptor"
+    else:
+        scope = "sensitivity"
+    return f"{prefix}:{scope}"
 
 
 def analyze(paths):
@@ -179,7 +203,7 @@ def analyze(paths):
             "median_feasible_regret": (
                 None if not regrets else float(np.median(regrets))),
             "mean_penalized_loss": float(np.mean(losses)),
-            "mean_penalized_loss_bootstrap_95ci": _bootstrap_mean(
+            "mean_penalized_loss_bootstrap_95ci": bootstrap_mean_ci(
                 losses, seed=20260808 + len(summaries)),
             "mean_verification_calls": float(np.mean([
                 row["verification_calls"] for row in group])),
@@ -227,8 +251,70 @@ def analyze(paths):
                     "nominal_dimension": context[3],
                     "effective_rank": context[4],
                     **_configuration_payload(context[5]),
+                    "inference_family_id": _inference_family(
+                        context[1], context[2], context[5],
+                        prefix="task_level_context"),
                 })
                 comparisons.append(comparison)
+
+    apply_holm_family(
+        comparisons,
+        pvalue_field="one_sided_first_better_exact_sign_pvalue",
+        family_field="inference_family_id",
+    )
+
+    macro_comparisons = []
+    macro_contexts = sorted({
+        (
+            row["schema_mode"], row["descriptor_mode"],
+            int(row["nominal_dimension"]), _configuration(row),
+        )
+        for row in rows
+    })
+    for macro_index, context in enumerate(macro_contexts):
+        context_rows = [
+            row for row in rows
+            if (
+                row["schema_mode"], row["descriptor_mode"],
+                int(row["nominal_dimension"]), _configuration(row),
+            ) == context
+        ]
+        source = [row for row in context_rows if row["arm"] == "source_atlas"]
+        for control_index, control in enumerate(PRIMARY_ARMS[1:]):
+            control_rows = [
+                row for row in context_rows if row["arm"] == control]
+            if not source or not control_rows:
+                continue
+            comparison = _paired_comparison(
+                source,
+                control_rows,
+                first_name="source_atlas",
+                second_name=control,
+                pair_key=lambda row: (
+                    str(row["regime"]), int(row["target_seed"])),
+                bootstrap_seed=(
+                    20260808 + 1000 * macro_index + control_index),
+            )
+            comparison.update({
+                "schema_mode": context[0],
+                "descriptor_mode": context[1],
+                "nominal_dimension": context[2],
+                **_configuration_payload(context[3]),
+                "registered_regime_count": len({
+                    row["regime"] for row in context_rows}),
+                "inference_family_id": _inference_family(
+                    context[0], context[1], context[3],
+                    prefix="registered_generator_macro"),
+                "population_claim": (
+                    "registered randomized generator only; no unrestricted "
+                    "domain-population claim"),
+            })
+            macro_comparisons.append(comparison)
+    apply_holm_family(
+        macro_comparisons,
+        pvalue_field="one_sided_first_better_exact_sign_pvalue",
+        family_field="inference_family_id",
+    )
 
     configuration_macro = []
     configurations = sorted({_configuration(row) for row in rows})
@@ -290,6 +376,7 @@ def analyze(paths):
         "row_count": len(rows),
         "summaries": summaries,
         "paired_task_level_comparisons": comparisons,
+        "registered_generator_macro_comparisons": macro_comparisons,
         "configuration_macro_summary": configuration_macro,
         "compact_rows": compact_rows,
         "failures": failures,

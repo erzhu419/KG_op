@@ -12,6 +12,11 @@ from pathlib import Path
 import numpy as np
 from scipy.stats import binomtest
 
+from performance.statistical_inference import (
+    apply_holm_family,
+    bootstrap_mean_ci,
+)
+
 
 CONTRACT_ID = "opsd_region_heldout_profile_design_v2"
 CONTROLS = (
@@ -152,10 +157,17 @@ def analyze(paths):
                         wins, wins + losses, p=0.5,
                         alternative="greater").pvalue)
                 ),
+                "inference_family_id": (
+                    "energy_market_algorithmic_repeatability"),
                 "task_population_inference_claimed": False,
                 "median_archive_break_even_target_count": (
                     None if not break_even else float(np.median(break_even))),
             })
+    apply_holm_family(
+        paired,
+        pvalue_field="algorithmic_repeatability_sign_pvalue",
+        family_field="inference_family_id",
+    )
 
     region_summaries = []
     for region in sorted({row["target_region"] for row in market_summaries}):
@@ -185,6 +197,7 @@ def analyze(paths):
     for control in CONTROLS:
         wins = losses = ties = 0
         compared_regions = 0
+        rate_differences = []
         for region in sorted({row["target_region"] for row in market_summaries}):
             source = [
                 row for row in market_summaries
@@ -205,6 +218,7 @@ def analyze(paths):
                 row["certified_safe_count"] / row["algorithmic_seed_count"]
                 for row in comparator
             ]))
+            rate_differences.append(source_rate - control_rate)
             if source_rate > control_rate + 1e-12:
                 wins += 1
             elif source_rate < control_rate - 1e-12:
@@ -225,12 +239,27 @@ def analyze(paths):
                     wins, wins + losses, p=0.5,
                     alternative="greater").pvalue)
             ),
+            "mean_source_minus_control_region_safe_rate": (
+                float(np.mean(rate_differences))
+            ),
+            "mean_source_minus_control_region_safe_rate_bootstrap_95ci": (
+                bootstrap_mean_ci(
+                    rate_differences,
+                    seed=20260808 + len(region_direction),
+                )
+            ),
+            "inference_family_id": "energy_region_primary_controls",
             "warning": (
                 "Only five geographic regions are available and markets share "
                 "calendar data; this is a conservative descriptive audit, not "
                 "a broad task-population claim."
             ),
         })
+    apply_holm_family(
+        region_direction,
+        pvalue_field="one_sided_region_sign_pvalue",
+        family_field="inference_family_id",
+    )
 
     compact_rows = [{
         "target_region": row["target_region"],
