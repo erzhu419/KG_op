@@ -7,7 +7,7 @@ import copy
 import math
 
 import numpy as np
-from scipy.stats import beta
+from scipy.stats import beta, binom
 from scipy.stats import t as student_t
 
 from core.certification import (
@@ -69,6 +69,49 @@ def exact_all_success_power(true_probability, trials):
     if trials < 1:
         raise ValueError("binomial trials must be positive")
     return float(true_probability ** trials)
+
+
+def minimum_exact_binomial_successes(
+    required_probability,
+    trials,
+    delta,
+):
+    """Smallest success count whose exact lower bound reaches the target."""
+
+    required_probability = float(required_probability)
+    trials = int(trials)
+    delta = float(delta)
+    if not 0.0 < required_probability < 1.0:
+        raise ValueError("required probability must lie in (0, 1)")
+    if trials < 1:
+        raise ValueError("binomial trials must be positive")
+    if not 0.0 < delta < 1.0:
+        raise ValueError("binomial delta must lie in (0, 1)")
+    for successes in range(trials + 1):
+        if exact_binomial_lower(successes, trials, delta) >= required_probability:
+            return int(successes)
+    return None
+
+
+def exact_binomial_threshold_power(
+    true_probability,
+    trials,
+    required_probability,
+    delta,
+):
+    """Power of the fixed-n exact lower-confidence-bound certificate."""
+
+    true_probability = float(true_probability)
+    if not 0.0 <= true_probability <= 1.0:
+        raise ValueError("true probability must lie in [0, 1]")
+    threshold = minimum_exact_binomial_successes(
+        required_probability,
+        trials,
+        delta,
+    )
+    if threshold is None:
+        return 0.0
+    return float(binom.sf(threshold - 1, int(trials), true_probability))
 
 
 def parse_verification_candidate_budgets(value, *, default):

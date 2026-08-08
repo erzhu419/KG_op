@@ -15,7 +15,9 @@ sys.path.insert(0, str(ROOT))
 
 from core.terminal_verification import (  # noqa: E402
     exact_all_success_power,
+    exact_binomial_threshold_power,
     minimum_all_success_binomial_budget,
+    minimum_exact_binomial_successes,
 )
 
 
@@ -37,6 +39,11 @@ def power_table(
     for budget in map(int, budgets):
         valid = bool(
             float(required_probability) ** budget <= candidate_delta)
+        exact_threshold = minimum_exact_binomial_successes(
+            required_probability,
+            budget,
+            candidate_delta,
+        )
         for probability in map(float, true_probabilities):
             rows.append({
                 "verification_budget": budget,
@@ -52,11 +59,30 @@ def power_table(
                 "all_success_probability": exact_all_success_power(
                     probability, budget),
                 "minimum_valid_budget": minimum_budget,
+                "clopper_pearson_candidate_validity_enabled": bool(
+                    exact_threshold is not None),
+                "clopper_pearson_success_threshold": exact_threshold,
+                "clopper_pearson_allowed_failures": (
+                    None
+                    if exact_threshold is None
+                    else int(budget - exact_threshold)
+                ),
+                "clopper_pearson_certification_probability": (
+                    exact_binomial_threshold_power(
+                        probability,
+                        budget,
+                        required_probability,
+                        candidate_delta,
+                    )
+                ),
             })
     return {
         "schema_version": 1,
-        "contract_id": "exact_all_success_binomial_power_v1",
-        "method": "exact_binomial_all_success",
+        "contract_id": "exact_binomial_verifier_power_comparison_v2",
+        "methods": [
+            "exact_binomial_all_success",
+            "exact_clopper_pearson_lower_bound",
+        ],
         "candidate_validity_statement": (
             "For any unsafe p <= p_required, false certification probability "
             "is at most p_required^n <= candidate_delta."
@@ -69,8 +95,9 @@ def power_table(
         "minimum_valid_budget": minimum_budget,
         "warning": (
             "For a fixed all-success rule, power at p<1 decreases as n grows. "
-            "The rule is chosen for transparent exact validity, not optimal "
-            "sample efficiency."
+            "The exact Clopper-Pearson threshold preserves candidate-wise "
+            "validity while allowing the rejection threshold to improve "
+            "with n."
         ),
         "rows": rows,
     }

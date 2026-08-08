@@ -15,8 +15,10 @@ from core.terminal_verification import (  # noqa: E402
     build_verification_aware_shortlist,
     exact_all_success_power,
     exact_binomial_lower,
+    exact_binomial_threshold_power,
     freeze_objective_incumbent_shortlist,
     minimum_all_success_binomial_budget,
+    minimum_exact_binomial_successes,
     parse_verification_candidate_budgets,
     select_initial_empirical_objective_incumbent,
     select_objective_verification_challenger,
@@ -263,6 +265,18 @@ def test_exact_all_success_binomial_candidate_contract():
     assert audit["certification_scope"] == "unit_test_iid_distribution"
 
 
+def test_exact_clopper_pearson_threshold_improves_with_budget():
+    delta = 0.05 / 3.0
+    assert minimum_exact_binomial_successes(0.95, 79, delta) is None
+    assert minimum_exact_binomial_successes(0.95, 80, delta) == 80
+    threshold_240 = minimum_exact_binomial_successes(0.95, 240, delta)
+    assert threshold_240 is not None
+    assert threshold_240 < 240
+    assert exact_binomial_threshold_power(0.99, 240, 0.95, delta) > (
+        exact_all_success_power(0.99, 80)
+    )
+
+
 def test_all_success_power_table_exposes_boundary_power():
     payload = power_table(
         required_probability=0.95,
@@ -280,6 +294,9 @@ def test_all_success_power_table_exposes_boundary_power():
     assert cells[(80, 1.0)]["certification_probability"] == 1.0
     assert np.isclose(
         cells[(80, 0.95)]["certification_probability"], 0.95 ** 80)
+    assert cells[(80, 1.0)]["clopper_pearson_success_threshold"] == 80
+    assert cells[(79, 1.0)][
+        "clopper_pearson_candidate_validity_enabled"] is False
 
 
 def test_exact_binomial_shortlist_deploys_first_certified_policy():
