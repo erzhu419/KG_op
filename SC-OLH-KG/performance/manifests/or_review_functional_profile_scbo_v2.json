@@ -22,6 +22,32 @@
     "performance_outcomes_observed_before_v2_freeze": false,
     "v1_results_eligible_for_inference": false
   },
+  "v2_submission_incident_audit": {
+    "malformed_argument": "--dimensions primary",
+    "root_cause": "The matrix name was placed in the dimensions argument while generating the first V2 scheduler specifications.",
+    "initial_parse_failure_task_ids": [
+      "t73679", "t73680", "t73681", "t73682", "t73683"
+    ],
+    "initial_queued_tasks_cancelled_before_launch": [
+      "t73684", "t73685", "t73686", "t73687", "t73688", "t73689",
+      "t73690", "t73691"
+    ],
+    "automatic_retry_parse_failure_task_ids": [
+      "t73709", "t73710", "t73711", "t73712", "t73713"
+    ],
+    "automatic_retry_tasks_force_cancelled": [
+      "t73727", "t73728", "t73729", "t73730", "t73731"
+    ],
+    "target_evaluations_per_malformed_task": 0,
+    "performance_outcomes_observed": false,
+    "malformed_tasks_eligible_for_inference": false,
+    "corrected_primary_task_ids": [
+      "t73715", "t73716", "t73717", "t73718", "t73719", "t73720"
+    ],
+    "corrected_rank_sensitivity_task_ids": [
+      "t73721", "t73722", "t73723", "t73724", "t73725", "t73726"
+    ]
+  },
   "method_contract": {
     "arm": "target_only_dct_space_scbo",
     "source_archive_used": false,
