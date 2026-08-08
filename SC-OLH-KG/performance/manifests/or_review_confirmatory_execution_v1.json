@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_confirmatory_execution_v1",
+  "status": "frozen_not_yet_interpreted",
+  "method_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "seed_derivation": "sha256(method_freeze_commit:regime:replicate_index)[0:8] mod 1000000000",
+  "target_replicate_indices": [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+  ],
+  "matrices": {
+    "profile_stress_primary": {
+      "cell_count": 2880,
+      "dimensions": [200, 1000, 10000],
+      "regime_count": 8,
+      "independent_tasks_per_regime": 20,
+      "arm_count": 6,
+      "runner_matrix": "primary"
+    },
+    "profile_stress_sensitivity": {
+      "cell_count": 8640,
+      "dimension": 1000,
+      "regime_count": 8,
+      "independent_tasks_per_regime": 20,
+      "configuration_count": 27,
+      "arm_count": 2,
+      "runner_matrix": "sensitivity"
+    },
+    "profile_stress_schema_descriptor": {
+      "cell_count": 1280,
+      "dimension": 1000,
+      "regime_count": 8,
+      "independent_tasks_per_regime": 20,
+      "configuration_count": 4,
+      "arm_count": 2,
+      "runner_matrix": "schema_descriptor"
+    },
+    "profile_stress_equal_preverification_cost": {
+      "cell_count": 800,
+      "dimension": 1000,
+      "regime_count": 8,
+      "independent_tasks_per_regime": 20,
+      "source_arm": "384 source + 10 target + at most 240 verification",
+      "control_arms": "394 target + at most 240 verification",
+      "shared_maximum_all_in_budget": 634,
+      "runner_matrix": "equal_preverification_cost"
+    },
+    "external_energy_region_holdout": {
+      "cell_count": 450,
+      "market_count": 18,
+      "region_count": 5,
+      "algorithmic_repetitions_per_market": 5,
+      "arm_count": 5,
+      "frozen_source_design_count": 18,
+      "target_seed_values": [0, 1, 2, 3, 4]
+    },
+    "binomial_verifier_power": {
+      "execution_kind": "deterministic exact calculation",
+      "true_probability_grid": [0.9, 0.925, 0.95, 0.96, 0.975, 0.99, 1.0],
+      "trial_grid": [40, 80, 120, 160, 240],
+      "candidate_count_grid": [1, 3]
+    }
+  },
+  "resource_contract": {
+    "profile_stress": "CPU only; node001-node006; flat restartable shards; one BLAS thread per worker",
+    "external_energy": "CPU only; node001-node006; frozen source designs are materialized before target tasks",
+    "saasbo": "not part of these matrices",
+    "checkpoint_policy": "atomic per-cell JSON; no large model checkpoints",
+    "result_sync_policy": "JSON summaries and compact results only"
+  },
+  "interpretation_contract": {
+    "confirmatory_outcome_repair_under_same_version": false,
+    "oracle_upper_bound_excluded_from_method_comparisons": true,
+    "adverse_and_negative_regimes_retained": true,
+    "paper_text_modified_before_result_freeze": false,
+    "task_level_and_seed_level_inference_separated": true
+  }
+}

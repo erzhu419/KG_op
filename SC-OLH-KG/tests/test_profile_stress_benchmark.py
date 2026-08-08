@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from performance.benchmark_profile_stress_suite import run_task  # noqa: E402
 from performance.run_profile_stress_matrix import (  # noqa: E402
     build_equal_preverification_cost_cells,
     build_primary_cells,
+    build_schema_descriptor_cells,
     build_sensitivity_cells,
     derived_target_seed,
     run_matrix,
@@ -135,3 +137,39 @@ def test_registered_sensitivity_and_equal_cost_cells_are_paired():
     controls = [cell for cell in equal_cost if cell["arm"] != "source_atlas"]
     assert source["N"] == 10
     assert all(cell["N"] == 394 for cell in controls)
+
+    schema = build_schema_descriptor_cells(
+        freeze_commit="freeze",
+        dimension=1000,
+        task_count=1,
+        regimes=("coordinate_permutation",),
+    )
+    assert len(schema) == 8
+    assert {
+        (cell["schema_mode"], cell["descriptor_mode"])
+        for cell in schema
+    } == {
+        ("declared", "domain_blind"),
+        ("declared", "conditioned"),
+        ("schema_blind", "domain_blind"),
+        ("schema_blind", "conditioned"),
+    }
+
+
+def test_confirmatory_manifest_cell_counts_match_builders():
+    manifest = json.loads((
+        ROOT / "performance" / "manifests"
+        / "or_review_confirmatory_execution_v1.json"
+    ).read_text(encoding="utf-8"))
+    commit = manifest["method_freeze_commit"]
+    matrices = manifest["matrices"]
+    assert len(build_primary_cells(freeze_commit=commit)) == (
+        matrices["profile_stress_primary"]["cell_count"])
+    assert len(build_sensitivity_cells(freeze_commit=commit)) == (
+        matrices["profile_stress_sensitivity"]["cell_count"])
+    assert len(build_schema_descriptor_cells(freeze_commit=commit)) == (
+        matrices["profile_stress_schema_descriptor"]["cell_count"])
+    assert len(build_equal_preverification_cost_cells(
+        freeze_commit=commit)) == (
+            matrices["profile_stress_equal_preverification_cost"][
+                "cell_count"])

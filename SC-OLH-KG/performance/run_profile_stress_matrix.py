@@ -171,6 +171,31 @@ def build_equal_preverification_cost_cells(
     return cells
 
 
+def build_schema_descriptor_cells(
+    *, freeze_commit, dimension=1000, task_count=20,
+    regimes=tuple(PROFILE_STRESS_REGIMES),
+):
+    """Cross declared/blind schemas with conditioned/blind descriptors."""
+
+    configurations = []
+    for schema_mode in ("declared", "schema_blind"):
+        for descriptor_mode in ("domain_blind", "conditioned"):
+            configurations.append((
+                f"schema-{schema_mode}__descriptor-{descriptor_mode}",
+                {
+                    "schema_mode": schema_mode,
+                    "descriptor_mode": descriptor_mode,
+                },
+            ))
+    return _paired_task_cells(
+        freeze_commit=freeze_commit,
+        configurations=configurations,
+        dimension=dimension,
+        task_count=task_count,
+        regimes=regimes,
+    )
+
+
 def _cell_name(index, cell):
     return (
         f"cell{int(index):05d}__d{int(cell['dimension'])}__"
@@ -278,6 +303,15 @@ def run_matrix(
             task_count=task_count,
             regimes=regimes,
         )
+    elif matrix == "schema_descriptor":
+        if len(tuple(dimensions)) != 1:
+            raise ValueError("schema matrix requires one dimension")
+        cells = build_schema_descriptor_cells(
+            freeze_commit=freeze_commit,
+            dimension=tuple(dimensions)[0],
+            task_count=task_count,
+            regimes=regimes,
+        )
     else:
         raise ValueError(f"unknown profile stress matrix: {matrix}")
     start = max(0, int(start))
@@ -351,7 +385,10 @@ def main():
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument(
         "--matrix",
-        choices=("primary", "sensitivity", "equal_preverification_cost"),
+        choices=(
+            "primary", "sensitivity", "equal_preverification_cost",
+            "schema_descriptor",
+        ),
         default="primary",
     )
     parser.add_argument("--dimensions", default="200,1000,10000")
