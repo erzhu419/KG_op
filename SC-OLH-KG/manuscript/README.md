@@ -1,47 +1,46 @@
 # Operations Research Manuscript
 
-This directory contains the new manuscript for the final structural-atlas
-method. It is independent of the rejected legacy manuscript in
+This directory contains the manuscript for the frozen source-scored structural
+initial-design method. It is independent of the rejected legacy manuscript in
 `Final_Submission/`.
 
 ## Method identity
 
-The manuscript studies:
-
 ```text
-source-learned structural proposal atlas
-  + replaceable online optimizer (canonical SAASBO in the primary arm)
-  + independent terminal verifier
+source-scored subset of a public profile library
+  + replaceable target optimizer
+  + independent frozen-shortlist verifier
 ```
 
-KG, SC-V69, and cumulative factor-HVD are comparisons or diagnostics, not
-headline contributions.
+The paper is not an SC-OLH-KG, KG, SAASBO, or HVD method paper. Cumulative HVD
+is retained only as a calibration diagnostic.
 
 ## Build
 
-From this directory:
-
 ```bash
+cd SC-OLH-KG/manuscript
+python3 ../performance/render_or_review_final_artifacts.py
 latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+cd ../..
+python3 SC-OLH-KG/performance/audit_or_manuscript.py \
+  --manuscript-dir SC-OLH-KG/manuscript \
+  --artifact-manifest SC-OLH-KG/manuscript/review_artifact_manifest.json \
+  --out SC-OLH-KG/paper_artifacts/or_manuscript_receipt_v1.json
 ```
 
-Generated tables and figures are rebuilt only from compact audited artifacts:
+The final renderer reads only compact audited analyses under
+`../paper_artifacts/or_review/`. It never reads checkpoints, pickle files,
+model weights, or raw policy vectors. Input and output hashes are recorded in
+`review_artifact_manifest.json`.
 
-```bash
-python3 ../performance/render_or_manuscript_artifacts.py
-```
+## Frozen evidence
 
-The renderer does not read checkpoints, pickles, model weights, or raw policy
-vectors. Its input and output hashes are recorded in `artifact_manifest.json`.
-
-## Evidence contracts
-
-- `../performance/manifests/paper_final_method_v1.json`
-- `../paper_artifacts/paper_result_audit_v1.json`
-- `../paper_artifacts/paper_paired_statistics_v1.json`
-- `../paper_artifacts/final_dimension_budget_evidence_v1.json`
-- `../paper_artifacts/paper_submission_readiness_v1.json`
+- `../paper_artifacts/or_review/final_evidence_registry_v1.json`
+- `../performance/manifests/profile_atlas_v2_method_spec.json`
+- `../performance/manifests/profile_stress_v2_protocol.json`
+- `../performance/manifests/or_review_energy_forecast_indexed_v3.json`
 - `../../proof/final_or_theory.md`
 
-Source, target-search, verification, and total simulator calls must remain
-separate in every revision.
+Every revision must keep source, target search, verification, total, and
+amortized simulator calls distinct. Energy V3 remains a negative external
+control, and `d=10000` remains a profile-grid refinement claim.

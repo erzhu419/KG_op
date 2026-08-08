@@ -1,220 +1,168 @@
 # Final Operations Research Theory Contract
 
-## 1. Decision Problem And Information Contract
+This file is the human-readable theory contract for the final manuscript. The
+paper's method is the V2 source-scored structural initial design, not historical
+V3 endpoint replacement, V69, KG, SAASBO, or HVD.
 
-For a held-out task, let `x` be an integer policy, `F(x)` its random operating
-cost, and `G(x)` its random constraint response.  The deployment problem is
+## 1. Decision and information contract
 
-```text
-minimize E[F(x)]  subject to  P(G(x) <= 0) >= 1 - alpha.
-```
-
-Before any target response is observed, the method may use a frozen source
-archive and target descriptors such as dimension, bounds, and an unlabeled
-policy/state schema.  It may not use target objective values, target
-constraint values, a target optimizer, target feasibility labels, or terminal
-verification responses.  Source, target-search, and verification calls are
-separate resources.
-
-The final method has three mathematical objects:
-
-1. a source-frozen deterministic proposal atlas `A_n0` of at most `n0`
-   policies;
-2. a replaceable target optimizer operating only after those `n0` calls;
-3. an independent ordered verifier applied to a shortlist frozen after search.
-
-The online optimizer is not part of the novelty theorem.  This separation is
-intentional: experiments show that the atlas contributes most of the observed
-gain, while canonical SAASBO provides a smaller target-stage improvement.
-
-## 2. Why A Transfer Assumption Is Necessary
-
-**Theorem 1 (finite-atlas no-free-lunch).**  For every proper finite proposal
-atlas that is frozen before target labels, there exists a nonempty held-out
-feasible set that the atlas misses.
-
-**Proof.**  Choose any policy outside the finite atlas and define the held-out
-feasible set to contain only that policy.  The feasible set is nonempty and
-has empty intersection with the atlas.  Therefore no finite target-label-free
-proposal can guarantee arbitrary target coverage without an explicit
-structural or source-to-target condition.  The Lean proof is
-`SCOLHKG.Real.finite_budget_no_unconditional_target_coverage`.
-
-This theorem is the reason the paper states a bounded transfer condition
-instead of presenting ten proposals in ten thousand dimensions as an
-unconditional feat.
-
-## 3. Deterministic Atlas Coverage
-
-Let `eta_star(x)` be an ideal transferable coordinate and `eta_hat(x)` its
-source-learned approximation.  Let `S` be the frozen source support and `A_n0`
-the maximin atlas selected from that support.  Assume:
-
-1. **finite coverage:** every `s in S` is within `r_cover` of an atlas point in
-   `eta_hat`;
-2. **coordinate approximation:**
-   `dist(eta_hat(x), eta_star(x)) <= epsilon_eta`;
-3. **source-target support:** a target-safe center `x_c` is within
-   `Delta_task` of some source-support point in the ideal coordinate;
-4. **one-sided margin regularity:** the target chance margin `m(x)` obeys
-   `m(x) <= m(y) + L dist(eta_hat(x), eta_hat(y))`;
-5. **safe depth:** `m(x_c) + gamma <= 0`;
-6. **radius condition:**
+The target decision is an ordered bounded profile `h:[0,1]->[0,1]` observed on
+a declared grid and deterministically mapped to an integer policy. The target
+problem is
 
 ```text
-L (r_cover + Delta_task + 2 epsilon_eta) <= gamma.
+minimize E[F_q(h)] subject to P(G_q(h) <= tau_q) >= 1-alpha_q.
 ```
 
-**Theorem 2 (aligned finite-atlas coverage).**  Under assumptions 1--6 and
-`|A_n0| <= n0`, at least one atlas policy is target feasible.
+Before target search, the frontend may use the ordered target grid, integer
+bounds, nominal dimension, channel order in declared-schema experiments, a
+public outcome-free profile library, and ordinary replicated source outcomes.
+It may not use target outcomes, target feasibility labels, target oracle
+parameters, target optimum, safe-basin geometry, or terminal verification
+samples.
 
-**Proof.**  Assumptions 2 and 3 plus two triangle inequalities put a learned
-source proxy within `Delta_task + 2 epsilon_eta` of the target-safe center.
-Assumption 1 supplies an atlas member at an additional distance at most
-`r_cover`.  The one-sided Lipschitz condition then raises its chance margin by
-at most `L(r_cover + Delta_task + 2 epsilon_eta)`, which is no larger than the
-safe depth.  Its chance margin is therefore nonpositive.  The Lean proof is
-`SCOLHKG.Real.finite_aligned_geometric_lipschitz_atlas_coverage`; the composed
-implementation theorem is
-`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`.
+The final algorithm has three interfaces:
 
-**Corollary 2.1 (nominal-dimension independence).**  The sufficient condition
-depends on the covering geometry of `eta`, not the raw policy dimension `d`.
-Increasing `d` does not change the theorem when `r_cover`, `Delta_task`,
-`epsilon_eta`, `L`, and `gamma` remain controlled.
+1. a source-scored initial design frozen before target outcomes;
+2. a replaceable target backend;
+3. a frozen-shortlist verifier using independent replications.
 
-The global Lipschitz condition is a declared model assumption.  The current
-finite synthetic audit verifies atlas coverage on the registered libraries but
-does not estimate a globally valid `L`; no unconditional global-coverage claim
-is permitted.
+Source, search, and verification calls are separate resources.
 
-## 4. V3 Source-Monotone Envelope
+## 2. Exact profile coordinate and cross-grid consistency
 
-The V3 challenger uses the normalized zero-frequency policy coefficient.  For
-each source task, it computes the rank correlation between that coefficient
-and observed chance margin.  It admits the upper endpoint only when at least
-two sources all have correlation at most `-kappa`; it admits the lower endpoint
-only when they all have correlation at least `kappa`.  Otherwise it returns no
-endpoint.
-
-**Theorem 3 (fail-closed identity).**  If source directions do not satisfy an
-admission rule, V3 returns the V1 atlas exactly and preserves its cardinality.
-
-**Proof.**  The proposal update is a Boolean branch.  Its false branch is the
-identity, and the true branch replaces one existing slot.  The Lean theorems
-are `rejected_envelope_preserves_baseline` and
-`fail_closed_envelope_preserves_budget`.  The end-to-end paper bridge is
-`paper_final_v3_fail_closed_contract`.
-
-**Theorem 4 (transferred endpoint safety).**  Suppose the source tasks agree on
-the negative direction and the held-out chance margin is nonincreasing in the
-same coordinate.  If a feasible target policy exists and the admitted upper
-endpoint is coordinate-wise maximal, then the upper endpoint is feasible.
-The symmetric statement holds for positive agreement and the lower endpoint.
-
-**Proof.**  Let `x_s` be a feasible witness.  Maximality gives
-`eta(x_s) <= eta(x_upper)`.  Transferred nonincreasing monotonicity gives
-`m(x_upper) <= m(x_s) <= 0`.  The lower-endpoint proof is identical with the
-order reversed.  The Lean theorem is
-`paper_final_v3_admitted_endpoint_contract`.
-
-Source rank agreement is not silently equated with target monotonicity.  It is
-the source-only admission statistic; transferred monotonicity is the explicit
-identifiability condition.  In the original three domains V3 rejected and was
-exactly V1 in all 60 registered cells.  In the energy family it admitted before
-the confirmatory market was opened, after which the untouched market supplied
-empirical evidence for the transfer condition.
-
-## 5. Independent Terminal Verification
-
-The target optimizer freezes an ordered shortlist containing an objective
-challenger, its primary recommendation, and a safe-interior support policy.
-Independent samples are never returned to the optimizer.
-
-### 5.1 Synthetic Gaussian verifier
-
-Each candidate receives a one-sided mean/scale certificate with error
-allocation `delta_j`.  If the candidate-wise false-certificate probabilities
-are bounded by their allocations, then the probability that the first
-certified policy in the ordered shortlist is unsafe is at most
-`sum_j delta_j`.  This is proved in
-`SCOLHKG.Measure.optimizer_agnostic_three_policy_false_deployment_probability_le`.
-
-The objective challenger replaces an independently safe incumbent only when a
-one-sided upper confidence bound on the paired objective difference is below
-zero.  On upper-bound coverage the switch is correct.  If coverage fails with
-probability at most `delta_obj`, the wrong-switch probability is at most
-`delta_obj`.  The Lean theorems are
-`objective_guard_switch_is_correct_on_upper_coverage` and
-`false_objective_switch_probability_le`.
-
-**Theorem 5 (joint terminal contract).**  Unsafe deployment or an incorrect
-objective switch occurs with probability at most
-`delta_safe + delta_obj`.  The implementation-matched Lean theorem is
-`optimizer_agnostic_three_policy_and_objective_guard_failure_le`.
-
-### 5.2 External exact-binomial verifier
-
-For a frozen policy with true feasible-window probability `p`, `n`
-independent verification windows produce `K ~ Binomial(n,p)`.  The all-success
-event has exact probability `p^n`; if `p <= p_required`, its probability is at
-most `p_required^n`.  Finite error spending over a frozen shortlist gives the
-familywise bound.  These facts are machine checked in
-`SCOLHKG.Measure.ExactBinomialCertificate` using mathlib's binomial law and
-`HasLaw` bridge.
-
-The registered 80-replication first-stage rule at required probability 0.95
-certifies only an all-success count.  The implementation computes the
-one-sided Clopper--Pearson lower bound; the threshold equivalence is regression
-tested numerically, while the probability statement is proved from the exact
-binomial mass.
-
-## 6. Budget Identity
-
-For source calls `S`, target search calls `N`, and independent verification
-calls `V`, total cost is exactly
+The implemented linear coordinate is the exact cosine integral of the
+Voronoi piecewise-constant reconstruction:
 
 ```text
-S + N + V.
+c_0 = sum_i h_i (e_i-e_{i-1})
+c_k = sqrt(2) sum_i h_i [sin(pi k e_i)-sin(pi k e_{i-1})]/(pi k).
 ```
 
-The theorem `paper_grade_budget_exact_decomposition` formalizes this identity.
-No result may label `N=13` as thirteen total evaluations: it means thirteen
-target search calls after a 384-call reusable source archive, with verification
-reported separately.
+Each `c_k` is divided by `1+0.25k`; all nine diagonal squares are appended and
+no cross-products are used.
 
-## 7. Optional Cumulative Heteroscedastic Calibration
+`Real/ProfileCoordinateConsistency.lean` proves:
 
-The cumulative decomposition
+- a coefficient error at most `epsilon*basisBound` under sup-norm profile
+  reconstruction error `epsilon`;
+- the `constant*basisBound/d` inverse-grid rate;
+- the regular midpoint/Voronoi `L/(2d)` profile rate for Lipschitz profiles;
+- the adjacent-grid convex-interpolation radius needed for the implemented
+  linear inverse map.
+
+These results justify refinement of one ordered profile grid. They do not
+justify treating arbitrary unordered coordinates as a profile.
+
+## 3. Farthest-first finite-library coverage
+
+For a finite library with coordinate `eta`, let
 
 ```text
-Var(C | T) = A(T)^T Lambda A(T) + N(T)^T B N(T) + N(T)^T omega
+r(A)=max_{h in L} min_{a in A} dist(eta(h),eta(a)).
 ```
 
-and its certification bridges remain Lean-proved.  However, the paired
-20-seed causal experiment improved variance RMSE and variance-shape
-correlation in all three domains without improving feasibility or regret, and
-increased verification cost in Inventory and Queue.  HVD is therefore an
-optional calibration diagnostic, not a primary contribution.  This empirical
-demotion does not invalidate the decomposition theorem; it limits the paper's
-optimization claim.
+`Real/FarthestFirstKCenter.lean` proves the standard factor-two guarantee from
+the checkable Gonzalez witness emitted by Python: the selected `k` centers plus
+one farthest witness are pairwise separated by the achieved radius; among any
+`k` optimal clusters, two of the `k+1` witnesses share one cluster, and the
+triangle inequality gives `r_greedy <= 2 r_optimal`. A separate zero-radius
+result covers an exact finite cover.
 
-## 8. Machine-Checked Scope
+## 4. Replicated source-score recovery
 
-The final proof build contains no `sorry`, `admit`, or project-defined `axiom`.
-The main files are:
+`Measure/SourceRankRecovery.lean` proves a finite-profile sub-Gaussian union
+bound for replicated source means. `Real/SourceRankRecovery.lean` proves the
+exact `ddof=1` finite-sum variance identity, propagates declared mean and scale
+error radii through the floored Gaussian chance-margin statistic, and proves
+that pairs separated by more than twice the uniform score error retain their
+order.
 
-| Claim | Lean file |
-|---|---|
-| No unconditional finite coverage | `Real/ProposalNoFreeLunch.lean` |
-| Deterministic aligned atlas coverage | `Real/GeometricAtlasCoverage.lean` |
-| Source-label noninterference | `Real/RiskAlignedRepresentation.lean` |
-| V3 fail-closed and endpoint transfer | `Real/SourceMonotoneEnvelope.lean` |
-| Three-policy safety and objective guard | `Real/MethodIndependentTerminalVerification.lean` |
-| Exact binomial all-success certificate | `Measure/ExactBinomialCertificate.lean` |
-| Final composed interfaces | `Real/PaperMainline.lean` |
+The theorem does not assert that three replications recover near ties. Numeric
+noise proxies and residual-square radii are experiment assumptions and are
+tested by the source-replication sensitivity matrix.
 
-Lean proves the stated implications.  Empirical assumptions such as bounded
-source-target discrepancy and target monotonicity remain scientific
-obligations; they are not converted into axioms or claimed to hold for every
-possible domain.
+## 5. Conditional source-to-target coverage
+
+Let `eta_star` be an ideal target-relevant coordinate and `eta_hat` the
+implemented coordinate. Assume:
+
+1. the selected atlas covers the finite library within `r_cover` in `eta_hat`;
+2. implemented and ideal coordinates differ by at most `epsilon_eta` on the
+   profiles used in the proof;
+3. a library member is within `Delta_task` of a target safe center in the ideal
+   coordinate;
+4. the target chance margin is `L`-Lipschitz in the ideal coordinate;
+5. the center has safety depth `gamma`;
+6. `L*(r_cover+Delta_task+2*epsilon_eta) <= gamma`.
+
+Then a selected atlas member is target feasible. The finite geometric and
+Lipschitz implications are proved in `Real/GeometricAtlasCoverage.lean`; the
+composed frontend interface is exposed by `Real/PaperMainline.lean`.
+
+This is a conditional theorem. It does not explain away adverse regimes:
+frequency shift, irregular grids, sparse high-frequency activity, and full
+misspecification can enlarge discrepancy or coordinate error beyond safe
+depth.
+
+## 6. Task-law calibration
+
+For a fixed atlas and independent held-out tasks from one declared task law,
+let each hit indicator lie in `[0,1]`. `Measure/TaskAtlasCoverage.lean` proves a
+sub-Gaussian mean-error bound with proxy `1/(4m)` for `m` independent tasks, and
+also an exact all-success false-coverage-claim bound. The manuscript uses
+task-level bootstrap intervals and scopes every conclusion to the registered
+randomized law. Repeated simulation seeds within one external market are not
+treated as independent domains.
+
+## 7. Exact terminal verification
+
+For a frozen candidate with true feasibility probability `p`, the all-success
+event in `v` iid Bernoulli replications has probability `p^v`. If the required
+probability is `p0`, an unsafe candidate satisfies
+
+```text
+P(certify unsafe candidate) = p^v <= p0^v <= delta_j.
+```
+
+Bonferroni spending over a frozen shortlist gives familywise false deployment
+at most `sum_j delta_j`. `Measure/ExactBinomialCertificate.lean` proves the
+binomial-law bridge, candidate bound, and three-candidate composition. The
+primary rule uses `p0=.95`, three candidates, familywise `.05`, and 80
+all-success trials per candidate. Its power is `p^80`, so validity and
+nonvacuity are reported separately.
+
+The Energy statement is conditional on the declared empirical-window
+replication distribution. Postdecision nonoverlap and block audits are
+descriptive and do not create an iid future-calendar theorem.
+
+## 8. Budget identity
+
+The finite accounting identity is
+
+```text
+C_all = S + N + V,
+C_amort(M) = S/M + N + V.
+```
+
+Equal preverification cost matches `S+N`, not total cost. Every displayed
+result reports realized verification calls separately.
+
+## 9. Negative and optional results
+
+`Real/ProposalNoFreeLunch.lean` proves that every proper finite target-label-
+free atlas misses some nonempty feasible set. This is a scope remark, not the
+main novelty theorem.
+
+The cumulative-HVD proofs remain valid mechanistic results, but the matched
+experiment improved variance calibration without improving feasible recovery,
+regret, false certification, or verification cost. HVD is therefore optional
+appendix material and not part of the final optimization claim.
+
+## 10. Machine-checked scope
+
+The final `lake build` contains no `sorry`, `admit`, or project-defined
+`axiom`. Lean verifies finite implications from declared premises. It does not
+prove that a future system belongs to the registered task law, that source and
+target are aligned, or that time-series windows are iid. Those remain empirical
+and operational obligations.

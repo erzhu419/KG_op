@@ -1,95 +1,99 @@
 \section{Discussion}\label{sec:discussion}
 
-\subsection{What the Experiments Identify}
+\subsection{What the evidence supports}
 
-The central empirical finding is an attribution result.  Under a target budget
-of 13 calls, the structural frontend determines whether the search observes a
-feasible basin; the online backend determines a smaller, conditional objective
-improvement after coverage.  This distinction explains why several transfer
-baselines become strong when supplied with the same frozen atlas and why a
-powerful high-dimensional optimizer can fail under common Sobol.  The proposed
-object is therefore not ``SAASBO plus a warm start.''  It is a reusable,
-source-trained experimental design whose value can be measured with the
-backend held fixed.
+The study supports a conditional proposition: when target feasibility is
+organized by profile geometry represented in the source population, source
+outcomes can improve a very small structural initial design.  The randomized
+task law tests more than the three mechanisms used during method development,
+and its permutation, rank, piecewise, frequency-shift, and misspecification
+regimes make the condition falsifiable.  Source scoring improves aggregate
+coverage, yet the regime table and Energy study identify concrete reversals.
 
-The component ablation also refines the structural story.  A universal low-
-frequency library alone is too generic, and source templates alone are too
-brittle.  Their union, followed by source-risk/objective ranking and maximin
-coverage, is robust across the three synthetic mechanisms.  The external
-energy audit then reveals an important boundary: in a domain with an obvious
-constant-profile control, a natural low-frequency grid is as good as the
-source-trained atlas.  Source learning is valuable when it identifies a
-nontrivial transferable profile family, not merely because historical data
-exist.
+This interpretation differs from claiming a generic high-dimensional
+optimizer.  The raw vector may contain $10^4$ coordinates, but the decision is
+an ordered profile and the library has finite structural complexity.  Profile
+grid refinement is operationally relevant---a controller may require a fine
+lookup table---but it is not equivalent to adding $10^4$ unrelated decision
+variables.  The proper benefit is invariance to representation resolution
+under shared profile structure.
 
-\subsection{Operational Meaning of the Cost Decomposition}
+\subsection{Why Energy is necessary}
 
-The method trades reusable offline cost and explicit verification cost for a
-small target search budget.  In a one-off target problem, $S=384$ source calls
-must be counted in full.  In a repeated deployment program, the same archive
-can support many target tasks and its per-target cost decreases, but this
-amortization is an operational decision rather than a statistical free pass.
-Likewise, independent verification often costs far more than the 13 search
-calls.  That is not a defect hidden by the analysis: it is the price of a
-deployment statement that does not trust the optimizer's posterior.
+Removing Energy would make the evidence cleaner and the scientific claim
+weaker.  The external reversal shows that a generic structural design can be
+better than source scoring when region-held-out source rankings do not transfer.
+Because V3 was frozen before its outcomes, tuning the source score after this
+result would convert the holdout into development data.  We therefore retain
+Energy as a negative control and interpret it as an applicability boundary.
 
-This decomposition is useful for managers choosing among protocols.  If the
-decision is exploratory and no deployment certificate is required, proposal-
-only or atlas-plus-Sobol may be sufficient.  If objective quality matters after
-coverage, canonical SAASBO adds value at higher computation cost.  If an unsafe
-deployment has material consequences, verification should be budgeted as a
-separate final experiment rather than borrowed from search data.
+The practical implication is a diagnostic choice.  If historical tasks and a
+new target share an ordered policy semantics and source rank stability can be
+validated on genuinely held-out tasks, source scoring is reasonable.  If the
+target is temporally or geographically shifted and generic low-frequency
+structure already has a credible physical basis, the generic maximin design is
+the safer default.  The method should abstain from a transfer claim when these
+conditions cannot be assessed.
 
-\subsection{Why the High-Dimensional Result Is Plausible}
+\subsection{Source cost as a portfolio investment}
 
-The raw search spaces are enormous, but the benchmark policies affect system
-behavior through coarse profile summaries.  The source archive identifies
-which low-frequency profiles should be transferred, and the inverse map
-constructs those profiles at a new dimension.  The relevant statistical
-dimension is therefore the geometry of $\etaHat$, not the number of integer
-entries.  Theorem \ref{thm:coverage} captures precisely this mechanism.
+The equal-preverification-cost experiment prevents an appealing but incorrect
+story: 10 target calls do not beat 394 target calls for a single target.  A
+source archive becomes economically plausible only when reused.  Let
+$C_0=N_0+V_0$ be the expected target-only calls per deployment and
+$C_A=N_A+V_A$ the source-design calls excluding the archive.  The call-count
+break-even number of deployments is
+\begin{equation}\label{eq:break-even}
+ M_{\rm break}=\left\lceil\frac{S}{C_0-C_A}\right\rceil,
+ \qquad C_0>C_A.
+\end{equation}
+In the randomized primary experiment, mean-call estimates give thresholds of
+about 7, 9, and 11 targets relative to generic DCT, natural structure, and raw
+Sobol.  This arithmetic does not include differences in simulator setup,
+wall-clock parallelism, or policy quality, and Energy shows that paying the
+archive can still be inferior.  It is a planning threshold, not a dominance
+theorem.
 
-This mechanism is also falsifiable.  If target safety depends on isolated
-high-frequency coordinates, if source and target safe supports are far apart,
-or if coordinate error consumes the safe depth, condition
-\eqref{eq:coverage-condition} fails.  The finite-atlas no-free-lunch theorem
-then applies.  We regard that explicit failure mode as preferable to an opaque
-claim of universal meta-learning.
+\subsection{Verification is a separate operational decision}
 
-\subsection{Heteroscedasticity and Certification}
+Independent verification frequently costs an order of magnitude more than
+target search.  That is not overhead hidden by the method; it is the cost of a
+different claim.  Search asks whether a promising policy has been found.
+Verification asks whether a frozen policy can be deployed with a specified
+false-certification bound.  A target-only optimizer making the same safety
+claim must pay a comparable fresh-sample cost.
 
-The HVD diagnostic shows that variance structure can be statistically
-recoverable without changing the selected policy.  This is unsurprising when
-the atlas already places a deep feasible point in the initial design and the
-terminal verifier can spend more samples.  The decomposition may matter in
-applications where shared shocks dominate, safe depth is narrow, or
-verification is more expensive; the present data do not establish such an
-optimization gain.  We therefore keep Equation \eqref{eq:hvd} and its formal
-properties as a secondary risk-modeling result, not as a reason to enlarge the
-paper's main claim.
+The all-success protocol is particularly conservative near the threshold.
+Its low power explains why feasible coverage greatly exceeds certified
+deployment.  Increasing an all-success budget can even reduce power for any
+$p<1$.  Future deployments should preregister a more efficient exact
+Clopper--Pearson or sequential ranking-and-selection design rather than change
+the rule after inspecting results.  Temporal applications also require block
+or mixing-aware certification if iid replications are not physically
+defensible.
 
-\subsection{Limitations}
+\subsection{Benchmark fit and remaining threats}
 
-Five limitations delimit external validity.
+The frozen randomized generator reduces development overfitting but cannot
+erase it.  The task law, profile library, and stress axes were authored within
+the project.  The method also assumes declared ordered semantics, and the
+schema-blind drop confirms that this is a strong prior.  Energy is genuinely
+different and unfavorable, but five geographic regions are too few for a broad
+population claim.  The native transfer audit has only three historical
+families and all methods fail on Queue.
 
-\begin{enumerate}[label=(\roman*)]
-\item The three primary domains are synthetic and intentionally satisfy a
-related structural family.  Their different operations interpretations do not
-replace independent real systems.
-\item The energy study contains one untouched market-year target.  It supports
-low-frequency structural compression but not superiority to a natural
-structured control.
-\item The global margin Lipschitz constant and ideal-coordinate error are
-assumptions.  The registered finite-library audit passes in all three domains,
-but a global certificate is unavailable.
-\item Verification controls its declared statistical event under fresh-sample
-independence.  Distribution shift after deployment is outside that contract.
-\item The source archive is fixed at two domains and 384 calls.  Richer task
-collections could improve or destabilize the atlas; learning curves in the
-number and diversity of source tasks remain future work.
-\end{enumerate}
+Other limitations are equally important.  Three source replications cannot
+reliably order near-tied profiles; source volume is nonmonotone; the finite
+library can miss a feasible basin entirely; and source rank aggregation can
+hide task disagreement.  Objective comparisons among certified subsets are
+selection dependent.  The randomized oracle measures regret relative to a
+finite audit library, not the unknown continuous optimum.  One canonical
+functional-SCBO task failed and remains in the denominator.  Finally, the
+formal theory proves finite implications conditional on alignment and iid
+assumptions; it does not prove those assumptions from data.
 
-The failed traffic development gate is retained in the experiment registry and
-supports the same caution: not every domain exposes a transferable feasible
-profile at the chosen fidelity.  We do not use that failed development study as
-positive evidence in this paper.
+These boundaries argue for a restrained deployment workflow: preregister the
+library and task law, keep a source-free structured control, validate rank
+stability on independent tasks, price source and verification calls, and
+retain abstention.  Under those conditions, historical simulation is a
+transparent experimental-design asset rather than a hidden oracle.

@@ -1,119 +1,115 @@
 \section{Experimental Design}\label{sec:experiments}
 
-\subsection{Evaluation Questions}
+The experiment program was frozen before confirmatory outcomes.  A compact
+registry commits the protocol, method specification, result-cell hashes,
+failures, and analysis endpoints.  All non-oracle methods use the same target
+truth only after deployment to compute audit metrics.
 
-The experiment matrix is organized around five preregistered questions.
+\subsection{Randomized ordered-profile stress test}
 
-\begin{enumerate}[label=Q\arabic*.]
-\item Does the frozen atlas, rather than the online backend, cause feasible-
-basin coverage?
-\item Are both universal support and source templates needed?
-\item How does the method compare with transfer methods receiving the same
-source archive and target budget, and with target-only methods receiving the
-same total search cost?
-\item Does performance persist as raw dimension and the ratio $d/N$ increase?
-\item Does the structural coordinate transfer to a held-out real-data control
-problem, and what happens against an obvious structured control?
-\end{enumerate}
+The primary study samples independent target tasks from eight registered
+regimes.  Table \ref{tab:stress-regimes} separates nominal grid resolution from
+latent complexity.
 
-A sixth diagnostic asks whether cumulative factor-HVD improves variance fit or
-operational optimization.  It was governed by a promotion rule requiring both
-calibration improvement and at least one operational gain without harm.
+\begin{table}[t]
+\centering
+\small
+\caption{Registered stress regimes.  The target generator hides its basis,
+center, safe radius, and task seed from every algorithm.}
+\label{tab:stress-regimes}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedright\arraybackslash}p{0.12\textwidth}>{\raggedright\arraybackslash}p{0.51\textwidth}}
+\toprule
+Regime & Default rank & Principal departure \\
+\midrule
+Aligned low frequency & 8 & Source and target share low-frequency support \\
+Growing effective rank & 24 & More active coefficients at fixed target budget \\
+Frequency support shift & 8 & Target frequencies shifted beyond source support \\
+Coordinate permutation & 8 & Ordered values are permuted before implementation \\
+Irregular grid & 8 & Nonuniform declared nodes \\
+Piecewise smooth & 12 & Blockwise basis rather than cosine basis \\
+Sparse high frequency & 16 & Few active high-frequency coordinates \\
+Misspecified target & 24 & Target center independent of source centers \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\subsection{Synthetic Task Family}
+For each regime and $d\in\{200,1000,10000\}$, we draw 20 independent target
+tasks.  Each task is paired across six designs: source-scored, generic DCT
+maximin, random low frequency, natural three-block, raw Sobol, and an
+explicitly labeled finite-library oracle.  The primary non-oracle matrix has
+$8\times3\times20\times5=2400$ cells; including the oracle gives 2880.  Every
+design uses $n_0=N=10$, so the primary comparison is a pure initial-design
+intervention.  The source-scored arm pays 384 source calls; source-free arms
+pay none.  All use the same frozen-shortlist verifier.
 
-We use three chance-constrained policy families.  Each policy has integer
-entries in $\{0,\ldots,100\}$, giving $101^d$ raw alternatives.
+The primary chance level is $\alpha=.05$, and task safe mass is calibrated to
+.08 on a fixed outcome-free audit library distinct from the design library.
+Regret is measured against the best feasible policy in that audit library.
+The $d=10000$ cells refine the grid while holding the registered latent law
+fixed unless the regime explicitly changes rank.
 
-\begin{description}[leftmargin=1.2em,style=nextline]
-\item[FactorShock.] The objective and constraint depend on coarse policy level,
-tail level, and dispersion.  Constraint noise contains three local exposures
-(level gap, tail gap, and spread) and two correlated shared-shock exposures
-(oscillation and tail shock), with the exact cumulative form in
-\eqref{eq:hvd}.
+\subsection{Sensitivity and information controls}
 
-\item[Inventory.] The policy is divided into stock, reorder, and safety-stock
-blocks.  The objective balances holding, backlog, reorder, and safety losses;
-the chance constraint represents service reliability.  Local variance
-exposures are backlog, holding, and stockout, while demand level and demand
-volatility are shared shocks.
+An 8640-cell one-factor-at-a-time matrix varies active rank, $\alpha$, safe
+mass, $n_0$, number of source tasks, profiles per task, source replications,
+retained frequency, frequency penalty, source-rank metric weights, and the
+first-center safety weight.  These are diagnostics, not a post-confirmatory
+hyperparameter search.  A separate 1280-cell matrix crosses declared versus
+schema-blind profile mapping with equal versus descriptor-conditioned source
+weights.  The latter weighting is excluded from the primary method regardless
+of its result.
 
-\item[Queue.] The policy is divided into capacity, priority, and smoothing
-blocks.  The objective balances waiting and resource costs, and the chance
-constraint defines a safe operating pocket.  Local exposures are queue, wait,
-and utilization; shared exposures are arrival bursts and common load.
-\end{description}
+\subsection{Cost and optimizer controls}
 
-These are not arbitrary high-dimensional functions.  They deliberately embed
-different operations mechanisms in normalized, low-dimensional policy
-summaries and heteroscedastic noise.  Their role is to test whether a
-dimension-equivariant profile learned from two mechanisms transfers to the
-third.  In each leave-one-domain-out fold, the other two domains form the
-source archive.  Each target domain uses 20 independent simulation seeds
-(80--99) at $d=1000$ and fixed registered geometry.  Truth is evaluated only
-post-run.  The extreme-dimension study uses ten seeds per domain at $d=10000$.
+The equal-preverification-cost matrix compares 384 source plus 10 target calls
+with 394 target-only calls for each source-free design.  The same independent
+verifier is applied afterward and all-in realized calls include its cost.
 
-\subsection{External Electricity-Storage Holdout}
+Target-only functional SCBO searches an 8-coefficient cosine space with the
+published constrained trust-region posterior-sampling backend
+\citep{BalandatEtAl2020,ErikssonPoloczek2021}.  We test coefficient counts
+4, 8, and 16 at $N=13$, and the primary 8-coefficient version at $N=394$.
+One $N=394$ task in the irregular-grid regime returned duplicate canonical
+posterior samples; it remains a failed, unsuccessful cell.
 
-The external study uses hourly load, forecast, and price series from Open Power
-System Data \citep{OPSD2020}.  A $d=1000$ integer profile controls storage
-reserve and state-of-charge behavior.  The simulator includes charge and
-discharge limits, round-trip efficiency, reserve floor, cycling cost, spill,
-and unserved-energy penalties.  The chance constraint limits the fraction of
-unserved demand windows.
+Eight native transfer pipelines---Safe F-PACOH, RGPE, stacked transfer GP,
+multi-task GP, FSBO, HyperBO, MetaBO, and MALIBO---receive the same 384-call
+source archive, $n_0=10$, $N=20$, and terminal verifier, but retain their own
+prior, representation, initialization, and acquisition logic.  This is an
+end-to-end transfer comparison, not a common-atlas backend comparison.
 
-The source markets are Austria 2017 and Denmark DK1 2017.  Denmark DK2 2018 is
-the development target.  Great Britain 2018 is opened once as the untouched
-20-seed confirmatory target.  The source-monotone endpoint rule is decided
-before Great Britain outcomes.  Search, audit, and verification use separated
-calendar samples.  We compare the frozen atlas at $N=13$ with (i) a natural
-constant-policy low-frequency grid at $N=13$, added as a post-confirmatory
-fairness audit, and (ii) common Sobol with $N=397$, equal to 384 source plus 13
-target-search calls.
+\subsection{Electricity-reserve negative external control}
 
-\subsection{Methods and Fairness Contracts}
+The external study uses the Open Power System Data time-series release
+\citep{OPSD2020}.  A policy maps 1000 ordered forecast-stress quantiles to
+reserve responses over a 168-hour operational horizon.  Energy V3 includes 18
+markets in five geographic regions and five algorithmic seeds per held-out
+market.  All source markets from the target's region are excluded.  The source
+arm uses 768 source calls, $N=13$ target calls, and the same public profile
+library; generic DCT, random low frequency, natural constant, raw Sobol, and
+target-only functional SCBO are controls.
 
-The frontend/backend factorial uses two initial designs: the frozen atlas and
-common Sobol.  Each is paired with proposal-only selection, a stacked transfer
-GP, and canonical SAASBO.  Canonical means a BoTorch
-\texttt{SaasFullyBayesianSingleTaskGP} refit at every adaptive iteration
-\citep{BalandatEtAl2020,ErikssonJankowiak2021}; periodic-capped SAAS appears
-only as a separately named target-only computational control.
+Fresh verification windows are sampled from a held-out empirical calendar
+split.  The exact-binomial claim is therefore conditional on the declared
+replication distribution, not a theorem about an unobserved future year.
+Postdecision audits test chronological blocks and physically nonoverlapping
+windows, but are descriptive because markets share calendar data and only five
+regions exist.  Energy V2 is retained as a separate historical specification;
+V3 is the final external control.  No Energy result was used to modify the
+frozen atlas.
 
-Archive-fair transfer comparisons receive the same 384 source calls, frozen
-$n_0=10$ initial design, target seeds, $N=13$ target-search calls, and terminal
-verifier.  They include Safe F-PACOH, RGPE, stacked GP, transfer multi-task GP,
-FSBO, HyperBO, MetaBO, and MALIBO.  Official code paths are used with documented
-compatibility adaptations to the scalar constrained interface.  Target-only
-TuRBO, SCBO, and periodic-capped SAAS receive $N=397$ target-search calls, equal
-to the final method's source-plus-target search cost.  All final comparisons
-use the same independent verifier.
+\subsection{Inference and failure accounting}
 
-The frontend component ablation retrains and regenerates every proposal from
-the same source archive.  It compares universal support only, source templates
-only, and their combined maximin atlas.  This is the supported structural
-ablation.  Earlier orthogonality, sparsity, additive, manifold, transformer,
-KG, and Thompson-sampling variants remain development diagnostics and are not
-recast as coequal contributions.
+For randomized profiles, an independently generated task is the generalization
+unit; paired bootstrap intervals resample tasks.  Simulation seeds within a
+fixed external market measure algorithmic repeatability, while geographic
+regions are the conservative Energy comparison units.  We do not pool seeds
+as if they were independent domains.  Exact sign tests are Holm-adjusted within
+their registered families, but effect sizes and intervals receive priority
+over very small $p$-values.  Every timeout, duplicate-sampling failure, and
+false certificate remains in its denominator.
 
-\subsection{Verification, Metrics, and Inference}
-
-The synthetic verifier uses an ordered three-policy shortlist with candidate
-budgets 80, 128, and 128, familywise error 0.05, and a fresh paired objective
-guard when switching incumbents.  It may stop after the first candidate.
-Consequently, verification calls are variable and are reported as a cost,
-not normalized away.  The energy verifier uses 80 fresh windows in its first
-stage and the exact binomial/Clopper--Pearson rule in Proposition
-\ref{prop:binomial}.
-
-We report true-feasible recommendations, independently certified
-recommendations, false certificates, feasible regret conditional on true
-feasibility, and verification cost.  Post-run HVD diagnostics report
-log-variance RMSE and variance-shape correlation over a fixed audit set.  The
-statistical plan uses paired seeds, 10,000-sample bootstrap intervals for
-median paired differences, exact McNemar tests for paired binary outcomes,
-Wilcoxon signed-rank tests for paired continuous outcomes, and Holm adjustment
-within preregistered confirmatory families.  Domain strata are descriptive
-heterogeneity analyses, not separate confirmatory families.  Failed and timed-
-out runs remain in the immutable registry; all release-required cells used
-below are complete.
+Primary endpoints are feasible coverage, certified true-feasible deployment,
+false certification, and penalized loss.  We additionally report source,
+search, verification, unamortized all-in, and $M=20$ amortized calls; conditional
+regret is secondary.

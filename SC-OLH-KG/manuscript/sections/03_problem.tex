@@ -1,87 +1,82 @@
 \section{Problem and Information Contract}\label{sec:problem}
 
-\subsection{Held-Out Chance-Constrained Task}
+\subsection{Ordered policy profiles}
 
-Let $q$ index a simulation task and let
-$\cX_{q,d}=\{0,1,\ldots,L_q\}^{d}$ be its finite integer policy space.  A
-simulation at $\x\in\cX_{q,d}$ returns a noisy objective $F_q(\x)$ and a noisy
-constraint response $G_q(\x)$.  The target task is
-\begin{equation}\label{eq:target-problem}
- \min_{\x\in\cX_{q,d}} f_q(\x):=\E[F_q(\x)]
- \quad\text{subject to}\quad
- \Prob\{G_q(\x)\le 0\}\ge 1-\alpha .
+Let $h:[0,1]\to[0,1]$ denote an ordered policy profile.  A task $q$ supplies
+ordered nodes
+\[
+  0<t_{q,1}<\cdots<t_{q,d_q}<1
+\]
+and an integer implementation scale $L_q$.  The deployed vector is
+\[
+  x_{q,i}(h)=\operatorname{round}\{L_qh(t_{q,i})\},
+  \qquad i=1,\ldots,d_q.
+\]
+Thus $d_q$ is a grid resolution, not by itself the intrinsic dimension of the
+admissible profile class.  Regular grids use
+$t_{q,i}=(i-1/2)/d_q$; irregular grids are allowed when their ordering is
+declared.  A schema may additionally declare channel order.  No claim is made
+for an unordered vector with unknown coordinate semantics.
+
+One simulator replication at $x$ returns an objective observation $Y^f_q(x)$
+and a scalar constraint observation $Y^g_q(x)$.  We minimize
+\[
+  f_q(x)=\E[Y^f_q(x)]
+\]
+subject to the chance constraint
+\begin{equation}\label{eq:chance-constraint}
+  p_q(x):=\Prob\{Y^g_q(x)\le \tau_q\}\ge 1-\alpha_q.
 \end{equation}
-For the Gaussian synthetic environments, the equivalent population chance
-margin is
-\begin{equation}\label{eq:true-margin}
- m_q(\x)=\mu_{G,q}(\x)+z_{1-\alpha}\sigma_{G,q}(\x),
- \qquad \x\text{ is feasible iff }m_q(\x)\le 0,
+The true feasible set is $\cF_q=\{x:p_q(x)\ge1-\alpha_q\}$.
+Truth is available in synthetic experiments only after all design, search,
+shortlisting, and verification decisions, and only for audit metrics.
+
+\subsection{Source and target information}
+
+Let $q_1,\ldots,q_m$ be source tasks and $q_\star$ a target task.  Before the
+target opens, every source task evaluates the same finite normalized profile
+library $\cL=\{h_1,\ldots,h_J\}$.  For each pair $(q,h)$, the source archive
+contains $R$ ordinary replications of $(Y^f_q,Y^g_q)$.  The primary method uses
+$m=2$, $J=64$, and $R=3$, hence
+\begin{equation}\label{eq:source-cost}
+  S=mJR=384
 \end{equation}
-where $z_{1-\alpha}$ is the standard normal quantile.  The experiments use
-$\alpha=0.05$.  Two simulated objective outputs are scalarized with fixed
-weights $(1/2,1/2)$; neither the weights nor the chance threshold is tuned by
-target seed.
+source simulator calls.  The library is constructed without source or target
+outcomes; source data only determine which members are selected.
 
-The known synthetic oracle is used only after each run to score true
-feasibility and feasible regret,
-\begin{equation}\label{eq:regret}
- r_q(\widehat\x)=f_q(\widehat\x)-
- \min_{\x:m_q(\x)\le0}f_q(\x),
+Before target search, the method may use the target's ordered grid, integer
+bounds, nominal dimension, and, in declared-schema experiments, channel order.
+It may not use a target outcome, feasibility label, noise parameter, optimum,
+safe-basin center, or verification sample.  The primary source aggregation is
+domain blind: source tasks receive equal weight.  Descriptor-conditioned
+weighting is evaluated only as a control.
+
+\subsection{Decision stages and costs}
+
+The frontend selects $n_0$ initial target policies.  A backend may then use a
+total of $N\ge n_0$ target search calls and returns an ordered shortlist of at
+most $K_s$ distinct candidates.  The shortlist and its order are frozen before
+verification.  Fresh replications test the candidates, producing either a
+certified deployment or abstention.
+
+We report the costs
+\begin{equation}\label{eq:cost-identity}
+  C_{\rm all}=S+N+V,
+  \qquad
+  C_{\rm amort}(M)=\frac{S}{M}+N+V,
 \end{equation}
-and never for proposal construction, target search, or verification.  Regret
-is undefined when the recommendation is truly infeasible, so feasibility
-counts and conditional regret are always reported together.
+where $V$ is the realized independent-verification cost and $M$ is the number
+of target deployments sharing one source archive.  ``Equal preverification
+cost'' means that $S+N$ is matched before $V$; it is not called equal total
+cost.
 
-\subsection{Source, Search, and Verification Information}
+\subsection{Endpoints}
 
-Suppose $Q_s$ source tasks have been completed before target task $q$ is
-opened.  Their archive is
-\begin{equation}
- \cD_{\mathrm{src}}=
- \{(q',\x_{q'i},Y^F_{q'ir},Y^G_{q'ir}):q'\ne q\},
-\end{equation}
-with observed simulation outputs but no source optimizer, source feasible
-oracle, or target label.  The final leave-one-domain-out protocol uses two
-source domains, 64 shared normalized profiles per source domain, and three
-independent replications per profile, for $S=384$ source simulator calls.
-
-Before observing a target response, a deterministic training map produces an
-atlas of at most $n_0$ target policies,
-\begin{equation}
- \atlas=T(\cD_{\mathrm{src}},d,L_q,\mathsf{schema}_q),
- \qquad |\atlas|\le n_0.
-\end{equation}
-The target schema may identify dimension, integer bounds, and unlabeled policy
-or state channels.  It may not contain target objective values, constraint
-values, feasible labels, target optimizers, or terminal verification outcomes.
-The atlas is immutable once the target stage begins.
-
-The target optimizer first evaluates $n_0$ atlas points and may then request
-$N-n_0$ adaptive target evaluations.  In the primary experiment $n_0=10$ and
-$N=13$.  After search, it freezes an ordered shortlist $O_N$ and terminates.
-An independent verifier draws $V$ additional target samples.  These samples do
-not update the optimizer or the shortlist.  Thus the exact simulation cost is
-\begin{equation}\label{eq:budget}
- C_{\mathrm{total}}=S+N+V,
-\end{equation}
-and not $N$.  We report source calls, target-search calls, objective-comparison
-calls, safety-verification calls, and total calls as separate fields.
-
-\subsection{Three-Part Decision Protocol}
-
-The protocol has three interfaces.
-
-\begin{enumerate}[label=\arabic*.]
-\item The \emph{frontend} maps source observations and target descriptors to
-the frozen atlas $\atlas$.
-\item The \emph{backend} maps atlas and adaptive target observations to a
-shortlist.  It may be proposal-only, a transfer GP, SC-V69, or canonical
-SAASBO.
-\item The \emph{verifier} maps the frozen shortlist and fresh samples to a
-deployment recommendation or no certificate.
-\end{enumerate}
-
-This factorization is central to both theory and experiment.  Atlas coverage
-does not depend on the backend.  The verifier's error bound does not depend on
-either the atlas or the backend.  Conversely, success under a strong initial
-design cannot automatically be attributed to the online acquisition rule.
+The primary search endpoint is whether the $N$ target evaluations contain a
+truly feasible policy.  The primary deployment endpoint is whether the
+verifier returns a truly feasible policy.  We also report false certificates,
+verification calls, and a penalized loss that retains failures in the
+denominator.  Conditional regret is reported only when a feasible policy
+exists and is never used to compare methods with different feasible counts by
+itself.  A fixed, outcome-free audit library defines synthetic regret and an
+explicit oracle upper bound; neither enters a non-oracle decision.

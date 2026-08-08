@@ -1,113 +1,174 @@
+\clearpage
 \appendix
 
-\section{Additional Implementation Details}\label{app:implementation}
+\section{Finite Algorithm}\label{app:algorithm}
 
-\subsection{Synthetic Population Interfaces}
+\noindent\fbox{\begin{minipage}{0.94\textwidth}
+\textbf{Algorithm 1: Source-scored structural initial design}
+\begin{enumerate}[label=\arabic*.]
+\item Generate the declared 64-profile outcome-free library on 128 regular
+midpoints using seed 20260808.
+\item For every source task and profile, compute the replicated objective mean
+and the Gaussian chance-margin statistic in \eqref{eq:source-margin}.
+\item Convert each statistic to deterministic within-task average-tie
+percentile ranks; average the ranks uniformly across source tasks.
+\item Compute exact Voronoi-cell cosine coefficients $c_0,\ldots,c_8$, divide
+$c_k$ by $1+.25k$, append all nine diagonal squares, and standardize the 18
+coordinates over the library.
+\item Append source safety and objective ranks.  Select the first center by
+\eqref{eq:first-center}; select nine further centers by
+\eqref{eq:farthest-first}.
+\item Linearly interpolate each selected profile to the declared target grid,
+clip to bounds, and deterministically round.  Freeze these ten policies before
+the first target outcome.
+\item Run any declared target backend.  Freeze a distinct ordered shortlist
+before verification.
+\item Test each shortlist candidate on its independent all-success stream.
+Deploy the first certificate; abstain if none certifies.
+\end{enumerate}
+\end{minipage}}
 
-All synthetic simulators return three Gaussian observations: two objective
-components and one constraint component.  The scalar objective is the equal-
-weight average of the first two.  The chance constraint uses the population
-mean and heteroscedastic standard deviation of the third as in
-\eqref{eq:true-margin}.  Each raw coordinate is integer valued between 0 and
-100.  The domain summaries are deterministic functions of the normalized
-policy and are available to the simulator; analytic target optima and
-feasibility labels are unavailable to the algorithm.
+The stable tie order is safety rank, objective rank, profile identifier for the
+first center and finite-library index for farthest-first.  Robust source
+feasibility is diagnostic only.  There is no endpoint replacement, hidden
+scalarization, target-outcome repair, or target-oracle branch in a non-oracle
+arm.
 
-FactorShock uses a policy-level summary $(u,q,s)$ and the cumulative exposure
-blocks
-\[
- A=(u\text{-gap},q\text{-gap},\text{spread}),\qquad
- N=(\text{oscillation},\text{tail shock}).
-\]
-Inventory partitions the policy into stock, reorder, and safety blocks; Queue
-partitions it into capacity, priority, and smoothing blocks.  Each objective
-and safety pocket is smooth in its block means and dispersion, but the centers,
-loss weights, and variance mechanisms differ by domain.  The post-run oracle
-enumerates the low-dimensional summary grid to compute the feasible optimum.
+\section{Additional Statistical Results}\label{app:additional-results}
 
-\subsection{Canonical Backend and Discretization}
+\subsection{Verifier thresholds}
 
-Canonical SAASBO is implemented in BoTorch with a fully Bayesian single-task
-GP and sparse axis-aligned shrinkage prior.  The model is refit after each of
-the three adaptive target evaluations.  Proposed normalized policies are
-rounded to the target integer cube before simulation.  The source archive is
-not appended as 384 pseudo-target observations; its primary role is to train
-the atlas.  Transfer baselines use the archive according to their own model
-contracts.
+Table \ref{tab:verifier-power-table} gives exact power calculations.  At
+$n=80$, the Clopper--Pearson lower-bound rule equals the all-success rule.  At
+$n=160$, its preregistered sensitivity threshold permits two failures.  The
+primary results retain the all-success protocol.
 
-\subsection{Terminal Verifier}
+\begin{table}[htbp]
+\centering
+\small
+\caption{Exact candidate-wise certificate power at budgets 80 and 160.}
+\label{tab:verifier-power-table}
+\input{tables/review_verifier_power.tex}
+\end{table}
 
-The synthetic verifier freezes, deduplicates, and orders up to three policies:
-an objective challenger, the backend recommendation, and a safe-interior
-support candidate.  Safety is evaluated with fresh Gaussian replications under
-a one-sided mean/scale tolerance rule and familywise error spending.  Candidate
-budgets are 80, 128, and 128, and the verifier stops at the first certificate.
-When a challenger and incumbent are both admissible, each receives eight fresh
-objective replications and the challenger switches only when the one-sided
-upper bound on its paired cost difference is below zero.  No verifier sample
-is returned to the surrogate, acquisition, shortlist construction, or source
-model.
+\subsection{Full sensitivity matrix}
+
+The full one-factor sensitivity matrix is reported in Table
+\ref{tab:sensitivity-full}.  Entries are ordered by the tested levels in the
+second column.  Effective-rank levels are explicit overrides; all other rows
+include the frozen baseline level.  The nonmonotone responses, the zero
+certificate rate at $\alpha=.01$, and the immaterial frequency penalty are
+retained rather than optimized away.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{One-factor sensitivity of the source-scored design at $d=1000$.
+Each rate aggregates eight regimes and 20 independent tasks per regime.}
+\label{tab:sensitivity-full}
+\resizebox{0.98\textwidth}{!}{\input{tables/review_sensitivity.tex}}
+\end{table}
+
+Recorded wall time is descriptive rather than a resource-normalized endpoint.
+On the mixed CPU cluster, the primary ten-point initial-design arms average
+1.2--1.7 seconds per synthetic task, whereas 394-call source-free controls
+average about 59 seconds and the 394-call functional-SCBO arm has a median of
+about 677 seconds.  The synthetic simulator is analytic and cheap, so these
+figures measure implementation overhead rather than the time of a physical
+simulator; simulation-call accounting remains the portable comparison.
+
+\subsection{Native end-to-end transfer}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Native transfer pipelines at $N=20$ with the same 384-call source
+archive and independent verifier.  Each method retains its own initialization
+and online adaptation.}
+\label{tab:native-transfer}
+\resizebox{0.88\textwidth}{!}{\input{tables/review_native_transfer.tex}}
+\end{table}
+
+No method certifies a Queue task.  These 60-task totals measure repeatability
+on three fixed families, not generalization to a population of domains.
+
+\subsection{Energy temporal audit}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Postdecision Energy temporal stability.  Counts are descriptive and
+do not replace the declared empirical-window certificate.}
+\label{tab:temporal-audit}
+\input{tables/review_temporal.tex}
+\end{table}
+
+V3 preserves all 358 original certificates under physically nonoverlapping
+windows but 312 under the joint block criterion.  Shared calendars and only
+five regions preclude an iid market-population interpretation.
+
+\section{Secondary Cumulative-Variance Diagnostic}\label{app:hvd}
+
+The project originally studied cumulative heteroscedastic variance
+decomposition.  Under matched policies, the factor-HVD model represents local
+and shared exposure and improves held-out variance-shape estimation.  Table
+\ref{tab:hvd-diagnostic} gives the final matched diagnostic.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Pooled variance versus cumulative factor-HVD.  HVD improves
+calibration but not feasible recovery or verification cost.}
+\label{tab:hvd-diagnostic}
+\resizebox{\textwidth}{!}{\input{tables/hvd_diagnostic.tex}}
+\end{table}
+
+Because both variance models recover the same feasible counts and HVD slightly
+increases verification cost in Inventory and Queue, HVD is not included in the
+paper's claimed optimization method.  Its formal results remain in the proof
+archive as reusable mechanistic results.
 
 \section{Machine-Checked Proof Map}\label{app:lean}
 
-The Lean 4 project contains 102 source files and builds against mathlib without
-\texttt{sorry}, \texttt{admit}, or project-defined \texttt{axiom}.  Table
-\ref{tab:lean-map} maps the claims used in the manuscript to their principal
-files.  Lean proves the displayed implications; empirical assumptions such as
-source-target support shift remain scientific premises rather than axioms
-asserting that every domain satisfies them.
+The Lean 4 project builds against mathlib without \texttt{sorry},
+\texttt{admit}, or project-defined \texttt{axiom}.  Table \ref{tab:lean-map}
+maps manuscript claims to their principal files.  Lean proves each displayed
+implication; source-target alignment and simulator-distribution assumptions
+remain scientific premises.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \small
-\caption{Principal Lean proof files.}
+\caption{Principal Lean files under \texttt{proof/SCOLHKG/}.}
 \label{tab:lean-map}
-\begin{tabular}{p{0.39\textwidth}p{0.52\textwidth}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.39\textwidth}>{\raggedright\arraybackslash}p{0.52\textwidth}}
 \toprule
-Claim & File under \texttt{proof/SCOLHKG/} \\
+Claim & File \\
 \midrule
 Finite-atlas no-free-lunch & \texttt{Real/ProposalNoFreeLunch.lean} \\
-Aligned geometric atlas coverage & \texttt{Real/GeometricAtlasCoverage.lean} \\
-Source-label noninterference & \texttt{Real/RiskAlignedRepresentation.lean} \\
-Fail-closed monotone envelope & \texttt{Real/SourceMonotoneEnvelope.lean} \\
-Shortlist safety and objective guard &
-\texttt{Real/MethodIndependent}\newline
-\texttt{TerminalVerification.lean} \\
-Exact binomial all-success certificate & \texttt{Measure/ExactBinomialCertificate.lean} \\
-Composed paper interfaces and budget identity & \texttt{Real/PaperMainline.lean} \\
+Profile-coordinate and interpolation error & \texttt{Real/ProfileCoordinateConsistency.lean} \\
+Farthest-first factor-two coverage & \texttt{Real/FarthestFirstKCenter.lean} \\
+Finite source-mean and rank recovery & \texttt{Measure/SourceRankRecovery.lean}, \texttt{Real/SourceRankRecovery.lean} \\
+Task-law coverage calibration & \texttt{Measure/TaskAtlasCoverage.lean} \\
+Aligned geometric coverage & \texttt{Real/GeometricAtlasCoverage.lean} \\
+Exact all-success candidate validity & \texttt{Measure/ExactBinomialCertificate.lean} \\
+Composed frontend and budget interfaces & \texttt{Real/PaperMainline.lean} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The final source-tree SHA-256 recorded by the proof receipt is:
-\begin{center}
-\small\texttt{536ca1d10e971f8001f4d38b}\\
-\texttt{050508e2448ce31fb51ec8a9}\\
-\texttt{abfdb0d6f343a710}.
-\end{center}
-The receipt is regenerated only after a successful \texttt{lake build} and a
-zero-placeholder scan.
+\section{Reproducibility Contract}\label{app:reproducibility}
 
-\section{Reproducibility and Data Contracts}\label{app:reproducibility}
+The final evidence registry contains 14 matrix contracts, 12 compact analyses,
+and SHA-256 commitments for 17,360 result cells.  It records one retained
+algorithmic failure and no integrity failure.  Every row identifies the task,
+source archive, initial design, method, implementation commit, verifier,
+source/search/verification calls, and postdecision truth reconstruction.
 
-Each result row records the task fingerprint, source-archive fingerprint,
-initial-design fingerprint, method identity, implementation commit, verifier
-signature, source/search/verification counts, and terminal truth reconstruction.
-The release audit requires every registered cell exactly once, identical
-problem fingerprints within paired comparisons, complete target-search traces,
-and agreement between stored and reconstructed truth.
-
-Manuscript tables and figures are generated only from compact audited JSON and
-CSV artifacts.  The renderer explicitly excludes runtime checkpoints, pickle
-files, model weights, and policy vectors, and writes SHA-256 hashes for every
-input and output.  The experiment registry also retains named algorithm
-variants: periodic-capped SAAS is never relabeled as canonical SAASBO, and
-failed or incomplete development tracks are not silently merged into release
-results.
-
-The code release includes the final method manifest, compact result records,
-paired-statistics artifact, convergence summaries, external energy data
-contract, proof receipt, and executable tests.  The OPSD source data are cited
-by version and DOI \citep{OPSD2020}.  Runtime checkpoints and model weights are
-not required to reproduce the audited numerical tables and are excluded from
-the compact release.
+Tables and figures in this manuscript are generated only from compact JSON and
+CSV analyses.  The renderer does not read checkpoints, pickle files, model
+weights, or exported policy vectors.  Runtime artifacts are unnecessary for
+auditing the displayed results.  The method specification, randomized task
+law, Energy data contract, proof receipt, and rendering manifest are versioned
+separately so that a theory version cannot be silently paired with another
+experiment version.

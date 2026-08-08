@@ -1,91 +1,149 @@
-\section{Dimension-Equivariant Structural Proposal Atlas}\label{sec:atlas}
+\section{Source-Scored Structural Initial Design}\label{sec:method}
 
-\subsection{Low-Frequency Policy Coordinate}
+This section specifies the complete frontend.  The implementation contains no
+additional scalarization, endpoint replacement, or target-dependent repair.
 
-Write $z_i=x_i/L_q\in[0,1]$ for the normalized policy.  The raw policy length
-changes across tasks, so direct coordinate-wise transfer is not well defined.
-For a fixed frequency cap $K$, define
+\subsection{Outcome-free profile library}
+
+All tasks share a deterministic library $\cL=\{h_1,\ldots,h_{64}\}$ on 128
+regular cell midpoints.  Its seed is 20260808.  It contains:
+\begin{itemize}
+\item ten constants with levels $0.05,0.15,\ldots,0.95$;
+\item six linear ramps with endpoint pairs $(.05,.95)$, $(.95,.05)$,
+$(.20,.80)$, $(.80,.20)$, $(.35,.65)$, and $(.65,.35)$;
+\item sixteen low-frequency cosine profiles, with rank drawn uniformly from
+$\{2,\ldots,8\}$, coefficient $a_k\sim N(0,.12^2/k)$, and baseline drawn
+uniformly from $[.25,.75]$;
+\item sixteen piecewise-constant profiles with 3--12 blocks and levels drawn
+uniformly from $[.08,.92]$, followed by the declared deterministic smoothing;
+\item sixteen cosine profiles with frequency drawn uniformly from
+$\{9,\ldots,40\}$, baseline in $[.30,.70]$, amplitude in $[.08,.25]$, and a
+uniform phase.
+\end{itemize}
+Values are clipped to $[0,1]$.  Duplicate profiles are skipped, and stable
+profile identifiers follow construction order.  This mixture is a structural
+prior.  It is public, generated before any outcome, and is not claimed to span
+all useful policies.
+
+\subsection{Grid-invariant profile coordinate}
+
+For ordered nodes $t_1<\cdots<t_d$, let
+$0=e_0<e_1<\cdots<e_d=1$ be their Voronoi cell edges, where
+$e_i=(t_i+t_{i+1})/2$ internally.  For the piecewise-constant reconstruction of
+$h$, define
 \begin{align}
- \bar z &= d^{-1}\sum_{i=0}^{d-1}z_i,\qquad
- s_z=\left[d^{-1}\sum_{i=0}^{d-1}(z_i-\bar z)^2\right]^{1/2},\label{eq:dc}\\
- c_k(z)&=\frac{2}{d}\sum_{i=0}^{d-1}(z_i-\bar z)
- \cos\left(\frac{\pi k(i+1/2)}{d}\right),\quad k=1,\ldots,K.\label{eq:dct}
+ c_0(h)&=\sum_{i=1}^{d}h(t_i)(e_i-e_{i-1}),\label{eq:c0}\\
+ c_k(h)&=\sqrt{2}\sum_{i=1}^{d}h(t_i)
+ \frac{\sin(\pi k e_i)-\sin(\pi k e_{i-1})}{\pi k},
+ \quad k=1,\ldots,K.\label{eq:ck}
 \end{align}
-The implemented coordinate $\etaHat_d(\x)$ contains $\bar z$, $s_z$, and a
-frequency-penalized selection of the coefficients in
-\eqref{eq:dct}, followed by a fixed diagonal quadratic expansion.  We use
-$K\le 8$.  Its dimension depends on $K$, not on $d$.  The cosine basis also
-admits an inverse map: a coordinate is reconstructed as a constant profile plus
-the selected modes, clipped to $[0,1]$, and rounded to the target integer
-bounds.
+These are exact integrals of the cosine basis over the reconstruction cells,
+not midpoint approximations to the basis.  With $K=8$ and $\kappa=.25$, the
+profile coordinate is
+\begin{equation}\label{eq:profile-coordinate}
+ \phi(h)=\bigl(\tilde c_0,\ldots,\tilde c_K,
+                    \tilde c_0^2,\ldots,\tilde c_K^2\bigr),
+ \qquad \tilde c_k=\frac{c_k}{1+\kappa k}.
+\end{equation}
+It has dimension 18 and contains no cross-products.  Each coordinate is
+standardized over the 64-profile library before selection.
 
-This coordinate encodes a specific structural hypothesis: slowly varying
-policy profiles and their coarse shape transfer more reliably than the identity
-of a raw coordinate.  It does not assert that every high-dimensional problem
-is low frequency.  Domain- and dimension-holdout experiments test whether this
-hypothesis remains useful.
+\subsection{Replicated source scores}
 
-\subsection{Universal Support and Source Templates}
+For source task $q$, profile $j$, and replication $r$, let
+$Y^f_{qjr}$ and $Y^g_{qjr}$ be the two simulator outputs.  Define
+\begin{align}
+ \widehat f_{qj}&=R^{-1}\sum_{r=1}^{R}Y^f_{qjr},\\
+ \widehat m_{qj}&=\overline Y^g_{qj}
+    +z_{1-\alpha_q}\max\{s^g_{qj},10^{-3}\}-\tau_q,
+                                                        \label{eq:source-margin}
+\end{align}
+where $s^g_{qj}$ is the sample standard deviation with divisor $R-1$.
+Within each task, deterministic average-tie percentile ranks map the 64
+objective means and margins to $[0,1]$, with lower values preferred.  Let
+$r^f_{qj}$ and $r^g_{qj}$ denote those ranks.  The primary domain-blind scores
+are
+\begin{equation}\label{eq:source-ranks}
+ r^f_j=\frac1m\sum_{q=1}^m r^f_{qj},\qquad
+ r^g_j=\frac1m\sum_{q=1}^m r^g_{qj}.
+\end{equation}
+Whether $\widehat m_{qj}\le0$ in every source task is logged as a diagnostic
+but does not filter the library.  Descriptor-conditioned source weights are a
+secondary control and are not part of the primary method.
 
-The candidate library is the union of two components.  The \emph{universal
-structural support} contains target-label-free constant, monotone, and
-low-frequency profiles generated from $(d,L_q)$ alone.  It supplies coverage
-when source outcomes are misleading or do not include a useful endpoint.  The
-\emph{source templates} are normalized profiles observed in every source task.
+\subsection{Rank-seeded farthest-first selection}
 
-For each source task, replicated observations estimate an objective score and
-a chance-margin score.  Scores are converted to within-task percentiles before
-aggregation, avoiding a common numerical scale assumption across domains.
-Profiles that are robustly source feasible are preferred.  Candidate templates
-on the source objective--risk Pareto frontier are selected under five fixed
-scalarizations: risk-only, objective-only, and three intermediate weights.
-This ranking uses observed source data only.  It never uses a source analytic
-optimizer or a target outcome.
+Let $z_j$ be the standardized version of $\phi(h_j)$.  Selection uses the
+20-dimensional augmented coordinate
+\begin{equation}\label{eq:augmented-coordinate}
+ \eta_j=(z_j,r^g_j,r^f_j)
+\end{equation}
+with Euclidean distance.  The first center is
+\begin{equation}\label{eq:first-center}
+ j_1\in\argmin_j \{.5r^g_j+.5r^f_j\},
+\end{equation}
+breaking ties by $r^g_j$, then $r^f_j$, then stable profile identifier.  For
+$\ell=2,\ldots,n_0$,
+\begin{equation}\label{eq:farthest-first}
+ j_\ell\in\argmax_{j\notin\{j_1,\ldots,j_{\ell-1}\}}
+ \min_{s<\ell}\|\eta_j-\eta_{j_s}\|_2,
+\end{equation}
+with the lowest library index breaking an exact tie.  The primary design uses
+$n_0=10$.  Each selected 128-node profile is linearly interpolated onto the
+declared target nodes, multiplied by $L_q$, clipped, and deterministically
+rounded to an integer policy.
 
-After the extreme Pareto templates are included, the remaining slots are
-filled by a maximin rule in $\etaHat$: at each step we select the candidate
-whose minimum coordinate distance to the current atlas is largest, with fixed
-penalties for source risk and objective rank.  The result is a deterministic
-risk-objective atlas of size at most $n_0$.
+\begin{table}[t]
+\centering
+\small
+\caption{Frozen primary method specification.}
+\label{tab:method-spec}
+\begin{tabular}{p{0.30\textwidth}p{0.61\textwidth}}
+\toprule
+Component & Specification \\
+\midrule
+Decision class & Ordered bounded profile $h:[0,1]\to[0,1]$ on a declared grid \\
+Library & 64 outcome-free profiles; 128 reference nodes; seed 20260808 \\
+Source archive & 2 tasks $\times$ 64 profiles $\times$ 3 replications = 384 calls \\
+Profile coordinate & Frequencies $0{:}8$, penalty $.25$, diagonal squares, 18 dimensions \\
+Source score & Equal-task average of objective and Gaussian chance-margin percentile ranks \\
+Selection & First center $.5r^g+.5r^f$; nine Gonzalez farthest-first centers \\
+Metric weights & Profile coordinates standardized; safety and objective rank weights both 1 \\
+Target map & Linear interpolation to declared nodes; deterministic integer rounding \\
+Target information & Grid, bounds, dimension, and declared ordering; no outcomes or oracle quantities \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\subsection{Fail-Closed Source-Monotone Envelope}
+\subsection{Search and verification interfaces}
 
-A final source-only extension tests whether the zero-frequency coefficient
-$\bar z$ has a common chance-margin direction.  For each source task $q'$, let
-$\rho_{q'}$ be the rank correlation between $\bar z$ and observed chance
-margin.  With threshold $\kappa=0.25$, the upper constant endpoint is admitted
-only if at least two source tasks all satisfy $\rho_{q'}\le-\kappa$; the lower
-endpoint is admitted only if all satisfy $\rho_{q'}\ge\kappa$.  Admission
-replaces an existing slot, so the budget remains $n_0$.  If neither condition
-holds, the update is the identity.
+The initial design is backend independent.  The primary attribution experiment
+sets $N=n_0=10$, so it contains no sequential optimizer and isolates the
+frontend.  Functional SCBO, SAASBO, and native transfer methods are separate
+comparisons.
 
-The original three synthetic domains reject this extension in all 60 primary
-cells, making the final version exactly equal to the base atlas there.  The
-electricity family admits it using source markets before the confirmatory
-market is opened.  Source agreement is evidence for a transferable direction,
-not proof that the target shares it; Section \ref{sec:theory} states the
-additional target monotonicity condition explicitly.
+Given noisy target records, the neutral protocol freezes up to three distinct
+shortlist entries in this order: best observed-objective empirical feasible
+policy, observed safe-interior policy, and minimizer of
+\begin{equation}\label{eq:empirical-risk}
+ Y^f(x)+2\,[Y^g(x)-\tau]_+,
+\end{equation}
+followed by objective-ranked fallbacks if needed.  Fresh simulator replications
+then test shortlist members sequentially.  Candidate $j$ with budget $v_j$ is
+certified only if all $v_j$ constraint replications satisfy the threshold and
+$(1-\alpha)^{v_j}\le\delta/K_s$.  The primary budgets are $(80,80,80)$,
+$K_s=3$, and $\delta=.05$.  Failure to certify produces abstention, not a
+deployment.
 
-\subsection{Training and Deployment Algorithm}
+\subsection{Source-free counterfactuals}
 
-The full frontend is summarized below.
+The most important control is \emph{generic DCT maximin}.  It uses the same
+64 profiles, the same $\phi$, the coordinate-space medoid as its first center,
+and farthest-first for the remaining nine, but no outcomes.  Random
+low-frequency, natural three-block, and raw Sobol designs separate other forms
+of structural prior.  The finite-library oracle is labeled as unattainable and
+appears only in audit artifacts.
 
-\begin{enumerate}[label=\textbf{A\arabic*.},leftmargin=3.2em]
-\item Normalize the 64 shared profiles in each source task and compute
-replication-based objective and chance-margin summaries.
-\item Convert summaries to within-source percentile ranks; retain robust
-source-feasible Pareto templates under the fixed risk-objective weights.
-\item Form the candidate union of source templates and universal structural
-support; map all candidates into $\etaHat_d$.
-\item Seed the atlas with selected Pareto extremes and fill remaining slots by
-the penalized maximin rule.
-\item Apply the fail-closed source-monotone endpoint test without changing
-atlas size.
-\item Freeze the atlas before the first target simulation.  Evaluate its
-$n_0$ policies, then pass the observations to the chosen online backend.
-\end{enumerate}
-
-The proposal is learned offline but is not free: its 384 source simulations
-are included in archive-fair and total-cost comparisons.  When the same archive
-is reused for many targets, this cost may be amortized operationally; our
-tables do not assume such amortization.
+For clarity, the method is a source-scored subset of a preconstructed library.
+It is not described as discovering the library from data, and its value over
+generic structure is an empirical question rather than a premise.

@@ -1,87 +1,94 @@
 \section{Introduction}\label{sec:introduction}
 
-Simulation optimization is often most valuable precisely where function
-evaluation is slow, noisy, and safety constrained.  A policy may contain
-hundreds or thousands of coordinated controls, while only a handful of target
-simulations are affordable.  Examples include reserve schedules, multi-node
-inventory rules, and resource-allocation profiles.  In these settings, the
-central statistical difficulty precedes the choice of an acquisition
-function: an unstructured initial design has negligible probability of
-intersecting a small feasible basin.  A sophisticated sequential optimizer
-cannot improve a basin it never observes.
+Many simulation-optimization decisions are functions before they are vectors.
+A reserve rule varies with forecast stress, an inventory rule varies across a
+planning horizon, and a resource rule varies over ordered operating states.
+Implementation discretizes such a policy into hundreds or thousands of
+coordinates, but neighboring coordinates retain a common order and often a
+smooth or piecewise-smooth interpretation.  Treating this representation as an
+arbitrary high-dimensional box discards information that can matter more than
+the choice of sequential optimizer.
 
-Historical tasks create a possible escape from this difficulty.  Related
-systems may have been optimized in earlier markets, networks, or operating
-regimes.  Their observations can reveal policy shapes that repeatedly balance
-objective quality and chance feasibility.  Yet reusing those observations is
-delicate.  Raw coordinates may change dimension, the meaning of individual
-controls may not align across tasks, and a target-specific hand-coded anchor
-would turn transfer into hidden oracle information.  Moreover, an attractive
-recommendation and a deployment-safe recommendation are different statistical
-objects.  Reusing the same observations for search and final certification can
-make the apparent evaluation budget and the safety claim both misleading.
+The difficulty is sharper under chance constraints.  With only a few target
+simulations, an unstructured design may never observe a feasible policy.  A
+surrogate or acquisition function then has little evidence with which to learn
+the feasible boundary.  Historical simulations from related tasks appear to
+offer a remedy, but they introduce two risks.  First, source tasks can be
+misaligned: a shape that is safe in one system may be harmful in another.
+Second, source cost and final safety verification can dwarf the advertised
+target-search budget.  A credible method must therefore expose its structural
+assumption, separate source information from target information, and permit
+abstention when independent evidence is insufficient.
 
-This paper treats those issues as one information-design problem.  Before a
-target task is opened, source outcomes are used to construct a small
-\emph{structural proposal atlas}: a set of normalized policy profiles that is
-defined in a dimension-equivariant low-frequency coordinate.  Source profiles
-are ranked by objective and chance-margin evidence, target-label-free profiles
-provide universal structural support, and a maximin rule fills a fixed initial
-design.  The atlas is then frozen.  Any target optimizer can consume it; in the
-primary implementation we use the standard sparse axis-aligned subspace
-Bayesian optimizer (SAASBO).  After search, a separate verifier receives fresh
-samples from a frozen, ordered shortlist and never returns those samples to the
-optimizer.
+We study a deliberately narrow question: can replicated source outcomes
+improve the \emph{initial design} for a new chance-constrained ordered-profile
+problem?  We begin with a finite, outcome-free library of constant, monotone,
+low-frequency, piecewise, and high-frequency profiles on $[0,1]$.  Source
+outcomes do not create this library.  They score its members using within-task
+objective and chance-margin ranks.  A first profile balances the two ranks;
+Gonzalez farthest-first selection then fills the design in a coordinate that
+contains exact cosine coefficients, their diagonal squares, and the two source
+ranks.  The ten selected profiles are frozen and mapped to the target grid
+before any target outcome is observed.  We call the result a
+\emph{source-scored structural initial design}.
 
-The separation is substantive rather than cosmetic.  It lets us ask three
-distinct questions.  Does the transferred frontend reach a feasible basin?
-Does online optimization improve objective quality once coverage is
-established?  Can the final recommendation be independently certified?  It
-also forces a transparent cost accounting: source simulation, target search,
-and terminal verification are reported separately.
+This construction separates three decisions that are often conflated.  The
+frontend decides where target search starts.  A replaceable backend may add
+target evaluations.  A frozen ordered shortlist is then tested on fresh
+replications by an optimizer-independent verifier.  Figure
+\ref{fig:method-overview} shows the information flow.  Verification outcomes
+never return to search.
 
-Our contributions are as follows.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.98\textwidth]{review_method.pdf}
+  \caption{Information contract.  A public profile library and replicated
+  source outcomes determine the initial design before target outcomes exist.
+  Target search and fresh terminal verification are separate interfaces.}
+  \label{fig:method-overview}
+\end{figure}
+
+Our contributions are fourfold.
 
 \begin{enumerate}[label=(\roman*)]
-\item We introduce a target-label-free, dimension-equivariant risk-objective
-proposal atlas.  Its low-frequency coordinate has fixed dimension even when
-the raw policy dimension changes, and its source-monotone extension is
-fail-closed when source directions disagree.
+\item We give a complete finite algorithm for turning source simulations into
+an initial design for ordered profiles.  Every library rule, coordinate,
+weight, tie break, interpolation, and information boundary is explicit.  The
+method uses no target objective, feasibility label, optimum, safe-basin
+parameter, or verification outcome before target search.
 
-\item We establish the relevant theoretical boundary.  No proper finite atlas
-can cover every possible held-out feasible set.  Under an explicit
-source-to-target support condition, coordinate error bound, margin regularity,
-and safe-depth condition, however, the atlas contains a feasible policy.  The
-sufficient condition depends on coordinate geometry rather than nominal policy
-dimension.  These and the terminal verification results are machine checked in
-Lean 4 without unproved placeholders.
+\item We connect the implementation to a finite theoretical chain.  The
+cosine coordinate is stable under profile-grid refinement; farthest-first is a
+two-approximation for finite $k$-center coverage; bounded source estimation
+error preserves sufficiently separated ranks; and profile coverage implies
+target feasibility under explicit source-target discrepancy and safety-depth
+conditions.  A separate exact-binomial result controls familywise false
+deployment for the frozen shortlist.  The finite implications are
+machine-checked in Lean 4; the alignment assumptions remain empirical scope
+conditions rather than universal claims.
 
-\item We design an optimizer-independent verifier with familywise control of
-unsafe deployment and an objective switch guard.  Search, objective-comparison,
-and safety-verification samples are tracked separately, so a target search
-budget is never reported as a total simulation budget.
+\item We conduct a frozen stress test designed to reveal benchmark fit.  Eight
+randomized regimes vary effective rank, frequency support, coordinate order,
+grid regularity, smoothness, sparse high-frequency activity, and complete
+source-target misspecification.  Structured source-free controls use the same
+finite library and profile coordinate.  Additional matrices vary source
+budget, representation schema, chance level, safety mass, and method constants.
 
-\item We perform a causal frontend/backend evaluation.  At dimension 1,000,
-the frozen atlas produces true-feasible and independently certified
-recommendations in all 60 trials with proposal-only, stacked-GP, and canonical
-SAASBO backends.  Matched common-Sobol frontends produce zero, one, and zero,
-respectively.  At dimension 10,000, all 30 trials are certified across target
-search budgets from 10 to 40 calls.  An electricity-storage holdout confirms a
-large total-cost advantage over unstructured Sobol, while a post-confirmatory
-structured control shows no advantage over an obvious low-frequency grid.
-
-\item We retain negative findings that delimit the contribution.  Canonical
-SAASBO is a replaceable backend rather than a novel algorithm.  A cumulative
-heteroscedastic variance model recovers variance shape much better than pooled
-variance but does not improve optimization outcomes, so it is reported as a
-calibration diagnostic rather than a second headline contribution.
+\item We account for source, target-search, and verification calls separately.
+An equal preverification-cost experiment gives target-only methods the source
+archive's calls.  A region-held-out electricity study is retained even though
+it reverses the source-versus-generic ordering.  Native transfer methods use
+their own pipelines rather than receiving our initial design.  These negative
+and equal-cost results delimit the contribution: source scoring is useful
+under aligned task laws and repeated deployment, not as a universal shortcut
+for arbitrary high-dimensional optimization.
 \end{enumerate}
 
-The resulting claim is deliberately narrower than ``solving arbitrary
-10,000-dimensional optimization in ten evaluations.''  The method succeeds
-when related tasks share a stable, low-dimensional structural coordinate; the
-paper states, audits, and stress-tests that condition.  Section
-\ref{sec:literature} positions the work.  Sections \ref{sec:problem}--
-\ref{sec:theory} give the information contract, atlas, and guarantees.
-Sections \ref{sec:experiments} and \ref{sec:results} present the experiments,
-and Section \ref{sec:discussion} discusses limits and operational use.
+The main empirical result is correspondingly conditional.  Across 480
+independent randomized tasks per design, source scoring substantially improves
+aggregate feasible coverage and certification.  It loses, however, in several
+registered regimes and in the electricity study.  A $10{,}000$-coordinate
+result is therefore interpreted as refinement of an ordered profile grid, not
+as solving an arbitrary $10{,}000$-variable black-box problem.  This boundary
+is central to both the theory and the practical decision of whether historical
+simulation is worth buying.

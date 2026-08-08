@@ -1,218 +1,206 @@
 \section{Results}\label{sec:results}
 
-\subsection{The Frontend Determines Feasible-Basin Coverage}
+\subsection{Aggregate randomized-task performance}
 
-Table \ref{tab:frontend-backend} gives the main causal comparison.  With the
-frozen atlas, all three backends produce true-feasible and independently
-certified recommendations in all 60 domain-seed pairs, with no false
-certificate.  Replacing only the frontend by common Sobol reduces these counts
-to 0/60 for proposal-only, 1/60 for stacked GP, and 0/60 for canonical SAASBO.
-For the preregistered proposal-only and SAAS comparisons, the Holm-adjusted
-McNemar $p$-value is $6.94\times10^{-18}$ for both feasibility and
-certification.  Figure \ref{fig:frontend-backend} shows the aggregate contrast.
-
-\begin{table}[t]
-\centering
-\small
-\caption{Frontend/backend factorial at $d=1000$.  Frozen-atlas arms use
-$n_0=10$ and at most three adaptive calls; proposal-only stops at ten.  Every
-arm uses the same independent verifier.}
-\label{tab:frontend-backend}
-\resizebox{\textwidth}{!}{\input{tables/frontend_backend}}
-\end{table}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.82\textwidth]{frontend_backend.pdf}
-\caption{Feasible-basin coverage is driven by the frozen structural frontend,
-not by the backend.  Counts aggregate 20 seeds in each of three domains.}
-\label{fig:frontend-backend}
-\end{figure}
-
-Once coverage is established, the backend affects objective quality.  Across
-all 60 frozen-atlas pairs, canonical SAASBO improves regret over proposal-only
-in 29 seeds, loses in two, and ties in 29; the Holm-adjusted Wilcoxon
-$p$-value is $1.16\times10^{-6}$.  It improves over stacked GP in 29 seeds,
-loses in three, and ties in 28 ($p_{\mathrm{Holm}}=1.49\times10^{-6}$).
-The median paired difference is zero because FactorShock and many other pairs
-tie, while Inventory and Queue contain the improvements.  The target-stage
-convergence paths in Figure \ref{fig:convergence} make the decomposition clear:
-the initial atlas reaches the feasible region, and the three adaptive calls
-occasionally improve its objective.
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.86\textwidth]{target_convergence.pdf}
-\caption{Median best true-feasible objective gap during target search.  Missing
-early values mean that no evaluated point was truly feasible at that call.
-Verification samples are excluded.}
-\label{fig:convergence}
-\end{figure}
-
-\subsection{Both Atlas Components Matter}
-
-Universal structural support alone reaches 27/60 feasible trials; source
-templates alone reach 40/60; their combined maximin atlas reaches 60/60
-(Table \ref{tab:components} and Figure \ref{fig:components}).  Universal
-support is particularly important as a source-misspecification fallback,
-whereas source templates concentrate probability mass around empirically safe,
-low-cost profiles.  The combined atlas is therefore not merely the best source
-profile copied to a new dimension.
-
-\begin{table}[t]
-\centering
-\caption{Causal frontend component ablation with the same source archive,
-target seeds, proposal budget, and verifier.}
-\label{tab:components}
-\input{tables/frontend_components}
-\end{table}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.70\textwidth]{frontend_components.pdf}
-\caption{Feasible and independently certified recommendations under the
-frontend component ablation.}
-\label{fig:components}
-\end{figure}
-
-\subsection{Archive-Fair Transfer and Total-Cost Controls}
-
-Table \ref{tab:transfer} compares transfer methods under exactly the same
-source archive, frozen initial design, target budget, seeds, and verifier.
-Because every method receives the strong atlas, most achieve high feasible
-coverage.  Safe F-PACOH reaches 56/60, RGPE and FSBO 59/60, transfer MTGP
-57/60, and stacked GP, HyperBO, MetaBO, MALIBO, and canonical SAASBO 60/60.
-Canonical SAASBO has the lowest aggregate median feasible regret (0.0038),
-whereas the other displayed methods have 0.0082.  Verification cost differs
-materially, demonstrating why the 60/60 coverage count alone is insufficient.
+Table \ref{tab:primary-results} and Figure \ref{fig:primary-results} report the
+primary randomized task law.  The source-scored design contains a truly
+feasible policy in 91.7\% of tasks and yields a certified true-feasible
+deployment in 47.3\%.  Generic DCT maximin reaches 37.5\% and 10.6\%; raw Sobol
+reaches 80.2\% and 30.0\%.  Penalized loss is 0.163 for source scoring, 0.746
+for generic DCT, and 0.337 for Sobol.  Thus source outcomes contribute beyond
+the shared structural library on this registered mixture.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Archive-fair transfer comparison at $d=1000$, $S=384$, $n_0=10$,
-and $N=13$.  Mean verification includes safety and any fresh objective-
-comparison calls.}
-\label{tab:transfer}
-\input{tables/transfer_baselines}
+\caption{Primary randomized profile results.  Each row contains 480
+independent tasks: eight regimes, three grid resolutions, and 20 tasks per
+regime--resolution cell.}
+\label{tab:primary-results}
+\resizebox{\textwidth}{!}{\input{tables/review_stress_primary.tex}}
 \end{table}
 
-The equal-total-search-cost comparison is more severe.  Target-only TuRBO and
-SCBO receive 397 target-search calls and find no feasible recommendation in 60
-trials.  Periodic-capped target-only SAAS finds two, both certified.  The atlas
-plus canonical SAASBO uses 384 source calls and 13 target-search calls and
-certifies all 60 (Table \ref{tab:totalcost}).  The Holm-adjusted McNemar
-$p$-values for the final method versus each target-only control are below
-$3\times10^{-17}$.  These results support reuse of related source simulations;
-they do not imply that source calls are free or that the frontend is uniformly
-better than every task-specific structured design.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.90\textwidth]{review_primary.pdf}
+  \caption{Aggregate feasible coverage and independently certified deployment.
+  Bars aggregate independent tasks, not repeated seeds from one domain.}
+  \label{fig:primary-results}
+\end{figure}
 
-\begin{table}[t]
-\centering
-\caption{Equal source-plus-search-cost comparison.  Verification is applied
-after search and reported separately.  ``Target-only SAASBO'' denotes the
-audited periodic-capped control, not canonical every-iteration SAASBO.}
-\label{tab:totalcost}
-\input{tables/total_cost_controls}
-\end{table}
+The paired source-minus-generic-DCT certified-success differences are 0.406
+(bootstrap 95\% CI $[.325,.488]$) at $d=200$, 0.356
+($[.275,.438]$) at $d=1000$, and 0.338 ($[.256,.419]$) at $d=10000$.
+These stable differences support cross-grid transfer for the registered
+profile law.  They do not establish increasing difficulty with $d$: the
+$d=10000$ experiment is a discretization-refinement test.
 
-\subsection{Dimension and Target-Budget Frontier}
+\subsection{Where source scoring fails}
 
-At $d=1000$, proposal-only at ten search calls and canonical SAASBO at 13 both
-certify all 60 trials; aggregate median regret improves from 0.00825 to 0.00383.
-At $d=10000$, all 30 trials are feasible and certified with zero false
-certificates at search budgets 10, 13, 20, and 40 (Table
-\ref{tab:dimension}).  The corresponding $d/N$ ratios range from 1,000 to 250.
-Median regret is 0.00825, 0.00825, 0.00451, and 0.00579.  The deterioration
-from $N=20$ to $N=40$ is retained rather than smoothed away; additional
-adaptive search is not monotonically beneficial under this finite stochastic
-protocol.
+The aggregate advantage is not uniform.  Table \ref{tab:regime-results} and
+Figure \ref{fig:regime-results} preserve every adverse regime.  Raw Sobol
+outperforms source scoring in aligned low frequency and irregular grids;
+natural structure is slightly better under sparse high-frequency activity;
+and neither method certifies useful policies under full misspecification.
+Source scoring is strongest for permutation, piecewise smoothness, growing
+rank, and the registered frequency shift.  In the sparse-high-frequency regime
+its feasible coverage falls from 20/20 tasks at $d=200$ to 0/20 at $d=10000$,
+despite unchanged target budget.  This is direct evidence against a generic
+high-dimensional claim.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Dimension and target-search budget.  Source archive size remains
-384; verification is additional and variable.}
-\label{tab:dimension}
-\input{tables/dimension_budget}
+\caption{Rates aggregated over three grid resolutions within each regime.
+The comparator is the best source-free design in that row.}
+\label{tab:regime-results}
+\resizebox{\textwidth}{!}{\input{tables/review_stress_regimes.tex}}
 \end{table}
 
 \begin{figure}[t]
-\centering
-\includegraphics[width=0.90\textwidth]{dimension_budget.pdf}
-\caption{Dimension/budget frontier: aggregate median feasible regret (left)
-and mean verification calls (right).  The $d=10000$ result is an effective-
-dimension stress test under the registered structural family.}
-\label{fig:dimension}
+  \centering
+  \includegraphics[width=0.92\textwidth]{review_regime.pdf}
+  \caption{Source-minus-generic-DCT certified-success differences by regime
+  and grid resolution.  Positive aggregate performance coexists with
+  registered reversals.}
+  \label{fig:regime-results}
 \end{figure}
 
-The result is consistent with Corollary \ref{cor:dimension}: the raw dimension
-can grow while the profile coordinate remains fixed.  It is not evidence that
-SAASBO or the atlas can identify an arbitrary sparse set of raw coordinates in
-ten calls.  Indeed, the common-Sobol negative controls show that the same
-backend without structural coverage fails at $d=1000$.
+The source arm records no false certificates in 480 tasks.  Generic DCT and
+raw Sobol record three and two, respectively.  Target-only functional SCBO at
+$N=13$ certifies 15 of 480 primary tasks with three false certificates, all in
+the frequency-support-shift regime.  Increasing its cosine rank does not remove
+the general coverage deficit.
 
-\subsection{External Electricity Holdout}\label{sec:energy-results}
+\subsection{Schema and sensitivity}
 
-All three energy arms are independently certified in 20/20 seeds with no false
-certificate (Table \ref{tab:energy}).  The frozen atlas at $N=13$ beats
-equal-total-cost common Sobol at $N=397$ in all 20 paired seeds.  The median
-objective difference (atlas minus Sobol) is $-0.05331$, with bootstrap 95\%
-interval $[-0.05408,-0.05058]$ and one-sided exact sign
-$p=9.54\times10^{-7}$.
-
-The natural low-frequency grid changes the interpretation.  The atlas wins
-9/20 and loses 11/20; the median difference is $0.000945$, with 95\% interval
-$[-0.00108,0.00180]$ and one-sided sign $p=0.748$.  Thus the external result
-supports low-frequency structural compression and a large advantage over
-unstructured total-cost search.  It does not establish that source learning
-outperforms an obvious domain-specific low-frequency control.
-
-\begin{table}[t]
-\centering
-\caption{Untouched Great Britain electricity-storage holdout and retained
-post-confirmatory fairness controls.}
-\label{tab:energy}
-\input{tables/external_energy}
-\end{table}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.90\textwidth]{external_energy.pdf}
-\caption{External energy paired differences.  Negative values favor the
-frozen atlas.  The left panel is a retained negative result; the right panel
-is the equal-total-cost unstructured control.}
-\label{fig:energy}
-\end{figure}
-
-\subsection{Heteroscedastic Decomposition Is a Calibration Diagnostic}
-\label{sec:hvd-results}
-
-The cumulative factor model sharply improves variance-shape recovery under a
-matched proposal, canonical SCBO backend, verifier, and 20-seed design.  Mean
-log-variance RMSE falls from 1.158 to 0.219 in FactorShock, 0.577 to 0.349 in
-Inventory, and 0.501 to 0.254 in Queue.  Shape correlation rises from zero
-under pooled variance to 0.919, 0.953, and 0.995.  The Holm-adjusted Wilcoxon
-$p$-value is $1.14\times10^{-10}$ for both log-RMSE and shape correlation.
-
-Operationally, however, both models produce 59/60 feasible and certified
-recommendations, zero false certificates, and identical median paired regret.
-The HVD model also increases mean verification cost in Inventory and Queue.
-It therefore fails the preregistered promotion rule and remains an optional
-risk-calibration diagnostic.
+Declared profile ordering is valuable information.  With domain-blind source
+weights, removing the declared schema reduces certified success from 46.2\%
+to 35.0\% (Table \ref{tab:schema-results}).  Descriptor-conditioned weighting
+reduces both declared- and blind-schema performance and is not promoted.
+Source scoring therefore does not need the target family label, but it does
+rely on an interpretable ordered profile map.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Pooled versus cumulative factor-HVD.  Variance diagnostics are
-post-run only; they do not enter target selection.}
-\label{tab:hvd}
-\input{tables/hvd_diagnostic}
+\caption{Information-contract controls at $d=1000$.}
+\label{tab:schema-results}
+\resizebox{0.88\textwidth}{!}{\input{tables/review_schema_controls.tex}}
 \end{table}
 
+Sensitivity is nonmonotone, which argues against treating source volume as a
+free advantage.  Raising profiles per source task from 64 to 128 reduces
+certified success from 46.2\% to 38.8\%; using one, three, or five replications
+gives 45.0\%, 46.2\%, and 45.6\%.  Four source tasks give 45.0\%, not more than
+two.  Retaining 16 frequencies reaches 48.1\%, while four reaches 43.1\%.
+Increasing $n_0$ from 10 to 20 yields only 46.9\% certification, while $n_0=5$
+yields 42.5\%.  The first-center safety weight is more consequential: .25
+reduces certification to 32.5\%, whereas .5 and .75 give 46.2\% and 45.0\%.
+Figure \ref{fig:source-budget} summarizes the source-budget axes.
+
 \begin{figure}[t]
-\centering
-\includegraphics[width=0.78\textwidth]{hvd_diagnostic.pdf}
-\caption{Cumulative factor-HVD recovers variance shape but does not improve
-feasible recovery or regret in the matched causal experiment.}
-\label{fig:hvd}
+  \centering
+  \includegraphics[width=0.92\textwidth]{review_source_budget.pdf}
+  \caption{Source-budget sensitivity.  More tasks, profiles, or replications
+  do not monotonically improve the frozen design.}
+  \label{fig:source-budget}
 \end{figure}
+
+\subsection{Cost changes the ranking}
+
+At the source method's primary budget, mean unamortized all-in calls are about
+559 across the randomized law, while amortization over 20 targets reduces the
+source contribution from 384 to 19.2 calls per target.  Comparable primary
+source-free designs use roughly 213--233 calls because verification dominates
+their ten search calls.  Figure \ref{fig:cost-results} makes both accounting
+views explicit.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.94\textwidth]{review_cost.pdf}
+  \caption{Mean source, target-search, and verification calls under
+  unamortized and 20-target accounting.}
+  \label{fig:cost-results}
+\end{figure}
+
+When the 384 source calls are instead given to target-only search, the source
+method is not best (Table \ref{tab:equal-cost}).  It certifies 46.2\% of 160
+tasks.  Generic DCT and raw Sobol each certify 53.8\%, natural structure 53.1\%,
+and target-only functional SCBO 58.1\%.  The latter includes one failed cell as
+an unsuccessful outcome.  Mean realized all-in costs are already close because
+methods consume different verification effort.  The source archive is thus an
+amortized multi-target investment, not a one-target total-cost win.
+
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Equal preverification cost at $d=1000$: 384 source plus 10 target
+calls versus 394 target-only calls.  Verification remains additional and is
+included in the final column.}
+\label{tab:equal-cost}
+\resizebox{\textwidth}{!}{\input{tables/review_equal_cost.tex}}
+\end{table}
+
+Using primary mean call counts, the source archive breaks even in simulator
+calls after roughly 7 target deployments versus generic DCT, 9 versus natural
+structure, and 11 versus raw Sobol.  These are cost thresholds, not guarantees
+of outcome dominance; Energy demonstrates why the distinction matters.
+
+\subsection{External Energy result}
+
+Energy is a negative external control for source learning.  Table
+\ref{tab:energy-results} shows that source scoring certifies 60/90 runs, while
+generic DCT maximin certifies 70/90.  Random low frequency, natural constants,
+raw Sobol, and functional SCBO certify 61, 57, 52, and 58.  No arm records a
+false certificate.  Across five regions, the source-minus-generic safe-rate
+difference is $-0.079$ with bootstrap 95\% CI $[-.137,-.020]$: zero region
+wins, three losses, and two ties.  Source scoring is not rescued by a favorable
+objective comparison; median objective is 0.0345 for source scoring and 0.0455
+for generic DCT among certified summaries, but the sets of certified runs
+differ and conditional medians cannot override the coverage reversal.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Energy V3 region-held-out results over 18 markets and five seeds per
+market.  Source scoring does not beat the generic structured control.}
+\label{tab:energy-results}
+\resizebox{0.94\textwidth}{!}{\input{tables/review_energy_v3.tex}}
+\end{table}
+
+The temporal audit preserves 312 of 358 V3 certificates under both block and
+nonoverlap conditions.  It is descriptive, not an iid future-calendar
+certificate.  The external conclusion is consequently narrow but useful:
+ordered low-frequency structure helps relative to raw Sobol, while source
+outcomes can mis-rank that structure under geographic and temporal shift.
+
+\subsection{Verifier power and native transfer}
+
+The verifier is valid but intentionally conservative.  At 80 all-success
+replications, certification power is only 1.7\% at the threshold $p=.95$,
+13.2\% at $.975$, and 44.8\% at $.99$ (Figure
+\ref{fig:verifier-power}).  Therefore the gap between 91.7\% feasible coverage
+and 47.3\% certified deployment is expected; an empty certificate set is not
+evidence that search found no feasible point.  A Clopper--Pearson threshold
+rule is reported as sensitivity, not substituted after observing outcomes.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.86\textwidth]{review_verifier_power.pdf}
+  \caption{Exact fixed-budget certification power.  The preregistered
+  all-success rule is familywise valid but weak near the chance threshold.}
+  \label{fig:verifier-power}
+\end{figure}
+
+In the native transfer matrix, RGPE certifies 30/60 tasks and MetaBO 28/60;
+the other six methods range from 0/60 to 14/60 (Appendix
+Table \ref{tab:native-transfer}).  All eight certify 0/20 Queue tasks.  These
+results show that ordinary end-to-end transfer remains difficult, but they do
+not establish a broad SOTA ranking from three historical synthetic families.
+
+Finally, cumulative factor-HVD substantially improves held-out log-variance
+RMSE and variance-shape correlation relative to pooled variance, yet does not
+improve feasible recovery, regret, false certification, or verification cost
+under matched designs.  It is therefore retained only as a calibration
+diagnostic in Appendix \ref{app:hvd}, not as a main optimization contribution.

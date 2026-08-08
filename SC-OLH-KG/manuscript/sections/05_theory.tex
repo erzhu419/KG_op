@@ -1,199 +1,163 @@
-\section{Coverage and Verification Guarantees}\label{sec:theory}
+\section{Finite-Sample Guarantees and Scope}\label{sec:theory}
 
-This section separates three claims that are often conflated: a finite
-proposal cannot cover arbitrary targets; it can cover targets satisfying a
-structural transfer condition; and a recommendation can be verified without
-assuming the search model is correct.  Complete machine-checked statements are
-mapped to the implementation in Appendix \ref{app:lean}.
+The theory explains the finite implementation under explicit conditions.  It
+does not assert that every target is aligned with the source population.
 
-\subsection{Why an Explicit Transfer Condition Is Necessary}
+\subsection{Profile-grid consistency}
 
-\begin{theorem}[Finite-atlas no-free-lunch]\label{thm:nfl}
-Let $\cX$ be finite and let $\cA\subsetneq\cX$ be any proper proposal atlas
-frozen before target labels.  There exists a nonempty feasible set
-$\cF\subseteq\cX$ such that $\cA\cap\cF=\varnothing$.
-\end{theorem}
+Let $c_k(h)=\int_0^1 h(t)b_k(t)\,dt$, where $b_0(t)=1$ and
+$b_k(t)=\sqrt2\cos(\pi kt)$ for $k\ge1$.  Let $\widehat h_d$ be a reconstruction
+from $d$ ordered samples.
 
-\begin{proof}
-Choose $x_0\in\cX\setminus\cA$ and set $\cF=\{x_0\}$.  Then $\cF$ is
-nonempty and is missed by $\cA$.
-\end{proof}
-
-Theorem \ref{thm:nfl} is elementary but decisive.  Neither source learning nor
-a nonlinear encoder can guarantee that ten target-label-free proposals hit an
-arbitrary feasible set.  A positive result must identify what transfers.
-
-\subsection{Aligned Geometric Atlas Coverage}
-
-Let $\etaStar$ be an ideal transferable coordinate and $\etaHat$ the coordinate
-learned from source information.  Let $\cS$ be the finite source-support
-library and $\atlas\subseteq\cS$ the selected atlas.  Distances below are in
-the common coordinate space.
-
-\begin{assumption}[Atlas coverage]\label{ass:atlas-cover}
-For every $s\in\cS$, there is $a\in\atlas$ such that
-$\|\etaHat(s)-\etaHat(a)\|\le r_{\mathrm{cover}}$, with
-$|\atlas|\le n_0$.
-\end{assumption}
-
-\begin{assumption}[Coordinate approximation]\label{ass:coordinate}
-For each relevant policy $x$,
-$\|\etaHat(x)-\etaStar(x)\|\le\epsilon_\eta$.
-\end{assumption}
-
-\begin{assumption}[Source-target support]\label{ass:support}
-There exists a target-safe center $x_c$ and a source-support policy
-$s_c\in\cS$ such that
-$\|\etaStar(x_c)-\etaStar(s_c)\|\le\Delta_{\mathrm{task}}$.
-\end{assumption}
-
-\begin{assumption}[One-sided margin regularity and safe depth]
-\label{ass:margin}
-The target chance margin satisfies
-\begin{equation}\label{eq:lipschitz}
- m_q(x)\le m_q(y)+L_m\|\etaHat(x)-\etaHat(y)\|
-\end{equation}
-for relevant $x,y$, and $m_q(x_c)+\gamma\le0$ for some $\gamma>0$.
-\end{assumption}
-
-\begin{theorem}[Aligned finite-atlas coverage]\label{thm:coverage}
-Under Assumptions \ref{ass:atlas-cover}--\ref{ass:margin}, if
-\begin{equation}\label{eq:coverage-condition}
- L_m\bigl(r_{\mathrm{cover}}+\Delta_{\mathrm{task}}
-       +2\epsilon_\eta\bigr)\le\gamma,
-\end{equation}
-then at least one $a\in\atlas$ is feasible for the target task.
-\end{theorem}
-
-\begin{proof}
-Assumptions \ref{ass:coordinate} and \ref{ass:support}, followed by the
-triangle inequality, place $s_c$ within
-$\Delta_{\mathrm{task}}+2\epsilon_\eta$ of $x_c$ in the learned coordinate.
-Assumption \ref{ass:atlas-cover} supplies $a\in\atlas$ at an additional
-distance at most $r_{\mathrm{cover}}$.  By \eqref{eq:lipschitz} and
-\eqref{eq:coverage-condition},
+\begin{proposition}[Coefficient stability]\label{prop:coefficient-stability}
+If $\|h-\widehat h_d\|_\infty\le\epsilon_d$ and
+$\|b_k\|_\infty\le B_k$, then
 \[
- m_q(a)\le m_q(x_c)+L_m(r_{\mathrm{cover}}+Delta_{\mathrm{task}}
- +2\epsilon_\eta)\le -\gamma+\gamma=0.
+ |c_k(h)-c_k(\widehat h_d)|\le \epsilon_d B_k.
 \]
-Thus $a$ is feasible.
-\end{proof}
-
-\begin{corollary}[Nominal-dimension independence]\label{cor:dimension}
-If $r_{\mathrm{cover}}$, $\Delta_{\mathrm{task}}$, $\epsilon_\eta$, $L_m$,
-and $\gamma$ remain controlled as $d$ changes, the sufficient condition
-\eqref{eq:coverage-condition} does not depend on $d$.
-\end{corollary}
-
-Corollary \ref{cor:dimension} is a conditional effective-dimension result, not
-an assertion that the constants are automatically stable.  The finite-library
-post-run audit verifies positive slack in all three synthetic domains (Table
-\ref{tab:coverage-audit}) under registered library quantities.  It does not
-certify a global Lipschitz constant for every policy, so the global theorem
-remains an explicit modeling condition.
-
-\begin{table}[t]
-\centering
-\caption{Post-run finite-library coverage audit.  Slack is safe radius minus
-the audited atlas/support radius.  These diagnostics were not used for target
-selection.}
-\label{tab:coverage-audit}
-\input{tables/coverage_audit}
-\end{table}
-
-\subsection{Fail-Closed Monotone Extension}
-
-Let $U$ and $L$ denote the upper and lower normalized constant policies.  The
-source-monotone test of Section \ref{sec:atlas} either replaces one atlas entry
-with an admitted endpoint or returns the base atlas unchanged.
-
-\begin{proposition}[Fail-closed identity and budget]\label{prop:failclosed}
-If neither source direction satisfies the admission threshold, the extension
-returns the base atlas exactly.  In all cases its cardinality is at most $n_0$.
+If $h$ is $L_h$-Lipschitz and $\widehat h_d$ is the regular-midpoint
+piecewise-constant reconstruction, then $\epsilon_d\le L_h/(2d)$.
+Consequently the error of the frequency-penalized coefficient is at most
+\[
+ \frac{L_hB_k}{2d(1+\kappa k)}.
+\]
+Linear interpolation from a reference grid of size $d_{\rm ref}$ has the
+analogous bound $L_h/(2d_{\rm ref})$ before deterministic rounding.
 \end{proposition}
 
-\begin{proposition}[Transferred endpoint safety]\label{prop:endpoint}
-Suppose all source tasks admit $U$, the target margin is nonincreasing in the
-zero-frequency coordinate, and $U$ is coordinate-wise maximal.  If any target
-policy is feasible, then $U$ is feasible.  A symmetric statement holds for
-the admitted lower endpoint and a nondecreasing target margin.
-\end{proposition}
+The proof applies the integral triangle inequality and the nearest-node or
+linear-interpolation error.  It justifies comparison across discretizations of
+one regular profile; it does not turn an unordered vector into a profile.
 
-\begin{proof}
-For a feasible witness $x_s$, maximality gives
-$\bar z(x_s)\le\bar z(U)$.  Target monotonicity gives
-$m_q(U)\le m_q(x_s)\le0$.  The lower-endpoint case reverses the order.
-\end{proof}
+\subsection{Finite-library coverage}
 
-The source rank statistic is only the admission rule.  Target monotonicity is
-the additional identifiability condition and is not inferred by logic alone.
+For any coordinate $\eta$ on the finite library, define the covering radius of
+$A\subset\cL$ by
+\[
+ r(A;\eta)=\max_{h\in\cL}\min_{a\in A}\|\eta(h)-\eta(a)\|_2.
+\]
 
-\subsection{Optimizer-Independent Terminal Verification}
-
-After search, the backend freezes an ordered shortlist of at most three
-policies: an objective challenger, the backend recommendation, and a
-safe-interior support policy.  Candidate $j$ is tested with fresh samples and
-error allocation $\delta_j$.  Let $E_j$ be the event that candidate $j$ is
-certified even though it is unsafe.
-
-\begin{theorem}[Ordered-shortlist safety]\label{thm:verifier}
-If $\Prob(E_j)\le\delta_j$ for every frozen candidate, then the probability
-that the first certified shortlist member is unsafe is at most
-$\sum_j\delta_j$.
+\begin{theorem}[Farthest-first finite $k$-center bound]
+\label{thm:farthest-first}
+Let $A_k$ be the $k$ centers produced by Gonzalez farthest-first from any
+declared first center, and let $r_k^\star$ be the smallest covering radius
+attainable by any $k$ library members.  Then
+\[
+ r(A_k;\eta)\le 2r_k^\star.
+\]
 \end{theorem}
 
-\begin{proof}
-Unsafe deployment implies $E_j$ for at least one candidate that could be
-selected.  The union bound yields the result; no property of the optimizer is
-used.
-\end{proof}
+The standard witness proof uses the $k$ centers and one farthest unselected
+point.  Two of these $k+1$ pairwise-separated witnesses must share an optimal
+cluster.  The implementation emits this witness certificate for every design.
 
-The challenger can replace a certified incumbent only if a one-sided upper
-confidence bound on their paired objective difference is negative.  Let
-$\delta_{\mathrm{obj}}$ bound failure of that objective upper bound.
+\subsection{Source-score uncertainty}
 
-\begin{corollary}[Joint deployment and switch bound]\label{cor:joint}
-If $\sum_j\delta_j\le\delta_{\mathrm{safe}}$, then the probability of unsafe
-deployment or an incorrect objective switch is at most
-$\delta_{\mathrm{safe}}+\delta_{\mathrm{obj}}$.
-\end{corollary}
+Let $s_{qj}$ denote either a true source objective statistic or a true source
+chance-margin statistic and $\widehat s_{qj}$ its replicated estimate.
 
-The implementation spends familywise error $0.05$ across the frozen shortlist
-and uses eight fresh paired objective replications per compared policy when an
-objective switch is attempted.  Verification samples never update the search
-posterior.
-
-For the external energy experiment, one verification replication is a fresh
-calendar window and success means satisfying the reliability requirement in
-that window.  If $K\sim\mathrm{Binomial}(n,p)$, the probability of $n$ successes
-is $p^n$.
-
-\begin{proposition}[Exact all-success certificate]\label{prop:binomial}
-For any infeasible reliability probability $p\le p_{\mathrm{req}}$,
-\begin{equation}
- \Prob_p(K=n)=p^n\le p_{\mathrm{req}}^n.
-\end{equation}
-Error spending over a frozen finite shortlist gives the corresponding
-familywise bound.
+\begin{proposition}[Separated-rank recovery]\label{prop:rank-recovery}
+Suppose $|\widehat s_{qj}-s_{qj}|\le r_q$ simultaneously over a finite source
+library.  Every pair satisfying $|s_{qj}-s_{q\ell}|>2r_q$ has the correct
+estimated order.  If the replicated mean errors are independent sub-Gaussian
+with proxies $\sigma_{qjr}$, then a union bound over tasks, profiles, and the
+two heads gives an explicit probability for the simultaneous mean-error
+event.  The same conclusion applies to the chance margin when the sample-scale
+error is bounded separately.
 \end{proposition}
 
-The registered first stage uses 80 independent windows.  At the 0.95 required
-probability and registered confidence level, the one-sided Clopper--Pearson
-rule certifies only the all-success count; the implementation equivalence is
-regression tested and Proposition \ref{prop:binomial} is machine checked from
-the binomial law.
+This result does not promise exact recovery of nearly tied ranks from three
+replications.  The sensitivity experiment therefore varies replications and
+library size rather than treating the source order as known.
 
-\subsection{Optional Cumulative Heteroscedastic Calibration}
+\subsection{Conditional source-to-target coverage}
 
-Some simulation tasks provide observable local exposures $A(x)$ and shared
-shock exposures $N(x)$.  The optional cumulative factor model is
-\begin{equation}\label{eq:hvd}
- v_C(x)=A(x)^\top\Lambda A(x)+N(x)^\top B N(x)
-       +N(x)^\top\omega+v_0,
+Let $m_q(h)$ be the target chance margin, with $m_q(h)\le0$ implying
+feasibility.  Let $\eta_q^\star$ be an ideal task coordinate and $\widehat\eta$
+the implemented coordinate.  The following statement exposes the assumption
+that source and target share useful profile geometry.
+
+\begin{assumption}[Aligned profile geometry]\label{ass:alignment}
+There exist a target safe-center profile $h_q^\star$, a library member $h_s$,
+and constants $\gamma_q,\Delta_q,\epsilon_\eta,L_q\ge0$ such that
+\begin{align*}
+ m_q(h_q^\star)&\le-\gamma_q,\\
+ \|\eta_q^\star(h_s)-\eta_q^\star(h_q^\star)\|_2&\le\Delta_q,\\
+ \|\widehat\eta(h)-\eta_q^\star(h)\|_2&\le\epsilon_\eta
+ \quad\text{for the profiles used below},\\
+ |m_q(h)-m_q(h')|&\le L_q
+ \|\eta_q^\star(h)-\eta_q^\star(h')\|_2.
+\end{align*}
+\end{assumption}
+
+\begin{theorem}[Aligned atlas coverage]\label{thm:aligned-coverage}
+Let $\atlas$ cover $\cL$ within radius $r_{n_0}$ in $\widehat\eta$.  Under
+Assumption \ref{ass:alignment}, if
+\begin{equation}\label{eq:coverage-condition}
+ L_q\bigl(r_{n_0}+\Delta_q+2\epsilon_\eta\bigr)\le\gamma_q,
 \end{equation}
-with nonnegative diagonal $\Lambda$, positive-semidefinite $B$, and projected
-nonnegative linear/floor terms.  This decomposition recovers local,
-shared-shock, linear, and floor contributions and is used only in the HVD
-diagnostic.  The primary atlas and verifier do not require it.  The distinction
-matters because better variance fit is not the same as better optimization;
-Section \ref{sec:hvd-results} reports both outcomes.
+then $\atlas$ contains a target-feasible policy.
+\end{theorem}
+
+The proof chooses the atlas member covering $h_s$, transfers the distance to
+$\eta_q^\star$ by two coordinate-error terms, and applies Lipschitz margin and
+safe depth.  Equation \eqref{eq:coverage-condition} is useful precisely because
+it can fail: frequency shifts, irregular grids, and misspecified targets raise
+$\Delta_q$ or $\epsilon_\eta$, while shallow feasible basins reduce
+$\gamma_q$.
+
+For a fixed atlas and independent held-out tasks $Q_1,\ldots,Q_T$ from a
+declared task law, let $H_t$ indicate whether the atlas contains a feasible
+policy.  Standard bounded-variable concentration gives, with probability at
+least $1-\delta$,
+\begin{equation}\label{eq:task-law-bound}
+ \E_{Q\sim\cQ}[H(Q)]
+ \ge \frac1T\sum_{t=1}^T H_t
+      -\sqrt{\frac{\log(2/\delta)}{2T}}.
+\end{equation}
+The probability refers only to the registered task law and requires the atlas
+to be frozen before the held-out tasks.  It is not a guarantee for arbitrary
+future domains.
+
+\subsection{Exact terminal verification}
+
+Fix a shortlist before verification.  Candidate $j$ receives $v_j$ fresh iid
+Bernoulli indicators $Z_{jr}=1\{Y^g_{jr}\le\tau\}$ and is certified only when
+$\sum_rZ_{jr}=v_j$ and
+\begin{equation}\label{eq:all-success-test}
+ p_0^{v_j}\le\delta_j,
+ \qquad p_0=1-\alpha,
+\end{equation}
+where $\delta_j=\delta/K_s$ in the primary protocol.
+
+\begin{theorem}[Candidate and familywise validity]\label{thm:verifier}
+For any fixed unsafe candidate with true feasibility probability $p_j<p_0$,
+\[
+ \Prob\{\text{candidate $j$ is certified}\}=p_j^{v_j}
+ \le p_0^{v_j}\le\delta_j.
+\]
+For a frozen shortlist, regardless of dependence among the candidate tests,
+\[
+ \Prob\{\text{an unsafe policy is deployed}\}
+ \le\sum_{j=1}^{K_s}\delta_j\le\delta.
+\]
+Sequentially stopping at the first certificate does not alter this union-bound
+argument because the shortlist and all budgets are fixed before testing.
+\end{theorem}
+
+For $p_0=.95$, $K_s=3$, and $\delta=.05$, the minimum all-success budget is 80
+per candidate.  Its power at true feasibility probability $p$ is $p^{80}$;
+this is only 0.017 at $p=.95$.  Validity therefore does not imply
+nonvacuity, and Section \ref{sec:results} reports both.  The exact
+Clopper--Pearson lower bound is used only for the preregistered sensitivity
+calculation \citep{ClopperPearson1934}.
+
+\subsection{Formalization boundary}
+
+The profile consistency, finite $k$-center, rank-recovery, aligned-coverage,
+task-law, binomial, and budget implications are formalized in Lean 4 without
+\texttt{sorry}, \texttt{admit}, or project-defined \texttt{axiom}.  Machine
+checking establishes that the finite conclusions follow from their premises.
+It does not establish that Assumption \ref{ass:alignment} holds in Energy or
+any unspecified target population; those questions are empirical and the
+negative experiments are retained.

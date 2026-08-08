@@ -9,8 +9,9 @@ human-readable roadmap and code-to-theory map.
 
 ## Current Claim Disposition
 
-The frozen primary claim no longer requires HVD or KG to be the optimization
-engine.  Its formal spine is:
+The final paper claim is the V2 source-scored structural initial design for
+ordered policy profiles. It does not require HVD, KG, SAASBO, historical V3
+endpoint replacement, or V69 to be the optimization engine. Its formal spine is:
 
 1. a source-only, target-label-free finite structural atlas;
 2. an explicit source-to-target geometric coverage condition in an effective
@@ -19,27 +20,18 @@ engine.  Its formal spine is:
 4. an optimizer-independent terminal verifier with separate search and
    verification budgets.
 
-`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate` is the
-headline umbrella theorem, while
+`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate` is a
+conditional umbrella theorem, while
 `SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` states the
 matching limitation: no proper frozen finite atlas can cover every possible
 held-out feasible set without a transfer/structure condition.
 
-The promoted V3 endpoint has its own implementation-matched contract in
-`SCOLHKG/Real/SourceMonotoneEnvelope.lean`.  Source sign agreement is not
-treated as target truth: endpoint safety additionally assumes the same
-monotone direction transfers to the held-out task.  If source agreement fails,
-the challenger is proved to return the original atlas exactly and preserve its
-fixed budget.  `SCOLHKG/Real/PaperMainline.lean` exposes these as
-`paper_final_v3_fail_closed_contract` and
-`paper_final_v3_admitted_endpoint_contract`.
-
-The final V69 deployment rule is covered by the three-policy theorem and
-paired objective-switch theorem in
-`SCOLHKG/Real/MethodIndependentTerminalVerification.lean`.  Their joint event
-has error at most the safety and objective allocations added together.  The
-OPSD verifier's exact all-success binomial law is formalized separately in
-`SCOLHKG/Measure/ExactBinomialCertificate.lean`.
+The final method uses no endpoint replacement. Historical V3 and V69 theorems
+remain checked development artifacts below but are not manuscript claims. The
+paper's exact all-success shortlist law is formalized in
+`SCOLHKG/Measure/ExactBinomialCertificate.lean`; profile-grid consistency,
+source-rank recovery, farthest-first coverage, and task-law calibration are in
+the files listed by `final_or_theory.md`.
 
 For a concise human-readable theorem sequence and proof arguments, see
 `final_or_theory.md`.

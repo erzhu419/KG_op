@@ -29,21 +29,18 @@
 \DeclareMathOperator{\E}{\mathbb{E}}
 \DeclareMathOperator{\Prob}{\mathbb{P}}
 \DeclareMathOperator{\Var}{\operatorname{Var}}
-\DeclareMathOperator{\Corr}{\operatorname{Corr}}
 \DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
 \newcommand{\cX}{\mathcal{X}}
-\newcommand{\cS}{\mathcal{S}}
+\newcommand{\cQ}{\mathcal{Q}}
+\newcommand{\cL}{\mathcal{L}}
 \newcommand{\cA}{\mathcal{A}}
-\newcommand{\cD}{\mathcal{D}}
 \newcommand{\cF}{\mathcal{F}}
 \newcommand{\R}{\mathbb{R}}
-\newcommand{\x}{\bm{x}}
-\newcommand{\etaHat}{\widehat{\eta}}
-\newcommand{\etaStar}{\eta^{\star}}
 \newcommand{\atlas}{\mathcal{A}_{n_0}}
 
-\title{\textbf{Transferable Structural Proposal Atlases for\\
-High-Dimensional Chance-Constrained Simulation Optimization}}
+\title{\textbf{Source-Scored Structural Initial Designs for\\
+Chance-Constrained Optimization of Ordered Policy Profiles}}
 \author{Authors omitted for review}
 \date{}
 
@@ -51,31 +48,32 @@ High-Dimensional Chance-Constrained Simulation Optimization}}
 \maketitle
 
 \begin{abstract}
-High-dimensional simulation optimization is statistically impossible under a
-tiny target budget without reusable structure.  We study chance-constrained
-problems in which source tasks are available before a new target task is
-opened.  We propose a dimension-equivariant structural proposal atlas: source
-outcomes rank normalized low-frequency policy profiles, target-label-free
-profiles provide universal support, and a maximin rule selects a small target
-initial design.  The atlas is frozen before target outcomes and can be paired
-with any online optimizer.  We prove that unconditional finite-budget coverage
-is impossible, give a conditional source-to-target coverage theorem whose
-geometry is independent of nominal dimension, and add an optimizer-independent
-terminal verifier with a familywise deployment-error bound.  In three held-out
-synthetic domains at dimension 1,000, the atlas yields independently certified
-feasible recommendations in 60 of 60 trials with three different backends,
-whereas common Sobol initial designs yield at most one.  At dimension 10,000 it
-certifies all 30 trials across budgets from 10 to 40 target search calls.  An
-external electricity-storage holdout confirms an advantage over equal-total-
-cost unstructured search, but not over a natural low-frequency grid.  The
-results identify transferable structural coverage, rather than a particular
-Bayesian-optimization backend, as the main source of sample efficiency.
+We study expensive chance-constrained simulation optimization for ordered
+policy profiles with historical source tasks.  Before any target outcome, our
+method ranks a public 64-profile library from replicated source objective and
+chance-margin outcomes, then chooses ten profiles by farthest-first coverage
+in an exact cosine-profile coordinate.  Target search and independent
+verification remain replaceable, so the contribution is an initial design,
+not a new Bayesian-optimization backend.  We establish cross-grid coordinate
+consistency, a factor-two finite-library covering guarantee, source-rank
+recovery, conditional source-to-target coverage, and exact familywise safety
+for a frozen shortlist.  In a registered randomized task law with eight
+aligned and adverse regimes, three grid resolutions, and 480 tasks per design,
+the source-scored design finds a truly feasible policy in 91.7\% of tasks and
+an independently certified one in 47.3\%, versus 37.5\% and 10.6\% for an
+outcome-free cosine maximin design.  The comparison reverses in aligned,
+irregular-grid, sparse-high-frequency, and misspecified regimes.  In a
+region-held-out electricity-reserve study, source scoring certifies 60/90 runs
+versus 70/90 for the generic design; target-only functional optimization also
+wins at equal one-target preverification cost.  Historical simulation is
+therefore justified only as an amortized, task-law-dependent design
+investment.
 \end{abstract}
 
 \medskip
 \noindent\textbf{Keywords:} simulation optimization; chance constraints;
-transfer learning; high-dimensional Bayesian optimization; independent
-verification; structural priors
+initial design; transfer learning; functional decisions; independent
+verification
 
 \input{sections/01_introduction}
 \input{sections/02_literature}
