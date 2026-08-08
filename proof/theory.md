@@ -71,7 +71,10 @@ The formal chain is deliberately conditional and modular:
    explicit `L * basisBound / (2d)` rate from the Voronoi radius. The
    implementation analytically integrates each cosine basis over each cell,
    so it is the exact continuous coefficient of the cellwise-constant
-   reconstruction rather than a midpoint approximation to the basis.
+   reconstruction rather than a midpoint approximation to the basis. A
+   separate interpolation theorem controls the actual target inverse map by
+   the convexly weighted source-node distance and yields `L/(2d_ref)` on the
+   registered regular reference grid.
 2. `Measure/SourceRankRecovery.lean` supplies a finite-profile source-mean
    concentration event; `Real/SourceRankRecovery.lean` propagates separate
    errors into the chance margin and turns a `2r` score gap into correct

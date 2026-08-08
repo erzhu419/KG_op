@@ -167,6 +167,74 @@ theorem lipschitz_sample_reconstruction_error
     |h x - h node| ≤ L * inverseDimension := by
   exact hLipschitz.trans (mul_le_mul_of_nonneg_left hNode hL)
 
+theorem lipschitz_linear_interpolation_error
+    {profile : ℝ → ℝ}
+    {x left right theta L radius reconstruction : ℝ}
+    (hThetaLower : 0 ≤ theta)
+    (hThetaUpper : theta ≤ 1)
+    (hL : 0 ≤ L)
+    (hReconstruction :
+      reconstruction = (1 - theta) * profile left + theta * profile right)
+    (hLeft : |profile x - profile left| ≤ L * |x - left|)
+    (hRight : |profile x - profile right| ≤ L * |x - right|)
+    (hWeightedDistance :
+      (1 - theta) * |x - left| + theta * |x - right| ≤ radius) :
+    |profile x - reconstruction| ≤ L * radius := by
+  have hOneMinus : 0 ≤ 1 - theta := sub_nonneg.mpr hThetaUpper
+  rw [hReconstruction]
+  have hIdentity :
+      profile x
+          - ((1 - theta) * profile left + theta * profile right)
+        = (1 - theta) * (profile x - profile left)
+          + theta * (profile x - profile right) := by ring
+  rw [hIdentity]
+  calc
+    |(1 - theta) * (profile x - profile left)
+        + theta * (profile x - profile right)|
+      ≤ |(1 - theta) * (profile x - profile left)|
+          + |theta * (profile x - profile right)| := abs_add_le _ _
+    _ = (1 - theta) * |profile x - profile left|
+          + theta * |profile x - profile right| := by
+            rw [abs_mul, abs_mul, abs_of_nonneg hOneMinus,
+              abs_of_nonneg hThetaLower]
+    _ ≤ (1 - theta) * (L * |x - left|)
+          + theta * (L * |x - right|) := by
+            exact add_le_add
+              (mul_le_mul_of_nonneg_left hLeft hOneMinus)
+              (mul_le_mul_of_nonneg_left hRight hThetaLower)
+    _ = L * ((1 - theta) * |x - left|
+          + theta * |x - right|) := by ring
+    _ ≤ L * radius := mul_le_mul_of_nonneg_left hWeightedDistance hL
+
+theorem lipschitz_linear_interpolation_inverse_grid_rate
+    {profile : ℝ → ℝ}
+    {x left right theta L reconstruction : ℝ}
+    {referenceDimension : ℕ}
+    (hReferenceDimension : 0 < referenceDimension)
+    (hThetaLower : 0 ≤ theta)
+    (hThetaUpper : theta ≤ 1)
+    (hL : 0 ≤ L)
+    (hReconstruction :
+      reconstruction = (1 - theta) * profile left + theta * profile right)
+    (hLeft : |profile x - profile left| ≤ L * |x - left|)
+    (hRight : |profile x - profile right| ≤ L * |x - right|)
+    (hRegularInterpolationRadius :
+      (1 - theta) * |x - left| + theta * |x - right|
+        ≤ 1 / (2 * (referenceDimension : ℝ))) :
+    |profile x - reconstruction| ≤ L / (2 * referenceDimension) := by
+  have hDimensionReal : (0 : ℝ) < referenceDimension := by
+    exact_mod_cast hReferenceDimension
+  have hDenominator : (2 * (referenceDimension : ℝ)) ≠ 0 := by
+    positivity
+  have hBound := lipschitz_linear_interpolation_error
+    hThetaLower hThetaUpper hL hReconstruction
+    hLeft hRight hRegularInterpolationRadius
+  calc
+    |profile x - reconstruction|
+      ≤ L * (1 / (2 * (referenceDimension : ℝ))) := hBound
+    _ = L / (2 * referenceDimension) := by
+      field_simp [hDenominator]
+
 theorem lipschitz_voronoi_coefficient_inverse_grid_rate
     {profile reconstruction basis node : ℝ → ℝ}
     {L basisBound : ℝ}

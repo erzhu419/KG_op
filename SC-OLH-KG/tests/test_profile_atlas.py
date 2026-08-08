@@ -21,6 +21,7 @@ from core.profile_atlas import (  # noqa: E402
     profile_quadrature_weights,
     profile_voronoi_edges,
     regular_profile_nodes,
+    resample_profile,
 )
 
 
@@ -91,6 +92,17 @@ def test_cosine_coordinate_is_consistent_under_grid_refinement():
         function(fine), nodes=fine, max_frequency=5,
         include_diagonal_quadratic=False)
     assert np.max(np.abs(coarse_coordinate - fine_coordinate)) < 2e-4
+
+
+def test_linear_inverse_map_converges_for_lipschitz_profile():
+    reference = regular_profile_nodes(128)
+    target = regular_profile_nodes(1000)
+    function = lambda nodes: 0.45 + 0.18 * np.cos(np.pi * nodes)
+    reconstructed = resample_profile(
+        function(reference), target, source_nodes=reference)
+    lipschitz_constant = 0.18 * np.pi
+    assert np.max(np.abs(reconstructed - function(target))) <= (
+        lipschitz_constant / (2.0 * len(reference)) + 1e-12)
 
 
 def test_percentile_ranks_use_average_ties():
