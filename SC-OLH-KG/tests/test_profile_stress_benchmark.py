@@ -221,3 +221,16 @@ def test_confirmatory_manifest_cell_counts_match_builders():
         freeze_commit=commit)) == (
             matrices["profile_stress_equal_preverification_cost"][
                 "cell_count"])
+
+
+def test_evaluation_patch_v2_freezes_full_search_credit():
+    patch = json.loads((
+        ROOT / "performance" / "manifests"
+        / "or_review_profile_evaluation_patch_v2.json"
+    ).read_text(encoding="utf-8"))
+    assert patch["method_invariance_contract"][
+        "atlas_selection_changed"] is False
+    assert patch["evaluation_changes"][
+        "equal_cost_target394_controls_receive_full_search_credit"] is True
+    assert patch["interpretation_contract"][
+        "frontend_attribution_uses_initial_design_fields"] is True

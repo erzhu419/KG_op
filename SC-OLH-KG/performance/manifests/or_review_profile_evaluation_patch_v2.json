@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "contract_id": "or_review_profile_evaluation_patch_v2",
+  "status": "frozen_not_yet_interpreted",
+  "method_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "parent_evaluation_contract": "or_review_profile_evaluation_patch_v1",
+  "evaluation_implementation_commit": "d9f0d6cf257d3cde1ceb75c1291b3bf2380c5f9b",
+  "result_run_id": "or_review_v2_evalpatch2",
+  "signature_version": "or_review_v2_evalpatch2",
+  "reason": "The equal-preverification-cost controls executed 394 target calls, but post-run feasibility and regret fields audited only the first n0=10 initial-design points. Certification used the full search, so the result mixed frontend and full-search endpoints and understated neutral target-only continuation.",
+  "method_invariance_contract": {
+    "atlas_selection_changed": false,
+    "initial_design_changed": false,
+    "target_observations_changed": false,
+    "neutral_sobol_continuation_changed": false,
+    "shortlist_changed": false,
+    "terminal_verifier_changed": false,
+    "task_seed_derivation_changed": false
+  },
+  "evaluation_changes": {
+    "initial_design_endpoints": "audit exactly the n0 frozen frontend points",
+    "full_search_endpoints": "audit all N target evaluations after neutral continuation",
+    "primary_n10_matrix_numerically_unchanged": true,
+    "equal_cost_target394_controls_receive_full_search_credit": true,
+    "all_four_profile_matrices_rerun": true,
+    "legacy_results_may_be_mixed_with_v2": false
+  },
+  "interpretation_contract": {
+    "frontend_attribution_uses_initial_design_fields": true,
+    "optimizer_and_all_in_comparisons_use_full_search_fields": true,
+    "post_outcome_method_repair": false,
+    "negative_regimes_retained": true,
+    "v1_and_patch1_results_role": "evaluation-bug audit only"
+  }
+}
