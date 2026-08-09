@@ -21,6 +21,11 @@ It may not use target outcomes, target feasibility labels, target oracle
 parameters, target optimum, safe-basin geometry, or terminal verification
 samples.
 
+The source archive is supplied exogenously. The method ranks profiles inside
+that archive; it does not retrieve related historical tasks. Synthetic source
+tasks are regime matched by the experimenter, while Energy is an explicit
+region-held-out mismatch control.
+
 The final algorithm has three interfaces:
 
 1. a source-scored initial design frozen before target outcomes;
@@ -56,7 +61,9 @@ justify treating arbitrary unordered coordinates as a profile.
 
 ## 3. Farthest-first finite-library coverage
 
-For a finite library with coordinate `eta`, let
+Selection uses the augmented coordinate `eta=(z,r_g,r_f)`, where `z` is the
+structural profile coordinate and the final two entries are source ranks. For
+a finite library with coordinate `eta`, let
 
 ```text
 r(A)=max_{h in L} min_{a in A} dist(eta(h),eta(a)).
@@ -69,6 +76,12 @@ one farthest witness are pairwise separated by the achieved radius; among any
 triangle inequality gives `r_greedy <= 2 r_optimal`. A separate zero-radius
 result covers an exact finite cover.
 
+`Real/GeometricAtlasCoverage.lean` additionally proves the missing bridge:
+if `z=project(eta)` and `project` is nonexpansive, an `eta` cover with radius
+`r` is also a structural `z` cover with radius `r`. Source ranks therefore
+influence selection, but the target transfer theorem need not assign them a
+target meaning.
+
 ## 4. Replicated source-score recovery
 
 `Measure/SourceRankRecovery.lean` proves a finite-profile sub-Gaussian union
@@ -78,23 +91,30 @@ error radii through the floored Gaussian chance-margin statistic, and proves
 that pairs separated by more than twice the uniform score error retain their
 order.
 
+For Gaussian replications, the manuscript instantiates the scale event through
+the standard Cochran identity `(R-1)S^2/sigma^2 ~ chi-square_(R-1)` and explicit
+chi-square quantiles. Lean checks the finite-sum identity, the one-Lipschitz
+variance-floor propagation, the mean/scale bad-event union, and the rank
+implication. It does not rederive the normal-to-gamma distribution law.
+
 The theorem does not assert that three replications recover near ties. Numeric
 noise proxies and residual-square radii are experiment assumptions and are
 tested by the source-replication sensitivity matrix.
 
 ## 5. Conditional source-to-target coverage
 
-Let `eta_star` be an ideal target-relevant coordinate and `eta_hat` the
-implemented coordinate. Assume:
+Let `z_star` be an ideal target structural coordinate and `z_hat` the
+structural projection of the implemented augmented coordinate. Assume:
 
-1. the selected atlas covers the finite library within `r_cover` in `eta_hat`;
-2. implemented and ideal coordinates differ by at most `epsilon_eta` on the
+1. the selected atlas covers the finite library within `r_cover` in augmented
+   `eta`, hence within the same radius in `z_hat` by nonexpansive projection;
+2. implemented and ideal structural coordinates differ by at most `epsilon_z` on the
    profiles used in the proof;
 3. a library member is within `Delta_task` of a target safe center in the ideal
    coordinate;
 4. the target chance margin is `L`-Lipschitz in the ideal coordinate;
 5. the center has safety depth `gamma`;
-6. `L*(r_cover+Delta_task+2*epsilon_eta) <= gamma`.
+6. `L*(r_cover+Delta_task+2*epsilon_z) <= gamma`.
 
 Then a selected atlas member is target feasible. The finite geometric and
 Lipschitz implications are proved in `Real/GeometricAtlasCoverage.lean`; the
@@ -107,13 +127,15 @@ depth.
 
 ## 6. Task-law calibration
 
-For a fixed atlas and independent held-out tasks from one declared task law,
-let each hit indicator lie in `[0,1]`. `Measure/TaskAtlasCoverage.lean` proves a
-sub-Gaussian mean-error bound with proxy `1/(4m)` for `m` independent tasks, and
-also an exact all-success false-coverage-claim bound. The manuscript uses
-task-level bootstrap intervals and scopes every conclusion to the registered
-randomized law. Repeated simulation seeds within one external market are not
-treated as independent domains.
+The stress experiment has eight fixed equally weighted regime strata. At each
+resolution, each stratum contributes 20 independent bounded hit indicators.
+`Measure/TaskAtlasCoverage.lean` proves both the equal-weight result and a
+weighted result for independent, non-identically distributed tasks. Assigning
+task weight `w_s/n_s` gives proxy `(1/4) sum_s w_s^2/n_s`. The deterministic
+`task_seed mod 5` category may therefore be imbalanced. The same 160 latent
+task seeds are crossed with three resolutions, so calibration is applied
+separately at each resolution; 480 pooled cells are descriptive. Repeated
+simulation seeds within one external market are not independent domains.
 
 ## 7. Exact terminal verification
 
@@ -147,6 +169,12 @@ C_amort(M) = S/M + N + V.
 
 Equal preverification cost matches `S+N`, not total cost. Every displayed
 result reports realized verification calls separately.
+
+The outcome-adjusted diagnostic also reports
+`(S/M + N + V) / p_certified`. Its break-even is
+`ceil(S / (p_A*C_0/p_0 - C_A))` when the denominator is positive. This does not
+replace a decision-maker loss over calls, unsafe deployment, abstention, and
+objective quality.
 
 ## 9. Negative and optional results
 

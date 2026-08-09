@@ -219,4 +219,99 @@ theorem taskCoverageMeanError_eq_empirical_sub_expectation
   rw [Finset.sum_sub_distrib, ← Finset.mul_sum, ← Finset.mul_sum]
   field_simp
 
+/-!
+The registered stress experiment is a fixed collection of regime strata, not
+an IID draw from one pooled law.  The weighted form below needs independence
+and boundedness only; task distributions may differ.  Setting every task in
+stratum `s` to weight `w_s / n_s` gives the usual stratified Hoeffding proxy
+`(1/4) * sum_s w_s^2 / n_s`.
+-/
+
+noncomputable def weightedTaskCoverageError
+    {Task : Type*} [Fintype Task]
+    (weight : Task → ℝ) (hit : Task → Omega → ℝ) : Omega → ℝ :=
+  finiteKernelPosteriorError
+    Finset.univ
+    (fun (_ : Unit) task => weight task)
+    (fun task omega => hit task omega - mu[hit task])
+    ()
+
+noncomputable def weightedTaskCoverageProxy
+    {Task : Type*} [Fintype Task]
+    (weight : Task → ℝ) : NNReal :=
+  finiteKernelSubGaussianParam
+    Finset.univ
+    (fun (_ : Unit) task => weight task)
+    (fun (_ : Task) => boundedResidualSquareConstant 0 1)
+    ()
+
+theorem weightedTaskCoverageError_subGaussian
+    {Task : Type*} [Fintype Task]
+    [IsProbabilityMeasure mu]
+    (weight : Task → ℝ)
+    (hit : Task → Omega → ℝ)
+    (hIndependent : iIndepFun hit mu)
+    (hMeasurable : ∀ task, AEMeasurable (hit task) mu)
+    (hUnit : ∀ task, ∀ᵐ omega ∂mu, hit task omega ∈ Set.Icc (0 : ℝ) 1) :
+    HasSubgaussianMGF
+      (weightedTaskCoverageError (mu := mu) weight hit)
+      (weightedTaskCoverageProxy weight)
+      mu := by
+  let centered : Task → Omega → ℝ :=
+    fun task omega => hit task omega - mu[hit task]
+  have hIndependentCentered : iIndepFun centered mu := by
+    have hComposed := hIndependent.comp
+      (fun task value => value - mu[hit task])
+      (by
+        intro task
+        fun_prop)
+    simpa [centered, Function.comp_def] using hComposed
+  have hEach : ∀ task ∈ (Finset.univ : Finset Task),
+      HasSubgaussianMGF
+        (centered task)
+        (boundedResidualSquareConstant 0 1)
+        mu := by
+    intro task _hTask
+    simpa [centered, boundedResidualSquareConstant] using
+      (hasSubgaussianMGF_of_mem_Icc
+        (μ := mu)
+        (X := hit task)
+        (a := (0 : ℝ))
+        (b := (1 : ℝ))
+        (hMeasurable task)
+        (hUnit task))
+  simpa [weightedTaskCoverageError, weightedTaskCoverageProxy, centered] using
+    (finiteKernelPosteriorError_subGaussian
+      (μ := mu)
+      (active := (Finset.univ : Finset Task))
+      (weight := fun (_ : Unit) task => weight task)
+      (noise := centered)
+      (c := fun (_ : Task) => boundedResidualSquareConstant 0 1)
+      (x := ())
+      hIndependentCentered
+      hEach)
+
+theorem weightedTaskCoverageError_abs_tail_le
+    {Task : Type*} [Fintype Task]
+    [IsProbabilityMeasure mu]
+    (weight : Task → ℝ)
+    (hit : Task → Omega → ℝ)
+    (radius : ℝ)
+    (hIndependent : iIndepFun hit mu)
+    (hMeasurable : ∀ task, AEMeasurable (hit task) mu)
+    (hUnit : ∀ task, ∀ᵐ omega ∂mu, hit task omega ∈ Set.Icc (0 : ℝ) 1)
+    (hRadius : 0 ≤ radius) :
+    mu.real {omega |
+      radius ≤ |weightedTaskCoverageError (mu := mu) weight hit omega|}
+      ≤ 2 * Real.exp (
+        -radius ^ 2 / (2 * (weightedTaskCoverageProxy weight : ℝ))) := by
+  exact centeredSubGaussian_abs_bad_event_le
+    (μ := mu)
+    (X := weightedTaskCoverageError (mu := mu) weight hit)
+    (c := weightedTaskCoverageProxy weight)
+    (radius := radius)
+    (weightedTaskCoverageError_subGaussian
+      (mu := mu) weight hit hIndependent hMeasurable hUnit)
+    hRadius
+
 end SCOLHKG.Measure

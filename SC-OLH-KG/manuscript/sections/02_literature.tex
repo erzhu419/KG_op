@@ -16,10 +16,23 @@ optimization more robust in large ambient spaces
 \citep{ErikssonEtAl2019,ErikssonPoloczek2021,ErikssonJankowiak2021}.  They do
 not by themselves encode that coordinates discretize one ordered function.
 Functional Bayesian optimization instead searches over function-valued
-decisions \citep{VienEtAl2018}.  Our profile coordinate is less flexible but
+decisions \citep{VienEtAl2018}.  Functional-data analysis likewise represents
+curves through common bases and treats discretization as observation of a
+function rather than unrelated coordinates \citep{RamsaySilverman2005}.  Our
+profile coordinate is less flexible but
 fully finite: it maps irregular or refined grids into a common cosine summary,
 then selects from a declared structural library.  Nominal grid dimension and
 effective profile complexity are therefore reported separately.
+
+\paragraph{Space-filling initial designs.}
+Maximin and minimax distance criteria are classical model-free devices for
+covering an experimental region \citep{JohnsonMooreYlvisaker1990}, and
+space-filling designs are standard for deterministic computer experiments
+\citep{MorrisMitchell1995}.  Gonzalez farthest-first gives a factor-two
+finite $k$-center guarantee \citep{Gonzalez1985}.  We use that algorithm on a
+finite profile library, but source ranks augment its selection metric.  The
+generic-DCT control removes those ranks and is therefore the direct
+space-filling counterfactual.
 
 \paragraph{Transfer and historical-task priors.}
 Few-shot deep kernels, hierarchical Gaussian-process priors, source ensembles,
@@ -28,9 +41,12 @@ and meta-learned acquisitions transfer different objects across tasks
 WangEtAl2024HyperBO,TighineanuEtAl2022,VolppEtAl2020,PanEtAl2024}.
 Related work also learns a search space from earlier hyperparameter tasks
 \citep{PerroneEtAl2019} or transfers optimizer rankings
-\citep{FeurerEtAl2018}.  In contrast, our source archive scores a fixed public
+\citep{FeurerEtAl2018}.  Warm-start Bayesian optimization similarly treats
+earlier evaluations as reusable information \citep{PoloczekWangFrazier2016}.
+In contrast, our source archive scores a fixed public
 library; it does not learn a target surrogate, acquisition function, or hidden
-target-specific representation.  This narrower object makes source cost and
+target-specific representation, and it assumes the archive has already been
+retrieved.  This narrower object makes source cost and
 the source-free structural counterfactual directly auditable.  We nevertheless
 compare eight native end-to-end transfer pipelines using the same source
 information and target budget.

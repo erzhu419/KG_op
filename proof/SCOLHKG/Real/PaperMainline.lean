@@ -480,7 +480,8 @@ absent.
 theorem paper_frontend_aligned_geometric_atlas_and_certificate
     {SourceRecords Proposal TargetLabels : Type}
     {X Eta Psi : Type*}
-    {Expert Z : Type*} [DecidableEq Expert] [PseudoMetricSpace Z]
+    {Expert Augmented Structural : Type*} [DecidableEq Expert]
+    [PseudoMetricSpace Augmented] [PseudoMetricSpace Structural]
     (fitProposal : SourceRecords → Proposal)
     (sourceRecords : SourceRecords)
     (leftTargetLabels rightTargetLabels : TargetLabels)
@@ -489,7 +490,9 @@ theorem paper_frontend_aligned_geometric_atlas_and_certificate
     (x y : X)
     (hEta : model.eta x = model.eta y)
     (hPsi : model.psi x = model.psi y)
-    (learnedCoordinate truthCoordinate : Expert → Z)
+    (augmentedCoordinate : Expert → Augmented)
+    (structuralCoordinate truthCoordinate : Expert → Structural)
+    (project : Augmented → Structural)
     (atlas support : Finset Expert)
     (margin : Expert → ℝ)
     (center : Expert)
@@ -497,15 +500,19 @@ theorem paper_frontend_aligned_geometric_atlas_and_certificate
     (n0 : ℕ)
     (hAtlasSize : atlas.card ≤ n0)
     (hCover :
-      CoordinateAtlasCovers learnedCoordinate atlas support coverRadius)
+      CoordinateAtlasCovers augmentedCoordinate atlas support coverRadius)
+    (hProjection :
+      CoordinateProjectionCompatible
+        augmentedCoordinate structuralCoordinate project)
+    (hProjectionNonexpansive : CoordinateProjectionNonexpansive project)
     (hApproximation :
       UniformCoordinateApproximation
-        learnedCoordinate truthCoordinate coordinateError)
+        structuralCoordinate truthCoordinate coordinateError)
     (hTruthProxy :
       TruthCoordinateSupportProxy
         truthCoordinate support center domainShift)
     (hLipschitz :
-      CoordinateMarginOneSidedLipschitz learnedCoordinate margin L)
+      CoordinateMarginOneSidedLipschitz truthCoordinate margin L)
     (hLNonnegative : 0 ≤ L)
     (hCenterDepth : margin center + safeDepth ≤ 0)
     (hDepth :
@@ -528,9 +535,9 @@ theorem paper_frontend_aligned_geometric_atlas_and_certificate
           + linearRisk risk
       ∧ trueMean + z * trueSigma ≤ tau := by
   obtain ⟨hCard, hExists⟩ :=
-    finite_aligned_geometric_lipschitz_atlas_coverage
-      hAtlasSize hCover hApproximation hTruthProxy hLipschitz
-      hLNonnegative hCenterDepth hDepth
+    finite_projected_aligned_geometric_lipschitz_atlas_coverage
+      hAtlasSize hCover hProjection hProjectionNonexpansive hApproximation
+      hTruthProxy hLipschitz hLNonnegative hCenterDepth hDepth
   refine ⟨sourceOnlyProposal_targetLabel_invariant
     fitProposal sourceRecords leftTargetLabels rightTargetLabels,
     hCard, hExists, ?_, fixedTrajectoryVarianceDecomposition risk, ?_⟩

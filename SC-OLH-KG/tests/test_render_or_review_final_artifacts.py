@@ -18,8 +18,8 @@ def test_review_renderer_uses_frozen_compact_evidence(tmp_path):
     assert manifest["contracts"][
         "reads_compact_audited_artifacts_only"
     ] is True
-    assert len(manifest["inputs"]) == 10
-    assert len(manifest["outputs"]) == 9
+    assert len(manifest["inputs"]) == 11
+    assert len(manifest["outputs"]) == 11
     primary = (manuscript / "tables/review_stress_primary.tex").read_text()
     assert "Source-scored atlas" in primary
     assert "47.3" in primary
@@ -32,3 +32,12 @@ def test_review_renderer_uses_frozen_compact_evidence(tmp_path):
     sensitivity = (manuscript / "tables/review_sensitivity.tex").read_text()
     assert "Chance level $\\alpha$" in sensitivity
     assert "Frequency penalty $\\kappa$" in sensitivity
+    outcome_cost = (
+        manuscript / "tables/review_outcome_adjusted_cost.tex"
+    ).read_text()
+    assert "Calls/success" in outcome_cost
+    assert "Equal preverification" in outcome_cost
+    assert "Source-scored atlas" in outcome_cost
+    strata = (manuscript / "tables/review_task_seed_strata.tex").read_text()
+    assert "Aligned low frequency" in strata
+    assert "Overall & 41 & 32 & 40 & 25 & 22 & 160" in strata

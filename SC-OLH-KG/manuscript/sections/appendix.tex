@@ -1,10 +1,10 @@
-\clearpage
 \appendix
 
 \section{Finite Algorithm}\label{app:algorithm}
 
-\noindent\fbox{\begin{minipage}{0.94\textwidth}
-\textbf{Algorithm 1: Source-scored structural initial design}
+\noindent\textbf{Algorithm 1: Source-scored structural initial design}
+\begingroup
+\small
 \begin{enumerate}[label=\arabic*.]
 \item Generate the declared 64-profile outcome-free library on 128 regular
 midpoints using seed 20260808.
@@ -26,7 +26,7 @@ before verification.
 \item Test each shortlist candidate on its independent all-success stream.
 Deploy the first certificate; abstain if none certifies.
 \end{enumerate}
-\end{minipage}}
+\endgroup
 
 The stable tie order is safety rank, objective rank, profile identifier for the
 first center and finite-library index for farthest-first.  Robust source
@@ -64,7 +64,8 @@ retained rather than optimized away.
 \centering
 \scriptsize
 \caption{One-factor sensitivity of the source-scored design at $d=1000$.
-Each rate aggregates eight regimes and 20 independent tasks per regime.}
+Each rate aggregates eight fixed regime strata and 20 independently seeded
+latent tasks per regime at one resolution.}
 \label{tab:sensitivity-full}
 \resizebox{0.98\textwidth}{!}{\input{tables/review_sensitivity.tex}}
 \end{table}
@@ -76,6 +77,24 @@ average about 59 seconds and the 394-call functional-SCBO arm has a median of
 about 677 seconds.  The synthetic simulator is analytic and cheap, so these
 figures measure implementation overhead rather than the time of a physical
 simulator; simulation-call accounting remains the portable comparison.
+
+\subsection{Task-seed strata audit}
+
+The registered generator includes a deterministic
+\texttt{task\_seed mod 5} cosine component.  Table
+\ref{tab:task-seed-strata} reports its realized categories rather than
+silently treating the finite sample as a balanced IID mixture.  The analysis
+uses fixed regime strata and applies concentration separately at each
+resolution.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Realized latent-category counts among the 160 independent task
+seeds.  The same seeds are crossed with all three grid resolutions.}
+\label{tab:task-seed-strata}
+\resizebox{0.92\textwidth}{!}{\input{tables/review_task_seed_strata.tex}}
+\end{table}
 
 \subsection{Native end-to-end transfer}
 
@@ -148,9 +167,9 @@ Claim & File \\
 Finite-atlas no-free-lunch & \texttt{Real/ProposalNoFreeLunch.lean} \\
 Profile-coordinate and interpolation error & \texttt{Real/ProfileCoordinateConsistency.lean} \\
 Farthest-first factor-two coverage & \texttt{Real/FarthestFirstKCenter.lean} \\
-Finite source-mean and rank recovery & \texttt{Measure/SourceRankRecovery.lean}, \texttt{Real/SourceRankRecovery.lean} \\
-Task-law coverage calibration & \texttt{Measure/TaskAtlasCoverage.lean} \\
-Aligned geometric coverage & \texttt{Real/GeometricAtlasCoverage.lean} \\
+Finite mean/scale margin and rank recovery & \texttt{Measure/SourceRankRecovery.lean}, \texttt{Real/SourceRankRecovery.lean} \\
+Stratified, non-identical task calibration & \texttt{Measure/TaskAtlasCoverage.lean} \\
+Augmented-to-structural projected coverage & \texttt{Real/GeometricAtlasCoverage.lean} \\
 Exact all-success candidate validity & \texttt{Measure/ExactBinomialCertificate.lean} \\
 Composed frontend and budget interfaces & \texttt{Real/PaperMainline.lean} \\
 \bottomrule
@@ -171,4 +190,6 @@ weights, or exported policy vectors.  Runtime artifacts are unnecessary for
 auditing the displayed results.  The method specification, randomized task
 law, Energy data contract, proof receipt, and rendering manifest are versioned
 separately so that a theory version cannot be silently paired with another
-experiment version.
+experiment version.  The review-V2 geometry, task-strata, and
+outcome-adjusted-cost supplement is hash-bound to the frozen evidence registry
+and cannot change a primary outcome.

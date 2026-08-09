@@ -16,12 +16,16 @@ and independent terminal verification.
 | source-scored structural initial design | The ten profiles selected from the shared library using replicated source ranks and farthest-first coverage |
 | generic DCT maximin | Outcome-free structured control using the same library and cosine coordinate |
 | source archive | Two source tasks by 64 profiles by three replications, or 384 calls, in the randomized primary study |
+| source retrieval | Upstream selection of related historical tasks; exogenous and outside the claimed method |
+| augmented selection coordinate | `eta=(z,r_g,r_f)`, used by source-scored farthest-first selection |
+| structural transfer coordinate | `z`, the projected profile coordinate in which target coverage is asserted |
 | target search calls | Calls used to initialize or adapt on the held-out target |
 | verification calls | Fresh terminal calls that never update search |
 | equal preverification cost | Source plus search cost is matched before verification |
 | independent certificate | Acceptance by the frozen-shortlist exact-binomial verifier |
 | false certificate | A certified deployment that is infeasible under postdecision benchmark truth |
 | penalized loss | Unconditional endpoint that retains infeasible runs in the denominator |
+| calls per certified deployment | Amortized source, search, and verification calls divided by the observed certificate-success probability; descriptive rather than a safety guarantee |
 | nominal grid dimension | Number of implementation nodes, not intrinsic profile rank |
 | registered task law | Frozen randomized distribution over eight profile regimes |
 | native transfer pipeline | A comparator retaining its own prior, initialization, and acquisition logic |
@@ -57,6 +61,9 @@ comparators. Cumulative factor-HVD is a secondary calibration diagnostic.
    threshold.
 6. Lean verifies the finite implications; source-target alignment, task-law
    membership, and iid simulator semantics remain empirical assumptions.
+7. The randomized study contains 160 independent latent task seeds crossed
+   with three resolutions. The resulting 480 paired cells are descriptive and
+   are not treated as independent task draws.
 
 ## Prohibited Claims
 
@@ -68,6 +75,8 @@ comparators. Cumulative factor-HVD is a secondary calibration diagnostic.
 - Three legacy domains establish transfer to a population of domains.
 - Zero observed false certificates proves zero deployment risk.
 - A formalized conditional theorem proves its assumptions in real systems.
+- The method discovers which historical source tasks are related to the target.
+- The augmented source-rank coordinate is itself a target semantic coordinate.
 
 ## Evidence Priority
 

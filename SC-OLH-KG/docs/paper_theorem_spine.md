@@ -1,5 +1,12 @@
 # Revised Paper Theorem Spine
 
+> Current manuscript clarification: farthest-first selection covers augmented
+> `eta=(z,r_g,r_f)`, then a nonexpansive projection supplies the structural `z`
+> cover used by target transfer. Source retrieval is exogenous. The 160 latent
+> task seeds are crossed with three resolutions, and stratified calibration is
+> applied separately by resolution. See `proof/final_or_theory.md` and
+> `or_review_v2_remediation.md` for the controlling contract.
+
 ## One object, not a module sum
 
 The revised method is described by one source-to-target decision model:

@@ -35,6 +35,13 @@ structure already has a credible physical basis, the generic maximin design is
 the safer default.  The method should abstain from a transfer claim when these
 conditions cannot be assessed.
 
+The current method begins after this assessment: a source archive is supplied
+exogenously, and the algorithm ranks profiles inside it.  It does not retrieve
+related tasks from an unrestricted historical database.  Regime-matched
+synthetic sources therefore identify the value of scoring a relevant archive,
+whereas Energy shows the cost of archive mismatch.  Source retrieval and its
+own data-acquisition cost remain separate research and operational decisions.
+
 \subsection{Source cost as a portfolio investment}
 
 The equal-preverification-cost experiment prevents an appealing but incorrect
@@ -53,6 +60,25 @@ Sobol.  This arithmetic does not include differences in simulator setup,
 wall-clock parallelism, or policy quality, and Energy shows that paying the
 archive can still be inferior.  It is a planning threshold, not a dominance
 theorem.
+
+If certified deployment rather than a target instance is the unit of value,
+let $p_A$ and $p_0$ be true-feasible certification probabilities.  The
+corresponding descriptive efficiencies are
+\[
+ \widetilde C_A(M)=\frac{S/M+C_A}{p_A},\qquad
+ \widetilde C_0=\frac{C_0}{p_0},
+\]
+and source scoring crosses a control when
+\[
+ M\ge
+ \left\lceil\frac{S}{p_A C_0/p_0-C_A}\right\rceil,
+ \qquad p_A C_0/p_0>C_A.
+\]
+This remains incomplete without decision-maker costs.  A general operational
+loss would add $c_{\rm unsafe}$ per false deployment,
+$c_{\rm abstain}$ per abstention, and $c_{\rm quality}$ times objective regret
+to simulator calls.  We report the components rather than choose those costs
+on the reader's behalf.
 
 \subsection{Verification is a separate operational decision}
 
@@ -82,15 +108,19 @@ different and unfavorable, but five geographic regions are too few for a broad
 population claim.  The native transfer audit has only three historical
 families and all methods fail on Queue.
 
-Other limitations are equally important.  Three source replications cannot
-reliably order near-tied profiles; source volume is nonmonotone; the finite
+Other limitations are equally important.  Related source tasks are assumed to
+have been supplied; source retrieval is not solved.  Three source replications
+cannot reliably order near-tied profiles; source volume is nonmonotone; the finite
 library can miss a feasible basin entirely; and source rank aggregation can
 hide task disagreement.  Objective comparisons among certified subsets are
 selection dependent.  The randomized oracle measures regret relative to a
 finite audit library, not the unknown continuous optimum.  One canonical
 functional-SCBO task failed and remains in the denominator.  Finally, the
-formal theory proves finite implications conditional on alignment and iid
-assumptions; it does not prove those assumptions from data.
+formal theory proves finite implications conditional on alignment,
+within-stratum independence, and the declared replication law; it does not
+prove those assumptions from data.  The same latent target seeds are reused
+across the three profile resolutions, so pooled 480-cell summaries are
+descriptive rather than a larger independent task sample.
 
 These boundaries argue for a restrained deployment workflow: preregister the
 library and task law, keep a source-free structured control, validate rank

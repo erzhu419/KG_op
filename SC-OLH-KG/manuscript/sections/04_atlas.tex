@@ -73,7 +73,8 @@ secondary control and are not part of the primary method.
 
 \subsection{Rank-seeded farthest-first selection}
 
-Let $z_j$ be the standardized version of $\phi(h_j)$.  Selection uses the
+Let $z_j$ be the standardized version of $\phi(h_j)$.  This 18-dimensional
+coordinate contains structural profile information only.  Selection uses the
 20-dimensional augmented coordinate
 \begin{equation}\label{eq:augmented-coordinate}
  \eta_j=(z_j,r^g_j,r^f_j)
@@ -92,6 +93,13 @@ with the lowest library index breaking an exact tie.  The primary design uses
 $n_0=10$.  Each selected 128-node profile is linearly interpolated onto the
 declared target nodes, multiplied by $L_q$, clipped, and deterministically
 rounded to an integer policy.
+
+The distinction between $z$ and $\eta$ is substantive.  Source ranks affect
+which library members are selected, but the target transfer condition in
+Section \ref{sec:theory} is stated only in structural $z$-space.  The coordinate
+projection $\pi_z(\eta)=z$ is nonexpansive under the Euclidean norms, so any
+radius achieved in augmented space is also a valid, possibly loose, radius in
+structural space.  No target analogue of a source percentile rank is assumed.
 
 \begin{table}[t]
 \centering

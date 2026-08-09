@@ -4,9 +4,10 @@
 
 The current primary mathematical object is the source-learned finite proposal
 atlas, not a particular acquisition backend.  Let `S_source` be source-only
-support, `A_n0` the frozen atlas of at most `n0` target policies, `eta` the
-learned dimension-equivariant coordinate, and `F_target` the held-out feasible
-set.  The deployed geometric contract is
+support, `A_n0` the frozen atlas of at most `n0` target policies,
+`eta=(z,r_g,r_f)` the augmented selection coordinate, `z` its structural
+projection, and `F_target` the held-out feasible set.  The deployed geometric
+contract is
 
 ```text
 L * (sourceCoverRadius + idealDomainShift
@@ -19,7 +20,10 @@ objective but is not needed for the coverage witness.  A separate fixed
 shortlist verifier controls false deployment and charges every independent
 replication outside the search budget.  The implementation-matched umbrella
 theorem is
-`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`.
+`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`.  Its
+first step proves that the Euclidean projection from `eta` to `z` is
+nonexpansive, so source ranks may influence selection without being assigned a
+target-side semantic interpretation.
 
 The condition is necessary in kind, not a proof convenience:
 `SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` constructs a
@@ -82,24 +86,24 @@ The formal chain is deliberately conditional and modular:
    ordering. The latter file proves the exact finite-sum identity for the
    implementation's `ddof=1` sample variance and propagates mean and
    residual-second-moment radii through the variance floor and square root.
-   The probabilistic scale radius still uses the registered Gaussian-square or
-   sub-exponential residual-tail contract; three replications are not treated
-   as exact variance knowledge.
+   The Gaussian instantiation uses explicit normal-mean and chi-square
+   sample-scale radii.  Lean proves floor-aware mean/scale propagation, the
+   bad-event union, and rank recovery; the classical Cochran distribution
+   identity remains an explicit external probability-law bridge.  Three
+   replications are not treated as exact variance knowledge.
 3. `FarthestFirstKCenter.lean` gives the standard factor-two finite metric
    guarantee against every no-larger competing center set from the exported
    `k+1` pairwise-separation witness. The zero-radius branch is separately
    proved optimal.
-4. Existing `GeometricAtlasCoverage.lean` converts cover radius, coordinate
-   error, source-target shift, and positive target safety depth into target
-   feasible coverage.
-5. `Measure/TaskAtlasCoverage.lean` calibrates the resulting frozen atlas on
-   independent held-out target tasks from a declared meta-distribution. The
-   result analyzer reports exact Clopper-Pearson intervals and the one-sided
-   95% lower coverage bound for every task group. The formal layer also proves
-   an arbitrary-hit-rate two-sided concentration inequality: the empirical
-   task-hit mean minus its meta-distribution expectation is sub-Gaussian with
-   parameter `1 / (4m)` for `m` independent bounded task indicators. Neither
-   quantity is extrapolated beyond that registered task distribution.
+4. `GeometricAtlasCoverage.lean` projects the augmented cover to structural
+   `z`, then converts structural-coordinate error, source-target shift, and
+   positive target safety depth into target feasible coverage.
+5. `Measure/TaskAtlasCoverage.lean` calibrates the frozen atlas on independent
+   bounded task indicators that need not be identically distributed.  Its
+   weighted theorem gives the stratified proxy `(1/4) sum_s w_s^2/n_s`.  The
+   manuscript applies this separately at each resolution to eight fixed
+   regime strata; the same 160 latent seeds crossed with three grids create
+   480 descriptive task-resolution cells, not 480 independent tasks.
 
 The theorem chain does not say that every target belongs to that
 meta-distribution or satisfies low-frequency smoothness. The preregistered

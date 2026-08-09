@@ -1,0 +1,614 @@
+{
+  "aggregate_analysis": {
+    "aligned_geometry": {
+      "design_fingerprint_root_sha256": "bd18a0541e914636bb36f15b3daba0d96e6521f039ad480c598464d4fd034ab3",
+      "design_summaries": [
+        {
+          "arm": "source_atlas",
+          "design_contains_true_feasible_rate": 1.0,
+          "minimum_latent_safe_center_distance": {
+            "count": 60,
+            "mean": 0.033162166087028135,
+            "median": 0.03286452078249569,
+            "q10": 0.03074778268254541,
+            "q90": 0.035402816737741274
+          },
+          "task_resolution_cell_count": 60,
+          "true_feasible_points_per_design": {
+            "count": 60,
+            "mean": 1.0,
+            "median": 1.0,
+            "q10": 1.0,
+            "q90": 1.0
+          }
+        },
+        {
+          "arm": "generic_dct_maximin",
+          "design_contains_true_feasible_rate": 1.0,
+          "minimum_latent_safe_center_distance": {
+            "count": 60,
+            "mean": 0.03170466041321267,
+            "median": 0.03170387786665982,
+            "q10": 0.029897764573128087,
+            "q90": 0.032749220321797244
+          },
+          "task_resolution_cell_count": 60,
+          "true_feasible_points_per_design": {
+            "count": 60,
+            "mean": 1.0,
+            "median": 1.0,
+            "q10": 1.0,
+            "q90": 1.0
+          }
+        },
+        {
+          "arm": "raw_sobol",
+          "design_contains_true_feasible_rate": 1.0,
+          "minimum_latent_safe_center_distance": {
+            "count": 60,
+            "mean": 0.02975526167906983,
+            "median": 0.02988184285420114,
+            "q10": 0.026027958781658683,
+            "q90": 0.032853024340399974
+          },
+          "task_resolution_cell_count": 60,
+          "true_feasible_points_per_design": {
+            "count": 60,
+            "mean": 9.466666666666667,
+            "median": 10.0,
+            "q10": 8.9,
+            "q90": 10.0
+          }
+        }
+      ],
+      "dimensions": [
+        200,
+        1000,
+        10000
+      ],
+      "generic_selected_profile_ids": [
+        "profile_0048",
+        "profile_0009",
+        "profile_0000",
+        "profile_0007",
+        "profile_0059",
+        "profile_0029",
+        "profile_0043",
+        "profile_0010",
+        "profile_0011",
+        "profile_0008"
+      ],
+      "independent_latent_task_seed_count": 20,
+      "mechanism_check": {
+        "interpretation": "Raw high-dimensional Sobol profiles average toward DC=0.5 with weak non-DC low-frequency energy, placing many points near the aligned target safe center.",
+        "raw_sobol_median_latent_distance_below_source": true,
+        "raw_sobol_median_non_dc_energy_below_source": true
+      },
+      "method_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+      "oracle_audit_contract": {
+        "diagnostic_changes_primary_outcomes": false,
+        "diagnostic_is_explanatory_not_inferential": true,
+        "target_hidden_center_used_after_design_freeze": true,
+        "target_hidden_center_used_by_algorithm": false
+      },
+      "point_summaries": [
+        {
+          "arm": "source_atlas",
+          "dc_coefficient": {
+            "count": 600,
+            "mean": 0.4655652999999999,
+            "median": 0.473525,
+            "q10": 0.4010621999999981,
+            "q90": 0.5313490000000012
+          },
+          "latent_safe_center_distance": {
+            "count": 600,
+            "mean": 0.08483058770421735,
+            "median": 0.08132591715328433,
+            "q10": 0.06376812207706752,
+            "q90": 0.12926177384500842
+          },
+          "method_structural_z_distance": {
+            "count": 600,
+            "mean": 8.174842734970122,
+            "median": 8.49394786894467,
+            "q10": 6.166899033415724,
+            "q90": 10.11692438469401
+          },
+          "non_dc_low_frequency_energy": {
+            "count": 600,
+            "mean": 0.20771915509507427,
+            "median": 0.22923104468699285,
+            "q10": 0.12904385207855312,
+            "q90": 0.27204526265252915
+          },
+          "point_count": 600,
+          "true_chance_margin": {
+            "count": 600,
+            "mean": 0.0394712833581363,
+            "median": 0.03596056560054694,
+            "q10": 0.01762251582288873,
+            "q90": 0.08682047203544475
+          },
+          "true_feasible_point_rate": 0.1
+        },
+        {
+          "arm": "generic_dct_maximin",
+          "dc_coefficient": {
+            "count": 600,
+            "mean": 0.5355666333333338,
+            "median": 0.5,
+            "q10": 0.27797000000000144,
+            "q90": 0.8600000000000042
+          },
+          "latent_safe_center_distance": {
+            "count": 600,
+            "mean": 0.10966420945844461,
+            "median": 0.1061960869485799,
+            "q10": 0.0802566787388963,
+            "q90": 0.16198145867071917
+          },
+          "method_structural_z_distance": {
+            "count": 600,
+            "mean": 5.449021585144611,
+            "median": 5.388943960487979,
+            "q10": 3.7466254775373393,
+            "q90": 6.793528343569488
+          },
+          "non_dc_low_frequency_energy": {
+            "count": 600,
+            "mean": 0.11475489729562506,
+            "median": 0.1000043128905757,
+            "q10": 1.1243924304053656e-16,
+            "q90": 0.2618049521651026
+          },
+          "point_count": 600,
+          "true_chance_margin": {
+            "count": 600,
+            "mean": 0.06430490511236354,
+            "median": 0.061709935970342446,
+            "q10": 0.03363281530166904,
+            "q90": 0.11553471673076261
+          },
+          "true_feasible_point_rate": 0.1
+        },
+        {
+          "arm": "raw_sobol",
+          "dc_coefficient": {
+            "count": 600,
+            "mean": 0.4999454616666667,
+            "median": 0.49999750000000054,
+            "q10": 0.4851140000000001,
+            "q90": 0.5136510000000005
+          },
+          "latent_safe_center_distance": {
+            "count": 600,
+            "mean": 0.035343114845538474,
+            "median": 0.03426923958009313,
+            "q10": 0.030633530956100122,
+            "q90": 0.0421609295055224
+          },
+          "method_structural_z_distance": {
+            "count": 600,
+            "mean": 3.2179453962126785,
+            "median": 3.14582788439208,
+            "q10": 2.8281245562035293,
+            "q90": 3.773594374397683
+          },
+          "non_dc_low_frequency_energy": {
+            "count": 600,
+            "mean": 0.029492454603838637,
+            "median": 0.02581214327502234,
+            "q10": 0.007146840726538546,
+            "q90": 0.061777393438584814
+          },
+          "point_count": 600,
+          "true_chance_margin": {
+            "count": 600,
+            "mean": -0.01001618950054257,
+            "median": -0.010914079370952408,
+            "q10": -0.014971776415772338,
+            "q90": -0.0030227153639258036
+          },
+          "true_feasible_point_rate": 0.9466666666666667
+        }
+      ],
+      "points_per_design": 10,
+      "regime": "aligned_low_frequency",
+      "source_selected_profile_ids": [
+        "profile_0054",
+        "profile_0035",
+        "profile_0044",
+        "profile_0026",
+        "profile_0059",
+        "profile_0017",
+        "profile_0023",
+        "profile_0050",
+        "profile_0047",
+        "profile_0062"
+      ],
+      "task_resolution_cell_count": 60
+    },
+    "outcome_adjusted_cost": {
+      "interpretation": "Call-only and outcome-adjusted break-even are distinct; no single loss ranking is asserted without decision-maker costs.",
+      "matrices": {
+        "equal_preverification": {
+          "rows": [
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 1050.2325581395348,
+                  "mean_calls_per_target": 564.5
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 1050.2325581395348,
+                  "mean_calls_per_target": 564.5
+                }
+              },
+              "arm": "generic_dct_maximin",
+              "certified_success_count": 86,
+              "certified_success_probability": 0.5375,
+              "mean_target_search_plus_verification_calls": 564.5,
+              "source_archive_calls": 0,
+              "task_count": 160
+            },
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 1062.5882352941176,
+                  "mean_calls_per_target": 564.5
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 1062.5882352941176,
+                  "mean_calls_per_target": 564.5
+                }
+              },
+              "arm": "natural_blockwise",
+              "certified_success_count": 85,
+              "certified_success_probability": 0.53125,
+              "mean_target_search_plus_verification_calls": 564.5,
+              "source_archive_calls": 0,
+              "task_count": 160
+            },
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 1280.0,
+                  "mean_calls_per_target": 584.0
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 1280.0,
+                  "mean_calls_per_target": 584.0
+                }
+              },
+              "arm": "random_low_frequency",
+              "certified_success_count": 73,
+              "certified_success_probability": 0.45625,
+              "mean_target_search_plus_verification_calls": 584.0,
+              "source_archive_calls": 0,
+              "task_count": 160
+            },
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 1049.3023255813953,
+                  "mean_calls_per_target": 564.0
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 1049.3023255813953,
+                  "mean_calls_per_target": 564.0
+                }
+              },
+              "arm": "raw_sobol",
+              "certified_success_count": 86,
+              "certified_success_probability": 0.5375,
+              "mean_target_search_plus_verification_calls": 564.0,
+              "source_archive_calls": 0,
+              "task_count": 160
+            },
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 1215.135135135135,
+                  "mean_calls_per_target": 562.0
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 426.37837837837833,
+                  "mean_calls_per_target": 197.2
+                }
+              },
+              "arm": "source_atlas",
+              "certified_success_count": 74,
+              "certified_success_probability": 0.4625,
+              "mean_target_search_plus_verification_calls": 178.0,
+              "source_archive_calls": 384,
+              "task_count": 160
+            }
+          ],
+          "source_outcome_adjusted_break_even_deployments": {
+            "generic_dct_maximin": 2,
+            "natural_blockwise": 2,
+            "random_low_frequency": 1,
+            "raw_sobol": 2
+          }
+        },
+        "primary_n10": {
+          "rows": [
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 2192.9411764705883,
+                  "mean_calls_per_target": 233.0
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 2192.9411764705883,
+                  "mean_calls_per_target": 233.0
+                }
+              },
+              "arm": "generic_dct_maximin",
+              "certified_success_count": 51,
+              "certified_success_probability": 0.10625,
+              "mean_target_search_plus_verification_calls": 233.0,
+              "source_archive_calls": 0,
+              "task_count": 480
+            },
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 1143.225806451613,
+                  "mean_calls_per_target": 221.5
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 1143.225806451613,
+                  "mean_calls_per_target": 221.5
+                }
+              },
+              "arm": "natural_blockwise",
+              "certified_success_count": 93,
+              "certified_success_probability": 0.19375,
+              "mean_target_search_plus_verification_calls": 221.5,
+              "source_archive_calls": 0,
+              "task_count": 480
+            },
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 575.195530726257,
+                  "mean_calls_per_target": 214.5
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 575.195530726257,
+                  "mean_calls_per_target": 214.5
+                }
+              },
+              "arm": "oracle_library_upper_bound",
+              "certified_success_count": 179,
+              "certified_success_probability": 0.3729166666666667,
+              "mean_target_search_plus_verification_calls": 214.5,
+              "source_archive_calls": 0,
+              "task_count": 480
+            },
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 1716.9230769230771,
+                  "mean_calls_per_target": 232.5
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 1716.9230769230771,
+                  "mean_calls_per_target": 232.5
+                }
+              },
+              "arm": "random_low_frequency",
+              "certified_success_count": 65,
+              "certified_success_probability": 0.13541666666666666,
+              "mean_target_search_plus_verification_calls": 232.5,
+              "source_archive_calls": 0,
+              "task_count": 480
+            },
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 709.4444444444445,
+                  "mean_calls_per_target": 212.83333333333334
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 709.4444444444445,
+                  "mean_calls_per_target": 212.83333333333334
+                }
+              },
+              "arm": "raw_sobol",
+              "certified_success_count": 144,
+              "certified_success_probability": 0.3,
+              "mean_target_search_plus_verification_calls": 212.83333333333334,
+              "source_archive_calls": 0,
+              "task_count": 480
+            },
+            {
+              "amortization": {
+                "1": {
+                  "expected_calls_per_certified_success": 1182.7312775330397,
+                  "mean_calls_per_target": 559.3333333333334
+                },
+                "20": {
+                  "expected_calls_per_certified_success": 411.34801762114546,
+                  "mean_calls_per_target": 194.53333333333336
+                }
+              },
+              "arm": "source_atlas",
+              "certified_success_count": 227,
+              "certified_success_probability": 0.47291666666666665,
+              "mean_target_search_plus_verification_calls": 175.33333333333337,
+              "source_archive_calls": 384,
+              "task_count": 480
+            }
+          ],
+          "source_outcome_adjusted_break_even_deployments": {
+            "generic_dct_maximin": 1,
+            "natural_blockwise": 2,
+            "oracle_library_upper_bound": 4,
+            "random_low_frequency": 1,
+            "raw_sobol": 3
+          }
+        }
+      },
+      "metric": "(source_archive_calls / deployments + target_search_calls + mean_verification_calls) / certified_success_probability",
+      "operational_loss_template": "simulator_calls + c_unsafe*false_deployment + c_abstain*abstention + c_quality*regret"
+    },
+    "source_archive_scope": {
+      "energy_region_holdout_is_archive_mismatch_control": true,
+      "method_ranks_profiles_within_supplied_archive": true,
+      "method_solves_source_retrieval": false,
+      "source_archive_is_supplied_exogenously": true,
+      "source_tasks_are_regime_matched_in_synthetic_stress": true
+    },
+    "task_seed_strata": {
+      "inference_contract": {
+        "pooled_480_cell_rates_are_descriptive": true,
+        "regimes_are_fixed_equal_weight_strata": true,
+        "same_latent_task_seeds_are_crossed_with_three_resolutions": true,
+        "task_law_bound_applied_separately_by_resolution": true,
+        "task_seed_mod_5_is_an_induced_latent_category": true,
+        "task_seeds_are_independent_hash_derived_streams_within_stratum": true
+      },
+      "method_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+      "overall_task_seed_mod_5_counts": [
+        41,
+        32,
+        40,
+        25,
+        22
+      ],
+      "regime_count": 8,
+      "replicates_per_regime": 20,
+      "rows": [
+        {
+          "independent_seed_count": 20,
+          "regime": "aligned_low_frequency",
+          "task_seed_mod_5_counts": [
+            3,
+            8,
+            3,
+            1,
+            5
+          ],
+          "unique_seed_count": 20
+        },
+        {
+          "independent_seed_count": 20,
+          "regime": "growing_effective_rank",
+          "task_seed_mod_5_counts": [
+            4,
+            7,
+            6,
+            3,
+            0
+          ],
+          "unique_seed_count": 20
+        },
+        {
+          "independent_seed_count": 20,
+          "regime": "frequency_support_shift",
+          "task_seed_mod_5_counts": [
+            8,
+            2,
+            3,
+            2,
+            5
+          ],
+          "unique_seed_count": 20
+        },
+        {
+          "independent_seed_count": 20,
+          "regime": "coordinate_permutation",
+          "task_seed_mod_5_counts": [
+            11,
+            0,
+            3,
+            5,
+            1
+          ],
+          "unique_seed_count": 20
+        },
+        {
+          "independent_seed_count": 20,
+          "regime": "irregular_grid",
+          "task_seed_mod_5_counts": [
+            4,
+            4,
+            6,
+            4,
+            2
+          ],
+          "unique_seed_count": 20
+        },
+        {
+          "independent_seed_count": 20,
+          "regime": "piecewise_smooth",
+          "task_seed_mod_5_counts": [
+            5,
+            4,
+            6,
+            4,
+            1
+          ],
+          "unique_seed_count": 20
+        },
+        {
+          "independent_seed_count": 20,
+          "regime": "sparse_high_frequency",
+          "task_seed_mod_5_counts": [
+            3,
+            1,
+            7,
+            4,
+            5
+          ],
+          "unique_seed_count": 20
+        },
+        {
+          "independent_seed_count": 20,
+          "regime": "misspecified_target",
+          "task_seed_mod_5_counts": [
+            3,
+            6,
+            6,
+            2,
+            3
+          ],
+          "unique_seed_count": 20
+        }
+      ]
+    }
+  },
+  "algorithmic_failure_count": 0,
+  "contract_id": "or_review_v2_supplemental_diagnostics_v1",
+  "failures": [],
+  "interpretation_contract": {
+    "frozen_primary_outcomes_unchanged": true,
+    "hidden_geometry_used_postdecision_only": true,
+    "outcome_adjusted_cost_uses_frozen_aggregate_counts": true,
+    "source_retrieval_is_out_of_scope": true,
+    "task_seed_strata_are_reported_not_rebalanced": true
+  },
+  "schema_version": 1,
+  "source_analysis": {
+    "base_evidence_registry_sha256": "104039f1b1b89684d4e61f0ab48ecaf13fd7125bee7855e2e327e852011998c0",
+    "contract_id": "or_review_v2_postdecision_reconstruction",
+    "inputs": [
+      {
+        "path": "randomized_profile_primary.json",
+        "sha256": "fbdf45a927b08e53d38809923ce78b1d922ea1beafba0da5db2106ed5b56cb71"
+      },
+      {
+        "path": "randomized_profile_equal_preverification.json",
+        "sha256": "bb9e5847207868e9f8fb5110d5261df0c3af7c6a68818d4ddab90c5906119da0"
+      },
+      {
+        "path": "final_evidence_registry_v1.json",
+        "sha256": "104039f1b1b89684d4e61f0ab48ecaf13fd7125bee7855e2e327e852011998c0"
+      }
+    ]
+  },
+  "status": "complete"
+}

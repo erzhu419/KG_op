@@ -44,6 +44,13 @@ $m=2$, $J=64$, and $R=3$, hence
 source simulator calls.  The library is constructed without source or target
 outcomes; source data only determine which members are selected.
 
+The source archive is an exogenously supplied input.  In the synthetic stress
+test its tasks are drawn from the same registered regime as the target; in the
+external study they obey the stated region-holdout rule.  The method ranks
+profiles within that supplied archive.  It does not identify, retrieve, or
+purchase related historical tasks from a larger repository.  Archive
+retrieval is therefore an upstream decision outside the claimed algorithm.
+
 Before target search, the method may use the target's ordered grid, integer
 bounds, nominal dimension, and, in declared-schema experiments, channel order.
 It may not use a target outcome, feasibility label, noise parameter, optimum,

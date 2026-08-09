@@ -7,9 +7,10 @@ truth only after deployment to compute audit metrics.
 
 \subsection{Randomized ordered-profile stress test}
 
-The primary study samples independent target tasks from eight registered
-regimes.  Table \ref{tab:stress-regimes} separates nominal grid resolution from
-latent complexity.
+The primary study uses eight fixed, equally weighted regime strata.  Within
+each stratum, independent hash-derived task-seed streams generate held-out
+latent tasks.  Table \ref{tab:stress-regimes} separates nominal grid resolution
+from latent complexity.
 
 \begin{table}[t]
 \centering
@@ -33,14 +34,23 @@ Misspecified target & 24 & Target center independent of source centers \\
 \end{tabular}
 \end{table}
 
-For each regime and $d\in\{200,1000,10000\}$, we draw 20 independent target
-tasks.  Each task is paired across six designs: source-scored, generic DCT
+For each regime, we draw 20 independently seeded latent target tasks and cross
+the same seeds with $d\in\{200,1000,10000\}$.  This gives 160 independent
+latent task seeds and 480 correlated task--resolution cells per design.  Each
+cell is paired across six designs: source-scored, generic DCT
 maximin, random low frequency, natural three-block, raw Sobol, and an
 explicitly labeled finite-library oracle.  The primary non-oracle matrix has
 $8\times3\times20\times5=2400$ cells; including the oracle gives 2880.  Every
 design uses $n_0=N=10$, so the primary comparison is a pure initial-design
 intervention.  The source-scored arm pays 384 source calls; source-free arms
 pay none.  All use the same frozen-shortlist verifier.
+
+For each synthetic target regime, the two supplied source tasks are generated
+from that same regime with the role set to source.  This is a regime-matched
+transfer experiment, not a source-retrieval experiment.  Algorithms receive
+neither target outcomes nor hidden target geometry, but the experimenter has
+already supplied a related archive.  The Energy region holdout is the explicit
+archive-mismatch control.
 
 The primary chance level is $\alpha=.05$, and task safe mass is calibrated to
 .08 on a fixed outcome-free audit library distinct from the design library.
@@ -100,9 +110,13 @@ frozen atlas.
 
 \subsection{Inference and failure accounting}
 
-For randomized profiles, an independently generated task is the generalization
-unit; paired bootstrap intervals resample tasks.  Simulation seeds within a
-fixed external market measure algorithmic repeatability, while geographic
+For randomized profiles, a latent task seed within a fixed regime and
+resolution is the generalization unit; paired bootstrap intervals resample
+these seeds.  Task-law concentration is applied separately at each resolution
+with regimes as fixed strata.  Rates pooled over all three resolutions
+describe 480 task--resolution cells but are not treated as 480 independent
+tasks.  Simulation seeds within a fixed external market measure algorithmic
+repeatability, while geographic
 regions are the conservative Energy comparison units.  We do not pool seeds
 as if they were independent domains.  Exact sign tests are Holm-adjusted within
 their registered families, but effect sizes and intervals receive priority

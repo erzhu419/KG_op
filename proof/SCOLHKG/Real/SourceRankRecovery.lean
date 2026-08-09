@@ -334,6 +334,24 @@ theorem empirical_chance_margin_error_le
     _ ≤ meanRadius + z * scaleRadius := by
           gcongr
 
+theorem floored_empirical_chance_margin_error_le
+    {estimatedMean trueMean estimatedScale trueScale scaleFloor z tau : ℝ}
+    {meanRadius scaleRadius : ℝ}
+    (hMean : |estimatedMean - trueMean| ≤ meanRadius)
+    (hScale : |estimatedScale - trueScale| ≤ scaleRadius)
+    (hFloor : scaleFloor ≤ trueScale)
+    (hZ : 0 ≤ z) :
+    |(estimatedMean + z * max estimatedScale scaleFloor - tau)
+        - (trueMean + z * trueScale - tau)|
+      ≤ meanRadius + z * scaleRadius := by
+  have hFlooredScale :
+      |max estimatedScale scaleFloor - max trueScale scaleFloor|
+        ≤ scaleRadius :=
+    (abs_max_sub_max_le_abs estimatedScale trueScale scaleFloor).trans hScale
+  have hMargin := chance_margin_error_from_mean_scale
+    (tau := tau) hMean hFlooredScale hZ
+  simpa [max_eq_left hFloor] using hMargin
+
 theorem separated_source_pair_order_recovered
     {X : Type*}
     {estimate truth : X → ℝ}

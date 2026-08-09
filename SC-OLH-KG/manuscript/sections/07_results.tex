@@ -13,9 +13,9 @@ the shared structural library on this registered mixture.
 \begin{table}[t]
 \centering
 \small
-\caption{Primary randomized profile results.  Each row contains 480
-independent tasks: eight regimes, three grid resolutions, and 20 tasks per
-regime--resolution cell.}
+\caption{Primary randomized profile results.  Each row contains 480 paired
+task--resolution cells: 160 independently seeded latent tasks crossed with
+three grid resolutions.}
 \label{tab:primary-results}
 \resizebox{\textwidth}{!}{\input{tables/review_stress_primary.tex}}
 \end{table}
@@ -24,7 +24,8 @@ regime--resolution cell.}
   \centering
   \includegraphics[width=0.90\textwidth]{review_primary.pdf}
   \caption{Aggregate feasible coverage and independently certified deployment.
-  Bars aggregate independent tasks, not repeated seeds from one domain.}
+  Bars aggregate task--resolution cells; inferential comparisons are paired
+  within resolution and do not treat the three grids as independent tasks.}
   \label{fig:primary-results}
 \end{figure}
 
@@ -66,11 +67,32 @@ The comparator is the best source-free design in that row.}
   \label{fig:regime-results}
 \end{figure}
 
-The source arm records no false certificates in 480 tasks.  Generic DCT and
+The source arm records no false certificates in 480 task--resolution cells.  Generic DCT and
 raw Sobol record three and two, respectively.  Target-only functional SCBO at
-$N=13$ certifies 15 of 480 primary tasks with three false certificates, all in
+$N=13$ certifies 15 of 480 primary cells with three false certificates, all in
 the frequency-support-shift regime.  Increasing its cosine rank does not remove
 the general coverage deficit.
+
+The aligned-low-frequency reversal has a concrete geometric explanation.
+Figure \ref{fig:aligned-geometry} reconstructs each frozen design and accesses
+the hidden target safe center only afterward.  Across the 600 design points
+per arm, raw Sobol has median latent-center distance 0.0343 and median non-DC
+low-frequency energy 0.0258, compared with 0.0813 and 0.2292 for source
+scoring.  Its pointwise true-feasible rate is 94.7\%, versus 10.0\% for both
+source and generic DCT.  High-dimensional independent coordinates average
+toward a near-constant profile with DC coefficient .5; the aligned generator's
+safe center happens to occupy that region.  The diagnostic explains the
+registered reversal but is postdecision, uses oracle geometry, and neither
+changes outcomes nor supports method selection.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.90\textwidth]{review_aligned_geometry.pdf}
+  \caption{Postdecision aligned-regime oracle audit.  Points show medians and
+  bars show 10th--90th percentiles over frozen design points.  The hidden safe
+  center was unavailable to every algorithm.}
+  \label{fig:aligned-geometry}
+\end{figure}
 
 \subsection{Schema and sensitivity}
 
@@ -147,6 +169,27 @@ calls after roughly 7 target deployments versus generic DCT, 9 versus natural
 structure, and 11 versus raw Sobol.  These are cost thresholds, not guarantees
 of outcome dominance; Energy demonstrates why the distinction matters.
 
+Table \ref{tab:outcome-adjusted-cost} also divides amortized calls by the
+observed probability of a true-feasible certificate.  In the primary matrix,
+source scoring uses 411.3 expected calls per certified deployment when the
+archive is shared by 20 targets, versus 2192.9 for generic DCT, 1143.2 for
+natural structure, and 709.4 for raw Sobol.  In the equal-preverification
+matrix the corresponding values are 426.4, 1050.2, 1062.6, and 1049.3.  This
+descriptive metric favors source reuse after roughly two targets in the latter
+comparison even though source scoring loses the single-target equal-cost
+success rate.  It conditions the economic calculation on certification
+success; it does not price unsafe deployment, abstention, or objective quality.
+
+\begin{table}[t]
+\centering
+\scriptsize
+\caption{Outcome-adjusted simulator cost.  Calls per success equal mean
+amortized all-in calls divided by the observed true-feasible certification
+rate.  Break-even compares source scoring with each source-free row.}
+\label{tab:outcome-adjusted-cost}
+\resizebox{\textwidth}{!}{\input{tables/review_outcome_adjusted_cost.tex}}
+\end{table}
+
 \subsection{External Energy result}
 
 Energy is a negative external control for source learning.  Table
@@ -194,8 +237,8 @@ rule is reported as sensitivity, not substituted after observing outcomes.
 \end{figure}
 
 In the native transfer matrix, RGPE certifies 30/60 tasks and MetaBO 28/60;
-the other six methods range from 0/60 to 14/60 (Appendix
-Table \ref{tab:native-transfer}).  All eight certify 0/20 Queue tasks.  These
+the other six methods range from 0/60 to 14/60 (Online Supplement,
+Table S4).  All eight certify 0/20 Queue tasks.  These
 results show that ordinary end-to-end transfer remains difficult, but they do
 not establish a broad SOTA ranking from three historical synthetic families.
 
@@ -203,4 +246,5 @@ Finally, cumulative factor-HVD substantially improves held-out log-variance
 RMSE and variance-shape correlation relative to pooled variance, yet does not
 improve feasible recovery, regret, false certification, or verification cost
 under matched designs.  It is therefore retained only as a calibration
-diagnostic in Appendix \ref{app:hvd}, not as a main optimization contribution.
+diagnostic in the Online Supplement, Section C, not as a main optimization
+contribution.

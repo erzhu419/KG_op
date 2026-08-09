@@ -1,0 +1,17 @@
+\begin{tabular}{llrrrr}
+\toprule
+Matrix & Design & Certified (\%) & Calls/success ($M=1$) & Calls/success ($M=20$) & Break-even $M$ \\
+\midrule
+$N=10$ primary & Generic DCT maximin & 10.6 & 2192.9 & 2192.9 & 1 \\
+$N=10$ primary & Natural blockwise & 19.4 & 1143.2 & 1143.2 & 2 \\
+$N=10$ primary & Random low frequency & 13.5 & 1716.9 & 1716.9 & 1 \\
+$N=10$ primary & Raw Sobol & 30.0 & 709.4 & 709.4 & 3 \\
+$N=10$ primary & Source-scored atlas & 47.3 & 1182.7 & 411.3 & -- \\
+\addlinespace
+Equal preverification & Generic DCT maximin & 53.8 & 1050.2 & 1050.2 & 2 \\
+Equal preverification & Natural blockwise & 53.1 & 1062.6 & 1062.6 & 2 \\
+Equal preverification & Random low frequency & 45.6 & 1280.0 & 1280.0 & 1 \\
+Equal preverification & Raw Sobol & 53.8 & 1049.3 & 1049.3 & 2 \\
+Equal preverification & Source-scored atlas & 46.2 & 1215.1 & 426.4 & -- \\
+\bottomrule
+\end{tabular}

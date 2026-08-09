@@ -64,7 +64,11 @@ def _reference_start_page(aux_text: str) -> int:
 
 
 def _source_files(manuscript_dir: Path) -> list[Path]:
-    rows = [manuscript_dir / "main.tex", manuscript_dir / "references.bib"]
+    rows = [
+        manuscript_dir / "main.tex",
+        manuscript_dir / "supplement.tex",
+        manuscript_dir / "references.bib",
+    ]
     rows.extend(sorted((manuscript_dir / "sections").glob("*.tex")))
     rows.extend(sorted((manuscript_dir / "tables").glob("*.tex")))
     return rows
@@ -81,9 +85,13 @@ def build_receipt(
     pdf = manuscript_dir / "main.pdf"
     log = manuscript_dir / "main.log"
     aux = manuscript_dir / "main.aux"
+    supplement_tex = manuscript_dir / "supplement.tex"
+    supplement_pdf = manuscript_dir / "supplement.pdf"
+    supplement_log = manuscript_dir / "supplement.log"
     failures: list[str] = []
 
     compile_result = None
+    supplement_compile_result = None
     if compile_manuscript:
         compile_result = subprocess.run(
             [
@@ -102,8 +110,35 @@ def build_receipt(
             failures.append(
                 f"latexmk returned {compile_result.returncode}"
             )
+        supplement_compile_result = subprocess.run(
+            [
+                "latexmk",
+                "-pdf",
+                "-interaction=nonstopmode",
+                "-halt-on-error",
+                "supplement.tex",
+            ],
+            cwd=manuscript_dir,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if supplement_compile_result.returncode != 0:
+            failures.append(
+                "supplement latexmk returned "
+                f"{supplement_compile_result.returncode}"
+            )
 
-    required = [main_tex, pdf, log, aux, Path(artifact_manifest_path)]
+    required = [
+        main_tex,
+        pdf,
+        log,
+        aux,
+        supplement_tex,
+        supplement_pdf,
+        supplement_log,
+        Path(artifact_manifest_path),
+    ]
     missing = [str(path) for path in required if not path.is_file()]
     if missing:
         failures.append(f"missing manuscript artifacts: {missing}")
@@ -135,14 +170,17 @@ def build_receipt(
                 )
         except ValueError as error:
             failures.append(str(error))
-    if log.is_file():
-        log_text = log.read_text(encoding="utf-8", errors="replace")
-        log_hits = [
+    for label, log_path in (("main", log), ("supplement", supplement_log)):
+        if not log_path.is_file():
+            continue
+        log_text = log_path.read_text(encoding="utf-8", errors="replace")
+        hits = [
             pattern for pattern in FORBIDDEN_LOG_PATTERNS
             if pattern in log_text
         ]
-        if log_hits:
-            failures.append(f"forbidden LaTeX log diagnostics: {log_hits}")
+        log_hits.extend(f"{label}:{pattern}" for pattern in hits)
+    if log_hits:
+        failures.append(f"forbidden LaTeX log diagnostics: {log_hits}")
 
     source_files = _source_files(manuscript_dir)
     missing_sources = [str(path) for path in source_files if not path.is_file()]
@@ -172,6 +210,11 @@ def build_receipt(
             "returncode": (
                 None if compile_result is None else compile_result.returncode
             ),
+            "supplement_returncode": (
+                None
+                if supplement_compile_result is None
+                else supplement_compile_result.returncode
+            ),
         },
         "journal_format_checks": {
             "abstract_word_count": abstract_words,
@@ -185,6 +228,19 @@ def build_receipt(
             "path": str(pdf),
             "sha256": _sha256(pdf) if pdf.is_file() else None,
             "size_bytes": pdf.stat().st_size if pdf.is_file() else None,
+        },
+        "supplement": {
+            "path": str(supplement_pdf),
+            "sha256": (
+                _sha256(supplement_pdf)
+                if supplement_pdf.is_file()
+                else None
+            ),
+            "size_bytes": (
+                supplement_pdf.stat().st_size
+                if supplement_pdf.is_file()
+                else None
+            ),
         },
         "source_files": [
             {

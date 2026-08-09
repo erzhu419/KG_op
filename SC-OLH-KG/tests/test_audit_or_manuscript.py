@@ -31,11 +31,20 @@ def test_receipt_passes_for_clean_precompiled_fixture(tmp_path):
         "\\begin{abstract}A short abstract.\\end{abstract}",
         encoding="utf-8",
     )
+    (manuscript / "supplement.tex").write_text(
+        "Supplement fixture.",
+        encoding="utf-8",
+    )
     (manuscript / "references.bib").write_text("", encoding="utf-8")
     (sections / "01.tex").write_text("text", encoding="utf-8")
     (tables / "table.tex").write_text("table", encoding="utf-8")
     (manuscript / "main.pdf").write_bytes(b"%PDF-1.4\nfixture")
     (manuscript / "main.log").write_text("clean log", encoding="utf-8")
+    (manuscript / "supplement.pdf").write_bytes(b"%PDF-1.4\nfixture")
+    (manuscript / "supplement.log").write_text(
+        "clean supplement log",
+        encoding="utf-8",
+    )
     (manuscript / "main.aux").write_text(
         r"\newlabel{page:references}{{}{12}{}{section*.1}{}}",
         encoding="utf-8",
@@ -56,3 +65,4 @@ def test_receipt_passes_for_clean_precompiled_fixture(tmp_path):
     assert receipt["journal_format_checks"][
         "body_pages_excluding_references"
     ] == 11
+    assert receipt["supplement"]["sha256"] is not None

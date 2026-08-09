@@ -1,5 +1,10 @@
 # OR Review Remediation Contract V1
 
+> Historical execution contract. Review-V2 closure, including projected
+> structural coordinates, finite mean/scale source margins, stratified task
+> units, and outcome-adjusted cost, is recorded in
+> `or_review_v2_remediation.md`.
+
 This document is an experiment and theory contract, not manuscript prose.
 No confirmatory result may be inferred from an implemented runner or a passing
 test. The manuscript remains unchanged until the frozen experiments finish.

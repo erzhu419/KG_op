@@ -1,6 +1,7 @@
 import Mathlib
 import SCOLHKG.Measure.GPKernelConfidence
 import SCOLHKG.Measure.SubGaussianConfidence
+import SCOLHKG.Real.SourceRankRecovery
 
 namespace SCOLHKG.Measure
 
@@ -94,5 +95,60 @@ theorem finite_source_profile_mean_bad_event_le_sum
         (hnoise profile hprofile))
     hradius
     htail
+
+theorem floored_margin_bad_event_subset_mean_union_scale_bad
+    (estimatedMean trueMean estimatedScale trueScale : Omega → ℝ)
+    (meanRadius scaleRadius scaleFloor z tau : ℝ)
+    (hFloor : ∀ omega, scaleFloor ≤ trueScale omega)
+    (hZ : 0 ≤ z) :
+    {omega |
+      meanRadius + z * scaleRadius <
+        |(estimatedMean omega + z * max (estimatedScale omega) scaleFloor - tau)
+          - (trueMean omega + z * trueScale omega - tau)|}
+      ⊆
+    {omega | meanRadius < |estimatedMean omega - trueMean omega|} ∪
+      {omega | scaleRadius < |estimatedScale omega - trueScale omega|} := by
+  intro omega hMargin
+  by_contra hOutside
+  simp only [Set.mem_union, Set.mem_setOf_eq, not_or, not_lt] at hOutside
+  have hBound := SCOLHKG.Real.floored_empirical_chance_margin_error_le
+    (tau := tau) hOutside.1 hOutside.2 (hFloor omega) hZ
+  exact (not_le_of_gt hMargin) hBound
+
+theorem floored_margin_bad_event_measure_le
+    [IsFiniteMeasure mu]
+    (estimatedMean trueMean estimatedScale trueScale : Omega → ℝ)
+    (meanRadius scaleRadius scaleFloor z tau deltaMean deltaScale : ℝ)
+    (hFloor : ∀ omega, scaleFloor ≤ trueScale omega)
+    (hZ : 0 ≤ z)
+    (hMeanTail :
+      mu.real {omega | meanRadius <
+        |estimatedMean omega - trueMean omega|} ≤ deltaMean)
+    (hScaleTail :
+      mu.real {omega | scaleRadius <
+        |estimatedScale omega - trueScale omega|} ≤ deltaScale) :
+    mu.real {omega |
+      meanRadius + z * scaleRadius <
+        |(estimatedMean omega + z * max (estimatedScale omega) scaleFloor - tau)
+          - (trueMean omega + z * trueScale omega - tau)|}
+      ≤ deltaMean + deltaScale := by
+  calc
+    mu.real {omega |
+        meanRadius + z * scaleRadius <
+          |(estimatedMean omega + z * max (estimatedScale omega) scaleFloor - tau)
+            - (trueMean omega + z * trueScale omega - tau)|}
+      ≤ mu.real (
+          {omega | meanRadius < |estimatedMean omega - trueMean omega|} ∪
+          {omega | scaleRadius < |estimatedScale omega - trueScale omega|}) :=
+        measureReal_mono
+          (floored_margin_bad_event_subset_mean_union_scale_bad
+            estimatedMean trueMean estimatedScale trueScale
+            meanRadius scaleRadius scaleFloor z tau hFloor hZ)
+    _ ≤ mu.real {omega | meanRadius <
+          |estimatedMean omega - trueMean omega|}
+        + mu.real {omega | scaleRadius <
+          |estimatedScale omega - trueScale omega|} :=
+        measureReal_union_le _ _
+    _ ≤ deltaMean + deltaScale := add_le_add hMeanTail hScaleTail
 
 end SCOLHKG.Measure

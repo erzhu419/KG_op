@@ -1,5 +1,9 @@
 # OR Review Final Evidence Disposition V1
 
+> Review-V2 clarification: this V1 file remains the frozen outcome record, but
+> its task-unit, source-retrieval, coordinate, and economic wording is
+> superseded by `or_review_v2_remediation.md`. No frozen outcome changed.
+
 This document freezes the scientific interpretation of the OR review
 remediation experiments. It is not manuscript prose and may not be relaxed in
 response to presentation preferences.

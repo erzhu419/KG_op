@@ -475,6 +475,71 @@ def _write_temporal_table(analysis, path):
     _write(path, lines)
 
 
+def _write_outcome_adjusted_cost_table(analysis, path):
+    lines = [
+        "\\begin{tabular}{llrrrr}",
+        "\\toprule",
+        "Matrix & Design & Certified (\\%) & Calls/success ($M=1$) & "
+        "Calls/success ($M=20$) & Break-even $M$ \\\\",
+        "\\midrule",
+    ]
+    labels = {
+        "primary_n10": "$N=10$ primary",
+        "equal_preverification": "Equal preverification",
+    }
+    for matrix_name in ("primary_n10", "equal_preverification"):
+        matrix = analysis["matrices"][matrix_name]
+        break_even = matrix["source_outcome_adjusted_break_even_deployments"]
+        for row in matrix["rows"]:
+            if row["arm"] == "oracle_library_upper_bound":
+                continue
+            m1 = row["amortization"]["1"][
+                "expected_calls_per_certified_success"
+            ]
+            m20 = row["amortization"]["20"][
+                "expected_calls_per_certified_success"
+            ]
+            crossing = (
+                "--" if row["arm"] == "source_atlas"
+                else str(break_even[row["arm"]])
+                if break_even[row["arm"]] is not None else "never"
+            )
+            lines.append(
+                f"{labels[matrix_name]} & {_latex(ARM_LABELS[row['arm']])} & "
+                f"{100 * row['certified_success_probability']:.1f} & "
+                f"{m1:.1f} & {m20:.1f} & {crossing} \\\\"
+            )
+        lines.append("\\addlinespace")
+    lines[-1] = "\\bottomrule"
+    lines.append("\\end{tabular}")
+    _write(path, lines)
+
+
+def _write_task_seed_strata_table(analysis, path):
+    lines = [
+        "\\begin{tabular}{lrrrrrr}",
+        "\\toprule",
+        "Regime & Category 0 & 1 & 2 & 3 & 4 & Total \\\\",
+        "\\midrule",
+    ]
+    for row in analysis["rows"]:
+        counts = row["task_seed_mod_5_counts"]
+        lines.append(
+            f"{_latex(REGIME_LABELS[row['regime']])} & "
+            f"{counts[0]} & {counts[1]} & {counts[2]} & {counts[3]} & "
+            f"{counts[4]} & {row['independent_seed_count']} \\\\"
+        )
+    overall = analysis["overall_task_seed_mod_5_counts"]
+    lines.extend([
+        "\\midrule",
+        f"Overall & {overall[0]} & {overall[1]} & {overall[2]} & "
+        f"{overall[3]} & {overall[4]} & {sum(overall)} \\\\",
+        "\\bottomrule",
+        "\\end{tabular}",
+    ])
+    _write(path, lines)
+
+
 def _plot_style():
     import matplotlib as mpl
 
@@ -585,7 +650,7 @@ def _plot_primary(analysis, stem):
     ax.set_yticks(y, labels)
     ax.invert_yaxis()
     ax.set_xlim(0, 100)
-    ax.set_xlabel("Rate across 480 independent target tasks (%)")
+    ax.set_xlabel("Rate across 480 paired task-resolution cells (%)")
     ax.legend(loc="lower right")
     ax.grid(axis="x", color="#E5E5E5", lw=0.5)
     _save(fig, stem)
@@ -732,6 +797,49 @@ def _plot_source_budget(analysis, stem):
     plt.close(fig)
 
 
+def _plot_aligned_geometry(analysis, stem):
+    """Postdecision explanation of raw-Sobol concentration in aligned tasks."""
+    import matplotlib.pyplot as plt
+
+    indexed = {row["arm"]: row for row in analysis["point_summaries"]}
+    order = ["source_atlas", "generic_dct_maximin", "raw_sobol"]
+    labels = [ARM_LABELS[arm] for arm in order]
+    colors = [COLORS["source"], COLORS["generic"], COLORS["sobol"]]
+    fig, axes = plt.subplots(1, 2, figsize=(7.0, 2.55))
+    fields = (
+        ("latent_safe_center_distance", "Distance to hidden safe center"),
+        ("non_dc_low_frequency_energy", "Non-DC low-frequency energy"),
+    )
+    x = np.arange(len(order))
+    for ax, (field, ylabel) in zip(axes, fields):
+        medians = np.array([indexed[arm][field]["median"] for arm in order])
+        lower = np.array([indexed[arm][field]["q10"] for arm in order])
+        upper = np.array([indexed[arm][field]["q90"] for arm in order])
+        for index, color in enumerate(colors):
+            ax.errorbar(
+                x[index],
+                medians[index],
+                yerr=np.array([[
+                    medians[index] - lower[index]
+                ], [
+                    upper[index] - medians[index]
+                ]]),
+                fmt="o",
+                color=color,
+                ecolor=color,
+                markersize=4,
+                elinewidth=1.5,
+                capsize=3,
+                zorder=3,
+            )
+        ax.set_xticks(x, labels, rotation=18, ha="right")
+        ax.set_ylabel(ylabel)
+        ax.grid(axis="y", color="#E5E5E5", lw=0.5)
+    fig.suptitle("Aligned low-frequency tasks: frozen-design oracle audit")
+    _save(fig, stem)
+    plt.close(fig)
+
+
 def render(evidence, manuscript, *, skip_figures=False):
     evidence = Path(evidence)
     manuscript = Path(manuscript)
@@ -749,12 +857,22 @@ def render(evidence, manuscript, *, skip_figures=False):
         "native_transfer",
         "functional_equal_preverification",
         "verifier_power",
+        "review_v2_supplemental_diagnostics",
     ]
     loaded = {}
     inputs = [evidence / "final_evidence_registry_v1.json"]
     for name in names:
         loaded[name], path = _analysis(evidence, name)
         inputs.append(path)
+    supplemental_path = evidence / "review_v2_supplemental_diagnostics.json"
+    supplemental_payload = _read_json(supplemental_path)
+    expected_registry_hash = _sha256(
+        evidence / "final_evidence_registry_v1.json"
+    )
+    if supplemental_payload["source_analysis"].get(
+        "base_evidence_registry_sha256"
+    ) != expected_registry_hash:
+        raise RuntimeError("review-v2 diagnostics do not bind the evidence registry")
 
     tables = manuscript / "tables"
     figures = manuscript / "figures"
@@ -782,6 +900,20 @@ def render(evidence, manuscript, *, skip_figures=False):
             loaded["verifier_power"], path),
         "review_temporal.tex": lambda path: _write_temporal_table(
             loaded["energy_temporal"], path),
+        "review_outcome_adjusted_cost.tex": lambda path:
+            _write_outcome_adjusted_cost_table(
+                loaded["review_v2_supplemental_diagnostics"][
+                    "outcome_adjusted_cost"
+                ],
+                path,
+            ),
+        "review_task_seed_strata.tex": lambda path:
+            _write_task_seed_strata_table(
+                loaded["review_v2_supplemental_diagnostics"][
+                    "task_seed_strata"
+                ],
+                path,
+            ),
     }
     for name, writer in table_calls.items():
         path = tables / name
@@ -803,6 +935,12 @@ def render(evidence, manuscript, *, skip_figures=False):
                 loaded["verifier_power"], stem),
             "review_source_budget": lambda stem: _plot_source_budget(
                 loaded["randomized_profile_sensitivity"], stem),
+            "review_aligned_geometry": lambda stem: _plot_aligned_geometry(
+                loaded["review_v2_supplemental_diagnostics"][
+                    "aligned_geometry"
+                ],
+                stem,
+            ),
         }
         for name, writer in plots.items():
             stem = figures / name
@@ -817,6 +955,8 @@ def render(evidence, manuscript, *, skip_figures=False):
             "reads_compact_audited_artifacts_only": True,
             "evidence_frozen_before_manuscript_render": True,
             "output_hashes_cover_all_generated_tables_and_figures": True,
+            "postdecision_geometry_is_bound_to_frozen_evidence": True,
+            "outcome_adjusted_cost_reports_certification_probability": True,
         },
         "evidence_registry_sha256": _sha256(
             evidence / "final_evidence_registry_v1.json"

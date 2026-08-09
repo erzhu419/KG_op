@@ -31,10 +31,10 @@ one regular profile; it does not turn an unordered vector into a profile.
 
 \subsection{Finite-library coverage}
 
-For any coordinate $\eta$ on the finite library, define the covering radius of
+For any coordinate $u$ on the finite library, define the covering radius of
 $A\subset\cL$ by
 \[
- r(A;\eta)=\max_{h\in\cL}\min_{a\in A}\|\eta(h)-\eta(a)\|_2.
+ r(A;u)=\max_{h\in\cL}\min_{a\in A}\|u(h)-u(a)\|_2.
 \]
 
 \begin{theorem}[Farthest-first finite $k$-center bound]
@@ -43,13 +43,20 @@ Let $A_k$ be the $k$ centers produced by Gonzalez farthest-first from any
 declared first center, and let $r_k^\star$ be the smallest covering radius
 attainable by any $k$ library members.  Then
 \[
- r(A_k;\eta)\le 2r_k^\star.
+ r(A_k;u)\le 2r_k^\star.
 \]
 \end{theorem}
 
 The standard witness proof uses the $k$ centers and one farthest unselected
 point.  Two of these $k+1$ pairwise-separated witnesses must share an optimal
 cluster.  The implementation emits this witness certificate for every design.
+For the implemented $\eta=(z,r^g,r^f)$, Euclidean projection gives
+\begin{equation}\label{eq:projection-cover}
+ r(A_k;z)\le r(A_k;\eta)\le2r_k^\star(\eta).
+\end{equation}
+Thus outcome ranks may alter selection, while the resulting set still has a
+checkable structural-space cover.  Equation \eqref{eq:projection-cover} does
+not assert that source ranks themselves transfer to a target.
 
 \subsection{Source-score uncertainty}
 
@@ -59,65 +66,100 @@ chance-margin statistic and $\widehat s_{qj}$ its replicated estimate.
 \begin{proposition}[Separated-rank recovery]\label{prop:rank-recovery}
 Suppose $|\widehat s_{qj}-s_{qj}|\le r_q$ simultaneously over a finite source
 library.  Every pair satisfying $|s_{qj}-s_{q\ell}|>2r_q$ has the correct
-estimated order.  If the replicated mean errors are independent sub-Gaussian
-with proxies $\sigma_{qjr}$, then a union bound over tasks, profiles, and the
-two heads gives an explicit probability for the simultaneous mean-error
-event.  The same conclusion applies to the chance margin when the sample-scale
-error is bounded separately.
+estimated order.
 \end{proposition}
 
-This result does not promise exact recovery of nearly tied ranks from three
-replications.  The sensitivity experiment therefore varies replications and
-library size rather than treating the source order as known.
+For the Gaussian simulator used in the registered synthetic study, let
+$R\ge2$, $\nu=R-1$, and let $q_{\nu,p}$ be the $p$ quantile of
+$\chi^2_\nu$.  For one profile with true mean $\mu$ and scale $\sigma$, define
+\begin{align}
+ r_\mu(\delta_\mu)
+   &=\sigma\sqrt{\frac{2\log(2/\delta_\mu)}{R}},\\
+ r_\sigma(\delta_\sigma)
+   &=\sigma\max\left\{
+       1-\sqrt{\frac{q_{\nu,\delta_\sigma/2}}{\nu}},
+       \sqrt{\frac{q_{\nu,1-\delta_\sigma/2}}{\nu}}-1
+     \right\}.
+\end{align}
+The normal mean tail and Cochran identity
+$(R-1)S^2/\sigma^2\sim\chi^2_{R-1}$ imply, with probability at least
+$1-\delta_\mu-\delta_\sigma$,
+\begin{equation}\label{eq:finite-source-margin}
+ \left|\widehat m-m\right|
+ \le r_\mu(\delta_\mu)+z_{1-\alpha}r_\sigma(\delta_\sigma),
+ \qquad \sigma\ge10^{-3}.
+\end{equation}
+The variance floor is harmless here because $a\mapsto\max\{a,10^{-3}\}$ is
+one-Lipschitz.  Allocating the two tail probabilities across the finite set of
+tasks, profiles, and score heads gives the simultaneous radius required by
+Proposition \ref{prop:rank-recovery}.  This result does not promise exact
+recovery of nearly tied ranks from three replications; the sensitivity matrix
+therefore varies replications and library size rather than treating source
+order as known.  Lean checks the finite-sum variance identity, floor-aware
+error propagation, bad-event union, and rank implication.  The normal and
+chi-square sampling laws are the standard external distributional identities
+used to instantiate those checked events \citep{Cochran1934}.
 
 \subsection{Conditional source-to-target coverage}
 
 Let $m_q(h)$ be the target chance margin, with $m_q(h)\le0$ implying
-feasibility.  Let $\eta_q^\star$ be an ideal task coordinate and $\widehat\eta$
-the implemented coordinate.  The following statement exposes the assumption
-that source and target share useful profile geometry.
+feasibility.  Let $z_q^\star$ be an ideal target structural coordinate and
+$\widehat z$ the implemented structural projection of $\eta$.  The following
+statement exposes the assumption that source and target share useful profile
+geometry; it imposes no target interpretation on $(r^g,r^f)$.
 
 \begin{assumption}[Aligned profile geometry]\label{ass:alignment}
 There exist a target safe-center profile $h_q^\star$, a library member $h_s$,
 and constants $\gamma_q,\Delta_q,\epsilon_\eta,L_q\ge0$ such that
 \begin{align*}
  m_q(h_q^\star)&\le-\gamma_q,\\
- \|\eta_q^\star(h_s)-\eta_q^\star(h_q^\star)\|_2&\le\Delta_q,\\
- \|\widehat\eta(h)-\eta_q^\star(h)\|_2&\le\epsilon_\eta
+ \|z_q^\star(h_s)-z_q^\star(h_q^\star)\|_2&\le\Delta_q,\\
+ \|\widehat z(h)-z_q^\star(h)\|_2&\le\epsilon_z
  \quad\text{for the profiles used below},\\
  |m_q(h)-m_q(h')|&\le L_q
- \|\eta_q^\star(h)-\eta_q^\star(h')\|_2.
+ \|z_q^\star(h)-z_q^\star(h')\|_2.
 \end{align*}
 \end{assumption}
 
 \begin{theorem}[Aligned atlas coverage]\label{thm:aligned-coverage}
-Let $\atlas$ cover $\cL$ within radius $r_{n_0}$ in $\widehat\eta$.  Under
-Assumption \ref{ass:alignment}, if
+Let $\atlas$ cover $\cL$ within radius $r_{n_0}^\eta$ in augmented $\eta$.
+By \eqref{eq:projection-cover} it covers the same support within that radius in
+$\widehat z$.  Under Assumption \ref{ass:alignment}, if
 \begin{equation}\label{eq:coverage-condition}
- L_q\bigl(r_{n_0}+\Delta_q+2\epsilon_\eta\bigr)\le\gamma_q,
+ L_q\bigl(r_{n_0}^\eta+\Delta_q+2\epsilon_z\bigr)\le\gamma_q,
 \end{equation}
 then $\atlas$ contains a target-feasible policy.
 \end{theorem}
 
-The proof chooses the atlas member covering $h_s$, transfers the distance to
-$\eta_q^\star$ by two coordinate-error terms, and applies Lipschitz margin and
+The proof projects the augmented cover to $\widehat z$, chooses the atlas
+member covering $h_s$, transfers the distance to $z_q^\star$ by two
+coordinate-error terms, and applies Lipschitz margin and
 safe depth.  Equation \eqref{eq:coverage-condition} is useful precisely because
 it can fail: frequency shifts, irregular grids, and misspecified targets raise
-$\Delta_q$ or $\epsilon_\eta$, while shallow feasible basins reduce
+$\Delta_q$ or $\epsilon_z$, while shallow feasible basins reduce
 $\gamma_q$.
 
-For a fixed atlas and independent held-out tasks $Q_1,\ldots,Q_T$ from a
-declared task law, let $H_t$ indicate whether the atlas contains a feasible
-policy.  Standard bounded-variable concentration gives, with probability at
-least $1-\delta$,
+The confirmatory generator uses eight fixed, equally weighted regime strata,
+not one pooled IID law.  At a fixed resolution $d$, let stratum $s$ have
+$n_s$ independent held-out task seeds, weight $w_s$ with $\sum_sw_s=1$, and
+hit indicators $H_{si}\in[0,1]$.  Weighted Hoeffding concentration, which
+does not require identical distributions across strata, gives with probability
+at least $1-\delta$,
 \begin{equation}\label{eq:task-law-bound}
- \E_{Q\sim\cQ}[H(Q)]
- \ge \frac1T\sum_{t=1}^T H_t
-      -\sqrt{\frac{\log(2/\delta)}{2T}}.
+ \sum_s w_s\E[H_s]
+ \ge \sum_s\frac{w_s}{n_s}\sum_{i=1}^{n_s}H_{si}
+      -\sqrt{\frac{\log(2/\delta)}{2}
+                    \sum_s\frac{w_s^2}{n_s}}.
 \end{equation}
-The probability refers only to the registered task law and requires the atlas
-to be frozen before the held-out tasks.  It is not a guarantee for arbitrary
-future domains.
+Here $w_s=1/8$ and $n_s=20$.  The deterministic component
+\texttt{task\_seed mod 5} is an induced latent category whose realized counts
+need not be balanced; independence and boundedness, rather than identical
+distributions, are sufficient.  The same 160 latent task seeds are crossed
+with all three resolutions, so \eqref{eq:task-law-bound} is applied separately
+at each $d$; the pooled 480-cell rate is descriptive.  The probability refers
+only to a prospective repetition of the registered stratified generator and
+requires the atlas to be frozen before held-out tasks.  It is not a guarantee
+for arbitrary future domains.
 
 \subsection{Exact terminal verification}
 

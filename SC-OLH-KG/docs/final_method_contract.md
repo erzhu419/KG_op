@@ -2,121 +2,108 @@
 
 ## Frozen identity
 
-The primary Operations Research track is frozen as
+The final Operations Research method is the V2 source-scored structural
+initial design for chance-constrained ordered policy profiles:
 
 ```text
-source-only LODO structural proposal
-  -> canonical SAASBO target adaptation
-  -> method-independent V69 deployment verification.
+exogenously supplied replicated source archive
+  -> source scores on a public 64-profile library
+  -> 10-point augmented-coordinate farthest-first design
+  -> replaceable target backend
+  -> independent frozen-shortlist verifier.
 ```
 
-The novel object is the transferable front end, not the BoTorch backend.  KG,
-SC-V69, Thompson sampling, and Stacked GP remain backend ablations.  The
-manifold and Transformer encoders remain representation-background rows.
+The primary attribution experiment sets `N=n0=10`, so there is no sequential
+backend. KG, SAASBO, SCBO, Thompson sampling, and historical V51--V69 policies
+are comparisons or development artifacts, not the claimed method.
 
-The executable identifier is `or_transfer_frontend_saas_v1`, defined in
-`performance/paper_method_contract.py`.  A result may use that identifier only
-when it has:
-
-- `risk_objective_atlas` with the `low_frequency_only` structural profile;
-- 384 source simulator calls from two non-target domains;
-- a frozen `n0=10` target design;
-- canonical per-iteration SAASBO through target search call 13; and
-- the V69 `80/128/128` independent verifier plus the paired objective
-  incumbent guard.
-
-Search and verification costs are different statistical stages and must never
-be collapsed into one unlabeled evaluation budget.
-
-Every paired result cell must also match a hash of the complete target problem
-contract, including the FactorShock shared-shock scale. Matching proposal,
-archive, and verifier fingerprints alone is insufficient.
+The executable method specification is
+`performance/manifests/profile_atlas_v2_method_spec.json`. Frozen evidence is
+indexed by `paper_artifacts/or_review/final_evidence_registry_v1.json`.
 
 ## Information contract
 
-The primary experiment is **descriptor-conditional LODO**, not domain-blind
-meta-learning.  Before target outcomes are observed, the method may use:
+The profile library is generated without any source or target outcome. Source
+records contain two supplied tasks, 64 library profiles, and three ordinary
+replications per task, for 384 source calls. The method may use target grid,
+bounds, dimension, and declared ordering before the target opens. It may not
+use target outcomes, target feasibility labels, hidden noise, optimum,
+safe-center geometry, or verification responses.
 
-- the held-out task-family identifier;
-- policy dimension and integer bounds;
-- an unlabeled policy/state exposure schema; and
-- simulator input/output schemas.
+Source-task retrieval is not part of the algorithm. Synthetic source tasks are
+regime matched by the experimenter. Energy excludes the held-out target region
+from its source archive and is the archive-mismatch control. The primary
+source aggregation is domain blind; descriptor-conditioned weighting is an
+unpromoted control.
 
-It may not use target objectives, target constraint observations, an analytic
-target optimum, target chance-margin labels, or terminal verification
-responses during proposal construction, search, or shortlist construction.
-Every baseline in the descriptor-conditional stratum receives the same
-descriptors.
+## Finite selection rule
 
-A separate domain-blind stress test removes the task-family identifier.  It is
-reported separately rather than being used to relabel the primary evidence.
+For each profile, `z` is the standardized 18-dimensional exact cosine
+coordinate with frequencies 0--8 and diagonal squares. Source objective and
+Gaussian chance-margin percentile ranks are `r_f` and `r_g`. The algorithm
+selects in
+
+```text
+eta = (z, r_g, r_f).
+```
+
+The first center minimizes `.5*r_g + .5*r_f`; nine more centers use Gonzalez
+farthest-first with stable index tie breaking. Profiles are linearly
+interpolated, clipped, and deterministically rounded on the target grid.
+
+## Theory contract
+
+Selection coverage is measured in augmented `eta`, while target transfer is
+measured only in structural `z`. The projection `eta -> z` is nonexpansive, so
+an augmented cover of radius `r` is also a structural cover of radius at most
+`r`. If implemented structural-coordinate error is `epsilon_z`, source-target
+safe-support shift is `Delta`, chance margin is `L`-Lipschitz in the ideal
+structural coordinate, and safe depth is `gamma`, then
+
+```text
+L * (r + Delta + 2*epsilon_z) <= gamma
+```
+
+forces a selected feasible profile. This is conditional and nominal raw grid
+dimension is absent only because the ordered profile representation is an
+assumption.
+
+For Gaussian source replications, explicit normal-mean and chi-square
+sample-scale radii bound the floored source chance-margin error. Separated
+score gaps larger than twice the uniform radius retain their order. The Lean
+bridge proves finite-sum variance algebra, floor-aware propagation, event
+union, projected geometric coverage, and rank recovery. Classical Gaussian and
+Cochran distribution identities remain explicit external probability laws.
+
+## Task and cost units
+
+The randomized study has eight fixed equally weighted regimes and 20
+independently seeded latent tasks per regime. The same 160 seeds are crossed
+with dimensions 200, 1000, and 10000. The resulting 480 task-resolution cells
+per design are descriptive; inference and stratified concentration are applied
+separately by resolution.
+
+Every result separates source calls `S`, target-search calls `N`, and fresh
+verification calls `V`:
+
+```text
+C_all = S + N + V
+C_amort(M) = S/M + N + V.
+```
+
+Outcome-adjusted efficiency additionally divides by true-feasible
+certification probability. No scalar operational loss is asserted without
+decision-maker costs for unsafe deployment, abstention, and objective quality.
 
 ## Claim boundary
 
-The completed factorial supports one primary empirical claim: the frozen
-source proposal is the dominant cause of held-out feasible-basin coverage at
-`d=1000, N_search=13`.  It does not support describing four structural
-switches as coequal causes, nor does it establish KG as the strongest online
-backend.
+The supported claim is conditional: source outcomes can improve a tiny
+structural initial design when the supplied source archive and target share
+useful ordered-profile geometry. The method is not a generic high-dimensional
+optimizer and does not solve source retrieval. Registered adverse regimes,
+the Energy reversal, equal-preverification loss, and all algorithm failures
+remain in the evidence.
 
-The corrected provider-coordinate cumulative HVD passed its variance-shape
-audit but failed its operational promotion gate.  Across 60 paired cells it
-improved variance RMSE and shape correlation in every domain, while feasibility
-and regret were unchanged and verification cost increased in Inventory and
-Queue.  It is therefore an optional risk diagnostic, not part of the primary
-optimizer or a coequal contribution.  The algebra and implementation remain
-available as a falsifiable extension for domains where cumulative risk shape
-changes deployment decisions.
-
-## Proposal coverage theorem
-
-The deployed `risk_objective_atlas` is a deterministic finite atlas: its
-target-seed replications share one frozen design fingerprint.  Therefore its
-main implementation bridge is
-`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`, not
-an IID-draw or raw cross-domain threshold claim.  Let `psi` be the frozen
-dimension-equivariant coordinate, `epsilon_cover` the maximin atlas radius on
-the source-consensus plus universal structural support, `epsilon_psi` its
-uniform approximation error to an ideal transferable coordinate,
-`delta_domain` the ideal-coordinate source/target support shift, `L` a
-chance-margin Lipschitz bound in `psi`, and `d_safe` the held-out safe-center
-depth. If
-
-```text
-L * (epsilon_cover + delta_domain + 2 epsilon_psi) <= d_safe,
-```
-
-then the atlas contains a feasible policy. The atlas has at most `n0` members,
-and nominal policy dimension does not enter this implication. No independence
-is assumed between atlas members.
-
-A normalized rank-alignment theorem was also formalized, then rejected as the
-headline bridge because its source-only finite-sample bound was vacuous in all
-three `d=1000` held-out domains. This negative audit is retained rather than
-silently choosing a theorem after seeing target results.
-
-`SCOLHKG.Real.paper_frontend_atlas_coverage_and_certificate` remains a raw
-feasible-mass special case for domains where absolute feasibility is
-transferable.  It is not used to explain the headline synthetic result.
-
-For an optional genuinely randomized proposal backend,
-`SCOLHKG.Real.paper_frontend_transfer_coverage_and_certificate` separately
-proves the IID corollary
-
-```text
-1 - (1 - p_lower)^n0.
-```
-
-`SCOLHKG.Measure.iid_at_least_one_hit_probability` proves that finite-product
-identity in mathlib, but the deterministic paper results do not use it.
-The paper must report the source-only atlas radius and inner-LODO coordinate
-error before target observations, then audit domain shift, safe depth, and a
-justified Lipschitz upper bound only after the decision is frozen. A finite
-candidate-library safe radius is diagnostic evidence, not a substitute for the
-global Lipschitz condition.
-
-There is no honest assumption-free replacement:
-`SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` proves that any
-proper finite target-label-free atlas can miss a nonempty held-out feasible
-set. The explicit transfer geometry is therefore the necessary identifiability
-contract behind the low target budget.
+Cumulative factor-HVD improves variance calibration but not matched feasible
+recovery, regret, false certification, or verification cost. It remains an
+appendix diagnostic, not a coequal optimization contribution.

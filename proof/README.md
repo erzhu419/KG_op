@@ -13,9 +13,11 @@ The final paper claim is the V2 source-scored structural initial design for
 ordered policy profiles. It does not require HVD, KG, SAASBO, historical V3
 endpoint replacement, or V69 to be the optimization engine. Its formal spine is:
 
-1. a source-only, target-label-free finite structural atlas;
-2. an explicit source-to-target geometric coverage condition in an effective
-   coordinate whose dimension does not grow with the raw policy dimension;
+1. a finite structural atlas scored from an exogenously supplied source
+   archive and frozen before target labels;
+2. augmented-coordinate farthest-first selection followed by a nonexpansive
+   projection to the structural coordinate used by the source-to-target
+   coverage condition;
 3. a replaceable online backend; and
 4. an optimizer-independent terminal verifier with separate search and
    verification budgets.
@@ -30,7 +32,8 @@ The final method uses no endpoint replacement. Historical V3 and V69 theorems
 remain checked development artifacts below but are not manuscript claims. The
 paper's exact all-success shortlist law is formalized in
 `SCOLHKG/Measure/ExactBinomialCertificate.lean`; profile-grid consistency,
-source-rank recovery, farthest-first coverage, and task-law calibration are in
+floor-aware source mean/scale rank recovery, farthest-first coverage, and
+stratified non-identical task-law calibration are in
 the files listed by `final_or_theory.md`.
 
 For a concise human-readable theorem sequence and proof arguments, see
