@@ -56,12 +56,12 @@ interpolated, clipped, and deterministically rounded on the target grid.
 Selection coverage is measured in augmented `eta`, while target transfer is
 measured only in structural `z`. The projection `eta -> z` is nonexpansive, so
 an augmented cover of radius `r` is also a structural cover of radius at most
-`r`. If implemented structural-coordinate error is `epsilon_z`, source-target
+`r`. If implemented projected structural-coordinate error is `epsilon_eta`, source-target
 safe-support shift is `Delta`, chance margin is `L`-Lipschitz in the ideal
 structural coordinate, and safe depth is `gamma`, then
 
 ```text
-L * (r + Delta + 2*epsilon_z) <= gamma
+L * (r + Delta + 2*epsilon_eta) <= gamma
 ```
 
 forces a selected feasible profile. This is conditional and nominal raw grid

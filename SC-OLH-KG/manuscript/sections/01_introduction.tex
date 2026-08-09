@@ -36,17 +36,29 @@ This construction separates three decisions that are often conflated.  The
 frontend decides where target search starts.  A replaceable backend may add
 target evaluations.  A frozen ordered shortlist is then tested on fresh
 replications by an optimizer-independent verifier.  Figure
-\ref{fig:method-overview} shows the information flow.  Verification outcomes
-never return to search.
+\ref{fig:method-overview} summarizes the central change in viewpoint: the
+method does not confront the large discretized coordinate space solely with a
+more elaborate acquisition rule.  It first uses the ordered functional
+interpretation to fix a public structural profile class, then uses historical
+simulations only to rank and diversify the initial design.  Verification
+outcomes never return to search.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.98\textwidth]{review_method.pdf}
-  \caption{Information contract.  A public profile library and replicated
-  source outcomes determine the initial design before target outcomes exist.
-  Target search and fresh terminal verification are separate interfaces.}
+  \includegraphics[width=\textwidth]{figure1_profile_space.png}
+  \caption{From high-dimensional coordinates to ordered profile-space search.
+  A discretized vector is treated as an ordered policy profile and represented
+  by low-frequency cosine coefficients.  A public, outcome-free structural
+  library and its coordinate are fixed before target outcomes.  Replicated
+  source outcomes rank existing profiles but do not construct the
+  representation.  Rank-seeded farthest-first selection chooses a diverse
+  ten-profile initial design.  A replaceable backend may add target
+  evaluations, after which fresh independent samples verify a frozen
+  shortlist.  Historical simulation therefore supplies reusable
+  experimental-design information rather than target-oracle information.}
   \label{fig:method-overview}
 \end{figure}
+\FloatBarrier
 
 Our contributions are fourfold.
 

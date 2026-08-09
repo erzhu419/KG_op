@@ -108,13 +108,13 @@ structural projection of the implemented augmented coordinate. Assume:
 
 1. the selected atlas covers the finite library within `r_cover` in augmented
    `eta`, hence within the same radius in `z_hat` by nonexpansive projection;
-2. implemented and ideal structural coordinates differ by at most `epsilon_z` on the
+2. implemented and ideal structural coordinates differ by at most `epsilon_eta` on the
    profiles used in the proof;
 3. a library member is within `Delta_task` of a target safe center in the ideal
    coordinate;
 4. the target chance margin is `L`-Lipschitz in the ideal coordinate;
 5. the center has safety depth `gamma`;
-6. `L*(r_cover+Delta_task+2*epsilon_z) <= gamma`.
+6. `L*(r_cover+Delta_task+2*epsilon_eta) <= gamma`.
 
 Then a selected atlas member is target feasible. The finite geometric and
 Lipschitz implications are proved in `Real/GeometricAtlasCoverage.lean`; the

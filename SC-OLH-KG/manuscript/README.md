@@ -41,6 +41,11 @@ The final renderer reads only compact audited analyses under
 model weights, or raw policy vectors. Input and output hashes are recorded in
 `review_artifact_manifest.json`.
 
+The two explanatory illustrations `figure1_profile_space.png` and
+`figure2_atlas_coverage.png` contain no empirical result. They are versioned
+editorial artifacts whose hashes are recorded directly in the manuscript
+compilation receipt.
+
 The journal-facing article is `main.pdf`. Detailed algorithms, sensitivity
 tables, task-seed strata, native transfer results, HVD diagnostics, and the
 Lean file map are retained in the separately built `supplement.pdf`; they are

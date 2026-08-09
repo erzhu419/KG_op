@@ -114,7 +114,7 @@ and constants $\gamma_q,\Delta_q,\epsilon_\eta,L_q\ge0$ such that
 \begin{align*}
  m_q(h_q^\star)&\le-\gamma_q,\\
  \|z_q^\star(h_s)-z_q^\star(h_q^\star)\|_2&\le\Delta_q,\\
- \|\widehat z(h)-z_q^\star(h)\|_2&\le\epsilon_z
+ \|\widehat z(h)-z_q^\star(h)\|_2&\le\epsilon_\eta
  \quad\text{for the profiles used below},\\
  |m_q(h)-m_q(h')|&\le L_q
  \|z_q^\star(h)-z_q^\star(h')\|_2.
@@ -126,7 +126,7 @@ Let $\atlas$ cover $\cL$ within radius $r_{n_0}^\eta$ in augmented $\eta$.
 By \eqref{eq:projection-cover} it covers the same support within that radius in
 $\widehat z$.  Under Assumption \ref{ass:alignment}, if
 \begin{equation}\label{eq:coverage-condition}
- L_q\bigl(r_{n_0}^\eta+\Delta_q+2\epsilon_z\bigr)\le\gamma_q,
+ L_q\bigl(r_{n_0}^\eta+\Delta_q+2\epsilon_\eta\bigr)\le\gamma_q,
 \end{equation}
 then $\atlas$ contains a target-feasible policy.
 \end{theorem}
@@ -136,8 +136,33 @@ member covering $h_s$, transfers the distance to $z_q^\star$ by two
 coordinate-error terms, and applies Lipschitz margin and
 safe depth.  Equation \eqref{eq:coverage-condition} is useful precisely because
 it can fail: frequency shifts, irregular grids, and misspecified targets raise
-$\Delta_q$ or $\epsilon_z$, while shallow feasible basins reduce
+$\Delta_q$ or $\epsilon_\eta$, while shallow feasible basins reduce
 $\gamma_q$.
+
+Figure \ref{fig:coverage-geometry} gives the geometric interpretation.  The
+symbol $\epsilon_\eta$ denotes error between the implemented projected
+structural coordinate $\widehat z$ and the ideal target coordinate $z_q^\star$;
+it does not transfer the source-rank components $(r^g,r^f)$ to the target.  The
+circle labeled $r_{n_0}$ depicts the structural-space upper bound obtained by
+projecting the augmented-coordinate cover $r_{n_0}^\eta$.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figure2_atlas_coverage.png}
+  \caption{Schematic geometry of atlas coverage in structural profile space.
+  Gray points represent the public profile library and blue points the
+  selected atlas.  The target has an unknown feasible basin $\mathcal F_q$
+  containing a safe center $h_q^\star$.  A source-supported library profile
+  $h_s$ lies within task discrepancy $\Delta_q$ of the safe center; projected
+  coordinate mismatch contributes at most $2\epsilon_\eta$; and an atlas
+  member $a$ covers $h_s$ within the projected upper bound $r_{n_0}$.  Hence
+  $L_q(r_{n_0}+\Delta_q+2\epsilon_\eta)\le\gamma_q$ implies
+  $\mathcal A\cap\mathcal F_q\ne\varnothing$.  The diagram illustrates the
+  coverage theorem and is not an empirical two-dimensional projection of a
+  target instance.}
+  \label{fig:coverage-geometry}
+\end{figure}
+\FloatBarrier
 
 The confirmatory generator uses eight fixed, equally weighted regime strata,
 not one pooled IID law.  At a fixed resolution $d$, let stratum $s$ have
