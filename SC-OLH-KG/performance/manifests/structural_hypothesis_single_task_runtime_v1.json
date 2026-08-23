@@ -1,0 +1,135 @@
+{
+  "schema_version": "sc-olh-kg.structural-hypothesis-single-task-runtime/1",
+  "contract_id": "structural_hypothesis_single_task_runtime_v1",
+  "source_contracts": {
+    "hypothesis_contract_id": "structural_hypothesis_loop_v1",
+    "hypothesis_contract_digest": "sha256:4242f6af8424acca5c93136f0d4eb354f8c2203431f1c5145290c4a3f248cf26",
+    "executor_contract_id": "structural_hypothesis_executor_v1",
+    "executor_contract_digest": "sha256:ede48b8b1fb0bb788f91a3834d5a41f336e55b331183922237176aec12624030",
+    "materializer_contract_id": "structural_hypothesis_task_materializer_v1",
+    "materializer_contract_digest": "sha256:30c65d77e6cbdbc13b95e9083604f6f99835b0982d52319b99d0040491c1d013"
+  },
+  "runtime_binding": {
+    "executor_module": "performance.benchmark_lodo_meta_prior",
+    "executor_callable": "run_one",
+    "executor_callable_source_sha256": "01c38f1978fb80df1d83c67db62ea1535c5812f0fadb78b4b32bcf45467c12ae",
+    "executor_callable_code_sha256": "bea51ae2b210fbc9e55600e988c8b97bf652e27c930cd945ca593d851226ac97",
+    "executor_callable_firstlineno": 686,
+    "task_keys": [
+      "args",
+      "heldout",
+      "line",
+      "seed"
+    ],
+    "source_files": {
+      "performance/benchmark_lodo_meta_prior.py": "a7d531cb79525966890904c5b4e7117709fddded012638c8bdd4cc8a33e825a0",
+      "algorithms/single_olhkg.py": "0ad688a94a8388615ca544ab50fb7d49fd49e76a7cab3ccc05e3897a80ddcc62",
+      "performance/aggregate_completed_matrix.py": "cdf0111c10a18a0cf647fc1e6100f6149427a9ec206e66eeb079c755ab6ed2df",
+      "performance/structural_hypothesis_execution.py": "7c5cc27f8e97da9b51e57975f63e860a23463d5e7728d1089f32978146f27c9b"
+    }
+  },
+  "task_selection": {
+    "mode": "exact_first_pending_only",
+    "ordinal": 0,
+    "authorized_task_count": 1,
+    "explicit_task_id_required": true
+  },
+  "task_runtime": {
+    "offline_only": true,
+    "llm_prior_enabled": false,
+    "outer_jobs": 1,
+    "exact_kg_jobs": 12,
+    "exact_kg_parallel_backend": "process_fork",
+    "runtime_checkpoint_resume": true,
+    "runtime_checkpoint_interval": 1
+  },
+  "required_environment": {
+    "SCOLHKG_OFFLINE": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "BLIS_NUM_THREADS": "1"
+  },
+  "preflight": {
+    "affinity_cpu_minimum": 12,
+    "memory_available_minimum_bytes": 12884901888,
+    "checkpoint_free_minimum_bytes": 2147483648,
+    "fork_probe_required": true,
+    "fork_probe_process_count": 12,
+    "threadpool_info_required": true,
+    "threadpool_num_threads": 1
+  },
+  "attempt_root_policy": {
+    "kind": "xdg-state-home-relative-v1",
+    "relative_prefix": "kg-op/structural-hypothesis-execution/v1",
+    "attempt_directory_mode": "0700",
+    "artifact_file_mode": "0600",
+    "reject_symlink_components": true,
+    "require_effective_user_owner": true,
+    "reject_group_or_world_writable_state_paths": true
+  },
+  "artifact_layout": {
+    "attempt_binding": "attempt.json",
+    "bundle_snapshot": "bundle.json",
+    "authorization": "authorization.json",
+    "input_directory": "inputs",
+    "report_snapshot": "inputs/report.json",
+    "hypothesis_contract_snapshot": "inputs/hypothesis_contract.json",
+    "executor_contract_snapshot": "inputs/executor_contract.json",
+    "materializer_contract_snapshot": "inputs/materializer_contract.json",
+    "journal_directory": "journal",
+    "authorized_event": "journal/0000_AUTHORIZED.json",
+    "running_event": "journal/0001_RUNNING.json",
+    "completed_event": "journal/0002_COMPLETED.json",
+    "preflight": "preflight.json",
+    "raw_result": "raw_result.json",
+    "receipt": "receipt.json",
+    "checkpoint_root": "checkpoints"
+  },
+  "state_machine": {
+    "states": [
+      "AUTHORIZED",
+      "RUNNING",
+      "COMPLETED"
+    ],
+    "transitions": [
+      "AUTHORIZED->RUNNING",
+      "RUNNING->COMPLETED"
+    ],
+    "immutable_event_files": true,
+    "running_reentry": "REJECT",
+    "automatic_reingestion": false
+  },
+  "mechanics": {
+    "local_files_only": true,
+    "network_access": false,
+    "scheduler_access": false,
+    "credential_access": false,
+    "shell_execution": false,
+    "one_real_executor_callback_maximum": true,
+    "strong_bundle_reverification_before_authorization": true,
+    "strong_bundle_reverification_before_execution": true,
+    "resource_preflight_before_running_state": true,
+    "distinct_result_persistence_rejection": true,
+    "full_chain_receipt_verification": true,
+    "no_clobber_artifacts": true
+  },
+  "nonclaims": [
+    "local_authorization_is_not_external_authority",
+    "local_digest_is_not_signature",
+    "source_file_hashes_are_not_a_complete_transitive_runtime_closure",
+    "current_runner_compatible_replay_is_not_exact_historical_reconstruction",
+    "authorized_is_not_executed",
+    "execution_is_not_reingestion",
+    "failed_execution_is_not_scientific_refutation",
+    "checkpoint_pickle_is_trusted_local_state_only",
+    "checkpoint_subtree_is_not_receipt_evidence",
+    "checkpoint_subtree_is_not_resume_authority",
+    "running_state_has_no_automatic_recovery",
+    "no_exactly_once_execution_claim",
+    "no_runtime_duration_claim",
+    "no_peak_memory_claim",
+    "no_scientific_verdict_from_single_execution"
+  ]
+}
