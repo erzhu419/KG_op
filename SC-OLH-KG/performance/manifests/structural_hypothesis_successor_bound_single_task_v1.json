@@ -1,0 +1,104 @@
+{
+  "schema_version": "sc-olh-kg.structural-hypothesis-successor-bound-single-task/1",
+  "contract_id": "structural_hypothesis_successor_bound_single_task_v1",
+  "source_contracts": {
+    "successor_contract_id": "structural_hypothesis_adopted_successor_materializer_v1",
+    "successor_contract_digest": "sha256:6a8380ee1d42b188f7bbd4818adc93949ed6f31c5981ddf6a17691d147043411",
+    "runtime_contract_id": "structural_hypothesis_single_task_runtime_v1",
+    "runtime_contract_digest": "sha256:d03529c64e6ea63b9997ded35fb6c0b44c6e17fb828f9e9db8960adb764a8c6b"
+  },
+  "source_files": {
+    "performance/structural_hypothesis_adopted_successor_materializer.py": "0d3fd169e31937f597a2a1b71d1106013125977f9cb197a8218e4357056fe55f",
+    "performance/structural_hypothesis_single_task_runtime.py": "618c336aee3558efb05a5415201cdf6b5cb1a7e028b90d94f2ac204b072e7fe4"
+  },
+  "operations": {
+    "inspect": "read_only_exact_successor_and_adoption_full_chain",
+    "prepare": "runtime_v1_authorized_attempt_without_execution",
+    "verify": "runtime_v1_verified_authorized_not_executed_only"
+  },
+  "provenance_binding": {
+    "schema_version": "sc-olh-kg.structural-hypothesis-successor-bound-provenance/1",
+    "fields": {
+      "bridge_contract": ["id", "digest"],
+      "source_adoption": ["id", "digest"],
+      "source_successor": ["id", "digest", "pending_evidence_digest", "first_pending_projection_digest"],
+      "bundle_binding": ["bundle_id", "bundle_digest", "plan_id", "plan_digest", "task_count"],
+      "task_binding": ["task_id", "task_digest", "ordinal", "cell"],
+      "attempt_binding": ["attempt_root", "checkpoint_root", "runtime_contract_id", "runtime_contract_digest"]
+    },
+    "digest": "sha256-canonical-json-v1",
+    "authorization_id": "successor-bound-v1:<provenance-binding-hex>"
+  },
+  "admission": {
+    "independent_adoption_digest_required": true,
+    "independent_successor_digest_required": true,
+    "independent_pending_evidence_digest_required": true,
+    "independent_first_pending_projection_digest_required": true,
+    "independent_bundle_digest_required": true,
+    "independent_plan_digest_required": true,
+    "independent_task_digest_required": true,
+    "held_dirfd_exact_successor_capture_required": true,
+    "full_successor_and_adoption_verification_required": true,
+    "same_generation_recheck_required": true,
+    "exact_first_task_only": true,
+    "exact_successor_future_attempt_root_required": true,
+    "exact_authorization_id_required": true,
+    "exact_provenance_binding_digest_required_before_prepare": true
+  },
+  "state_boundary": {
+    "inspected_status": "INSPECTED_SUCCESSOR_BOUND_TASK_NOT_AUTHORIZED_NOT_PREPARED",
+    "inspect_creates_state": false,
+    "inspect_artifact_layout": "NONE",
+    "prepare_creates_runtime_v1_authorized_attempt": true,
+    "prepare_artifact_layout": "exact_structural_hypothesis_single_task_runtime_v1",
+    "bridge_sidecar_created": false,
+    "prepare_creates_empty_checkpoint_directories": true,
+    "prepare_performs_resource_preflight": false,
+    "post_write_verification_failure_leaves_nonreusable_attempt_root": true,
+    "atomic_rollback_claim": false,
+    "prepare_executes_task": false,
+    "verify_creates_state": false,
+    "accepted_runtime_verify_status": "VERIFIED_AUTHORIZED_NOT_EXECUTED",
+    "prepared_status": "SUCCESSOR_BOUND_AUTHORIZED_NOT_EXECUTED",
+    "verified_status": "VERIFIED_SUCCESSOR_BOUND_AUTHORIZED_NOT_EXECUTED"
+  },
+  "mechanics": {
+    "local_files_only": true,
+    "network_access": false,
+    "scheduler_access": false,
+    "credential_access": false,
+    "shell_execution": false,
+    "benchmark_import": false,
+    "run_one_invocation": false,
+    "runtime_v1_unchanged": true,
+    "captured_report_and_bundle_passed_to_runtime_prepare": true,
+    "bridge_provenance_and_authorization_checks_before_attempt_creation": true,
+    "mutable_current_pointer_written": false
+  },
+  "nonclaims": [
+    "inspection_is_not_authorization",
+    "inspection_is_not_attempt_preparation",
+    "local_authorization_is_not_external_authority",
+    "local_digest_is_not_signature",
+    "authorized_is_not_executed",
+    "authorized_is_not_preflight_passed",
+    "authorized_is_not_runtime_ready",
+    "successor_binding_is_not_currentness",
+    "successor_binding_is_not_scientific_validation",
+    "checkpoint_directory_creation_is_not_execution",
+    "no_external_authority",
+    "no_network_access",
+    "no_scheduler_access",
+    "no_credential_access",
+    "no_shell_execution",
+    "no_benchmark_execution",
+    "no_run_one_invocation",
+    "no_reingestion",
+    "no_global_current_selection",
+    "no_exactly_once_execution_claim",
+    "attempt_alone_is_not_successor_provenance",
+    "external_bridge_contract_and_full_original_successor_adoption_chain_plus_independent_anchors_required",
+    "raw_runtime_execute_is_not_a_successor_provenance_gate_without_immediately_preceding_bridge_verify",
+    "bridge_verify_is_a_temporal_observation_not_execution_reservation_or_atomic_handoff"
+  ]
+}
