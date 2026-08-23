@@ -15,8 +15,6 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from performance.benchmark_lodo_meta_prior import run_one  # noqa: E402
-from performance.benchmark_quality import json_safe  # noqa: E402
 from performance.structural_ablation import (  # noqa: E402
     HVD_PROFILES,
     STRUCTURAL_PRIOR_PROFILES,
@@ -227,6 +225,8 @@ def load_config(path):
 
 
 def atomic_write_json(path, payload):
+    from performance.benchmark_quality import json_safe
+
     output = Path(path)
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = output.with_suffix(output.suffix + ".tmp")
@@ -235,7 +235,7 @@ def atomic_write_json(path, payload):
     temporary.replace(output)
 
 
-def main():
+def main(argv=None, *, materialize_only=False):
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--heldout", required=True)
@@ -1075,7 +1075,7 @@ def main():
         "--certification-recheck-min-replicates", type=int, default=3)
     parser.add_argument(
         "--certification-recheck-soft-margin-scale", type=float, default=2.0)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     config = load_config(args.manifest)
     for key, value in (("d", args.d), ("N", args.N), ("n0", args.n0)):
@@ -1737,6 +1737,11 @@ def main():
         "line": str(args.line),
         "seed": int(args.seed),
     }
+    if materialize_only:
+        return task
+    from performance.benchmark_lodo_meta_prior import run_one
+    from performance.benchmark_quality import json_safe
+
     row = run_one(task)
     row["experiment_variant"] = str(args.experiment_variant)
     row["proposal_mode"] = str(config.get(
@@ -2092,6 +2097,14 @@ def main():
     }
     atomic_write_json(args.out, payload)
     print(json.dumps(json_safe(payload), indent=2, sort_keys=True))
+
+
+def build_run_one_task(argv):
+    """Return the fully resolved local task without invoking ``run_one``."""
+    task = main(argv, materialize_only=True)
+    if not isinstance(task, dict):
+        raise RuntimeError("task materialization did not return a mapping")
+    return task
 
 
 if __name__ == "__main__":
