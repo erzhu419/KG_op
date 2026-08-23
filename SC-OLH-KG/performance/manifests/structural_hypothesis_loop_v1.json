@@ -1,0 +1,109 @@
+{
+  "schema_version": "sc-olh-kg.structural-hypothesis-loop/1",
+  "contract_id": "structural_hypothesis_loop_v1",
+  "components": [
+    "low_frequency",
+    "orthogonality",
+    "sparsity",
+    "additivity"
+  ],
+  "profiles": {
+    "none": [],
+    "low_frequency_only": [
+      "low_frequency"
+    ],
+    "orthogonality_only": [
+      "orthogonality"
+    ],
+    "sparsity_only": [
+      "sparsity"
+    ],
+    "additivity_only": [
+      "additivity"
+    ],
+    "full": [
+      "low_frequency",
+      "orthogonality",
+      "sparsity",
+      "additivity"
+    ],
+    "leave_out_low_frequency": [
+      "orthogonality",
+      "sparsity",
+      "additivity"
+    ],
+    "leave_out_orthogonality": [
+      "low_frequency",
+      "sparsity",
+      "additivity"
+    ],
+    "leave_out_sparsity": [
+      "low_frequency",
+      "orthogonality",
+      "additivity"
+    ],
+    "leave_out_additivity": [
+      "low_frequency",
+      "orthogonality",
+      "sparsity"
+    ]
+  },
+  "evidence_scope": {
+    "track": "priors",
+    "run_id": "scolh_structural_backend_gate_n20_s10_20260716",
+    "domains": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "d": 50,
+    "N": 20,
+    "n0": 10,
+    "source_calls": 384,
+    "implementation": "sc_olh",
+    "initial_design": "source_informed",
+    "decision_backend": "risk_ts",
+    "variant_template": "structural_backend/priors/{profile}",
+    "fixed_row_values": {
+      "total_calls": 404,
+      "hvd_profile": "factor_cumulative",
+      "source_discrepancy_update": true,
+      "recheck_top_k": 0,
+      "risk_penalty": 5.0,
+      "utility_weight": 1.0,
+      "adaptive_replication_voi": false,
+      "posterior_dominance_enabled": false,
+      "posterior_dominance_switch_count": 0
+    }
+  },
+  "gate": {
+    "min_overall_feasible": 24,
+    "min_per_domain_feasible": 6,
+    "max_failed_rows": 0,
+    "max_adaptive_losses": 2,
+    "regret_tolerance": 1e-12
+  },
+  "nonclaims": [
+    "retrospective_aggregate_only",
+    "no_causal_identification",
+    "no_universal_truth",
+    "no_paper_promotion",
+    "no_online_execution",
+    "no_archive_fingerprint_verification",
+    "no_statistical_significance_claim",
+    "gate_versioned_after_historical_evidence",
+    "no_complete_runtime_config_fingerprint"
+  ]
+}
