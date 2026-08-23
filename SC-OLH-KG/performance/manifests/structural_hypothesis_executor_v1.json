@@ -1,0 +1,90 @@
+{
+  "schema_version": "sc-olh-kg.structural-hypothesis-executor/1",
+  "contract_id": "structural_hypothesis_executor_v1",
+  "source_hypothesis_contract_id": "structural_hypothesis_loop_v1",
+  "source_hypothesis_contract_digest": "sha256:4242f6af8424acca5c93136f0d4eb354f8c2203431f1c5145290c4a3f248cf26",
+  "executor_binding": {
+    "module": "performance.benchmark_lodo_meta_prior",
+    "callable": "run_one",
+    "task_keys": [
+      "args",
+      "heldout",
+      "line",
+      "seed"
+    ],
+    "cell_input_map": {
+      "profile": "args.structural_prior_profile",
+      "domain": "heldout",
+      "line": "line",
+      "seed": "seed"
+    },
+    "result_adapter": {
+      "module": "performance.aggregate_completed_matrix",
+      "callable": "_normalize_sc_result",
+      "projection": "REQUIRED_EVIDENCE_FIELDS"
+    }
+  },
+  "execution_scope": {
+    "profile": "full",
+    "line": "lodo",
+    "domains": [
+      "FactorShockStatePolicyRZDT1",
+      "InventorySupplyChain",
+      "QueueResourceControl"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "d": 50,
+    "N": 20,
+    "n0": 10
+  },
+  "fixed_task_inputs": {
+    "decision_backend": "risk_ts",
+    "structural_prior_profile": "full",
+    "hvd_ablation_profile": "factor_cumulative",
+    "source_discrepancy_update": true,
+    "certification_recheck_top_k": 0,
+    "decision_risk_penalty": 5.0,
+    "decision_source_utility_weight": 1.0,
+    "adaptive_replication_voi": false,
+    "posterior_dominance_enabled": false,
+    "offline_only": true,
+    "llm_prior_enabled": false
+  },
+  "mechanics": {
+    "plan_only_default": true,
+    "real_task_template": "NOT_IMPLEMENTED",
+    "network_access": false,
+    "scheduler_access": false,
+    "shell_execution": false
+  },
+  "nonclaims": [
+    "proposal_is_not_authorization",
+    "authorization_is_not_execution",
+    "execution_is_not_reingestion",
+    "local_digest_is_not_signature",
+    "no_external_authority",
+    "no_credential_access",
+    "no_network_access",
+    "no_scheduler_submission",
+    "no_shell_execution",
+    "no_bundled_real_task_template",
+    "no_exact_historical_runtime_reconstruction",
+    "injected_template_not_verified_as_exact_historical_runtime",
+    "plan_cli_performs_no_actual_experiment_execution",
+    "source_report_hash_chain_not_external_anchor",
+    "no_runtime_readiness_claim",
+    "no_scientific_verdict_from_plan",
+    "no_paper_promotion"
+  ]
+}
