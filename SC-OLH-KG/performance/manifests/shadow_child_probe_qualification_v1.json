@@ -1,0 +1,126 @@
+{
+  "schema_version": "sc-olh-kg.shadow-child-probe-qualification-contract/1",
+  "contract_id": "shadow_child_probe_qualification_v1",
+  "input_schema_version": "sc-olh-kg.shadow-child-probe-qualification-input/1",
+  "source_transition_contract_id": "shadow_theory_transition_v1",
+  "source_transition_contract_digest": "sha256:35c5f127aa8c400d8d723eccaffaf05fa9667771edcdfcd6e648eac7854eeaab",
+  "source_transition_report_schema_version": "sc-olh-kg.shadow-theory-transition-report/1",
+  "child_theory_schema_version": "sc-olh-kg.shadow-theory-state/1",
+  "report_schema_version": "sc-olh-kg.shadow-child-probe-qualification-report/1",
+  "evidence_policy": {
+    "min_holdout_rows": 4,
+    "min_stress_rows": 4,
+    "require_complete_parent_context_scope_pairs_per_split": true,
+    "require_disjoint_new_ids": true,
+    "require_disjoint_from_source_ids": true,
+    "require_registered_parent_contexts": true,
+    "require_registered_scopes": true
+  },
+  "evaluator_epoch_policy": {
+    "derive_from_child_and_transition": true,
+    "require_fresh_from_source": true,
+    "inherit_fixed_anchor": true,
+    "forbid_old_new_pooling": true,
+    "logical_selective_erasure": true,
+    "physical_erasure": false
+  },
+  "probe_registry": {
+    "ROBUST_INTERVAL_EXPANSION": [
+      {
+        "probe_id": "absolute_error_point_prediction",
+        "semantics": "absolute observed-minus-parent and observed-minus-child-center error",
+        "aggregation": "mean_by_fresh_split",
+        "role": "nominal_prediction_control"
+      },
+      {
+        "probe_id": "interval_containment",
+        "semantics": "fresh scalar observation lies within the child center plus or minus its selected radius",
+        "aggregation": "coverage_by_fresh_split",
+        "role": "robust_interval_qualification"
+      },
+      {
+        "probe_id": "tail_interval_containment",
+        "semantics": "interval containment on stress rows with largest parent absolute errors",
+        "aggregation": "parent_error_ranked_stress_tail_coverage",
+        "role": "fresh_tail_qualification"
+      },
+      {
+        "probe_id": "normalized_interval_radius",
+        "semantics": "mean fresh-split interval radius normalized by twice the frozen parent prediction scale",
+        "aggregation": "mean_holdout_and_stress_radius_over_two_scale",
+        "role": "anti_vacuity_radius_budget"
+      }
+    ],
+    "QUOTIENT_IDEALIZATION": [
+      {
+        "probe_id": "absolute_error_point_prediction",
+        "semantics": "absolute observed-minus-parent and observed-minus-quotient-child error",
+        "aggregation": "mean_by_fresh_split",
+        "role": "nominal_prediction_control"
+      },
+      {
+        "probe_id": "parent_child_point_divergence",
+        "semantics": "absolute parent-point minus quotient-child-point prediction divergence on complete parent fibers",
+        "aggregation": "maximum_across_fresh_holdout_and_stress",
+        "role": "finite_prediction_proxy_qualification"
+      }
+    ]
+  },
+  "thresholds": {
+    "numeric_epsilon": 1e-12,
+    "coverage_tolerance": 0.05,
+    "tail_fraction": 0.25,
+    "min_holdout_coverage": 0.75,
+    "min_stress_tail_coverage": 0.75,
+    "min_safety_rate": 0.75,
+    "max_nominal_mae_increase": 0.05,
+    "max_probe_divergence": 0.20,
+    "max_normalized_radius": 1.0
+  },
+  "selection": {
+    "qualified_status": "QUALIFIED_NEW_EVALUATOR_EPOCH",
+    "needs_evidence_status": "NEEDS_NEW_EVALUATOR_EVIDENCE",
+    "incomparable_status": "INCOMPARABLE_NEW_EVALUATOR_EPOCH",
+    "failed_status": "FAILED_OPERATIONAL_PROBE_QUALIFICATION",
+    "adoption_status": "NOT_ADOPTED_SHADOW_ONLY"
+  },
+  "nonclaims": [
+    "shadow_only",
+    "no_automatic_adoption",
+    "no_paper_promotion",
+    "no_operations_research_baseline_or_claim_change",
+    "no_parent_child_or_ambient_state_write",
+    "explicit_cli_out_is_only_optional_write",
+    "no_run_one",
+    "no_benchmark_execution",
+    "no_scheduler_access",
+    "no_network_access",
+    "only_materialized_expand_and_quotient_children",
+    "no_restrict_operation",
+    "no_language_or_predicate_invention",
+    "fixed_operational_probe_registry_only",
+    "no_autonomous_probe_invention",
+    "no_child_probe_registry_mutation",
+    "supplied_new_evidence_evaluation_only",
+    "no_probe_acquisition_or_environment_execution",
+    "source_evidence_excluded_from_child_scoring",
+    "no_source_evidence_score_reuse",
+    "no_cross_epoch_pooling",
+    "logical_selective_erasure_only",
+    "no_physical_record_deletion",
+    "original_shadow_child_remains_unmodified",
+    "qualification_receipt_is_not_adoption",
+    "finite_scalar_tabular_scope_only",
+    "robust_interval_containment_is_not_domain_safety",
+    "tail_interval_containment_is_not_cvar_or_worst_case_safety",
+    "idealization_probe_preservation_is_task_and_finite_evidence_scoped",
+    "quotient_recovery_still_requires_frozen_parent_snapshot",
+    "new_evaluator_epoch_is_content_derived_not_externally_attested",
+    "fixed_anchor_equality_is_not_external_attestation",
+    "input_artifacts_require_independent_expected_values",
+    "report_digest_is_not_a_signature",
+    "no_data_provenance_beyond_bound_artifacts",
+    "no_scientific_validity_or_generalization_claim",
+    "no_h_t_to_h_t_plus_1_acceptance"
+  ]
+}
