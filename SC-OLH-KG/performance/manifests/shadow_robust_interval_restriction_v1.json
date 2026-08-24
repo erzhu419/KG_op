@@ -1,0 +1,140 @@
+{
+  "schema_version": "sc-olh-kg.shadow-robust-interval-restriction-contract/1",
+  "contract_id": "shadow_robust_interval_restriction_v1",
+  "source_probe_contract_id": "shadow_child_failure_boundary_probe_v1",
+  "source_probe_contract_digest": "sha256:fdc92e276f7d8cb0c1ab6fd097242932851da04e1f97888d3f9597bfb0f726e0",
+  "source_probe_report_schema_version": "sc-olh-kg.shadow-child-failure-boundary-probe-report/1",
+  "input_schema_version": "sc-olh-kg.shadow-robust-interval-restriction-input/1",
+  "report_schema_version": "sc-olh-kg.shadow-robust-interval-restriction-report/1",
+  "state_schema_version": "sc-olh-kg.shadow-robust-interval-restricted-theory-state/1",
+  "multiplier_registry": [
+    {
+      "candidate_id": "uniform_radius_1_over_4",
+      "numerator": 1,
+      "denominator": 4,
+      "radius_multiplier": 0.25
+    },
+    {
+      "candidate_id": "uniform_radius_1_over_2",
+      "numerator": 1,
+      "denominator": 2,
+      "radius_multiplier": 0.5
+    },
+    {
+      "candidate_id": "uniform_radius_3_over_4",
+      "numerator": 3,
+      "denominator": 4,
+      "radius_multiplier": 0.75
+    },
+    {
+      "candidate_id": "uniform_radius_9_over_10",
+      "numerator": 9,
+      "denominator": 10,
+      "radius_multiplier": 0.9
+    }
+  ],
+  "evidence_policy": {
+    "required_splits": [
+      "calibration",
+      "holdout",
+      "stress"
+    ],
+    "require_complete_parent_context_scope_pairs_per_split": true,
+    "require_exactly_one_row_per_context_scope_pair_per_split": true,
+    "require_unique_new_observation_ids": true,
+    "require_disjoint_from_competition_ids": true,
+    "require_disjoint_from_qualification_ids": true,
+    "require_disjoint_from_failure_boundary_probe_ids": true,
+    "require_exact_derived_epoch": true,
+    "require_exact_inherited_fixed_anchor": true,
+    "forbid_cross_epoch_pooling": true
+  },
+  "thresholds": {
+    "numeric_epsilon": 1e-12,
+    "min_calibration_normalized_signed_margin": 0.0,
+    "max_holdout_boundary_violation_rate": 0.0,
+    "max_stress_boundary_violation_rate": 0.0
+  },
+  "selection": {
+    "materialized_status": "MATERIALIZED_SHADOW_ROBUST_INTERVAL_RESTRICTION",
+    "no_calibration_status": "NO_CALIBRATION_ADMISSIBLE_STRICT_INTERVAL_RESTRICTION",
+    "no_validated_status": "NO_VALIDATED_STRICT_INTERVAL_RESTRICTION",
+    "needs_evidence_status": "RESTRICTION_NEEDS_NEW_EVIDENCE",
+    "incomparable_status": "RESTRICTION_INCOMPARABLE_EVALUATOR_EPOCH",
+    "source_counterexample_status": "RESTRICTION_BLOCKED_SOURCE_BOUNDARY_COUNTEREXAMPLE",
+    "source_unresolved_status": "RESTRICTION_BLOCKED_SOURCE_PROBE_UNRESOLVED",
+    "non_robust_status": "RESTRICTION_NOT_APPLICABLE_NON_ROBUST_SOURCE",
+    "source_no_counterexample_status": "EXPANDED_PROBE_NO_BOUNDARY_COUNTEREXAMPLE_ON_SUPPLIED_EVIDENCE",
+    "source_counterexample_disposition": "EXPANDED_PROBE_BOUNDARY_COUNTEREXAMPLE_FOUND_SHADOW_ONLY",
+    "applicable_transition_kind": "ROBUST_INTERVAL_EXPANSION",
+    "operation_kind": "restrict",
+    "restriction_kind": "UNIFORM_RADIUS_CONTRACTION",
+    "candidate_order": "ASCENDING_RADIUS_MULTIPLIER",
+    "adoption_eligibility": "NOT_DETERMINED_EXTERNAL_AUTHORITY_REQUIRED",
+    "adoption_status": "NOT_ADOPTED_SHADOW_ONLY",
+    "promotion_status": "NOT_PROMOTED",
+    "current_status": "NOT_CURRENT"
+  },
+  "record_lifecycle_policy": {
+    "competition_record_role": "AUDIT_ONLY_SCORING_EXCLUDED",
+    "qualification_record_role": "CONSUMED_AUDIT_ONLY_SCORING_EXCLUDED",
+    "failure_boundary_probe_record_role": "CONSUMED_FAILURE_BOUNDARY_EVIDENCE_AUDIT_ONLY",
+    "restriction_record_role": "CONSUMED_RESTRICTION_COMPETITION_EVIDENCE_AUDIT_ONLY",
+    "all_record_classes_eligible_for_future_scoring": false,
+    "future_scoring_requires_new_unconsumed_evidence": true,
+    "cross_epoch_pooling_allowed": false,
+    "logical_selective_erasure_applied": true,
+    "physical_erasure": "NOT_PERFORMED"
+  },
+  "authority_boundary": {
+    "scope": "LOCAL_SHADOW_ROBUST_INTERVAL_RESTRICTION_ONLY",
+    "source_state_mutation": false,
+    "source_child_invalidation": false,
+    "ambient_restriction_execution": false,
+    "rollback_execution": false,
+    "adoption_decision": false,
+    "promotion_decision": false,
+    "current_pointer_write": false,
+    "parent_or_source_state_write": false,
+    "external_data_attestation": "REQUIRED_NOT_PRESENT",
+    "external_evaluator_attestation": "REQUIRED_NOT_PRESENT",
+    "external_adoption_authority": "REQUIRED_NOT_PRESENT"
+  },
+  "nonclaims": [
+    "shadow_only",
+    "robust_finite_interval_restriction_only",
+    "no_generic_restriction_engine",
+    "no_rigid_body_markov_or_independence_assumption",
+    "no_scope_restriction",
+    "no_quotient_restriction",
+    "no_new_probe",
+    "q_registry_copied_not_requalified",
+    "v_registry_unchanged",
+    "no_language_or_predicate_invention",
+    "no_external_probe_acquisition",
+    "caller_supplied_static_rows_only",
+    "local_epoch_is_not_external_attestation",
+    "fresh_evidence_pass_is_not_global_preservation",
+    "interval_width_reduction_is_not_nominal_utility_or_domain_safety",
+    "no_source_child_invalidation",
+    "no_rollback_execution",
+    "no_adoption_eligibility_determination",
+    "no_adoption",
+    "no_promotion",
+    "no_current_pointer_write",
+    "no_parent_source_or_ambient_state_write",
+    "no_h_t_to_h_t_plus_1_acceptance",
+    "no_cross_epoch_pooling",
+    "no_physical_erasure",
+    "no_external_data_or_evaluator_attestation",
+    "no_run_one",
+    "no_benchmark_execution",
+    "no_scheduler_or_network_access",
+    "no_operations_research_baseline_or_claim_change",
+    "no_paper_promotion",
+    "explicit_cli_out_is_only_optional_write",
+    "input_artifacts_require_independent_expected_values",
+    "report_digest_is_not_a_signature",
+    "no_scientific_validity_or_generalization_claim"
+  ]
+}
