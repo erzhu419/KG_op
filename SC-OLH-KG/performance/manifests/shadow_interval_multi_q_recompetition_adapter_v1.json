@@ -1,0 +1,208 @@
+{
+  "schema_version": "sc-olh-kg.shadow-interval-multi-q-recompetition-adapter-contract/1",
+  "contract_id": "shadow_interval_multi_q_recompetition_adapter_v1",
+  "source_adjudication_contract_id": "shadow_post_restriction_adjudication_v1",
+  "source_adjudication_contract_digest": "sha256:dc870252207785f1d2ff4768dbf7d9fcedba7e0580554b0e647df82757d461ef",
+  "source_adjudication_report_schema_version": "sc-olh-kg.shadow-post-restriction-adjudication-report/1",
+  "input_schema_version": "sc-olh-kg.shadow-interval-multi-q-recompetition-adapter-input/1",
+  "report_schema_version": "sc-olh-kg.shadow-interval-multi-q-recompetition-adapter-report/1",
+  "seed_schema_version": "sc-olh-kg.shadow-interval-multi-q-recompetition-seed/1",
+  "source_disposition_registry": [
+    {
+      "source_disposition": "POST_RESTRICTION_QUALIFIED_RETAIN_RESTRICTED_SHADOW",
+      "adapter_disposition": "EMITTED_RESTRICTED_SHADOW_RECOMPETITION_SEED",
+      "seed_kind": "RESTRICTED_SHADOW"
+    },
+    {
+      "source_disposition": "POST_RESTRICTION_FAILED_SOURCE_SHADOW_ROLLBACK_TARGET_SELECTED",
+      "adapter_disposition": "EMITTED_SOURCE_ROLLBACK_TARGET_RECOMPETITION_SEED",
+      "seed_kind": "SOURCE_ROLLBACK_TARGET"
+    },
+    {
+      "source_disposition": "POST_RESTRICTION_AND_SOURCE_FAILED_RECOMPETITION_ADAPTER_REQUIRED",
+      "adapter_disposition": "EMITTED_UNQUALIFIED_SOURCE_REPAIR_RECOMPETITION_SEED",
+      "seed_kind": "UNQUALIFIED_SOURCE_REPAIR_BASE"
+    },
+    {
+      "source_disposition": "POST_RESTRICTION_NEEDS_NEW_EVIDENCE",
+      "adapter_disposition": "RECOMPETITION_ADAPTER_NEEDS_NEW_POST_RESTRICTION_EVIDENCE",
+      "seed_kind": null
+    },
+    {
+      "source_disposition": "POST_RESTRICTION_INCOMPARABLE_EVALUATOR_EPOCH",
+      "adapter_disposition": "RECOMPETITION_ADAPTER_INCOMPARABLE_POST_RESTRICTION_EPOCH",
+      "seed_kind": null
+    }
+  ],
+  "seed_resolution_policy": {
+    "retain_restricted_source": "EXACT_VERIFIED_RESTRICTED_SHADOW_STATE_BYTES",
+    "source_rollback_target": "EXACT_VERIFIED_SOURCE_PROBE_EXPANDED_SHADOW_STATE_BYTES",
+    "both_failed_repair_base": "EXACT_VERIFIED_SOURCE_PROBE_EXPANDED_SHADOW_STATE_BYTES_UNQUALIFIED",
+    "precondition_blocked_seed": null,
+    "theory_state_projection_allowed_by_adapter": false,
+    "rollback_execution_allowed_by_adapter": false,
+    "state_mutation_allowed_by_adapter": false,
+    "both_failed_required_certificates": [
+      "SOURCE_AND_RESTRICTED_FRESH_QUALIFICATION_FALSE",
+      "STRICT_FINITE_INTERVAL_SUBSET",
+      "EXACT_TWO_Q_REGISTRY",
+      "V_REGISTRY_BYTE_EQUAL",
+      "CENTER_PREDICTIONS_BYTE_EQUAL",
+      "RESTRICTED_RADII_LTE_SOURCE",
+      "FINITE_INTERVAL_MONOTONICITY_DOMINANCE"
+    ]
+  },
+  "interval_multi_q_interface": {
+    "model_kind": "finite_interval_table",
+    "probe_ids": [
+      "absolute_error_point_prediction",
+      "normalized_signed_interval_boundary_margin"
+    ],
+    "allowed_radius_groupings": [
+      "global",
+      "per_scope",
+      "per_context"
+    ],
+    "require_exact_registered_radius_group_keys": true,
+    "require_all_radii_finite_nonnegative": true,
+    "require_v_registry_byte_preserved": true,
+    "require_object_space_byte_preserved": true,
+    "require_scope_ids_byte_preserved": true,
+    "require_removable_feature_ids_byte_preserved": true
+  },
+  "future_competition_requirements": {
+    "required_core": "shadow_interval_multi_q_theory_operation_competition_v2",
+    "implementation_status": "REQUIRED_NOT_IMPLEMENTED_BY_ADAPTER",
+    "required_diagnostic_order": [
+      "reestimate",
+      "noise",
+      "scope",
+      "mixture",
+      "simplify",
+      "robustify",
+      "new_probe",
+      "language_last"
+    ],
+    "operation_registry": [
+      {
+        "operation_id": "reestimate",
+        "operation_kind": "expand"
+      },
+      {
+        "operation_id": "noise",
+        "operation_kind": "expand"
+      },
+      {
+        "operation_id": "scope",
+        "operation_kind": "restrict"
+      },
+      {
+        "operation_id": "mixture",
+        "operation_kind": "expand"
+      },
+      {
+        "operation_id": "simplify",
+        "operation_kind": "quotient"
+      },
+      {
+        "operation_id": "robustify",
+        "operation_kind": "expand"
+      },
+      {
+        "operation_id": "new_probe",
+        "operation_kind": "probe"
+      },
+      {
+        "operation_id": "language_last",
+        "operation_kind": "language"
+      }
+    ],
+    "require_new_evaluator_epoch": true,
+    "required_fresh_splits": [
+      "discovery",
+      "validation",
+      "stress"
+    ],
+    "require_complete_context_scope_cartesian_per_split": true,
+    "prior_record_reuse_allowed": false,
+    "cross_epoch_pooling_allowed": false,
+    "language_last_resort_deferred": true,
+    "language_expansion_executed_by_adapter": false
+  },
+  "record_lifecycle_policy": {
+    "all_prior_record_classes_role": "AUDIT_ONLY_SCORING_EXCLUDED",
+    "adapter_record_role": "STATE_HANDOFF_ONLY_NO_SCORING",
+    "new_evidence_consumed_by_adapter": false,
+    "new_evaluator_epoch_created_by_adapter": false,
+    "future_v2_requires_new_unconsumed_evidence": true,
+    "cross_epoch_pooling_allowed": false,
+    "logical_selective_erasure_applied": true,
+    "physical_erasure": "NOT_PERFORMED"
+  },
+  "authority_boundary": {
+    "scope": "LOCAL_SHADOW_INTERVAL_MULTI_Q_RECOMPETITION_ADAPTER_ONLY",
+    "adapter_execution": true,
+    "upstream_shadow_chain_exact_replay_performed": true,
+    "upstream_competition_v1_exact_replay_performed": true,
+    "upstream_scoring_exact_replay_performed": true,
+    "adapter_seed_submitted_to_competition_v1": false,
+    "adapter_competition_v2_execution": false,
+    "adapter_candidate_synthesis_performed": false,
+    "adapter_candidate_evaluation_performed": false,
+    "adapter_scoring_performed": false,
+    "new_evidence_consumed_by_adapter": false,
+    "new_evaluator_epoch_created_by_adapter": false,
+    "source_state_mutated_by_adapter": false,
+    "restricted_state_mutated_by_adapter": false,
+    "rollback_executed_by_adapter": false,
+    "language_expansion_executed_by_adapter": false,
+    "adoption_decided_by_adapter": false,
+    "promotion_decided_by_adapter": false,
+    "current_pointer_written_by_adapter": false,
+    "parent_or_source_state_written_by_adapter": false,
+    "external_data_attestation": "REQUIRED_NOT_PRESENT",
+    "external_evaluator_attestation": "REQUIRED_NOT_PRESENT",
+    "external_adoption_authority": "REQUIRED_NOT_PRESENT"
+  },
+  "nonclaims": [
+    "shadow_only",
+    "adapter_only",
+    "state_handoff_is_not_theory_operation",
+    "adapter_handoff_finite_interval_table_only",
+    "adapter_handoff_fixed_two_probe_registry_only",
+    "no_adapter_point_projection",
+    "no_adapter_lossy_probe_projection",
+    "adapter_seed_not_submitted_to_competition_v1",
+    "competition_v1_unchanged",
+    "competition_v2_required_not_implemented",
+    "no_adapter_candidate_synthesis",
+    "no_adapter_candidate_evaluation",
+    "no_adapter_scoring",
+    "no_new_evidence_consumed_by_adapter",
+    "future_v2_requires_new_unconsumed_evidence",
+    "no_cross_epoch_pooling",
+    "no_adapter_new_probe_execution",
+    "no_adapter_restriction_or_quotient_execution",
+    "no_adapter_language_or_predicate_invention",
+    "language_last_resort_not_certified",
+    "no_adapter_language_expansion_execution",
+    "both_failed_source_is_unqualified_repair_base_not_accepted_theory",
+    "two_q_dominance_is_frozen_table_and_supplied_evidence_only",
+    "rollback_target_selection_is_not_rollback_execution",
+    "no_adapter_rollback_execution",
+    "no_adapter_state_mutation",
+    "no_adapter_adoption_eligibility_determination",
+    "no_adapter_adoption",
+    "no_adapter_promotion",
+    "no_adapter_current_pointer_write",
+    "no_adapter_h_t_to_h_t_plus_1_acceptance",
+    "no_adapter_external_data_or_evaluator_attestation",
+    "adapter_does_not_call_run_one",
+    "no_adapter_benchmark_execution",
+    "no_adapter_scheduler_or_network_access",
+    "no_operations_research_baseline_or_claim_change",
+    "no_paper_promotion",
+    "report_digest_is_not_a_signature",
+    "no_scientific_validity_or_generalization_claim"
+  ]
+}
