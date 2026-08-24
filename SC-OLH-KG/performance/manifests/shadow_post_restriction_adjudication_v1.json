@@ -1,0 +1,146 @@
+{
+  "schema_version": "sc-olh-kg.shadow-post-restriction-adjudication-contract/1",
+  "contract_id": "shadow_post_restriction_adjudication_v1",
+  "source_restriction_contract_id": "shadow_robust_interval_restriction_v1",
+  "source_restriction_contract_digest": "sha256:57e7beb6a1a409cb959be3e98192158311bcb855e4f8295fbd90c4c40e9eb512",
+  "source_restriction_report_schema_version": "sc-olh-kg.shadow-robust-interval-restriction-report/1",
+  "input_schema_version": "sc-olh-kg.shadow-post-restriction-adjudication-input/1",
+  "report_schema_version": "sc-olh-kg.shadow-post-restriction-adjudication-report/1",
+  "probe_registry": [
+    {
+      "probe_id": "absolute_error_point_prediction",
+      "semantics": "absolute observed-minus-center error",
+      "aggregation": "mean_and_max_by_fresh_split"
+    },
+    {
+      "probe_id": "normalized_signed_interval_boundary_margin",
+      "semantics": "radius minus absolute observed-minus-center error, normalized by an observation-independent source scale",
+      "aggregation": "minimum_margin_and_boundary_exceedance_by_fresh_split"
+    }
+  ],
+  "evidence_policy": {
+    "required_splits": [
+      "holdout",
+      "stress"
+    ],
+    "require_complete_parent_context_scope_pairs_per_split": true,
+    "require_exactly_one_row_per_context_scope_pair_per_split": true,
+    "require_unique_new_observation_ids": true,
+    "require_disjoint_from_competition_ids": true,
+    "require_disjoint_from_qualification_ids": true,
+    "require_disjoint_from_failure_boundary_probe_ids": true,
+    "require_disjoint_from_restriction_ids": true,
+    "require_exact_derived_epoch": true,
+    "require_exact_inherited_fixed_anchor": true,
+    "forbid_cross_epoch_pooling": true
+  },
+  "thresholds": {
+    "numeric_epsilon": 1e-12,
+    "max_boundary_violation_rate": 0.0
+  },
+  "selection": {
+    "retain_restricted_status": "POST_RESTRICTION_QUALIFIED_RETAIN_RESTRICTED_SHADOW",
+    "source_rollback_target_status": "POST_RESTRICTION_FAILED_SOURCE_SHADOW_ROLLBACK_TARGET_SELECTED",
+    "both_failed_status": "POST_RESTRICTION_AND_SOURCE_FAILED_RECOMPETITION_ADAPTER_REQUIRED",
+    "needs_evidence_status": "POST_RESTRICTION_NEEDS_NEW_EVIDENCE",
+    "incomparable_status": "POST_RESTRICTION_INCOMPARABLE_EVALUATOR_EPOCH",
+    "source_materialized_status": "MATERIALIZED_SHADOW_ROBUST_INTERVAL_RESTRICTION",
+    "retain_restricted_route": "RETAIN_RESTRICTED_SHADOW_AND_REQUIRE_RECOMPETITION_ADAPTER_FOR_NEXT_CYCLE",
+    "source_rollback_target_route": "SOURCE_ROLLBACK_TARGET_SELECTED_AND_REQUIRE_RECOMPETITION_ADAPTER_FOR_NEXT_CYCLE",
+    "both_failed_route": "RECOMPETITION_ADAPTER_REQUIRED_BEFORE_LANGUAGE_EXPANSION",
+    "needs_evidence_route": "NEW_COMPLETE_POST_RESTRICTION_EVIDENCE_REQUIRED",
+    "incomparable_route": "COMPARABLE_POST_RESTRICTION_EPOCH_REQUIRED",
+    "adoption_eligibility": "NOT_DETERMINED_EXTERNAL_AUTHORITY_REQUIRED",
+    "adoption_status": "NOT_ADOPTED_SHADOW_ONLY",
+    "promotion_status": "NOT_PROMOTED",
+    "current_status": "NOT_CURRENT"
+  },
+  "loop_compatibility_boundary": {
+    "competition_v1_required_model_kind": "finite_point_table",
+    "competition_v1_required_probe_ids": [
+      "absolute_error_point_prediction"
+    ],
+    "selected_source_model_kind": "finite_interval_table",
+    "selected_source_probe_ids": [
+      "absolute_error_point_prediction",
+      "normalized_signed_interval_boundary_margin"
+    ],
+    "feed_back_compatible": false,
+    "language_last_resort_certified": false,
+    "language_expansion_executed": false,
+    "required_bridge": "INTERVAL_MULTI_Q_THEORY_OPERATION_RECOMPETITION_ADAPTER_NOT_IMPLEMENTED"
+  },
+  "record_lifecycle_policy": {
+    "competition_record_role": "AUDIT_ONLY_SCORING_EXCLUDED",
+    "qualification_record_role": "CONSUMED_AUDIT_ONLY_SCORING_EXCLUDED",
+    "failure_boundary_probe_record_role": "CONSUMED_FAILURE_BOUNDARY_EVIDENCE_AUDIT_ONLY",
+    "restriction_record_role": "CONSUMED_RESTRICTION_COMPETITION_EVIDENCE_AUDIT_ONLY",
+    "post_restriction_record_role": "CONSUMED_POST_RESTRICTION_ADJUDICATION_EVIDENCE_AUDIT_ONLY",
+    "all_record_classes_eligible_for_future_scoring": false,
+    "future_scoring_requires_new_unconsumed_evidence": true,
+    "cross_epoch_pooling_allowed": false,
+    "logical_selective_erasure_applied": true,
+    "physical_erasure": "NOT_PERFORMED"
+  },
+  "authority_boundary": {
+    "scope": "LOCAL_SHADOW_POST_RESTRICTION_ADJUDICATION_ONLY",
+    "source_state_mutation": false,
+    "restricted_state_mutation": false,
+    "rollback_target_selection": true,
+    "rollback_execution": false,
+    "language_expansion_execution": false,
+    "recompetition_adapter_execution": false,
+    "adoption_decision": false,
+    "promotion_decision": false,
+    "current_pointer_write": false,
+    "parent_or_source_state_write": false,
+    "external_data_attestation": "REQUIRED_NOT_PRESENT",
+    "external_evaluator_attestation": "REQUIRED_NOT_PRESENT",
+    "external_adoption_authority": "REQUIRED_NOT_PRESENT"
+  },
+  "nonclaims": [
+    "shadow_only",
+    "post_restriction_fresh_qualification_only",
+    "finite_interval_source_and_restricted_comparison_only",
+    "fixed_two_probe_registry_replay_only",
+    "no_generic_adjudication_engine",
+    "no_rigid_body_markov_or_independence_assumption",
+    "no_scope_restriction",
+    "no_quotient_restriction",
+    "no_new_probe",
+    "q_registry_replayed_not_invented",
+    "v_registry_unchanged",
+    "no_language_or_predicate_invention",
+    "language_last_resort_not_certified",
+    "language_expansion_not_executed",
+    "recompetition_adapter_not_implemented",
+    "competition_v1_incompatible_with_interval_multi_q_state",
+    "no_external_probe_acquisition",
+    "caller_supplied_static_rows_only",
+    "local_epoch_is_not_external_attestation",
+    "fresh_evidence_pass_is_not_global_preservation",
+    "finite_interval_nesting_is_only_checked_on_the_frozen_finite_table",
+    "center_error_equality_is_not_domain_safety",
+    "rollback_target_selection_is_not_rollback_execution",
+    "no_source_child_invalidation",
+    "no_rollback_execution",
+    "no_adoption_eligibility_determination",
+    "no_adoption",
+    "no_promotion",
+    "no_current_pointer_write",
+    "no_parent_source_or_ambient_state_write",
+    "no_h_t_to_h_t_plus_1_acceptance",
+    "no_cross_epoch_pooling",
+    "no_physical_erasure",
+    "no_external_data_or_evaluator_attestation",
+    "no_run_one",
+    "no_benchmark_execution",
+    "no_scheduler_or_network_access",
+    "no_operations_research_baseline_or_claim_change",
+    "no_paper_promotion",
+    "explicit_cli_out_is_only_optional_write",
+    "input_artifacts_require_independent_expected_values",
+    "report_digest_is_not_a_signature",
+    "no_scientific_validity_or_generalization_claim"
+  ]
+}
