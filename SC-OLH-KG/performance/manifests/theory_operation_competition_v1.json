@@ -1,0 +1,114 @@
+{
+  "schema_version": "sc-olh-kg.theory-operation-competition-contract/1",
+  "contract_id": "theory_operation_competition_v1",
+  "input_schema_version": "sc-olh-kg.theory-operation-competition-input/1",
+  "report_schema_version": "sc-olh-kg.theory-operation-competition-report/1",
+  "operation_kinds": [
+    "expand",
+    "restrict",
+    "quotient",
+    "language",
+    "probe"
+  ],
+  "diagnostic_order": [
+    "reestimate",
+    "noise",
+    "scope",
+    "mixture",
+    "quotient",
+    "robustify",
+    "new_probe",
+    "language_last"
+  ],
+  "evidence_policy": {
+    "min_discovery_rows": 4,
+    "min_validation_rows": 2,
+    "min_stress_rows": 2,
+    "require_disjoint_observation_ids": true,
+    "require_exact_theory_epoch": true,
+    "require_exact_fixed_anchor": true,
+    "require_registered_contexts": true
+  },
+  "candidate_generation": {
+    "robust_interval_groupings": [
+      "global",
+      "per_scope",
+      "per_context"
+    ],
+    "interval_radius_statistic": "discovery_max_absolute_residual",
+    "enumerate_nonempty_removable_subsets": true,
+    "quotient_aggregation": "mean_parent_prediction",
+    "quotient_restore": "restore_frozen_parent_point_table",
+    "supported_probe_id": "absolute_error_point_prediction",
+    "language_is_last_resort_only": true
+  },
+  "thresholds": {
+    "numeric_epsilon": 1e-12,
+    "coverage_tolerance": 0.05,
+    "tail_fraction": 0.25,
+    "min_validation_coverage": 0.75,
+    "min_stress_tail_coverage": 0.75,
+    "min_safety_rate": 0.75,
+    "max_nominal_mae_increase": 0.05,
+    "max_probe_divergence": 0.20,
+    "min_complexity_reduction": 0.20,
+    "max_normalized_radius": 1.00,
+    "min_score_margin": 0.02,
+    "reestimate_min_relative_improvement": 0.20,
+    "noise_min_relative_sse": 0.50,
+    "scope_min_relative_spread": 0.25,
+    "mixture_min_relative_sse_reduction": 0.9,
+    "new_probe_residual_fraction": 0.25,
+    "language_residual_fraction": 0.50
+  },
+  "score_weights": {
+    "validation_mae_improvement": 1.0,
+    "stress_mae_improvement": 1.0,
+    "coverage": 0.5,
+    "tail_coverage": 0.75,
+    "safety": 0.5,
+    "complexity_reduction": 1.0,
+    "probe_divergence_penalty": 0.75,
+    "radius_cost_penalty": 0.5
+  },
+  "idealization_contract_fields": [
+    "deleted_degrees_of_freedom",
+    "preserved_observables",
+    "applicable_scale",
+    "applicable_task",
+    "approximation_error",
+    "failure_boundary",
+    "counterexample",
+    "computational_or_sample_complexity_gain",
+    "full_model_recovery_method"
+  ],
+  "selection": {
+    "robustification_status": "SELECT_ROBUSTIFICATION",
+    "idealization_status": "SELECT_IDEALIZATION",
+    "insufficient_status": "NEEDS_EVIDENCE",
+    "cross_epoch_status": "INCOMPARABLE_EVALUATOR_EPOCH",
+    "promotion_status": "NOT_PROMOTED_SHADOW_ONLY"
+  },
+  "nonclaims": [
+    "shadow_only",
+    "no_automatic_promotion",
+    "no_paper_promotion",
+    "no_run_one",
+    "no_benchmark_execution",
+    "no_scheduler_access",
+    "no_network_access",
+    "no_ambient_or_parent_state_write",
+    "explicit_cli_out_is_only_optional_write",
+    "finite_tabular_theory_only",
+    "discovery_only_candidate_synthesis",
+    "validation_and_stress_never_enter_synthesis",
+    "computed_metrics_are_case_scoped_not_universal",
+    "same_epoch_comparisons_only",
+    "no_selective_erasure_implementation",
+    "input_artifact_binding_requires_independent_expected_values",
+    "safety_rate_is_interval_containment_not_domain_safety",
+    "fixed_anchor_equality_is_not_external_attestation",
+    "report_digest_is_not_a_signature",
+    "contract_id_alone_does_not_pin_contract_values"
+  ]
+}
