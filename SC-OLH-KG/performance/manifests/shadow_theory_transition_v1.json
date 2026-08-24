@@ -1,0 +1,74 @@
+{
+  "schema_version": "sc-olh-kg.shadow-theory-transition-contract/1",
+  "contract_id": "shadow_theory_transition_v1",
+  "source_contract_id": "theory_operation_competition_v1",
+  "source_report_schema_version": "sc-olh-kg.theory-operation-competition-report/1",
+  "child_theory_schema_version": "sc-olh-kg.shadow-theory-state/1",
+  "report_schema_version": "sc-olh-kg.shadow-theory-transition-report/1",
+  "materializable_sources": {
+    "official_source_contract_digest": "sha256:9e1aa6834ce2663066f1e9b6a01f5cc94c5e807aca40fc490b9b0829084363b8",
+    "disposition_to_transition": {
+      "SELECT_ROBUSTIFICATION": "MATERIALIZED_SHADOW_ROBUSTIFICATION",
+      "SELECT_IDEALIZATION": "MATERIALIZED_SHADOW_IDEALIZATION",
+      "NEEDS_EVIDENCE": "NOT_MATERIALIZED_NEEDS_EVIDENCE",
+      "INCOMPARABLE_EVALUATOR_EPOCH": "NOT_MATERIALIZED_INCOMPARABLE_EVALUATOR_EPOCH"
+    }
+  },
+  "preservation_policy": {
+    "complete_parent_object_space_check": true,
+    "robust_center_equals_parent": true,
+    "robust_radii_finite_and_nonnegative": true,
+    "robust_zero_radius_recovers_parent": true,
+    "quotient_prediction_recomputed_as_parent_mean": true,
+    "quotient_max_divergence_uses_source_contract": true,
+    "quotient_parent_snapshot_required": true
+  },
+  "evaluator_epoch_policy": {
+    "inherit_fixed_anchor": true,
+    "child_evaluator_epoch_status": "UNASSIGNED_NEW_EVALUATOR_REQUIRED",
+    "source_evidence_role": "QUALIFICATION_ONLY",
+    "source_evidence_allowed_for_child_scoring": false,
+    "forbid_old_new_pooling": true,
+    "operational_probe_gate_required": true,
+    "selective_erasure_applied": false
+  },
+  "selection": {
+    "adoption_status": "NOT_ADOPTED_SHADOW_ONLY",
+    "robust_operation_kind": "expand",
+    "robust_transition_kind": "ROBUST_INTERVAL_EXPANSION",
+    "ideal_operation_kind": "quotient",
+    "ideal_transition_kind": "QUOTIENT_IDEALIZATION"
+  },
+  "nonclaims": [
+    "shadow_only",
+    "no_automatic_adoption",
+    "no_paper_promotion",
+    "no_parent_or_ambient_state_write",
+    "explicit_cli_out_is_only_optional_write",
+    "no_run_one",
+    "no_benchmark_execution",
+    "no_scheduler_access",
+    "no_network_access",
+    "only_expand_and_quotient_materialization",
+    "no_restrict_operation",
+    "no_probe_expansion_or_execution",
+    "no_language_or_predicate_invention",
+    "no_operational_probe_preservation_claim",
+    "copied_probe_ids_are_declarations_only",
+    "source_evidence_is_qualification_only",
+    "no_source_evidence_reuse_for_child_scoring",
+    "fresh_child_evaluator_epoch_not_created",
+    "no_selective_erasure_implementation",
+    "no_cross_epoch_pooling",
+    "robust_child_is_finite_scalar_interval_only",
+    "interval_containment_is_not_domain_safety",
+    "idealization_is_task_and_finite_object_space_scoped",
+    "lossy_quotient_requires_frozen_parent_snapshot",
+    "quotient_alone_does_not_recover_parent",
+    "no_external_evaluator_or_anchor_attestation",
+    "input_artifacts_require_independent_expected_values",
+    "report_digest_is_not_a_signature",
+    "no_scientific_validity_or_generalization_claim",
+    "no_h_t_to_h_t_plus_1_acceptance"
+  ]
+}
