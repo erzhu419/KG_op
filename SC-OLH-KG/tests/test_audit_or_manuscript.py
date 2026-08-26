@@ -38,8 +38,8 @@ def test_receipt_passes_for_clean_precompiled_fixture(tmp_path):
         encoding="utf-8",
     )
     (manuscript / "references.bib").write_text("", encoding="utf-8")
-    (figures / "figure1_profile_space.png").write_bytes(b"figure one")
-    (figures / "figure2_atlas_coverage.png").write_bytes(b"figure two")
+    (figures / "figure1_profile_space.pdf").write_bytes(b"figure one")
+    (figures / "figure2_atlas_coverage.pdf").write_bytes(b"figure two")
     (sections / "01.tex").write_text("text", encoding="utf-8")
     (tables / "table.tex").write_text("table", encoding="utf-8")
     (manuscript / "main.pdf").write_bytes(b"%PDF-1.4\nfixture")

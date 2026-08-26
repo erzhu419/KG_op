@@ -68,8 +68,8 @@ def _source_files(manuscript_dir: Path) -> list[Path]:
         manuscript_dir / "main.tex",
         manuscript_dir / "supplement.tex",
         manuscript_dir / "references.bib",
-        manuscript_dir / "figures" / "figure1_profile_space.png",
-        manuscript_dir / "figures" / "figure2_atlas_coverage.png",
+        manuscript_dir / "figures" / "figure1_profile_space.pdf",
+        manuscript_dir / "figures" / "figure2_atlas_coverage.pdf",
     ]
     rows.extend(sorted((manuscript_dir / "sections").glob("*.tex")))
     rows.extend(sorted((manuscript_dir / "tables").glob("*.tex")))
