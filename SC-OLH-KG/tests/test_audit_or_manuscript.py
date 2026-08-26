@@ -16,6 +16,13 @@ def test_abstract_word_count_ignores_latex_commands():
     assert _abstract_word_count(source) == 8
 
 
+def test_abstract_word_count_supports_opre_command_and_nested_braces():
+    source = r"""
+    \ABSTRACT{A small \textbf{structural design} solves a held-out task.}
+    """
+    assert _abstract_word_count(source) == 8
+
+
 def test_reference_start_page_reads_aux_label():
     aux = r"\newlabel{page:references}{{}{26}{}{section*.8}{}}"
     assert _reference_start_page(aux) == 26
@@ -30,14 +37,21 @@ def test_receipt_passes_for_clean_precompiled_fixture(tmp_path):
     tables.mkdir()
     figures.mkdir()
     (manuscript / "main.tex").write_text(
-        "\\begin{abstract}A short abstract.\\end{abstract}",
+        "\\documentclass[opre,dblanonrev]{informs4}\n"
+        "\\OneAndAHalfSpacedXII\n"
+        "\\begin{abstract}A short abstract.\\end{abstract}\n"
+        "\\bibliographystyle{informs2014}\n",
         encoding="utf-8",
     )
     (manuscript / "supplement.tex").write_text(
-        "Supplement fixture.",
+        "\\ECSwitch\nSupplement fixture.",
         encoding="utf-8",
     )
     (manuscript / "references.bib").write_text("", encoding="utf-8")
+    (manuscript / "main.bbl").write_text("", encoding="utf-8")
+    (manuscript / "informs4.cls").write_text("class", encoding="utf-8")
+    (manuscript / "informs2014.bst").write_text("style", encoding="utf-8")
+    (manuscript / "informs_Logo.pdf").write_bytes(b"logo")
     (figures / "figure1_profile_space.pdf").write_bytes(b"figure one")
     (figures / "figure2_atlas_coverage.pdf").write_bytes(b"figure two")
     (sections / "01.tex").write_text("text", encoding="utf-8")

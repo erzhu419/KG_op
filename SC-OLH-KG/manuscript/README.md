@@ -24,6 +24,13 @@ only in the projected structural coordinate `z`. The primary experiment has
 
 ## Build
 
+The submission uses the journal's `informs4` class with the `opre` and
+`dblanonrev` options, the `informs2014` bibliography style, 12-point
+one-and-a-half-spaced review text, continuous equation and theorem numbering,
+and EC-prefixed online-supplement numbering. The journal class, bibliography
+style, logo, generated `main.bbl`, and both PDFs are included in the audited
+source bundle.
+
 ```bash
 cd SC-OLH-KG/manuscript
 python3 ../performance/render_or_review_final_artifacts.py
@@ -52,6 +59,11 @@ The journal-facing article is `main.pdf`. Detailed algorithms, sensitivity
 tables, task-seed strata, native transfer results, HVD diagnostics, and the
 Lean file map are retained in the separately built `supplement.pdf`; they are
 not removed to satisfy the article page limit.
+
+Every display was compiled once with the INFORMS 240-point production-column
+validator. The four formulas initially exceeding that width were rebroken;
+the validator reported no remaining violations and is intentionally not loaded
+in the submission sources, so no instructional boxes appear in the final PDFs.
 
 ## Frozen evidence
 

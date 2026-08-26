@@ -46,9 +46,25 @@ def _abstract_word_count(source: str) -> int:
         source,
         flags=re.DOTALL,
     )
-    if match is None:
-        raise ValueError("abstract environment not found")
-    text = re.sub(r"\\[A-Za-z]+\*?(?:\[[^\]]*\])?", " ", match.group(1))
+    if match is not None:
+        abstract = match.group(1)
+    else:
+        command = re.search(r"\\ABSTRACT\s*\{", source)
+        if command is None:
+            raise ValueError("abstract environment or OPRE ABSTRACT command not found")
+        start = command.end()
+        depth = 1
+        cursor = start
+        while cursor < len(source) and depth:
+            if source[cursor] == "{" and source[cursor - 1] != "\\":
+                depth += 1
+            elif source[cursor] == "}" and source[cursor - 1] != "\\":
+                depth -= 1
+            cursor += 1
+        if depth:
+            raise ValueError("unterminated OPRE ABSTRACT command")
+        abstract = source[start:cursor - 1]
+    text = re.sub(r"\\[A-Za-z]+\*?(?:\[[^\]]*\])?", " ", abstract)
     text = re.sub(r"[{}~$^_\\]", " ", text)
     return len(re.findall(r"[A-Za-z0-9]+(?:[-'][A-Za-z0-9]+)*", text))
 
@@ -68,6 +84,10 @@ def _source_files(manuscript_dir: Path) -> list[Path]:
         manuscript_dir / "main.tex",
         manuscript_dir / "supplement.tex",
         manuscript_dir / "references.bib",
+        manuscript_dir / "main.bbl",
+        manuscript_dir / "informs4.cls",
+        manuscript_dir / "informs2014.bst",
+        manuscript_dir / "informs_Logo.pdf",
         manuscript_dir / "figures" / "figure1_profile_space.pdf",
         manuscript_dir / "figures" / "figure2_atlas_coverage.pdf",
     ]
@@ -91,6 +111,39 @@ def build_receipt(
     supplement_pdf = manuscript_dir / "supplement.pdf"
     supplement_log = manuscript_dir / "supplement.log"
     failures: list[str] = []
+
+    main_source = (
+        main_tex.read_text(encoding="utf-8") if main_tex.is_file() else ""
+    )
+    supplement_source = (
+        supplement_tex.read_text(encoding="utf-8")
+        if supplement_tex.is_file()
+        else ""
+    )
+    opre_class = (
+        r"\documentclass[opre,dblanonrev]{informs4}" in main_source
+    )
+    opre_bibliography = (
+        r"\bibliographystyle{informs2014}" in main_source
+    )
+    opre_spacing = r"\OneAndAHalfSpacedXII" in main_source
+    ec_numbering = r"\ECSwitch" in supplement_source
+    width_validator_removed = all(
+        "eqndefns-left" not in source
+        for source in (main_source, supplement_source)
+    )
+    format_contract = {
+        "opre_double_anonymous_class": opre_class,
+        "opre_bibliography_style": opre_bibliography,
+        "opre_default_review_spacing": opre_spacing,
+        "ec_supplement_numbering": ec_numbering,
+        "width_validator_removed_from_final_sources": width_validator_removed,
+    }
+    failed_format = [
+        name for name, passed in format_contract.items() if not passed
+    ]
+    if failed_format:
+        failures.append(f"OPRE format contract failed: {failed_format}")
 
     compile_result = None
     supplement_compile_result = None
@@ -151,9 +204,7 @@ def build_receipt(
     log_hits: list[str] = []
     if main_tex.is_file():
         try:
-            abstract_words = _abstract_word_count(
-                main_tex.read_text(encoding="utf-8")
-            )
+            abstract_words = _abstract_word_count(main_source)
             if abstract_words > 200:
                 failures.append(
                     f"abstract has {abstract_words} words, limit is 200"
@@ -225,6 +276,7 @@ def build_receipt(
             "body_pages_excluding_references": body_pages,
             "body_page_limit": 30,
             "forbidden_log_diagnostics": log_hits,
+            **format_contract,
         },
         "pdf": {
             "path": str(pdf),

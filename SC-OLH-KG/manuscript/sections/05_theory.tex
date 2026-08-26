@@ -75,11 +75,10 @@ $\chi^2_\nu$.  For one profile with true mean $\mu$ and scale $\sigma$, define
 \begin{align}
  r_\mu(\delta_\mu)
    &=\sigma\sqrt{\frac{2\log(2/\delta_\mu)}{R}},\\
+ a_\nu(\delta)&=1-\sqrt{q_{\nu,\delta/2}/\nu},\\
+ b_\nu(\delta)&=\sqrt{q_{\nu,1-\delta/2}/\nu}-1,\\
  r_\sigma(\delta_\sigma)
-   &=\sigma\max\left\{
-       1-\sqrt{\frac{q_{\nu,\delta_\sigma/2}}{\nu}},
-       \sqrt{\frac{q_{\nu,1-\delta_\sigma/2}}{\nu}}-1
-     \right\}.
+   &=\sigma\max\{a_\nu(\delta_\sigma),b_\nu(\delta_\sigma)\}.
 \end{align}
 The normal mean tail and Cochran identity
 $(R-1)S^2/\sigma^2\sim\chi^2_{R-1}$ imply, with probability at least
@@ -106,19 +105,19 @@ Let $m_q(h)$ be the target chance margin, with $m_q(h)\le0$ implying
 feasibility.  Let $z_q^\star$ be an ideal target structural coordinate and
 $\widehat z$ the implemented structural projection of $\eta$.  The following
 statement exposes the assumption that source and target share useful profile
-geometry; it imposes no target interpretation on $(r^g,r^f)$.
+geometry; it imposes no target interpretation on $(r^g,r^f)$.  Write
+$d_q(h,h')=\|z_q^\star(h)-z_q^\star(h')\|_2$.
 
 \begin{assumption}[Aligned profile geometry]\label{ass:alignment}
 There exist a target safe-center profile $h_q^\star$, a library member $h_s$,
 and constants $\gamma_q,\Delta_q,\epsilon_\eta,L_q\ge0$ such that
 \begin{align*}
  m_q(h_q^\star)&\le-\gamma_q,\\
- \|z_q^\star(h_s)-z_q^\star(h_q^\star)\|_2&\le\Delta_q,\\
- \|\widehat z(h)-z_q^\star(h)\|_2&\le\epsilon_\eta
- \quad\text{for the profiles used below},\\
- |m_q(h)-m_q(h')|&\le L_q
- \|z_q^\star(h)-z_q^\star(h')\|_2.
+ d_q(h_s,h_q^\star)&\le\Delta_q,\\
+ \|\widehat z(h)-z_q^\star(h)\|_2&\le\epsilon_\eta,\\
+ |m_q(h)-m_q(h')|&\le L_q d_q(h,h').
 \end{align*}
+The third inequality holds for every profile used below.
 \end{assumption}
 
 \begin{theorem}[Aligned atlas coverage]\label{thm:aligned-coverage}
@@ -167,14 +166,14 @@ projecting the augmented-coordinate cover $r_{n_0}^\eta$.
 The confirmatory generator uses eight fixed, equally weighted regime strata,
 not one pooled IID law.  At a fixed resolution $d$, let stratum $s$ have
 $n_s$ independent held-out task seeds, weight $w_s$ with $\sum_sw_s=1$, and
-hit indicators $H_{si}\in[0,1]$.  Weighted Hoeffding concentration, which
-does not require identical distributions across strata, gives with probability
-at least $1-\delta$,
+hit indicators $H_{si}\in[0,1]$.  Define the task-law hit rate
+$p=\sum_s w_s\E[H_s]$, its stratified estimate
+$\widehat p=\sum_s(w_s/n_s)\sum_{i=1}^{n_s}H_{si}$, and
+$v_w=\sum_s w_s^2/n_s$.  Weighted Hoeffding concentration, which does not
+require identical distributions across strata, gives with probability at least
+$1-\delta$,
 \begin{equation}\label{eq:task-law-bound}
- \sum_s w_s\E[H_s]
- \ge \sum_s\frac{w_s}{n_s}\sum_{i=1}^{n_s}H_{si}
-      -\sqrt{\frac{\log(2/\delta)}{2}
-                    \sum_s\frac{w_s^2}{n_s}}.
+ p\ge \widehat p-\sqrt{\frac{v_w\log(2/\delta)}{2}}.
 \end{equation}
 Here $w_s=1/8$ and $n_s=20$.  The deterministic component
 \texttt{task\_seed mod 5} is an induced latent category whose realized counts

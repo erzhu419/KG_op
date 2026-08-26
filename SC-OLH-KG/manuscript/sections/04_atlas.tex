@@ -29,12 +29,13 @@ all useful policies.
 
 For ordered nodes $t_1<\cdots<t_d$, let
 $0=e_0<e_1<\cdots<e_d=1$ be their Voronoi cell edges, where
-$e_i=(t_i+t_{i+1})/2$ internally.  For the piecewise-constant reconstruction of
-$h$, define
+$e_i=(t_i+t_{i+1})/2$ internally.  Write
+$\Delta_{ik}=\sin(\pi k e_i)-\sin(\pi k e_{i-1})$.  For the
+piecewise-constant reconstruction of $h$, define
 \begin{align}
  c_0(h)&=\sum_{i=1}^{d}h(t_i)(e_i-e_{i-1}),\label{eq:c0}\\
- c_k(h)&=\sqrt{2}\sum_{i=1}^{d}h(t_i)
- \frac{\sin(\pi k e_i)-\sin(\pi k e_{i-1})}{\pi k},
+ c_k(h)&=\frac{\sqrt{2}}{\pi k}
+ \sum_{i=1}^{d}h(t_i)\Delta_{ik},
  \quad k=1,\ldots,K.\label{eq:ck}
 \end{align}
 These are exact integrals of the cosine basis over the reconstruction cells,

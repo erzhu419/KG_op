@@ -1,25 +1,43 @@
-\documentclass[12pt]{article}
+\pdfminorversion=7
+\documentclass[opre,dblanonrev]{informs4}
 
-\usepackage[margin=1in]{geometry}
-\usepackage{setspace}
-\onehalfspacing
-\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
-\usepackage{booktabs,graphicx,array,multirow}
-\usepackage[round,authoryear]{natbib}
-\usepackage{enumitem}
-\usepackage{xcolor}
+\RequirePackage{tgtermes}
+\RequirePackage{newtxtext}
+\RequirePackage{newtxmath}
+\RequirePackage{bm}
+
+\OneAndAHalfSpacedXII
+
+\usepackage{mathtools}
+\usepackage{booktabs}
 \usepackage{microtype}
+\usepackage{natbib}
+\bibpunct[, ]{(}{)}{,}{a}{}{,}
 \usepackage{xr-hyper}
 \usepackage[hidelinks]{hyperref}
 
-\externaldocument{main}
+\EquationsNumberedThrough
+\TheoremsNumberedThrough
+\ECRepeatTheorems
+
+\externaldocument{main}[main.pdf]
 \graphicspath{{figures/}}
 \setlength{\emergencystretch}{2em}
-\setlist{nosep}
-\renewcommand{\thetable}{S\arabic{table}}
-\renewcommand{\thefigure}{S\arabic{figure}}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\cL}{\mathcal{L}}
+
+\ECRUNAUTHOR{Authors' names not included for peer review}
+\ECRUNTITLE{Structural Initial Designs for Ordered Policy Profiles}
+\hypersetup{
+  pdftitle={Online Supplement: Source-Scored Structural Initial Designs for Chance-Constrained Optimization of Ordered Policy Profiles},
+  pdfauthor={}
+}
 
 \begin{document}
+\ECSwitch
 
 \begin{center}
 {\Large\bfseries Online Supplement}\par
@@ -27,7 +45,7 @@
 {\large Source-Scored Structural Initial Designs for Chance-Constrained
 Optimization of Ordered Policy Profiles}\par
 \vspace{0.4em}
-Authors omitted for review
+Authors' names are not included for peer review
 \end{center}
 
 \input{sections/appendix}

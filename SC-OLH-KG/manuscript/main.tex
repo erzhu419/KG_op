@@ -1,37 +1,38 @@
-\documentclass[12pt]{article}
+\pdfminorversion=7
+\documentclass[opre,dblanonrev]{informs4}
 
-\usepackage[margin=1in]{geometry}
-\usepackage{setspace}
-\onehalfspacing
-\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
-\usepackage{booktabs,graphicx,array,multirow}
-\usepackage[round,authoryear]{natbib}
-\usepackage[hidelinks]{hyperref}
-\usepackage{enumitem}
-\usepackage{xcolor}
+\RequirePackage{tgtermes}
+\RequirePackage{newtxtext}
+\RequirePackage{newtxmath}
+\RequirePackage{bm}
+\RequirePackage{endnotes}
+
+\OneAndAHalfSpacedXII
+
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{multirow}
 \usepackage{microtype}
 \usepackage{placeins}
+\usepackage{natbib}
+\bibpunct[, ]{(}{)}{,}{a}{}{,}
+\def\bibfont{\small}
+\def\bibsep{\smallskipamount}
+\def\bibhang{24pt}
+\def\newblock{\ }
+\def\BIBand{and}
+\usepackage[hidelinks]{hyperref}
+
+\EquationsNumberedThrough
+\TheoremsNumberedThrough
+\ECRepeatTheorems
 
 \graphicspath{{figures/}}
 \setlength{\emergencystretch}{2em}
-\setlist{nosep}
 
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}[section]
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{lemma}[theorem]{Lemma}
-\theoremstyle{definition}
-\newtheorem{assumption}[theorem]{Assumption}
-\newtheorem{definition}[theorem]{Definition}
-\theoremstyle{remark}
-\newtheorem{remark}[theorem]{Remark}
-
-\DeclareMathOperator{\E}{\mathbb{E}}
-\DeclareMathOperator{\Prob}{\mathbb{P}}
-\DeclareMathOperator{\Var}{\operatorname{Var}}
-\DeclareMathOperator*{\argmin}{arg\,min}
-\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\Var}{\operatorname{Var}}
 \newcommand{\cX}{\mathcal{X}}
 \newcommand{\cQ}{\mathcal{Q}}
 \newcommand{\cL}{\mathcal{L}}
@@ -40,42 +41,68 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\atlas}{\mathcal{A}_{n_0}}
 
-\title{\textbf{Source-Scored Structural Initial Designs for\\
-Chance-Constrained Optimization of Ordered Policy Profiles}}
-\author{Authors omitted for review}
-\date{}
+% The distributed INFORMS class includes an author-instruction panel beside
+% the abstract. The submission PDF uses the journal metadata block without
+% that instructional panel.
+\makeatletter
+\def\theARTICLEABSTRACT{%
+  \HOOKb
+  \vspace*{12pt}
+  \begin{minipage}[t]{\dimexpr\textwidth-2pt\relax}\parindent1em
+    \ABSfont
+    \noindent\theABSTRACT\endgraf
+    \vskip5pt
+    \theFUNDING
+    \theKEYWORDS
+    \theSUBJECTCLASS
+    \theAREAOFREVIEW
+    \theMSCCLASS
+    \theORMSCLASS
+    \if@BLINDREV\else\theHISTORY\fi
+    \noindent\hrulefill
+  \end{minipage}
+}
+\makeatother
+
+\MANUSCRIPTNO{}
+\RUNAUTHOR{Authors' names not included for peer review}
+\RUNTITLE{Structural Initial Designs for Ordered Policy Profiles}
+\TITLE{Source-Scored Structural Initial Designs for
+Chance-Constrained Optimization of Ordered Policy Profiles}
+\ARTICLEAUTHORS{\AUTHOR{Authors omitted for peer review}}
+
+\ABSTRACT{We study expensive chance-constrained simulation optimization for
+ordered policy profiles with historical source tasks. Before any target
+outcome, our method ranks a public 64-profile library from replicated source
+objective and chance-margin outcomes, then chooses ten profiles by
+farthest-first coverage in an exact cosine-profile coordinate. Target search
+and independent verification remain replaceable, so the contribution is an
+initial design, not a new Bayesian-optimization backend. We establish
+cross-grid coordinate consistency, a factor-two finite-library covering
+guarantee, source-rank recovery, conditional source-to-target coverage, and
+exact familywise safety for a frozen shortlist. In a registered randomized
+task law with eight aligned and adverse regimes, 160 independently seeded
+latent tasks crossed with three grid resolutions (480 task--resolution cells
+per design), the source-scored design finds a truly feasible policy in 91.7\%
+of tasks and an independently certified one in 47.3\%, versus 37.5\% and
+10.6\% for an outcome-free cosine maximin design. The comparison reverses in
+aligned, irregular-grid, sparse-high-frequency, and misspecified regimes. In
+a region-held-out electricity-reserve study, source scoring certifies 60/90
+runs versus 70/90 for the generic design; target-only functional optimization
+also wins at equal one-target preverification cost. Historical simulation is
+therefore justified only as an amortized, task-law-dependent design
+investment.}
+
+\KEYWORDS{simulation optimization, chance constraints, initial design,
+transfer learning, functional decisions, independent verification}
+
+\hypersetup{
+  pdftitle={Source-Scored Structural Initial Designs for Chance-Constrained Optimization of Ordered Policy Profiles},
+  pdfauthor={}
+}
 
 \begin{document}
 \maketitle
-
-\begin{abstract}
-We study expensive chance-constrained simulation optimization for ordered
-policy profiles with historical source tasks.  Before any target outcome, our
-method ranks a public 64-profile library from replicated source objective and
-chance-margin outcomes, then chooses ten profiles by farthest-first coverage
-in an exact cosine-profile coordinate.  Target search and independent
-verification remain replaceable, so the contribution is an initial design,
-not a new Bayesian-optimization backend.  We establish cross-grid coordinate
-consistency, a factor-two finite-library covering guarantee, source-rank
-recovery, conditional source-to-target coverage, and exact familywise safety
-for a frozen shortlist.  In a registered randomized task law with eight
-aligned and adverse regimes, 160 independently seeded latent tasks crossed
-with three grid resolutions (480 task--resolution cells per design),
-the source-scored design finds a truly feasible policy in 91.7\% of tasks and
-an independently certified one in 47.3\%, versus 37.5\% and 10.6\% for an
-outcome-free cosine maximin design.  The comparison reverses in aligned,
-irregular-grid, sparse-high-frequency, and misspecified regimes.  In a
-region-held-out electricity-reserve study, source scoring certifies 60/90 runs
-versus 70/90 for the generic design; target-only functional optimization also
-wins at equal one-target preverification cost.  Historical simulation is
-therefore justified only as an amortized, task-law-dependent design
-investment.
-\end{abstract}
-
-\medskip
-\noindent\textbf{Keywords:} simulation optimization; chance constraints;
-initial design; transfer learning; functional decisions; independent
-verification
 
 \input{sections/01_introduction}
 \input{sections/02_literature}
@@ -86,11 +113,12 @@ verification
 \input{sections/07_results}
 \input{sections/08_discussion}
 \input{sections/09_conclusion}
+\input{sections/10_disclosure}
 
 \clearpage
 \phantomsection
 \label{page:references}
-\bibliographystyle{plainnat}
+\bibliographystyle{informs2014}
 \bibliography{references}
 
 \end{document}
