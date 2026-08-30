@@ -1,107 +1,84 @@
 \section{Introduction}\label{sec:introduction}
 
-Many simulation-optimization decisions are functions before they are vectors.
-A reserve rule varies with forecast stress, an inventory rule varies across a
-planning horizon, and a resource rule varies over ordered operating states.
-Implementation discretizes such a policy into hundreds or thousands of
-coordinates, but neighboring coordinates retain a common order and often a
-smooth or piecewise-smooth interpretation.  Treating this representation as an
-arbitrary high-dimensional box discards information that can matter more than
-the choice of sequential optimizer.
+Many simulation decisions are rules before they are vectors.  A reserve rule
+changes with forecast stress, an inventory rule changes over a planning
+horizon, and a resource rule changes across ordered operating states.  A
+computer may store such a rule as hundreds or thousands of numbers, but those
+numbers are not unrelated knobs.  They are samples of one ordered profile.
+Ignoring that fact can make the problem look much harder than the underlying
+decision really is.
 
-The difficulty is sharper under chance constraints.  With only a few target
-simulations, an unstructured design may never observe a feasible policy.  A
-surrogate or acquisition function then has little evidence with which to learn
-the feasible boundary.  Historical simulations from related tasks appear to
-offer a remedy, but they introduce two risks.  First, source tasks can be
-misaligned: a shape that is safe in one system may be harmful in another.
-Second, source cost and final safety verification can dwarf the advertised
-target-search budget.  A credible method must therefore expose its structural
-assumption, separate source information from target information, and permit
-abstention when independent evidence is insufficient.
+Chance constraints make the first simulations especially important.  If none
+of them reaches a feasible region, a surrogate has little evidence about
+where the safety boundary lies.  Historical simulations from related systems
+can help, but only if the relevant policy shapes transfer.  A shape that was
+safe in one system may be unsafe in another, and the cost of collecting and
+verifying historical evidence may exceed the cost of the new search itself.
+The useful question is therefore not simply whether history helps, but what
+part of history can be reused, under what assumption, and at what cost.
 
-We study a deliberately narrow question: can replicated source outcomes
-improve the \emph{initial design} for a new chance-constrained ordered-profile
-problem?  We begin with a finite, outcome-free library of constant, monotone,
-low-frequency, piecewise, and high-frequency profiles on $[0,1]$.  Source
-outcomes do not create this library.  They score its members using within-task
-objective and chance-margin ranks.  A first profile balances the two ranks;
-Gonzalez farthest-first selection then fills the design in a coordinate that
-contains exact cosine coefficients, their diagonal squares, and the two source
-ranks.  The ten selected profiles are frozen and mapped to the target grid
-before any target outcome is observed.  We call the result a
+We focus on one concrete use of history: choosing the \emph{initial design}
+for a new chance-constrained ordered-profile problem.  We first construct a
+public library of 64 constant, monotone, smooth, piecewise, and oscillatory
+profiles without using outcomes.  Replicated source simulations then rank
+these same profiles by objective and chance margin.  The best compromise
+starts the design, and farthest-first selection adds profiles that cover a
+common cosine coordinate.  The resulting ten policies are fixed and mapped to
+the target grid before the first target outcome.  We call this a
 \emph{source-scored structural initial design}.
 
-This construction separates three decisions that are often conflated.  The
-frontend decides where target search starts.  A replaceable backend may add
-target evaluations.  A frozen ordered shortlist is then tested on fresh
-replications by an optimizer-independent verifier.  Figure
-\ref{fig:method-overview} summarizes the central change in viewpoint: the
-method does not confront the large discretized coordinate space solely with a
-more elaborate acquisition rule.  It first uses the ordered functional
-interpretation to fix a public structural profile class, then uses historical
-simulations only to rank and diversify the initial design.  Verification
-outcomes never return to search.
+The method keeps three jobs separate.  The initial design decides where a new
+search begins.  Any declared optimizer may add target evaluations.  Finally,
+a short ordered list of candidates is fixed and tested with fresh simulations;
+if none passes, the procedure abstains.  Figure \ref{fig:method-overview}
+shows the change in viewpoint.  We do not try to solve a large discretized
+space only by making the acquisition rule more elaborate.  We first recognize
+the ordered profile, use history to choose among transparent candidate shapes,
+and reserve fresh target outcomes for deployment verification.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\textwidth]{figure1_profile_space.pdf}
+  \begin{overpic}[width=\textwidth]{figure1_profile_space.pdf}
+    \put(11.0,41.7){\colorbox{white}{\parbox[c][9pt][c]{100pt}{\centering
+      \fontsize{4}{4.5}\selectfont Low-frequency cosine basis\\[-0.5pt]
+      (DCT-II on regular midpoint grids)}}}
+  \end{overpic}
   \caption{From high-dimensional coordinates to ordered profile-space search.
-  A discretized vector is treated as an ordered policy profile and represented
-  by low-frequency cosine coefficients.  A public, outcome-free structural
-  library and its coordinate are fixed before target outcomes.  Replicated
-  source outcomes rank existing profiles but do not construct the
-  representation.  Rank-seeded farthest-first selection chooses a diverse
-  ten-profile initial design.  A replaceable backend may add target
-  evaluations, after which fresh independent samples verify a frozen
-  shortlist.  Historical simulation therefore supplies reusable
-  experimental-design information rather than target-oracle information.}
+  The raw vector is read as samples of an ordered policy and summarized by
+  low-frequency cosine coefficients.  The public library and coordinate are
+  fixed without outcomes.  Source simulations rank existing profiles, while
+  farthest-first selection prevents the ten-point design from collapsing onto
+  a single source-favored shape.  A replaceable optimizer may add target
+  evaluations.  Fresh target simulations then verify a fixed shortlist.}
   \label{fig:method-overview}
 \end{figure}
 \FloatBarrier
 
-Our contributions are fourfold.
+The paper makes three contributions.
 
 \begin{enumerate}
-\item We give a complete finite algorithm for turning source simulations into
-an initial design for ordered profiles.  Every library rule, coordinate,
-weight, tie break, interpolation, and information boundary is explicit.  The
-method uses no target objective, feasibility label, optimum, safe-basin
-parameter, or verification outcome before target search.
+\item We give a finite, reproducible way to turn source simulations into ten
+starting policies.  The library, coordinate, weights, tie breaks, and target
+mapping are explicit, and the design uses no target outcome or hidden target
+geometry.
 
-\item We connect the implementation to a finite theoretical chain.  The
-cosine coordinate is stable under profile-grid refinement; farthest-first is a
-two-approximation for finite $k$-center coverage; bounded source estimation
-error preserves sufficiently separated ranks; and profile coverage implies
-target feasibility under explicit source-target discrepancy and safety-depth
-conditions.  A separate exact-binomial result controls familywise false
-deployment for the frozen shortlist.  The finite implications are
-machine-checked in Lean 4; the alignment assumptions remain empirical scope
-conditions rather than universal claims.
+\item We explain when the small design can work.  Grid refinement preserves
+the profile coordinate; farthest-first controls finite-library cover; finite
+source samples recover separated ranks; and structural cover reaches a target
+safe region when transfer error fits inside its safety margin.  Fresh tests
+control false deployment.  Lean 4 checks the finite implications, while
+source-target alignment remains an empirical assumption.
 
-\item We conduct a frozen stress test designed to reveal benchmark fit.  Eight
-randomized regimes vary effective rank, frequency support, coordinate order,
-grid regularity, smoothness, sparse high-frequency activity, and complete
-source-target misspecification.  Structured source-free controls use the same
-finite library and profile coordinate.  Additional matrices vary source
-budget, representation schema, chance level, safety mass, and method constants.
-
-\item We account for source, target-search, and verification calls separately.
-An equal preverification-cost experiment gives target-only methods the source
-archive's calls.  A region-held-out electricity study is retained even though
-it reverses the source-versus-generic ordering.  Native transfer methods use
-their own pipelines rather than receiving our initial design.  These negative
-and equal-cost results delimit the contribution: source scoring is useful
-under aligned task laws and repeated deployment, not as a universal shortcut
-for arbitrary high-dimensional optimization.
+\item We test that assumption in eight randomized regimes, structured
+source-free comparisons, equal-cost experiments, and a region-held-out
+electricity study in which source scoring loses.  Source, target-search, and
+verification calls are reported separately.  The evidence therefore measures
+an amortized design investment for related tasks, not a shortcut for one
+arbitrary high-dimensional problem.
 \end{enumerate}
 
-The main empirical result is correspondingly conditional.  Across 160
-independently seeded latent tasks crossed with three profile-grid resolutions
-(480 paired task--resolution cells per design), source scoring improves
-aggregate feasible coverage and certification.  It loses, however, in several
-registered regimes and in the electricity study.  A $10{,}000$-coordinate
-result is therefore interpreted as refinement of an ordered profile grid, not
-as solving an arbitrary $10{,}000$-variable black-box problem.  This boundary
-is central to both the theory and the practical decision of whether historical
-simulation is worth buying.
+Across 160 independently seeded tasks and three grid resolutions, source
+scoring improves feasible coverage and certification in aggregate but loses
+in several adverse regimes and in Energy.  The $10{,}000$-coordinate result
+shows stability under grid refinement, not a ten-evaluation solution to an
+arbitrary $10{,}000$-variable black box.

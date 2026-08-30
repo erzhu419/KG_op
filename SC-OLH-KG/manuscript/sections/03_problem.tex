@@ -1,4 +1,4 @@
-\section{Problem and Information Contract}\label{sec:problem}
+\section{Problem Setting and Available Information}\label{sec:problem}
 
 \subsection{Ordered policy profiles}
 
@@ -28,8 +28,9 @@ subject to the chance constraint
   p_q(x):=\Prob\{Y^g_q(x)\le \tau_q\}\ge 1-\alpha_q.
 \end{equation}
 The true feasible set is $\cF_q=\{x:p_q(x)\ge1-\alpha_q\}$.
-Truth is available in synthetic experiments only after all design, search,
-shortlisting, and verification decisions, and only for audit metrics.
+In synthetic experiments, the experimenter reveals truth only after design,
+search, shortlisting, and verification are complete, and uses it only to score
+the finished decision.
 
 \subsection{Source and target information}
 
@@ -44,12 +45,11 @@ $m=2$, $J=64$, and $R=3$, hence
 source simulator calls.  The library is constructed without source or target
 outcomes; source data only determine which members are selected.
 
-The source archive is an exogenously supplied input.  In the synthetic stress
-test its tasks are drawn from the same registered regime as the target; in the
-external study they obey the stated region-holdout rule.  The method ranks
-profiles within that supplied archive.  It does not identify, retrieve, or
-purchase related historical tasks from a larger repository.  Archive
-retrieval is therefore an upstream decision outside the claimed algorithm.
+The source archive is supplied before the target problem opens.  In the
+synthetic stress test its tasks come from the same declared regime as the
+target; in the external study they obey the stated region-holdout rule.  The
+method ranks profiles within this archive.  Choosing or purchasing related
+historical tasks from a larger repository is a separate upstream decision.
 
 Before target search, the method may use the target's ordered grid, integer
 bounds, nominal dimension, and, in declared-schema experiments, channel order.
@@ -60,10 +60,10 @@ weighting is evaluated only as a control.
 
 \subsection{Decision stages and costs}
 
-The frontend selects $n_0$ initial target policies.  A backend may then use a
-total of $N\ge n_0$ target search calls and returns an ordered shortlist of at
-most $K_s$ distinct candidates.  The shortlist and its order are frozen before
-verification.  Fresh replications test the candidates, producing either a
+The initial-design step selects $n_0$ target policies.  A target optimizer may
+then use a total of $N\ge n_0$ search calls and return an ordered list of at
+most $K_s$ distinct candidates.  This list and its order are fixed before
+fresh verification simulations begin.  The final outcome is either a
 certified deployment or abstention.
 
 We report the costs
@@ -84,6 +84,6 @@ truly feasible policy.  The primary deployment endpoint is whether the
 verifier returns a truly feasible policy.  We also report false certificates,
 verification calls, and a penalized loss that retains failures in the
 denominator.  Conditional regret is reported only when a feasible policy
-exists and is never used to compare methods with different feasible counts by
-itself.  A fixed, outcome-free audit library defines synthetic regret and an
-explicit oracle upper bound; neither enters a non-oracle decision.
+exists and is not used alone to compare methods with different feasible
+counts.  A separate fixed library defines synthetic regret and an unattainable
+finite-library upper bound; neither affects an implementable decision.

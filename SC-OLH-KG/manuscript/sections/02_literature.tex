@@ -32,7 +32,7 @@ space-filling designs are standard for deterministic computer experiments
 finite $k$-center guarantee \citep{Gonzalez1985}.  We use that algorithm on a
 finite profile library, but source ranks augment its selection metric.  The
 generic-DCT control removes those ranks and is therefore the direct
-space-filling counterfactual.
+source-free space-filling comparison.
 
 \paragraph{Transfer and historical-task priors.}
 Few-shot deep kernels, hierarchical Gaussian-process priors, source ensembles,
@@ -43,12 +43,11 @@ Related work also learns a search space from earlier hyperparameter tasks
 \citep{PerroneEtAl2019} or transfers optimizer rankings
 \citep{FeurerEtAl2018}.  Warm-start Bayesian optimization similarly treats
 earlier evaluations as reusable information \citep{PoloczekWangFrazier2016}.
-In contrast, our source archive scores a fixed public
-library; it does not learn a target surrogate, acquisition function, or hidden
-target-specific representation, and it assumes the archive has already been
-retrieved.  This narrower object makes source cost and
-the source-free structural counterfactual directly auditable.  We nevertheless
-compare eight native end-to-end transfer pipelines using the same source
+Our method transfers a smaller object: the source archive ranks a fixed public
+library, while the target surrogate and optimizer remain separate.  This makes
+it possible to compare source scoring directly with the same structural
+library without outcomes and to count the cost of history explicitly.  We
+also compare eight end-to-end transfer pipelines using the same source
 information and target budget.
 
 \paragraph{Selection and independent verification.}
@@ -66,7 +65,8 @@ posterior feasibility probability as a deployment certificate.
 \paragraph{Positioning.}
 Without restrictions on the objective and feasible set, no finite
 target-label-free design can dominate all others, a point consistent with
-no-free-lunch results \citep{WolpertMacready1997}.  Our contribution is not a
-distribution-free optimizer.  It is a task-law-conditional experimental-design
-protocol for ordered profiles, accompanied by source-free structured controls,
-adverse regimes, a negative external control, and explicit cost accounting.
+no-free-lunch results \citep{WolpertMacready1997}.  Our claim is therefore
+about experimental design for related ordered-profile tasks, not a
+distribution-free optimizer.  Source-free structured designs, adverse
+regimes, an external negative control, and explicit cost accounting show where
+that claim does and does not hold.

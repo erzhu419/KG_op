@@ -1,7 +1,22 @@
-\section{Finite-Sample Guarantees and Scope}\label{sec:theory}
+\section{Why the Design Can Work: Finite-Sample Guarantees}\label{sec:theory}
 
-The theory explains the finite implementation under explicit conditions.  It
-does not assert that every target is aligned with the source population.
+The method uses only ten target policies, so its structural assumption must do
+real work.  The results below trace that work from representation to
+deployment.  Proposition \ref{prop:coefficient-stability} first shows that a
+policy has nearly the same coordinate when the implementation grid is
+refined.  Theorem \ref{thm:farthest-first} then shows that farthest-first gives
+a controlled cover of the finite library.  Proposition
+\ref{prop:rank-recovery} states which source rankings survive finite
+simulation noise.  Theorem \ref{thm:aligned-coverage} turns structural cover
+into a feasible target policy when a source-supported profile lies close
+enough to a sufficiently deep target safe region.  Finally, Theorem
+\ref{thm:verifier} controls false deployment using fresh target simulations.
+
+This chain also makes the limitation visible.  A fine grid does not hurt if it
+describes the same ordered profile, but no theorem can rescue a target whose
+safe region is absent from, or badly distorted relative to, the structural
+library.  The results are finite and conditional; they are not a guarantee for
+arbitrary high-dimensional black boxes.
 
 \subsection{Profile-grid consistency}
 
@@ -25,11 +40,13 @@ Linear interpolation from a reference grid of size $d_{\rm ref}$ has the
 analogous bound $L_h/(2d_{\rm ref})$ before deterministic rounding.
 \end{proposition}
 
-The proof applies the integral triangle inequality and the nearest-node or
-linear-interpolation error.  It justifies comparison across discretizations of
-one regular profile; it does not turn an unordered vector into a profile.
+The bound says that nominal dimension disappears once the grid is fine enough
+to reconstruct the same profile.  It justifies comparisons across
+discretizations of one ordered rule; it does not turn an unordered vector into
+a function.  The proof is the integral triangle inequality followed by the
+nearest-node or linear-interpolation error.
 
-\subsection{Finite-library coverage}
+\subsection{Why ten diverse profiles cover the library}
 
 For any coordinate $u$ on the finite library, define the covering radius of
 $A\subset\cL$ by
@@ -54,11 +71,11 @@ For the implemented $\eta=(z,r^g,r^f)$, Euclidean projection gives
 \begin{equation}\label{eq:projection-cover}
  r(A_k;z)\le r(A_k;\eta)\le2r_k^\star(\eta).
 \end{equation}
-Thus outcome ranks may alter selection, while the resulting set still has a
-checkable structural-space cover.  Equation \eqref{eq:projection-cover} does
-not assert that source ranks themselves transfer to a target.
+Thus source ranks can steer selection without erasing structural diversity.
+Equation \eqref{eq:projection-cover} gives a checkable cover in profile space;
+it does not claim that source ranks have the same meaning on the target.
 
-\subsection{Source-score uncertainty}
+\subsection{What finite source samples can rank}
 
 Let $s_{qj}$ denote either a true source objective statistic or a true source
 chance-margin statistic and $\widehat s_{qj}$ its replicated estimate.
@@ -91,15 +108,15 @@ $1-\delta_\mu-\delta_\sigma$,
 The variance floor is harmless here because $a\mapsto\max\{a,10^{-3}\}$ is
 one-Lipschitz.  Allocating the two tail probabilities across the finite set of
 tasks, profiles, and score heads gives the simultaneous radius required by
-Proposition \ref{prop:rank-recovery}.  This result does not promise exact
-recovery of nearly tied ranks from three replications; the sensitivity matrix
-therefore varies replications and library size rather than treating source
-order as known.  Lean checks the finite-sum variance identity, floor-aware
-error propagation, bad-event union, and rank implication.  The normal and
-chi-square sampling laws are the standard external distributional identities
-used to instantiate those checked events \citep{Cochran1934}.
+Proposition \ref{prop:rank-recovery}.  This result deliberately leaves nearly
+tied profiles unresolved: three replications cannot reliably order them.  The
+sensitivity experiment therefore varies replications and library size instead
+of treating the source order as known.  The normal and chi-square sampling
+laws supply the probability bounds \citep{Cochran1934}; Lean checks the finite
+variance identity, the effect of the variance floor, the union of bad events,
+and the final rank implication.
 
-\subsection{Conditional source-to-target coverage}
+\subsection{When library coverage reaches a target safe region}
 
 Let $m_q(h)$ be the target chance margin, with $m_q(h)\le0$ implying
 feasibility.  Let $z_q^\star$ be an ideal target structural coordinate and
@@ -130,13 +147,14 @@ $\widehat z$.  Under Assumption \ref{ass:alignment}, if
 then $\atlas$ contains a target-feasible policy.
 \end{theorem}
 
-The proof projects the augmented cover to $\widehat z$, chooses the atlas
-member covering $h_s$, transfers the distance to $z_q^\star$ by two
-coordinate-error terms, and applies Lipschitz margin and
-safe depth.  Equation \eqref{eq:coverage-condition} is useful precisely because
-it can fail: frequency shifts, irregular grids, and misspecified targets raise
-$\Delta_q$ or $\epsilon_\eta$, while shallow feasible basins reduce
-$\gamma_q$.
+The condition has a direct reading.  The ten profiles must cover the library
+closely; the source-supported shape must not move too far on the target; the
+implemented coordinate must approximate the target-relevant geometry; and the
+safe region must be deep enough to absorb all three errors.  Frequency shifts,
+irregular grids, and misspecification increase $\Delta_q$ or
+$\epsilon_\eta$, while a shallow feasible region decreases $\gamma_q$.  In
+those cases the theorem stops, as it should.  The complete triangle-inequality
+proof appears in the Online Supplement.
 
 Figure \ref{fig:coverage-geometry} gives the geometric interpretation.  The
 symbol $\epsilon_\eta$ denotes error between the implemented projected
@@ -163,8 +181,11 @@ projecting the augmented-coordinate cover $r_{n_0}^\eta$.
 \end{figure}
 \FloatBarrier
 
-The confirmatory generator uses eight fixed, equally weighted regime strata,
-not one pooled IID law.  At a fixed resolution $d$, let stratum $s$ have
+The preceding theorem concerns one target.  To estimate how often the selected
+design succeeds over the declared task population, we next treat a design hit
+as a bounded random outcome.  The confirmatory generator uses eight fixed,
+equally weighted regimes, not one pooled IID law.  At a fixed resolution $d$,
+let regime $s$ have
 $n_s$ independent held-out task seeds, weight $w_s$ with $\sum_sw_s=1$, and
 hit indicators $H_{si}\in[0,1]$.  Define the task-law hit rate
 $p=\sum_s w_s\E[H_s]$, its stratified estimate
@@ -185,7 +206,7 @@ only to a prospective repetition of the registered stratified generator and
 requires the atlas to be frozen before held-out tasks.  It is not a guarantee
 for arbitrary future domains.
 
-\subsection{Exact terminal verification}
+\subsection{Independent terminal safety}
 
 Fix a shortlist before verification.  Candidate $j$ receives $v_j$ fresh iid
 Bernoulli indicators $Z_{jr}=1\{Y^g_{jr}\le\tau\}$ and is certified only when
@@ -213,17 +234,20 @@ argument because the shortlist and all budgets are fixed before testing.
 
 For $p_0=.95$, $K_s=3$, and $\delta=.05$, the minimum all-success budget is 80
 per candidate.  Its power at true feasibility probability $p$ is $p^{80}$;
-this is only 0.017 at $p=.95$.  Validity therefore does not imply
-nonvacuity, and Section \ref{sec:results} reports both.  The exact
-Clopper--Pearson lower bound is used only for the preregistered sensitivity
-calculation \citep{ClopperPearson1934}.
+this is only 0.017 at $p=.95$.  Validity therefore does not imply that the
+test will often certify, and Section \ref{sec:results} reports both validity
+and power.  The exact Clopper--Pearson lower bound is used only for the
+preregistered sensitivity calculation \citep{ClopperPearson1934}.  A complete
+proof of the familywise statement appears in the Online Supplement.
 
-\subsection{Formalization boundary}
+\subsection{Human-readable and machine-checked proofs}
 
-The profile consistency, finite $k$-center, rank-recovery, aligned-coverage,
-task-law, binomial, and budget implications are formalized in Lean 4 without
-\texttt{sorry}, \texttt{admit}, or project-defined \texttt{axiom}.  Machine
-checking establishes that the finite conclusions follow from their premises.
-It does not establish that Assumption \ref{ass:alignment} holds in Energy or
-any unspecified target population; those questions are empirical and the
-negative experiments are retained.
+The Online Supplement gives ordinary mathematical proofs of the three central
+statistical and transfer results, followed by a map from manuscript claims to
+Lean files.  Profile consistency, finite $k$-center, rank recovery, aligned
+coverage, task-law concentration, binomial verification, and budget
+implications are formalized in Lean 4 without \texttt{sorry}, \texttt{admit},
+or a project-defined \texttt{axiom}.  Machine checking confirms that the
+stated conclusions follow from the stated premises.  It cannot establish that
+Assumption \ref{ass:alignment} holds in Energy or in an unspecified future
+domain; that remains an empirical question.

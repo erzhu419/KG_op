@@ -1,16 +1,16 @@
 \section{Experimental Design}\label{sec:experiments}
 
-The experiment program was frozen before confirmatory outcomes.  A compact
-registry commits the protocol, method specification, result-cell hashes,
-failures, and analysis endpoints.  All non-oracle methods use the same target
-truth only after deployment to compute audit metrics.
+We fixed the confirmatory protocol before observing its outcomes.  A compact
+registry records the method version, experimental cells, failures, and
+analysis endpoints.  Every implementable method sees target truth only after
+its deployment decision, when truth is used to compute evaluation metrics.
 
 \subsection{Randomized ordered-profile stress test}
 
-The primary study uses eight fixed, equally weighted regime strata.  Within
-each stratum, independent hash-derived task-seed streams generate held-out
-latent tasks.  Table \ref{tab:stress-regimes} separates nominal grid resolution
-from latent complexity.
+The primary study uses eight fixed, equally weighted regimes.  Within each
+regime, independent deterministic seed streams generate held-out problem
+instances.  Table \ref{tab:stress-regimes} separates grid resolution from the
+complexity of the underlying policy shape.
 
 \begin{table}[t]
 \centering
@@ -39,11 +39,12 @@ the same seeds with $d\in\{200,1000,10000\}$.  This gives 160 independent
 latent task seeds and 480 correlated task--resolution cells per design.  Each
 cell is paired across six designs: source-scored, generic DCT
 maximin, random low frequency, natural three-block, raw Sobol, and an
-explicitly labeled finite-library oracle.  The primary non-oracle matrix has
+explicitly labeled finite-library upper bound.  The primary implementable
+matrix has
 $8\times3\times20\times5=2400$ cells; including the oracle gives 2880.  Every
 design uses $n_0=N=10$, so the primary comparison is a pure initial-design
 intervention.  The source-scored arm pays 384 source calls; source-free arms
-pay none.  All use the same frozen-shortlist verifier.
+pay none.  All use the same independent shortlist verifier.
 
 For each synthetic target regime, the two supplied source tasks are generated
 from that same regime with the role set to source.  This is a regime-matched
@@ -53,18 +54,19 @@ already supplied a related archive.  The Energy region holdout is the explicit
 archive-mismatch control.
 
 The primary chance level is $\alpha=.05$, and task safe mass is calibrated to
-.08 on a fixed outcome-free audit library distinct from the design library.
-Regret is measured against the best feasible policy in that audit library.
-The $d=10000$ cells refine the grid while holding the registered latent law
-fixed unless the regime explicitly changes rank.
+.08 on a separate fixed library that is not used for design.  Regret is
+measured against the best feasible policy in that evaluation library.  The
+$d=10000$ cells refine the grid while holding the underlying problem fixed
+unless the regime explicitly changes rank.
 
 \subsection{Sensitivity and information controls}
 
 An 8640-cell one-factor-at-a-time matrix varies active rank, $\alpha$, safe
 mass, $n_0$, number of source tasks, profiles per task, source replications,
 retained frequency, frequency penalty, source-rank metric weights, and the
-first-center safety weight.  These are diagnostics, not a post-confirmatory
-hyperparameter search.  A separate 1280-cell matrix crosses declared versus
+first-center safety weight.  These experiments describe sensitivity; they are
+not a hyperparameter search performed after seeing the primary results.  A
+separate 1280-cell matrix crosses declared versus
 schema-blind profile mapping with equal versus descriptor-conditioned source
 weights.  The latter weighting is excluded from the primary method regardless
 of its result.
@@ -82,8 +84,8 @@ published constrained trust-region posterior-sampling backend
 One $N=394$ task in the irregular-grid regime returned duplicate canonical
 posterior samples; it remains a failed, unsuccessful cell.
 
-Eight native transfer pipelines---Safe F-PACOH, RGPE, stacked transfer GP,
-multi-task GP, FSBO, HyperBO, MetaBO, and MALIBO---receive the same 384-call
+Eight native transfer pipelines (Safe F-PACOH, RGPE, stacked transfer GP,
+multi-task GP, FSBO, HyperBO, MetaBO, and MALIBO) receive the same 384-call
 source archive, $n_0=10$, $N=20$, and terminal verifier, but retain their own
 prior, representation, initialization, and acquisition logic.  This is an
 end-to-end transfer comparison, not a common-atlas backend comparison.
@@ -96,17 +98,17 @@ reserve responses over a 168-hour operational horizon.  Energy V3 includes 18
 markets in five geographic regions and five algorithmic seeds per held-out
 market.  All source markets from the target's region are excluded.  The source
 arm uses 768 source calls, $N=13$ target calls, and the same public profile
-library; generic DCT, random low frequency, natural constant, raw Sobol, and
-target-only functional SCBO are controls.
+library.  Generic DCT, random low frequency, natural constant, raw Sobol, and
+target-only functional SCBO provide comparisons without source scoring.
 
 Fresh verification windows are sampled from a held-out empirical calendar
 split.  The exact-binomial claim is therefore conditional on the declared
 replication distribution, not a theorem about an unobserved future year.
-Postdecision audits test chronological blocks and physically nonoverlapping
-windows, but are descriptive because markets share calendar data and only five
-regions exist.  Energy V2 is retained as a separate historical specification;
-V3 is the final external control.  No Energy result was used to modify the
-frozen atlas.
+After the decisions, we also check chronological blocks and physically
+nonoverlapping windows.  These checks are descriptive because markets share
+calendar data and only five regions exist.  Energy V2 is retained as a
+separate historical specification; V3 is the final external control.  No
+Energy result was used to modify the initial design.
 
 \subsection{Inference and failure accounting}
 

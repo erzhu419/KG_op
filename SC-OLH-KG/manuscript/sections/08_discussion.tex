@@ -2,30 +2,27 @@
 
 \subsection{What the evidence supports}
 
-The study supports a conditional proposition: when target feasibility is
-organized by profile geometry represented in the source population, source
-outcomes can improve a very small structural initial design.  The randomized
-task law tests more than the three mechanisms used during method development,
-and its permutation, rank, piecewise, frequency-shift, and misspecification
-regimes make the condition falsifiable.  Source scoring improves aggregate
-coverage, yet the regime table and Energy study identify concrete reversals.
+Source outcomes help when source and target tasks organize safety around
+similar policy shapes.  That is the central empirical claim, and the adverse
+regimes make it testable rather than automatic.  Source scoring improves
+coverage on the full randomized mixture, but the regime table and Energy
+study show concrete cases in which it loses.
 
 This interpretation differs from claiming a generic high-dimensional
 optimizer.  The raw vector may contain $10^4$ coordinates, but the decision is
-an ordered profile and the library has finite structural complexity.  Profile
-grid refinement is operationally relevant---a controller may require a fine
-lookup table---but it is not equivalent to adding $10^4$ unrelated decision
-variables.  The proper benefit is invariance to representation resolution
-under shared profile structure.
+an ordered profile and the library has finite structural complexity.  A
+controller may still require a fine lookup table, so profile-grid refinement
+is operationally relevant.  It is not equivalent to adding $10^4$ unrelated
+decision variables.  The proper benefit is invariance to representation
+resolution under shared profile structure.
 
-\subsection{Why Energy is necessary}
+\subsection{What Energy teaches us}
 
-Removing Energy would make the evidence cleaner and the scientific claim
-weaker.  The external reversal shows that a generic structural design can be
-better than source scoring when region-held-out source rankings do not transfer.
-Because V3 was frozen before its outcomes, tuning the source score after this
-result would convert the holdout into development data.  We therefore retain
-Energy as a negative control and interpret it as an applicability boundary.
+The Energy reversal shows that a generic structural design can beat source
+scoring when rankings from held-out regions do not transfer.  Because V3 was
+fixed before its outcomes, changing the score now would turn a test case into
+development data.  We keep the result as a negative control and as a practical
+boundary on when the method should be used.
 
 The practical implication is a diagnostic choice.  If historical tasks and a
 new target share an ordered policy semantics and source rank stability can be
@@ -35,18 +32,17 @@ structure already has a credible physical basis, the generic maximin design is
 the safer default.  The method should abstain from a transfer claim when these
 conditions cannot be assessed.
 
-The current method begins after this assessment: a source archive is supplied
-exogenously, and the algorithm ranks profiles inside it.  It does not retrieve
-related tasks from an unrestricted historical database.  Regime-matched
+The current method begins after this assessment: a source archive has already
+been supplied, and the algorithm ranks profiles inside it.  It does not
+retrieve related tasks from an unrestricted historical database.  Regime-matched
 synthetic sources therefore identify the value of scoring a relevant archive,
 whereas Energy shows the cost of archive mismatch.  Source retrieval and its
 own data-acquisition cost remain separate research and operational decisions.
 
-\subsection{Source cost as a portfolio investment}
+\subsection{When the source archive pays for itself}
 
-The equal-preverification-cost experiment prevents an appealing but incorrect
-story: 10 target calls do not beat 394 target calls for a single target.  A
-source archive becomes economically plausible only when reused.  Let
+Ten target calls do not beat 394 target calls for a single target.  The source
+archive becomes economically plausible only when it is reused.  Let
 $C_0=N_0+V_0$ be the expected target-only calls per deployment and
 $C_A=N_A+V_A$ the source-design calls excluding the archive.  The call-count
 break-even number of deployments is
@@ -61,69 +57,37 @@ wall-clock parallelism, or policy quality, and Energy shows that paying the
 archive can still be inferior.  It is a planning threshold, not a dominance
 theorem.
 
-If certified deployment rather than a target instance is the unit of value,
-let $p_A$ and $p_0$ be true-feasible certification probabilities.  The
-corresponding descriptive efficiencies are
-\[
- \widetilde C_A(M)=\frac{S/M+C_A}{p_A},\qquad
- \widetilde C_0=\frac{C_0}{p_0},
-\]
-and source scoring crosses a control when
-\[
- M\ge
- \left\lceil\frac{S}{p_A C_0/p_0-C_A}\right\rceil,
- \qquad p_A C_0/p_0>C_A.
-\]
-This remains incomplete without decision-maker costs.  A general operational
-loss would add $c_{\rm unsafe}$ per false deployment,
-$c_{\rm abstain}$ per abstention, and $c_{\rm quality}$ times objective regret
-to simulator calls.  We report the components rather than choose those costs
-on the reader's behalf.
+Table \ref{tab:outcome-adjusted-cost} also reports calls per certified
+deployment, but that ratio is only a descriptive planning aid.  A complete
+operational comparison would attach decision-maker costs to unsafe deployment,
+abstention, and objective quality.  We report those components separately
+rather than choose their relative value on the reader's behalf.
 
-\subsection{Verification is a separate operational decision}
+\subsection{Search and verification answer different questions}
 
 Independent verification frequently costs an order of magnitude more than
-target search.  That is not overhead hidden by the method; it is the cost of a
-different claim.  Search asks whether a promising policy has been found.
-Verification asks whether a frozen policy can be deployed with a specified
-false-certification bound.  A target-only optimizer making the same safety
-claim must pay a comparable fresh-sample cost.
+target search because it answers a different question.  Search asks whether a
+promising policy has been found.  Verification asks whether a fixed policy can
+be deployed with a specified false-certification bound.  A target-only
+optimizer making the same safety claim must also pay for fresh samples.
 
-The all-success protocol is particularly conservative near the threshold.
-Its low power explains why feasible coverage greatly exceeds certified
-deployment.  Increasing an all-success budget can even reduce power for any
-$p<1$.  Future deployments should preregister a more efficient exact
-Clopper--Pearson or sequential ranking-and-selection design rather than change
-the rule after inspecting results.  Temporal applications also require block
-or mixing-aware certification if iid replications are not physically
-defensible.
+The all-success rule is valid but weak near the threshold, which explains why
+feasible coverage exceeds certified deployment.  Future studies should fix a
+more efficient exact or sequential test in advance and use block-aware
+verification when temporal replications are not iid.
 
 \subsection{Benchmark fit and remaining threats}
 
-The frozen randomized generator reduces development overfitting but cannot
-erase it.  The task law, profile library, and stress axes were authored within
-the project.  The method also assumes declared ordered semantics, and the
-schema-blind drop confirms that this is a strong prior.  Energy is genuinely
-different and unfavorable, but five geographic regions are too few for a broad
-population claim.  The native transfer audit has only three historical
-families and all methods fail on Queue.
-
-Other limitations are equally important.  Related source tasks are assumed to
-have been supplied; source retrieval is not solved.  Three source replications
-cannot reliably order near-tied profiles; source volume is nonmonotone; the finite
-library can miss a feasible basin entirely; and source rank aggregation can
-hide task disagreement.  Objective comparisons among certified subsets are
-selection dependent.  The randomized oracle measures regret relative to a
-finite audit library, not the unknown continuous optimum.  One canonical
-functional-SCBO task failed and remains in the denominator.  Finally, the
-formal theory proves finite implications conditional on alignment,
-within-stratum independence, and the declared replication law; it does not
-prove those assumptions from data.  The same latent target seeds are reused
-across the three profile resolutions, so pooled 480-cell summaries are
-descriptive rather than a larger independent task sample.
-
-These boundaries argue for a restrained deployment workflow: preregister the
-library and task law, keep a source-free structured control, validate rank
-stability on independent tasks, price source and verification calls, and
-retain abstention.  Under those conditions, historical simulation is a
-transparent experimental-design asset rather than a hidden oracle.
+Fixing the generator before confirmatory runs reduces development overfitting
+but cannot erase it: the task law, library, and stress axes were created within
+the project.  Ordered semantics are a strong prior.  Energy covers only five
+regions, and the native transfer study has only three historical families.
+The archive is assumed to have been supplied; source retrieval is unsolved.
+Three replications cannot order near ties, source aggregation can hide task
+disagreement, and a finite library can miss the safe region entirely.  Regret
+uses a finite evaluation library rather than the unknown continuous optimum,
+and one functional-SCBO failure remains in the denominator.  The theory is
+conditional on alignment, independence within each regime, and the declared
+replication law.  Finally, the same target seeds appear at all three grid
+resolutions, so 480-cell totals are descriptive rather than 480 independent
+tasks.

@@ -4,11 +4,12 @@
 
 Table \ref{tab:primary-results} and Figure \ref{fig:primary-results} report the
 primary randomized task law.  The source-scored design contains a truly
-feasible policy in 91.7\% of tasks and yields a certified true-feasible
-deployment in 47.3\%.  Generic DCT maximin reaches 37.5\% and 10.6\%; raw Sobol
+feasible policy in 91.7\% of task--resolution cells and yields a certified
+true-feasible deployment in 47.3\%.  Generic DCT maximin reaches 37.5\% and
+10.6\%; raw Sobol
 reaches 80.2\% and 30.0\%.  Penalized loss is 0.163 for source scoring, 0.746
-for generic DCT, and 0.337 for Sobol.  Thus source outcomes contribute beyond
-the shared structural library on this registered mixture.
+for generic DCT, and 0.337 for Sobol.  Thus source outcomes add value beyond
+the shared structural library on this declared task mixture.
 
 \begin{table}[t]
 \centering
@@ -29,12 +30,13 @@ three grid resolutions.}
   \label{fig:primary-results}
 \end{figure}
 
-The paired source-minus-generic-DCT certified-success differences are 0.406
+The paired source-minus-generic-DCT differences in certified success are 0.406
 (bootstrap 95\% CI $[.325,.488]$) at $d=200$, 0.356
 ($[.275,.438]$) at $d=1000$, and 0.338 ($[.256,.419]$) at $d=10000$.
-These stable differences support cross-grid transfer for the registered
-profile law.  They do not establish increasing difficulty with $d$: the
-$d=10000$ experiment is a discretization-refinement test.
+The similar differences across grids show that the result survives profile
+refinement under this task law.  They do not show increasing difficulty with
+$d$: the $d=10000$ experiment changes resolution, not the underlying policy
+class.
 
 \subsection{Where source scoring fails}
 
@@ -62,8 +64,8 @@ The comparator is the best source-free design in that row.}
   \centering
   \includegraphics[width=0.92\textwidth]{review_regime.pdf}
   \caption{Source-minus-generic-DCT certified-success differences by regime
-  and grid resolution.  Positive aggregate performance coexists with
-  registered reversals.}
+  and grid resolution.  Positive aggregate performance coexists with clear
+  reversals.}
   \label{fig:regime-results}
 \end{figure}
 
@@ -74,23 +76,23 @@ the frequency-support-shift regime.  Increasing its cosine rank does not remove
 the general coverage deficit.
 
 The aligned-low-frequency reversal has a concrete geometric explanation.
-Figure \ref{fig:aligned-geometry} reconstructs each frozen design and accesses
+Figure \ref{fig:aligned-geometry} reconstructs each fixed design and accesses
 the hidden target safe center only afterward.  Across the 600 design points
 per arm, raw Sobol has median latent-center distance 0.0343 and median non-DC
 low-frequency energy 0.0258, compared with 0.0813 and 0.2292 for source
 scoring.  Its pointwise true-feasible rate is 94.7\%, versus 10.0\% for both
 source and generic DCT.  High-dimensional independent coordinates average
 toward a near-constant profile with DC coefficient .5; the aligned generator's
-safe center happens to occupy that region.  The diagnostic explains the
-registered reversal but is postdecision, uses oracle geometry, and neither
-changes outcomes nor supports method selection.
+safe center happens to occupy that region.  This after-the-fact diagnostic
+explains the reversal, but it uses hidden geometry and cannot be used to
+choose a method or change an outcome.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.90\textwidth]{review_aligned_geometry.pdf}
-  \caption{Postdecision aligned-regime oracle audit.  Points show medians and
-  bars show 10th--90th percentiles over frozen design points.  The hidden safe
-  center was unavailable to every algorithm.}
+  \caption{After-the-fact geometry diagnostic for the aligned regime.  Points
+  show medians and bars show 10th--90th percentiles over fixed design points.
+  The hidden safe center was unavailable to every algorithm.}
   \label{fig:aligned-geometry}
 \end{figure}
 
@@ -99,14 +101,15 @@ changes outcomes nor supports method selection.
 Declared profile ordering is valuable information.  With domain-blind source
 weights, removing the declared schema reduces certified success from 46.2\%
 to 35.0\% (Table \ref{tab:schema-results}).  Descriptor-conditioned weighting
-reduces both declared- and blind-schema performance and is not promoted.
+reduces both declared- and blind-schema performance and is not used in the
+final method.
 Source scoring therefore does not need the target family label, but it does
 rely on an interpretable ordered profile map.
 
 \begin{table}[t]
 \centering
 \small
-\caption{Information-contract controls at $d=1000$.}
+\caption{Controls for the information available at $d=1000$.}
 \label{tab:schema-results}
 \resizebox{0.88\textwidth}{!}{\input{tables/review_schema_controls.tex}}
 \end{table}
@@ -169,16 +172,11 @@ calls after roughly 7 target deployments versus generic DCT, 9 versus natural
 structure, and 11 versus raw Sobol.  These are cost thresholds, not guarantees
 of outcome dominance; Energy demonstrates why the distinction matters.
 
-Table \ref{tab:outcome-adjusted-cost} also divides amortized calls by the
-observed probability of a true-feasible certificate.  In the primary matrix,
-source scoring uses 411.3 expected calls per certified deployment when the
-archive is shared by 20 targets, versus 2192.9 for generic DCT, 1143.2 for
-natural structure, and 709.4 for raw Sobol.  In the equal-preverification
-matrix the corresponding values are 426.4, 1050.2, 1062.6, and 1049.3.  This
-descriptive metric favors source reuse after roughly two targets in the latter
-comparison even though source scoring loses the single-target equal-cost
-success rate.  It conditions the economic calculation on certification
-success; it does not price unsafe deployment, abstention, or objective quality.
+Table \ref{tab:outcome-adjusted-cost} converts amortized calls into calls per
+true-feasible certificate.  With the archive shared by 20 targets, source
+scoring uses 411.3 calls per certificate, versus 2192.9 for generic DCT,
+1143.2 for natural structure, and 709.4 for raw Sobol.  This descriptive ratio
+does not price unsafe deployment, abstention, or objective quality.
 
 \begin{table}[t]
 \centering

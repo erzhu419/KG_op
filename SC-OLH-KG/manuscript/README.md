@@ -56,9 +56,9 @@ embedded theorem header is normalized to the number-independent label
 compilation receipt.
 
 The journal-facing article is `main.pdf`. Detailed algorithms, sensitivity
-tables, task-seed strata, native transfer results, HVD diagnostics, and the
-Lean file map are retained in the separately built `supplement.pdf`; they are
-not removed to satisfy the article page limit.
+tables, task-seed strata, native transfer results, HVD diagnostics,
+human-readable proofs, and the Lean file map are retained in the separately
+built `supplement.pdf`; they are not removed to satisfy the article page limit.
 
 Every display was compiled once with the INFORMS 240-point production-column
 validator. The four formulas initially exceeding that width were rebroken;

@@ -145,13 +145,143 @@ increases verification cost in Inventory and Queue, HVD is not included in the
 paper's claimed optimization method.  Its formal results remain in the proof
 archive as reusable mechanistic results.
 
+\section{Human-Readable Proofs}\label{app:proofs}
+
+This section gives conventional proofs of the three results that carry the
+main statistical and transfer claims.  The shorter coefficient-stability and
+finite $k$-center arguments are summarized in the main paper.  Section
+\ref{app:lean} then identifies the corresponding machine-checked statements.
+
+\subsection{Finite source errors and separated-rank recovery}
+
+\begin{proof}{Proof of Proposition \ref{prop:rank-recovery} and the
+finite-source margin bound.}
+Fix a source task and a library profile.  For its $R$ independent Gaussian
+constraint replications, write $\bar Y$ and $S$ for the sample mean and sample
+standard deviation, and write $\mu$ and $\sigma$ for their population
+counterparts.  The Gaussian mean tail gives
+\[
+ \Prob\{ |\bar Y-\mu|>r_\mu(\delta_\mu)\}
+ \le \delta_\mu.
+\]
+Let $\nu=R-1$.  Cochran's identity gives
+$(R-1)S^2/\sigma^2\sim\chi^2_\nu$, and therefore, with probability at least
+$1-\delta_\sigma$,
+\[
+ \sqrt{q_{\nu,\delta_\sigma/2}/\nu}
+ \le \frac{S}{\sigma}
+ \le \sqrt{q_{\nu,1-\delta_\sigma/2}/\nu}.
+\]
+On this event,
+\[
+ |S-\sigma|
+ \le \sigma\max\{a_\nu(\delta_\sigma),
+                         b_\nu(\delta_\sigma)\}
+ =r_\sigma(\delta_\sigma).
+\]
+Because $\sigma\ge10^{-3}$, replacing $S$ by
+$\max\{S,10^{-3}\}$ cannot increase its distance from $\sigma$.  Hence, on
+the intersection of the mean and scale events,
+\begin{align*}
+ |\widehat m-m|
+ &=\left| (\bar Y-\mu)
+       +z_{1-\alpha}\bigl(\max\{S,10^{-3}\}-\sigma\bigr)\right|\\
+ &\le r_\mu(\delta_\mu)
+      +z_{1-\alpha}r_\sigma(\delta_\sigma).
+\end{align*}
+The objective score uses the same argument without the scale term.  Assigning
+the tail probabilities across the finite set of source tasks, profiles, and
+score heads and applying the union bound produces a simultaneous radius $r_q$
+for each score head.
+
+It remains to show what this event implies for ranking.  Let profiles $j$ and
+$\ell$ have true scores $s_{qj}<s_{q\ell}$ with
+$s_{q\ell}-s_{qj}>2r_q$.  Uniform error at most $r_q$ gives
+\[
+ \widehat s_{qj}
+ \le s_{qj}+r_q
+ < s_{q\ell}-r_q
+ \le \widehat s_{q\ell}.
+\]
+Thus every pair separated by more than $2r_q$ has the correct estimated order.
+Pairs inside that band may remain tied or reverse, which is why the result
+does not claim exact recovery of the full percentile ranking.
+\end{proof}
+
+\subsection{From structural coverage to a feasible target policy}
+
+\begin{proof}{Proof of Theorem \ref{thm:aligned-coverage}.}
+By Assumption \ref{ass:alignment}, choose a source-supported library profile
+$h_s$ satisfying
+$d_q(h_s,h_q^\star)\le\Delta_q$.  Because the selected atlas covers the
+library in augmented coordinate $\eta$, there is an atlas member $a$ such that
+\[
+ \|\eta(a)-\eta(h_s)\|_2\le r_{n_0}^\eta.
+\]
+Projection onto the structural coordinates is nonexpansive, so
+\[
+ \|\widehat z(a)-\widehat z(h_s)\|_2
+ \le r_{n_0}^\eta.
+\]
+Insert $\widehat z(a)$, $\widehat z(h_s)$, and
+$z_q^\star(h_s)$ between the ideal target coordinates of $a$ and the safe
+center.  The triangle inequality and the two coordinate-approximation bounds
+give
+\begin{align*}
+ d_q(a,h_q^\star)
+ &\le \|z_q^\star(a)-\widehat z(a)\|_2
+      +\|\widehat z(a)-\widehat z(h_s)\|_2\\
+ &\quad
+      +\|\widehat z(h_s)-z_q^\star(h_s)\|_2
+      +d_q(h_s,h_q^\star)\\
+ &\le r_{n_0}^\eta+\Delta_q+2\epsilon_\eta.
+\end{align*}
+The one-sided Lipschitz condition for the chance margin now yields
+\begin{align*}
+ m_q(a)
+ &\le m_q(h_q^\star)+L_qd_q(a,h_q^\star)\\
+ &\le -\gamma_q
+      +L_q(r_{n_0}^\eta+\Delta_q+2\epsilon_\eta)
+ \le0,
+\end{align*}
+where the last inequality is exactly condition
+\eqref{eq:coverage-condition}.  Therefore $a$ is target feasible and belongs
+to the selected atlas.
+\end{proof}
+
+\subsection{Exact familywise verification}
+
+\begin{proof}{Proof of Theorem \ref{thm:verifier}.}
+Consider a fixed candidate $j$ whose true success probability satisfies
+$p_j<p_0$.  Certification requires all $v_j$ fresh Bernoulli trials to
+succeed.  Independence within that candidate's verification stream gives
+\[
+ \Prob\{j\text{ certifies}\}=p_j^{v_j}
+ \le p_0^{v_j}\le\delta_j.
+\]
+If an unsafe policy is deployed from the fixed shortlist, at least one unsafe
+shortlist member must have certified.  Consequently,
+\[
+ \Prob\{\text{an unsafe policy is deployed}\}
+ \le \sum_{j:\,p_j<p_0}\Prob\{j\text{ certifies}\}
+ \le \sum_{j=1}^{K_s}\delta_j
+ \le\delta.
+\]
+This union bound does not require independence between candidates.  Testing
+them in a fixed order and stopping at the first certificate only removes later
+tests from consideration; it does not enlarge the event that any unsafe
+candidate passes.  Fixing the shortlist, its order, and all budgets before
+verification is what prevents search or selection from using the fresh test
+outcomes.
+\end{proof}
+
 \section{Machine-Checked Proof Map}\label{app:lean}
 
 The Lean 4 project builds against mathlib without \texttt{sorry},
-\texttt{admit}, or project-defined \texttt{axiom}.  Table \ref{tab:lean-map}
-maps manuscript claims to their principal files.  Lean proves each displayed
-implication; source-target alignment and simulator-distribution assumptions
-remain scientific premises.
+\texttt{admit}, or a project-defined \texttt{axiom}.  Table
+\ref{tab:lean-map} maps manuscript claims to their principal files.  Lean
+checks each displayed implication; source-target alignment and the assumed
+simulation distributions remain scientific premises.
 
 \begin{table}[htbp]
 \centering
@@ -174,20 +304,19 @@ Composed frontend and budget interfaces & \texttt{Real/PaperMainline.lean} \\
 \end{tabular}
 \end{table}
 
-\section{Reproducibility Contract}\label{app:reproducibility}
+\section{Reproducibility Materials}\label{app:reproducibility}
 
-The final evidence registry contains 14 matrix contracts, 12 compact analyses,
-and SHA-256 commitments for 17,360 result cells.  It records one retained
-algorithmic failure and no integrity failure.  Every row identifies the task,
-source archive, initial design, method, implementation commit, verifier,
-source/search/verification calls, and postdecision truth reconstruction.
+A frozen evidence registry links 17,360 result cells to 14 experimental
+matrices and 12 compact analyses.  It retains the one recorded algorithmic
+failure.  Every row identifies the task, source archive, initial design,
+method, implementation version, verifier, source/search/verification calls,
+and the truth used only after the decision.
 
 Tables and figures in this manuscript are generated only from compact JSON and
 CSV analyses.  The renderer does not read checkpoints, pickle files, model
 weights, or exported policy vectors.  Runtime artifacts are unnecessary for
 auditing the displayed results.  The method specification, randomized task
-law, Energy data contract, proof receipt, and rendering manifest are versioned
-separately so that a theory version cannot be silently paired with another
-experiment version.  The review-V2 geometry, task-strata, and
-outcome-adjusted-cost supplement is hash-bound to the frozen evidence registry
-and cannot change a primary outcome.
+law, Energy data specification, proof receipt, and rendering manifest are
+versioned separately so that results from one method version cannot be paired
+with theory from another.  The geometry, task-strata, and cost analyses use
+the same frozen evidence registry as the primary outcomes.

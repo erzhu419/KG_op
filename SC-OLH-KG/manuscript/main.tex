@@ -14,6 +14,7 @@
 \usepackage{multirow}
 \usepackage{microtype}
 \usepackage{placeins}
+\usepackage{overpic}
 \usepackage{natbib}
 \bibpunct[, ]{(}{)}{,}{a}{}{,}
 \def\bibfont{\small}
@@ -71,27 +72,25 @@
 Chance-Constrained Optimization of Ordered Policy Profiles}
 \ARTICLEAUTHORS{\AUTHOR{Authors omitted for peer review}}
 
-\ABSTRACT{We study expensive chance-constrained simulation optimization for
-ordered policy profiles with historical source tasks. Before any target
-outcome, our method ranks a public 64-profile library from replicated source
-objective and chance-margin outcomes, then chooses ten profiles by
-farthest-first coverage in an exact cosine-profile coordinate. Target search
-and independent verification remain replaceable, so the contribution is an
-initial design, not a new Bayesian-optimization backend. We establish
-cross-grid coordinate consistency, a factor-two finite-library covering
-guarantee, source-rank recovery, conditional source-to-target coverage, and
-exact familywise safety for a frozen shortlist. In a registered randomized
-task law with eight aligned and adverse regimes, 160 independently seeded
-latent tasks crossed with three grid resolutions (480 task--resolution cells
-per design), the source-scored design finds a truly feasible policy in 91.7\%
-of tasks and an independently certified one in 47.3\%, versus 37.5\% and
-10.6\% for an outcome-free cosine maximin design. The comparison reverses in
-aligned, irregular-grid, sparse-high-frequency, and misspecified regimes. In
-a region-held-out electricity-reserve study, source scoring certifies 60/90
-runs versus 70/90 for the generic design; target-only functional optimization
-also wins at equal one-target preverification cost. Historical simulation is
-therefore justified only as an amortized, task-law-dependent design
-investment.}
+\ABSTRACT{A policy with thousands of ordered settings is often a finely
+discretized rule, not a collection of unrelated decisions. We study how
+historical simulations can help choose the first few policies for a new
+chance-constrained problem of this kind. Our method starts from a public
+library of 64 simple profiles. Replicated source outcomes rank these profiles
+by objective and safety, while farthest-first selection chooses ten that also
+cover a low-dimensional cosine coordinate. The ten policies are fixed before
+any target outcome; any declared target optimizer and an independent verifier
+can then use them without changing the initial design. We prove cross-grid
+coordinate
+stability, finite-library coverage, recovery of separated source ranks,
+conditional coverage of an aligned target safe region, and exact familywise
+safety for the final shortlist. Across 480 paired task--resolution cells from
+160 independently seeded latent tasks, source scoring achieves 91.7\%
+feasible coverage and 47.3\% certified deployment, versus 37.5\% and 10.6\%
+for outcome-free cosine maximin. The best source-free design wins in four
+adverse regimes and in a held-out electricity study. Historical simulation
+therefore helps only when profile geometry transfers and its cost is reused
+across targets.}
 
 \KEYWORDS{simulation optimization, chance constraints, initial design,
 transfer learning, functional decisions, independent verification}

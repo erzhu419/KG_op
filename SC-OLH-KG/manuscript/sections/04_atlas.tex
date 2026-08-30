@@ -1,7 +1,8 @@
 \section{Source-Scored Structural Initial Design}\label{sec:method}
 
-This section specifies the complete frontend.  The implementation contains no
-additional scalarization, endpoint replacement, or target-dependent repair.
+The initial design has three steps: construct a public library of policy
+shapes, summarize each shape in a common coordinate, and use source outcomes
+to choose a promising but diverse subset.  This section specifies each step.
 
 \subsection{Outcome-free profile library}
 
@@ -39,8 +40,10 @@ piecewise-constant reconstruction of $h$, define
  \quad k=1,\ldots,K.\label{eq:ck}
 \end{align}
 These are exact integrals of the cosine basis over the reconstruction cells,
-not midpoint approximations to the basis.  With $K=8$ and $\kappa=.25$, the
-profile coordinate is
+not midpoint approximations to the basis.  On regular midpoint grids they
+coincide with DCT-II coefficients up to normalization; on irregular grids we
+use their exact cell-integral cosine analogue.  With $K=8$ and $\kappa=.25$,
+the profile coordinate is
 \begin{equation}\label{eq:profile-coordinate}
  \phi(h)=\bigl(\tilde c_0,\ldots,\tilde c_K,
                     \tilde c_0^2,\ldots,\tilde c_K^2\bigr),
@@ -48,6 +51,12 @@ profile coordinate is
 \end{equation}
 It has dimension 18 and contains no cross-products.  Each coordinate is
 standardized over the 64-profile library before selection.
+
+Here $c_0$ is the profile's average level, while $c_1,\ldots,c_8$ describe
+its broad upward, downward, and oscillatory shapes.  Their squares add a
+simple measure of mode strength without introducing every pairwise
+interaction.  The cell integrals are what let the same shape receive a
+comparable description on a 200-, 1000-, or 10,000-point grid.
 
 \subsection{Replicated source scores}
 
@@ -72,6 +81,10 @@ Whether $\widehat m_{qj}\le0$ in every source task is logged as a diagnostic
 but does not filter the library.  Descriptor-conditioned source weights are a
 secondary control and are not part of the primary method.
 
+The margin combines the observed constraint mean and scale in the same units
+as the threshold: a negative value favors feasibility.  Percentile ranks then
+remove differences in objective and constraint scales across source tasks.
+
 \subsection{Rank-seeded farthest-first selection}
 
 Let $z_j$ be the standardized version of $\phi(h_j)$.  This 18-dimensional
@@ -95,12 +108,17 @@ $n_0=10$.  Each selected 128-node profile is linearly interpolated onto the
 declared target nodes, multiplied by $L_q$, clipped, and deterministically
 rounded to an integer policy.
 
-The distinction between $z$ and $\eta$ is substantive.  Source ranks affect
-which library members are selected, but the target transfer condition in
-Section \ref{sec:theory} is stated only in structural $z$-space.  The coordinate
-projection $\pi_z(\eta)=z$ is nonexpansive under the Euclidean norms, so any
-radius achieved in augmented space is also a valid, possibly loose, radius in
-structural space.  No target analogue of a source percentile rank is assumed.
+Selecting the ten best source ranks alone could return ten nearly identical
+profiles.  Farthest-first avoids that collapse: source performance chooses the
+starting point and influences distance, while each later point must add new
+coverage.
+
+The two coordinates play different roles.  The structural coordinate $z$
+says what a profile looks like.  The augmented coordinate $\eta$ also says how
+that profile performed on source tasks, so it determines which profiles are
+selected.  The target coverage theorem uses only $z$: projecting $\eta$ back
+to $z$ cannot increase Euclidean distance.  We therefore do not pretend that
+a source percentile rank has a target counterpart.
 
 \begin{table}[t]
 \centering
@@ -124,12 +142,12 @@ Target information & Grid, bounds, dimension, and declared ordering; no outcomes
 \end{tabular}
 \end{table}
 
-\subsection{Search and verification interfaces}
+\subsection{Target search and verification}
 
-The initial design is backend independent.  The primary attribution experiment
-sets $N=n_0=10$, so it contains no sequential optimizer and isolates the
-frontend.  Functional SCBO, SAASBO, and native transfer methods are separate
-comparisons.
+The initial design does not depend on a particular target optimizer.  The
+primary comparison sets $N=n_0=10$, so no sequential search can blur the
+effect of the ten starting policies.  Functional SCBO, SAASBO, and native
+transfer methods are evaluated separately.
 
 Given noisy target records, the neutral protocol freezes up to three distinct
 shortlist entries in this order: best observed-objective empirical feasible
@@ -144,15 +162,15 @@ $(1-\alpha)^{v_j}\le\delta/K_s$.  The primary budgets are $(80,80,80)$,
 $K_s=3$, and $\delta=.05$.  Failure to certify produces abstention, not a
 deployment.
 
-\subsection{Source-free counterfactuals}
+\subsection{Source-free comparison designs}
 
-The most important control is \emph{generic DCT maximin}.  It uses the same
+The closest comparison is \emph{generic DCT maximin}.  It uses the same
 64 profiles, the same $\phi$, the coordinate-space medoid as its first center,
 and farthest-first for the remaining nine, but no outcomes.  Random
 low-frequency, natural three-block, and raw Sobol designs separate other forms
-of structural prior.  The finite-library oracle is labeled as unattainable and
-appears only in audit artifacts.
+of structural prior.  The finite-library upper bound is unattainable and is
+used only to interpret the completed experiments.
 
-For clarity, the method is a source-scored subset of a preconstructed library.
-It is not described as discovering the library from data, and its value over
-generic structure is an empirical question rather than a premise.
+Thus source data choose among profiles that already exist; they do not learn
+the library itself.  Whether this scoring improves on generic structure is a
+question for the experiments, not an assumption of the method.
