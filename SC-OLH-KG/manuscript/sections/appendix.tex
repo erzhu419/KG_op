@@ -147,12 +147,70 @@ archive as reusable mechanistic results.
 
 \section{Human-Readable Proofs}\label{app:proofs}
 
-This section gives conventional proofs of the three results that carry the
-main statistical and transfer claims.  The shorter coefficient-stability and
-finite $k$-center arguments are summarized in the main paper.  Section
-\ref{app:lean} then identifies the corresponding machine-checked statements.
+This section gives the complete conventional proof chain used by the paper.
+It includes the two short geometric arguments rather than leaving them as
+verbal sketches.  Section \ref{app:lean} then maps every step to an exact Lean
+declaration and separates proved implications from scientific premises.
+
+\subsection{Profile-coordinate stability}\label{app:proof-profile}
+
+\begin{proof}{Proof of Proposition \ref{prop:coefficient-stability}.}
+Let $e_d=h-\widehat h_d$.  Since the integration interval has length one,
+the triangle inequality gives
+\begin{align*}
+ |c_k(h)-c_k(\widehat h_d)|
+ &=\left|\int_0^1 e_d(t)b_k(t)\,dt\right|\\
+ &\le\int_0^1 |e_d(t)|\,|b_k(t)|\,dt
+ \le\epsilon_dB_k.
+\end{align*}
+For the regular-midpoint reconstruction, every $t$ lies within $1/(2d)$ of
+the midpoint assigned to its Voronoi cell.  Lipschitz continuity therefore
+implies
+\[
+ |h(t)-\widehat h_d(t)|\le L_h/(2d),
+\]
+so substituting $\epsilon_d=L_h/(2d)$ proves the first rate.  Dividing both
+coefficients by $1+\kappa k\ge1$ divides their absolute difference by the same
+quantity and cannot enlarge it.
+
+For completeness, suppose $t$ lies between adjacent reference nodes $l$ and
+$r$, has interpolation weight $\theta\in[0,1]$, and the node spacing is
+$1/d_{\rm ref}$.  The interpolant is
+$\widehat h(t)=(1-\theta)h(l)+\theta h(r)$, whence
+\begin{align*}
+ |h(t)-\widehat h(t)|
+ &\le L_h\{(1-\theta)|t-l|+\theta|t-r|\}\\
+ &=\frac{2L_h\theta(1-\theta)}{d_{\rm ref}}
+ \le\frac{L_h}{2d_{\rm ref}}.
+\end{align*}
+This is the claimed pre-rounding interpolation bound.
+\end{proof}
+
+\subsection{Farthest-first coverage}\label{app:proof-kcenter}
+
+\begin{proof}{Proof of Theorem \ref{thm:farthest-first}.}
+Let $r=r(A_k;u)$ and choose a library point $w$ whose distance to $A_k$ is
+$r$.  Farthest-first selection implies that the $k$ selected centers together
+with $w$ are pairwise separated by at least $r$: when each center was inserted,
+its distance from all earlier centers was at least the final covering radius,
+and the same is true of $w$ by construction.
+
+Assign these $k+1$ witnesses to their nearest centers in an optimal $k$-center
+solution of radius $r_k^\star$.  Two witnesses, say $x$ and $y$, must share one
+optimal center $o$.  The triangle inequality then yields
+\[
+ r\le\|u(x)-u(y)\|_2
+ \le\|u(x)-u(o)\|_2+\|u(o)-u(y)\|_2
+ \le2r_k^\star.
+\]
+The zero-radius case is immediate.  Finally, deleting the two source-rank
+coordinates is a Euclidean projection and is nonexpansive.  Hence an
+$\eta=(z,r^g,r^f)$ cover of radius $r$ is also a $z$ cover of radius at most
+$r$, proving Equation \eqref{eq:projection-cover}.
+\end{proof}
 
 \subsection{Finite source errors and separated-rank recovery}
+\label{app:proof-rank}
 
 \begin{proof}{Proof of Proposition \ref{prop:rank-recovery} and the
 finite-source margin bound.}
@@ -209,6 +267,7 @@ does not claim exact recovery of the full percentile ranking.
 \end{proof}
 
 \subsection{From structural coverage to a feasible target policy}
+\label{app:proof-aligned}
 
 \begin{proof}{Proof of Theorem \ref{thm:aligned-coverage}.}
 By Assumption \ref{ass:alignment}, choose a source-supported library profile
@@ -249,7 +308,41 @@ where the last inequality is exactly condition
 to the selected atlas.
 \end{proof}
 
-\subsection{Exact familywise verification}
+\subsection{Stratified task-law concentration}\label{app:proof-task-law}
+
+\begin{proof}{Proof of Equation \eqref{eq:task-law-bound}.}
+Index the independent held-out task outcomes by $(s,i)$ and write
+$a_{si}=w_s/n_s$.  Then
+\[
+ \widehat p-p
+ =\sum_s\sum_{i=1}^{n_s}a_{si}
+   \{H_{si}-\E[H_{si}]\}.
+\]
+The variables need not have the same distribution.  Independence and
+$H_{si}\in[0,1]$ are enough for Hoeffding's lemma, which gives
+\[
+ \E\exp\{\lambda(\widehat p-p)\}
+ \le \exp\left\{\frac{\lambda^2}{8}
+        \sum_s\sum_{i=1}^{n_s}a_{si}^2\right\}
+ =\exp\{\lambda^2v_w/8\},
+\]
+because $\sum_i a_{si}^2=w_s^2/n_s$.  Chernoff optimization at
+$\lambda=4r/v_w$ gives
+\[
+ \Prob\{\widehat p-p\ge r\}\le e^{-2r^2/v_w}.
+\]
+Applying the same argument to $p-\widehat p$ and taking a union bound yields
+$\Prob\{|\widehat p-p|\ge r\}\le2e^{-2r^2/v_w}$.  Set
+\[
+ r=\sqrt{\frac{v_w\log(2/\delta)}{2}}.
+\]
+The right-hand side is $\delta$, and on the complementary event
+$p\ge\widehat p-r$, which is Equation \eqref{eq:task-law-bound}.  Applying the
+argument separately at each resolution is valid because independence is
+required within a resolution, not between the three reported resolutions.
+\end{proof}
+
+\subsection{Exact familywise verification}\label{app:proof-verifier}
 
 \begin{proof}{Proof of Theorem \ref{thm:verifier}.}
 Consider a fixed candidate $j$ whose true success probability satisfies
@@ -275,31 +368,110 @@ verification is what prevents search or selection from using the fresh test
 outcomes.
 \end{proof}
 
+\subsection{Source-only scope, no-free-lunch, and call accounting}
+\label{app:proof-scope}
+
+The frozen proposal is a function of source records and the declared target
+grid only.  Replacing one unused target-label object by another therefore
+leaves the proposal unchanged.  This is a definitional noninterference result,
+not a probabilistic generalization claim.
+
+For the corresponding limitation, let $\mathcal X$ be finite and let a
+deterministic target-label-free atlas $A$ be a proper subset of $\mathcal X$.
+Choose $x\in\mathcal X\setminus A$ and define the nonempty feasible set as
+$\mathcal F=\{x\}$.  Then $A\cap\mathcal F=\varnothing$.  In particular,
+$|A|\le n_0<|\mathcal X|$ implies that such a feasible set exists.  Thus a
+finite source-only proposal needs the alignment premise in Theorem
+\ref{thm:aligned-coverage}; coverage of every possible target is impossible.
+
+Finally, if the source archive costs $S$ simulations, target search costs $N$,
+and independent verification costs $V$, disjoint accounting gives
+$C_{\rm all}=S+N+V$.  If the same frozen archive is reused by $M$ target
+problems, charging each target an equal share of the archive gives
+$C_{\rm amort}(M)=S/M+N+V$.  These are accounting identities; they do not claim
+that archive reuse is statistically valid for an unrelated target.
+
 \section{Machine-Checked Proof Map}\label{app:lean}
 
 The Lean 4 project builds against mathlib without \texttt{sorry},
-\texttt{admit}, or a project-defined \texttt{axiom}.  Table
-\ref{tab:lean-map} maps manuscript claims to their principal files.  Lean
-checks each displayed implication; source-target alignment and the assumed
-simulation distributions remain scientific premises.
+\texttt{admit}, or a project-defined \texttt{axiom}.  The authoritative
+paper-facing manifest is
+\path{proof/SCOLHKG/PaperProofInterface.lean}.  It contains compile-time checks
+for exactly the declarations in Table \ref{tab:lean-map}.  Every conventional
+proof in Section \ref{app:proofs} maps to at least one declaration, and every
+declaration in the manifest maps back to a manuscript statement or accounting
+identity.  Other files in the larger Lean archive formalize historical KG,
+HVD, and intermediate algorithm versions; they are not claims of this paper.
+
+The map distinguishes logical closure from empirical truth.  Assumption
+\ref{ass:alignment} is intentionally a premise consumed by the aligned-coverage
+theorem, not a theorem about every target.  For replicated Gaussian source
+scores, the normal mean law and Cochran's chi-square identity are standard
+distributional inputs; Lean verifies the finite-sample variance identity,
+event union, variance-floor propagation, and rank implication after those
+inputs are supplied.  Likewise, the task-law result assumes independent
+bounded held-out tasks, and terminal verification assumes the declared
+binomial law for each fresh stream.  These boundaries are part of the theorem
+statements rather than unrecorded gaps.
 
 \begin{table}[htbp]
 \centering
-\small
-\caption{Principal Lean files under \texttt{proof/SCOLHKG/}.}
+\scriptsize
+\caption{Bidirectional closure of manuscript statements, conventional proofs,
+and the final paper-facing Lean interface.  Names after the file colon are
+exact Lean declarations.}
 \label{tab:lean-map}
-\begin{tabular}{>{\raggedright\arraybackslash}p{0.39\textwidth}>{\raggedright\arraybackslash}p{0.52\textwidth}}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}p{0.50\textwidth}}
 \toprule
-Claim & File \\
+Manuscript statement & Conventional proof & Lean file and declaration \\
 \midrule
-Finite-atlas no-free-lunch & \texttt{Real/ProposalNoFreeLunch.lean} \\
-Profile-coordinate and interpolation error & \texttt{Real/ProfileCoordinateConsistency.lean} \\
-Farthest-first factor-two coverage & \texttt{Real/FarthestFirstKCenter.lean} \\
-Finite mean/scale margin and rank recovery & \texttt{Measure/SourceRankRecovery.lean}, \texttt{Real/SourceRankRecovery.lean} \\
-Stratified, non-identical task calibration & \texttt{Measure/TaskAtlasCoverage.lean} \\
-Augmented-to-structural projected coverage & \texttt{Real/GeometricAtlasCoverage.lean} \\
-Exact all-success candidate validity & \texttt{Measure/ExactBinomialCertificate.lean} \\
-Composed frontend and budget interfaces & \texttt{Real/PaperMainline.lean} \\
+Target-label noninterference & Section \ref{app:proof-scope} &
+\path{Real/RiskAlignedRepresentation.lean}:\newline
+\path{sourceOnlyProposal_targetLabel_invariant} \\
+Proposition \ref{prop:coefficient-stability} and interpolation rate &
+Section \ref{app:proof-profile} &
+\path{Real/ProfileCoordinateConsistency.lean}:\newline
+\path{continuousProfileCoefficient_error_le};
+\path{lipschitz_voronoi_coefficient_inverse_grid_rate};
+\path{lipschitz_linear_interpolation_inverse_grid_rate};
+\path{frequency_penalty_cannot_increase_coefficient_error} \\
+Theorem \ref{thm:farthest-first} and projected cover &
+Section \ref{app:proof-kcenter} &
+\path{Real/FarthestFirstKCenter.lean}:\newline
+\path{GonzalezWitnessCertificate.two_approx_every_k_center};\newline
+\path{Real/GeometricAtlasCoverage.lean}:\newline
+\path{projected_coordinate_atlas_covers} \\
+Proposition \ref{prop:rank-recovery} and finite margin &
+Section \ref{app:proof-rank} &
+\path{Measure/SourceRankRecovery.lean}:\newline
+\path{finite_source_profile_mean_bad_event_le_sum};
+\path{floored_margin_bad_event_measure_le};\newline
+\path{Real/SourceRankRecovery.lean}:\newline
+\path{floored_empirical_chance_margin_error_le};
+\path{separated_source_pair_order_recovered} \\
+Theorem \ref{thm:aligned-coverage} &
+Section \ref{app:proof-aligned} &
+\path{Real/GeometricAtlasCoverage.lean}:\newline
+\path{finite_projected_aligned_geometric_lipschitz_atlas_coverage} \\
+Equation \eqref{eq:task-law-bound} &
+Section \ref{app:proof-task-law} &
+\path{Measure/TaskAtlasCoverage.lean}:\newline
+\path{weightedTaskCoverageError_subGaussian};
+\path{weightedTaskCoverageError_abs_tail_le} \\
+Theorem \ref{thm:verifier} &
+Section \ref{app:proof-verifier} &
+\path{Measure/ExactBinomialCertificate.lean}:\newline
+\path{unsafe_all_success_certificate_probability_le};
+\path{finite_all_success_certificates_familywise} \\
+Finite-atlas limitation & Section \ref{app:proof-scope} &
+\path{Real/ProposalNoFreeLunch.lean}:\newline
+\path{proper_finite_atlas_misses_some_nonempty_feasible_set};
+\path{finite_budget_no_unconditional_target_coverage} \\
+Unamortized and amortized call identities &
+Section \ref{app:proof-scope} &
+\path{Real/MethodIndependentTerminalVerification.lean}:\newline
+\path{paper_grade_budget_exact_decomposition};
+\path{paper_grade_budget_amortized_decomposition} \\
 \bottomrule
 \end{tabular}
 \end{table}

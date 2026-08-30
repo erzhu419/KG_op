@@ -242,12 +242,13 @@ proof of the familywise statement appears in the Online Supplement.
 
 \subsection{Human-readable and machine-checked proofs}
 
-The Online Supplement gives ordinary mathematical proofs of the three central
-statistical and transfer results, followed by a map from manuscript claims to
-Lean files.  Profile consistency, finite $k$-center, rank recovery, aligned
-coverage, task-law concentration, binomial verification, and budget
-implications are formalized in Lean 4 without \texttt{sorry}, \texttt{admit},
-or a project-defined \texttt{axiom}.  Machine checking confirms that the
-stated conclusions follow from the stated premises.  It cannot establish that
+The Online Supplement gives ordinary mathematical proofs of every named result
+in this section, the task-law bound, the finite-atlas limitation, and the call
+accounting identities.  A bidirectional closure table maps each manuscript
+statement to exact Lean declarations in the frozen paper-facing interface.
+These declarations build in Lean 4 without \texttt{sorry}, \texttt{admit}, or a
+project-defined \texttt{axiom}.  Machine checking confirms that the stated
+conclusions follow from the stated premises.  It cannot establish that
 Assumption \ref{ass:alignment} holds in Energy or in an unspecified future
-domain; that remains an empirical question.
+domain, nor can it replace the declared Gaussian, bounded-task, and binomial
+sampling laws; those remain scientific premises.

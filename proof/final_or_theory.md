@@ -149,10 +149,10 @@ P(certify unsafe candidate) = p^v <= p0^v <= delta_j.
 
 Bonferroni spending over a frozen shortlist gives familywise false deployment
 at most `sum_j delta_j`. `Measure/ExactBinomialCertificate.lean` proves the
-binomial-law bridge, candidate bound, and three-candidate composition. The
-primary rule uses `p0=.95`, three candidates, familywise `.05`, and 80
-all-success trials per candidate. Its power is `p^80`, so validity and
-nonvacuity are reported separately.
+binomial-law bridge, candidate bound, generic finite-shortlist composition, and
+the primary three-candidate specialization. The primary rule uses `p0=.95`,
+three candidates, familywise `.05`, and 80 all-success trials per candidate.
+Its power is `p^80`, so validity and nonvacuity are reported separately.
 
 The Energy statement is conditional on the declared empirical-window
 replication distribution. Postdecision nonoverlap and block audits are
@@ -169,6 +169,10 @@ C_amort(M) = S/M + N + V.
 
 Equal preverification cost matches `S+N`, not total cost. Every displayed
 result reports realized verification calls separately.
+
+`Real/MethodIndependentTerminalVerification.lean` proves both the exact
+unamortized decomposition and the real-valued amortized identity used in the
+paper.
 
 The outcome-adjusted diagnostic also reports
 `(S/M + N + V) / p_certified`. Its break-even is
@@ -188,6 +192,12 @@ regret, false certification, or verification cost. HVD is therefore optional
 appendix material and not part of the final optimization claim.
 
 ## 10. Machine-checked scope
+
+`SCOLHKG/PaperProofInterface.lean` is the authoritative final manuscript
+interface. Every declaration it checks appears in the Online Supplement, and
+every conventional supplement proof maps back to at least one checked
+declaration. The remaining Lean modules are historical or optional proof
+artifacts rather than manuscript claims.
 
 The final `lake build` contains no `sorry`, `admit`, or project-defined
 `axiom`. Lean verifies finite implications from declared premises. It does not

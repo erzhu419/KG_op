@@ -27,6 +27,7 @@ import SCOLHKG.Measure.ProbabilityEvents
 import SCOLHKG.Measure.SafeRegretEvent
 import SCOLHKG.Measure.StatisticalClosure
 import SCOLHKG.Measure.SharedTerminalPoolKG
+import SCOLHKG.PaperProofInterface
 import SCOLHKG.Optimization
 import SCOLHKG.Real.AdditiveApproxKG
 import SCOLHKG.Real.AdaptiveCoefficientSparsity

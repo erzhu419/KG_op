@@ -22,19 +22,21 @@ endpoint replacement, or V69 to be the optimization engine. Its formal spine is:
 4. an optimizer-independent terminal verifier with separate search and
    verification budgets.
 
-`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate` is a
-conditional umbrella theorem, while
-`SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` states the
+`SCOLHKG/PaperProofInterface.lean` is the authoritative paper-facing manifest.
+It compile-checks the exact declarations cited by the Online Supplement and no
+historical algorithm claim. The conditional aligned-coverage theorem is
+`SCOLHKG.Real.finite_projected_aligned_geometric_lipschitz_atlas_coverage`,
+while `SCOLHKG.Real.finite_budget_no_unconditional_target_coverage` states the
 matching limitation: no proper frozen finite atlas can cover every possible
 held-out feasible set without a transfer/structure condition.
 
 The final method uses no endpoint replacement. Historical V3 and V69 theorems
 remain checked development artifacts below but are not manuscript claims. The
-paper's exact all-success shortlist law is formalized in
+paper's generic finite-shortlist all-success law is formalized in
 `SCOLHKG/Measure/ExactBinomialCertificate.lean`; profile-grid consistency,
 floor-aware source mean/scale rank recovery, farthest-first coverage, and
-stratified non-identical task-law calibration are in
-the files listed by `final_or_theory.md`.
+stratified non-identical task-law calibration are in the files listed by the
+paper interface and `final_or_theory.md`.
 
 For a concise human-readable theorem sequence and proof arguments, see
 `final_or_theory.md`.
@@ -59,6 +61,10 @@ mathlib and its cache; later builds should be fast.
 
 ## Core Files
 
+- `SCOLHKG/PaperProofInterface.lean`: the closed final manuscript interface.
+  Every declaration checked here appears in the Online Supplement's
+  bidirectional proof map; all other Lean modules are historical or optional
+  unless that map explicitly cites them.
 - `SCOLHKG/Variance.lean`: formal cumulative-risk algebra, including the
   `A^T Lambda A + N^T B N + N^T omega + floor` decomposition and truncation
   bookkeeping lemmas.
@@ -82,8 +88,8 @@ mathlib and its cache; later builds should be fast.
   two/three-policy familywise safety, exact budget decomposition, and the
   posterior-safe objective-incumbent switch contract.
 - `SCOLHKG/Measure/ExactBinomialCertificate.lean`: mathlib-binomial `HasLaw`
-  bridge and familywise all-success certificate bound used by the external
-  reliability verifier.
+  bridge and candidate-wise, generic finite-shortlist, and three-candidate
+  familywise all-success bounds used by the external reliability verifier.
 - `SCOLHKG/Real/ConditionalVariance.lean`: finite-partition law of total
   variance over real numbers, proved by algebraic expansion.
 - `SCOLHKG/Real/GPRUpdate.lean`: code-level rank-one GPR update bridge, showing

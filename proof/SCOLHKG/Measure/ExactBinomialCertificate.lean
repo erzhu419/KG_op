@@ -52,6 +52,51 @@ theorem unsafe_all_success_certificate_probability_le
     trueProbability.2.1
   gcongr
 
+theorem finite_all_success_certificates_familywise
+    {Candidate : Type*} [DecidableEq Candidate]
+    [IsFiniteMeasure mu]
+    (shortlist : Finset Candidate)
+    (successCount : Candidate -> Omega -> Nat)
+    (replications : Candidate -> Nat)
+    (trueProbability : Candidate -> unitInterval)
+    (requiredProbability : unitInterval)
+    (delta : Candidate -> Real)
+    (familywiseDelta : Real)
+    (hLaw : ∀ candidate ∈ shortlist,
+      HasLaw (successCount candidate)
+        Bin(replications candidate, trueProbability candidate) mu)
+    (hUnsafe : ∀ candidate ∈ shortlist,
+      trueProbability candidate <= requiredProbability)
+    (hCandidateSpend : ∀ candidate ∈ shortlist,
+      (requiredProbability : Real) ^ replications candidate
+        <= delta candidate)
+    (hFamilySpend :
+      ∑ candidate ∈ shortlist, delta candidate <= familywiseDelta) :
+    mu.real (⋃ candidate ∈ shortlist,
+      {omega | successCount candidate omega = replications candidate})
+      <= familywiseDelta := by
+  calc
+    mu.real (⋃ candidate ∈ shortlist,
+        {omega | successCount candidate omega = replications candidate})
+      <= ∑ candidate ∈ shortlist,
+          mu.real {omega |
+            successCount candidate omega = replications candidate} := by
+        exact measureReal_biUnion_finset_le (μ := mu) shortlist
+          (fun candidate =>
+            {omega |
+              successCount candidate omega = replications candidate})
+    _ <= ∑ candidate ∈ shortlist, delta candidate := by
+      exact Finset.sum_le_sum (fun candidate hCandidate =>
+        (unsafe_all_success_certificate_probability_le
+          (successCount candidate)
+          (replications candidate)
+          (trueProbability candidate)
+          requiredProbability
+          (hLaw candidate hCandidate)
+          (hUnsafe candidate hCandidate)).trans
+            (hCandidateSpend candidate hCandidate))
+    _ <= familywiseDelta := hFamilySpend
+
 theorem three_all_success_certificates_familywise
     [IsFiniteMeasure mu]
     (firstCount secondCount thirdCount : Omega -> Nat)

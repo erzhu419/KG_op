@@ -2,11 +2,14 @@
 
 ## Frozen Claim Boundary
 
-The final manuscript maps the V2 source-scored structural initial design to
-`SCOLHKG.Real.paper_frontend_aligned_geometric_atlas_and_certificate`, then
-uses the optimizer-agnostic terminal verifier.  Canonical SAASBO, SC-OLH/KG,
+The final manuscript proof interface is frozen in
+`SCOLHKG/PaperProofInterface.lean`. Its declarations map one-for-one to the
+Online Supplement closure table. The V2 source-scored structural initial
+design uses
+`SCOLHKG.Real.finite_projected_aligned_geometric_lipschitz_atlas_coverage`
+and the optimizer-agnostic terminal verifier. Canonical SAASBO, SC-OLH/KG,
 SCBO, and posterior sampling are interchangeable backend comparisons rather
-than theorem identities.  The matching no-free-lunch result is
+than theorem identities. The matching no-free-lunch result is
 `SCOLHKG.Real.finite_budget_no_unconditional_target_coverage`.
 
 The paper method uses no V3 endpoint replacement. V3, V51--V69, KG, and HVD
@@ -14,7 +17,8 @@ entries below are retained as a historical development map only and must not be
 cited as the final algorithm. The authoritative paper sequence is
 `ProfileCoordinateConsistency`, `SourceRankRecovery`,
 `FarthestFirstKCenter`, `TaskAtlasCoverage`, `GeometricAtlasCoverage`,
-`ExactBinomialCertificate`, and `PaperMainline`.
+`ExactBinomialCertificate`, `ProposalNoFreeLunch`,
+`MethodIndependentTerminalVerification`, and `PaperProofInterface`.
 
 Provider-coordinate cumulative HVD is retained below because its algebra,
 estimation, and certification bridges are formally valid and its variance

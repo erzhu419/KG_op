@@ -35,11 +35,23 @@ def PaperGradeBudget.totalCalls
     (budget : PaperGradeBudget) : ℕ :=
   budget.sourceCalls + budget.targetCalls
 
+noncomputable def PaperGradeBudget.amortizedCalls
+    (budget : PaperGradeBudget) (targetCount : ℕ) : ℝ :=
+  budget.sourceCalls / (targetCount : ℝ)
+    + budget.searchCalls + budget.verificationCalls
+
 theorem paper_grade_budget_exact_decomposition
     (budget : PaperGradeBudget) :
     budget.totalCalls =
       budget.sourceCalls + budget.searchCalls + budget.verificationCalls := by
   simp [PaperGradeBudget.totalCalls, PaperGradeBudget.targetCalls, Nat.add_assoc]
+
+theorem paper_grade_budget_amortized_decomposition
+    (budget : PaperGradeBudget) (targetCount : ℕ) :
+    budget.amortizedCalls targetCount =
+      budget.sourceCalls / (targetCount : ℝ)
+        + budget.searchCalls + budget.verificationCalls := by
+  rfl
 
 theorem powered_shortlist_total_budget_le
     (sourceCalls searchCalls : ℕ)
