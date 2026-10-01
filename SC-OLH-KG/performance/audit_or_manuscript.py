@@ -79,6 +79,26 @@ def _reference_start_page(aux_text: str) -> int:
     return int(match.group(1))
 
 
+def _table_start_page(aux_text: str) -> int:
+    match = re.search(
+        r"\\newlabel\{page:tables\}\{\{[^}]*\}\{([0-9]+)\}",
+        aux_text,
+    )
+    if match is None:
+        raise ValueError("table-start page label not found")
+    return int(match.group(1))
+
+
+def _pdf_page_count(path: Path) -> int:
+    result = subprocess.run(
+        ["pdfinfo", str(path)], text=True, capture_output=True, check=False,
+    )
+    match = re.search(r"^Pages:\s+([0-9]+)\s*$", result.stdout, re.MULTILINE)
+    if result.returncode != 0 or match is None:
+        raise ValueError(f"pdfinfo could not read the page count of {path.name}")
+    return int(match.group(1))
+
+
 def _source_files(manuscript_dir: Path) -> list[Path]:
     rows = [
         manuscript_dir / "main.tex",
@@ -126,7 +146,16 @@ def build_receipt(
     opre_bibliography = (
         r"\bibliographystyle{informs2014}" in main_source
     )
-    opre_spacing = r"\OneAndAHalfSpacedXII" in main_source
+    opre_spacing = all(
+        re.search(r"\\OneAndAHalfSpacedXI(?![A-Za-z])", source) is not None
+        for source in (main_source, supplement_source)
+    )
+    subject_classifications = re.search(
+        r"\\SUBJECTCLASS\s*\{\s*[^}\s]", main_source,
+    ) is not None
+    area_of_review = re.search(
+        r"\\AREAOFREVIEW\s*\{\s*[^}\s]", main_source,
+    ) is not None
     ec_numbering = r"\ECSwitch" in supplement_source
     width_validator_removed = all(
         "eqndefns-left" not in source
@@ -135,7 +164,9 @@ def build_receipt(
     format_contract = {
         "opre_double_anonymous_class": opre_class,
         "opre_bibliography_style": opre_bibliography,
-        "opre_default_review_spacing": opre_spacing,
+        "opre_11pt_one_and_a_half_spacing": opre_spacing,
+        "subject_classifications_present": subject_classifications,
+        "area_of_review_present": area_of_review,
         "ec_supplement_numbering": ec_numbering,
         "width_validator_removed_from_final_sources": width_validator_removed,
     }
@@ -200,6 +231,10 @@ def build_receipt(
 
     abstract_words = None
     reference_start_page = None
+    table_start_page = None
+    total_pdf_pages = None
+    table_pages = None
+    supplement_pages = None
     body_pages = None
     log_hits: list[str] = []
     if main_tex.is_file():
@@ -213,16 +248,42 @@ def build_receipt(
             failures.append(str(error))
     if aux.is_file():
         try:
+            aux_text = aux.read_text(encoding="utf-8", errors="replace")
             reference_start_page = _reference_start_page(
-                aux.read_text(encoding="utf-8", errors="replace")
+                aux_text
             )
-            body_pages = reference_start_page - 1
-            if body_pages > 30:
-                failures.append(
-                    f"body has {body_pages} pages before references, limit is 30"
-                )
+            table_start_page = _table_start_page(aux_text)
         except ValueError as error:
             failures.append(str(error))
+    if pdf.is_file():
+        try:
+            total_pdf_pages = _pdf_page_count(pdf)
+        except ValueError as error:
+            failures.append(str(error))
+    if supplement_pdf.is_file():
+        try:
+            supplement_pages = _pdf_page_count(supplement_pdf)
+        except ValueError as error:
+            failures.append(str(error))
+    if all(value is not None for value in (
+        reference_start_page, table_start_page, total_pdf_pages,
+    )):
+        if not 1 <= reference_start_page < table_start_page <= total_pdf_pages:
+            failures.append("reference/table page labels do not match the PDF page order")
+        else:
+            table_pages = total_pdf_pages - table_start_page + 1
+            body_pages = reference_start_page - 1 + table_pages
+            if body_pages > 30:
+                failures.append(
+                    f"article has {body_pages} non-reference pages including "
+                    "tables after references, limit is 30"
+                )
+    if (supplement_pages is not None and body_pages is not None
+            and supplement_pages > body_pages):
+        failures.append(
+            f"supplement has {supplement_pages} pages, exceeding the "
+            f"article's {body_pages} non-reference pages"
+        )
     for label, log_path in (("main", log), ("supplement", supplement_log)):
         if not log_path.is_file():
             continue
@@ -273,8 +334,13 @@ def build_receipt(
             "abstract_word_count": abstract_words,
             "abstract_word_limit": 200,
             "reference_start_page": reference_start_page,
+            "table_start_page": table_start_page,
+            "total_pdf_pages": total_pdf_pages,
+            "table_pages_after_references": table_pages,
             "body_pages_excluding_references": body_pages,
             "body_page_limit": 30,
+            "supplement_pages": supplement_pages,
+            "supplement_page_limit": body_pages,
             "forbidden_log_diagnostics": log_hits,
             **format_contract,
         },
@@ -318,7 +384,7 @@ def build_receipt(
             ),
         },
         "claims": {
-            "evidence_and_theory_frozen_before_drafting": True,
+            "supplementary_evidence_role": "reused-task diagnostics and separate frozen new-family confirmation",
             "source_search_verification_costs_separated": True,
             "hvd_headline_claim_prohibited": True,
             "unconditional_high_dimensional_claim_prohibited": True,

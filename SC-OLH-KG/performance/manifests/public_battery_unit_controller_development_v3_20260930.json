@@ -1,0 +1,119 @@
+{
+  "api_base": "https://data.elexon.co.uk/bmrs/api/v1",
+  "acceptances_endpoint": "/balancing/acceptances",
+  "request_chunk_days": 2,
+  "dispatch_prefix_days": 1,
+  "calibration_csv": "paper_artifacts/independent_data_feasibility_20260930/development/calibration_half_hours.csv",
+  "signal_calibration_period_utc": [
+    "2022-01-15T00:00:00Z",
+    "2022-01-25T00:00:00Z"
+  ],
+  "signal": "max(forecast level q05-q95, absolute half-hour forecast ramp divided by calibration q95); calibrate only on 2022 forecasts",
+  "development": [
+    {
+      "start": "2024-04-15T00:00:00Z",
+      "stop": "2024-04-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-04-15/development_half_hours.csv"
+    },
+    {
+      "start": "2024-07-15T00:00:00Z",
+      "stop": "2024-07-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-07-15/development_half_hours.csv"
+    },
+    {
+      "start": "2024-10-15T00:00:00Z",
+      "stop": "2024-10-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-10-15/development_half_hours.csv"
+    }
+  ],
+  "library": {
+    "profiles": 64,
+    "nodes": 128,
+    "seed": 20261799,
+    "maximum_frequency": 40
+  },
+  "policy_dimension": 1000,
+  "policy_integer_levels": 100,
+  "reference_profiles": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "failure": {
+    "event": "any nominated baseline or dispatcher request cannot be delivered within power or energy limits",
+    "numerical_energy_tolerance_MWh": 1e-08,
+    "chance_failure_probability": 0.05,
+    "threshold_scope": "analyst finite-population feasibility criterion, not a market permission to disregard instructions"
+  },
+  "windows": {
+    "hours": 168,
+    "start_stride_hours": 1,
+    "population": "all complete windows inside each fixed ten-day development sample; common reset inventory per diagnostic window"
+  },
+  "gate": "advance only if at least one actual library profile meets the fixed 95% development criterion in all three samples, and at least one is unsafe; this is not an OR submission or source-benefit gate",
+  "protocol_id": "public_battery_unit_controller_development_v3_20260930",
+  "frozen_at_utc": "2026-09-30T06:26:35.839471+00:00",
+  "registration_context": "pooled and passive unit-inventory development outcomes known; no per-unit controller outcomes observed",
+  "role": "development repair with independent unit states and shared site power, not confirmation",
+  "asset": {
+    "name": "Pillswood site simulation",
+    "power_MW": 98.0,
+    "energy_MWh": 196.0,
+    "workload_bm_units": [
+      "E_PILLB-1",
+      "E_PILLB-2"
+    ],
+    "charge_efficiency": 0.92,
+    "discharge_efficiency": 0.92,
+    "capacity_source": "https://harmonyenergy.co.uk/projects/",
+    "grid_connection_source": "https://www.harmonyenergy.co.uk/wp-content/uploads/2023/06/Harmony-Energy-final.pdf",
+    "power_basis": "98 MW published combined grid connection; impose sum of absolute unit powers <=98 MW as a conservative simulation throughput bound, not measured inverter throughput",
+    "energy_basis": "196 MWh site capacity; equal 98 MWh usable allocation per BM unit is a simulation assumption, not measured unit capacity",
+    "identity_basis": "retained 2026 Elexon reference names Pillswood 1 and Pillswood 2; current 49.9 MW registry fields do not set historical unit limits",
+    "efficiency_basis": "simulation assumption",
+    "unit_energy_MWh": [
+      98.0,
+      98.0
+    ]
+  },
+  "control": {
+    "decision_minutes": 30,
+    "nomination_lead_minutes": 60,
+    "initial_nomination_MW": 0.0,
+    "initial_soc_fraction": 0.5,
+    "target_soc": "same policy forecast target fraction independently applied to each modeled 98 MWh unit",
+    "forecast_visibility": "delivery-period and preceding forecasts must have publishTime no later than nomination time",
+    "projection": "per-unit current SOC plus pending nominations and received future BOAs over next 90 minutes; no inter-unit inventory transfer",
+    "command": "compute independent delayed nominations; bound each by known future BOA headroom and scale their combined absolute nomination to 98 MW",
+    "execution": "BOA revision priority and baseline resumption applied separately for each unit",
+    "request_visibility": "acceptanceTime is the simulated receipt time; no future receipts used",
+    "physical_step_minutes": 1,
+    "integration": "exact piecewise-linear gross energy, split at zero and power limits",
+    "supported_time_grid": "instruction timeFrom/timeTo/acceptanceTime on whole UTC minutes, as in the supplied ordinary BOA data",
+    "physical_bounds": "require each unit inventory in [0,98] MWh continuously and summed absolute power <=98 MW; stop failed windows"
+  },
+  "development_conditions": [
+    "per_unit_received_BOA_projection"
+  ],
+  "cost": {
+    "objective": "net metered-energy procurement proxy in GBP plus inventory mark-to-market adjustment",
+    "flows": "sum APXMIDP[t] * (delivered_import_MWh - delivered_export_MWh), including baseline and instruction flows",
+    "inventory_adjustment": "charge_efficiency is not used for sale value: lambda_T = discharge_efficiency * final settlement-period MID; add lambda_T * (common_initial_SOC - final_SOC)",
+    "price_visibility": "realized prices and lambda_T are accounting outcomes only; the controller never observes them",
+    "scope": "MID-indexed accounting on completed physically feasible windows only; failed windows have no full-window economic outcome"
+  },
+  "model_assumptions": [
+    "gross absolute power bound is stricter than the published net grid limit and can create conservative false infeasibility",
+    "historical BOAs held fixed despite their dependence on actual baseline and availability; other commitments absent",
+    "fixed development sample windows overlap; 95% success is a finite-population development criterion",
+    "nominations model a one-hour information lead; exact order execution, BM settlement, and degradation absent",
+    "equal per-unit usable capacities and half-full starts are analyst assumptions; no physical transfer of energy between inventory states",
+    "no unit-specific converter cap inferred from present-day registry or historical dynamic MEL/MIL; retain conservative shared gross power bound"
+  ],
+  "confirmation_year": 2025,
+  "confirmation_year_access": false,
+  "full_experiment_launch": false,
+  "optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "data_access": "offline cached 2024 samples only; no new public requests and no 2025 access"
+}

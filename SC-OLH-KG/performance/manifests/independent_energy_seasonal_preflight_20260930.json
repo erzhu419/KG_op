@@ -1,0 +1,17 @@
+{
+  "protocol_id": "independent_energy_seasonal_preflight_20260930",
+  "role": "development-only seasonal extension; no method comparison",
+  "registration_context": "January preflight found all 67 profiles feasible on all 73 windows; other three periods fixed before their data requests",
+  "base_protocol": "independent_energy_development_preflight_20260930.json",
+  "existing_case": "paper_artifacts/independent_data_feasibility_20260930/development",
+  "additional_development_periods": [
+    ["2024-04-15T00:00:00Z", "2024-04-25T00:00:00Z"],
+    ["2024-07-15T00:00:00Z", "2024-07-25T00:00:00Z"],
+    ["2024-10-15T00:00:00Z", "2024-10-25T00:00:00Z"]
+  ],
+  "calibration": "reuse the original 2022 source sample and its scales",
+  "controls": "same V5 physics, reliability threshold, 64-profile library seed and three constant references",
+  "decision": "launch no full certification-rate experiment if the fixed pool remains universally feasible in all sampled seasons",
+  "confirmation_year_access": false,
+  "full_experiment_launch": false
+}

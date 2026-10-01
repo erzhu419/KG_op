@@ -1,0 +1,104 @@
+{
+  "protocol_id": "public_battery_controller_development_v1_20260930",
+  "role": "development feasibility of the fixed public policy library, with no optimizer or certification comparison",
+  "registration_context": "one April day and isolated 2023 source availability known; no replenishment-policy outcomes observed",
+  "asset": {
+    "name": "public two-hour reference battery",
+    "power_MW": 49.0,
+    "energy_MWh": 98.0,
+    "capacity_source": "https://harmonyenergy.co.uk/projects/",
+    "capacity_basis": "published Jamesfield site is 49 MW/98 MWh; Pillswood site is 98 MW/196 MWh",
+    "workload_bm_unit": "E_PILLB-1",
+    "workload_power_basis": "historical 2024-04-15 unit MEL reaches 49 MW",
+    "asset_scope": "reference asset with recorded unit workload; 98 MWh is not a measured E_PILLB-1 energy capacity",
+    "charge_efficiency": 0.92,
+    "discharge_efficiency": 0.92,
+    "efficiency_basis": "simulation assumption, not manufacturer data"
+  },
+  "api_base": "https://data.elexon.co.uk/bmrs/api/v1",
+  "acceptances_endpoint": "/balancing/acceptances",
+  "request_chunk_days": 2,
+  "dispatch_prefix_days": 1,
+  "calibration_csv": "paper_artifacts/independent_data_feasibility_20260930/development/calibration_half_hours.csv",
+  "signal_calibration_period_utc": [
+    "2022-01-15T00:00:00Z",
+    "2022-01-25T00:00:00Z"
+  ],
+  "signal": "max(forecast level q05-q95, absolute half-hour forecast ramp divided by calibration q95); calibrate only on 2022 forecasts",
+  "development": [
+    {
+      "start": "2024-04-15T00:00:00Z",
+      "stop": "2024-04-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-04-15/development_half_hours.csv"
+    },
+    {
+      "start": "2024-07-15T00:00:00Z",
+      "stop": "2024-07-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-07-15/development_half_hours.csv"
+    },
+    {
+      "start": "2024-10-15T00:00:00Z",
+      "stop": "2024-10-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-10-15/development_half_hours.csv"
+    }
+  ],
+  "library": {
+    "profiles": 64,
+    "nodes": 128,
+    "seed": 20261799,
+    "maximum_frequency": 40
+  },
+  "policy_dimension": 1000,
+  "policy_integer_levels": 100,
+  "reference_profiles": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "control": {
+    "decision_minutes": 30,
+    "nomination_lead_minutes": 60,
+    "initial_nomination_MW": 0.0,
+    "initial_soc_fraction": 0.5,
+    "target_soc": "interpolate the quantized policy at the delivery-period forecast stress, multiplied by 98 MWh",
+    "forecast_visibility": "delivery-period and preceding forecasts must have publishTime no later than nomination time",
+    "projection": "current SOC plus already nominated baseline energy over the next hour, assuming no additional dispatcher intervention",
+    "command": "bounded constant import/export power over the future half-hour, aiming from the projected inventory to the policy target",
+    "execution": "most recent received covering BOA overrides nominated baseline; resume nominated baseline outside BOA segments",
+    "request_visibility": "acceptanceTime is the simulated receipt time; no future receipts used",
+    "physical_step_minutes": 1,
+    "integration": "exact piecewise-linear gross energy, split at zero and power limits",
+    "supported_time_grid": "instruction timeFrom/timeTo/acceptanceTime on whole UTC minutes, as in the supplied ordinary BOA data",
+    "physical_bounds": "clip delivered power and energy to the reference asset; retain all undelivered baseline and BOA energy separately"
+  },
+  "cost": {
+    "objective": "net metered-energy procurement proxy in GBP plus inventory mark-to-market adjustment",
+    "flows": "sum APXMIDP[t] * (delivered_import_MWh - delivered_export_MWh), including baseline and instruction flows",
+    "inventory_adjustment": "charge_efficiency is not used for sale value: lambda_T = discharge_efficiency * final settlement-period MID; add lambda_T * (common_initial_SOC - final_SOC)",
+    "price_visibility": "realized prices and lambda_T are accounting outcomes only; the controller never observes them",
+    "scope": "MID-indexed energy accounting; BM pay-as-bid revenues, fees and degradation are outside this pilot cost"
+  },
+  "failure": {
+    "event": "any nominated baseline or dispatcher request cannot be delivered within power or energy limits",
+    "numerical_energy_tolerance_MWh": 1e-08,
+    "chance_failure_probability": 0.05,
+    "threshold_scope": "analyst finite-population feasibility criterion, not a market permission to disregard instructions"
+  },
+  "windows": {
+    "hours": 168,
+    "start_stride_hours": 1,
+    "population": "all complete windows inside each fixed ten-day development sample; common reset inventory per diagnostic window"
+  },
+  "gate": "advance only if at least one of the actual 64 library profiles is empirically feasible in all three development samples and at least one library profile is infeasible in at least one sample; extra constants do not open the gate",
+  "model_assumptions": [
+    "single-service reference asset with no other commitments besides its modeled nominations and received exogenous BOA workload",
+    "historical BOA requests are held fixed although actual acceptances depended on the original participant baseline and availability",
+    "98 MWh is modeled usable energy; unit-specific usable energy and SOC were not observed",
+    "nominations impose a one-hour physical-information lead; order-book execution and exact BM financial settlement are not simulated"
+  ],
+  "confirmation_year": 2025,
+  "confirmation_year_access": false,
+  "full_experiment_launch": false,
+  "optimizer_calls": 0,
+  "terminal_verifier_calls": 0
+}

@@ -1,0 +1,92 @@
+MONTH_COMPLETED DK_1 01 rows=25
+MONTH_COMPLETED DK_1 02 rows=25
+MONTH_COMPLETED DK_1 03 rows=25
+MONTH_COMPLETED DK_1 04 rows=25
+MONTH_COMPLETED DK_1 05 rows=25
+MONTH_COMPLETED DK_1 06 rows=25
+MONTH_COMPLETED DK_1 07 rows=25
+MONTH_COMPLETED DK_1 08 rows=25
+MONTH_COMPLETED DK_1 09 rows=25
+MONTH_COMPLETED DK_1 10 rows=25
+MONTH_COMPLETED DK_1 11 rows=25
+MONTH_COMPLETED DK_1 12 rows=25
+MONTH_COMPLETED DK_2 01 rows=25
+MONTH_COMPLETED DK_2 02 rows=25
+MONTH_COMPLETED DK_2 03 rows=25
+MONTH_COMPLETED DK_2 04 rows=25
+MONTH_COMPLETED DK_2 05 rows=25
+MONTH_COMPLETED DK_2 06 rows=25
+MONTH_COMPLETED DK_2 07 rows=25
+MONTH_COMPLETED DK_2 08 rows=25
+MONTH_COMPLETED DK_2 09 rows=25
+MONTH_COMPLETED DK_2 10 rows=25
+MONTH_COMPLETED DK_2 11 rows=25
+MONTH_COMPLETED DK_2 12 rows=25
+MONTH_COMPLETED GB_GBN 01 rows=25
+MONTH_COMPLETED GB_GBN 02 rows=25
+MONTH_COMPLETED GB_GBN 03 rows=25
+MONTH_COMPLETED GB_GBN 04 rows=25
+MONTH_COMPLETED GB_GBN 05 rows=25
+MONTH_COMPLETED GB_GBN 06 rows=25
+MONTH_COMPLETED GB_GBN 07 rows=25
+MONTH_COMPLETED GB_GBN 08 rows=25
+MONTH_COMPLETED GB_GBN 09 rows=25
+MONTH_COMPLETED GB_GBN 10 rows=25
+MONTH_COMPLETED GB_GBN 11 rows=25
+MONTH_COMPLETED GB_GBN 12 rows=25
+MONTH_COMPLETED IT_CNOR 01 rows=25
+MONTH_COMPLETED IT_CNOR 02 rows=25
+MONTH_COMPLETED IT_CNOR 03 rows=25
+MONTH_COMPLETED IT_CNOR 04 rows=25
+MONTH_COMPLETED IT_CNOR 05 rows=25
+MONTH_COMPLETED IT_CNOR 06 rows=25
+MONTH_COMPLETED IT_CNOR 07 rows=25
+MONTH_COMPLETED IT_CNOR 08 rows=25
+MONTH_COMPLETED IT_CNOR 09 rows=25
+MONTH_COMPLETED IT_CNOR 10 rows=25
+MONTH_COMPLETED IT_CNOR 11 rows=25
+MONTH_COMPLETED IT_CNOR 12 rows=25
+MONTH_COMPLETED IT_CSUD 01 rows=25
+MONTH_COMPLETED IT_CSUD 02 rows=25
+MONTH_COMPLETED IT_CSUD 03 rows=25
+MONTH_COMPLETED IT_CSUD 04 rows=25
+MONTH_COMPLETED IT_CSUD 05 rows=25
+MONTH_COMPLETED IT_CSUD 06 rows=25
+MONTH_COMPLETED IT_CSUD 07 rows=25
+MONTH_COMPLETED IT_CSUD 08 rows=25
+MONTH_COMPLETED IT_CSUD 09 rows=25
+MONTH_COMPLETED IT_CSUD 10 rows=25
+MONTH_COMPLETED IT_CSUD 11 rows=25
+MONTH_COMPLETED IT_CSUD 12 rows=25
+MONTH_COMPLETED IT_NORD 01 rows=25
+MONTH_COMPLETED IT_NORD 02 rows=25
+MONTH_COMPLETED IT_NORD 03 rows=25
+MONTH_COMPLETED IT_NORD 04 rows=25
+MONTH_COMPLETED IT_NORD 05 rows=25
+MONTH_COMPLETED IT_NORD 06 rows=25
+MONTH_COMPLETED IT_NORD 07 rows=25
+MONTH_COMPLETED IT_NORD 08 rows=25
+MONTH_COMPLETED IT_NORD 09 rows=25
+MONTH_COMPLETED IT_NORD 10 rows=25
+Traceback (most recent call last):
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/benchmark_energy_archive_reuse.py", line 254, in <module>
+    main()
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/benchmark_energy_archive_reuse.py", line 242, in main
+    payloads = [evaluate_market(protocol, market, args.out) for market in protocol["markets"]]
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/benchmark_energy_archive_reuse.py", line 242, in <listcomp>
+    payloads = [evaluate_market(protocol, market, args.out) for market in protocol["markets"]]
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/benchmark_energy_archive_reuse.py", line 137, in evaluate_market
+    deployed, verification = evaluate_task(problem, points[arm], design_seed)
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/benchmark_energy_archive_reuse.py", line 111, in evaluate_task
+    deployed, verification = verify_batch(problem, shortlist, design_seed)
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/benchmark_energy_archive_reuse.py", line 81, in verify_batch
+    starts = sampled_window_starts(problem, "verification", seeds)
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/problems/energy_archive_reuse.py", line 54, in sampled_window_starts
+    return np.array([starts[int(np.random.default_rng(np.random.SeedSequence(seed)).integers(0, len(starts)))]
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/problems/energy_archive_reuse.py", line 54, in <listcomp>
+    return np.array([starts[int(np.random.default_rng(np.random.SeedSequence(seed)).integers(0, len(starts)))]
+  File "numpy/random/_generator.pyx", line 5084, in numpy.random._generator.default_rng
+  File "numpy/random/_pcg64.pyx", line 132, in numpy.random._pcg64.PCG64.__init__
+  File "/home/erzhu419/.local/lib/python3.10/site-packages/numpy/_core/_ufunc_config.py", line 479, in inner
+    return func(*args, **kwargs)
+KeyboardInterrupt

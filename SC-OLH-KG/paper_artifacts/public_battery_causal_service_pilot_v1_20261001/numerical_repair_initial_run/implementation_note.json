@@ -1,0 +1,18 @@
+{
+  "cause": "admission used hour-origin cumulative integration; execution used repeated minute-origin SOC updates, causing 1e-13 MWh rounding to cross the unchanged 1e-8 tolerance",
+  "observed_stop_minute": 1711,
+  "repair": "execute prefix physics with the same hour origin and cumulative integration as declaration",
+  "unchanged": [
+    "service capacity",
+    "target fractions",
+    "initial state",
+    "physical limits",
+    "efficiencies",
+    "request marks",
+    "event order",
+    "numerical tolerance"
+  ],
+  "initial_controller_window_evaluations": 4,
+  "fixed_protocol_replays": 4,
+  "scope": "initial outputs retained; first-service deficits at minute 60 and raw physical failures are not discarded"
+}

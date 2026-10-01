@@ -1,0 +1,105 @@
+{
+  "protocol_id": "independent_energy_data_preflight_20260930",
+  "status": "sample_alignment_pass",
+  "samples": [
+    {
+      "date": "2022-01-15",
+      "matched_half_hours": 48,
+      "complete_UTC_hours": 24,
+      "forecast_lead_hours_min": 20.25,
+      "forecast_lead_hours_max": 43.75,
+      "forecasts_published_before_delivery": true,
+      "requests": {
+        "forecast": {
+          "url": "https://data.elexon.co.uk/bmrs/api/v1/forecast/demand/day-ahead/earliest/stream?from=2022-01-15T00%3A00%3A00%2B00%3A00&to=2022-01-16T00%3A00%3A00%2B00%3A00",
+          "response_bytes": 9644,
+          "retrieved_at": "2026-09-30T03:27:56.830754+00:00",
+          "returned_rows": 49,
+          "retained_rows": 48
+        },
+        "actual": {
+          "url": "https://data.elexon.co.uk/bmrs/api/v1/demand/outturn/stream?settlementDateFrom=2022-01-15&settlementDateTo=2022-01-15",
+          "response_bytes": 9688,
+          "retrieved_at": "2026-09-30T03:27:57.159923+00:00",
+          "returned_rows": 48,
+          "retained_rows": 48
+        },
+        "price": {
+          "url": "https://data.elexon.co.uk/bmrs/api/v1/balancing/pricing/market-index?from=2022-01-15T00%3A00%3A00%2B00%3A00&to=2022-01-16T00%3A00%3A00%2B00%3A00&dataProviders=APXMIDP&format=json",
+          "response_bytes": 7209,
+          "retrieved_at": "2026-09-30T03:27:57.482447+00:00",
+          "returned_rows": 49,
+          "retained_rows": 48
+        }
+      }
+    },
+    {
+      "date": "2023-01-15",
+      "matched_half_hours": 48,
+      "complete_UTC_hours": 24,
+      "forecast_lead_hours_min": 20.25,
+      "forecast_lead_hours_max": 43.75,
+      "forecasts_published_before_delivery": true,
+      "requests": {
+        "forecast": {
+          "url": "https://data.elexon.co.uk/bmrs/api/v1/forecast/demand/day-ahead/earliest/stream?from=2023-01-15T00%3A00%3A00%2B00%3A00&to=2023-01-16T00%3A00%3A00%2B00%3A00",
+          "response_bytes": 9644,
+          "retrieved_at": "2026-09-30T03:27:57.820186+00:00",
+          "returned_rows": 49,
+          "retained_rows": 48
+        },
+        "actual": {
+          "url": "https://data.elexon.co.uk/bmrs/api/v1/demand/outturn/stream?settlementDateFrom=2023-01-15&settlementDateTo=2023-01-15",
+          "response_bytes": 9688,
+          "retrieved_at": "2026-09-30T03:27:58.150187+00:00",
+          "returned_rows": 48,
+          "retained_rows": 48
+        },
+        "price": {
+          "url": "https://data.elexon.co.uk/bmrs/api/v1/balancing/pricing/market-index?from=2023-01-15T00%3A00%3A00%2B00%3A00&to=2023-01-16T00%3A00%3A00%2B00%3A00&dataProviders=APXMIDP&format=json",
+          "response_bytes": 7197,
+          "retrieved_at": "2026-09-30T03:27:58.465348+00:00",
+          "returned_rows": 49,
+          "retained_rows": 48
+        }
+      }
+    },
+    {
+      "date": "2024-01-15",
+      "matched_half_hours": 48,
+      "complete_UTC_hours": 24,
+      "forecast_lead_hours_min": 20.25,
+      "forecast_lead_hours_max": 43.75,
+      "forecasts_published_before_delivery": true,
+      "requests": {
+        "forecast": {
+          "url": "https://data.elexon.co.uk/bmrs/api/v1/forecast/demand/day-ahead/earliest/stream?from=2024-01-15T00%3A00%3A00%2B00%3A00&to=2024-01-16T00%3A00%3A00%2B00%3A00",
+          "response_bytes": 9644,
+          "retrieved_at": "2026-09-30T03:27:58.804745+00:00",
+          "returned_rows": 49,
+          "retained_rows": 48
+        },
+        "actual": {
+          "url": "https://data.elexon.co.uk/bmrs/api/v1/demand/outturn/stream?settlementDateFrom=2024-01-15&settlementDateTo=2024-01-15",
+          "response_bytes": 9688,
+          "retrieved_at": "2026-09-30T03:27:59.134372+00:00",
+          "returned_rows": 48,
+          "retained_rows": 48
+        },
+        "price": {
+          "url": "https://data.elexon.co.uk/bmrs/api/v1/balancing/pricing/market-index?from=2024-01-15T00%3A00%3A00%2B00%3A00&to=2024-01-16T00%3A00%3A00%2B00%3A00&dataProviders=APXMIDP&format=json",
+          "response_bytes": 7185,
+          "retrieved_at": "2026-09-30T03:27:59.453615+00:00",
+          "returned_rows": 49,
+          "retained_rows": 48
+        }
+      }
+    }
+  ],
+  "response_bytes": 79587,
+  "full_year_coverage_checked": false,
+  "confirmation_year_accessed": false,
+  "algorithm_evaluations": 0,
+  "historical_policy_archives_recovered": 0,
+  "scientific_scope": "independent-provider counterfactual storage candidate; no deployment evidence"
+}

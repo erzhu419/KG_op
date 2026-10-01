@@ -1,0 +1,135 @@
+{
+  "protocol_id": "public_battery_announced_hour_accumulation_repair_v1_20261001",
+  "frozen_at_utc": "2026-10-01T04:32:10.546890+00:00",
+  "role": "repair the six observed safety/execution hour-origin accumulation discrepancies; preserve all initial dynamic outcomes",
+  "basis_protocol": "performance/manifests/public_battery_announced_dynamic_targets_pilot_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_announced_dynamic_targets_pilot_v1_20261001",
+  "diagnosis": "paper_artifacts/public_battery_announced_dynamic_targets_pilot_v1_20261001/numerical_boundary_diagnosis.json",
+  "mechanism": "nomination references currently accumulate one 120-minute sum from the current hour origin; actual execution starts a new sum each hour. At six boundary cases this changes the violation by 3e-15 to 1.4e-14 MWh and reverses the fixed 1e-8 comparison",
+  "repair": "supply actual hour boundaries to the existing trajectory integral so nomination-reference stocks accumulate from each execution hour origin, with unchanged linear power, extrema, tolerance, 48 bisections and one trajectory call per reference path",
+  "preservation": "default single-origin trajectory behavior remains exact for existing callers; retain every initial 24-window negative and all short-component outcomes",
+  "saved_component_nomination_cases": [
+    {
+      "period": "2024-07-15",
+      "window_start_minute": 4320,
+      "profile_id": "functional_pair_0010_0037",
+      "dispatch_rule": "conservative_admission",
+      "safety_nomination_minute": 150,
+      "physical_failure_minute": 239,
+      "saved_safe_violation_MWh": 9.999997274690031e-09,
+      "saved_actual_violation_MWh": 1.0000011485544746e-08,
+      "accumulation_difference_MWh": 1.4210854715202004e-14,
+      "numerical_tolerance_MWh": 1e-08
+    },
+    {
+      "period": "2024-07-15",
+      "window_start_minute": 4320,
+      "profile_id": "functional_pair_0037_0010",
+      "dispatch_rule": "conservative_admission",
+      "safety_nomination_minute": 150,
+      "physical_failure_minute": 239,
+      "saved_safe_violation_MWh": 9.999997274690031e-09,
+      "saved_actual_violation_MWh": 1.0000011485544746e-08,
+      "accumulation_difference_MWh": 1.4210854715202004e-14,
+      "numerical_tolerance_MWh": 1e-08
+    },
+    {
+      "period": "2024-10-15",
+      "window_start_minute": 0,
+      "profile_id": "functional_pair_0010_0037",
+      "dispatch_rule": "conservative_admission",
+      "safety_nomination_minute": 10110,
+      "physical_failure_minute": 10199,
+      "saved_safe_violation_MWh": 9.999997274690031e-09,
+      "saved_actual_violation_MWh": 1.000000082740371e-08,
+      "accumulation_difference_MWh": 3.552713678800501e-15,
+      "numerical_tolerance_MWh": 1e-08
+    },
+    {
+      "period": "2024-10-15",
+      "window_start_minute": 0,
+      "profile_id": "functional_pair_0037_0010",
+      "dispatch_rule": "conservative_admission",
+      "safety_nomination_minute": 10110,
+      "physical_failure_minute": 10199,
+      "saved_safe_violation_MWh": 9.999997274690031e-09,
+      "saved_actual_violation_MWh": 1.000000082740371e-08,
+      "accumulation_difference_MWh": 3.552713678800501e-15,
+      "numerical_tolerance_MWh": 1e-08
+    },
+    {
+      "period": "2024-10-15",
+      "window_start_minute": 4320,
+      "profile_id": "functional_pair_0010_0037",
+      "dispatch_rule": "conservative_admission",
+      "safety_nomination_minute": 5790,
+      "physical_failure_minute": 5879,
+      "saved_safe_violation_MWh": 9.999997274690031e-09,
+      "saved_actual_violation_MWh": 1.000000082740371e-08,
+      "accumulation_difference_MWh": 3.552713678800501e-15,
+      "numerical_tolerance_MWh": 1e-08
+    },
+    {
+      "period": "2024-10-15",
+      "window_start_minute": 4320,
+      "profile_id": "functional_pair_0037_0010",
+      "dispatch_rule": "conservative_admission",
+      "safety_nomination_minute": 5790,
+      "physical_failure_minute": 5879,
+      "saved_safe_violation_MWh": 9.999997274690031e-09,
+      "saved_actual_violation_MWh": 1.000000082740371e-08,
+      "accumulation_difference_MWh": 3.552713678800501e-15,
+      "numerical_tolerance_MWh": 1e-08
+    }
+  ],
+  "planned_saved_case_nomination_probes": 6,
+  "planned_controller_window_replays": 6,
+  "replay_roster": [
+    {
+      "period": "2024-07-15",
+      "window_start_minute": 4320,
+      "profile_id": "functional_pair_0010_0037",
+      "dispatch_rule": "conservative_admission"
+    },
+    {
+      "period": "2024-07-15",
+      "window_start_minute": 4320,
+      "profile_id": "functional_pair_0037_0010",
+      "dispatch_rule": "conservative_admission"
+    },
+    {
+      "period": "2024-10-15",
+      "window_start_minute": 0,
+      "profile_id": "functional_pair_0010_0037",
+      "dispatch_rule": "conservative_admission"
+    },
+    {
+      "period": "2024-10-15",
+      "window_start_minute": 0,
+      "profile_id": "functional_pair_0037_0010",
+      "dispatch_rule": "conservative_admission"
+    },
+    {
+      "period": "2024-10-15",
+      "window_start_minute": 4320,
+      "profile_id": "functional_pair_0010_0037",
+      "dispatch_rule": "conservative_admission"
+    },
+    {
+      "period": "2024-10-15",
+      "window_start_minute": 4320,
+      "profile_id": "functional_pair_0037_0010",
+      "dispatch_rule": "conservative_admission"
+    }
+  ],
+  "maximum_replay_minute_physics_evaluations": 61200,
+  "maximum_replay_nomination_decisions": 2028,
+  "gate": "each repaired case must be safe when accumulated by actual hourly origins, then replay exactly the six affected conservative windows; keep service failures and undefined costs, and count all calls separately",
+  "new_public_data_requests": 0,
+  "diagnostic_LP_calls": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false
+}

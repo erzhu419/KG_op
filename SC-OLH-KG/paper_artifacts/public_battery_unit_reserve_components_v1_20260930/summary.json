@@ -1,0 +1,363 @@
+{
+  "protocol_id": "public_battery_unit_reserve_components_v1_20260930",
+  "status": "component_development_complete",
+  "conditions": [
+    {
+      "condition": "inventory_reserve_only",
+      "protocol_id": "public_battery_unit_reserve_components_v1_20260930/inventory_reserve_only",
+      "status": "development_complete",
+      "normalization": {
+        "forecast_q05_MW": 24497.95,
+        "forecast_q95_MW": 42992.0,
+        "absolute_ramp_q95_MW": 2135.45,
+        "fit_half_hours": 480
+      },
+      "cases": [
+        {
+          "period": "2024-04-15",
+          "status": "evaluated",
+          "windows": 73,
+          "reserve_conflict_decisions": 0,
+          "library_feasible_profiles": 0,
+          "V3_library_feasible_profiles": 0,
+          "library_all_windows_completed_profiles": 0,
+          "library_successful_windows_union": 0,
+          "library_failed_windows": 4672,
+          "library_gained_windows": 0,
+          "library_lost_windows": 0,
+          "library_first_failure_causes": {
+            "power_failure": 1052,
+            "BOA_inventory_failure": 3095,
+            "baseline_inventory_failure": 526,
+            "unit_1_inventory_failure": 2628,
+            "unit_2_inventory_failure": 1020
+          },
+          "reference_50_success_windows": 0,
+          "max_unit_energy_balance_error_MWh": 2.043520908046048e-11
+        },
+        {
+          "period": "2024-07-15",
+          "status": "evaluated",
+          "windows": 73,
+          "reserve_conflict_decisions": 0,
+          "library_feasible_profiles": 1,
+          "V3_library_feasible_profiles": 3,
+          "library_all_windows_completed_profiles": 0,
+          "library_successful_windows_union": 72,
+          "library_failed_windows": 4337,
+          "library_gained_windows": 66,
+          "library_lost_windows": 68,
+          "library_first_failure_causes": {
+            "power_failure": 1428,
+            "BOA_inventory_failure": 2620,
+            "baseline_inventory_failure": 289,
+            "unit_1_inventory_failure": 898,
+            "unit_2_inventory_failure": 2214
+          },
+          "reference_50_success_windows": 66,
+          "max_unit_energy_balance_error_MWh": 4.5218939703772776e-11
+        },
+        {
+          "period": "2024-10-15",
+          "status": "evaluated",
+          "windows": 73,
+          "reserve_conflict_decisions": 0,
+          "library_feasible_profiles": 24,
+          "V3_library_feasible_profiles": 22,
+          "library_all_windows_completed_profiles": 24,
+          "library_successful_windows_union": 73,
+          "library_failed_windows": 2465,
+          "library_gained_windows": 176,
+          "library_lost_windows": 151,
+          "library_first_failure_causes": {
+            "power_failure": 939,
+            "BOA_inventory_failure": 931,
+            "baseline_inventory_failure": 607,
+            "unit_1_inventory_failure": 1231,
+            "unit_2_inventory_failure": 330
+          },
+          "reference_50_success_windows": 73,
+          "max_unit_energy_balance_error_MWh": 6.146905207060627e-11
+        }
+      ],
+      "library_profiles_feasible_in_all_periods": [],
+      "library_profiles_completing_all_windows_in_all_periods": [],
+      "development_gate_passed": false,
+      "decision": "hold_full_comparison",
+      "diagnostic_window_evaluations": 14673,
+      "planned_window_evaluations": 14673,
+      "new_data_requests": 0,
+      "new_API_response_bytes": 0,
+      "algorithm_optimizer_calls": 0,
+      "terminal_verifier_calls": 0,
+      "confirmation_year_access": false,
+      "limitations": [
+        "gross absolute power bound is stricter than the published net grid limit and can create conservative false infeasibility",
+        "historical BOAs held fixed despite their dependence on actual baseline and availability; other commitments absent",
+        "fixed development sample windows overlap; 95% success is a finite-population development criterion",
+        "nominations model a one-hour information lead; exact order execution, BM settlement, and degradation absent",
+        "equal per-unit usable capacities and half-full starts are analyst assumptions; no physical transfer of energy between inventory states",
+        "no unit-specific converter cap inferred from present-day registry or historical dynamic MEL/MIL; retain conservative shared gross power bound",
+        "post-V4 development ablation, not independent confirmation; overlapping windows and exogenous historical BOAs retain their original interpretation"
+      ],
+      "cost_scope": "MID-indexed accounting on completed physically feasible windows only; failed windows have no full-window economic outcome"
+    },
+    {
+      "condition": "power_reserve_only",
+      "protocol_id": "public_battery_unit_reserve_components_v1_20260930/power_reserve_only",
+      "status": "development_complete",
+      "normalization": {
+        "forecast_q05_MW": 24497.95,
+        "forecast_q95_MW": 42992.0,
+        "absolute_ramp_q95_MW": 2135.45,
+        "fit_half_hours": 480
+      },
+      "cases": [
+        {
+          "period": "2024-04-15",
+          "status": "evaluated",
+          "windows": 73,
+          "reserve_conflict_decisions": 0,
+          "library_feasible_profiles": 0,
+          "V3_library_feasible_profiles": 0,
+          "library_all_windows_completed_profiles": 0,
+          "library_successful_windows_union": 0,
+          "library_failed_windows": 4672,
+          "library_gained_windows": 0,
+          "library_lost_windows": 0,
+          "library_first_failure_causes": {
+            "power_failure": 513,
+            "BOA_inventory_failure": 3511,
+            "baseline_inventory_failure": 648,
+            "unit_1_inventory_failure": 2962,
+            "unit_2_inventory_failure": 1224
+          },
+          "reference_50_success_windows": 0,
+          "max_unit_energy_balance_error_MWh": 2.7959856652159942e-11
+        },
+        {
+          "period": "2024-07-15",
+          "status": "evaluated",
+          "windows": 73,
+          "reserve_conflict_decisions": 0,
+          "library_feasible_profiles": 3,
+          "V3_library_feasible_profiles": 3,
+          "library_all_windows_completed_profiles": 2,
+          "library_successful_windows_union": 73,
+          "library_failed_windows": 4327,
+          "library_gained_windows": 8,
+          "library_lost_windows": 0,
+          "library_first_failure_causes": {
+            "power_failure": 1071,
+            "BOA_inventory_failure": 2872,
+            "baseline_inventory_failure": 384,
+            "unit_1_inventory_failure": 1185,
+            "unit_2_inventory_failure": 2318
+          },
+          "reference_50_success_windows": 73,
+          "max_unit_energy_balance_error_MWh": 5.090328158985358e-11
+        },
+        {
+          "period": "2024-10-15",
+          "status": "evaluated",
+          "windows": 73,
+          "reserve_conflict_decisions": 0,
+          "library_feasible_profiles": 24,
+          "V3_library_feasible_profiles": 22,
+          "library_all_windows_completed_profiles": 23,
+          "library_successful_windows_union": 73,
+          "library_failed_windows": 2506,
+          "library_gained_windows": 51,
+          "library_lost_windows": 67,
+          "library_first_failure_causes": {
+            "power_failure": 675,
+            "BOA_inventory_failure": 969,
+            "baseline_inventory_failure": 874,
+            "unit_1_inventory_failure": 1293,
+            "unit_2_inventory_failure": 573
+          },
+          "reference_50_success_windows": 73,
+          "max_unit_energy_balance_error_MWh": 5.864819740963867e-11
+        }
+      ],
+      "library_profiles_feasible_in_all_periods": [],
+      "library_profiles_completing_all_windows_in_all_periods": [],
+      "development_gate_passed": false,
+      "decision": "hold_full_comparison",
+      "diagnostic_window_evaluations": 14673,
+      "planned_window_evaluations": 14673,
+      "new_data_requests": 0,
+      "new_API_response_bytes": 0,
+      "algorithm_optimizer_calls": 0,
+      "terminal_verifier_calls": 0,
+      "confirmation_year_access": false,
+      "limitations": [
+        "gross absolute power bound is stricter than the published net grid limit and can create conservative false infeasibility",
+        "historical BOAs held fixed despite their dependence on actual baseline and availability; other commitments absent",
+        "fixed development sample windows overlap; 95% success is a finite-population development criterion",
+        "nominations model a one-hour information lead; exact order execution, BM settlement, and degradation absent",
+        "equal per-unit usable capacities and half-full starts are analyst assumptions; no physical transfer of energy between inventory states",
+        "no unit-specific converter cap inferred from present-day registry or historical dynamic MEL/MIL; retain conservative shared gross power bound",
+        "post-V4 development ablation, not independent confirmation; overlapping windows and exogenous historical BOAs retain their original interpretation"
+      ],
+      "cost_scope": "MID-indexed accounting on completed physically feasible windows only; failed windows have no full-window economic outcome"
+    }
+  ],
+  "paired_library_outcomes": [
+    {
+      "condition": "inventory_reserve_only",
+      "period": "2024-04-15",
+      "reference": "V3",
+      "library_window_evaluations": 4672,
+      "both_success": 0,
+      "gained_windows": 0,
+      "lost_windows": 0,
+      "both_failed": 4672,
+      "new_power_failure_windows": 1052,
+      "reference_power_failure_windows": 663
+    },
+    {
+      "condition": "inventory_reserve_only",
+      "period": "2024-04-15",
+      "reference": "V4",
+      "library_window_evaluations": 4672,
+      "both_success": 0,
+      "gained_windows": 0,
+      "lost_windows": 0,
+      "both_failed": 4672,
+      "new_power_failure_windows": 1052,
+      "reference_power_failure_windows": 727
+    },
+    {
+      "condition": "inventory_reserve_only",
+      "period": "2024-07-15",
+      "reference": "V3",
+      "library_window_evaluations": 4672,
+      "both_success": 269,
+      "gained_windows": 66,
+      "lost_windows": 68,
+      "both_failed": 4269,
+      "new_power_failure_windows": 1428,
+      "reference_power_failure_windows": 991
+    },
+    {
+      "condition": "inventory_reserve_only",
+      "period": "2024-07-15",
+      "reference": "V4",
+      "library_window_evaluations": 4672,
+      "both_success": 335,
+      "gained_windows": 0,
+      "lost_windows": 7,
+      "both_failed": 4330,
+      "new_power_failure_windows": 1428,
+      "reference_power_failure_windows": 1393
+    },
+    {
+      "condition": "inventory_reserve_only",
+      "period": "2024-10-15",
+      "reference": "V3",
+      "library_window_evaluations": 4672,
+      "both_success": 2031,
+      "gained_windows": 176,
+      "lost_windows": 151,
+      "both_failed": 2314,
+      "new_power_failure_windows": 939,
+      "reference_power_failure_windows": 659
+    },
+    {
+      "condition": "inventory_reserve_only",
+      "period": "2024-10-15",
+      "reference": "V4",
+      "library_window_evaluations": 4672,
+      "both_success": 2207,
+      "gained_windows": 0,
+      "lost_windows": 45,
+      "both_failed": 2420,
+      "new_power_failure_windows": 939,
+      "reference_power_failure_windows": 880
+    },
+    {
+      "condition": "power_reserve_only",
+      "period": "2024-04-15",
+      "reference": "V3",
+      "library_window_evaluations": 4672,
+      "both_success": 0,
+      "gained_windows": 0,
+      "lost_windows": 0,
+      "both_failed": 4672,
+      "new_power_failure_windows": 513,
+      "reference_power_failure_windows": 663
+    },
+    {
+      "condition": "power_reserve_only",
+      "period": "2024-04-15",
+      "reference": "V4",
+      "library_window_evaluations": 4672,
+      "both_success": 0,
+      "gained_windows": 0,
+      "lost_windows": 0,
+      "both_failed": 4672,
+      "new_power_failure_windows": 513,
+      "reference_power_failure_windows": 727
+    },
+    {
+      "condition": "power_reserve_only",
+      "period": "2024-07-15",
+      "reference": "V3",
+      "library_window_evaluations": 4672,
+      "both_success": 337,
+      "gained_windows": 8,
+      "lost_windows": 0,
+      "both_failed": 4327,
+      "new_power_failure_windows": 1071,
+      "reference_power_failure_windows": 991
+    },
+    {
+      "condition": "power_reserve_only",
+      "period": "2024-07-15",
+      "reference": "V4",
+      "library_window_evaluations": 4672,
+      "both_success": 276,
+      "gained_windows": 69,
+      "lost_windows": 66,
+      "both_failed": 4261,
+      "new_power_failure_windows": 1071,
+      "reference_power_failure_windows": 1393
+    },
+    {
+      "condition": "power_reserve_only",
+      "period": "2024-10-15",
+      "reference": "V3",
+      "library_window_evaluations": 4672,
+      "both_success": 2115,
+      "gained_windows": 51,
+      "lost_windows": 67,
+      "both_failed": 2439,
+      "new_power_failure_windows": 675,
+      "reference_power_failure_windows": 659
+    },
+    {
+      "condition": "power_reserve_only",
+      "period": "2024-10-15",
+      "reference": "V4",
+      "library_window_evaluations": 4672,
+      "both_success": 2076,
+      "gained_windows": 90,
+      "lost_windows": 176,
+      "both_failed": 2330,
+      "new_power_failure_windows": 675,
+      "reference_power_failure_windows": 880
+    }
+  ],
+  "passing_conditions": [],
+  "decision": "hold_90_minute_reserve_family",
+  "diagnostic_window_evaluations": 29346,
+  "planned_window_evaluations": 29346,
+  "retained_comparator_reruns": 0,
+  "new_data_requests": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "limitations": "post-V4 development ablation, not independent confirmation; overlapping windows and exogenous historical BOAs retain their original interpretation",
+  "next_protocol": "performance/manifests/public_battery_unit_recoverability_v1_20260930.json"
+}

@@ -1,0 +1,99 @@
+{
+  "protocol_id": "public_battery_receipt_forecast_pilot_v1_20261001",
+  "frozen_at_utc": "2026-10-01T00:59:06+00:00",
+  "role": "causal nomination development with a received-sign forecast and inventory-priority allocation; same absolute-dispatch task",
+  "registration_context": "two original timing failures reproduce and two earlier-PN interventions complete both requests; nomination-clock information audited at 270, 300 and 330; this causal rule and its pilot outcomes remain unobserved",
+  "basis_protocol": "performance/manifests/public_battery_absolute_dispatch_pilot_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_absolute_dispatch_pilot_v1_20261001",
+  "timing_protocol": "performance/manifests/public_battery_replenishment_timing_preflight_v1_20261001.json",
+  "timing_outputs": "paper_artifacts/public_battery_replenishment_timing_preflight_v1_20261001",
+  "information_audit": "paper_artifacts/public_battery_replenishment_timing_preflight_v1_20261001/nomination_information_audit.json",
+  "inputs": {
+    "public_cue": "reuse cached April public receipts; at each nomination time t select the same latest nonzero endpoint tuple as receipt_marks in (t-60,t]; acceptanceTime must be no later than t",
+    "cue_clocks": "0,30,...,9990; cache compact source metadata for all 334 possible nomination times",
+    "controller_access": "own SOC, two locked PN slots, original targets, own accepted simulated pulse and the cue for the current nomination time only; no future mark or future cue",
+    "fixed_request_marks": "reuse the exact original 168 hourly marks and 95 activations; no change in magnitude, sign, clock or pulse shape"
+  },
+  "nomination_rule": {
+    "ordinary_command": "first compute the unchanged nominate_units command using own actual accepted pulse and original target fractions; whole-hour decisions and empty half-hour cues keep this command",
+    "forecast_scope": "only at half-hour clocks t mod 60 = 30 with a nonzero current cue, predict one fixed common-direction absolute pulse at t+30; its sign is the received cue, not the actual upcoming mark",
+    "forecast_shape": "one-minute ramp from following locked PN, 30-minute fixed signed hold, one-minute return to the ordinary command; this return is a planning proxy and does not create a received commitment",
+    "forecast_terms": "overlay this hypothetical pulse at offsets 30--62 on a copy of the 90-minute accepted plan; reuse unit_planning_terms and nominate_units with the original targets to obtain the preferred forecast command",
+    "readiness_band": "for a repeated predicted export use [D_i,C_i], D_i=abs(peak_i)*31/60/discharge_efficiency; for predicted import use [0,C_i-I_i], I_i=abs(peak_i)*31/60*charge_efficiency. This zero-reference planning band is advisory, not a new firm obligation",
+    "inventory_priority": "from forecast forced flows and locked PN obtain projected end stock without the new command. Invert the original signed inventory_rate over the remaining idle slot to find each unit power interval placing forecast end stock in the readiness band; intersect with its planning power bound. Prefer the original forecast command inside this interval",
+    "site_allocation": "if intervals are nonempty and their commands nearest zero fit within 98 MW gross, first reserve these minimum commands, then move toward the clipped preferred commands with the largest common fraction that fits the site bound. If the forecast band cannot fit, retain the preferred forecast command and record the predicted infeasibility; actual service accounting is unchanged",
+    "known_reference_safety": "evaluate the actual 90-minute known reference with the ordinary command and candidate, without the hypothetical pulse. If the ordinary reference is unsafe, keep it and preserve the known failure. Otherwise admit the candidate if safe, or the largest safe common interpolation from ordinary to candidate using 48 bisection steps",
+    "execution": "only the final nominated PN enters commitments. Actual pulses still use exact PN ramps, causal absolute declarations and the existing dispatch modes; predicted pulses never become physical instructions",
+    "no_retuning": "no new capacity, efficiency, fraction, threshold, history-window, weight or policy parameter search"
+  },
+  "component_preflight": {
+    "saved_states": "the two original minute-330 timing states, with current and following locked PN and original targets",
+    "cues": [
+      "the audited export receipt at minute 301",
+      "empty cue"
+    ],
+    "planned_nomination_probes": 4,
+    "required_behavior": "empty cues reproduce ordinary PN; receipt-assisted commands respect gross power and known-reference safety, and may arrange replenishment before the next hypothetical activation; record forecast feasibility without interpreting it as service success",
+    "tests": "future-receipt and future-mark prefix invariance, forecast kept out of actual accepted plans, inventory-priority allocation, unsafe-known-reference retention, and original event order regressions. Any implementation discrepancy blocks pilot interpretation"
+  },
+  "sequential_pilot": {
+    "period": "2024-04-15",
+    "window_start_minutes": [
+      0
+    ],
+    "horizon_hours": 168,
+    "profiles": [
+      {
+        "id": "constant_pair_0003_0007",
+        "target_fractions": [
+          0.35,
+          0.75
+        ]
+      },
+      {
+        "id": "constant_pair_0004_0007",
+        "target_fractions": [
+          0.45,
+          0.75
+        ]
+      }
+    ],
+    "dispatch_rules": [
+      "conservative_admission",
+      "full_request_reference"
+    ],
+    "planned_controller_window_evaluations": 4,
+    "initial_SOC_MWh": [
+      49,
+      49
+    ],
+    "initial_locked_PN_MW": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "reference_comparison": "pair against the already retained ordinary-nomination runs within the same absolute task; no extra reference rollout and no comparison against the old firm-headroom product",
+    "outcomes": "all four runs, physical completion, fulfilled and unfulfilled calls out of 95, unobserved calls after interruption, signed executed-prefix errors, first failure, cue and forecast nominations, safety interpolation counts and minimum-stock violations",
+    "window_success": "all 10080 minutes completed safely, all 95 prescribed requests fulfilled, and no known unsafe commitment; inactive hours are not counted as fulfilled requests",
+    "nomination_safety_budget": "at most 50 known-reference trajectory evaluations for each of 167 half-hour decisions per complete run; count actual calls including probes, tests and any implementation replays separately",
+    "chance_criterion": "retain the original 0.05 failure probability for any future broader development population; these four trials cannot pass that gate",
+    "storage": "compact declarations, nominations and first failures only; no full-week minute trace or monetary outcome"
+  },
+  "decision": "if any window fulfills all 95 requests safely with no known unsafe commitment, register broader development. Otherwise use recorded cues and first failures to distinguish forecast error, shared-power allocation and remaining physical limits before any further controller change; no larger matrix follows automatically",
+  "accounting_constraints": {
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "preservation": "keep all original products, policy outcomes and negatives; write receipt-forecast results to a separate directory",
+  "limitations": "this is development after inspecting April failures. Receipt signs forecast an analyst-generated workload and do not identify real BM counterfactual dispatch. The planning pulse and zero-reference readiness bands are approximations; exact executed physics and full-request shortfalls determine outcomes. Four pilots cannot establish 95 percent development reliability or source benefit"
+}

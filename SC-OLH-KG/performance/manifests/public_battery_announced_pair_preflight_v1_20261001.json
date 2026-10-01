@@ -1,0 +1,52 @@
+{
+  "protocol_id": "public_battery_announced_pair_preflight_v1_20261001",
+  "frozen_at_utc": "2026-10-01T01:58:50+00:00",
+  "role": "counterfactual advance-notice component diagnostic, separate from the existing unannounced task",
+  "registration_context": "conditional bound, six previous paths and cached information-coverage counts observed; the eight advance-notice paths have not been evaluated",
+  "basis_protocol": "performance/manifests/public_battery_two_call_information_bound_v1_20261001.json",
+  "basis_coverage": "paper_artifacts/public_battery_nomination_information_coverage_v1_20261001/summary.json",
+  "retained_asset_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "information_intervention": {
+    "announcement_lead_minutes": 90,
+    "first_call_announcement_minute": 870,
+    "second_call_announcement_minute": 930,
+    "critical_nomination_minute": 930,
+    "meaning": "both full request signs are stipulated known before the tail PN is chosen; these early announcements were not present in the public receipt history. This is an information counterfactual, not a causal forecast evaluated against the original information set",
+    "rationale": "90 minutes exposes the next call by the last nomination that can act on the preceding call's return and tail; it retains the original 60-minute PN lead and 30-minute nomination clock"
+  },
+  "component_roster": {
+    "contexts": "reuse both component_probes.contexts from basis_protocol, including exact first-call stock, first locked PN slot, original targets and the minute-960/1020 clocks",
+    "sign_pairs": ["export_export", "export_import", "import_export", "import_import"],
+    "first_call_minute": 960,
+    "second_call_minute": 1020,
+    "stop_exclusive_minute": 1080,
+    "duration_minutes": 120,
+    "absolute_peak_MW": {"export": [49, 49], "import": [-49, -49]},
+    "pulse": "original one-minute linear ramp, 30-minute hold and one-minute return to the locked reference, followed by its mandatory tail",
+    "first_tail_PN_MW": {
+      "export_export": [-49, 0],
+      "export_import": [0, 0],
+      "import_export": [0, 0],
+      "import_import": [0, 49]
+    },
+    "tail_delivery_minute": 990,
+    "second_hour_locked_PN_MW": [[0, 0], [0, 0]],
+    "second_hour_nomination_minutes": [960, 990],
+    "command_rationale": "repeated export replenishes only the initially lower-stock unit; repeated import releases only the initially higher-stock unit; opposite calls retain zero PN. Fix these commands before evaluating the paths, without fitting capacities or searching commands",
+    "planned_component_trajectory_evaluations": 8,
+    "outputs": "compact continuous SOC extrema, final per-unit stock and shared gross power feasibility; no minute traces or weekly controller runs"
+  },
+  "decision": "if all eight paths are physically safe, the advance information removes the tested local obstruction. Assess the justification for a distinct announced simulation task before any rollout. If a path fails, retain its exact mechanism; do not tune commands or launch a matrix automatically",
+  "accounting_constraints": {
+    "new_controller_window_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "preservation": "all original request histories, information conditions, controllers and negative results remain unchanged; write this counterfactual to a separate directory",
+  "limitations": "two saved states and four supplied sign pairs only; the information intervention is not historical BM knowledge, a 95-request causal-policy proof, a calibrated reliability estimate, evidence of source benefit or OR submission readiness"
+}

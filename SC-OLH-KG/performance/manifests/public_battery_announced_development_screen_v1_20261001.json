@@ -1,0 +1,180 @@
+{
+  "protocol_id": "public_battery_announced_development_screen_v1_20261001",
+  "frozen_at_utc": "2026-10-01T02:59:41.630144+00:00",
+  "role": "finite-window development screen of the same two announced-task controllers",
+  "registration_context": "all 22 components and four April start-zero pilots observed safe with 95/95 requests fulfilled; other announced windows unobserved",
+  "basis_protocol": "performance/manifests/public_battery_announced_controller_pilot_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_announced_controller_pilot_v1_20261001",
+  "task_protocol": "performance/manifests/public_battery_announced_task_contract_v1_20261001.json",
+  "cached_data_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "development_samples": [
+    {
+      "start": "2024-04-15T00:00:00Z",
+      "stop": "2024-04-25T00:00:00Z"
+    },
+    {
+      "start": "2024-07-15T00:00:00Z",
+      "stop": "2024-07-25T00:00:00Z"
+    },
+    {
+      "start": "2024-10-15T00:00:00Z",
+      "stop": "2024-10-25T00:00:00Z"
+    }
+  ],
+  "workload": {
+    "data": "reuse original cached 2024 per-unit acceptances through cached_unit; no API or new data. Prefix comes from the existing one-day prefix for each sample",
+    "receipt_marks": "for each original 168-hour source window use receipt_marks at its 168 hourly clocks; its latest nonzero endpoint in (clock-60,clock] and frozen priority determine each mark",
+    "coordinates": "generate marks in sample-relative minutes; translate release and each source timestamp to window-relative minutes by subtracting its source-window start; retain sample dates and original source coordinates in workload metadata",
+    "announcements": "announce each mark for release+120, keep all active/inactive marks binding; predefined inactive startup slots at 0 and 60; use announce_requests and delivery_clock_roster with the retained contract",
+    "source_span_minutes": 10080,
+    "warmup_minutes": 120,
+    "execution_minutes": 10200,
+    "requests": "each workload has its own original active count, not a forced count of 95; all its active requests remain the denominator; inactive slots create no delivered requests",
+    "reset": "each simulated window resets SOC to [49,49] and both initial PN rows to zero; no cross-window warm start",
+    "boundary": "last requests may execute 120 minutes after the source sample ends, using only already released instructions; no public data after the ten-day source sample is needed"
+  },
+  "controller": {
+    "implementation": "unchanged nominate_announced in problems/public_battery_announced_nomination.py and simulate_service in problems/public_battery_causal_service.py",
+    "profiles": [
+      {
+        "id": "constant_pair_0003_0007",
+        "target_fractions": [
+          0.35,
+          0.75
+        ]
+      },
+      {
+        "id": "constant_pair_0004_0007",
+        "target_fractions": [
+          0.45,
+          0.75
+        ]
+      }
+    ],
+    "dispatch_rules": [
+      "conservative_admission",
+      "full_request_reference"
+    ],
+    "fixed_parameters": "unchanged 98 MW shared gross power, two 98 MWh stocks, 0.92 efficiencies, targets, 30-minute PN clock, 60-minute PN lead, 120-minute announcements, 1/30/1 pulses and 1e-8 physical tolerances",
+    "information": "controller receives only released announcements, own actual stocks, PN and own admitted pulse/past execution; full marks stay dispatcher-only",
+    "infeasibility": "unchanged zero fallback, planning and known-reference failure records; no retuning or policy selection during execution"
+  },
+  "roster": {
+    "source_window_start_minutes": [
+      0,
+      60,
+      120,
+      180,
+      240,
+      300,
+      360,
+      420,
+      480,
+      540,
+      600,
+      660,
+      720,
+      780,
+      840,
+      900,
+      960,
+      1020,
+      1080,
+      1140,
+      1200,
+      1260,
+      1320,
+      1380,
+      1440,
+      1500,
+      1560,
+      1620,
+      1680,
+      1740,
+      1800,
+      1860,
+      1920,
+      1980,
+      2040,
+      2100,
+      2160,
+      2220,
+      2280,
+      2340,
+      2400,
+      2460,
+      2520,
+      2580,
+      2640,
+      2700,
+      2760,
+      2820,
+      2880,
+      2940,
+      3000,
+      3060,
+      3120,
+      3180,
+      3240,
+      3300,
+      3360,
+      3420,
+      3480,
+      3540,
+      3600,
+      3660,
+      3720,
+      3780,
+      3840,
+      3900,
+      3960,
+      4020,
+      4080,
+      4140,
+      4200,
+      4260,
+      4320
+    ],
+    "windows_per_sample": 73,
+    "source_window_hours": 168,
+    "execution_hours": 170,
+    "samples": 3,
+    "profiles": 2,
+    "dispatch_rules": 2,
+    "reported_controller_window_evaluations": 876,
+    "new_controller_window_evaluations": 872,
+    "reused_controller_window_evaluations": 4,
+    "reuse": "reuse only the four completed April window-start-zero pilots after its regenerated announced workload matches the retained 168 announcements and 170 delivery clocks; no rollout or nomination recomputation for reused rows; retain explicit artifact provenance",
+    "order": "sample in original April/July/October order, window start ascending, profile in retained order, dispatch rule in retained order",
+    "coverage": "evaluate every registered cell even after a scientific failure; stop only for an implementation/interface/accounting discrepancy and preserve completed cells"
+  },
+  "accounting": {
+    "window_success": "all 10200 minutes physical, all workload requests fulfilled, no known unsafe commitment",
+    "interruption": "preserve last safe state, first physical/dispatch failure, executed-prefix errors, observed failures and unobserved obligation count",
+    "call_counts": "new and reused windows, declarations, half/whole-hour nominations, scalar stock projections, reference-safety and minute-physics calls counted separately; any tests or repairs/replays separate",
+    "budgets": "at most 300 scalar projections and 51 safety trajectories per half-hour decision; whole-hour nomination zero without extra trajectories",
+    "output": "compact per-window summary and per-sample/profile/rule success counts; keep first failure state and preceding two relevant nomination records for every failed window; no minute trajectories or monetary outcomes",
+    "tests": "window-relative receipt/source translation and exact April-pilot workload reuse; do not rerun unchanged policy regressions or components without a new implementation change"
+  },
+  "gate": {
+    "chance_failure_probability": 0.05,
+    "required_successes_per_sample": 70,
+    "denominator_per_sample": 73,
+    "pass": "the same retained profile must safely fulfill all requests in at least 70/73 windows in each of April, July and October under each dispatch rule",
+    "interpretation": "finite overlapping-window development criterion, not a statistical 95-percent reliability bound or independent confirmation; record any unsafe profile/window without requiring or manufacturing one",
+    "if_pass": "register the next announced-task library/objective stage; safe/unsafe candidate support and source comparison design remain to be established before any source comparison",
+    "if_fail": "retain all failures and diagnose the earliest failed physical/planning/request mechanism from saved records before changing the task or controller"
+  },
+  "accounting_constraints": {
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "confirmation_year_access": false,
+  "preservation": "retain all unannounced tasks, negatives, original pilots and protocols; this stage changes only population coverage, not task assumptions or policy parameters",
+  "limitations": "announced analyst simulation developed after prior failures, fixed reset stocks and overlapping 2024 windows; two retained constant profiles do not establish functional library diversity, economic outcomes, historical BM validity, source benefit, independent confirmation or OR submission readiness"
+}

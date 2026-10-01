@@ -30,7 +30,8 @@ def analyze(paths):
     controls = tuple(arm for arm in ARMS if arm != "source_atlas")
     return analyze_energy(
         paths,
-        accepted_contract_ids={CONTRACT_ID},
+        # Scalar replay preserves V3/V4 recorded outcomes without re-simulation.
+        accepted_contract_ids={CONTRACT_ID, "opsd_forecast_indexed_region_holdout_v3", "opsd_forecast_indexed_region_holdout_v4_fixed_initial_soc"},
         controls=controls,
         analysis_contract_id=ANALYSIS_CONTRACT_ID,
     )

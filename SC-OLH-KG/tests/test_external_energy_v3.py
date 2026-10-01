@@ -58,6 +58,22 @@ def _write_energy_suite(path):
         np.savez_compressed(handle, **arrays)
 
 
+def test_energy_common_initial_inventory_and_charged_first_adjustment(tmp_path):
+    data = tmp_path / "energy.npz"
+    _write_energy_suite(data)
+    problem = OPSDForecastIndexedStorageProblem(data, market="DK_2", d=37, horizon=24)
+    problem._net_error[:] = 0.0
+    start = problem.split_window_starts("search")[0]
+    _, low = problem._evaluate_start_batch([0] * 37, [start], return_diagnostics=True)
+    _, high = problem._evaluate_start_batch([100] * 37, [start], return_diagnostics=True)
+    initial = .5 * problem.physics.energy_capacity
+    assert low["initial_energy"][0] == high["initial_energy"][0] == initial
+    assert low["grid_charge_cost"][0] == 0.0
+    assert high["grid_charge_cost"][0] > 0.0
+    assert low["terminal_energy"][0] < initial < high["terminal_energy"][0]
+    assert problem.information_contract()["terminal_energy_value"] == 0.0
+
+
 def test_energy_v3_separates_policy_dimension_and_physical_horizon(tmp_path):
     data = tmp_path / "energy.npz"
     _write_energy_suite(data)
@@ -74,6 +90,25 @@ def test_energy_v3_separates_policy_dimension_and_physical_horizon(tmp_path):
     output = problem.simulate(tuple([50] * 37), np.random.default_rng(7))
     assert output.shape == (2,)
     assert np.all(np.isfinite(output))
+
+
+def test_reserve_adjustment_and_balancing_share_hourly_power(tmp_path):
+    data = tmp_path / "energy.npz"
+    _write_energy_suite(data)
+    problem = OPSDForecastIndexedStorageProblem(
+        data, market="DK_2", d=37, horizon=2, initial_soc_fraction=.5)
+    start = problem.split_window_starts("search")[0]
+    problem._forecast_stress[start:start + 2] = [0., 1.]
+    problem._net_error[start:start + 2] = [.25, -.10]
+    problem._normalized_price[start:start + 2] = 1.
+    _, state = problem._evaluate_start_batch(
+        np.rint(np.linspace(0, 100, 37)).astype(int), [start], return_diagnostics=True)
+    # Hour one releases 0.1472 and supplies 0.0368, exhausting stored energy.
+    # Hour two charges 0.4 from the grid; no hourly budget remains for surplus.
+    np.testing.assert_allclose(state["terminal_energy"], [.368], atol=1e-14)
+    np.testing.assert_allclose(state["grid_charge_cost"], [.4], atol=1e-14)
+    np.testing.assert_allclose(state["spill_energy"], [.10], atol=1e-14)
+    assert state["maximum_hourly_energy_exchange"][0] <= .4
 
 
 def test_energy_v3_coordinate_is_outcome_free_and_dimension_stable(tmp_path):

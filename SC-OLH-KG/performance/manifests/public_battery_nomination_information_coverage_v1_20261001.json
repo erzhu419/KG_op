@@ -1,0 +1,36 @@
+{
+  "protocol_id": "public_battery_nomination_information_coverage_v1_20261001",
+  "frozen_at_utc": "2026-10-01T01:50:13+00:00",
+  "role": "descriptive cached-clock audit before any further task or controller change",
+  "registration_context": "positive conditional two-call bound and six component paths observed; adjacent-active-pair counts and nomination-cue coverage totals not yet computed",
+  "basis_protocol": "performance/manifests/public_battery_two_call_information_bound_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_two_call_information_bound_v1_20261001",
+  "cached_inputs": {
+    "request_marks": "paper_artifacts/public_battery_receipt_forecast_pilot_v1_20261001/request_marks.json",
+    "nomination_cues": "paper_artifacts/public_battery_receipt_forecast_pilot_v1_20261001/nomination_cues.json"
+  },
+  "scope": {
+    "request_clocks": 168,
+    "nomination_clocks": 334,
+    "expected_active_requests": 95,
+    "adjacent_pair": "two active calls exactly 60 minutes apart; keep all four observed sign combinations, without constructing new calls",
+    "critical_deadline": "for a second call at t, the first call's return and tail PN at t-30 is nominated at t-90; that tail is fixed before either first-sign branch in the bound",
+    "late_forecast_clock": "t-30; its new PN begins at t+30, during the final part of the 32-minute pulse and too late to change earlier stock extrema",
+    "early_pairs": "if t-90 precedes zero, retain the pair in the sign roster and label its deadline as bootstrap; do not invent a cue",
+    "outputs": "compact pair rows plus sign-combination totals; deadline-cue absent/present and agreement with each eventual sign; late-cue agreement; whether the selected final first-call source was already received at the deadline",
+    "interpretation": "agreement is a retrospective descriptive relationship; receipt of a selected source does not guarantee the final mark was known, because later receipts can supersede it"
+  },
+  "decision": "use the observed sequence and information timing to decide whether task-information repair has a factual basis; do not infer a stochastic failure rate or launch another heuristic controller, a larger matrix or a source comparison",
+  "accounting_constraints": {
+    "component_trajectory_evaluations": 0,
+    "new_controller_window_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "limitations": "fixed-April descriptive development audit, not a calibrated sign-support model, a 95-percent reliability estimate, a policy feasibility proof or real BM counterfactual dispatch"
+}

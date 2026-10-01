@@ -7,7 +7,7 @@
 \RequirePackage{bm}
 \RequirePackage{endnotes}
 
-\OneAndAHalfSpacedXII
+\OneAndAHalfSpacedXI
 
 \usepackage{mathtools}
 \usepackage{booktabs}
@@ -46,6 +46,8 @@
 % the abstract. The submission PDF uses the journal metadata block without
 % that instructional panel.
 \makeatletter
+\setlength{\@fptop}{0pt}
+\setlength{\@fpsep}{18pt}
 \def\theARTICLEABSTRACT{%
   \HOOKb
   \vspace*{12pt}
@@ -72,28 +74,35 @@
 Chance-Constrained Optimization of Ordered Policy Profiles}
 \ARTICLEAUTHORS{\AUTHOR{Authors omitted for peer review}}
 
-\ABSTRACT{A policy with thousands of ordered settings is often a finely
-discretized rule, not a collection of unrelated decisions. We study how
-historical simulations can help choose the first few policies for a new
-chance-constrained problem of this kind. Our method starts from a public
-library of 64 simple profiles. Replicated source outcomes rank these profiles
-by objective and safety, while farthest-first selection chooses ten that also
-cover a low-dimensional cosine coordinate. The ten policies are fixed before
-any target outcome; any declared target optimizer and an independent verifier
-can then use them without changing the initial design. We prove cross-grid
-coordinate
-stability, finite-library coverage, recovery of separated source ranks,
-conditional coverage of an aligned target safe region, and exact familywise
-safety for the final shortlist. Across 480 paired task--resolution cells from
-160 independently seeded latent tasks, source scoring achieves 91.7\%
-feasible coverage and 47.3\% certified deployment, versus 37.5\% and 10.6\%
-for outcome-free cosine maximin. The best source-free design wins in four
-adverse regimes and in a held-out electricity study. Historical simulation
-therefore helps only when profile geometry transfers and its cost is reused
-across targets.}
+\ABSTRACT{Many policies stored as thousands of ordered settings are finely
+discretized rules. We study how historical simulations can choose starting
+policies for a new chance-constrained problem of this kind. Replicated source
+outcomes rank a public library of 64 profiles by objective and safety;
+farthest-first selection chooses ten profiles covering a standardized cosine
+coordinate augmented by these ranks. The design is fixed before target
+outcomes and followed by an independent deployment verifier. We establish
+cross-grid stability, finite-library coverage, recovery of separated source
+ranks, conditional coverage under source-target alignment, and familywise
+certificate validity. Across the original 480 task--resolution cells,
+source scoring achieves 47.3\% certified true-feasible deployment versus
+31.5\% for standardized outcome-free maximin. A prospective study on 240 new
+tasks, three new source families and three public libraries yields 23.3\%
+versus 10.0\%. Factorial controls attribute most of the gain to the
+source-selected first center; rank augmentation adds little. A subsequent
+fixed-first-center diagnostic gives 53/240 certificates with nine random
+remainder policies versus 54/240 with structural coverage. A same-source
+portfolio gives better feasible coverage and penalized loss in the new study,
+while electricity results do not establish an archive cost advantage.
+A separate public-battery development replay is matched by a source-free
+constant-policy search and favors paid enumeration at the source-inclusive budget.
+The evidence supports source-selected initialization under the declared
+synthetic task laws; its operational value requires transferable structure
+and recovery of the archive cost.}
 
-\KEYWORDS{simulation optimization, chance constraints, initial design,
-transfer learning, functional decisions, independent verification}
+\KEYWORDS{simulation optimization, chance constraints, initial design}
+\SUBJECTCLASS{Simulation: initial designs and independent verification;
+programming, stochastic-chance constrained: ordered policies.}
+\AREAOFREVIEW{Simulation}
 
 \hypersetup{
   pdftitle={Source-Scored Structural Initial Designs for Chance-Constrained Optimization of Ordered Policy Profiles},
@@ -119,5 +128,9 @@ transfer learning, functional decisions, independent verification}
 \label{page:references}
 \bibliographystyle{informs2014}
 \bibliography{references}
+
+\clearpage
+\input{sections/submission_tables}
+\clearpage
 
 \end{document}

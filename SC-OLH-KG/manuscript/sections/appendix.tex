@@ -5,7 +5,7 @@
 \small
 \begin{enumerate}
 \item Generate the declared 64-profile outcome-free library on 128 regular
-midpoints using seed 20260808.
+midpoints using library seed 20261799, equal to family seed 20260808 plus 991.
 \item For every source task and profile, compute the replicated objective mean
 and the Gaussian chance-margin statistic in \eqref{eq:source-margin}.
 \item Convert each statistic to deterministic within-task average-tie
@@ -32,7 +32,51 @@ feasibility is diagnostic only.  There is no endpoint replacement, hidden
 scalarization, target-outcome repair, or target-oracle branch in a non-oracle
 arm.
 
+\subsection{Supplementary comparison rules}\label{app:supplemental-controls}
+
+Standardized DCT maximin computes the same 18-dimensional $z_j$ as the
+source-scored atlas.  It starts at the library medoid minimizing mean
+Euclidean distance to all 64 profiles and adds nine farthest-first centers in
+$z$; the lowest library index breaks ties.  The original unstandardized DCT
+maximin control applies these rules directly to $\phi$.
+
+The source-greedy portfolio uses the same replicated source records and
+within-task percentile ranks as the source-scored atlas.  Define
+$\rho_{qj}=.5(r^g_{qj}+r^f_{qj})$.  Starting from $A_0=\varnothing$, it selects
+\begin{equation}\label{eq:greedy-portfolio}
+ j_\ell\in\argmin_{j\notin A_{\ell-1}}
+ \frac1m\sum_{q=1}^{m}\min_{i\in A_{\ell-1}\cup\{j\}}\rho_{qi},
+ \qquad A_\ell=A_{\ell-1}\cup\{j_\ell\},\quad \ell=1,\ldots,10.
+\end{equation}
+Ties favor the candidate with the lower overall mean source score
+$m^{-1}\sum_q\rho_{qj}$, then the lower library index.  This adapts greedy
+portfolio selection \citep{FeurerEtAl2022} to the declared finite policy
+library using safety and objective ranks.
+Both supplementary designs use the original interpolation, target budget,
+and independent verifier.  Their evaluations reuse the original target seeds
+after manuscript review.
+
 \section{Additional Statistical Results}\label{app:additional-results}
+
+\subsection{Paired supplementary comparisons}
+
+Table \ref{tab:matched-comparisons} retains the paired certification counts
+for the two supplementary controls.  Bootstrap resampling draws 20 paired
+task seeds within each of the eight fixed regimes, retaining equal regime
+weights, with 10,000 replicates.  Each resolution is analyzed separately.
+Wins and losses refer to source-only and control-only true-feasible
+certificates; ties include both successes and both failures.  These are
+post-review comparisons on previously used seeds.  The standardized $d=1000$
+control reuses the first review diagnostic unchanged.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Source-scored atlas minus supplementary controls in true-feasible
+certification.  Differences and intervals are in percentage points.}
+\label{tab:matched-comparisons}
+\resizebox{\textwidth}{!}{\input{tables/review_matched_comparisons.tex}}
+\end{table}
 
 \subsection{Verifier thresholds}
 
@@ -55,8 +99,10 @@ The full one-factor sensitivity matrix is reported in Table
 \ref{tab:sensitivity-full}.  Entries are ordered by the tested levels in the
 second column.  Effective-rank levels are explicit overrides; all other rows
 include the frozen baseline level.  The nonmonotone responses, the zero
-certificate rate at $\alpha=.01$, and the immaterial frequency penalty are
-retained rather than optimized away.
+certificate rate at $\alpha=.01$, and the identical frequency-penalty results
+are retained.  The latter follow from column standardization cancelling the
+positive frequency scaling, rather than from robustness to an effective
+metric parameter.
 
 \begin{table}[htbp]
 \centering
@@ -99,15 +145,18 @@ seeds.  The same seeds are crossed with all three grid resolutions.}
 \begin{table}[htbp]
 \centering
 \small
-\caption{Native transfer pipelines at $N=20$ with the same 384-call source
-archive and independent verifier.  Each method retains its own initialization
-and online adaptation.}
+\caption{Native transfer pipelines at $N=13$ and $n_0=10$ with the same
+384-call source archive and historical v69 terminal protocol.  Candidate
+budgets are $(80,128,128)$, with an 8-call incumbent objective comparison.
+Each method retains its own initialization and online adaptation.}
 \label{tab:native-transfer}
 \resizebox{0.88\textwidth}{!}{\input{tables/review_native_transfer.tex}}
 \end{table}
 
-No method certifies a Queue task.  These 60-task totals measure repeatability
-on three fixed families, not generalization to a population of domains.
+No method certifies a Queue task.  These 60-task totals comprise 20
+algorithmic seeds per fixed family and measure repeatability, not
+generalization to a population of domains.  The v69 protocol is common to
+these eight pipelines and differs from the primary $(80,80,80)$ verifier.
 
 \subsection{Energy temporal audit}
 
@@ -117,13 +166,86 @@ on three fixed families, not generalization to a population of domains.
 \caption{Postdecision Energy temporal stability.  Counts are descriptive and
 do not replace the declared empirical-window certificate.}
 \label{tab:temporal-audit}
-\input{tables/review_temporal.tex}
+\resizebox{\textwidth}{!}{\input{tables/review_temporal_v5.tex}}
 \end{table}
 
-V3 preserves all 358 original certificates under physically nonoverlapping
-windows but 312 under the joint block criterion.  Shared calendars and only
+V5 preserves all 421 certificates under physically nonoverlapping
+windows and 374 under both the chronological-block and joint criteria.  Shared calendars and only
 five regions preclude an iid market-population interpretation.
 
+\FloatBarrier
+\section{Mechanism Attribution and New-Family Confirmation}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Diagnostic first-center and distance interventions on the original
+160 tasks at each grid resolution.  Medoid first centers are fixed across
+metrics; raw L2 uses the same public profiles and Voronoi quadrature.}
+\resizebox{\textwidth}{!}{\input{tables/review_attribution.tex}}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Prospective results by source-family and public-library seed.
+Each row contains 80 tasks at $d=1000$.}
+\resizebox{\textwidth}{!}{\input{tables/review_confirmation_families.tex}}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Prospective results by fixed mechanism, pooling ten tasks from each
+of the three new families.  Each row contains 30 tasks.}
+\resizebox{\textwidth}{!}{\input{tables/review_confirmation_regimes.tex}}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Predefined library-size sensitivities on the first new family.
+Each row contains 80 paired tasks; support composition changes with size.}
+\resizebox{\textwidth}{!}{\input{tables/review_library_sizes.tex}}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Observed reuse cost in prospective synthetic confirmation.  Each
+source design pays once for each of 24 archives serving ten tasks.}
+\resizebox{\textwidth}{!}{\input{tables/review_confirmation_cost.tex}}
+\end{table}
+
+Across the 240 tasks, source scoring consumes 60736 calls and standardized
+maximin 56960.  Their calls per true-feasible certificate are 1084.6 and
+2373.3; the portfolio consumes 63936 calls, or 1304.8 per true certificate.
+This is observed archive reuse rather than a hypothetical deployment count.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Corrected Energy V5 reuse across the actual 18 markets.  Each of
+five geographic archives is charged once.  Target cost and certificates are
+averaged over the five algorithm repeats within each market.}
+\resizebox{\textwidth}{!}{\input{tables/review_energy_reuse.tex}}
+\end{table}
+
+\FloatBarrier
+\section{Additional Source-Budget and Geometry Diagnostics}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.90\textwidth]{review_aligned_geometry.pdf}
+  \caption{After-the-fact geometry diagnostic for the aligned regime.  Points
+  show medians and bars show 10th--90th percentiles over the original fixed designs.
+  The hidden safe center was unavailable to every algorithm.}
+  \label{fig:aligned-geometry}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.92\textwidth]{review_source_budget.pdf}
+  \caption{Source-budget sensitivity.  More tasks, profiles, or replications
+  do not monotonically improve the frozen design.}
+  \label{fig:source-budget}
+\end{figure}
+
+\FloatBarrier
 \section{Secondary Cumulative-Variance Diagnostic}\label{app:hvd}
 
 The project originally studied cumulative heteroscedastic variance
@@ -145,12 +267,110 @@ increases verification cost in Inventory and Queue, HVD is not included in the
 paper's claimed optimization method.  Its formal results remain in the proof
 archive as reusable mechanistic results.
 
+\FloatBarrier
 \section{Human-Readable Proofs}\label{app:proofs}
+
+\begin{proof}{Proof of Proposition \ref{prop:design-stability}.}
+A normalized average-tie rank is $(J-1)^{-1}$ times the sum, over all other
+profiles, of one for a lower score and one-half for an equal score.  Under the
+simultaneous error event, a pair separated by more than $2r_q$ keeps its strict
+order.  Only the $U_{qj}(r_q)$ unresolved pairs can change their contribution,
+each by at most one.  This proves the rank bound.  Weighted averages propagate
+these bounds to $\epsilon_g$ and $\epsilon_f$.
+
+Since $|\widehat b_j-b_j|\le\epsilon_b$ and
+$\widehat b_{\widehat j}\le\widehat b_{j^\star}$ for a population minimizer,
+$b_{\widehat j}\le b_{j^\star}+2\epsilon_b$.  A population gap strictly
+larger than $2\epsilon_b$ forces the same unique minimizer.  Structural
+coordinates are fixed, so each augmented coordinate moves by at most
+$\epsilon_{\rm aug}$ and each pairwise distance by at most
+$2\epsilon_{\rm aug}$.
+For a common selected set, taking the minimum over its members preserves this
+distance-error bound.  A winner-to-runner-up gap larger than
+$4\epsilon_{\rm aug}$ therefore preserves the next center.  Induction from the
+common first center proves equality of the complete sequence.
+\Halmos
+\end{proof}
+
+\subsection{First-center uncertainty and target safety}
+
+For a simultaneous source-score bound
+$\max_j|\widehat b_j-b_j|\le\epsilon_b$, define
+\[
+ \mathcal C_b=\{j:\widehat b_j\le\min_\ell\widehat b_\ell+2\epsilon_b\},
+ \qquad D_b=\max_{i,j\in\mathcal C_b}
+ \|\widehat z(h_i)-\widehat z(h_j)\|_2.
+\]
+
+\begin{proposition}[First-center margin transfer]\label{prop:first-center-transfer}
+Let $j^\star$ minimize $b_j$ and $\widehat j$ minimize $\widehat b_j$.
+On the simultaneous score-error event, both belong to $\mathcal C_b$.
+Suppose the target margin is $L_q$-Lipschitz in $z_q^\star$, coordinate
+error is at most $\epsilon_\eta$ on this set, and
+$m_q(h_{j^\star})\le-\gamma_q$.  Then
+\[
+ m_q(h_{\widehat j})\le-\gamma_q+L_q(D_b+2\epsilon_\eta).
+\]
+Thus $L_q(D_b+2\epsilon_\eta)\le\gamma_q$ suffices for a feasible first
+center.  If the score-error event has probability at least $1-\delta_s$
+and the target premises hold throughout that event, the same lower bound
+applies to the probability of a feasible first center.
+\end{proposition}
+
+The Online Supplement gives the proof.  Unlike complete-design stability,
+this result permits the first center to change within a geometrically small
+source-compatible set.  It separates source estimation error from target
+transfer.  Source data alone cannot identify whether the selected center is
+safer than a distinct outcome-free center: the same archive can accompany
+two targets assigning opposite safety margins to those policies.
+
+\paragraph{Scope of the first-center condition.}
+For a supplied valid source radius, $\mathcal C_b$ and $D_b$ use only
+source scores and fixed coordinates.  The target safety of $j^\star$,
+$L_q$, and coordinate mismatch remain target premises.  The source radii
+above depend on population scales and unresolved population-score pairs;
+substituting sample scales does not automatically yield a computable valid
+confidence radius.  We do not use this analytic result to select policies
+or certify deployment in the experiments.
+A postdecision diagnostic on the 240 confirmation tasks evaluates the
+condition using exact source-score errors and a finite-library target
+Lipschitz constant.  It satisfies the sufficient condition on 0/240 tasks;
+the source-compatible sets contain 14--33 policies.  Thus the condition
+clarifies the logical connection but does not explain the observed
+certification gain with a nonvacuous safety bound.
+
+\begin{proof}{Proof of Proposition \ref{prop:first-center-transfer}.}
+Let $k$ minimize $\widehat b$.  On the source-score error event,
+\[
+ \widehat b_{j^\star}\le b_{j^\star}+\epsilon_b
+ \le b_k+\epsilon_b\le\widehat b_k+2\epsilon_b.
+\]
+Hence $j^\star\in\mathcal C_b$; $\widehat j\in\mathcal C_b$ by definition.
+The coordinate triangle inequality gives
+\[
+ \|z_q^\star(h_{\widehat j})-z_q^\star(h_{j^\star})\|_2
+ \le D_b+2\epsilon_\eta.
+\]
+Apply target Lipschitz continuity and the margin bound at $j^\star$.
+A nonpositive margin implies feasibility.  If all target premises hold
+throughout the score-error event, that event is contained in the
+feasible-first-center event, proving the probability claim.
+\Halmos
+\end{proof}
+
+For first-center nonidentifiability, fix a source archive and two distinct
+policies $a,c$.  On target 1 set deterministic margins
+$m_1(a)=-1$, $m_1(c)=1$; on target 2 set $m_2(a)=1$, $m_2(c)=-1$.
+All remaining library margins are $1$ on both targets.  Source outcomes,
+coordinates and source-only selections are unchanged, but which policy is
+safe reverses.  Source records cannot distinguish these targets without an
+additional target restriction.  This construction establishes a scope
+limit; it does not assert that either target occurs in the experiments.
 
 This section gives the complete conventional proof chain used by the paper.
 It includes the two short geometric arguments rather than leaving them as
-verbal sketches.  Section \ref{app:lean} then maps every step to an exact Lean
-declaration and separates proved implications from scientific premises.
+verbal sketches.  Section \ref{app:lean} then maps the original proof chain to exact Lean
+declarations and separates proved implications from scientific premises.
 
 \subsection{Profile-coordinate stability}\label{app:proof-profile}
 
@@ -397,11 +617,14 @@ The Lean 4 project builds against mathlib without \texttt{sorry},
 \texttt{admit}, or a project-defined \texttt{axiom}.  The authoritative
 paper-facing manifest is
 \path{proof/SCOLHKG/PaperProofInterface.lean}.  It contains compile-time checks
-for exactly the declarations in Table \ref{tab:lean-map}.  Every conventional
+for exactly the declarations in Table \ref{tab:lean-map}.  Every original conventional
 proof in Section \ref{app:proofs} maps to at least one declaration, and every
 declaration in the manifest maps back to a manuscript statement or accounting
 identity.  Other files in the larger Lean archive formalize historical KG,
 HVD, and intermediate algorithm versions; they are not claims of this paper.
+
+Proposition \ref{prop:design-stability} is established by the analytic proof
+above and is outside the original Lean interface.
 
 The map distinguishes logical closure from empirical truth.  Assumption
 \ref{ass:alignment} is intentionally a premise consumed by the aligned-coverage
@@ -478,17 +701,191 @@ Section \ref{app:proof-scope} &
 
 \section{Reproducibility Materials}\label{app:reproducibility}
 
-A frozen evidence registry links 17,360 result cells to 14 experimental
+The original frozen evidence registry links 17,360 result cells to 14 experimental
 matrices and 12 compact analyses.  It retains the one recorded algorithmic
 failure.  Every row identifies the task, source archive, initial design,
 method, implementation version, verifier, source/search/verification calls,
-and the truth used only after the decision.
+and the truth used only after the decision.  Supplementary matched controls
+are recorded separately from these historical totals.
 
-Tables and figures in this manuscript are generated only from compact JSON and
-CSV analyses.  The renderer does not read checkpoints, pickle files, model
-weights, or exported policy vectors.  Runtime artifacts are unnecessary for
-auditing the displayed results.  The method specification, randomized task
-law, Energy data specification, proof receipt, and rendering manifest are
-versioned separately so that results from one method version cannot be paired
-with theory from another.  The geometry, task-strata, and cost analyses use
-the same frozen evidence registry as the primary outcomes.
+The anonymous attachment includes compact JSONL projections of these cells,
+retaining identifiers, scalar outcomes, verifier results, costs, and the
+recorded failure.  The September 7 comparisons add 960 synthetic and 180 Energy
+cells, with the standardized $d=1000$ diagnostic reused among the synthetic
+cells.  Their paired input records and analysis rules are included separately.
+The renderer reads compact JSON summaries to generate the empirical tables
+and figures.  The package also contains the processed OPSD archive, current
+method and protocol files with the metadata erratum, and Lean source and
+dependency configuration.  The September 30 evidence separately contains
+4160 profile analysis rows (2400 attribution, 1440 prospective confirmation,
+and 320 library-size rows) and 720 corrected Energy V5 runs.  The profile study
+executes 2360 new arm-task evaluations and reuses 1800 outcomes only for
+identical ordered designs; its confirmation has 240 distinct latent tasks.
+The HVD table renderer uses six aggregate input rows, rather than seed-level
+HVD records.  Original geometric diagnostics retain their original scope;
+the displayed temporal diagnostics use V5.
+
+
+\section{Public-battery development replay}\label{ec:public-battery}
+
+This diagnostic uses the original 154 joint policy profiles, of which 100
+are constant pairs, and three target seasons beginning April 15, July 15,
+and October 15, 2024.  Each season has 73 supported window starts, from 0 to
+4320 at stride 60.  The original controller and failure rule are fixed.
+The source archive contains 44,968 evaluated cells from two 2023 seasons,
+154 profiles, 73 windows and two failure rules.  The rules give identical
+outcomes and successful costs here.  The source-selected center is
+\texttt{constant\_pair\_0007\_0007}, with channel levels .75/.75.
+
+Each search evaluates 13 distinct candidates on one uniformly sampled window
+per candidate.  Ten initial policies are selected by farthest-first;
+three additional policies follow a common frozen random permutation.
+Successful samples rank by cost; failures keep null cost and rank after
+successes by evaluation order.  A shortlist of three is then frozen.
+Verification uses an independent random stream to draw 80 window indices
+with replacement per candidate, stopping at the first all-success
+certificate.  The per-candidate error allocation remains $.05/3$ and the
+reliability threshold remains $.95$.  The source-singleton control searches
+only the source center and retains this conservative allocation.
+
+The constant-only control selects its medoid and farthest-first points using
+standardized ordered-channel coordinates on the 100 constants, without
+target outcomes.  It searches the same 13-candidate budget.  Five seeds per
+season are algorithm repeats; they are averaged within season for cost
+accounting, not counted as separate deployments.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Design & Certificates/15 & Target queries & Source queries \\
+\midrule
+Source-first structural & 15 & 279 & 44,968 \\
+Full-library structural & 9 & 471 & 0 \\
+Constant-only structural & 15 & 279 & 0 \\
+Source singleton & 15 & 243 & 44,968 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Target queries are the sum of within-season averages over three tasks.
+All four arms have zero false certificates relative to the fixed population.
+The new controls reuse stored cells and add no controller simulations;
+represented queries are charged even when a window is sampled repeatedly.
+
+Paid census evaluates every supported window for every candidate.  Its
+full-library query charge is $3\times154\times73=33,726$; the constant-only
+charge is $3\times100\times73=21,900$.  Both select
+\texttt{constant\_pair\_0008\_0009} in spring and
+\texttt{constant\_pair\_0006\_0009} in summer and autumn.
+Their mean full-window costs are respectively \pounds21,310.11,
+\pounds44,648.60 and \pounds33,568.78, with 73/73 successful windows each.
+The census ranks only candidates having a complete cost on every window;
+it is an exact paid finite-population calculation, not a free oracle.
+
+\paragraph{Scope and limitations.}
+The controls are post hoc development diagnostics, not independent
+confirmation.  Window-index sampling supports inference only under the
+specified finite uniform law; overlapping historical windows do not establish
+calendar generalization.  This is a complete-cost first-center adaptation,
+not the full rank-augmented atlas or the primary continuous search protocol.
+No 2025 observations are accessed.  Code, protocols and compact summaries
+are retained in the project under the
+\texttt{public\_battery\_simple\_controls\_v1\_20261002} identifier
+in the attachment specified in Section~\ref{sec:code-data} of the main paper.
+Window-level replay requires the retained source and target population
+journals, which are outside the compact attachment.
+
+
+\section{First-center margin diagnostic}
+
+After all confirmation decisions were fixed, we reconstructed the same
+24 source archives using their original seeds and replayed 9,216 source
+replications.  Every estimated first center matched its stored decision.
+No new independent source samples or target simulations were collected.
+For the original 240 confirmation tasks we evaluated generator truth on
+all 64 mapped library policies (15,360 deterministic evaluations).
+Population objective and chance-margin ranks define $b_j$ with the original
+equal weights and tie breaks.  The diagnostic radius is the observed
+$\max_j|\widehat b_j-b_j|$, not a confidence radius.
+
+For this finite-domain check choose $z_q^\star=\widehat z$, so coordinate
+error is zero, and compute the exact maximum of
+$|m_q(h_i)-m_q(h_j)|/\|\widehat z(h_i)-\widehat z(h_j)\|_2$
+over distinct coordinates in the mapped library.  No coordinate collision
+with unequal margins occurred.  This supplies a Lipschitz constant only on
+that finite library, not on the continuous policy space.
+
+The sufficient condition of Proposition~\ref{prop:first-center-transfer}
+holds on 0/240 tasks.  Source-compatible sets have 14--33 policies.
+Population-score first centers are target feasible in 119/240 tasks;
+estimated first centers are feasible in 106/240.  These totals do not imply
+that removing source noise improves every task: for example, piecewise
+smoothness has 14/30 and 22/30 respectively.  The proposed bound is therefore
+empirically vacuous in this diagnostic.  It remains a conditional analytic
+statement, not an established explanation of the experimental gain or a
+selection rule.  Compact results and code are retained under
+\texttt{first\_center\_margin\_diagnostic\_20261002} in the current
+submission attachment.
+
+
+\section{Fixed-first-center remainder controls}\label{ec:remainder-controls}
+
+These rules were fixed after observing the 240-task confirmation and its
+mechanism diagnostics.  The comparisons are postdecision evidence on that
+same task population.  For each original task the random control retains the
+source-selected first policy and draws nine distinct candidates uniformly
+from the other 63 IDs using
+\texttt{SeedSequence(family\_seed, design\_seed, 53107)}.
+The entire original library remains eligible, without target-outcome filters.
+The other new control initializes the original source-greedy portfolio with
+this same first policy, then applies its original score and tie rules to nine
+further choices.  It reuses 230 results only where all ten ordered IDs match;
+ten changed ordered designs are evaluated anew.  The random control adds
+240 arm-task runs.  All use $d=1000$, $N=n_0=10$ and the unchanged
+$(80,80,80)$ all-success verifier at familywise error $.05$.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Design & Design hits & Shortlist hits & True certificates & False \\
+\midrule
+Source-first + random nine & 167 & 158 & 53 & 0 \\
+Source-first + structural & 155 & 155 & 54 & 1 \\
+Source-scored atlas & 155 & 155 & 56 & 1 \\
+Fixed-first portfolio & 212 & 177 & 49 & 1 \\
+\bottomrule
+\end{tabular}
+\end{center}
+All denominators are 240 tasks.  Random-remainder mean penalized search-set
+loss is .361, versus .414 for structural coverage and .156 for the
+fixed-first portfolio.  This hidden-truth search-set diagnostic is distinct
+from certified deployment cost.  The atlas-minus-random certification
+interval is $[-2.5,5.0]$ percentage points; structural-minus-random is
+$[-3.3,4.2]$.  Neither establishes superiority or equivalence.
+
+All 24 original archives are replayed during preparation using their original
+source streams, adding no independent source evidence.  Represented source
+cost is 9,216 calls paid once per source-based arm across the 240 tasks.
+The 250 new runs consume 2,500 target-search and 52,160 verification calls.
+Cumulative source-inclusive calls are 62,576 for random remainder,
+60,976 for structural coverage, 60,736 for the atlas and 63,936 for the
+fixed-first portfolio.  Differences in certification remain unresolved.
+
+For a frozen shortlist with candidate feasibility probabilities $p_j$, let
+$q_j=p_j^{80}$.  Under the declared independent simulation streams, the
+conditional probability of a true certificate is
+\[
+ \sum_{j:\,p_j\ge .95}q_j\prod_{\ell<j}(1-q_\ell).
+\]
+Averaging this expression over the fixed task shortlists gives expected
+true-certificate counts 48.60, 49.44, 49.72 and 54.07 in the table's order.
+These quantities use generator truth for explanation; they do not supply
+new certificates or average over new search observations.
+
+\paragraph{Scope and limitations.}
+Only one random remainder is frozen per original design seed; the tasks,
+source archives and libraries have already been observed.  The controls do
+not authorize tuning the library, ranks, shortlist or verifier.  The .99
+risk-probability summaries in the compact artifacts are descriptive only;
+the chance threshold remains .95.  No 2025 data are accessed.  Code and
+compact artifacts are included in the current submission attachment
+under \texttt{source\_first\_remainders\_v1\_20261002}.

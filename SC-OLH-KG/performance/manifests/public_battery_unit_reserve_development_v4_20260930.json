@@ -1,0 +1,47 @@
+{
+  "protocol_id": "public_battery_unit_reserve_development_v4_20260930",
+  "frozen_at_utc": "2026-09-30T07:45:25+00:00",
+  "role": "development repair of causal inventory and shared-power preparation",
+  "registration_context": "V3 and its April first-failure visibility labels are known; no V4 results observed",
+  "basis_controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "basis_controller_outputs": "paper_artifacts/public_battery_unit_controller_development_v3_20260930",
+  "basis_diagnostic_outputs": "paper_artifacts/public_battery_unit_failure_visibility_v1_20260930",
+  "unchanged_contract": "inherit V3 asset, per-unit capacity, efficiency, common initial stocks, forecast calibration, integer profiles, receipt priority, lead time, physical execution, failure event, prices and terminal accounting",
+  "roster": {
+    "library_profiles": 64,
+    "reference_profiles": [0.0, 0.5, 1.0],
+    "development_samples": "all original April, July and October 2024 ten-day samples",
+    "complete_windows_per_sample": 73,
+    "window_hours": 168,
+    "window_stride_hours": 1,
+    "window_evaluations": 14673,
+    "paired_baseline": "saved V3 rows for identical profile, sample and window"
+  },
+  "control": {
+    "reserve_lookback_minutes": 90,
+    "lookback_basis": "existing 60-minute nomination lead plus 30-minute delivery slot; one fixed rule, no parameter sweep",
+    "history_visibility": "only instruction flows executed in [decision-90min, decision), reconstructed with the original receipt-time priority; later receipts never enter an earlier decision",
+    "history_bootstrap": "use the already cached one-day instruction prefix; this supplies observed history, not a different simulated initial stock",
+    "energy_reserve": "for each unit, L = past BOA gross export / discharge_efficiency; R = charge_efficiency * past BOA gross import; integrate ramps and zero crossings exactly, with zero contribution when no BOA is active",
+    "target": "if L+R<=unit_capacity, map the original profile fraction theta to L + theta*(unit_capacity-L-R); use the same forecast-derived theta as V3",
+    "reserve_conflict": "if the empirical interval is empty, report a reserve-rule conflict and HOLD this development gate; do not relabel it as physical infeasibility or alter the lookback, asset, workload or threshold",
+    "power_reserve": "bound each new unit nomination's absolute power by site_power minus the other unit's maximum absolute BOA endpoint power in the same observed 90 minutes, and by V3's received-future headroom; retain the original joint absolute nomination bound",
+    "power_reserve_basis": "observed workload preparation, not a historical unit hardware rating",
+    "nomination": "retain V3 projection of each stock, the two fixed pending nominations and received BOAs over 90 minutes; substitute the reserve-mapped target and additional observed power bound",
+    "execution": "retain unchanged V3 physical execution and stop at the first actual inventory or shared-power failure"
+  },
+  "validation": [
+    "analytical tests of reserve energy, opposite-unit power headroom and unchanged queue timing",
+    "a future unreceived BOA must not alter any earlier reserve or nomination",
+    "evaluate the full frozen roster and report April, July, October and their common feasible library set",
+    "retain V3 negative results and paired failure outcomes; completed-window cost cannot rank a method that fails the feasibility gate"
+  ],
+  "gate": "retain the V3 95% finite-window development criterion: at least one actual library profile feasible in all three samples and at least one unsafe library profile; a gate pass alone does not authorize source comparison or establish OR readiness",
+  "accounting": {
+    "new_data_requests": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "limitations": "past instruction flows provide an empirical reserve, not a bound on later instructions; this is a development-selected control repair, not independent confirmation, measured battery performance or source benefit"
+}

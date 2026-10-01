@@ -1,11 +1,13 @@
 {
+  "schema_version": 1,
   "contract_id": "or_review_final_manuscript_render_v1",
+  "status": "complete",
   "contracts": {
+    "reads_compact_audited_artifacts_only": true,
     "evidence_frozen_before_manuscript_render": true,
-    "outcome_adjusted_cost_reports_certification_probability": true,
-    "output_hashes_cover_all_generated_tables_and_figures": true,
+    "output_hashes_cover_all_generated_tables_and_figures": false,
     "postdecision_geometry_is_bound_to_frozen_evidence": true,
-    "reads_compact_audited_artifacts_only": true
+    "outcome_adjusted_cost_reports_certification_probability": true
   },
   "evidence_registry_sha256": "104039f1b1b89684d4e61f0ab48ecaf13fd7125bee7855e2e327e852011998c0",
   "inputs": [
@@ -52,16 +54,24 @@
     {
       "path": "review_v2_supplemental_diagnostics.json",
       "sha256": "fb47d884f2c1d7b85af6dd85cec198e8828e43bc420b7acfa4754eb885762f17"
+    },
+    {
+      "path": "analysis.json",
+      "sha256": "195321222fce42f27cc2df9652d35717f2bda92c62a56a5c0ebd64744b88fbdc"
+    },
+    {
+      "path": "energy_analysis.json",
+      "sha256": "01d90bbb00bd6b67c18df9f95b3edc3e33730ddac93b028fe90cddf97831b0e3"
     }
   ],
   "outputs": [
     {
       "path": "tables/review_stress_primary.tex",
-      "sha256": "20211aeb05af81e9e5c82aa3cfd713b58451a9fcbf0b19d9bb31cfd8f7702fbb"
+      "sha256": "3c1906be050b10fc3099c9503bea5eb33dd21ef335997a58944d93818ad0638b"
     },
     {
       "path": "tables/review_stress_regimes.tex",
-      "sha256": "d09784ab636a8351264d459d1edc390ba3e2a59bb0e5849616cfd6c4daf2f83a"
+      "sha256": "3cdc031115d3c87ab759dd2dd6d3a29686be73cdb5191bb1afd98cc10b5861bf"
     },
     {
       "path": "tables/review_schema_controls.tex",
@@ -73,11 +83,7 @@
     },
     {
       "path": "tables/review_equal_cost.tex",
-      "sha256": "634c2609454178dea034405c299bedb62db87fc2096a214d125a089fa7665c13"
-    },
-    {
-      "path": "tables/review_energy_v3.tex",
-      "sha256": "51647ef7a88d63814891c0c2bab37f5876cc55ce8e975c2d720356c7cc1614df"
+      "sha256": "01abef012dacd5921cbc47d8bbfdf84262cb8e3f842346a81d1f8ccd28ec2e2d"
     },
     {
       "path": "tables/review_native_transfer.tex",
@@ -93,19 +99,23 @@
     },
     {
       "path": "tables/review_outcome_adjusted_cost.tex",
-      "sha256": "fcec9d4cbe12d7f5f0699f18d0f2e9b60db2e2c85369acb66ae48085167357a6"
+      "sha256": "88f0cc895853e96d40798d8372595a21f2c04ed1a7752b15b95b3114881be338"
     },
     {
       "path": "tables/review_task_seed_strata.tex",
       "sha256": "aee44e493f93c0491e8c5375045caef4beaf52816d6fe0172c592eddac61eef6"
     },
     {
+      "path": "tables/review_matched_comparisons.tex",
+      "sha256": "92099a4d1682c3f2a1d4e4b32c053c0db2de84569950e2b40f7b5290610e19c8"
+    },
+    {
       "path": "figures/review_method.pdf",
-      "sha256": "7de3f5abb8d7d0ea3d9f2f62070d5ffaf5267e4a9c16f8bad52e0713430d2bf0"
+      "sha256": "47b1284a5f90094bbcbc98bc6e7e26b0cf253b4c67ac30be84ba2468e67713a1"
     },
     {
       "path": "figures/review_method.svg",
-      "sha256": "8ed38ff01aa11e15091fdf379a8b30ed73ca9b6f39a73fe3092eb6b21c23623f"
+      "sha256": "ac72b705a64724966f0289a2e74d6d44e3571bafb11f186b17b59e0ee9ab3fc1"
     },
     {
       "path": "figures/review_method.png",
@@ -113,47 +123,47 @@
     },
     {
       "path": "figures/review_primary.pdf",
-      "sha256": "4a3740b16bef9826e6868f2d99cd7862517ff41ef668947b5547f630a46d22c6"
+      "sha256": "0d205f3ea34c22be126a5755e6f346aba1abc983244c0c2b920ffd3e11cbbaf6"
     },
     {
       "path": "figures/review_primary.svg",
-      "sha256": "e07a641464e953e62ae6aa4b3850026f080708b2c4a3b0175e526f547d480b60"
+      "sha256": "440b4c154aaa4ff40bd82e130d5b27f85b77bb0cf3692b144bbc547525282aee"
     },
     {
       "path": "figures/review_primary.png",
-      "sha256": "9ff0cd1356df33ec8e903991634d83de5aea5113fba783244bc394ac46b85b16"
+      "sha256": "9763f39f1353f74fb22779c6267ada3b364811babe5f572757db6e15df82e0e0"
     },
     {
       "path": "figures/review_regime.pdf",
-      "sha256": "cbd18a905e50f76a47fd31443a2c004553509cfc51d33032e9e1dc9525e726a8"
+      "sha256": "c3822c0f5ccd0e4555baa1eb2f131e041d1a5a2f41e9f1bbcdfac033b0a346f8"
     },
     {
       "path": "figures/review_regime.svg",
-      "sha256": "03d73e9179218aafbdf414995cc9dd5b02f3e5c48eba06f5f406de55c79a03f1"
+      "sha256": "6e60c0a1918570877e147ebcc2e36f0d41733c91e010c93c59278f0d6ae596d5"
     },
     {
       "path": "figures/review_regime.png",
-      "sha256": "d2d98e159727ed6013c4a0a23f118f0337375530bcd0d795dc1604415c15011e"
+      "sha256": "1c65a47fb4550e3f08af0205d5d346a74b99921550884fcd28161bf8799cdcc3"
     },
     {
       "path": "figures/review_cost.pdf",
-      "sha256": "a18d94a8775c431adc19da037088db589d77e281534235572fb3c49b84e45800"
+      "sha256": "ae1a2c2dcfe3e8fa9d9134636a7d6dc6994cbb9045e308ff6dd636d72bbae67d"
     },
     {
       "path": "figures/review_cost.svg",
-      "sha256": "af352d1c60f2a7f5c003ed9e3e364835e50cbefc22b12a0b3fa293389f607c51"
+      "sha256": "d2643d99dc6d733ba1b89b6be705496c533e9e06716c4777d1827b8143941933"
     },
     {
       "path": "figures/review_cost.png",
-      "sha256": "c723683a654d088a0b2492a1b3cecc4c1ba9d314afe86667782a62f23fd1a992"
+      "sha256": "9fffd8317ef0aea84392ebfb09942306f95d42260a0f93fc27e901399d883c97"
     },
     {
       "path": "figures/review_verifier_power.pdf",
-      "sha256": "2365f80861478e5c9d1b68d5138e577585bf49e0b72dc30ab726fad594dccb14"
+      "sha256": "2388620089d1d1db7971ecf79c4880dcb43824d6a0a64d2881e3c7c19fe5ad32"
     },
     {
       "path": "figures/review_verifier_power.svg",
-      "sha256": "722d8fb28ae8dac390953d8e8fdcb27f9aae3fc54e460b4d5c847bf1a0fa9dd0"
+      "sha256": "1a6805601abfb1f9df2e38621218c88df145b145c46eaad2f86bef6670fb9a6f"
     },
     {
       "path": "figures/review_verifier_power.png",
@@ -161,11 +171,11 @@
     },
     {
       "path": "figures/review_source_budget.pdf",
-      "sha256": "e30eb064463cbfe31ba1801a89cbd9c1c6295d66531ec5882afb01fb37f3c4f1"
+      "sha256": "13355c3fea7fa69ebbc0501107aaf1358d65cdde671223dd8a0b691a102f262a"
     },
     {
       "path": "figures/review_source_budget.svg",
-      "sha256": "693ca99d1a0aac1ceb0494d32f2766c2da8c8a8f628068518b86791aa32e0311"
+      "sha256": "d1ba9fb952440da9c9982615d6629e23232b7996159b49f58d5fab314ef9ec1a"
     },
     {
       "path": "figures/review_source_budget.png",
@@ -173,17 +183,56 @@
     },
     {
       "path": "figures/review_aligned_geometry.pdf",
-      "sha256": "a9fb5981aca1dfb0f51aa9960bc92b4f4c658b65e419a31f159f9df3e5bf68b5"
+      "sha256": "f76aee6051ce7d9c4c690236e8c0fbea81ea03cb2b57dc7853010f19488bad76"
     },
     {
       "path": "figures/review_aligned_geometry.svg",
-      "sha256": "1fd1c73a1ccd9e886bc9b87f2d8f8dc617ebb48e985bd2bfd4d8c6968ba366d1"
+      "sha256": "8ef09125e87640e06a7402ff8003521ca88167b354aa5c52c591f1d00049f22e"
     },
     {
       "path": "figures/review_aligned_geometry.png",
-      "sha256": "cf33cabefd87bb9d0c611171436ca06d9c9a7f08b4062ff4a02b99959b0038c1"
+      "sha256": "8c6e89853f904a95a1268da40d86086272ac1db213d3b88249e7f667f99886b0"
+    },
+    {
+      "path": "tables/hvd_diagnostic.tex"
+    },
+    {
+      "path": "tables/review_attribution.tex"
+    },
+    {
+      "path": "tables/review_confirmation.tex"
+    },
+    {
+      "path": "tables/review_confirmation_cost.tex"
+    },
+    {
+      "path": "tables/review_confirmation_families.tex"
+    },
+    {
+      "path": "tables/review_confirmation_regimes.tex"
+    },
+    {
+      "path": "tables/review_energy_reuse.tex"
+    },
+    {
+      "path": "tables/review_energy_v3.tex"
+    },
+    {
+      "path": "tables/review_library_sizes.tex"
+    },
+    {
+      "path": "tables/review_temporal_v5.tex"
     }
   ],
-  "schema_version": 1,
-  "status": "complete"
+  "supplement_study_role": {
+    "synthetic": "Post-review supplemental comparisons on previously used task seeds; not new independent confirmatory evidence. The standardized d=1000 control was already observed in the submission review and is reused unchanged.",
+    "energy": "post-review supplement on previously used markets and seeds"
+  },
+  "revision_inputs": [
+    "paper_artifacts/submission_revision_20260930/profile_analysis.json",
+    "paper_artifacts/submission_revision_energy_v5_20260930/energy_analysis.json",
+    "paper_artifacts/hvd_diagnostic_summary.csv"
+  ],
+  "current_external_contract": "opsd_forecast_indexed_region_holdout_v5_shared_hourly_power",
+  "prospective_confirmation_task_count": 240
 }

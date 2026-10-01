@@ -1,0 +1,45 @@
+{
+  "protocol_id": "public_battery_unit_target_decoupling_v1_20260930",
+  "frozen_at_utc": "2026-09-30T10:49:55+00:00",
+  "role": "constructive representation of saved physically feasible actions by independent unit targets",
+  "registration_context": "original shared-target continuum is infeasible at all 23 selected reference states; unit-specific inverse-target reconstruction outcomes unobserved",
+  "controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "physical_oracle_protocol": "performance/manifests/public_battery_unit_physical_oracle_v1_20260930.json",
+  "basis_scalar_continuum_outputs": "paper_artifacts/public_battery_unit_scalar_action_continuum_v1_20260930",
+  "basis_recoverability_outputs": "paper_artifacts/public_battery_unit_recoverability_v1_20260930",
+  "roster": {
+    "period": "2024-04-15",
+    "reference_profile": "constant_0.50",
+    "snapshots": 23,
+    "window_start_minutes": "0,60,...,1320",
+    "snapshot_kind": "current",
+    "absolute_nomination_decision_minute": 1380,
+    "saved_witness_keys": "V3_2024-04-15_w{window_start_minute}_current",
+    "dependence": "overlapping reference histories at the same nomination event"
+  },
+  "construction": {
+    "state_and_pending": "retain actual stocks and both pending nominations at each existing reference snapshot",
+    "desired_new_action": "third half-hour nomination from the same already replayed recoverability witness; do not solve for another witness",
+    "planning_terms": "unchanged received-only V3 terms at the original decision time",
+    "projected_stock": "actual stock plus received forced inventory change over 90 minutes plus both pending inventory rates times their respective known idle hours",
+    "inverse_target": "for each unit, target fraction equals (projected stock + desired new inventory rate times known new-slot idle hours) divided by its original capacity",
+    "fraction_domain": "clip the inverse fraction to the fixed [0,1] domain; the forward reconstruction decides representability, including clipping plateaus",
+    "forward_test": "call the unchanged nominate_units with each unit's reconstructed target and preserve both individual power clipping and shared gross-power normalization",
+    "no_search": "one deterministic inverse construction per saved witness; no grid, profile generation, parameter tuning, alternative witness or new LP"
+  },
+  "analysis": {
+    "representation": "record both raw and clipped target fractions and new-action residual; represented only if original forward-rule deviation is at most the unchanged 1e-8 MW tolerance",
+    "reuse_physical_evidence": "reuse the corresponding saved replayed_feasible suffix report and schedule; store references instead of duplicating schedules or rerunning their LPs and replays",
+    "failure": "a failed reconstruction is one saved witness not represented by this construction, not proof that the independent-target action family is infeasible"
+  },
+  "decision": "if all saved actions are represented, register a causal unit-specific controller and its candidate mapping before any development rollout; otherwise identify the actual clipping or target-domain obstruction before choosing a revision. Keep the full source-comparison gate HOLD",
+  "accounting": {
+    "new_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "diagnostic_physical_witness_replays": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "limitations": "target fractions are reconstructed from perfect-information witnesses, so they are not online decisions; representation does not demonstrate a shared causal policy, complete candidate rollout, source benefit or independent confirmation"
+}

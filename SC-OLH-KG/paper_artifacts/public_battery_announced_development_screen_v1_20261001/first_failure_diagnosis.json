@@ -1,0 +1,56 @@
+{
+  "case": {
+    "period": "2024-07-15",
+    "window_start_minute": 0,
+    "profile_id": "constant_pair_0003_0007",
+    "dispatch_rule": "conservative_admission"
+  },
+  "evidence": "first_failures.jsonl, first saved case; scalar arithmetic only, no controller or trajectory replay",
+  "request_minute": 840,
+  "direction": "export",
+  "request_start_SOC_MWh": [
+    0.7864188965049266,
+    3.4059199420620807
+  ],
+  "locked_PN_MW": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0
+    ]
+  ],
+  "zero_PN_full_request_inventory_requirement_MWh": [
+    27.518115942028984,
+    27.518115942028984
+  ],
+  "inventory_deficit_MWh": [
+    26.731697045524058,
+    24.112195999966904
+  ],
+  "admitted_peak_MW": [
+    1.4003330206152178,
+    1.4003330206152178
+  ],
+  "executed_unmet_increase_MWh": [
+    24.593161272682124,
+    24.593161272682124
+  ],
+  "preceding_nomination_minute": 810,
+  "preceding_nomination_reason": "shared_power_infeasible",
+  "minimum_required_gross_power_MW": 116.17844781627093,
+  "retained_gross_power_limit_MW": 98,
+  "excess_over_shared_limit_MW": 18.178447816270932,
+  "known_reference_failure": false,
+  "classification": "inventory preparation fails under the saved stocks and locked PN; zero fallback retains a safe mandatory reference but cannot fulfill the next export",
+  "scope": "conditional failure of this target profile and saved commitments, not proof that the announced workload is infeasible for all controllers",
+  "additional_controller_window_evaluations": 0,
+  "additional_nomination_calls": 0,
+  "additional_trajectory_evaluations": 0,
+  "diagnostic_LP_calls": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false
+}

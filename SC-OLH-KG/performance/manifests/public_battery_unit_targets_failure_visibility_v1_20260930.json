@@ -1,0 +1,37 @@
+{
+  "protocol_id": "public_battery_unit_targets_failure_visibility_v1_20260930",
+  "frozen_at_utc": "2026-09-30T11:27:26+00:00",
+  "role": "nomination-time explanation of failed V5 constant pairs using retained traces",
+  "registration_context": "V5 three-season outcomes and first-failure times observed; receipt-prefix classifications for these V5 histories unobserved",
+  "basis_controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "basis_V5_protocol": "performance/manifests/public_battery_unit_controller_development_v5_20260930.json",
+  "basis_V5_outputs": "paper_artifacts/public_battery_unit_controller_development_v5_20260930",
+  "roster": {
+    "period": "2024-04-15",
+    "profiles": ["constant_pair_0003_0007", "constant_pair_0004_0007"],
+    "target_fractions": [[0.35, 0.75], [0.45, 0.75]],
+    "selection_basis": "original constant levels bracketing the prior inverse unit-1 range and nearest the unit-2 range; chosen for explanation, not as a performance-selected shortlist",
+    "windows_per_profile": 73,
+    "failed_contexts": 146,
+    "window_start_minutes": "all original 0,60,...,4320",
+    "population": "dependent, overlapping development windows; all V5 library outcomes remain retained"
+  },
+  "procedure": {
+    "trace": "read the existing compressed V5 first-failure contexts and matching windows.csv; do not reconstruct stocks with another controller rollout",
+    "known_path": "at the saved decision stock, execute the two pending nominations and actual new nomination under only BOA revisions already received at that decision",
+    "actual_path": "reconstruct the same prefix through its saved first failing piece using actual BOA revisions",
+    "classification": "reuse classify_failure to distinguish known pending-hour violation, known new-delivery violation, later receipt path change and unresolved trace discrepancy",
+    "accounting": "preserve causes, absolute event times and changed-receipt times; the actual prefix must reproduce the saved first physical failure",
+    "report": "counts by candidate and event with first examples; no target fitting or new policy search"
+  },
+  "decision": "if discrepancies occur, repair the trace linkage before interpretation; known new-delivery failures direct attention to causal physical projection; later receipt changes direct attention to the information/commitment model and predictive inputs before any further controller revision. Neither branch proves online impossibility",
+  "accounting": {
+    "new_controller_window_evaluations": 0,
+    "new_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "limitations": "two development-selected constant pairs and overlapping histories; classifications explain their realized first failures, not every V5 policy or a causal policy's achievable reliability; full source comparison stays HOLD"
+}

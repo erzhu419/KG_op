@@ -1,0 +1,1663 @@
+{
+  "source": "https://data.elexon.co.uk/swagger/v1/swagger.json",
+  "downloaded_openapi_bytes": 1455686,
+  "info": {
+    "title": "Insights.Api",
+    "version": "1.0"
+  },
+  "paths": {
+    "/forecast/demand/day-ahead/earliest/stream": {
+      "get": {
+        "tags": [
+          "Demand Forecast"
+        ],
+        "summary": "Historic view of the earliest forecasted demand (NDF, TSDF) stream",
+        "description": "This endpoint allows for retrieving a stream of earliest day-ahead demand forecast data from National Grid ESO.\nResults are filtered by settlement time, and only the earliest published forecast for each settlement period is shown.\nThis endpoint has an optimised JSON payload and aimed at frequent request for the day-ahead demand forecast data.",
+        "parameters": [
+          {
+            "name": "boundary",
+            "in": "query",
+            "description": "Omitting this will return only national data. Specifying boundary=zonal will return only zonal data.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data retrieved",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Service.DayAheadDemandForecastRow"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Service.DayAheadDemandForecastRow"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Service.DayAheadDemandForecastRow"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Error with query parameters - see response for details"
+          },
+          "500": {
+            "description": "Server error - please try again later"
+          }
+        }
+      }
+    },
+    "/datasets/NDF": {
+      "get": {
+        "tags": [
+          "BMRS Datasets"
+        ],
+        "summary": "Day and day-ahead National Demand forecast (NDF)",
+        "description": "This endpoint provides the National Demand forecast received from NGESO. Data is available\ndaily and will show values for the day ahead. Expressed as an average MW\nvalue for each settlement period. The forecast is based on historically metered generation\noutput for Great Britain. This value INCLUDES transmission losses, but EXCLUDES interconnector\nflows and demand from station transformers and pumped storage units.\n            \nThis API endpoint provides a maximum data output range of 1 day.\n            \nSpecific publish time filters may be supplied, otherwise this will retrieve the latest published forecast.",
+        "parameters": [
+          {
+            "name": "publishDateTimeFrom",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "publishDateTimeTo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Response data format. Use json/xml to include metadata.",
+            "schema": {
+              "enum": [
+                "json",
+                "xml",
+                "csv"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data retrieved",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandForecast.DatasetRows.DemandForecastNationalDayAhead"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandForecast.DatasetRows.DemandForecastNationalDayAhead"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandForecast.DatasetRows.DemandForecastNationalDayAhead"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandForecast.DatasetRows.DemandForecastNationalDayAhead"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandForecast.DatasetRows.DemandForecastNationalDayAhead"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandForecast.DatasetRows.DemandForecastNationalDayAhead"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Error with query parameters - see response for details"
+          },
+          "500": {
+            "description": "Server error - please try again later"
+          }
+        }
+      }
+    },
+    "/demand/outturn/stream": {
+      "get": {
+        "tags": [
+          "Demand"
+        ],
+        "summary": "Initial National Demand outturn (INDO) stream",
+        "description": "This endpoint provides data for initial National Demand outturn, which measures the\nhalf-hour average MW demand metered by the Transmission Company based on its operational metering.\nThe data is updated every 30 minutes and within 15 minutes of the end of the effective settlement period. The data is represented with:\n- INDO (initial National Demand outturn) which takes into account transmission losses but does not include station transformer load, pumped storage demand or interconnector demand.\n- ITSDO (initial Transmission System Demand outturn) which takes into account transmission losses, station transformer load, pumped storage demand and interconnector demand.\n            \nThis endpoint has an optimised JSON payload and is aimed at frequent requests for the data.\n            \nSettlement date parameters must be provided in the exact format yyyy-MM-dd.",
+        "parameters": [
+          {
+            "name": "settlementDateFrom",
+            "in": "query",
+            "description": "The settlement date from for the filter. This must be in the format yyyy-MM-dd.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2022-09-20"
+            },
+            "example": "2022-09-20"
+          },
+          {
+            "name": "settlementDateTo",
+            "in": "query",
+            "description": "The settlement date to for the filter. This must be in the format yyyy-MM-dd.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2022-09-21"
+            },
+            "example": "2022-09-21"
+          },
+          {
+            "name": "settlementPeriod",
+            "in": "query",
+            "schema": {
+              "uniqueItems": true,
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data retrieved",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Responses.DemandOutturn.DemandOutturn"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Responses.DemandOutturn.DemandOutturn"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Responses.DemandOutturn.DemandOutturn"
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Error with query parameters - see response for details"
+          },
+          "500": {
+            "description": "Server error - please try again later"
+          }
+        }
+      }
+    },
+    "/datasets/INDO": {
+      "get": {
+        "tags": [
+          "BMRS Datasets"
+        ],
+        "summary": "Initial National Demand outturn (INDO)",
+        "description": "The endpoint provides data showing the initial National Demand outturn.\nData is updated at 15 min intervals containing the initial demand expressed in MW.\n            \nSpecific publish time filters may be supplied, otherwise this will retrieve the latest published data.",
+        "parameters": [
+          {
+            "name": "publishDateTimeFrom",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "publishDateTimeTo",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Response data format. Use json/xml to include metadata.",
+            "schema": {
+              "enum": [
+                "json",
+                "xml",
+                "csv"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data retrieved",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandOutturn.DatasetRows.DemandOutturnNational"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandOutturn.DatasetRows.DemandOutturnNational"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandOutturn.DatasetRows.DemandOutturnNational"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandOutturn.DatasetRows.DemandOutturnNational"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandOutturn.DatasetRows.DemandOutturnNational"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandOutturn.DatasetRows.DemandOutturnNational"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Error with query parameters - see response for details"
+          },
+          "500": {
+            "description": "Server error - please try again later"
+          }
+        }
+      }
+    },
+    "/balancing/pricing/market-index": {
+      "get": {
+        "tags": [
+          "Market Index"
+        ],
+        "summary": "Market Index Data (MID) price time series",
+        "description": "This endpoint provides Market Index Data received from NGESO.\n            \nMarket Index Data is a key component in the calculation of System Buy Price and System Sell Price for each\nSettlement Period. This data is received from each of the appointed Market Index Data Providers (MIDPs) and\nreflects the price of wholesale electricity in Great Britain in the short term markets. The Market Index Data\nwhich is received from each MIDP for each Settlement Period consists of a Market Index Volume and\nMarket Index Price, representing the volume and price of trading for the relevant period in the market operated\nby the MIDP. The Market Price (the volume weighed average Market Index Price) is used to derive\nthe Reverse Price (SBP or SSP).\"\n            \nThe two data providers available to query are N2EX (\"N2EXMIDP\") and APX (\"APXMIDP\").\n\nBy default, the from and to parameters filter the data by time inclusively. If the settlementPeriodFrom or\nsettlementPeriodTo parameters are provided, the corresponding from or to parameter instead filters on settlement\ndate, allowing for searching by a combination of time and/or settlement date & settlement period.\nNote: When filtering via settlement date, from/to are treated as Dates only, with the time being ignored. For\nexample, 2022-06-01T00:00Z and 2022-06-01T11:11Z are both treated as the settlement date 2022-06-01.\n            \nAll Dates and DateTimes should be expressed as defined within\n<a href=\"https://datatracker.ietf.org/doc/html/rfc3339#section-5.6\" target=\"_blank\">RFC 3339</a>.\n            \nSome examples of date parameter combinations are shown below.\n            \nFiltering from start time to start time:\n            \n    /balancing/pricing/market-index?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z\n            \nFiltering from start time to settlement date and period:\n            \n    /balancing/pricing/market-index?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodTo=1\n            \nFiltering from settlement date and period to start time:\n            \n    /balancing/pricing/market-index?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodFrom=1\n            \nFiltering from settlement date and period to settlement date and period:\n            \n    /balancing/pricing/market-index?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodFrom=1&settlementPeriodTo=1",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "description": "The \"from\" start time or settlement date for the filter.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-10-12T00:00Z"
+            },
+            "example": "2022-10-12T00:00Z"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "The \"to\" start time or settlement date for the filter.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-10-13T00:00Z"
+            },
+            "example": "2022-10-13T00:00Z"
+          },
+          {
+            "name": "settlementPeriodFrom",
+            "in": "query",
+            "description": "The \"from\" settlement period for the filter. This should be an integer from 1-50 inclusive.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "settlementPeriodTo",
+            "in": "query",
+            "description": "The \"to\" settlement period for the filter. This should be an integer from 1-50 inclusive.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dataProviders",
+            "in": "query",
+            "description": "The data providers to query. If no data provider is selected both will be displayed.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "N2EXMIDP"
+              ]
+            },
+            "example": [
+              "N2EXMIDP"
+            ]
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Response data format. Use json/xml to include metadata.",
+            "schema": {
+              "enum": [
+                "json",
+                "xml",
+                "csv"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data retrieved",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.MarketIndexResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.MarketIndexResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.MarketIndexResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.MarketIndexResponse"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.MarketIndexResponse"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.MarketIndexResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Error with query parameters - see response for details"
+          },
+          "500": {
+            "description": "Server error - please try again later"
+          }
+        }
+      }
+    },
+    "/datasets/PN": {
+      "get": {
+        "tags": [
+          "BMRS Datasets"
+        ],
+        "summary": "Physical Notifications (PN)",
+        "description": "This endpoint provides Physical Notification data received from NGESO. It returns the data valid for a single settlement period.\nA Physical Notification is the best estimate of the level of generation or demand that a participant in the BM expects a BM Unit to export or import, respectively, in a Settlement Period.\n            \nPhysical Notifications are submitted as a series of point MW values.\n            \nThe settlement period to query must be specified as a date and settlement period. The date should be provided in the format yyyy-MM-dd.",
+        "parameters": [
+          {
+            "name": "settlementDate",
+            "in": "query",
+            "description": "The settlement date to query. This must be in the format yyyy-MM-dd.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2022-07-01"
+            },
+            "example": "2022-07-01"
+          },
+          {
+            "name": "settlementPeriod",
+            "in": "query",
+            "description": "The settlement period to query. This should be an integer from 1-50 inclusive.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "example": 5
+            },
+            "example": 5
+          },
+          {
+            "name": "bmUnit",
+            "in": "query",
+            "description": "The BM units to query. Add each unit separately. If no BM unit is selected all BM units will be displayed.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "T_ABRBO-1"
+              ]
+            },
+            "example": [
+              "T_ABRBO-1"
+            ]
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Response data format. Use json/xml to include metadata.",
+            "schema": {
+              "enum": [
+                "json",
+                "xml",
+                "csv"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data retrieved",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.Balancing.Physical.DatasetRows.PhysicalNotificationData"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.Balancing.Physical.DatasetRows.PhysicalNotificationData"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.Balancing.Physical.DatasetRows.PhysicalNotificationData"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.Balancing.Physical.DatasetRows.PhysicalNotificationData"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.Balancing.Physical.DatasetRows.PhysicalNotificationData"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.Balancing.Physical.DatasetRows.PhysicalNotificationData"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Error with query parameters - see response for details"
+          },
+          "500": {
+            "description": "Server error - please try again later"
+          }
+        }
+      }
+    },
+    "/balancing/physical": {
+      "get": {
+        "tags": [
+          "Balancing Mechanism Physical"
+        ],
+        "summary": "Physical data per BMU (PN, QPN, MILS, MELS)",
+        "description": "This endpoint provides the physical data for a requested BMU.\nIt returns the data valid over a given time range.\n            \nBy default, all of the relevant datasets are returned: PN, QPN, MILS, & MELS.\nThe results from each dataset are transformed to a common response model, with fields not present in all 4 datasets dropped.\n            \nBy default, the from and to parameters filter the data by start time inclusively. If the settlementPeriodFrom or\nsettlementPeriodTo parameters are provided, the corresponding from or to parameter instead filters on settlement\ndate, allowing for searching by a combination of start time and/or settlement date & settlement period.\nNote: When filtering via settlement date, from/to are treated as Dates only, with the time being ignored. For\nexample, 2022-06-01T00:00Z and 2022-06-01T11:11Z are both treated as the settlement date 2022-06-01.\n            \nAll Dates and DateTimes should be expressed as defined within\n<a href=\"https://datatracker.ietf.org/doc/html/rfc3339#section-5.6\" target=\"_blank\">RFC 3339</a>.\n            \nSome examples of date parameter combinations are shown below.\n            \nFiltering from start time to start time:\n            \n    /balancing/physical?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z\n            \nFiltering from start time to settlement date and period:\n            \n    /balancing/physical?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodTo=1\n            \nFiltering from settlement date and period to start time:\n            \n    /balancing/physical?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodFrom=1\n            \nFiltering from settlement date and period to settlement date and period:\n            \n    /balancing/physical?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodFrom=1&settlementPeriodTo=1",
+        "parameters": [
+          {
+            "name": "bmUnit",
+            "in": "query",
+            "description": "The BM Unit to query.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "2__HFLEX001"
+            },
+            "example": "2__HFLEX001"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "The \"from\" start time or settlement date for the filter.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-09-22T00:00Z"
+            },
+            "example": "2022-09-22T00:00Z"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "The \"to\" start time or settlement date for the filter.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-09-23T00:00Z"
+            },
+            "example": "2022-09-23T00:00Z"
+          },
+          {
+            "name": "settlementPeriodFrom",
+            "in": "query",
+            "description": "The \"from\" settlement period for the filter. This should be an integer from 1-50 inclusive.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "settlementPeriodTo",
+            "in": "query",
+            "description": "The \"to\" settlement period for the filter. This should be an integer from 1-50 inclusive.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dataset",
+            "in": "query",
+            "description": "Datasets to filter. If empty, all datasets will be returned.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": [
+                "PN",
+                "MILS"
+              ]
+            },
+            "example": [
+              "PN",
+              "MILS"
+            ]
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Response data format. Use json/xml to include metadata.",
+            "schema": {
+              "enum": [
+                "json",
+                "xml",
+                "csv"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data retrieved",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.Physical.PhysicalData"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.Physical.PhysicalData"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.Physical.PhysicalData"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.Physical.PhysicalData"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.Physical.PhysicalData"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.Physical.PhysicalData"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Error with query parameters - see response for details"
+          },
+          "500": {
+            "description": "Server error - please try again later"
+          }
+        }
+      }
+    },
+    "/balancing/acceptances": {
+      "get": {
+        "tags": [
+          "Bid-Offer Acceptances"
+        ],
+        "summary": "Bid-offer acceptances per BMU (BOALF)",
+        "description": "This endpoint provides the bid-offer acceptance data (BOALF) for a requested BMU.\n            \nBy default, the from and to parameters filter the data by start time inclusively. If the settlementPeriodFrom or\nsettlementPeriodTo parameters are provided, the corresponding from or to parameter instead filters on settlement\ndate, allowing for searching by a combination of start time and/or settlement date & settlement period.\nNote: When filtering via settlement date, from/to are treated as Dates only, with the time being ignored. For\nexample, 2022-06-01T00:00Z and 2022-06-01T11:11Z are both treated as the settlement date 2022-06-01.\n            \nAll Dates and DateTimes should be expressed as defined within\n<a href=\"https://datatracker.ietf.org/doc/html/rfc3339#section-5.6\" target=\"_blank\">RFC 3339</a>.\n            \nSome examples of date parameter combinations are shown below.\n            \nFiltering from start time to start time:\n            \n    /balancing/acceptances?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z\n            \nFiltering from start time to settlement date and period:\n            \n    /balancing/acceptances?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodTo=1\n            \nFiltering from settlement date and period to start time:\n            \n    /balancing/acceptances?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodFrom=1\n            \nFiltering from settlement date and period to settlement date and period:\n            \n    /balancing/acceptances?from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodFrom=1&settlementPeriodTo=1",
+        "parameters": [
+          {
+            "name": "bmUnit",
+            "in": "query",
+            "description": "The BM Unit to query.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "T_MILWW-1"
+            },
+            "example": "T_MILWW-1"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "The \"from\" start time or settlement date for the filter.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-10-03T00:00Z"
+            },
+            "example": "2022-10-03T00:00Z"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "The \"to\" start time or settlement date for the filter.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-10-06T00:00Z"
+            },
+            "example": "2022-10-06T00:00Z"
+          },
+          {
+            "name": "settlementPeriodFrom",
+            "in": "query",
+            "description": "The \"from\" settlement period for the filter. This should be an integer from 1-50 inclusive.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "settlementPeriodTo",
+            "in": "query",
+            "description": "The \"to\" settlement period for the filter. This should be an integer from 1-50 inclusive.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Response data format. Use json/xml to include metadata.",
+            "schema": {
+              "enum": [
+                "json",
+                "xml",
+                "csv"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data retrieved",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferAcceptancesResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferAcceptancesResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferAcceptancesResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferAcceptancesResponse"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferAcceptancesResponse"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferAcceptancesResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Error with query parameters - see response for details"
+          },
+          "500": {
+            "description": "Server error - please try again later"
+          }
+        }
+      }
+    },
+    "/balancing/bid-offer": {
+      "get": {
+        "tags": [
+          "Bid-Offer"
+        ],
+        "summary": "Bid-offer data per BMU (BOD)",
+        "description": "This endpoint provides the bid-offer data for a requested BMU. It returns the data valid over a given time\nrange, excluding any results where LevelFrom and LevelTo are both zero.\n            \nBy default, the from and to parameters filter the data inclusively and this endpoint will return any data that\noverlaps even at a single instant. If the settlementPeriodFrom or settlementPeriodTo parameters are provided, it\nwill instead filter to return any data that overlaps with the specified range of settlement periods. It is\npossible to search using a combination of time and/or settlement date & settlement period. Note: When\nfiltering via settlement date, from/to are treated as Dates only, with the time being ignored. For example,\n2022-06-01T00:00Z and 2022-06-01T11:11Z are both treated as the settlement date 2022-06-01.\n            \nAll Dates and DateTimes should be expressed as defined within\n<a href=\"https://datatracker.ietf.org/doc/html/rfc3339#section-5.6\" target=\"_blank\">RFC 3339</a>.\n            \nSome examples of date parameter combinations are shown below.\n            \nFiltering by timeFrom and timeTo:\n            \n    /balancing/bid-offer?bmUnit=T_DRAXX-1&from=2022-06-01T00:00Z&to=2022-07-01T00:00Z\n            \nFiltering from timeFrom to settlement date and period:\n            \n    /balancing/bid-offer?bmUnit=T_DRAXX-1&from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodTo=1\n            \nFiltering from settlement date and period to TimeTo:\n            \n    /balancing/bid-offer?bmUnit=T_DRAXX-1&from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodFrom=1\n            \nFiltering from settlement date and period to settlement date and period:\n            \n    /balancing/bid-offer?bmUnit=T_DRAXX-1&from=2022-06-01T00:00Z&to=2022-07-01T00:00Z&settlementPeriodFrom=1&settlementPeriodTo=1",
+        "parameters": [
+          {
+            "name": "bmUnit",
+            "in": "query",
+            "description": "The BM Unit to query.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "2__HFLEX001"
+            },
+            "example": "2__HFLEX001"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "The \"from\" start time or settlement date for the filter.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-09-22T00:00Z"
+            },
+            "example": "2022-09-22T00:00Z"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "The \"to\" start time or settlement date for the filter.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "example": "2022-09-23T00:00Z"
+            },
+            "example": "2022-09-23T00:00Z"
+          },
+          {
+            "name": "settlementPeriodFrom",
+            "in": "query",
+            "description": "The \"from\" settlement period for the filter. This should be an integer from 1-50 inclusive.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "settlementPeriodTo",
+            "in": "query",
+            "description": "The \"to\" settlement period for the filter. This should be an integer from 1-50 inclusive.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "description": "Response data format. Use json/xml to include metadata.",
+            "schema": {
+              "enum": [
+                "json",
+                "xml",
+                "csv"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data retrieved",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferResponse"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferResponse"
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferResponse"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "$ref": "#/components/schemas/Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests"
+          },
+          "400": {
+            "description": "Error with query parameters - see response for details"
+          },
+          "500": {
+            "description": "Server error - please try again later"
+          }
+        }
+      }
+    },
+    "/reference/bmunits/all": {
+      "get": {
+        "tags": [
+          "Reference"
+        ],
+        "summary": "BM Units",
+        "description": "This endpoint provides a current list of BM units held by Elexon",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Responses.Reference.BmUnitData"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Responses.Reference.BmUnitData"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Responses.Reference.BmUnitData"
+                  }
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Responses.Reference.BmUnitData"
+                  }
+                }
+              },
+              "text/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Responses.Reference.BmUnitData"
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Insights.Api.Models.Responses.Reference.BmUnitData"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.MarketIndexResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Insights.Api.Models.Responses.Balancing.MarketIndexResponse"
+            },
+            "nullable": true
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Insights.Api.Models.Metadata.ApiResponseSourceMetadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.Physical.PhysicalData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Insights.Api.Models.Responses.Balancing.Physical.PhysicalData"
+            },
+            "nullable": true
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Insights.Api.Models.Metadata.ApiResponseSourceMetadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.DemandOutturn.DemandOutturn": {
+        "type": "object",
+        "properties": {
+          "publishTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "settlementDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "settlementPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "initialDemandOutturn": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "initialTransmissionSystemDemandOutturn": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Insights.Api.Models.Responses.Balancing.BidOfferResponse"
+            },
+            "nullable": true
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Insights.Api.Models.Metadata.ApiResponseSourceMetadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.ResponseWithMetadata-1_Insights.Api.Models.Responses.Balancing.BidOfferAcceptancesResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Insights.Api.Models.Responses.Balancing.BidOfferAcceptancesResponse"
+            },
+            "nullable": true
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/Insights.Api.Models.Metadata.ApiResponseSourceMetadata"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.Reference.BmUnitData": {
+        "type": "object",
+        "properties": {
+          "nationalGridBmUnit": {
+            "type": "string",
+            "nullable": true
+          },
+          "elexonBmUnit": {
+            "type": "string",
+            "nullable": true
+          },
+          "eic": {
+            "type": "string",
+            "nullable": true
+          },
+          "fuelType": {
+            "type": "string",
+            "nullable": true
+          },
+          "leadPartyName": {
+            "type": "string",
+            "nullable": true
+          },
+          "bmUnitType": {
+            "type": "string",
+            "nullable": true
+          },
+          "fpnFlag": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "bmUnitName": {
+            "type": "string",
+            "nullable": true
+          },
+          "leadPartyId": {
+            "type": "string",
+            "nullable": true
+          },
+          "demandCapacity": {
+            "type": "string",
+            "nullable": true
+          },
+          "generationCapacity": {
+            "type": "string",
+            "nullable": true
+          },
+          "productionOrConsumptionFlag": {
+            "type": "string",
+            "nullable": true
+          },
+          "transmissionLossFactor": {
+            "type": "string",
+            "nullable": true
+          },
+          "workingDayCreditAssessmentImportCapability": {
+            "type": "string",
+            "nullable": true
+          },
+          "nonWorkingDayCreditAssessmentImportCapability": {
+            "type": "string",
+            "nullable": true
+          },
+          "workingDayCreditAssessmentExportCapability": {
+            "type": "string",
+            "nullable": true
+          },
+          "nonWorkingDayCreditAssessmentExportCapability": {
+            "type": "string",
+            "nullable": true
+          },
+          "creditQualifyingStatus": {
+            "type": "boolean"
+          },
+          "demandInProductionFlag": {
+            "type": "boolean"
+          },
+          "gspGroupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "gspGroupName": {
+            "type": "string",
+            "nullable": true
+          },
+          "interconnectorId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Service.DayAheadDemandForecastRow": {
+        "type": "object",
+        "properties": {
+          "publishTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "settlementDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "settlementPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "boundary": {
+            "type": "string",
+            "nullable": true
+          },
+          "transmissionSystemDemand": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nationalDemand": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandForecast.DatasetRows.DemandForecastNationalDayAhead": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Insights.Api.Models.Responses.DemandForecast.DatasetRows.DemandForecastNationalDayAhead"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.DemandOutturn.DatasetRows.DemandOutturnNational": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Insights.Api.Models.Responses.DemandOutturn.DatasetRows.DemandOutturnNational"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.DatasetResponse-1_Insights.Api.Models.Responses.Balancing.Physical.DatasetRows.PhysicalNotificationData": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Insights.Api.Models.Responses.Balancing.Physical.DatasetRows.PhysicalNotificationData"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.Balancing.MarketIndexResponse": {
+        "type": "object",
+        "properties": {
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-09-26T13:00:00Z"
+          },
+          "dataProvider": {
+            "type": "string",
+            "nullable": true,
+            "example": "N2EXMIDP"
+          },
+          "settlementDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2022-09-26"
+          },
+          "settlementPeriod": {
+            "type": "integer",
+            "format": "int32",
+            "example": 3
+          },
+          "price": {
+            "type": "number",
+            "format": "double",
+            "example": 678.12
+          },
+          "volume": {
+            "type": "number",
+            "format": "double",
+            "example": 678.123
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.DemandOutturn.DatasetRows.DemandOutturnNational": {
+        "type": "object",
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "nullable": true
+          },
+          "publishTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "settlementDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "settlementPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "demand": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.Balancing.BidOfferAcceptancesResponse": {
+        "type": "object",
+        "properties": {
+          "settlementDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2022-06-25"
+          },
+          "settlementPeriodFrom": {
+            "type": "integer",
+            "format": "int32",
+            "example": 29
+          },
+          "settlementPeriodTo": {
+            "type": "integer",
+            "format": "int32",
+            "example": 32
+          },
+          "timeFrom": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-06-25T13:34:00Z"
+          },
+          "timeTo": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-06-25T13:37:00Z"
+          },
+          "levelFrom": {
+            "type": "integer",
+            "format": "int32",
+            "example": 5
+          },
+          "levelTo": {
+            "type": "integer",
+            "format": "int32",
+            "example": 46
+          },
+          "nationalGridBmUnit": {
+            "type": "string",
+            "nullable": true,
+            "example": "ABRBO-1"
+          },
+          "bmUnit": {
+            "type": "string",
+            "nullable": true,
+            "example": "T_ABRBO-1"
+          },
+          "acceptanceNumber": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1234567
+          },
+          "acceptanceTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-06-25T13:30:00Z"
+          },
+          "deemedBoFlag": {
+            "type": "boolean",
+            "example": true
+          },
+          "soFlag": {
+            "type": "boolean",
+            "example": false
+          },
+          "storFlag": {
+            "type": "boolean",
+            "example": true
+          },
+          "rrFlag": {
+            "type": "boolean",
+            "nullable": true,
+            "example": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.DemandForecast.DatasetRows.DemandForecastNationalDayAhead": {
+        "type": "object",
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "nullable": true
+          },
+          "demand": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "publishTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "settlementDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "settlementPeriod": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "boundary": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.Balancing.Physical.DatasetRows.PhysicalNotificationData": {
+        "type": "object",
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "nullable": true,
+            "example": "PN"
+          },
+          "settlementDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2022-07-01"
+          },
+          "settlementPeriod": {
+            "type": "integer",
+            "format": "int32",
+            "example": 3
+          },
+          "timeFrom": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-07-01T13:34:00Z"
+          },
+          "timeTo": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-07-01T13:34:00Z"
+          },
+          "levelFrom": {
+            "type": "integer",
+            "format": "int32",
+            "example": 5
+          },
+          "levelTo": {
+            "type": "integer",
+            "format": "int32",
+            "example": 46
+          },
+          "nationalGridBmUnit": {
+            "type": "string",
+            "nullable": true,
+            "example": "ABRBO-1"
+          },
+          "bmUnit": {
+            "type": "string",
+            "nullable": true,
+            "example": "T_ABRBO-1"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Metadata.ApiResponseSourceMetadata": {
+        "type": "object",
+        "properties": {
+          "datasets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "example": [
+              "DATASET"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.Balancing.BidOfferResponse": {
+        "type": "object",
+        "properties": {
+          "settlementDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2022-07-25"
+          },
+          "settlementPeriod": {
+            "type": "integer",
+            "format": "int32",
+            "example": 3
+          },
+          "nationalGridBmUnit": {
+            "type": "string",
+            "nullable": true,
+            "example": "ABRBO-1"
+          },
+          "bmUnit": {
+            "type": "string",
+            "nullable": true,
+            "example": "T_ABRBO-1"
+          },
+          "timeFrom": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-07-01T13:34:00Z"
+          },
+          "timeTo": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-07-01T13:34:00Z"
+          },
+          "levelFrom": {
+            "type": "integer",
+            "format": "int32",
+            "example": 5
+          },
+          "levelTo": {
+            "type": "integer",
+            "format": "int32",
+            "example": 46
+          },
+          "bid": {
+            "type": "number",
+            "format": "double",
+            "example": 668.67
+          },
+          "offer": {
+            "type": "number",
+            "format": "double",
+            "example": -71.5
+          },
+          "pairId": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1
+          }
+        },
+        "additionalProperties": false
+      },
+      "Insights.Api.Models.Responses.Balancing.Physical.PhysicalData": {
+        "type": "object",
+        "properties": {
+          "dataset": {
+            "type": "string",
+            "nullable": true,
+            "example": "PN"
+          },
+          "settlementDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2022-07-01"
+          },
+          "settlementPeriod": {
+            "type": "integer",
+            "format": "int32",
+            "example": 3
+          },
+          "timeFrom": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-07-01T13:34:00Z"
+          },
+          "timeTo": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-07-01T13:34:00Z"
+          },
+          "levelFrom": {
+            "type": "integer",
+            "format": "int32",
+            "example": 5
+          },
+          "levelTo": {
+            "type": "integer",
+            "format": "int32",
+            "example": 46
+          },
+          "nationalGridBmUnit": {
+            "type": "string",
+            "nullable": true,
+            "example": "ABRBO-1"
+          },
+          "bmUnit": {
+            "type": "string",
+            "nullable": true,
+            "example": "T_ABRBO-1"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "interpretation": "Post-hoc diagnostic on existing 160 task seeds at d=1000. Frozen source rows read from local results; outcome-free standardized control newly evaluated. Not independent confirmatory evidence. No frozen source or manuscript files edited.",
+  "control_change": "Apply source-identical z-standardization of the 18 profile coordinates before the generic medoid and farthest-first. Source labels absent. Other run_task logic unchanged.",
+  "source": {
+    "n": 160,
+    "coverage_count": 152,
+    "certified_true_count": 74,
+    "false_certificate_count": 0,
+    "mean_penalized_loss": 0.14293611787491017,
+    "mean_all_in_calls_unamortized": 562.0,
+    "mean_all_in_calls_amortized_M20": 197.2
+  },
+  "standardized_generic": {
+    "n": 160,
+    "coverage_count": 135,
+    "certified_true_count": 49,
+    "false_certificate_count": 0,
+    "mean_penalized_loss": 0.25408430087322126,
+    "mean_all_in_calls_unamortized": 203.5
+  },
+  "frozen_generic": {
+    "n": 160,
+    "coverage_count": 60,
+    "certified_true_count": 17,
+    "false_certificate_count": 1,
+    "mean_penalized_loss": 0.7429276052965587,
+    "mean_all_in_calls_unamortized": 233.0
+  },
+  "paired_source_minus_standardized_success": {
+    "mean": 0.15625,
+    "fixed_regime_stratified_paired_bootstrap_95CI": [
+      0.1125,
+      0.2
+    ],
+    "wins": 28,
+    "losses": 3,
+    "ties": 129,
+    "two_sided_exact_discordant_sign_p_unadjusted_posthoc": 4.649162292480469e-06
+  },
+  "per_regime": [
+    {
+      "regime": "aligned_low_frequency",
+      "source": {
+        "n": 20,
+        "coverage_count": 20,
+        "certified_true_count": 11,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.04756345809528277,
+        "mean_all_in_calls_unamortized": 546.0
+      },
+      "standardized_generic": {
+        "n": 20,
+        "coverage_count": 20,
+        "certified_true_count": 10,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.08831732152569141,
+        "mean_all_in_calls_unamortized": 170.0
+      },
+      "frozen_generic": {
+        "initial_design_true_feasible_coverage_count": 20,
+        "certified_true_feasible_deployment_count": 12,
+        "false_certificate_count": 0
+      }
+    },
+    {
+      "regime": "coordinate_permutation",
+      "source": {
+        "n": 20,
+        "coverage_count": 20,
+        "certified_true_count": 18,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.0033616762659194666,
+        "mean_all_in_calls_unamortized": 494.0
+      },
+      "standardized_generic": {
+        "n": 20,
+        "coverage_count": 3,
+        "certified_true_count": 0,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.8983958570641637,
+        "mean_all_in_calls_unamortized": 250.0
+      },
+      "frozen_generic": {
+        "initial_design_true_feasible_coverage_count": 0,
+        "certified_true_feasible_deployment_count": 0,
+        "false_certificate_count": 0
+      }
+    },
+    {
+      "regime": "frequency_support_shift",
+      "source": {
+        "n": 20,
+        "coverage_count": 19,
+        "certified_true_count": 12,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.07611925637414703,
+        "mean_all_in_calls_unamortized": 538.0
+      },
+      "standardized_generic": {
+        "n": 20,
+        "coverage_count": 19,
+        "certified_true_count": 13,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.07611925637414704,
+        "mean_all_in_calls_unamortized": 154.0
+      },
+      "frozen_generic": {
+        "initial_design_true_feasible_coverage_count": 13,
+        "certified_true_feasible_deployment_count": 2,
+        "false_certificate_count": 1
+      }
+    },
+    {
+      "regime": "growing_effective_rank",
+      "source": {
+        "n": 20,
+        "coverage_count": 20,
+        "certified_true_count": 8,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.32849689973976315,
+        "mean_all_in_calls_unamortized": 570.0
+      },
+      "standardized_generic": {
+        "n": 20,
+        "coverage_count": 20,
+        "certified_true_count": 2,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.34071061103076505,
+        "mean_all_in_calls_unamortized": 234.0
+      },
+      "frozen_generic": {
+        "initial_design_true_feasible_coverage_count": 0,
+        "certified_true_feasible_deployment_count": 0,
+        "false_certificate_count": 0
+      }
+    },
+    {
+      "regime": "irregular_grid",
+      "source": {
+        "n": 20,
+        "coverage_count": 20,
+        "certified_true_count": 3,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.11497380136672206,
+        "mean_all_in_calls_unamortized": 610.0
+      },
+      "standardized_generic": {
+        "n": 20,
+        "coverage_count": 20,
+        "certified_true_count": 2,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.05615750983355566,
+        "mean_all_in_calls_unamortized": 234.0
+      },
+      "frozen_generic": {
+        "initial_design_true_feasible_coverage_count": 20,
+        "certified_true_feasible_deployment_count": 3,
+        "false_certificate_count": 0
+      }
+    },
+    {
+      "regime": "misspecified_target",
+      "source": {
+        "n": 20,
+        "coverage_count": 15,
+        "certified_true_count": 0,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.2674360918562523,
+        "mean_all_in_calls_unamortized": 634.0
+      },
+      "standardized_generic": {
+        "n": 20,
+        "coverage_count": 15,
+        "certified_true_count": 0,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.2674360918562523,
+        "mean_all_in_calls_unamortized": 250.0
+      },
+      "frozen_generic": {
+        "initial_design_true_feasible_coverage_count": 7,
+        "certified_true_feasible_deployment_count": 0,
+        "false_certificate_count": 0
+      }
+    },
+    {
+      "regime": "piecewise_smooth",
+      "source": {
+        "n": 20,
+        "coverage_count": 20,
+        "certified_true_count": 19,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.0,
+        "mean_all_in_calls_unamortized": 482.0
+      },
+      "standardized_generic": {
+        "n": 20,
+        "coverage_count": 20,
+        "certified_true_count": 19,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.0,
+        "mean_all_in_calls_unamortized": 98.0
+      },
+      "frozen_generic": {
+        "initial_design_true_feasible_coverage_count": 0,
+        "certified_true_feasible_deployment_count": 0,
+        "false_certificate_count": 0
+      }
+    },
+    {
+      "regime": "sparse_high_frequency",
+      "source": {
+        "n": 20,
+        "coverage_count": 18,
+        "certified_true_count": 3,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.30553775930119476,
+        "mean_all_in_calls_unamortized": 622.0
+      },
+      "standardized_generic": {
+        "n": 20,
+        "coverage_count": 18,
+        "certified_true_count": 3,
+        "false_certificate_count": 0,
+        "mean_penalized_loss": 0.30553775930119487,
+        "mean_all_in_calls_unamortized": 238.0
+      },
+      "frozen_generic": {
+        "initial_design_true_feasible_coverage_count": 0,
+        "certified_true_feasible_deployment_count": 0,
+        "false_certificate_count": 0
+      }
+    }
+  ],
+  "raw_evidence_validation": {
+    "source_atlas": {
+      "local_raw_rows": 160,
+      "same_task_and_algorithm_seed_as_diagnostic": true,
+      "all_8_regime_coverage_certification_false_counts_and_mean_loss_match_frozen_compact": true
+    },
+    "generic_dct_maximin": {
+      "local_raw_rows": 160,
+      "same_task_and_algorithm_seed_as_diagnostic": true,
+      "all_8_regime_coverage_certification_false_counts_and_mean_loss_match_frozen_compact": true
+    }
+  },
+  "cost_diagnostic": {
+    "dimension": 1000,
+    "source_target_plus_verification_mean": 178.0,
+    "source_call_count": 384,
+    "source_vs_frozen_generic_call_break_even_targets": 7,
+    "source_vs_standardized_generic_call_break_even_targets": 16,
+    "source_calls_per_true_certificate_at_M20": 426.37837837837833,
+    "standardized_generic_calls_per_true_certificate": 664.4897959183673
+  }
+}

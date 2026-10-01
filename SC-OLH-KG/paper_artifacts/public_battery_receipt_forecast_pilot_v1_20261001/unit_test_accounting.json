@@ -1,0 +1,84 @@
+{
+  "runs": [
+    {
+      "trajectory_calls": 3296,
+      "analytic_nomination_calls": 47,
+      "simulation_calls": 17,
+      "simulation_horizons_minutes": [
+        180,
+        180,
+        180,
+        60,
+        60,
+        60,
+        60,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        60,
+        60,
+        120,
+        60
+      ],
+      "exit_code": 0,
+      "test_files": [
+        "tests/test_public_battery_receipt_forecast.py",
+        "tests/test_public_battery_absolute_dispatch.py",
+        "tests/test_public_battery_causal_service.py"
+      ]
+    },
+    {
+      "trajectory_calls": 706,
+      "analytic_nomination_calls": 25,
+      "simulation_calls": 3,
+      "simulation_horizons_minutes": [
+        180,
+        180,
+        180
+      ],
+      "exit_code": 0,
+      "test_files": [
+        "tests/test_public_battery_receipt_forecast.py"
+      ],
+      "reason": "confirm exact 98 MW planning-budget allocation after removing the physical tolerance from the advisory band feasibility test"
+    },
+    {
+      "trajectory_calls": 3298,
+      "analytic_nomination_calls": 49,
+      "simulation_calls": 17,
+      "simulation_horizons_minutes": [
+        180,
+        180,
+        180,
+        60,
+        60,
+        60,
+        60,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        60,
+        60,
+        120,
+        60
+      ],
+      "exit_code": 0,
+      "test_files": [
+        "tests/test_public_battery_receipt_forecast.py",
+        "tests/test_public_battery_absolute_dispatch.py",
+        "tests/test_public_battery_causal_service.py"
+      ],
+      "reason": "regression after preserving the actual execution origin for the observed minute-3690 nomination safety check"
+    }
+  ],
+  "test_runs": 3,
+  "total_trajectory_calls": 7300,
+  "total_analytic_nomination_calls": 121,
+  "total_test_simulation_calls": 37
+}

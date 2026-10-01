@@ -1,0 +1,33 @@
+{
+  "attempts": [
+    {
+      "tests_run": 7,
+      "passed": 6,
+      "errors": 1,
+      "failure": "KeyError: library; V5 recipe is inherited from basis_controller_protocol",
+      "resolution": "read the exact V3 basis referenced by V5; no library or policy change"
+    },
+    {
+      "tests_run": 7,
+      "passed": 7,
+      "errors": 0
+    },
+    {
+      "tests_run": 1,
+      "passed": 1,
+      "errors": 0,
+      "scope": "new local-boundary-cache reuse test; requests.Session.get rejects any repeated public fetch"
+    }
+  ],
+  "final_exit_code": 0,
+  "collected_tests": 8,
+  "total_test_executions": 15,
+  "test_controller_window_evaluations": 0,
+  "test_nomination_calls": 0,
+  "test_declaration_path_evaluations": 0,
+  "test_trajectory_evaluations": 0,
+  "successful_test_commands": [
+    "python3 -m unittest tests.test_public_battery_announced_library -v (seven tests at that revision)",
+    "python3 -m unittest tests.test_public_battery_announced_library.AnnouncedLibraryTests.test_separate_reproduction_uses_saved_boundary_without_public_requests -v"
+  ]
+}

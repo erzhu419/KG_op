@@ -1,0 +1,47 @@
+{
+  "protocol_id": "public_battery_full_service_energy_bound_v1_20261001",
+  "frozen_at_utc": "2026-09-30T23:27:10+00:00",
+  "role": "conditional aggregate-energy feasibility bound for the unchanged full-capacity service product; no controller search",
+  "registration_context": "four causal-service pilot outcomes observed: both admitted runs finish physically but have 95 capacity-shortfall hours and 58 partial requests; raw runs fail at minutes 430 and 445; direction-count and aggregate-energy prefix bounds unobserved",
+  "basis_protocol": "performance/manifests/public_battery_causal_service_pilot_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_causal_service_pilot_v1_20261001",
+  "retained_asset_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "scope": {
+    "request_marks": "all 168 existing hourly marks, unchanged; do not regenerate, drop, reorder or resize requests",
+    "initial_SOC_MWh": [
+      49,
+      49
+    ],
+    "service_capacity_MW": [
+      49,
+      49
+    ],
+    "shared_gross_power_MW": 98,
+    "pulse": "one-minute ramp, 30-minute hold, one-minute return; net peak 98 MW under a full-service common-direction call",
+    "firm_obligation": "both directional offers must deliver the complete 49 MW per unit at every hourly clock, including no-activation clocks",
+    "physical_model": "two independent 98 MWh stocks; 0.92 charging and discharging efficiency; no energy input except PN and the prescribed accepted calls",
+    "information": "hourly pulses do not overlap; no accepted pulse remains active at the next hourly declaration",
+    "no_retuning": "retain all pilot controls, calls, obligations and negatives; the bound does not fit another capacity or target"
+  },
+  "procedure": [
+    "Let M_i=max of the two locked PN slots and m_i=min. Full joint export peaks M_i+49 require sum(M_i)<=0, and full joint import peaks m_i-49 require sum(m_i)>=0 at an exact 98 MW gross limit. Since M_i>=m_i, both sums are zero and each unit's locked PN is constant over its hour. Therefore summed PN power is zero under exact full service.",
+    "With the retained 1e-8 MW power tolerance, the same inequalities bound every PN and pulse net-power deviation from the ideal zero-baseline pulse by 1e-8 MW; do not increase the tolerance.",
+    "Conversion losses mean zero-net-power PN cannot increase total stock. For each ideal net-export pulse total stock decreases by at least its net energy divided by 0.92; for each net-import pulse stock increases by at most 0.92 times its net energy.",
+    "Use ramp-inclusive ideal site energy: at pulse age s minutes the peak-equivalent area is s^2/2 for 0<=s<=1, s-0.5 for 1<=s<=31, 30.5+(s-31)-(s-31)^2/2 for 31<=s<=32, and 31 thereafter; multiply by 98/60 MWh.",
+    "At every integer minute from 0 through 10080 compute the generous total-stock upper bound U=98+0.92*ideal_net_import_MWh-ideal_net_export_MWh/0.92+(1e-8/0.92)*elapsed_hours. Keep this upper bound uncapped at 196 MWh; ignoring overflow and circulation losses makes it more generous.",
+    "If U is below minus twice the retained 1e-8 MWh unit-stock tolerance at any inspected minute, the literal full-service obligation is infeasible for every PN policy satisfying these hypotheses. Retain the first inspected violating minute and prefix import/export counts. If no such minute exists, the bound is inconclusive and does not certify feasibility."
+  ],
+  "report": "a short analytic derivation, one compact prefix CSV, summary of the first bound violation or inconclusive result; no new simulated controller traces",
+  "decision": "a violated bound directs work to the business-duty and capacity specification before more controller search; an inconclusive bound directs work to per-unit stock and delayed-PN scheduling. Neither branch changes the 49 MW pilot obligation or advances source comparison.",
+  "accounting": {
+    "new_controller_window_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "limitations": "conditional necessity bound for this constructed hourly full-capacity bidirectional service product only; not an impossibility claim for real BM operation, other duties or all online battery policies, and not an OR submission readiness certificate"
+}

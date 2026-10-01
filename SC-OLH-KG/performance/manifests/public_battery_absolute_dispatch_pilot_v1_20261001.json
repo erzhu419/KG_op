@@ -1,0 +1,109 @@
+{
+  "protocol_id": "public_battery_absolute_dispatch_pilot_v1_20261001",
+  "frozen_at_utc": "2026-10-01T00:24:02+00:00",
+  "role": "explicit repair of the constructed service contract, followed by a bounded absolute-dispatch tracking pilot",
+  "registration_context": "the prior full-capacity bidirectional product is conditionally infeasible by minute 500; absolute-dispatch component and sequential pilot outcomes unobserved",
+  "basis_infeasibility_protocol": "performance/manifests/public_battery_full_service_energy_bound_v1_20261001.json",
+  "basis_infeasibility_outputs": "paper_artifacts/public_battery_full_service_energy_bound_v1_20261001",
+  "basis_previous_pilot": "performance/manifests/public_battery_causal_service_pilot_v1_20261001.json",
+  "basis_previous_outputs": "paper_artifacts/public_battery_causal_service_pilot_v1_20261001",
+  "retained_asset_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "contract": {
+    "duty": "track a prescribed absolute-power request when activated, while executing safe locked PN and already accepted pulses",
+    "absolute_request_peak_MW": {
+      "export": [
+        49,
+        49
+      ],
+      "import": [
+        -49,
+        -49
+      ]
+    },
+    "request_marks": "read all 168 existing hourly marks, including all 95 activations; keep their clocks and directions",
+    "pulse": "one-minute ramp from current mandatory-reference power, 30-minute absolute hold, one-minute return to reference at minute 32; reference resumes afterwards",
+    "no_activation": "execute the mandatory reference and report physical safety and declarations; no delivery observation is created in the absence of a request",
+    "declaration": "before revealing the current mark, compute both signed absolute peak envelopes from own SOC and the actual PN reference; neutral pulse peak is zero, and locked PN remains separate reference data",
+    "admission": "reserve the physically feasible common-scale interval from zero peak toward the fixed signed 49 MW peak, including no activation and the known 60-minute tail; if zero revision is not sustainable, retain the safe reference and record any request shortfall",
+    "joint_request_support": "both units activate together in one common direction; reservation covers common proportional amplitudes and no activation",
+    "service_accounting": "integrate increase/decrease error against the complete prescribed absolute trajectory separately per unit; declined or partial requests remain unmet even when declared availability is low",
+    "known_unsafe_reference": "retain commitment failure even if a subsequent call could replace the unsafe portion",
+    "difference_from_failed_product": "this is a separate simulation task: 49 MW is absolute requested power, rather than headroom on top of PN; it carries no permanent bidirectional full-reserve duty at inactive clocks",
+    "comparison_scope": "compare admission against full-request execution only within this new task; do not interpret a cross-product change from the failed pilot as a policy gain"
+  },
+  "component_preflight": {
+    "states": "the two saved conservative-admission states at minute 60, with original SOC and locked PN from the previous pilot hourly_service.json",
+    "profiles": [
+      "constant_pair_0003_0007",
+      "constant_pair_0004_0007"
+    ],
+    "directions": [
+      "export",
+      "import"
+    ],
+    "planned_fixture_replays": 4,
+    "purpose": "verify absolute 49 MW requests, PN resumption, shared power, gross conversion and delivered-error accounting before sequential execution",
+    "storage": "four short traces and compact metrics only"
+  },
+  "sequential_pilot": {
+    "roster": "same two prior fixed target pairs and both dispatch rules; first original April window only",
+    "period": "2024-04-15",
+    "window_start_minutes": [
+      0
+    ],
+    "horizon_hours": 168,
+    "profiles": [
+      {
+        "id": "constant_pair_0003_0007",
+        "target_fractions": [
+          0.35,
+          0.75
+        ]
+      },
+      {
+        "id": "constant_pair_0004_0007",
+        "target_fractions": [
+          0.45,
+          0.75
+        ]
+      }
+    ],
+    "dispatch_rules": [
+      "conservative_admission",
+      "full_request_reference"
+    ],
+    "planned_controller_window_evaluations": 4,
+    "initial_SOC_MWh": [
+      49,
+      49
+    ],
+    "initial_locked_PN_MW": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "event_order": "retain the previous pilot order: shift locked PN; declare before mark; observe and admit the absolute request; use own now-received pulse to nominate the slot 60 minutes ahead; execute exact minute physics",
+    "control": "reuse the unchanged 30-minute nomination clock, 60-minute lead, per-unit target fractions, nominate_units and unit_planning_terms",
+    "outcomes": "report physical completion, first physical or known commitment failure, fulfilled and unfulfilled activation counts out of the fixed 95 calls, signed unmet energy, and censored executed-prefix accounting on interruption",
+    "window_success": "all 10080 minutes completed safely, all 95 prescribed requests fulfilled, and no known unsafe commitment; inactive hours are not counted as fulfilled requests",
+    "storage": "compact hourly declarations/requests, nomination records and first failures; no full weekly minute trace or monetary outcome",
+    "chance_criterion": "retain the original 0.05 failure probability for any future broader development population; these four trials cannot pass that gate"
+  },
+  "decision": "resolve any component or accounting discrepancy before pilot interpretation; after all four pilots retain failures and diagnose their first mechanism, or register a broader development population if a complete service-successful pilot exists. No fitted capacity, target search or source comparison follows automatically.",
+  "accounting_constraints": {
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "preservation": "leave the failed full-capacity product, its bound and all prior V1-V5 outcomes intact; write this new task to a separate artifact directory",
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "limitations": "absolute 49 MW common-direction calls and hourly sign mapping remain analyst simulation assumptions, not an identified BM counterfactual or historical service contract; shared gross 98 MW, equal 98 MWh stocks and 0.92 efficiencies remain model assumptions"
+}

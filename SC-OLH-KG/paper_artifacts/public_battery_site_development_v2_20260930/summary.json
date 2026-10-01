@@ -1,0 +1,157 @@
+{
+  "protocol_id": "public_battery_site_development_v2_20260930",
+  "status": "development_complete",
+  "normalization": {
+    "forecast_q05_MW": 24497.95,
+    "forecast_q95_MW": 42992.0,
+    "absolute_ramp_q95_MW": 2135.45,
+    "fit_half_hours": 480
+  },
+  "cases": [
+    {
+      "period": "2024-04-15",
+      "condition": "received_BOA_projection",
+      "windows": 73,
+      "unit_segments": [
+        820,
+        483
+      ],
+      "unit_acceptances": [
+        296,
+        168
+      ],
+      "library_feasible_profiles": 23,
+      "library_successful_windows_union": 73,
+      "extra_reference_feasible_profiles": 1,
+      "max_energy_balance_error_MWh": 1.5342038750532083e-10
+    },
+    {
+      "period": "2024-04-15",
+      "condition": "pending_baseline_projection_ablation",
+      "windows": 73,
+      "unit_segments": [
+        820,
+        483
+      ],
+      "unit_acceptances": [
+        296,
+        168
+      ],
+      "library_feasible_profiles": 17,
+      "library_successful_windows_union": 73,
+      "extra_reference_feasible_profiles": 1,
+      "max_energy_balance_error_MWh": 1.6211743059102446e-10
+    },
+    {
+      "period": "2024-07-15",
+      "condition": "received_BOA_projection",
+      "windows": 73,
+      "unit_segments": [
+        900,
+        947
+      ],
+      "unit_acceptances": [
+        333,
+        354
+      ],
+      "library_feasible_profiles": 22,
+      "library_successful_windows_union": 73,
+      "extra_reference_feasible_profiles": 1,
+      "max_energy_balance_error_MWh": 1.4134116099739913e-10
+    },
+    {
+      "period": "2024-07-15",
+      "condition": "pending_baseline_projection_ablation",
+      "windows": 73,
+      "unit_segments": [
+        900,
+        947
+      ],
+      "unit_acceptances": [
+        333,
+        354
+      ],
+      "library_feasible_profiles": 17,
+      "library_successful_windows_union": 73,
+      "extra_reference_feasible_profiles": 1,
+      "max_energy_balance_error_MWh": 1.305053842770576e-10
+    },
+    {
+      "period": "2024-10-15",
+      "condition": "received_BOA_projection",
+      "windows": 73,
+      "unit_segments": [
+        994,
+        795
+      ],
+      "unit_acceptances": [
+        374,
+        303
+      ],
+      "library_feasible_profiles": 42,
+      "library_successful_windows_union": 73,
+      "extra_reference_feasible_profiles": 1,
+      "max_energy_balance_error_MWh": 2.1319124243746046e-10
+    },
+    {
+      "period": "2024-10-15",
+      "condition": "pending_baseline_projection_ablation",
+      "windows": 73,
+      "unit_segments": [
+        994,
+        795
+      ],
+      "unit_acceptances": [
+        374,
+        303
+      ],
+      "library_feasible_profiles": 38,
+      "library_successful_windows_union": 73,
+      "extra_reference_feasible_profiles": 1,
+      "max_energy_balance_error_MWh": 1.617905809325748e-10
+    }
+  ],
+  "library_profiles_feasible_in_all_periods": {
+    "received_BOA_projection": [
+      "profile_0004",
+      "profile_0005",
+      "profile_0006",
+      "profile_0014",
+      "profile_0015",
+      "profile_0021",
+      "profile_0022",
+      "profile_0030",
+      "profile_0034",
+      "profile_0038"
+    ],
+    "pending_baseline_projection_ablation": [
+      "profile_0004",
+      "profile_0005",
+      "profile_0006",
+      "profile_0014",
+      "profile_0022",
+      "profile_0030"
+    ]
+  },
+  "decision": "hold_source_comparison_for_unit_controller",
+  "diagnostic_window_evaluations": 29346,
+  "P2_response_bytes": 880509,
+  "new_API_response_bytes": 880509,
+  "new_API_requests": 18,
+  "optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "limitations": [
+    "pooled site inventory permits virtual sharing between BM units; a successful simulation does not prove physical unit-level feasibility",
+    "equal baseline split is an analyst control assumption; per-unit SOC, usable energy, and converter limits were not observed",
+    "gross absolute power bound is stricter than the published net grid limit and can create conservative false infeasibility",
+    "historical BOAs held fixed despite their dependence on actual baseline and availability; other commitments absent",
+    "fixed development sample windows overlap; 95% success is a finite-population development criterion",
+    "nominations model a one-hour information lead; exact order execution, BM settlement, and degradation absent"
+  ],
+  "pooled_development_gate": "proceed_to_source_archive_pilot",
+  "partition_diagnostic": {
+    "file": "partition_summary.json",
+    "common_equal_partition_feasible_profiles": []
+  }
+}

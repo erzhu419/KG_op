@@ -1,0 +1,99 @@
+{
+  "protocol_id": "public_battery_announced_dynamic_targets_pilot_v1_20261001",
+  "frozen_at_utc": "2026-10-01T04:16:01.119852+00:00",
+  "role": "bounded integration of original forecast-indexed ordered target channels; component checks followed by 24 development pilots",
+  "registration_context": "library/objective preflight passed; 154 original candidates decoded, 74022 forecast visibility checks passed, 12 boundary slots covered via three cached and nine newly obtained slots; dynamic controller outcomes remain unobserved",
+  "basis_protocol": "performance/manifests/public_battery_announced_library_objective_preflight_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_announced_library_objective_preflight_v1_20261001",
+  "controller_protocol": "performance/manifests/public_battery_announced_controller_pilot_v1_20261001.json",
+  "screen_protocol": "performance/manifests/public_battery_announced_development_screen_v1_20261001.json",
+  "screen_outputs": "paper_artifacts/public_battery_announced_development_screen_v1_20261001",
+  "task_protocol": "performance/manifests/public_battery_announced_task_contract_v1_20261001.json",
+  "data_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "library_roster": "performance/manifests/public_battery_unit_controller_development_v5_candidates_20260930.csv",
+  "unchanged": "original asset, initial stock, seed, 154-candidate roster, announcement contract, admission rules, scalar brackets, tolerances, safety fallback, event order, physical engine, denominators and negative evidence",
+  "target_interface": {
+    "supported_inputs": "retain a static ordered two-unit fraction vector; add an ordered (eligible nomination decisions,2) fraction array on the existing target_fractions input",
+    "selection": "at decision minute t, select row t//30 for that decision before nomination; static vectors remain constant over decisions",
+    "eligible_rows": "338 rows for execution horizon 10200; last eligible decision 10110, delivery 10170. No post-horizon targets are queried",
+    "signal": "reuse 2022-only fit and decoded 1000-node integer channels; actual delivery t+60 and previous half-hour forecasts must both be published by actual decision UTC",
+    "observability": "record selected ordered target fractions in nomination metadata; forecasts alone determine them. Prices, later announcements, realized demand and saved outcomes do not enter targets"
+  },
+  "components": {
+    "fixture": "240-minute execution with inactive delivery clocks 0/60, export at120 and import at180; identical announced contract, half-full initial inventory and zero locked PN",
+    "constant_equivalence": "two retained constant pairs each run once as a static vector and once as six identical ordered rows; compare PN, admissions, delivered flow, stocks and failure accounting after excluding new target metadata",
+    "functional_routing": "both selected functional pairs run once on six explicit fixture stresses [0,0.25,0.5,0.75,1,0.25]; record per-decision targets and retain physical/service failures",
+    "planned_short_controller_evaluations": 6,
+    "maximum_component_minute_physics_evaluations": 1440,
+    "tests": "separate channels reach correct units at correct nomination clocks, constant schedule equivalence, no unused terminal row, historic forecast publication cutoff, absolute settlement-clock economics and censored cost on failed/partial paths; count any actual policy/trajectory calls separately",
+    "gate": "constant equivalence, target routing, visibility and accounting must pass before pilots. Functional nonfulfillment is an observed performance result, not an interface failure"
+  },
+  "pilots": {
+    "profiles": [
+      "functional_pair_0010_0037",
+      "functional_pair_0037_0010"
+    ],
+    "selection": "first original functional pair and its already registered swapped partner; structural selection, no outcome-based selection",
+    "source_sample_start_dates": [
+      "2024-04-15",
+      "2024-07-15",
+      "2024-10-15"
+    ],
+    "source_window_start_minutes": [
+      0,
+      4320
+    ],
+    "window_selection": "original first and last windows in each sample; last window exercises the repaired boundary without changing source request marks",
+    "dispatch_rules": [
+      "conservative_admission",
+      "full_request_reference"
+    ],
+    "execution_minutes": 10200,
+    "initial_SOC_MWh": [
+      49,
+      49
+    ],
+    "initial_locked_PN_MW": [
+      [
+        0,
+        0
+      ],
+      [
+        0,
+        0
+      ]
+    ],
+    "planned_new_controller_window_evaluations": 24,
+    "planned_controller_window_replays": 0,
+    "maximum_pilot_minute_physics_evaluations": 244800,
+    "maximum_pilot_nomination_decisions": 8112,
+    "execution": "execute all 24 registered cells, preserving physical interruptions, service failures, planning failures and unassessed requests; no retuning or replacement profiles after observing results",
+    "economics": "exact gross import/export at actual executed half-hour MID plus inherited terminal inventory adjustment. Full cost is defined only for successful complete windows; failed/interrupted windows retain null full-window cost",
+    "storage": "compact run summaries, hourly records, nominations and first failure context; no full-minute week traces or checkpoints"
+  },
+  "outputs": [
+    "effective_protocol.json",
+    "component_results.json",
+    "unit_test_accounting.json",
+    "runs.json",
+    "hourly_dispatch.json",
+    "nominations.json",
+    "first_failures.json",
+    "pilot_economics.json",
+    "artifact_accounting.json",
+    "summary.json",
+    "execution.log"
+  ],
+  "accounting_constraints": {
+    "new_public_data_requests": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "decision": "if interfaces and accounting agree, retain all 24 outcomes and freeze the next population experiment with explicit execution budget before any matrix launch. A pilot success is not a 95-percent reliability pass. If an implementation discrepancy occurs, retain the initial result and count repaired reruns; scientific failures remain results",
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "limitations": "two structurally selected functional pairs, six heavily overlapping source windows, analyst-defined notices and reset stocks, MID-indexed simulation costs; no source effect, population reliability, actual BM profits, independent confirmation or OR submission-readiness inference"
+}

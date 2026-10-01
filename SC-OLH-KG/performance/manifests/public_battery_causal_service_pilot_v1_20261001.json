@@ -1,0 +1,77 @@
+{
+  "protocol_id": "public_battery_causal_service_pilot_v1_20261001",
+  "frozen_at_utc": "2026-09-30T16:56:01+00:00",
+  "role": "bounded sequential service simulation with delayed PN and public-data request marks; not historical BM counterfactual validation",
+  "registration_context": "four received-BOA fixtures and 292 saved-state probes observed; all saved-state probes delivered the fixed 49 MW pulse; sequential pilot outcomes unobserved",
+  "basis": "paper_artifacts/public_battery_received_availability_preflight_v1_20261001/summary.json",
+  "retained_asset_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "retained_controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "roster": {
+    "period": "2024-04-15",
+    "window_start_minutes": [0],
+    "horizon_hours": 168,
+    "profiles": [
+      {"id": "constant_pair_0003_0007", "target_fractions": [0.35, 0.75]},
+      {"id": "constant_pair_0004_0007", "target_fractions": [0.45, 0.75]}
+    ],
+    "dispatch_rules": ["conservative_admission", "full_request_reference"],
+    "planned_controller_window_evaluations": 4,
+    "initial_SOC_MWh": [49.0, 49.0],
+    "initial_locked_PN_MW": [[0.0, 0.0], [0.0, 0.0]],
+    "selection": "same two explanatory V5 constants, first original April window; neither profile, reset stock nor window selected from new pilot outcomes"
+  },
+  "request_workload": {
+    "input": "cached April BOA receipt ledger only, including the existing one-day prefix",
+    "clock_minutes": 60,
+    "clock_start_minute": 0,
+    "clock_stop_exclusive_minute": 10080,
+    "marks": "at each clock t, consider cached segments with t-60 < received_minute <= t and nonzero last_MW; select the maximum tuple (received_minute, unit_index, acceptance_number, stop_minute, start_minute); its sign(last_MW) defines a common site direction; if none, no new instruction",
+    "mark_scope": "publicly announced endpoint signs provide a lagged hourly simulation mark; original BOA magnitudes, durations and intervening receipts are not actual dispatch in this pilot",
+    "service_capacity_MW": [49.0, 49.0],
+    "proposal": "if a mark exists, request both units at the relevant locked-PN anchor plus sign times 49 MW; request size never depends on declared availability",
+    "pulse": "one-minute ramp from current mandatory-reference power, 30-minute hold at absolute peak, one-minute return to reference power at minute 32; reference resumes afterwards",
+    "no_instruction": "retain the mandatory reference; fixed hourly service capacity is still assessed in both directions",
+    "overlap": "at most one common-direction site pulse per hour; no overlapping proposed pulses or independent mixed-direction site requests",
+    "policy_independence": "same request marks and fixed service obligation for all four runs; nomination and availability functions do not receive upcoming marks"
+  },
+  "information_and_control": {
+    "physical_step_minutes": 1,
+    "nomination_clock_minutes": 30,
+    "nomination_lead_minutes": 60,
+    "reference": "each simulated accepted pulse overrides locked PN only within its own interval; historical BOAs serve only as request marks and do not become prior accepted power in this new simulation",
+    "event_order": [
+      "At a half-hour boundary shift previously nominated PN into the current and following locked slots",
+      "On an hourly request clock, compute export and import availability from current simulated SOC, locked PN and already accepted pulses, before revealing the mark to the dispatch rule",
+      "Reveal the fixed common-direction proposal; conservative_admission clips it to the corresponding declared range; full_request_reference executes the complete requested absolute peak; no instruction follows the reference",
+      "Record the admitted or reference pulse as an already received commitment",
+      "At the same half-hour decision, reuse nominate_units and unit_planning_terms with only own accepted pulses over the next 90 minutes and the unchanged per-unit target fractions; nominate the slot starting 60 minutes later",
+      "Execute the minute using exact gross import/export integrals and continuous stock extrema"
+    ],
+    "order_scope": "explicit discrete simulation order; the current two PN slots stay locked and the newly nominated third slot uses the now-received pulse, without any later receipt or future mark",
+    "tail": "do not create nominations with delivery starting outside the 168-hour pilot; the final scheduled pulse and its full known 60-minute exposure finish within the pilot",
+    "known_unsafe_reference": "record a commitment failure without allowing a new request to erase it",
+    "no_retuning": "retain targets, equal 98 MWh inventory split, 98 MW gross site bound, 0.92 efficiencies, delayed control rule, hourly clock and fixed 49 MW obligation throughout all runs"
+  },
+  "outcomes": {
+    "physical": "continuous unit stock bounds and gross site power; stop the rollout at first physical violation and retain its minute and cause",
+    "firm_availability": "at every scheduled hourly clock assess both directional declarations against the fixed 49 MW per unit, even when there is no activation",
+    "delivery": "record upward and downward unmet energy per unit against the full requested absolute trajectory; no unit or direction netting",
+    "service_failure": "any known unsafe reference, directional availability shortfall, unmet requested trajectory or actual physical violation is a service failure; continue after service-only failures while physical execution remains safe",
+    "window_success": "all 168 hourly obligations satisfied and all 10080 minutes physically completed; a partial rollout cannot become a successful window",
+    "report": "retain all four run summaries and compact hourly declaration/nomination/event records, first physical failure and first service shortfall; no monetary outcome or full minute trace",
+    "planned_maximum_hourly_service_records": 672
+  },
+  "decision": "if accounting or causal ordering fails, repair implementation without interpreting outcomes; if a pilot has a physical or service failure, diagnose its first mechanism before any larger run; only after a complete service-successful pilot register the broader development population. These four windows cannot pass the original 95 percent development gate or establish source benefit",
+  "retained_failure_probability": 0.05,
+  "failure_probability_scope": "unchanged original development criterion; not estimated from this four-run implementation pilot",
+  "accounting_constraints": {
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "limitations": "The hourly sign mapping, fixed symmetric capacity and common-direction pulses define a new public-data-driven simulation task. Historical BOAs do not identify market dispatch after changed nominations or declarations. The pilot does not supersede V1-V5 fixed-request negatives or demonstrate OR submission readiness."
+}

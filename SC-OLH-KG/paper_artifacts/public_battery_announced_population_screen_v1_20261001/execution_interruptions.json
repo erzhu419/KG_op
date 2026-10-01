@@ -1,0 +1,37 @@
+[
+  {
+    "stopped_at_utc": "2026-10-01T13:21:44.768834+00:00",
+    "former_backend": "local_slurm",
+    "former_job_id": "23",
+    "reason": "switch to the user-requested scheduleurm scheduler",
+    "validated_unique_cells_preserved": 20026,
+    "recorded_controller_executions_preserved": 19278,
+    "last_completed_execution": {
+      "period": "2024-07-15",
+      "window_start_minute": 4320,
+      "profile_id": "constant_pair_0004_0004",
+      "dispatch_rule": "full_request_reference",
+      "evaluation_origin": "new_population"
+    },
+    "unrecorded_inflight_controller_attempts": {
+      "minimum": 0,
+      "maximum": 1
+    },
+    "unrecorded_inflight_calls": null,
+    "accounting_scope": "Completed journals remain exact. A cancelled in-flight path may have consumed additional calls; its counters are unavailable and are not reported as zero. The frozen execution budget is unchanged; its exact all-attempt compliance cannot be asserted."
+  },
+  {
+    "former_backend": "scheduleurm",
+    "former_task_id": "t118688",
+    "recorded_at_utc": "2026-10-01T15:56:42.067232+00:00",
+    "reason": "user-authorized switch to parallel window shards",
+    "validated_unique_cells_preserved": 22035,
+    "recorded_controller_executions_preserved": 21723,
+    "unrecorded_inflight_controller_attempts": {
+      "minimum": 0,
+      "maximum": 1
+    },
+    "unrecorded_inflight_calls": null,
+    "accounting_scope": "An interrupted cell may have consumed additional calls; keep it separate from exact completed journals."
+  }
+]

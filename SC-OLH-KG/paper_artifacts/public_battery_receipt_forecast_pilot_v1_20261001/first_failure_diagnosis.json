@@ -1,0 +1,641 @@
+{
+  "protocol_id": "public_battery_receipt_forecast_pilot_v1_20261001",
+  "diagnosed_profiles": 2,
+  "additional_saved_state_path_evaluations": 6,
+  "controller_window_evaluations": 0,
+  "rows": [
+    {
+      "profile_id": "constant_pair_0003_0007",
+      "first_unmet_request_minute": 1020,
+      "initial_SOC_MWh": [
+        57.59133333333336,
+        96.79133333333331
+      ],
+      "locked_PN_MW": [
+        [
+          42.85605333333338,
+          42.8560533333333
+        ],
+        [
+          49.00000000000003,
+          48.999999999999986
+        ]
+      ],
+      "direction": "import",
+      "admitted_peak_MW": [
+        -3.401521466054888,
+        -3.401521466054888
+      ],
+      "latest_forecast_direction_correct": true,
+      "forecast_nomination_minute": 990,
+      "forecast_delivery_minute": 1050,
+      "earlier_tail_nomination": {
+        "profile_id": "constant_pair_0003_0007",
+        "dispatch_rule": "conservative_admission",
+        "period": "2024-04-15",
+        "window_start_minute": 0,
+        "minute": 930,
+        "delivery_minute": 990,
+        "SOC_MWh": [
+          34.30000000000001,
+          73.49999999999997
+        ],
+        "locked_PN_MW": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            2.6147972675971688e-14,
+            -6.178632484870436e-14
+          ]
+        ],
+        "nomination_MW": [
+          0.0,
+          0.0
+        ],
+        "receipt_cue": {
+          "minute": 930,
+          "direction": null,
+          "source": null
+        },
+        "forecast_used": false,
+        "forecast_call_minute": null,
+        "ordinary_nomination_MW": [
+          0.0,
+          0.0
+        ],
+        "analytic_nomination_calls": 1,
+        "reference_safety_path_evaluations": 0,
+        "reference_safety_scale": 1.0,
+        "reference_execution_prefix_minutes": 30,
+        "known_reference_failure": false,
+        "nomination_reason": "ordinary"
+      },
+      "late_forecast_nomination": {
+        "profile_id": "constant_pair_0003_0007",
+        "dispatch_rule": "conservative_admission",
+        "period": "2024-04-15",
+        "window_start_minute": 0,
+        "minute": 990,
+        "delivery_minute": 1050,
+        "SOC_MWh": [
+          56.46433333333336,
+          95.66433333333332
+        ],
+        "locked_PN_MW": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            42.85605333333338,
+            42.8560533333333
+          ]
+        ],
+        "nomination_MW": [
+          49.00000000000003,
+          48.999999999999986
+        ],
+        "receipt_cue": {
+          "minute": 990,
+          "direction": "import",
+          "source": {
+            "received_minute": 935.0,
+            "unit": 1,
+            "acceptance_number": 6781,
+            "stop_minute": 961.0,
+            "start_minute": 960.0,
+            "last_MW": -3.0
+          }
+        },
+        "forecast_used": true,
+        "forecast_call_minute": 1020,
+        "ordinary_nomination_MW": [
+          1.3073986337985844e-14,
+          0.0
+        ],
+        "analytic_nomination_calls": 2,
+        "reference_safety_path_evaluations": 2,
+        "reference_safety_scale": 1.0,
+        "reference_execution_prefix_minutes": 30,
+        "known_reference_failure": false,
+        "nomination_reason": "receipt_forecast",
+        "forecast_band_feasible": false,
+        "forecast_power_interval_MW": [
+          [
+            11.469018548275505,
+            98.0
+          ],
+          [
+            88.74901854827543,
+            98.0
+          ]
+        ],
+        "forecast_minimum_command_MW": [
+          11.469018548275505,
+          88.74901854827543
+        ],
+        "forecast_required_gross_power_MW": 100.21803709655093,
+        "forecast_preference_fraction": null,
+        "forecast_stock_without_nomination_MWh": [
+          80.52628477086438,
+          119.72628477086434
+        ],
+        "forecast_stock_after_candidate_MWh": [
+          55.671212307096255,
+          94.87121230709623
+        ],
+        "forecast_stock_band_MWh": [
+          [
+            0.0,
+            74.70866666666666
+          ],
+          [
+            0.0,
+            74.70866666666666
+          ]
+        ],
+        "forecast_preferred_nomination_MW": [
+          49.00000000000003,
+          48.999999999999986
+        ],
+        "forecast_candidate_MW": [
+          49.00000000000003,
+          48.999999999999986
+        ],
+        "ordinary_reference_physics": {
+          "minimum_SOC_MWh": [
+            34.300000000000004,
+            73.49999999999997
+          ],
+          "maximum_SOC_MWh": [
+            57.59133333333336,
+            96.79133333333331
+          ],
+          "final_SOC_MWh": [
+            34.300000000000004,
+            73.5
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            0.0
+          ],
+          "power_bound_violation_MW": 0.0
+        },
+        "candidate_reference_physics": {
+          "minimum_SOC_MWh": [
+            7.669565217391309,
+            46.869565217391326
+          ],
+          "maximum_SOC_MWh": [
+            57.59133333333336,
+            96.79133333333331
+          ],
+          "final_SOC_MWh": [
+            7.669565217391309,
+            46.869565217391326
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            0.0
+          ],
+          "power_bound_violation_MW": 1.4210854715202004e-14
+        },
+        "nominated_reference_physics": {
+          "minimum_SOC_MWh": [
+            7.669565217391309,
+            46.869565217391326
+          ],
+          "maximum_SOC_MWh": [
+            57.59133333333336,
+            96.79133333333331
+          ],
+          "final_SOC_MWh": [
+            7.669565217391309,
+            46.869565217391326
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            0.0
+          ],
+          "power_bound_violation_MW": 1.4210854715202004e-14
+        }
+      },
+      "maximum_starting_SOC_for_full_requested_path_MWh": [
+        75.25288189580229,
+        75.2528818958023
+      ],
+      "paths": {
+        "reference": {
+          "minimum_SOC_MWh": [
+            7.66956521739133,
+            46.86956521739132
+          ],
+          "maximum_SOC_MWh": [
+            57.59133333333336,
+            96.79133333333331
+          ],
+          "final_SOC_MWh": [
+            7.66956521739133,
+            46.86956521739132
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            0.0
+          ],
+          "power_bound_violation_MW": 1.4210854715202004e-14
+        },
+        "requested": {
+          "minimum_SOC_MWh": [
+            55.26145868390786,
+            94.46145868390784
+          ],
+          "maximum_SOC_MWh": [
+            80.33845143753106,
+            119.53845143753101
+          ],
+          "final_SOC_MWh": [
+            55.26145868390786,
+            94.46145868390784
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            21.53845143753101
+          ],
+          "power_bound_violation_MW": 1.4210854715202004e-14
+        },
+        "admitted": {
+          "minimum_SOC_MWh": [
+            33.52989783340408,
+            72.72989783340405
+          ],
+          "maximum_SOC_MWh": [
+            58.80000001000001,
+            98.00000000999997
+          ],
+          "final_SOC_MWh": [
+            33.52989783340408,
+            72.72989783340405
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            9.999965300266922e-09
+          ],
+          "power_bound_violation_MW": 1.4210854715202004e-14
+        }
+      },
+      "full_request_first_physical_failure": {
+        "minute": 1022,
+        "last_safe_SOC_MWh": [
+          58.36195143753105,
+          97.561951437531
+        ],
+        "power_first_MW": [
+          -49.0,
+          -49.0
+        ],
+        "power_last_MW": [
+          -49.0,
+          -49.0
+        ],
+        "minimum_SOC_MWh": [
+          57.41022122235186,
+          96.61022122235181
+        ],
+        "maximum_SOC_MWh": [
+          59.113284770864375,
+          98.31328477086433
+        ],
+        "final_SOC_MWh": [
+          59.113284770864375,
+          98.31328477086433
+        ],
+        "unit_bound_violation_MWh": [
+          0.0,
+          0.31328477086432827
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "mechanism": "correct import forecast, but the new release PN starts during the final part of the next pulse; inventory exceeds its ceiling before that recovery can act. The earlier free PN slot was committed when its public cue was empty"
+    },
+    {
+      "profile_id": "constant_pair_0004_0007",
+      "first_unmet_request_minute": 1020,
+      "initial_SOC_MWh": [
+        67.39133333333338,
+        96.79133333333337
+      ],
+      "locked_PN_MW": [
+        [
+          42.85605333333341,
+          42.85605333333338
+        ],
+        [
+          49.000000000000014,
+          48.999999999999986
+        ]
+      ],
+      "direction": "import",
+      "admitted_peak_MW": [
+        -3.4015214660547137,
+        -3.4015214660547137
+      ],
+      "latest_forecast_direction_correct": true,
+      "forecast_nomination_minute": 990,
+      "forecast_delivery_minute": 1050,
+      "earlier_tail_nomination": {
+        "profile_id": "constant_pair_0004_0007",
+        "dispatch_rule": "conservative_admission",
+        "period": "2024-04-15",
+        "window_start_minute": 0,
+        "minute": 930,
+        "delivery_minute": 990,
+        "SOC_MWh": [
+          44.10000000000003,
+          73.50000000000001
+        ],
+        "locked_PN_MW": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            3.9221959013957534e-14,
+            2.6147972675971688e-14
+          ]
+        ],
+        "nomination_MW": [
+          1.3073986337985844e-14,
+          0.0
+        ],
+        "receipt_cue": {
+          "minute": 930,
+          "direction": null,
+          "source": null
+        },
+        "forecast_used": false,
+        "forecast_call_minute": null,
+        "ordinary_nomination_MW": [
+          1.3073986337985844e-14,
+          0.0
+        ],
+        "analytic_nomination_calls": 1,
+        "reference_safety_path_evaluations": 0,
+        "reference_safety_scale": 1.0,
+        "reference_execution_prefix_minutes": 30,
+        "known_reference_failure": false,
+        "nomination_reason": "ordinary"
+      },
+      "late_forecast_nomination": {
+        "profile_id": "constant_pair_0004_0007",
+        "dispatch_rule": "conservative_admission",
+        "period": "2024-04-15",
+        "window_start_minute": 0,
+        "minute": 990,
+        "delivery_minute": 1050,
+        "SOC_MWh": [
+          66.26433333333338,
+          95.66433333333336
+        ],
+        "locked_PN_MW": [
+          [
+            1.3073986337985844e-14,
+            0.0
+          ],
+          [
+            42.85605333333341,
+            42.85605333333338
+          ]
+        ],
+        "nomination_MW": [
+          49.000000000000014,
+          48.999999999999986
+        ],
+        "receipt_cue": {
+          "minute": 990,
+          "direction": "import",
+          "source": {
+            "received_minute": 935.0,
+            "unit": 1,
+            "acceptance_number": 6781,
+            "stop_minute": 961.0,
+            "start_minute": 960.0,
+            "last_MW": -3.0
+          }
+        },
+        "forecast_used": true,
+        "forecast_call_minute": 1020,
+        "ordinary_nomination_MW": [
+          0.0,
+          0.0
+        ],
+        "analytic_nomination_calls": 2,
+        "reference_safety_path_evaluations": 2,
+        "reference_safety_scale": 1.0,
+        "reference_execution_prefix_minutes": 30,
+        "known_reference_failure": false,
+        "nomination_reason": "receipt_forecast",
+        "forecast_band_feasible": false,
+        "forecast_power_interval_MW": [
+          [
+            30.789018548275557,
+            98.0
+          ],
+          [
+            88.74901854827552,
+            98.0
+          ]
+        ],
+        "forecast_minimum_command_MW": [
+          30.789018548275557,
+          88.74901854827552
+        ],
+        "forecast_required_gross_power_MW": 119.53803709655108,
+        "forecast_preference_fraction": null,
+        "forecast_stock_without_nomination_MWh": [
+          90.3262847708644,
+          119.72628477086438
+        ],
+        "forecast_stock_after_candidate_MWh": [
+          65.47121230709628,
+          94.87121230709627
+        ],
+        "forecast_stock_band_MWh": [
+          [
+            0.0,
+            74.70866666666666
+          ],
+          [
+            0.0,
+            74.70866666666666
+          ]
+        ],
+        "forecast_preferred_nomination_MW": [
+          49.000000000000014,
+          48.999999999999986
+        ],
+        "forecast_candidate_MW": [
+          49.000000000000014,
+          48.999999999999986
+        ],
+        "ordinary_reference_physics": {
+          "minimum_SOC_MWh": [
+            44.10000000000002,
+            73.50000000000001
+          ],
+          "maximum_SOC_MWh": [
+            67.39133333333338,
+            96.79133333333337
+          ],
+          "final_SOC_MWh": [
+            44.10000000000002,
+            73.50000000000001
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            0.0
+          ],
+          "power_bound_violation_MW": 0.0
+        },
+        "candidate_reference_physics": {
+          "minimum_SOC_MWh": [
+            17.469565217391338,
+            46.86956521739133
+          ],
+          "maximum_SOC_MWh": [
+            67.39133333333338,
+            96.79133333333337
+          ],
+          "final_SOC_MWh": [
+            17.469565217391338,
+            46.86956521739133
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            0.0
+          ],
+          "power_bound_violation_MW": 0.0
+        },
+        "nominated_reference_physics": {
+          "minimum_SOC_MWh": [
+            17.469565217391338,
+            46.86956521739133
+          ],
+          "maximum_SOC_MWh": [
+            67.39133333333338,
+            96.79133333333337
+          ],
+          "final_SOC_MWh": [
+            17.469565217391338,
+            46.86956521739133
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            0.0
+          ],
+          "power_bound_violation_MW": 0.0
+        }
+      },
+      "maximum_starting_SOC_for_full_requested_path_MWh": [
+        75.2528818958023,
+        75.2528818958023
+      ],
+      "paths": {
+        "reference": {
+          "minimum_SOC_MWh": [
+            17.46956521739134,
+            46.86956521739134
+          ],
+          "maximum_SOC_MWh": [
+            67.39133333333338,
+            96.79133333333337
+          ],
+          "final_SOC_MWh": [
+            17.46956521739134,
+            46.86956521739134
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            0.0
+          ],
+          "power_bound_violation_MW": 0.0
+        },
+        "requested": {
+          "minimum_SOC_MWh": [
+            65.06145868390789,
+            94.46145868390789
+          ],
+          "maximum_SOC_MWh": [
+            90.13845143753107,
+            119.53845143753107
+          ],
+          "final_SOC_MWh": [
+            65.06145868390789,
+            94.46145868390789
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            21.538451437531066
+          ],
+          "power_bound_violation_MW": 0.0
+        },
+        "admitted": {
+          "minimum_SOC_MWh": [
+            43.32989783340403,
+            72.72989783340404
+          ],
+          "maximum_SOC_MWh": [
+            68.60000000999995,
+            98.00000000999994
+          ],
+          "final_SOC_MWh": [
+            43.32989783340403,
+            72.72989783340404
+          ],
+          "unit_bound_violation_MWh": [
+            0.0,
+            9.999936878557492e-09
+          ],
+          "power_bound_violation_MW": 0.0
+        }
+      },
+      "full_request_first_physical_failure": {
+        "minute": 1022,
+        "last_safe_SOC_MWh": [
+          68.16195143753106,
+          97.56195143753105
+        ],
+        "power_first_MW": [
+          -49.0,
+          -49.0
+        ],
+        "power_last_MW": [
+          -49.0,
+          -49.0
+        ],
+        "minimum_SOC_MWh": [
+          67.21022122235188,
+          96.61022122235187
+        ],
+        "maximum_SOC_MWh": [
+          68.9132847708644,
+          98.31328477086439
+        ],
+        "final_SOC_MWh": [
+          68.9132847708644,
+          98.31328477086439
+        ],
+        "unit_bound_violation_MWh": [
+          0.0,
+          0.3132847708643851
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "mechanism": "correct import forecast, but the new release PN starts during the final part of the next pulse; inventory exceeds its ceiling before that recovery can act. The earlier free PN slot was committed when its public cue was empty"
+    }
+  ],
+  "source_comparison_gate": "HOLD",
+  "confirmation_year_access": false,
+  "decision": "derive_a_two_call_information_necessity_bound_before_any_further_controller_change"
+}

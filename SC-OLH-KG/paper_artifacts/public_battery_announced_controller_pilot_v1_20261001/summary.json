@@ -1,0 +1,319 @@
+{
+  "protocol_id": "public_battery_announced_controller_pilot_v1_20261001",
+  "completed_at_utc": "2026-10-01T02:53:52.571237+00:00",
+  "status": "announced_controller_pilot_complete",
+  "components": {
+    "nomination_probes": 22,
+    "passed_probes": 22,
+    "execution_trajectory_evaluations": 22,
+    "reference_safety_trajectory_evaluations": 66,
+    "scalar_stock_projection_evaluations": 4784,
+    "maximum_scalar_stock_evaluations_per_probe": 248,
+    "maximum_safety_trajectories_per_probe": 3,
+    "full_requested_pulses_tested": 36,
+    "minimum_SOC_MWh": 3.0406467454920154,
+    "minimum_capacity_headroom_MWh": 1.208666666666474,
+    "maximum_projection_error_MWh": 3.552713678800501e-14,
+    "unit_tests_pass": true,
+    "component_gate_pass": true
+  },
+  "controller_window_evaluations": 4,
+  "implementation_replays": 0,
+  "runs": [
+    {
+      "profile_id": "constant_pair_0003_0007",
+      "dispatch_rule": "conservative_admission",
+      "period": "2024-04-15",
+      "window_start_minute": 0,
+      "planned_minutes": 10200,
+      "completed_minutes": 10200,
+      "physical_complete": true,
+      "window_success": true,
+      "request_shortfall_hours": 0,
+      "known_commitment_failure_hours": 0,
+      "unmet_increase_MWh": [
+        0.0,
+        0.0
+      ],
+      "unmet_decrease_MWh": [
+        0.0,
+        0.0
+      ],
+      "delivery_accounting_complete": true,
+      "first_physical_failure": null,
+      "final_or_last_safe_SOC_MWh": [
+        22.364432079369756,
+        57.659553043507245
+      ],
+      "minimum_accepted_SOC_MWh": [
+        2.531918423323159,
+        14.244720281743845
+      ],
+      "maximum_accepted_SOC_MWh": [
+        57.4111290678104,
+        96.61112906781042
+      ],
+      "gross_export_MWh": [
+        2130.451671514665,
+        2085.444411247855
+      ],
+      "gross_import_MWh": [
+        2488.1225768285017,
+        2473.311909319264
+      ],
+      "envelope_path_evaluations": 5772,
+      "nomination_decisions": 338,
+      "minute_physics_evaluations": 10200,
+      "energy_balance_error_MWh": [
+        4.4565240386873484e-11,
+        6.139089236967266e-11
+      ],
+      "limited_declaration_hours": 99,
+      "first_dispatch_failure": null,
+      "task": "announced_absolute_dispatch_tracking",
+      "scheduled_hourly_clocks": 170,
+      "assessed_hourly_clocks": 170,
+      "inactive_hourly_clocks": 75,
+      "planned_requests": 95,
+      "observed_requests": 95,
+      "fulfilled_requests": 95,
+      "unfulfilled_observed_requests": 0,
+      "unobserved_requests": 0,
+      "unfulfilled_or_unassessed_requests": 0,
+      "nomination_controller": "announced_inventory_priority",
+      "half_hour_announced_decisions": 169,
+      "whole_hour_zero_decisions": 169,
+      "nomination_planning_failure_decisions": 0,
+      "nomination_safety_interpolations": 0,
+      "nomination_known_reference_failure_decisions": 0,
+      "nomination_safety_path_evaluations": 507,
+      "scalar_stock_projection_evaluations": 35576
+    },
+    {
+      "profile_id": "constant_pair_0003_0007",
+      "dispatch_rule": "full_request_reference",
+      "period": "2024-04-15",
+      "window_start_minute": 0,
+      "planned_minutes": 10200,
+      "completed_minutes": 10200,
+      "physical_complete": true,
+      "window_success": true,
+      "request_shortfall_hours": 0,
+      "known_commitment_failure_hours": 0,
+      "unmet_increase_MWh": [
+        0.0,
+        0.0
+      ],
+      "unmet_decrease_MWh": [
+        0.0,
+        0.0
+      ],
+      "delivery_accounting_complete": true,
+      "first_physical_failure": null,
+      "final_or_last_safe_SOC_MWh": [
+        22.364432079369756,
+        57.659553043507245
+      ],
+      "minimum_accepted_SOC_MWh": [
+        2.531918423323159,
+        14.244720281743845
+      ],
+      "maximum_accepted_SOC_MWh": [
+        57.4111290678104,
+        96.61112906781042
+      ],
+      "gross_export_MWh": [
+        2130.451671514665,
+        2085.444411247855
+      ],
+      "gross_import_MWh": [
+        2488.1225768285017,
+        2473.311909319264
+      ],
+      "envelope_path_evaluations": 5772,
+      "nomination_decisions": 338,
+      "minute_physics_evaluations": 10200,
+      "energy_balance_error_MWh": [
+        4.4565240386873484e-11,
+        6.139089236967266e-11
+      ],
+      "limited_declaration_hours": 99,
+      "first_dispatch_failure": null,
+      "task": "announced_absolute_dispatch_tracking",
+      "scheduled_hourly_clocks": 170,
+      "assessed_hourly_clocks": 170,
+      "inactive_hourly_clocks": 75,
+      "planned_requests": 95,
+      "observed_requests": 95,
+      "fulfilled_requests": 95,
+      "unfulfilled_observed_requests": 0,
+      "unobserved_requests": 0,
+      "unfulfilled_or_unassessed_requests": 0,
+      "nomination_controller": "announced_inventory_priority",
+      "half_hour_announced_decisions": 169,
+      "whole_hour_zero_decisions": 169,
+      "nomination_planning_failure_decisions": 0,
+      "nomination_safety_interpolations": 0,
+      "nomination_known_reference_failure_decisions": 0,
+      "nomination_safety_path_evaluations": 507,
+      "scalar_stock_projection_evaluations": 35576
+    },
+    {
+      "profile_id": "constant_pair_0004_0007",
+      "dispatch_rule": "conservative_admission",
+      "period": "2024-04-15",
+      "window_start_minute": 0,
+      "planned_minutes": 10200,
+      "completed_minutes": 10200,
+      "physical_complete": true,
+      "window_success": true,
+      "request_shortfall_hours": 0,
+      "known_commitment_failure_hours": 0,
+      "unmet_increase_MWh": [
+        0.0,
+        0.0
+      ],
+      "unmet_decrease_MWh": [
+        0.0,
+        0.0
+      ],
+      "delivery_accounting_complete": true,
+      "first_physical_failure": null,
+      "final_or_last_safe_SOC_MWh": [
+        31.08787087582556,
+        58.7385359406216
+      ],
+      "minimum_accepted_SOC_MWh": [
+        6.9503940092003305,
+        19.62952589156189
+      ],
+      "maximum_accepted_SOC_MWh": [
+        67.21112906781039,
+        96.61112906781037
+      ],
+      "gross_export_MWh": [
+        2111.624828886527,
+        2091.7415723800664
+      ],
+      "gross_import_MWh": [
+        2475.3611414133647,
+        2481.9246519912735
+      ],
+      "envelope_path_evaluations": 5436,
+      "nomination_decisions": 338,
+      "minute_physics_evaluations": 10200,
+      "energy_balance_error_MWh": [
+        1.546140993013978e-11,
+        2.637534635141492e-11
+      ],
+      "limited_declaration_hours": 92,
+      "first_dispatch_failure": null,
+      "task": "announced_absolute_dispatch_tracking",
+      "scheduled_hourly_clocks": 170,
+      "assessed_hourly_clocks": 170,
+      "inactive_hourly_clocks": 75,
+      "planned_requests": 95,
+      "observed_requests": 95,
+      "fulfilled_requests": 95,
+      "unfulfilled_observed_requests": 0,
+      "unobserved_requests": 0,
+      "unfulfilled_or_unassessed_requests": 0,
+      "nomination_controller": "announced_inventory_priority",
+      "half_hour_announced_decisions": 169,
+      "whole_hour_zero_decisions": 169,
+      "nomination_planning_failure_decisions": 0,
+      "nomination_safety_interpolations": 0,
+      "nomination_known_reference_failure_decisions": 0,
+      "nomination_safety_path_evaluations": 507,
+      "scalar_stock_projection_evaluations": 35672
+    },
+    {
+      "profile_id": "constant_pair_0004_0007",
+      "dispatch_rule": "full_request_reference",
+      "period": "2024-04-15",
+      "window_start_minute": 0,
+      "planned_minutes": 10200,
+      "completed_minutes": 10200,
+      "physical_complete": true,
+      "window_success": true,
+      "request_shortfall_hours": 0,
+      "known_commitment_failure_hours": 0,
+      "unmet_increase_MWh": [
+        0.0,
+        0.0
+      ],
+      "unmet_decrease_MWh": [
+        0.0,
+        0.0
+      ],
+      "delivery_accounting_complete": true,
+      "first_physical_failure": null,
+      "final_or_last_safe_SOC_MWh": [
+        31.08787087582556,
+        58.7385359406216
+      ],
+      "minimum_accepted_SOC_MWh": [
+        6.9503940092003305,
+        19.62952589156189
+      ],
+      "maximum_accepted_SOC_MWh": [
+        67.21112906781039,
+        96.61112906781037
+      ],
+      "gross_export_MWh": [
+        2111.624828886527,
+        2091.7415723800664
+      ],
+      "gross_import_MWh": [
+        2475.3611414133647,
+        2481.9246519912735
+      ],
+      "envelope_path_evaluations": 5436,
+      "nomination_decisions": 338,
+      "minute_physics_evaluations": 10200,
+      "energy_balance_error_MWh": [
+        1.546140993013978e-11,
+        2.637534635141492e-11
+      ],
+      "limited_declaration_hours": 92,
+      "first_dispatch_failure": null,
+      "task": "announced_absolute_dispatch_tracking",
+      "scheduled_hourly_clocks": 170,
+      "assessed_hourly_clocks": 170,
+      "inactive_hourly_clocks": 75,
+      "planned_requests": 95,
+      "observed_requests": 95,
+      "fulfilled_requests": 95,
+      "unfulfilled_observed_requests": 0,
+      "unobserved_requests": 0,
+      "unfulfilled_or_unassessed_requests": 0,
+      "nomination_controller": "announced_inventory_priority",
+      "half_hour_announced_decisions": 169,
+      "whole_hour_zero_decisions": 169,
+      "nomination_planning_failure_decisions": 0,
+      "nomination_safety_interpolations": 0,
+      "nomination_known_reference_failure_decisions": 0,
+      "nomination_safety_path_evaluations": 507,
+      "scalar_stock_projection_evaluations": 35672
+    }
+  ],
+  "physically_completed_windows": 4,
+  "service_successful_windows": 4,
+  "hourly_dispatch_records": 680,
+  "nomination_records": 1352,
+  "pilot_envelope_path_evaluations": 22416,
+  "pilot_nomination_safety_path_evaluations": 2028,
+  "pilot_scalar_stock_projection_evaluations": 142496,
+  "pilot_minute_physics_evaluations": 40800,
+  "unit_test_accounting": "unit_test_accounting.json (separate from all components and pilots)",
+  "decision": "register_broader_announced_development",
+  "retained_failure_probability": 0.05,
+  "new_business_data_requests": 0,
+  "diagnostic_LP_calls": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "limitations": "development of an analyst-defined announced service after inspecting earlier failures; zero-reference stock bands are planning approximations and future admitted tails remain endogenous. Components and four pilots cannot establish historical BM validity, 95-percent reliability, source benefit or OR submission readiness"
+}

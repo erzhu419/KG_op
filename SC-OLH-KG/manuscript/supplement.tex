@@ -6,13 +6,16 @@
 \RequirePackage{newtxmath}
 \RequirePackage{bm}
 
-\OneAndAHalfSpacedXII
+\OneAndAHalfSpacedXI
 
 \usepackage{mathtools}
 \usepackage{booktabs}
+\usepackage{placeins}
 \usepackage{microtype}
 \usepackage{natbib}
 \bibpunct[, ]{(}{)}{,}{a}{}{,}
+\def\BIBand{and}
+\def\newblock{\ }
 \usepackage{xr-hyper}
 \usepackage[hidelinks]{hyperref}
 
@@ -20,7 +23,7 @@
 \TheoremsNumberedThrough
 \ECRepeatTheorems
 
-\externaldocument{main}[main.pdf]
+\externaldocument[][nocite]{main}[main.pdf]
 \graphicspath{{figures/}}
 \setlength{\emergencystretch}{2em}
 
@@ -38,6 +41,7 @@
 
 \begin{document}
 \ECSwitch
+\raggedbottom
 
 \begin{center}
 {\Large\bfseries Online Supplement}\par
@@ -49,5 +53,8 @@ Authors' names are not included for peer review
 \end{center}
 
 \input{sections/appendix}
+
+\bibliographystyle{informs2014}
+\bibliography{references}
 
 \end{document}

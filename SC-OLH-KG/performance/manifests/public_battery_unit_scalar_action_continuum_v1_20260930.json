@@ -1,0 +1,49 @@
+{
+  "protocol_id": "public_battery_unit_scalar_action_continuum_v1_20260930",
+  "frozen_at_utc": "2026-09-30T10:34:57+00:00",
+  "role": "exact continuous shared-target action coverage at the original library's zero-coverage reference states",
+  "registration_context": "all original-library local action outcomes observed; continuous-family suffix outcomes unobserved",
+  "controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "physical_oracle_protocol": "performance/manifests/public_battery_unit_physical_oracle_v1_20260930.json",
+  "basis_action_coverage_outputs": "paper_artifacts/public_battery_unit_action_coverage_v1_20260930",
+  "basis_recoverability_outputs": "paper_artifacts/public_battery_unit_recoverability_v1_20260930",
+  "roster": {
+    "period": "2024-04-15",
+    "reference_profile": "constant_0.50",
+    "reference_snapshots": "the same current snapshots at window starts 0,60,...,1320 minutes; actual stocks and both pending nominations retained",
+    "snapshots": 23,
+    "absolute_nomination_decision_minute": 1380,
+    "dependence": "23 overlapping histories at one common nomination event, not 23 independent events",
+    "maximum_segments_per_snapshot": 14,
+    "maximum_diagnostic_LP_calls": 322,
+    "reuse": "retain the 50 covered states and all 73 negative controls from the preceding diagnostic; do not rerun their LPs"
+  },
+  "action_family": {
+    "target": "one shared continuous fraction theta in [0,1], with each unit target theta times its original capacity",
+    "rule": "unchanged V3 received-only planning terms, efficiency conversion, individual known power clipping and shared absolute-power normalization",
+    "raw_breakpoints": "0,1 and each in-range unit fraction where projected SOC equals target or the raw nomination reaches either known power bound; a unit with no new-slot idle time has identically zero nomination",
+    "power_breakpoints": "on every sign-fixed clipped affine interval, add the in-range root of sum(abs(raw nominations))=98 MW",
+    "exact_representation": "each resulting interval maps continuously onto the line segment between its endpoint nominations; under shared normalization the curve has an affine numerator and common positive affine denominator, so its image remains that full segment",
+    "inventory_rates": "split at all nomination sign changes before converting endpoint powers to inventory rates; both power and rate then interpolate along the same segment",
+    "no_grid_search": "enumerate analytic clipping, sign and normalization breakpoints; add no target grid, profiles, seed or heuristic"
+  },
+  "suffix_test": {
+    "initial_state": "actual two-unit stocks at each selected reference snapshot",
+    "locked_commitments": "first two half-hours equal the original pending nominations",
+    "new_nomination": "third half-hour inventory rates must lie on exactly one attainable action segment, enforced by one interpolation variable in [0,1]",
+    "continuation": "all subsequent nominations free with full future BOA information through the original window end",
+    "physical_model": "unchanged unit capacities, efficiency, gross site bound and BOA priority",
+    "evaluation": "test every analytic segment, keeping infeasible and unresolved results",
+    "replay": "independently replay every feasible witness; reconstruct its scalar theta from the segment interpolation, recompute nominate_units at that theta, and check the third nomination against the replayed witness",
+    "construction_check": "endpoint and interval-interior rule evaluations must agree with the claimed attainable segment, and theta=0.50 must reconstruct the saved reference action"
+  },
+  "analysis": "per snapshot, any replayed feasible segment establishes a finite-library sampling gap; all segments proved infeasible establish a gap in this fixed shared-target action family at that actual reference state; remaining solver or replay discrepancies stay unresolved",
+  "decision": "if the continuous shared-target family fails, consider unit-specific target fractions or earlier causal planning; if it succeeds, address finite candidate coverage. Freeze the chosen controller revision only after this diagnostic. The full source-comparison gate stays HOLD",
+  "accounting": {
+    "new_data_requests": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "limitations": "local counterfactual actions at dependent reference histories and perfect-information continuations; neither branch proves absence or existence of a shared causal policy, source benefit, whole-window performance or independent confirmation"
+}

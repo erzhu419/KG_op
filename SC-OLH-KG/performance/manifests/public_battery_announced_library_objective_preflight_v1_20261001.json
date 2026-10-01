@@ -1,0 +1,87 @@
+{
+  "protocol_id": "public_battery_announced_library_objective_preflight_v1_20261001",
+  "frozen_at_utc": "2026-10-01T04:03:24.506190+00:00",
+  "role": "announcement-compatible library decoding, forecast visibility and economic accounting preflight; no library rollout",
+  "registration_context": "all 876 screen cells complete (872 new, four reused). The 0.45/0.75 pair succeeds in 73/73 windows in each 2024 sample under both rules; the 0.35/0.75 pair succeeds in April and fails every July/October window. Announced functional-library and monetary results remain unobserved",
+  "basis_protocol": "performance/manifests/public_battery_announced_development_screen_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_announced_development_screen_v1_20261001",
+  "task_protocol": "performance/manifests/public_battery_announced_task_contract_v1_20261001.json",
+  "pilot_protocol": "performance/manifests/public_battery_announced_controller_pilot_v1_20261001.json",
+  "pilot_outputs": "paper_artifacts/public_battery_announced_controller_pilot_v1_20261001",
+  "library_protocol": "performance/manifests/public_battery_unit_controller_development_v5_20260930.json",
+  "cached_data_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "library": {
+    "roster_csv": "performance/manifests/public_battery_unit_controller_development_v5_candidates_20260930.csv",
+    "joint_library_profiles": 154,
+    "constant_pairs": 100,
+    "functional_pairs": 54,
+    "components": "reuse the original 64 components, seed 20261799, 128 generator nodes, maximum frequency 40, 1000 interpolated nodes per channel and rounding by the existing policy_integer_levels=100 recipe",
+    "mapping": "retain the V5 ordered component mapping, including the fixed 27-position functional pairing; 2000 coordinates are two ordered 1000-coordinate channels",
+    "extra_shared_reference_profiles": [
+      0.0,
+      0.5,
+      1.0
+    ],
+    "reference_scope": "the three extra shared references stay outside the joint library and cannot open its gate",
+    "constant_continuity": "confirm decoded profile_0003/profile_0007 equal [0.35,0.75] and profile_0004/profile_0007 equal [0.45,0.75] at every node before treating the screen as evidence about encoded joint candidates",
+    "storage": "reuse the roster and generator recipe; keep compact metadata rather than dumping all window-by-profile target arrays"
+  },
+  "forecast_targets": {
+    "calibration": "reuse the original 2022-only q05/q95 forecast level and q95 absolute half-hour ramp fit; no development refit",
+    "stress": "reuse the existing max(clipped normalized forecast level, clipped absolute forecast ramp) signal",
+    "clock": "at an eligible nomination t use the forecast for its PN delivery t+60 and the preceding half-hour forecast; both publish times must be <=t in actual window UTC coordinates",
+    "channel": "each unit interpolates its own original component on that available stress; do not substitute announced direction, prices, realized demand or optimized witness stocks for the original signal",
+    "scope": "construct and validate the nomination target schedule only; the current static-controller engine and all saved physical outcomes remain untouched during this preflight",
+    "terminal": "only the 338 eligible decisions 0..10110 for a 10200-minute task need target values; unused post-horizon delivery forecasts are not fabricated"
+  },
+  "input_boundary": {
+    "saved_observation": "paper_artifacts/public_battery_announced_development_screen_v1_20261001/cached_signal_price_boundary.json",
+    "affected_source_window_start_minutes": [
+      4260,
+      4320
+    ],
+    "required_extension": "for each original sample, cover [source_sample_stop,source_sample_stop+120 minutes) at half-hour resolution: at most four additional slots per sample, 12 slots total, for prices and historical forecast/publish metadata",
+    "lookup": "inspect existing raw forecast/market-index caches first; derived CSV cutoff alone does not establish a cache gap",
+    "small_public_fetch": "if needed, retrieve only the missing three two-hour ranges through the same official Elexon historical endpoints and selection logic; retain request logs and the selected small records",
+    "maximum_new_public_data_requests": 12,
+    "maximum_retained_new_half_hour_slots": 12,
+    "preservation": "write boundary records separately; leave original ten-day CSVs, all 73 source windows per sample and every original outcome intact",
+    "failure": "unavailable historical forecast publication or incomplete actual execution-price coverage blocks the corresponding next rollout; retain the missing slots rather than extrapolating prices, using outturn as forecast or dropping windows"
+  },
+  "economic_accounting": {
+    "objective": "retain the V3 net metered procurement proxy plus terminal inventory adjustment in GBP",
+    "metered_cash": "sum each actual half-hour MID price times gross delivered import minus gross delivered export across both units; prices are accounting outcomes only",
+    "terminal_adjustment": "lambda_T = discharge_efficiency * MID in the last executed settlement interval; add lambda_T * (sum common initial SOC - sum final SOC)",
+    "pulse_flow": "reconstruct each saved pilot hour from its actual admitted peak and locked current/following PN; use exact 1/30/1 endpoints and sign-crossing integrals, including resumed PN and warmup",
+    "pilot_cases": "the four complete April start-zero pilots only, 680 saved hours; reconstruct endpoints and gross flows without repeating nominations, declarations, minute physics or full-window simulation",
+    "required_agreement": "reconstructed gross flows and final inventory balance must match saved pilot totals within the retained 1e-8 tolerance; each pair of identical admitted paths must have identical economic outcomes",
+    "failures": "failed or interrupted windows retain undefined full-window cost; this preflight does not rank profiles by costs conditional on different completion sets",
+    "comparison_scope": "economic output belongs to this announced analyst simulation and its 170-hour execution clock"
+  },
+  "outputs": [
+    "library_metadata.json",
+    "forecast_target_visibility.json",
+    "boundary_request_log.json (only if new public requests occur)",
+    "input_coverage.json",
+    "pilot_economics.json",
+    "summary.json",
+    "unit_test_accounting.json"
+  ],
+  "tests": "decoded constant continuity, two forecast channels, publication cutoff rejection, settlement-clock price assignment, exact signed pulse/PN energy and terminal adjustment; no rerun of unchanged policy regressions or the 876-cell screen",
+  "accounting_constraints": {
+    "new_controller_window_evaluations": 0,
+    "controller_window_replays": 0,
+    "new_nomination_calls": 0,
+    "new_declaration_path_evaluations": 0,
+    "new_trajectory_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "decision": "after decoded-library, historical-visibility, complete price coverage and saved-pilot economic checks pass, freeze a bounded dynamic-target integration/component stage before any announced library matrix or source comparison; otherwise preserve the specific discrepancy and resolve it first",
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "limitations": "overlapping development windows, analyst-defined advance notice and reset inventory, two observed constant candidates and MID-indexed simulation accounting; this stage cannot establish functional-library reliability, source benefit, actual BM profits, independent confirmation or OR submission readiness"
+}

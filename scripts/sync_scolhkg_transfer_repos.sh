@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TRANSPORT=(python3 "$ROOT/../scheduleurm/skill/transport_exec.py")
 DEPLOY="${DEPLOY:-/home/erzhu419/mine_code/KG_op_scheduler_deploy}"
 REMOTE="${REMOTE:-zhengliang01@202.197.46.16}"
 PROXY="${PROXY:-jtl110gpu}"
@@ -31,9 +32,9 @@ for repo in "${REPOS[@]}"; do
     "$ROOT/repo/clones/$repo/" "$DEPLOY/external_repos/$repo/"
 done
 
-ssh -o ConnectTimeout=30 -o BatchMode=yes -J "$PROXY" "$REMOTE" \
+"${TRANSPORT[@]}" -- ssh -o ConnectTimeout=30 -o BatchMode=yes -J "$PROXY" "$REMOTE" \
   "mkdir -p '$REMOTE_ROOT/external_repos'"
-rsync -a "${EXCLUDES[@]}" \
+"${TRANSPORT[@]}" --bulk -- rsync -a "${EXCLUDES[@]}" \
   -e "ssh -o ConnectTimeout=30 -o BatchMode=yes -J $PROXY" \
   "$DEPLOY/external_repos/" "$REMOTE:$REMOTE_ROOT/external_repos/"
 

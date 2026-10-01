@@ -1,0 +1,32 @@
+{
+  "protocol_id": "public_battery_information_contract_audit_v1_20260930",
+  "frozen_at_utc": "2026-09-30T11:49:26+00:00",
+  "role": "focused primary-source review of the simulated information and commitment contract before further controller development",
+  "registration_context": "V5 whole-window gate failed; all 146 retained contexts of the two fixed April constant pairs reproduce their first failures following later receipt changes, across 10 distinct absolute failure minutes",
+  "basis_controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "basis_V5_protocol": "performance/manifests/public_battery_unit_controller_development_v5_20260930.json",
+  "basis_diagnostic": "paper_artifacts/public_battery_unit_targets_failure_visibility_v1_20260930/summary.json",
+  "questions": [
+    "Does the applicable one-hour Gate Closure / Physical Notification rule imply the simulated two locked baseline nominations, and which operational changes remain possible after later acceptances?",
+    "How do absolute BOA power levels, receipt revisions, the original Physical Notification and offered availability interact, and what can be claimed when historical acceptances are replayed against a different replenishment baseline?",
+    "If the commitment model is supported, which observable predictor has a justified relation to unit dispatch beyond the existing national forecast proxy?"
+  ],
+  "evidence": {
+    "sources": "official Elexon, BSC and NESO documentation plus existing cached project records; distinguish 2024 applicability from current rules",
+    "seed_sources": [
+      "https://www.elexon.co.uk/bsc/glossary/acceptance-data/",
+      "https://assets.elexon.co.uk/wp-content/uploads/sites/11/2018/11/28160209/SAA_SD_v26.2_P369.pdf"
+    ],
+    "data_access": "read existing notes and small cached samples first; retrieve primary documentation only as needed, no bulk dispatch data or checkpoints, no 2025 confirmation access",
+    "deliverable": "brief finding on the commitment and BOA/baseline mapping, with exact primary-source references and any necessary minimal model correction; no scoring rubric"
+  },
+  "decision": "if a simulated operational implication is unsupported, state it as an assumption or repair the task contract and freeze the necessary rerun before observing outcomes; if supported, specify the predictive-input prerequisite before another controller search. Preserve all V3-V5 negative results and source comparison HOLD",
+  "scope": "no new capacity relaxation, changed initial stocks, easier service threshold, discarded April windows or favorable target fitting; no broad controller grid during this audit",
+  "accounting": {
+    "new_controller_window_evaluations": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  }
+}

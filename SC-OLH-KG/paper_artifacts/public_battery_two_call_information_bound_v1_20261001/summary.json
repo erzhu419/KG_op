@@ -1,0 +1,50 @@
+{
+  "protocol_id": "public_battery_two_call_information_bound_v1_20261001",
+  "status": "conditional_uniform_two_call_guarantee_impossible",
+  "unit": 2,
+  "first_stock_separation_lower_bound_MWh": 50.67310144927536,
+  "second_stock_band_without_stock_tolerance_MWh": [
+    26.42543961343828,
+    75.80134299526662
+  ],
+  "second_stock_band_MWh": [
+    26.425439603438278,
+    75.80134300526662
+  ],
+  "second_stock_band_width_MWh": 49.375903401828346,
+  "separation_excess_MWh": 1.2971980474470115,
+  "uniform_four_sign_guarantee_impossible": true,
+  "stock_tolerance_MWh": 1e-08,
+  "power_tolerance_MW": 1e-08,
+  "optimistic_reference_limit_MW": 98.00000001,
+  "optimistic_second_pulse_paths": 2,
+  "response_kernels": {
+    "export": {
+      "reference_MW": -98.00000001,
+      "peak_MW": 49.0,
+      "minimum_delta_MWh": -26.42543961343828,
+      "maximum_delta_MWh": 0.5008888889570371,
+      "final_delta_MWh": -25.924550724481243
+    },
+    "import": {
+      "reference_MW": 98.00000001,
+      "peak_MW": -49.0,
+      "minimum_delta_MWh": -0.5917874396940418,
+      "maximum_delta_MWh": 22.198657004733377,
+      "final_delta_MWh": 21.606869565039336
+    }
+  },
+  "saved_context_prefix_paths": 4,
+  "total_component_paths": 6,
+  "all_saved_first_branches_physical_feasible": true,
+  "decision": "reassess_task_and_nomination_information_before_another_controller_change",
+  "new_controller_window_evaluations": 0,
+  "new_business_data_requests": 0,
+  "diagnostic_LP_calls": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "library_matrix_launch": false,
+  "source_comparison_gate": "HOLD",
+  "limitations": "the bound concerns serving all four possible active sign pairs under a specific information schedule. It does not establish that every causal policy fails on the retained deterministic history, quantify a stochastic failure probability, identify real BM dispatch, or demonstrate OR submission readiness"
+}

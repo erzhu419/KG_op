@@ -1,0 +1,83 @@
+{
+  "protocol_id": "public_battery_unit_physical_oracle_v1_20260930",
+  "status": "joint_physical_diagnostic_complete",
+  "cases": [
+    {
+      "period": "2024-04-15",
+      "windows": 73,
+      "statuses": {
+        "replayed_feasible": 73
+      },
+      "LP_solves": 73,
+      "physical_witness_replays": 73,
+      "unresolved_windows": 0,
+      "oracle_feasible_fraction": 1.0,
+      "max_inventory_bound_violation_MWh": 2.3447910280083306e-13,
+      "max_unit_energy_balance_error_MWh": 5.144329406903125e-12,
+      "max_execution_power_violation_MW": 1.4210854715202004e-14
+    },
+    {
+      "period": "2024-07-15",
+      "windows": 73,
+      "statuses": {
+        "replayed_feasible": 73
+      },
+      "LP_solves": 73,
+      "physical_witness_replays": 73,
+      "unresolved_windows": 0,
+      "oracle_feasible_fraction": 1.0,
+      "max_inventory_bound_violation_MWh": 2.984279490192421e-13,
+      "max_unit_energy_balance_error_MWh": 6.0751403907488566e-12,
+      "max_execution_power_violation_MW": 1.4210854715202004e-14
+    },
+    {
+      "period": "2024-10-15",
+      "windows": 73,
+      "statuses": {
+        "replayed_feasible": 73
+      },
+      "LP_solves": 73,
+      "physical_witness_replays": 73,
+      "unresolved_windows": 0,
+      "oracle_feasible_fraction": 1.0,
+      "max_inventory_bound_violation_MWh": 7.673861546209082e-13,
+      "max_unit_energy_balance_error_MWh": 4.355626970209414e-12,
+      "max_execution_power_violation_MW": 1.4210854715202004e-14
+    }
+  ],
+  "controller_comparison": [
+    {
+      "period": "2024-04-15",
+      "oracle_replayed_feasible_windows": 73,
+      "any_library_policy_successful_windows": 0,
+      "oracle_feasible_windows_missed_by_entire_library": 73,
+      "V3_successful_windows_included": true
+    },
+    {
+      "period": "2024-07-15",
+      "oracle_replayed_feasible_windows": 73,
+      "any_library_policy_successful_windows": 73,
+      "oracle_feasible_windows_missed_by_entire_library": 0,
+      "V3_successful_windows_included": true
+    },
+    {
+      "period": "2024-10-15",
+      "oracle_replayed_feasible_windows": 73,
+      "any_library_policy_successful_windows": 73,
+      "oracle_feasible_windows_missed_by_entire_library": 0,
+      "V3_successful_windows_included": true
+    }
+  ],
+  "diagnostic_windows": 219,
+  "diagnostic_LP_solves": 219,
+  "diagnostic_physical_witness_replays": 219,
+  "scipy_version": "1.15.3",
+  "unresolved_windows": 0,
+  "decision": "address_causal_control_and_candidate_coverage",
+  "new_data_requests": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "scope": "simulation feasibility under the frozen equal capacity allocation, efficiency and conservative gross-power assumptions; no field-performance or causal/source advantage claim",
+  "next_protocol": "performance/manifests/public_battery_unit_failure_visibility_v1_20260930.json"
+}

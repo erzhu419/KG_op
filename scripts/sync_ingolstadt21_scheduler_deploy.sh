@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TRANSPORT=(python3 "$ROOT/../scheduleurm/skill/transport_exec.py")
 DEPLOY="${DEPLOY:-/home/erzhu419/mine_code/KG_op_scheduler_deploy}"
 REMOTE="${REMOTE:-zhengliang01@202.197.46.16}"
 PROXY="${PROXY:-jtl110gpu}"
@@ -31,7 +32,7 @@ tar_to_remote() {
   local rel="$2"
   local dst_dir="$3"
   retry bash -lc \
-    "tar -C '$src_dir' -cf - '$rel' | ssh ${SSH_OPTS[*]@Q} '$REMOTE' 'mkdir -p \"$dst_dir\" && tar -C \"$dst_dir\" -xf -'"
+    "tar -C '$src_dir' -cf - '$rel' | ${TRANSPORT[*]@Q} --bulk -- ssh ${SSH_OPTS[*]@Q} '$REMOTE' 'mkdir -p \"$dst_dir\" && tar -C \"$dst_dir\" -xf -'"
 }
 
 rm -rf "$DEPLOY"
@@ -76,10 +77,10 @@ rsync -a --delete \
   "$ROOT/SC-OLH-KG/" \
   "$DEPLOY/SC-OLH-KG/"
 
-ssh "${SSH_OPTS[@]}" "$REMOTE" "mkdir -p '$REMOTE_ROOT'"
+"${TRANSPORT[@]}" -- ssh "${SSH_OPTS[@]}" "$REMOTE" "mkdir -p '$REMOTE_ROOT'"
 tar_to_remote "$DEPLOY" "." "$REMOTE_ROOT"
 
-ssh "${SSH_OPTS[@]}" "$REMOTE" \
+"${TRANSPORT[@]}" -- ssh "${SSH_OPTS[@]}" "$REMOTE" \
   "du -sh '$REMOTE_ROOT'; test -f '$REMOTE_ROOT/Final_Submission/GPR_KG_Code/results/ingolstadt21/baseline.json'; test -f '$REMOTE_ROOT/SC-OLH-KG/performance/benchmark_traffic_ingolstadt21.py'"
 
 echo "local deploy:  $DEPLOY"

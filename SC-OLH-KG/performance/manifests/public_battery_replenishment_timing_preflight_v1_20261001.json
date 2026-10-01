@@ -1,0 +1,102 @@
+{
+  "protocol_id": "public_battery_replenishment_timing_preflight_v1_20261001",
+  "frozen_at_utc": "2026-10-01T00:43:52+00:00",
+  "role": "saved-state diagnostic of earlier replenishment timing, not a new causal policy or weekly performance estimate",
+  "registration_context": "four absolute-dispatch pilots observed; neither admitted run fulfilled all requests, both first deficits at minute 420; the earlier-PN intervention has not been replayed",
+  "basis_protocol": "performance/manifests/public_battery_absolute_dispatch_pilot_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_absolute_dispatch_pilot_v1_20261001",
+  "basis_diagnosis": "paper_artifacts/public_battery_absolute_dispatch_pilot_v1_20261001/first_failure_diagnosis.json",
+  "profiles": [
+    {
+      "id": "constant_pair_0003_0007",
+      "target_fractions": [
+        0.35,
+        0.75
+      ],
+      "initial_SOC_at_minute_330_MWh": [
+        34.3,
+        73.5
+      ],
+      "initial_locked_PN_at_minute_330_MW": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "retained_nomination_for_minute_390_MW": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "id": "constant_pair_0004_0007",
+      "target_fractions": [
+        0.45,
+        0.75
+      ],
+      "initial_SOC_at_minute_330_MWh": [
+        44.1,
+        73.5
+      ],
+      "initial_locked_PN_at_minute_330_MW": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "retained_nomination_for_minute_390_MW": [
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "roster": {
+    "start_minute": 330,
+    "stop_exclusive_minute": 480,
+    "nomination_intervention_minute": 330,
+    "intervention_delivery_minute": 390,
+    "commands": [
+      {
+        "id": "retained",
+        "nomination_MW": "use the stored original command for each profile"
+      },
+      {
+        "id": "earlier_unit_1_recharge",
+        "nomination_MW": [
+          -49.0,
+          0.0
+        ]
+      }
+    ],
+    "planned_short_controller_replays": 4,
+    "request_marks": "reuse only the original export marks at minutes 360 and 420, and their unchanged absolute peaks; do not change signs or draw a new sequence",
+    "dispatch_rule": "full_request_reference",
+    "initial_exposure": "execute locked reference at minutes 330--360; at 360 begin a 120-minute replay with the following locked PN and the nominated PN for 390; no prior accepted pulse is active",
+    "subsequent_control": "after the one nominated slot, use the unchanged nominate_units and unit_planning_terms with original targets, receipts and 60-minute lead",
+    "asset_and_tolerance": "retain both 98 MWh stocks, gross 98 MW, 0.92 efficiencies, and the original 1e-8 tolerance; no capacity or target search",
+    "outcomes": "first physical or known commitment failure, both request completion counts, signed executed-prefix errors, stock extrema and PN records",
+    "baseline_requirement": "the retained branch must reproduce the saved raw failures at absolute minutes 428 and 439; a mismatch blocks interpretation"
+  },
+  "intervention_scope": "the single command is chosen after observing the depleted unit; it is a diagnostic intervention within the legal nomination lead, not evidence that a causal controller would choose it",
+  "decision": "if an earlier nomination avoids the first deficit without another physical or commitment failure, develop and freeze a causal rule based only on pre-nomination information; otherwise diagnose the retained physical constraint. In neither case expand the weekly matrix or claim service reliability from these short replays",
+  "accounting_constraints": {
+    "new_168_hour_controller_window_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "preservation": "retain every old product, policy and negative result; write timing fixtures to a separate directory",
+  "limitations": "two post-hoc states and one fixed command on one observed export--export pair cannot establish an operational policy, future request coverage or the original 95 percent development criterion"
+}

@@ -1,0 +1,98 @@
+{
+  "protocol_id": "public_battery_unit_physical_oracle_v1_20260930",
+  "frozen_at_utc": "2026-09-30T06:48:11.432926+00:00",
+  "role": "offline physical upper bound with independent unit inventories and shared site power",
+  "registration_context": "V3 control outcomes and free-start forced-run capacity bounds observed; no joint physical LP outcomes observed",
+  "controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "asset": {
+    "name": "Pillswood site simulation",
+    "power_MW": 98.0,
+    "energy_MWh": 196.0,
+    "workload_bm_units": [
+      "E_PILLB-1",
+      "E_PILLB-2"
+    ],
+    "charge_efficiency": 0.92,
+    "discharge_efficiency": 0.92,
+    "capacity_source": "https://harmonyenergy.co.uk/projects/",
+    "grid_connection_source": "https://www.harmonyenergy.co.uk/wp-content/uploads/2023/06/Harmony-Energy-final.pdf",
+    "power_basis": "98 MW published combined grid connection; impose sum of absolute unit powers <=98 MW as a conservative simulation throughput bound, not measured inverter throughput",
+    "energy_basis": "196 MWh site capacity; equal 98 MWh usable allocation per BM unit is a simulation assumption, not measured unit capacity",
+    "identity_basis": "retained 2026 Elexon reference names Pillswood 1 and Pillswood 2; current 49.9 MW registry fields do not set historical unit limits",
+    "efficiency_basis": "simulation assumption",
+    "unit_energy_MWh": [
+      98.0,
+      98.0
+    ]
+  },
+  "development": [
+    {
+      "start": "2024-04-15T00:00:00Z",
+      "stop": "2024-04-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-04-15/development_half_hours.csv"
+    },
+    {
+      "start": "2024-07-15T00:00:00Z",
+      "stop": "2024-07-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-07-15/development_half_hours.csv"
+    },
+    {
+      "start": "2024-10-15T00:00:00Z",
+      "stop": "2024-10-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-10-15/development_half_hours.csv"
+    }
+  ],
+  "windows": {
+    "hours": 168,
+    "start_stride_hours": 1,
+    "population": "all complete windows inside each fixed ten-day development sample; common reset inventory per diagnostic window"
+  },
+  "data_access": "same cached P1/P2 2024 records only; no new requests or 2025 data",
+  "controls": {
+    "decision_minutes": 30,
+    "initial_nomination_minutes": 60,
+    "initial_nomination_MW": [
+      0.0,
+      0.0
+    ],
+    "initial_soc_fraction": 0.5,
+    "inventory": "two independent stocks, no transfer; preserve exact signed BOA energies and charge/discharge conversion",
+    "baseline": "one signed constant power per unit per half-hour; received BOAs override separately; joint sum of absolute nominations <=98 MW",
+    "execution_power": "sum of absolute executed unit powers <=98 MW continuously, including mixtures of baseline and BOA",
+    "information": "LP knows every future instruction for the current window; independent per-window schedules are not a shared causal policy"
+  },
+  "formulation": {
+    "rate": "r[u,j] is signed idle-time inventory rate; import power = -r/eta_charge when r>=0, export power = -r*eta_discharge otherwise",
+    "absolute_power": "auxiliary a[u,j]>=r[u,j]/eta_charge and a[u,j]>=-r[u,j]*eta_discharge; sum_u a[u,j]<=site power",
+    "inventory": "S[u,j]+forced_SOC_change(t)+idle_hours(t)*r[u,j] lies within unit capacity, using segment boundaries and zero crossings",
+    "forced_headroom": "a[idle unit,j]<=site power - maximum absolute opposite-unit BOA power while the unit is idle",
+    "coupled_forced_power": "check both-active BOAs against site bound before solving",
+    "initial_state": "S[u,0]=unit_capacity[u]*0.5; first two half-hour rates zero"
+  },
+  "solver": {
+    "method": "scipy.optimize.linprog highs",
+    "time_limit_seconds_per_window": 20,
+    "primal_feasibility_tolerance": 1e-09,
+    "dual_feasibility_tolerance": 1e-09,
+    "objective": "feasibility only"
+  },
+  "replay": {
+    "required": "independent minute reconstruction and chronological zero-split replay of every LP witness",
+    "energy_tolerance_MWh": 1e-08,
+    "power_tolerance_MW": 1e-08,
+    "checks": [
+      "per-unit SOC bounds",
+      "site gross power bound",
+      "per-unit gross-flow energy identity",
+      "common initial stock and first-hour zero nominations",
+      "joint absolute nomination bound"
+    ],
+    "unresolved": "retain solver timeout/failure or witness discrepancy separately; never count as feasible",
+    "coverage": "every V3 successful window must be contained in the replayed physical-feasibility set"
+  },
+  "next_action": "if the physical upper bound cannot meet 95% in April, hold this frozen application model; if a sufficient physical population exists, address causal control and candidate coverage before any source-benefit comparison",
+  "optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "scope": "simulation feasibility under the frozen equal capacity allocation, efficiency and conservative gross-power assumptions; no field-performance or causal/source advantage claim"
+}

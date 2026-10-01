@@ -1,0 +1,76 @@
+{
+  "population_unique_results": 68766,
+  "new_unique_controller_cells": 67866,
+  "reused_cells": 900,
+  "equivalence_replays": 8,
+  "economic_replays": 580,
+  "actual_controller_executions": 68454,
+  "resumed_batch_new_controller_calls": 0,
+  "first_failure_contexts": 46140,
+  "completed_candidate_populations": 157,
+  "successful_new_cells": 21726,
+  "maximum_new_energy_balance_error_MWh": 1.0231815394945443e-10,
+  "population_complete": true,
+  "new_public_data_requests": 0,
+  "confirmation_year_access": false,
+  "resume_validation_profile_index_range": [
+    0,
+    4
+  ],
+  "successful_unique_cells": 22310,
+  "known_successful_costs": 22310,
+  "pending_successful_economic_replays": 0,
+  "last_batch": {
+    "profile_index_range": [
+      44,
+      157
+    ],
+    "new_unique_controller_cells": 49032,
+    "successful_cells": 19974,
+    "first_failure_contexts": 29058,
+    "minute_physics_evaluations": 324621349,
+    "equivalence_replays": 0,
+    "economic_replays": 436,
+    "economic_minute_physics_evaluations": 4447200,
+    "elapsed_seconds": 0,
+    "status": "complete"
+  },
+  "actual_controller_execution_count_complete": false,
+  "execution_interruptions": [
+    {
+      "stopped_at_utc": "2026-10-01T13:21:44.768834+00:00",
+      "former_backend": "local_slurm",
+      "former_job_id": "23",
+      "reason": "switch to the user-requested scheduleurm scheduler",
+      "validated_unique_cells_preserved": 20026,
+      "recorded_controller_executions_preserved": 19278,
+      "last_completed_execution": {
+        "period": "2024-07-15",
+        "window_start_minute": 4320,
+        "profile_id": "constant_pair_0004_0004",
+        "dispatch_rule": "full_request_reference",
+        "evaluation_origin": "new_population"
+      },
+      "unrecorded_inflight_controller_attempts": {
+        "minimum": 0,
+        "maximum": 1
+      },
+      "unrecorded_inflight_calls": null,
+      "accounting_scope": "Completed journals remain exact. A cancelled in-flight path may have consumed additional calls; its counters are unavailable and are not reported as zero. The frozen execution budget is unchanged; its exact all-attempt compliance cannot be asserted."
+    },
+    {
+      "former_backend": "scheduleurm",
+      "former_task_id": "t118688",
+      "recorded_at_utc": "2026-10-01T15:56:42.067232+00:00",
+      "reason": "user-authorized switch to parallel window shards",
+      "validated_unique_cells_preserved": 22035,
+      "recorded_controller_executions_preserved": 21723,
+      "unrecorded_inflight_controller_attempts": {
+        "minimum": 0,
+        "maximum": 1
+      },
+      "unrecorded_inflight_calls": null,
+      "accounting_scope": "An interrupted cell may have consumed additional calls; keep it separate from exact completed journals."
+    }
+  ]
+}

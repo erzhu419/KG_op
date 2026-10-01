@@ -7,7 +7,8 @@ to choose a promising but diverse subset.  This section specifies each step.
 \subsection{Outcome-free profile library}
 
 All tasks share a deterministic library $\cL=\{h_1,\ldots,h_{64}\}$ on 128
-regular cell midpoints.  Its seed is 20260808.  It contains:
+regular cell midpoints.  Its seed is 20261799, obtained by adding 991 to the
+family seed 20260808.  It contains:
 \begin{itemize}
 \item ten constants with levels $0.05,0.15,\ldots,0.95$;
 \item six linear ramps with endpoint pairs $(.05,.95)$, $(.95,.05)$,
@@ -51,6 +52,13 @@ the profile coordinate is
 \end{equation}
 It has dimension 18 and contains no cross-products.  Each coordinate is
 standardized over the 64-profile library before selection.
+Orthogonality supplies a coordinate system; truncation and the finite profile
+library impose the complexity restriction.  The squared coordinates describe
+mode strength and do not assume an additive target response.
+On this library, standardization cancels the positive frequency rescaling in
+both the coefficient and squared-coordinate columns.  Thus $\kappa$ is
+redundant in the standardized selection metric; its frozen value specifies
+the coordinate before standardization.
 
 Here $c_0$ is the profile's average level, while $c_1,\ldots,c_8$ describe
 its broad upward, downward, and oscillatory shapes.  Their squares add a
@@ -120,27 +128,6 @@ selected.  The target coverage theorem uses only $z$: projecting $\eta$ back
 to $z$ cannot increase Euclidean distance.  We therefore do not pretend that
 a source percentile rank has a target counterpart.
 
-\begin{table}[t]
-\centering
-\small
-\caption{Frozen primary method specification.}
-\label{tab:method-spec}
-\begin{tabular}{p{0.30\textwidth}p{0.61\textwidth}}
-\toprule
-Component & Specification \\
-\midrule
-Decision class & Ordered bounded profile $h:[0,1]\to[0,1]$ on a declared grid \\
-Library & 64 outcome-free profiles; 128 reference nodes; seed 20260808 \\
-Source archive & 2 tasks $\times$ 64 profiles $\times$ 3 replications = 384 calls \\
-Profile coordinate & Frequencies $0{:}8$, penalty $.25$, diagonal squares, 18 dimensions \\
-Source score & Equal-task average of objective and Gaussian chance-margin percentile ranks \\
-Selection & First center $.5r^g+.5r^f$; nine Gonzalez farthest-first centers \\
-Metric weights & Profile coordinates standardized; safety and objective rank weights both 1 \\
-Target map & Linear interpolation to declared nodes; deterministic integer rounding \\
-Target information & Grid, bounds, dimension, and declared ordering; no outcomes or oracle quantities \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \subsection{Target search and verification}
 
@@ -162,15 +149,24 @@ $(1-\alpha)^{v_j}\le\delta/K_s$.  The primary budgets are $(80,80,80)$,
 $K_s=3$, and $\delta=.05$.  Failure to certify produces abstention, not a
 deployment.
 
-\subsection{Source-free comparison designs}
+\subsection{Comparison designs}\label{sec:comparison-designs}
 
-The closest comparison is \emph{generic DCT maximin}.  It uses the same
-64 profiles, the same $\phi$, the coordinate-space medoid as its first center,
-and farthest-first for the remaining nine, but no outcomes.  Random
-low-frequency, natural three-block, and raw Sobol designs separate other forms
-of structural prior.  The finite-library upper bound is unattainable and is
-used only to interpret the completed experiments.
+\emph{Standardized DCT maximin} uses the same 64 profiles and the same $z$
+coordinates as the source-scored atlas, with the coordinate-space medoid as
+its first center and farthest-first for the remaining nine.  It uses no
+outcomes.  The original \emph{generic DCT maximin} implementation instead used
+unstandardized $\phi$ throughout; we label its frozen results
+\emph{unstandardized DCT maximin}.  Both coordinate scaling and source
+information therefore differ in that original comparison.
+
+The \emph{source-greedy portfolio} uses the same source archive to select ten
+profiles by their complementary source performance.  It greedily minimizes
+the average, over source tasks, of the best selected profile's equal-weight
+safety and objective rank.  The finite rule and ties are specified in the
+Online Supplement.  Random low-frequency, natural three-block, and raw Sobol
+designs separate other forms of structural prior.  The finite-library upper
+bound is unattainable and is used only to interpret completed experiments.
 
 Thus source data choose among profiles that already exist; they do not learn
-the library itself.  Whether this scoring improves on generic structure is a
-question for the experiments, not an assumption of the method.
+the library itself.  The standardized and portfolio comparisons assess,
+respectively, the value of source outcomes and the choice of selection rule.

@@ -1,0 +1,42 @@
+{
+  "protocol_id": "public_battery_availability_contract_preflight_v1_20260930",
+  "frozen_at_utc": "2026-09-30T12:01:33+00:00",
+  "role": "minimal availability and service-obligation contract with two physical fixtures; no historical controller development run",
+  "registration_context": "primary-source information-contract review complete; V1-V5 fixed-request negatives known; no new availability-aware historical outcomes observed",
+  "basis": "paper_artifacts/public_battery_information_contract_audit_v1_20260930/summary.json",
+  "retained_asset": {
+    "unit_energy_MWh": [98.0, 98.0],
+    "shared_gross_power_MW": 98.0,
+    "charge_efficiency": 0.92,
+    "discharge_efficiency": 0.92,
+    "capacity_scope": "unchanged analyst unit split and conservative site constraint; no historical converter rating inferred"
+  },
+  "contract_work": [
+    "Separate gate-closed baseline, causal availability declaration, request proposal, admitted dispatch and unmet service; define update times and observable state for each",
+    "Compute the available pulse envelope from own simulated inventory and frozen physical limits; historical PN/MEL/MIL without publication vintages remain retrospective only",
+    "Apply the shared gross site limit to joint unit admissions, not just independent envelopes",
+    "Hold the service obligation fixed independently of a policy reducing its declared availability; record both unmet MW and gross directional unmet energy, with no netting between units",
+    "A physically safe partial dispatch is still a service failure when the fixed request cannot be supplied; rejected requests do not become successful observations",
+    "State that any new proposal-to-dispatch mapping is a simulation assumption; historical BOAs do not identify dispatch under changed baselines and declarations"
+  ],
+  "fixtures": {
+    "baseline_MW": [0.0, 0.0],
+    "obligation_MW": [49.0, 49.0],
+    "pulse": "one-minute linear ramp from zero, 30-minute hold, one-minute linear return; explicit fixture shape consistent with the 2024 OTF duration description, not an inferred hardware ramp limit",
+    "states_MWh": [[49.0, 49.0], [1.0, 97.0]],
+    "directions": ["export", "import"],
+    "purpose": "check exact gross energy, independent stock bounds, coupled site limit and honest shortfall accounting in symmetric and unequal-stock cases",
+    "scope": "zero-baseline component fixtures only; do not treat them as validation of nonzero baselines, pending BOAs or a historical-week controller"
+  },
+  "decision": "if fixture or accounting fails, repair the contract before integration; if it passes, specify nonzero-baseline and pending-commitment behavior and freeze a bounded causal pilot before observing its results. Do not start a library matrix or source comparison on fixture success",
+  "accounting": {
+    "new_historical_controller_window_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "full_experiment_launch": false
+}

@@ -1,0 +1,60 @@
+{
+  "protocol_id": "public_battery_target_search_replay_v1_20261002",
+  "status": "paired_target_replay_complete",
+  "completed_runs": 30,
+  "groups": [
+    {
+      "arm": "source_complete_cost_best_z",
+      "certified_runs": 15,
+      "total_runs": 15,
+      "finite_population_feasible_certificates": 15,
+      "false_certificates": 0,
+      "represented_search_queries": 195,
+      "represented_verification_queries": 1200,
+      "source_archive_queries_paid_once": 44968,
+      "expected_queries_for_three_seasonal_tasks": 279.0,
+      "expected_certificates_for_three_seasonal_tasks": 3.0,
+      "all_in_represented_queries_per_expected_certificate": 15082.333333333334
+    },
+    {
+      "arm": "standardized_generic_dct_maximin",
+      "certified_runs": 9,
+      "total_runs": 15,
+      "finite_population_feasible_certificates": 9,
+      "false_certificates": 0,
+      "represented_search_queries": 195,
+      "represented_verification_queries": 2160,
+      "source_archive_queries_paid_once": 0,
+      "expected_queries_for_three_seasonal_tasks": 471.0,
+      "expected_certificates_for_three_seasonal_tasks": 1.8,
+      "all_in_represented_queries_per_expected_certificate": 261.6666666666667
+    }
+  ],
+  "seasonal_contrasts": [
+    {
+      "period": "2024-04-15",
+      "source_certified_runs": 5,
+      "structural_certified_runs": 5
+    },
+    {
+      "period": "2024-07-15",
+      "source_certified_runs": 5,
+      "structural_certified_runs": 3
+    },
+    {
+      "period": "2024-10-15",
+      "source_certified_runs": 5,
+      "structural_certified_runs": 1
+    }
+  ],
+  "new_controller_window_evaluations": 0,
+  "represented_target_queries": 3750,
+  "retrospective": true,
+  "independent_confirmation": false,
+  "confirmation_year_access": false,
+  "source_comparison_gate": "HOLD",
+  "limitations": "Retrospective analyst-designed announced simulation, overlapping finite windows in one market, previously observed target outcomes. Independent random streams certify only the fixed uniform-window empirical law, not independent calendar periods or real operation. This tests source first-center adaptation, not full augmented atlas or Bayesian optimizer. Represented query comparisons omit unequal runtimes; archive actual acquisition/calls remain explicit.",
+  "next_action": "retain_all_in_source_cost_and_simple_constant_baseline_before_confirmation_registration",
+  "source_first_center_deployed_runs": 12,
+  "all_certified_deployments_are_constant_pairs": true
+}

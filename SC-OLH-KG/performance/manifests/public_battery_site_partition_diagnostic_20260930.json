@@ -1,0 +1,27 @@
+{
+  "protocol_id": "public_battery_site_partition_diagnostic_20260930",
+  "frozen_at_utc": "2026-09-30T06:22:10.640527+00:00",
+  "basis_protocol": "performance/manifests/public_battery_site_development_v2_20260930.json",
+  "registration_context": "whole-site development outcomes observed; no per-unit inventory trajectories observed",
+  "profiles": [
+    "profile_0004",
+    "profile_0005",
+    "profile_0006",
+    "profile_0014",
+    "profile_0015",
+    "profile_0021",
+    "profile_0022",
+    "profile_0030",
+    "profile_0034",
+    "profile_0038"
+  ],
+  "condition": "received_BOA_projection",
+  "unit_state_assumption": "equal 98 MWh allocation and 50% initial inventory in each BM unit; a sensitivity assumption, not observed capacities",
+  "controls": "unchanged whole-site nominations and BOA revisions, passively track independent unit inventories",
+  "additional_bound": "report the minimum fixed capacity required for each unit with half-full initialization over the successful pooled trajectories; do not infer unit-level chance infeasibility solely from an empty all-window interval",
+  "data": "same three fixed 2024 samples, cached locally, no network",
+  "next_action_if_no_common_equal_partition_profile": "hold source comparison and freeze a unit-specific inventory/controller model before evaluating it",
+  "confirmation_year_access": false,
+  "optimizer_calls": 0,
+  "terminal_verifier_calls": 0
+}

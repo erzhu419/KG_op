@@ -1,0 +1,111 @@
+{
+  "protocol_id": "public_battery_source_archive_pilot_v1_20261002",
+  "status": "source_interface_pilot_complete",
+  "completed_controller_window_evaluations": 32,
+  "successful_windows": 8,
+  "known_full_costs": 8,
+  "calls": {
+    "envelope_path_evaluations": 53112,
+    "nomination_decisions": 4436,
+    "half_hour_announced_decisions": 2212,
+    "whole_hour_zero_decisions": 2224,
+    "nomination_safety_path_evaluations": 10764,
+    "scalar_stock_projection_evaluations": 455360,
+    "minute_physics_evaluations": 133244
+  },
+  "groups": [
+    {
+      "period": "2023-07-15",
+      "profile_id": "constant_pair_0000_0000",
+      "successful_windows": 0,
+      "assessed_windows": 4
+    },
+    {
+      "period": "2023-07-15",
+      "profile_id": "constant_pair_0004_0007",
+      "successful_windows": 4,
+      "assessed_windows": 4
+    },
+    {
+      "period": "2023-07-15",
+      "profile_id": "functional_pair_0010_0037",
+      "successful_windows": 0,
+      "assessed_windows": 4
+    },
+    {
+      "period": "2023-07-15",
+      "profile_id": "functional_pair_0037_0010",
+      "successful_windows": 0,
+      "assessed_windows": 4
+    },
+    {
+      "period": "2023-10-15",
+      "profile_id": "constant_pair_0000_0000",
+      "successful_windows": 0,
+      "assessed_windows": 4
+    },
+    {
+      "period": "2023-10-15",
+      "profile_id": "constant_pair_0004_0007",
+      "successful_windows": 4,
+      "assessed_windows": 4
+    },
+    {
+      "period": "2023-10-15",
+      "profile_id": "functional_pair_0010_0037",
+      "successful_windows": 0,
+      "assessed_windows": 4
+    },
+    {
+      "period": "2023-10-15",
+      "profile_id": "functional_pair_0037_0010",
+      "successful_windows": 0,
+      "assessed_windows": 4
+    }
+  ],
+  "data_accounting": {
+    "protocol_id": "public_battery_source_archive_pilot_v1_20261002",
+    "data_interface_gate_pass": true,
+    "coverage": [
+      {
+        "period": "2023-07-15",
+        "aligned_half_hours": 484,
+        "unit_BOA_segments": [
+          183,
+          91
+        ],
+        "original_hourly_receipt_marks": 240,
+        "active_receipt_marks": 45
+      },
+      {
+        "period": "2023-10-15",
+        "aligned_half_hours": 484,
+        "unit_BOA_segments": [
+          101,
+          88
+        ],
+        "original_hourly_receipt_marks": 240,
+        "active_receipt_marks": 34
+      }
+    ],
+    "source_windows": 146,
+    "original_joint_candidates": 154,
+    "coordinates": 36,
+    "minimum_forecast_publication_lead_minutes": 1155.0,
+    "public_response_bytes": 501182,
+    "new_controller_window_evaluations": 0,
+    "source_comparison_gate": "HOLD",
+    "confirmation_year_access": false,
+    "public_request_attempt_start_records": 33,
+    "completed_new_public_responses": 30,
+    "uncompleted_request_start_records": 3
+  },
+  "maximum_energy_balance_error_MWh": 1.978150976356119e-11,
+  "all_original_library_candidates_retained": 154,
+  "source_comparison_gate": "HOLD",
+  "confirmation_year_access": false,
+  "original_objective_atlas_interface_ready": false,
+  "source_designs_frozen": 0,
+  "decision": "define_source_selection_for_undefined_failed_costs_before_full_archive_and_target_comparison",
+  "limitations": "Observed-data analyst simulation with notice/reset assumptions and overlapping windows. Pilots are diagnostic anchors chosen after 2024 development; no independent confirmation. Failed paths have undefined full costs, so the existing finite-objective atlas is not yet connected."
+}

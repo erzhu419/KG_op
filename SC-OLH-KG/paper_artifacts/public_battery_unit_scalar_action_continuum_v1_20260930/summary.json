@@ -1,0 +1,29 @@
+{
+  "protocol_id": "public_battery_unit_scalar_action_continuum_v1_20260930",
+  "status": "scalar_continuum_diagnostic_complete",
+  "reference_snapshots": 23,
+  "analytic_action_segments": 161,
+  "classification_counts": {
+    "shared_target_action_gap": 23
+  },
+  "segment_statuses": {
+    "energy_or_commitment_infeasible": 161
+  },
+  "unresolved_segments": 0,
+  "diagnostic_LP_solves": 161,
+  "diagnostic_physical_witness_replays": 0,
+  "original_rule_witnesses": 0,
+  "maximum_construction_error_MW": 2.842170943040401e-14,
+  "maximum_reference_reconstruction_error_MW": 0.0,
+  "reused_preceding_covered_states": 50,
+  "reused_preceding_negative_controls": 73,
+  "preceding_diagnostic_LPs_rerun": 0,
+  "decision": "assess_unit_specific_targets_or_earlier_planning",
+  "source_comparison_gate": "HOLD",
+  "scipy_version": "1.15.3",
+  "new_data_requests": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "limitations": "local counterfactual actions at dependent reference histories and perfect-information continuations; neither branch proves absence or existence of a shared causal policy, source benefit, whole-window performance or independent confirmation"
+}

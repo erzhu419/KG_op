@@ -1,0 +1,408 @@
+{
+  "library_recipe": {
+    "profiles": 64,
+    "nodes": 128,
+    "seed": 20261799,
+    "maximum_frequency": 40
+  },
+  "policy_integer_levels": 100,
+  "joint_candidates": 154,
+  "constant_pairs": 100,
+  "functional_pairs": 54,
+  "coordinates": 2000,
+  "nodes_per_ordered_channel": 1000,
+  "constant_continuity_pass": true,
+  "ordered_roster_pass": true,
+  "extra_shared_references": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "references_in_library": false,
+  "components": [
+    {
+      "id": "profile_0000",
+      "family": "constant",
+      "minimum": 0.05,
+      "maximum": 0.05
+    },
+    {
+      "id": "profile_0001",
+      "family": "constant",
+      "minimum": 0.15,
+      "maximum": 0.15
+    },
+    {
+      "id": "profile_0002",
+      "family": "constant",
+      "minimum": 0.25,
+      "maximum": 0.25
+    },
+    {
+      "id": "profile_0003",
+      "family": "constant",
+      "minimum": 0.35,
+      "maximum": 0.35
+    },
+    {
+      "id": "profile_0004",
+      "family": "constant",
+      "minimum": 0.45,
+      "maximum": 0.45
+    },
+    {
+      "id": "profile_0005",
+      "family": "constant",
+      "minimum": 0.55,
+      "maximum": 0.55
+    },
+    {
+      "id": "profile_0006",
+      "family": "constant",
+      "minimum": 0.65,
+      "maximum": 0.65
+    },
+    {
+      "id": "profile_0007",
+      "family": "constant",
+      "minimum": 0.75,
+      "maximum": 0.75
+    },
+    {
+      "id": "profile_0008",
+      "family": "constant",
+      "minimum": 0.85,
+      "maximum": 0.85
+    },
+    {
+      "id": "profile_0009",
+      "family": "constant",
+      "minimum": 0.95,
+      "maximum": 0.95
+    },
+    {
+      "id": "profile_0010",
+      "family": "ramp",
+      "minimum": 0.05,
+      "maximum": 0.95
+    },
+    {
+      "id": "profile_0011",
+      "family": "ramp",
+      "minimum": 0.05,
+      "maximum": 0.95
+    },
+    {
+      "id": "profile_0012",
+      "family": "ramp",
+      "minimum": 0.2,
+      "maximum": 0.8
+    },
+    {
+      "id": "profile_0013",
+      "family": "ramp",
+      "minimum": 0.2,
+      "maximum": 0.8
+    },
+    {
+      "id": "profile_0014",
+      "family": "ramp",
+      "minimum": 0.35,
+      "maximum": 0.65
+    },
+    {
+      "id": "profile_0015",
+      "family": "ramp",
+      "minimum": 0.35,
+      "maximum": 0.65
+    },
+    {
+      "id": "profile_0016",
+      "family": "low_frequency",
+      "minimum": 0.03,
+      "maximum": 0.46
+    },
+    {
+      "id": "profile_0017",
+      "family": "piecewise",
+      "minimum": 0.05,
+      "maximum": 0.91
+    },
+    {
+      "id": "profile_0018",
+      "family": "high_frequency",
+      "minimum": 0.4,
+      "maximum": 0.69
+    },
+    {
+      "id": "profile_0019",
+      "family": "low_frequency",
+      "minimum": 0.0,
+      "maximum": 0.53
+    },
+    {
+      "id": "profile_0020",
+      "family": "piecewise",
+      "minimum": 0.44,
+      "maximum": 0.88
+    },
+    {
+      "id": "profile_0021",
+      "family": "high_frequency",
+      "minimum": 0.56,
+      "maximum": 0.78
+    },
+    {
+      "id": "profile_0022",
+      "family": "low_frequency",
+      "minimum": 0.36,
+      "maximum": 0.71
+    },
+    {
+      "id": "profile_0023",
+      "family": "piecewise",
+      "minimum": 0.19,
+      "maximum": 0.9
+    },
+    {
+      "id": "profile_0024",
+      "family": "high_frequency",
+      "minimum": 0.23,
+      "maximum": 0.42
+    },
+    {
+      "id": "profile_0025",
+      "family": "low_frequency",
+      "minimum": 0.21,
+      "maximum": 0.59
+    },
+    {
+      "id": "profile_0026",
+      "family": "piecewise",
+      "minimum": 0.11,
+      "maximum": 0.81
+    },
+    {
+      "id": "profile_0027",
+      "family": "high_frequency",
+      "minimum": 0.4,
+      "maximum": 0.84
+    },
+    {
+      "id": "profile_0028",
+      "family": "low_frequency",
+      "minimum": 0.31,
+      "maximum": 0.81
+    },
+    {
+      "id": "profile_0029",
+      "family": "piecewise",
+      "minimum": 0.26,
+      "maximum": 0.89
+    },
+    {
+      "id": "profile_0030",
+      "family": "high_frequency",
+      "minimum": 0.34,
+      "maximum": 0.52
+    },
+    {
+      "id": "profile_0031",
+      "family": "low_frequency",
+      "minimum": 0.32,
+      "maximum": 0.44
+    },
+    {
+      "id": "profile_0032",
+      "family": "piecewise",
+      "minimum": 0.14,
+      "maximum": 0.74
+    },
+    {
+      "id": "profile_0033",
+      "family": "high_frequency",
+      "minimum": 0.26,
+      "maximum": 0.53
+    },
+    {
+      "id": "profile_0034",
+      "family": "low_frequency",
+      "minimum": 0.44,
+      "maximum": 0.69
+    },
+    {
+      "id": "profile_0035",
+      "family": "piecewise",
+      "minimum": 0.09,
+      "maximum": 0.89
+    },
+    {
+      "id": "profile_0036",
+      "family": "high_frequency",
+      "minimum": 0.61,
+      "maximum": 0.79
+    },
+    {
+      "id": "profile_0037",
+      "family": "low_frequency",
+      "minimum": 0.25,
+      "maximum": 0.97
+    },
+    {
+      "id": "profile_0038",
+      "family": "piecewise",
+      "minimum": 0.18,
+      "maximum": 0.84
+    },
+    {
+      "id": "profile_0039",
+      "family": "high_frequency",
+      "minimum": 0.24,
+      "maximum": 0.67
+    },
+    {
+      "id": "profile_0040",
+      "family": "low_frequency",
+      "minimum": 0.19,
+      "maximum": 0.88
+    },
+    {
+      "id": "profile_0041",
+      "family": "piecewise",
+      "minimum": 0.17,
+      "maximum": 0.69
+    },
+    {
+      "id": "profile_0042",
+      "family": "high_frequency",
+      "minimum": 0.5,
+      "maximum": 0.87
+    },
+    {
+      "id": "profile_0043",
+      "family": "low_frequency",
+      "minimum": 0.09,
+      "maximum": 0.6
+    },
+    {
+      "id": "profile_0044",
+      "family": "piecewise",
+      "minimum": 0.08,
+      "maximum": 0.8
+    },
+    {
+      "id": "profile_0045",
+      "family": "high_frequency",
+      "minimum": 0.11,
+      "maximum": 0.57
+    },
+    {
+      "id": "profile_0046",
+      "family": "low_frequency",
+      "minimum": 0.36,
+      "maximum": 0.83
+    },
+    {
+      "id": "profile_0047",
+      "family": "piecewise",
+      "minimum": 0.15,
+      "maximum": 0.85
+    },
+    {
+      "id": "profile_0048",
+      "family": "high_frequency",
+      "minimum": 0.32,
+      "maximum": 0.66
+    },
+    {
+      "id": "profile_0049",
+      "family": "low_frequency",
+      "minimum": 0.46,
+      "maximum": 0.78
+    },
+    {
+      "id": "profile_0050",
+      "family": "piecewise",
+      "minimum": 0.24,
+      "maximum": 0.76
+    },
+    {
+      "id": "profile_0051",
+      "family": "high_frequency",
+      "minimum": 0.44,
+      "maximum": 0.81
+    },
+    {
+      "id": "profile_0052",
+      "family": "low_frequency",
+      "minimum": 0.55,
+      "maximum": 0.84
+    },
+    {
+      "id": "profile_0053",
+      "family": "piecewise",
+      "minimum": 0.11,
+      "maximum": 0.81
+    },
+    {
+      "id": "profile_0054",
+      "family": "high_frequency",
+      "minimum": 0.28,
+      "maximum": 0.64
+    },
+    {
+      "id": "profile_0055",
+      "family": "low_frequency",
+      "minimum": 0.12,
+      "maximum": 0.39
+    },
+    {
+      "id": "profile_0056",
+      "family": "piecewise",
+      "minimum": 0.15,
+      "maximum": 0.69
+    },
+    {
+      "id": "profile_0057",
+      "family": "high_frequency",
+      "minimum": 0.45,
+      "maximum": 0.81
+    },
+    {
+      "id": "profile_0058",
+      "family": "low_frequency",
+      "minimum": 0.13,
+      "maximum": 0.67
+    },
+    {
+      "id": "profile_0059",
+      "family": "piecewise",
+      "minimum": 0.05,
+      "maximum": 0.68
+    },
+    {
+      "id": "profile_0060",
+      "family": "high_frequency",
+      "minimum": 0.42,
+      "maximum": 0.74
+    },
+    {
+      "id": "profile_0061",
+      "family": "low_frequency",
+      "minimum": 0.0,
+      "maximum": 0.52
+    },
+    {
+      "id": "profile_0062",
+      "family": "piecewise",
+      "minimum": 0.11,
+      "maximum": 0.77
+    },
+    {
+      "id": "profile_0063",
+      "family": "high_frequency",
+      "minimum": 0.37,
+      "maximum": 0.58
+    }
+  ]
+}

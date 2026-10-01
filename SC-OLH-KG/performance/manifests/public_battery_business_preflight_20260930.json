@@ -1,0 +1,29 @@
+{
+  "protocol_id": "public_battery_business_preflight_20260930",
+  "role": "public asset/task mapping and a single-day instruction-schema probe; no optimizer comparison",
+  "asset": {
+    "name": "Contego reference battery",
+    "nameplate_power_MW": 34.0,
+    "nameplate_energy_MWh": 68.0,
+    "capacity_source": "https://frv.com/en/projects/contego/",
+    "elexon_bm_unit": "E_CONTB-1",
+    "national_grid_bm_unit": "CONTB-1",
+    "identity_source": "https://data.elexon.co.uk/bmrs/api/v1/reference/bmunits/all",
+    "identity_scope": "current reference metadata; historical operating limits must come from historical records"
+  },
+  "candidate_task": "SOC replenishment planning for a reference battery following recorded BM dispatcher instructions",
+  "probe": {
+    "from": "2024-04-15T00:00:00Z",
+    "to": "2024-04-16T00:00:00Z",
+    "endpoints": ["/balancing/physical", "/balancing/acceptances", "/balancing/bid-offer"]
+  },
+  "national_demand_role": "candidate observable predictor only; national forecast error is not assigned as battery dispatch demand",
+  "instruction_role": "realized dispatcher demand, with acceptance time; not a day-ahead known input",
+  "candidate_chance_event": "recorded requested dispatch cannot be delivered within the physical constraints",
+  "legacy_unserved_fraction_0_11_role": "not a published BM service requirement; not adopted as the new business constraint",
+  "initial_soc_fraction": 0.5,
+  "initial_soc_scope": "common counterfactual service endowment; historical SOC is not observed",
+  "candidate_confirmation_year": 2025,
+  "confirmation_year_access": false,
+  "full_experiment_launch": false
+}

@@ -1,0 +1,43 @@
+{
+  "contract_id": "submission_revision_energy_v5_20260930",
+  "status": "rules_fixed_before_new_outcomes",
+  "registration": "local prospective protocol; not public preregistration",
+  "method_changes": "shared hourly physical power limit only; initial SOC, costs, capacities, thresholds, seeds and all eight arms fixed as V4",
+  "energy": {
+    "initial_soc_fraction": 0.5,
+    "horizon_hours": 168,
+    "cost_scope": "finite seven-day service; common endowed initial energy; terminal energy has zero salvage value",
+    "arms": [
+      "source_atlas",
+      "generic_dct_maximin",
+      "standardized_generic_dct_maximin",
+      "source_greedy_portfolio",
+      "random_low_frequency",
+      "natural_constant_grid",
+      "raw_sobol",
+      "target_only_dct_space_scbo"
+    ],
+    "target_markets": "all 18 previously registered markets",
+    "target_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "n0": 10,
+    "N": 13,
+    "verification_budgets": [
+      80,
+      80,
+      80
+    ],
+    "family_seed": 20260808,
+    "archive_reuse": "one frozen source archive per excluded geographic region, shared by its target markets and all arms using source outcomes",
+    "temporal_audit": "four chronological blocks, 512 evenly spaced starts, plus physically nonoverlapping starts; postdecision descriptive evidence",
+    "inference": "five geographic regions; algorithm seeds are repeats within markets",
+    "cost": "source calls counted once per geographic archive; target calls summed over actual markets; five seeds averaged within each market, not counted as five deployments",
+    "power_budget": "total charging plus discharging energy shared across both substeps of each hour"
+  },
+  "historical_results": "V3 and V4 retained separately; only newly computed V5 rows qualify as corrected physical evidence"
+}

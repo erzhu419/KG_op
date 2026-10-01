@@ -1,9 +1,11 @@
 \section{Experimental Design}\label{sec:experiments}
 
-We fixed the confirmatory protocol before observing its outcomes.  A compact
-registry records the method version, experimental cells, failures, and
-analysis endpoints.  Every implementable method sees target truth only after
-its deployment decision, when truth is used to compute evaluation metrics.
+The original confirmatory protocol was fixed before observing its outcomes.
+A compact registry records its method version, cells, failures, and analysis
+endpoints.  Supplementary comparisons added after manuscript review reuse
+those target seeds and are identified separately below.  Every implementable
+method sees target truth only after its deployment decision, when truth is
+used to compute evaluation metrics.
 
 \subsection{Randomized ordered-profile stress test}
 
@@ -12,32 +14,12 @@ regime, independent deterministic seed streams generate held-out problem
 instances.  Table \ref{tab:stress-regimes} separates grid resolution from the
 complexity of the underlying policy shape.
 
-\begin{table}[t]
-\centering
-\small
-\caption{Registered stress regimes.  The target generator hides its basis,
-center, safe radius, and task seed from every algorithm.}
-\label{tab:stress-regimes}
-\begin{tabular}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedright\arraybackslash}p{0.12\textwidth}>{\raggedright\arraybackslash}p{0.51\textwidth}}
-\toprule
-Regime & Default rank & Principal departure \\
-\midrule
-Aligned low frequency & 8 & Source and target share low-frequency support \\
-Growing effective rank & 24 & More active coefficients at fixed target budget \\
-Frequency support shift & 8 & Target frequencies shifted beyond source support \\
-Coordinate permutation & 8 & Ordered values are permuted before implementation \\
-Irregular grid & 8 & Nonuniform declared nodes \\
-Piecewise smooth & 12 & Blockwise basis rather than cosine basis \\
-Sparse high frequency & 16 & Few active high-frequency coordinates \\
-Misspecified target & 24 & Target center independent of source centers \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 For each regime, we draw 20 independently seeded latent target tasks and cross
 the same seeds with $d\in\{200,1000,10000\}$.  This gives 160 independent
 latent task seeds and 480 correlated task--resolution cells per design.  Each
-cell is paired across six designs: source-scored, generic DCT
+cell in the original frozen matrix is paired across six designs: source-scored,
+unstandardized DCT
 maximin, random low frequency, natural three-block, raw Sobol, and an
 explicitly labeled finite-library upper bound.  The primary implementable
 matrix has
@@ -45,6 +27,19 @@ $8\times3\times20\times5=2400$ cells; including the oracle gives 2880.  Every
 design uses $n_0=N=10$, so the primary comparison is a pure initial-design
 intervention.  The source-scored arm pays 384 source calls; source-free arms
 pay none.  All use the same independent shortlist verifier.
+
+\paragraph{Supplementary matched comparisons.}\label{sec:supplemental-controls}
+We added standardized DCT maximin and the source-greedy portfolio on the same
+160 latent tasks at all three resolutions.  These controls use $n_0=N=10$,
+the original target noise streams, and the primary $(80,80,80)$ verifier.
+Standardized DCT matches the source-scored atlas's structural scaling; the
+portfolio also matches its 384-call source archive.  The standardized control
+at $d=1000$ was first evaluated during manuscript review and is reused
+unchanged; the remaining runs followed the recorded supplementary rules.
+All rules were chosen after the original target results had been examined.
+They isolate the comparison confound and
+selection-rule choice on reused tasks; they are not a new independent
+confirmation.  The original matrix and its results remain frozen.
 
 For each synthetic target regime, the two supplied source tasks are generated
 from that same regime with the role set to source.  This is a regime-matched
@@ -58,6 +53,24 @@ The primary chance level is $\alpha=.05$, and task safe mass is calibrated to
 measured against the best feasible policy in that evaluation library.  The
 $d=10000$ cells refine the grid while holding the underlying problem fixed
 unless the regime explicitly changes rank.
+
+\paragraph{First-center attribution and new-family confirmation.}
+We subsequently fixed a factorial comparison of the structural medoid and
+source-best first center, crossed with structural-only and augmented metrics.
+The medoid was held fixed across the two metrics.  A fifth design used the
+source-best center with Voronoi-weighted raw-profile $L^2$ distance on the same
+128 reference nodes.  These diagnostic comparisons reused the original tasks;
+identical ordered designs reused their original outcomes with the proper
+source cost.  A separate local prospective protocol then fixed three new
+family seeds, three corresponding public libraries and source archives, and
+ten new tasks per mechanism and family at $d=1000$.  Its 240 latent tasks
+were compared across six designs, including the same-source portfolio.
+The primary contrast was source scoring minus standardized generic maximin
+in certified true-feasible deployment.  Intervals resampled tasks within the
+24 fixed family--mechanism strata, and each family was reported separately.
+Library sizes 32 and 128 were additional fixed sensitivities on the first new
+family; they change support composition as well as cardinality.  The archive,
+selection rule and verifier were not tuned after these new outcomes.
 
 \subsection{Sensitivity and information controls}
 
@@ -77,7 +90,8 @@ The equal-preverification-cost matrix compares 384 source plus 10 target calls
 with 394 target-only calls for each source-free design.  The same independent
 verifier is applied afterward and all-in realized calls include its cost.
 
-Target-only functional SCBO searches an 8-coefficient cosine space with the
+Target-only functional SCBO searches eight nonconstant cosine coefficients
+and one level parameter (nine optimization variables) with the
 published constrained trust-region posterior-sampling backend
 \citep{BalandatEtAl2020,ErikssonPoloczek2021}.  We test coefficient counts
 4, 8, and 16 at $N=13$, and the primary 8-coefficient version at $N=394$.
@@ -86,35 +100,52 @@ posterior samples; it remains a failed, unsuccessful cell.
 
 Eight native transfer pipelines (Safe F-PACOH, RGPE, stacked transfer GP,
 multi-task GP, FSBO, HyperBO, MetaBO, and MALIBO) receive the same 384-call
-source archive, $n_0=10$, $N=20$, and terminal verifier, but retain their own
+source archive, $n_0=10$, and $N=13$, but retain their own
 prior, representation, initialization, and acquisition logic.  This is an
-end-to-end transfer comparison, not a common-atlas backend comparison.
+end-to-end transfer comparison on three fixed families with 20 algorithmic
+seeds per family.  All eight pipelines share the historical v69 terminal
+protocol: candidate budgets $(80,128,128)$ and an 8-call incumbent objective
+comparison.  This protocol differs from the primary $(80,80,80)$ verifier;
+native results are interpreted within their own matrix.
 
-\subsection{Electricity-reserve negative external control}
+\subsection{Electricity-reserve external comparison}
 
 The external study uses the Open Power System Data time-series release
-\citep{OPSD2020}.  A policy maps 1000 ordered forecast-stress quantiles to
-reserve responses over a 168-hour operational horizon.  Energy V3 includes 18
-markets in five geographic regions and five algorithmic seeds per held-out
-market.  All source markets from the target's region are excluded.  The source
-arm uses 768 source calls, $N=13$ target calls, and the same public profile
-library.  Generic DCT, random low frequency, natural constant, raw Sobol, and
-target-only functional SCBO provide comparisons without source scoring.
+\citep{OPSD2020}.  A 1000-point policy maps observable forecast stress to
+reserve responses over a 168-hour service window.  The corrected Energy V5
+model gives every policy the same initial SOC, 50\% of capacity, charges all
+subsequent grid purchases, and records terminal energy.  Reserve adjustment
+and forecast-error balancing share one hourly converter budget: the sum of
+external charging and discharging energy cannot exceed the power capacity
+times one hour.  Reserve adjustment is executed first and balancing uses the
+remaining budget.  Its objective is
+finite-period service cost with zero terminal salvage value, rather than a
+steady-state economic criterion.
 
-Fresh verification windows are sampled from a held-out empirical calendar
-split.  The exact-binomial claim is therefore conditional on the declared
-replication distribution, not a theorem about an unobserved future year.
-After the decisions, we also check chronological blocks and physically
-nonoverlapping windows.  These checks are descriptive because markets share
-calendar data and only five regions exist.  Energy V2 is retained as a
-separate historical specification; V3 is the final external control.  No
-Energy result was used to modify the initial design.
+All eight designs were rerun on 18 markets in five geographic regions with
+five algorithmic seeds per market, giving 720 cells.  Each uses $n_0=10$,
+$N=13$, and the same $(80,80,80)$ verifier.  One source archive is frozen for
+each excluded geographic region before target evaluation, with four external
+source markets, 64 profiles and three replications (768 calls).  Its source
+outcomes and selected designs are shared across the region's target markets
+and source-based comparisons.  The data splits remain search in 2017, audit
+in 2018 and verification in 2019.  V2--V4 results are preserved as
+historical evidence; V5 supplies the current external comparison.
+
+Fresh verification windows are sampled from the held-out empirical calendar.
+After each decision, four chronological blocks and physically nonoverlapping
+windows provide descriptive stability checks.  Actual reuse accounting charges
+one archive per excluded region and sums target costs across its observed
+markets; five seeds estimate repeatability within each market and do not count
+as five deployments.  This corrected study reuses previously examined data,
+so it is distinct from the prospective synthetic confirmation.
 
 \subsection{Inference and failure accounting}
 
 For randomized profiles, a latent task seed within a fixed regime and
-resolution is the generalization unit; paired bootstrap intervals resample
-these seeds.  Task-law concentration is applied separately at each resolution
+resolution is the generalization unit.  Supplementary paired bootstrap
+intervals resample task seeds within each fixed regime and retain the equal
+regime weights.  Task-law concentration is applied separately at each resolution
 with regimes as fixed strata.  Rates pooled over all three resolutions
 describe 480 task--resolution cells but are not treated as 480 independent
 tasks.  Simulation seeds within a fixed external market measure algorithmic

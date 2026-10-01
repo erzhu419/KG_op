@@ -1,0 +1,29 @@
+{
+  "protocol_id": "independent_energy_data_preflight_20260930",
+  "role": "data feasibility only; no algorithm comparison or confirmatory result",
+  "registered_before": "remaining 2023/2024 sample requests; initial 2022-01-15 interface discovery already observed",
+  "api_base": "https://data.elexon.co.uk/bmrs/api/v1",
+  "sample_dates": ["2022-01-15", "2023-01-15", "2024-01-15"],
+  "forecast_endpoint": "/forecast/demand/day-ahead/earliest/stream",
+  "forecast_selection": "earliest published national forecast per settlement interval; publishTime < startTime",
+  "forecast_field": "nationalDemand",
+  "actual_endpoint": "/demand/outturn/stream",
+  "actual_field": "initialDemandOutturn",
+  "price_endpoint": "/balancing/pricing/market-index",
+  "price_provider": "APXMIDP",
+  "price_role": "realized short-term wholesale price; not a day-ahead price forecast",
+  "input_units": {"demand": "MW, half-hour average", "price": "GBP/MWh"},
+  "alignment": "UTC startTime, half-open day; retain both half-hours for every UTC hour; no interpolation",
+  "expected_intervals_per_sample": 48,
+  "tentative_future_periods": {
+    "historical_source": [2022, 2023],
+    "development": [2024],
+    "unread_confirmation": [2025]
+  },
+  "future_period_status": "candidate allocation only; full coverage and experiment protocol not yet established",
+  "sampling_unit": "one national market; dates and algorithm seeds do not create independent markets",
+  "policy_record_status": "demand/forecast/price endpoints do not contain historical reserve response policies or battery SOC",
+  "full_experiment_launch": false,
+  "change_existing_storage_physics": false,
+  "change_existing_reliability_threshold": false
+}

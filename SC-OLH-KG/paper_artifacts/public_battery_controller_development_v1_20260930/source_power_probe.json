@@ -1,0 +1,21 @@
+{
+  "role": "fixed 2023 availability days, operating-limit interpretation only",
+  "samples": [
+    {
+      "date": "2023-07-15",
+      "url": "https://data.elexon.co.uk/bmrs/api/v1/balancing/physical?bmUnit=E_PILLB-1&from=2023-07-15T00%3A00%3A00%2B00%3A00&to=2023-07-16T00%3A00%3A00%2B00%3A00&format=json",
+      "response_bytes": 116178,
+      "MELS_segments": 106,
+      "maximum_declared_export_MW": 37
+    },
+    {
+      "date": "2023-10-15",
+      "url": "https://data.elexon.co.uk/bmrs/api/v1/balancing/physical?bmUnit=E_PILLB-1&from=2023-10-15T00%3A00%3A00%2B00%3A00&to=2023-10-16T00%3A00%3A00%2B00%3A00&format=json",
+      "response_bytes": 129182,
+      "MELS_segments": 120,
+      "maximum_declared_export_MW": 49
+    }
+  ],
+  "API_response_bytes": 245360,
+  "interpretation": "historical MEL varies with available operating state; these samples do not establish a 50 MW fixed hardware capacity"
+}

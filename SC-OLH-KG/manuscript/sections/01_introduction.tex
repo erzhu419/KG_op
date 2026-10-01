@@ -31,9 +31,8 @@ The method keeps three jobs separate.  The initial design decides where a new
 search begins.  Any declared optimizer may add target evaluations.  Finally,
 a short ordered list of candidates is fixed and tested with fresh simulations;
 if none passes, the procedure abstains.  Figure \ref{fig:method-overview}
-shows the change in viewpoint.  We do not try to solve a large discretized
-space only by making the acquisition rule more elaborate.  We first recognize
-the ordered profile, use history to choose among transparent candidate shapes,
+shows the decision sequence.  We use the ordered profile and history to
+choose among transparent candidate shapes,
 and reserve fresh target outcomes for deployment verification.
 
 \begin{figure}[t]
@@ -64,21 +63,34 @@ geometry.
 
 \item We explain when the small design can work.  Grid refinement preserves
 the profile coordinate; farthest-first controls finite-library cover; finite
-source samples recover separated ranks; and structural cover reaches a target
+source samples recover separated ranks, and selection gaps determine whether
+source noise changes the design.  Structural cover reaches a target
 safe region when transfer error fits inside its safety margin.  Fresh tests
-control false deployment.  Lean 4 checks the finite implications, while
+control false deployment.  Lean 4 checks the original finite components, while
 source-target alignment remains an empirical assumption.
 
-\item We test that assumption in eight randomized regimes, structured
-source-free comparisons, equal-cost experiments, and a region-held-out
-electricity study in which source scoring loses.  Source, target-search, and
-verification calls are reported separately.  The evidence therefore measures
-an amortized design investment for related tasks, not a shortcut for one
-arbitrary high-dimensional problem.
+\item We evaluate the resulting design in eight randomized regimes, a factorial
+first-center/metric intervention, prospective confirmation on new source
+families and public libraries, a same-source portfolio, equal-cost
+experiments, postdecision fixed-first-center remainder controls, and a region-held-out
+electricity study that does not establish a cost advantage.  A separate
+public-battery development diagnostic is matched by constant-only search
+and favors paid enumeration at the source-inclusive budget.  Source, target-search, and
+verification calls are reported separately.  The evidence measures when source initialization helps under specified
+task laws and when the archive cost remains unjustified.
 \end{enumerate}
 
 Across 160 independently seeded tasks and three grid resolutions, source
-scoring improves feasible coverage and certification in aggregate but loses
-in several adverse regimes and in Energy.  The $10{,}000$-coordinate result
-shows stability under grid refinement, not a ten-evaluation solution to an
-arbitrary $10{,}000$-variable black box.
+scoring certifies 47.3\% of task--resolution cells.  Supplementary comparisons
+on these same tasks give 31.5\% for standardized outcome-free maximin and
+37.1\% for the source-greedy portfolio.  The matched scaling corrects a
+confound in the original outcome-free comparison, and the portfolio tests
+whether geometric selection adds value beyond a simple use of source ranks.
+The advantage varies by mechanism, with reversals in adverse regimes and no
+established archive cost advantage in Energy.  On 240 new tasks the matched generic comparison remains positive,
+but portfolio superiority is not reproduced.  Attribution identifies the
+source-best first center as the main effective contribution.  The
+fixed-first-center controls do not establish a certification advantage for
+structural coverage over nine random remainder policies.  The
+10,000-coordinate result concerns stability under grid refinement
+of an ordered rule.

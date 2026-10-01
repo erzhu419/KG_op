@@ -31,24 +31,36 @@ space-filling designs are standard for deterministic computer experiments
 \citep{MorrisMitchell1995}.  Gonzalez farthest-first gives a factor-two
 finite $k$-center guarantee \citep{Gonzalez1985}.  We use that algorithm on a
 finite profile library, but source ranks augment its selection metric.  The
-generic-DCT control removes those ranks and is therefore the direct
-source-free space-filling comparison.
+standardized DCT maximin control uses the same structural coordinates without
+source ranks.  It separates source information from the coordinate scaling
+used by the original unstandardized DCT control.
+
+\paragraph{Learned initializations and portfolios.}
+Learning starting configurations from historical tasks is established work.
+\citet{WistubaEtAl2015} optimize a meta-loss to learn an initialization
+sequence, while \citet{FeurerEtAl2022} greedily construct a finite portfolio
+of complementary configurations and evaluate it before continuing Bayesian
+optimization.  Our contribution concerns ordered policies under noisy chance
+constraints: a common structural coordinate across grids, joint safety and
+objective source ranks, and independent deployment verification with explicit
+source costs.  To compare selection rules within this setting, we include a
+source-greedy portfolio using the same archive and ten target evaluations.
 
 \paragraph{Transfer and historical-task priors.}
 Few-shot deep kernels, hierarchical Gaussian-process priors, source ensembles,
 and meta-learned acquisitions transfer different objects across tasks
-\citep{WistubaGrabocka2021,RothfussEtAl2021,RothfussEtAl2023,
+\citep{WistubaGrabocka2021,RothfussEtAl2021,RothfussEtAl2021FPACOH,RothfussEtAl2023,
 WangEtAl2024HyperBO,TighineanuEtAl2022,VolppEtAl2020,PanEtAl2024}.
 Related work also learns a search space from earlier hyperparameter tasks
-\citep{PerroneEtAl2019} or transfers optimizer rankings
+\citep{PerroneEtAl2019} or weights source surrogates by ranking performance
 \citep{FeurerEtAl2018}.  Warm-start Bayesian optimization similarly treats
 earlier evaluations as reusable information \citep{PoloczekWangFrazier2016}.
-Our method transfers a smaller object: the source archive ranks a fixed public
-library, while the target surrogate and optimizer remain separate.  This makes
+Our method transfers a finite initial design: the source archive ranks a fixed
+public library, while the target surrogate and optimizer remain separate.  This makes
 it possible to compare source scoring directly with the same structural
 library without outcomes and to count the cost of history explicitly.  We
-also compare eight end-to-end transfer pipelines using the same source
-information and target budget.
+also compare eight end-to-end transfer pipelines under their own common
+source, target-budget, and verification protocol.
 
 \paragraph{Selection and independent verification.}
 Chance-constrained ranking-and-selection procedures allocate simulation to

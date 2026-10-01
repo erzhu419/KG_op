@@ -1,0 +1,119 @@
+\begin{table}[p]
+\centering
+\phantomsection
+\label{page:tables}
+\small
+\caption{Frozen primary method specification.}
+\label{tab:method-spec}
+\begin{tabular}{p{0.30\textwidth}p{0.61\textwidth}}
+\toprule
+Component & Specification \\
+\midrule
+Decision class & Ordered bounded profile $h:[0,1]\to[0,1]$ on a declared grid \\
+Library & 64 outcome-free profiles; 128 reference nodes; library seed 20261799 \\
+Source archive & 2 tasks $\times$ 64 profiles $\times$ 3 replications = 384 calls \\
+Profile coordinate & Frequencies $0{:}8$, diagonal squares, 18 standardized dimensions \\
+Source score & Equal-task average of objective and Gaussian chance-margin percentile ranks \\
+Selection & First center $.5r^g+.5r^f$; nine Gonzalez farthest-first centers \\
+Metric weights & Profile coordinates standardized; safety and objective rank weights both 1 \\
+Target map & Linear interpolation to declared nodes; deterministic integer rounding \\
+Target information & Grid, bounds, dimension, and declared ordering; no outcomes or oracle quantities \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% Tables follow the references, in citation order.
+\begin{table}[p]
+\centering
+\small
+\caption{Registered stress regimes.  The target generator hides its basis,
+center, safe radius, and task seed from every algorithm.}
+\label{tab:stress-regimes}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedright\arraybackslash}p{0.12\textwidth}>{\raggedright\arraybackslash}p{0.51\textwidth}}
+\toprule
+Regime & Default rank & Principal departure \\
+\midrule
+Aligned low frequency & 8 & Source and target share low-frequency support \\
+Growing effective rank & 24 & More active coefficients at fixed target budget \\
+Frequency support shift & 8 & Target frequencies shifted beyond source support \\
+Coordinate permutation & 8 & Ordered values are permuted before implementation \\
+Irregular grid & 8 & Nonuniform declared nodes \\
+Piecewise smooth & 12 & Blockwise basis rather than cosine basis \\
+Sparse high frequency & 16 & Few active high-frequency coordinates \\
+Misspecified target & 24 & Target center independent of source centers \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[p]
+\centering
+\small
+\caption{Primary randomized profile results.  Each row contains 480 paired
+task--resolution cells: 160 independently seeded latent tasks crossed with
+three grid resolutions.  Standardized DCT maximin and the source-greedy
+portfolio are post-review supplementary comparisons on the original tasks.}
+\label{tab:primary-results}
+\resizebox{\textwidth}{!}{\input{tables/review_stress_primary.tex}}
+\end{table}
+
+\begin{table}[p]
+\centering
+\small
+\caption{Prospective confirmation on 240 new latent tasks across three fixed
+source families and public libraries, at $d=1000$ and $n_0=N=10$.  Coverage
+counts designs with a truly feasible policy; true certificates exclude the
+one false certificate recorded by each design.  Medoid + structural is
+standardized generic DCT maximin.}
+\label{tab:confirmation}
+\resizebox{\textwidth}{!}{\input{tables/review_confirmation.tex}}
+\end{table}
+
+\begin{table}[p]
+\centering
+\small
+\caption{Rates aggregated over three grid resolutions within each regime.
+The comparator is the best source-free design in that row.}
+\label{tab:regime-results}
+\resizebox{\textwidth}{!}{\input{tables/review_stress_regimes.tex}}
+\end{table}
+
+\begin{table}[p]
+\centering
+\small
+\caption{Controls for the information available at $d=1000$.}
+\label{tab:schema-results}
+\resizebox{0.88\textwidth}{!}{\input{tables/review_schema_controls.tex}}
+\end{table}
+
+\begin{table}[p]
+\centering
+\scriptsize
+\caption{Equal preverification cost at $d=1000$: 384 source plus 10 target
+calls versus 394 target-only calls.  Verification remains additional and is
+included in the final column.}
+\label{tab:equal-cost}
+\resizebox{\textwidth}{!}{\input{tables/review_equal_cost.tex}}
+\end{table}
+
+\begin{table}[p]
+\centering
+\scriptsize
+\caption{Outcome-adjusted simulator cost.  Calls per success equal mean
+amortized all-in calls divided by the observed true-feasible certification
+rate.  Break-even compares source scoring with each alternative, charging
+both source-based designs for their archive.}
+\label{tab:outcome-adjusted-cost}
+\resizebox{\textwidth}{!}{\input{tables/review_outcome_adjusted_cost.tex}}
+\end{table}
+
+\begin{table}[p]
+\centering
+\small
+\caption{Corrected Energy V5 region-held-out results over 18 markets and five seeds
+per market.  All policies receive a common 50\% initial SOC; every design
+uses the same finite service objective and empirical-window verifier.
+Objective is the median of market medians among each design's certified safe
+runs; designs can therefore contribute different subsets of markets.}
+\label{tab:energy-results}
+\resizebox{0.94\textwidth}{!}{\input{tables/review_energy_v3.tex}}
+\end{table}

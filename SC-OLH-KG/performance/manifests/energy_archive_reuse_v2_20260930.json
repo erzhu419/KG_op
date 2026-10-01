@@ -1,0 +1,112 @@
+{
+  "contract_id": "opsd_same_market_temporal_archive_reuse_v2_shared_hourly_power",
+  "status": "rules_fixed_before_new_policy_outcomes",
+  "registration": "local protocol on previously examined historical data; not independent external confirmation",
+  "data": "data/external/opsd_time_series_extended_v2.npz",
+  "markets": [
+    "DK_1",
+    "DK_2",
+    "GB_GBN",
+    "IT_CNOR",
+    "IT_CSUD",
+    "IT_NORD",
+    "IT_SARD",
+    "IT_SICI",
+    "IT_SUD",
+    "NO_1",
+    "NO_2",
+    "NO_3",
+    "NO_4",
+    "NO_5",
+    "SE_1",
+    "SE_2",
+    "SE_3",
+    "SE_4"
+  ],
+  "archive": {
+    "ownership": "one archive per market, reused by its twelve monthly tasks",
+    "source_periods": [
+      [
+        "2017-01-01T00",
+        "2017-07-01T00"
+      ],
+      [
+        "2017-07-01T00",
+        "2018-01-01T00"
+      ]
+    ],
+    "library_seed": 20261799,
+    "library_size": 64,
+    "reference_nodes": 128,
+    "maximum_frequency": 40,
+    "replications_per_profile_per_period": 3,
+    "calls_once_per_market": 384,
+    "seed": 202609301,
+    "designs_frozen_before_any_target_simulation": true
+  },
+  "target": {
+    "months": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ],
+    "search": "corresponding calendar month in 2018",
+    "verification": "corresponding calendar month in 2019",
+    "observable_normalization": "2017 only; same load, price and stress scales throughout each market, including the source archive",
+    "minimum_windows": 32,
+    "horizon_hours": 168,
+    "initial_soc_fraction": 0.5,
+    "terminal_salvage": 0.0,
+    "physics": "StoragePhysics unchanged; reserve adjustment and balancing share one hourly gross-energy power budget",
+    "dimension": 1000,
+    "n0": 10,
+    "N": 13,
+    "continuation": "same neutral Sobol continuation",
+    "algorithm_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "design_seed": "9030000 + 10000 * market_index + 100 * month + algorithm_seed",
+    "verifier": "unchanged fixed shortlist of three, 80 all-success iid starts per tested candidate; familywise delta 0.05",
+    "arms": [
+      "source_best_z",
+      "source_atlas",
+      "standardized_generic_dct_maximin",
+      "source_greedy_portfolio",
+      "generic_dct_maximin"
+    ],
+    "expected_deployment_tasks": 216,
+    "expected_rows": 5400
+  },
+  "analysis": {
+    "primary_contrast": "source_best_z minus standardized_generic_dct_maximin in certified true-feasible deployment",
+    "secondary": [
+      "full atlas versus source_best_z",
+      "same-source portfolio",
+      "original unstandardized generic",
+      "postdecision initial feasible coverage",
+      "abstention",
+      "false certificates",
+      "certified objective",
+      "cumulative calls per true certificate"
+    ],
+    "pairing": "same market, month, algorithm seed; algorithm repeats averaged within each actual market-month task",
+    "inference": "report all markets and five geographic regions; descriptive paired region bootstrap, 10000 resamples, seed 202609302; shared calendars preclude a population iid claim",
+    "cost": "source archive once per market; average repeat costs within market-month, then sum actual twelve monthly deployments; no hypothetical M=20",
+    "diagnostic_truth": "finite empirical verification-window population evaluated after shortlist and certification; neither selection nor source matching uses this truth",
+    "decision": "retain every registered market and arm; no threshold, source-period, library, metric or cost retuning after outcomes; negative or mixed results remain separate from the paper"
+  },
+  "supersedes": "energy_archive_reuse_20260930.json; stopped after reproduced power-limit violation"
+}

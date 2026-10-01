@@ -1,0 +1,40 @@
+{
+  "protocol_id": "independent_energy_seasonal_preflight_20260930",
+  "role": "development-only model and active-constraint diagnostic; no method comparison",
+  "registration_context": "three isolated January 15 interface samples already inspected; no policy outcomes observed",
+  "interface_protocol": "independent_energy_data_preflight_20260930.json",
+  "calibration_period": [
+    "2022-01-15T00:00:00Z",
+    "2022-01-25T00:00:00Z"
+  ],
+  "development_period": [
+    "2024-10-15T00:00:00Z",
+    "2024-10-25T00:00:00Z"
+  ],
+  "forecast_prefix_hours": 1,
+  "market_index_request_days": 6,
+  "normalization_fit": "2022 calibration forecasts and prices only; no realized errors or development values",
+  "policy_dimension": 1000,
+  "simulation_horizon_hours": 168,
+  "initial_soc_fraction": 0.5,
+  "physical_model": "existing V5 shared gross hourly power engine, unchanged StoragePhysics defaults",
+  "chance_failure_probability": 0.05,
+  "maximum_unserved_fraction": 0.11,
+  "library": {
+    "profiles": 64,
+    "nodes": 128,
+    "seed": 20261799,
+    "maximum_frequency": 40
+  },
+  "reference_profiles": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "window_starts": "all complete hourly starts inside the development period; overlapping finite population",
+  "decision": "proceed to a certification-rate comparison only if this fixed policy pool contains both feasible and infeasible profiles at the unchanged 95 percent window-success threshold",
+  "diagnostic_cost_accounting": "enumerated window evaluations recorded separately; zero operational optimizer or terminal-verifier calls",
+  "confirmation_year": 2025,
+  "confirmation_year_access": false,
+  "full_experiment_launch": false
+}

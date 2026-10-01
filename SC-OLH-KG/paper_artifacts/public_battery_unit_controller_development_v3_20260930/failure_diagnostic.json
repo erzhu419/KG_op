@@ -1,0 +1,41 @@
+{
+  "cases": [
+    {
+      "period": "2024-04-15",
+      "library_failed_windows": 4672,
+      "first_failure_causes": {
+        "power_failure": 663,
+        "BOA_inventory_failure": 3381,
+        "baseline_inventory_failure": 628,
+        "unit_1_inventory_failure": 2890,
+        "unit_2_inventory_failure": 1146
+      },
+      "first_hour_failures": 0
+    },
+    {
+      "period": "2024-07-15",
+      "library_failed_windows": 4335,
+      "first_failure_causes": {
+        "power_failure": 991,
+        "BOA_inventory_failure": 2921,
+        "baseline_inventory_failure": 423,
+        "unit_1_inventory_failure": 1186,
+        "unit_2_inventory_failure": 2405
+      },
+      "first_hour_failures": 0
+    },
+    {
+      "period": "2024-10-15",
+      "library_failed_windows": 2490,
+      "first_failure_causes": {
+        "power_failure": 659,
+        "BOA_inventory_failure": 969,
+        "baseline_inventory_failure": 874,
+        "unit_1_inventory_failure": 1320,
+        "unit_2_inventory_failure": 546
+      },
+      "first_hour_failures": 0
+    }
+  ],
+  "scope": "first failing piece; cause counts can overlap; no later outcomes assigned to stopped windows"
+}

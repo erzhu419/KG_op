@@ -1,0 +1,40 @@
+{
+  "protocol_id": "public_battery_unit_reserve_components_v1_20260930",
+  "frozen_at_utc": "2026-09-30T08:06:06+00:00",
+  "role": "paired development ablation of the two frozen V4 reserve components",
+  "registration_context": "complete V3 and V4 outcomes known; inventory-only and power-only outcomes unobserved",
+  "basis_protocol": "performance/manifests/public_battery_unit_reserve_development_v4_20260930.json",
+  "retained_comparators": {
+    "V3": "paper_artifacts/public_battery_unit_controller_development_v3_20260930",
+    "V4": "paper_artifacts/public_battery_unit_reserve_development_v4_20260930"
+  },
+  "conditions": [
+    {
+      "name": "inventory_reserve_only",
+      "target": "retain V4 90-minute gross-flow reserve mapping",
+      "power": "retain V3 received-future headroom and joint nomination bound; no recent-peak power bound"
+    },
+    {
+      "name": "power_reserve_only",
+      "target": "retain V3 profile fraction times unit capacity",
+      "power": "retain V4 observed opposite-unit peak bound, received-future headroom and joint nomination bound"
+    }
+  ],
+  "unchanged_contract": "same 64 library profiles plus three reference constants, same original April/July/October 2024 samples and all 73 complete windows per sample; original asset, stocks, efficiency, lead, signal calibration, receipt visibility, failure event, 95% criterion and cost accounting",
+  "execution": "run the two conditions serially from local caches; reuse saved V3 and V4 comparisons without rerunning either",
+  "accounting": {
+    "planned_new_window_evaluations": 29346,
+    "new_data_requests": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "analysis": [
+    "report each condition's seasonal and common feasible library sets",
+    "pair identical profile-window outcomes against V3 and V4, retaining gains and losses",
+    "report first inventory and shared-power failure causes, including the fixed 50% reference",
+    "do not rank incomplete methods by conditional completed-window costs"
+  ],
+  "decision": "if neither component passes the unchanged all-season development gate, keep this 90-minute reserve family on HOLD; if a component passes, assess its control and source-data protocol before any source comparison",
+  "limitations": "post-V4 development ablation, not independent confirmation; overlapping windows and exogenous historical BOAs retain their original interpretation"
+}

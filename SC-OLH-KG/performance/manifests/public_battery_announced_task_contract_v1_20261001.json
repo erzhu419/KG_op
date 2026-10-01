@@ -1,0 +1,55 @@
+{
+  "protocol_id": "public_battery_announced_task_contract_v1_20261001",
+  "frozen_at_utc": "2026-10-01T02:07:33+00:00",
+  "role": "causal announcement interface for a distinct public-receipt-driven simulation task",
+  "registration_context": "all eight advance-notice component paths observed safe; no translated announcement ledger, announced-task controller or announced-task performance result has been generated",
+  "basis_protocol": "performance/manifests/public_battery_announced_pair_preflight_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_announced_pair_preflight_v1_20261001",
+  "cached_request_marks": "paper_artifacts/public_battery_receipt_forecast_pilot_v1_20261001/request_marks.json",
+  "retained_asset_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "contract": {
+    "service": "deliver fixed absolute common-direction pulses under an advance-announced simulation schedule, executing locked PN outside pulses",
+    "announcement_clocks": {"start_minute": 0, "stop_exclusive_minute": 10080, "step_minutes": 60},
+    "announcement_lead_minutes": 120,
+    "lead_rationale": "the diagnosed information cutoff is 90 minutes before a call; 120 minutes is the smallest whole-hour lead meeting it while retaining the existing hourly delivery grid. No notice-duration search",
+    "generation": "at each original clock t use its cached receipt-prefix mark, whose selected public source has already arrived by t, to issue a binding announcement for delivery at t+120",
+    "locking": "announced direction and fixed peak remain unchanged after release; later public receipts generate their own later announcements",
+    "inactive_announcements": "an empty original mark publishes no activation for that future slot; it remains in the announced clock roster and creates no delivered request",
+    "warmup": "no service calls at minutes 0 and 60; these two startup slots are part of the defined task, with no invented negative-time announcements",
+    "delivery_clocks": {"start_minute": 120, "stop_exclusive_minute": 10200, "step_minutes": 60},
+    "total_execution_horizon_minutes": 10200,
+    "service_clock_span_minutes": 10080,
+    "original_signal_clocks": 168,
+    "expected_active_requests": 95,
+    "absolute_peak_MW": {"export": [49, 49], "import": [-49, -49]},
+    "pulse": "one-minute linear ramp from the locked reference, 30-minute absolute hold, one-minute return to the locked reference at minute 32, then resume reference",
+    "physical_model": "retain the original per-unit 98 MWh inventories, 98 MW shared gross limit, 0.92 efficiencies, 30-minute PN clock and 60-minute PN lead",
+    "future_controller_inputs": "own state and commitments plus announcements whose release_minute is no later than the current decision; unreleased requests stay outside the controller interface",
+    "service_accounting": "all 95 activated requests remain obligations; partial or rejected pulses remain failures, while inactive and warmup slots create no successful service observations",
+    "comparison_scope": "future controller comparisons share this announced task and its 170-hour execution horizon"
+  },
+  "interface_preflight": {
+    "outputs": "compact 168-row announcement ledger, 170-row delivery clock roster and summary; no minute physics or prices",
+    "required_checks": [
+      "preserve all original direction/source pairs and the 95 activations, with only delivery shifted by 120 minutes",
+      "every selected public source is received no later than its announcement release",
+      "announcement prefixes exposed at a decision include only released rows; changes to unreleased rows leave that prefix unchanged",
+      "every announced call is visible by its delivery-minus-90 critical nomination cutoff, and bootstrap slots are explicit"
+    ],
+    "storage": "JSON only; reuse cached local inputs"
+  },
+  "decision": "resolve any announcement-accounting or visibility discrepancy first; after interface success, specify and freeze a bounded announced-task controller component preflight before any weekly rollout. No matrix or source comparison starts automatically",
+  "accounting_constraints": {
+    "component_trajectory_evaluations": 0,
+    "new_controller_window_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "preservation": "write a separate announced-task ledger; retain all original timestamps, request histories, information schedules and negative results",
+  "limitations": "analyst-defined announced service, developed after inspecting prior failures; not historical BM counterfactual dispatch or documented BOA notice. Interface success does not establish full-week feasibility, 95-percent development reliability, source benefit or OR submission readiness"
+}

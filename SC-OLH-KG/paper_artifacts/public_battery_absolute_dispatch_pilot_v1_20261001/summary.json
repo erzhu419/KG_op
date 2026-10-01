@@ -1,0 +1,358 @@
+{
+  "protocol_id": "public_battery_absolute_dispatch_pilot_v1_20261001",
+  "completed_at_utc": "2026-10-01T00:35:29.600017+00:00",
+  "status": "absolute_dispatch_pilot_complete",
+  "component_fixture_replays": 4,
+  "component_passes": 4,
+  "controller_window_evaluations": 4,
+  "physically_completed_windows": 2,
+  "service_successful_windows": 0,
+  "runs": [
+    {
+      "period": "2024-04-15",
+      "window_start_minute": 0,
+      "profile_id": "constant_pair_0003_0007",
+      "dispatch_rule": "conservative_admission",
+      "planned_minutes": 10080,
+      "completed_minutes": 10080,
+      "physical_complete": true,
+      "window_success": false,
+      "request_shortfall_hours": 35,
+      "known_commitment_failure_hours": 0,
+      "unmet_increase_MWh": [
+        349.3288807642901,
+        349.3288807642901
+      ],
+      "unmet_decrease_MWh": [
+        397.32476350591935,
+        397.32476350591935
+      ],
+      "delivery_accounting_complete": true,
+      "first_physical_failure": null,
+      "final_or_last_safe_SOC_MWh": [
+        4.6841476375149735,
+        43.884147637514964
+      ],
+      "minimum_accepted_SOC_MWh": [
+        -9.999996386511611e-09,
+        39.19999999000001
+      ],
+      "maximum_accepted_SOC_MWh": [
+        58.800000009999984,
+        98.00000001
+      ],
+      "gross_export_MWh": [
+        1117.5954194204458,
+        1104.0714194204459
+      ],
+      "gross_import_MWh": [
+        1272.241062437324,
+        1298.871497219931
+      ],
+      "envelope_path_evaluations": 4608,
+      "nomination_decisions": 334,
+      "minute_physics_evaluations": 10080,
+      "energy_balance_error_MWh": [
+        9.094947017729282e-12,
+        1.0913936421275139e-11
+      ],
+      "limited_declaration_hours": 75,
+      "first_dispatch_failure": {
+        "minute": 420,
+        "reasons": [
+          "request_shortfall"
+        ]
+      },
+      "task": "absolute_dispatch_tracking",
+      "scheduled_hourly_clocks": 168,
+      "assessed_hourly_clocks": 168,
+      "inactive_hourly_clocks": 73,
+      "planned_requests": 95,
+      "observed_requests": 95,
+      "fulfilled_requests": 60,
+      "unfulfilled_observed_requests": 35,
+      "unobserved_requests": 0,
+      "unfulfilled_or_unassessed_requests": 35
+    },
+    {
+      "period": "2024-04-15",
+      "window_start_minute": 0,
+      "profile_id": "constant_pair_0003_0007",
+      "dispatch_rule": "full_request_reference",
+      "planned_minutes": 10080,
+      "completed_minutes": 428,
+      "physical_complete": false,
+      "window_success": false,
+      "request_shortfall_hours": 0,
+      "known_commitment_failure_hours": 0,
+      "unmet_increase_MWh": [
+        0.0,
+        0.0
+      ],
+      "unmet_decrease_MWh": [
+        0.0,
+        0.0
+      ],
+      "delivery_accounting_complete": false,
+      "first_physical_failure": {
+        "minute": 428,
+        "last_safe_SOC_MWh": [
+          0.5340289855072582,
+          39.73402898550726
+        ],
+        "power_first_MW": [
+          49.0,
+          49.0
+        ],
+        "power_last_MW": [
+          49.0,
+          49.0
+        ],
+        "minimum_SOC_MWh": [
+          -0.35365217391303183,
+          38.84634782608697
+        ],
+        "maximum_SOC_MWh": [
+          6.969717391304361,
+          46.16971739130436
+        ],
+        "final_SOC_MWh": [
+          -0.35365217391303183,
+          38.84634782608697
+        ],
+        "unit_bound_violation_MWh": [
+          0.35365217391303183,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "final_or_last_safe_SOC_MWh": [
+        0.5340289855072582,
+        39.73402898550726
+      ],
+      "minimum_accepted_SOC_MWh": [
+        0.5340289855072582,
+        39.73402898550726
+      ],
+      "maximum_accepted_SOC_MWh": [
+        57.591333333333345,
+        96.79133333333334
+      ],
+      "gross_export_MWh": [
+        66.18952666666678,
+        52.665526666666736
+      ],
+      "gross_import_MWh": [
+        25.52083333333333,
+        52.15126811594209
+      ],
+      "envelope_path_evaluations": 144,
+      "nomination_decisions": 15,
+      "minute_physics_evaluations": 429,
+      "energy_balance_error_MWh": [
+        1.2789769243681803e-13,
+        2.842170943040401e-14
+      ],
+      "limited_declaration_hours": 2,
+      "first_dispatch_failure": {
+        "minute": 428,
+        "reasons": [
+          "physical_failure"
+        ]
+      },
+      "task": "absolute_dispatch_tracking",
+      "scheduled_hourly_clocks": 168,
+      "assessed_hourly_clocks": 8,
+      "inactive_hourly_clocks": 5,
+      "planned_requests": 95,
+      "observed_requests": 3,
+      "fulfilled_requests": 2,
+      "unfulfilled_observed_requests": 1,
+      "unobserved_requests": 92,
+      "unfulfilled_or_unassessed_requests": 93
+    },
+    {
+      "period": "2024-04-15",
+      "window_start_minute": 0,
+      "profile_id": "constant_pair_0004_0007",
+      "dispatch_rule": "conservative_admission",
+      "planned_minutes": 10080,
+      "completed_minutes": 10080,
+      "physical_complete": true,
+      "window_success": false,
+      "request_shortfall_hours": 35,
+      "known_commitment_failure_hours": 0,
+      "unmet_increase_MWh": [
+        232.61273576614616,
+        232.61273576614616
+      ],
+      "unmet_decrease_MWh": [
+        397.299188816817,
+        397.299188816817
+      ],
+      "delivery_accounting_complete": true,
+      "first_physical_failure": null,
+      "final_or_last_safe_SOC_MWh": [
+        4.6680388327771904,
+        34.06803883277719
+      ],
+      "minimum_accepted_SOC_MWh": [
+        -9.999991945619513e-09,
+        29.399999990000012
+      ],
+      "maximum_accepted_SOC_MWh": [
+        68.60000001000002,
+        98.00000001
+      ],
+      "gross_export_MWh": [
+        1222.673017618035,
+        1218.1650176180353
+      ],
+      "gross_import_MWh": [
+        1396.3700535729897,
+        1423.0004883555957
+      ],
+      "envelope_path_evaluations": 4560,
+      "nomination_decisions": 334,
+      "minute_physics_evaluations": 10080,
+      "energy_balance_error_MWh": [
+        1.2278178473934531e-11,
+        1.5234036254696548e-11
+      ],
+      "limited_declaration_hours": 74,
+      "first_dispatch_failure": {
+        "minute": 420,
+        "reasons": [
+          "request_shortfall"
+        ]
+      },
+      "task": "absolute_dispatch_tracking",
+      "scheduled_hourly_clocks": 168,
+      "assessed_hourly_clocks": 168,
+      "inactive_hourly_clocks": 73,
+      "planned_requests": 95,
+      "observed_requests": 95,
+      "fulfilled_requests": 60,
+      "unfulfilled_observed_requests": 35,
+      "unobserved_requests": 0,
+      "unfulfilled_or_unassessed_requests": 35
+    },
+    {
+      "period": "2024-04-15",
+      "window_start_minute": 0,
+      "profile_id": "constant_pair_0004_0007",
+      "dispatch_rule": "full_request_reference",
+      "planned_minutes": 10080,
+      "completed_minutes": 439,
+      "physical_complete": false,
+      "window_success": false,
+      "request_shortfall_hours": 0,
+      "known_commitment_failure_hours": 0,
+      "unmet_increase_MWh": [
+        0.0,
+        0.0
+      ],
+      "unmet_decrease_MWh": [
+        0.0,
+        0.0
+      ],
+      "delivery_accounting_complete": false,
+      "first_physical_failure": {
+        "minute": 439,
+        "last_safe_SOC_MWh": [
+          0.5695362318840793,
+          29.969536231884078
+        ],
+        "power_first_MW": [
+          49.0,
+          49.0
+        ],
+        "power_last_MW": [
+          49.0,
+          49.0
+        ],
+        "minimum_SOC_MWh": [
+          -0.3181449275362098,
+          29.08185507246379
+        ],
+        "maximum_SOC_MWh": [
+          16.769717391304365,
+          46.16971739130436
+        ],
+        "final_SOC_MWh": [
+          -0.3181449275362098,
+          29.08185507246379
+        ],
+        "unit_bound_violation_MWh": [
+          0.3181449275362098,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "final_or_last_safe_SOC_MWh": [
+        0.5695362318840793,
+        29.969536231884078
+      ],
+      "minimum_accepted_SOC_MWh": [
+        0.5695362318840793,
+        29.969536231884078
+      ],
+      "maximum_accepted_SOC_MWh": [
+        67.39133333333335,
+        96.79133333333334
+      ],
+      "gross_export_MWh": [
+        66.15686000000012,
+        61.648860000000106
+      ],
+      "gross_import_MWh": [
+        25.52083333333333,
+        52.15126811594209
+      ],
+      "envelope_path_evaluations": 144,
+      "nomination_decisions": 15,
+      "minute_physics_evaluations": 440,
+      "energy_balance_error_MWh": [
+        1.5631940186722204e-13,
+        7.105427357601002e-14
+      ],
+      "limited_declaration_hours": 2,
+      "first_dispatch_failure": {
+        "minute": 439,
+        "reasons": [
+          "physical_failure"
+        ]
+      },
+      "task": "absolute_dispatch_tracking",
+      "scheduled_hourly_clocks": 168,
+      "assessed_hourly_clocks": 8,
+      "inactive_hourly_clocks": 5,
+      "planned_requests": 95,
+      "observed_requests": 3,
+      "fulfilled_requests": 2,
+      "unfulfilled_observed_requests": 1,
+      "unobserved_requests": 92,
+      "unfulfilled_or_unassessed_requests": 93
+    }
+  ],
+  "request_marks_origin": "paper_artifacts/public_battery_causal_service_pilot_v1_20261001/request_marks.json",
+  "request_clocks": 168,
+  "request_activation_clocks": 95,
+  "hourly_dispatch_records": 352,
+  "nomination_records": 698,
+  "pilot_envelope_path_evaluations": 9456,
+  "total_envelope_path_evaluations": 9468,
+  "component_final_path_evaluations": 4,
+  "minute_physics_evaluations": 21029,
+  "source_comparison_gate": "HOLD",
+  "new_business_data_requests": 0,
+  "diagnostic_LP_calls": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "library_matrix_launch": false,
+  "retained_failure_probability": 0.05,
+  "decision": "diagnose_first_dispatch_failure_before_any_larger_run",
+  "delivery_accounting": "all 95 calls remain in each planned denominator; interrupted runs report executed-prefix error and unobserved calls; inactive clocks create no delivered-request observation",
+  "limitations": "absolute 49 MW common-direction calls and hourly sign mapping remain analyst simulation assumptions, not an identified BM counterfactual or historical service contract; shared gross 98 MW, equal 98 MWh stocks and 0.92 efficiencies remain model assumptions"
+}

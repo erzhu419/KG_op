@@ -1,0 +1,47 @@
+{
+  "protocol_id": "public_battery_unit_failure_visibility_v1_20260930",
+  "frozen_at_utc": "2026-09-30T07:13:48.861685+00:00",
+  "role": "retrospective information audit of the frozen V3 controller, with no new policy evaluation",
+  "registration_context": "all 219 joint physical witnesses replayed; V3 April outcomes known, nomination-time failure classification unobserved",
+  "basis_controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "basis_controller_outputs": "paper_artifacts/public_battery_unit_controller_development_v3_20260930",
+  "basis_physical_oracle_outputs": "paper_artifacts/public_battery_unit_physical_oracle_v1_20260930",
+  "development": [
+    {
+      "start": "2024-04-15T00:00:00Z",
+      "stop": "2024-04-25T00:00:00Z",
+      "csv": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-04-15/development_half_hours.csv"
+    }
+  ],
+  "roster": {
+    "library": "all original 64 profiles, seed and integer projection unchanged",
+    "reference": "constant_0.50 only, already fixed and failed in all April windows",
+    "diagnostic_profiles": 65,
+    "windows": 73,
+    "selection_basis": "April is the frozen unresolved development bottleneck; no selection of successful trajectories"
+  },
+  "control": "V3 nominations and execution unchanged; append trace metadata only",
+  "information_contract": {
+    "nomination_time": "window start + floor(first failure relative minute/30)*30 -60 minutes",
+    "decision_state": "actual independent stocks immediately before that nomination, plus the two already pending unit nominations and the new nomination",
+    "known_path": "reconstruct up to the first failed minute using only BOAs received by the nomination time; retain exact gross-flow energy and within-minute extrema",
+    "new_receipts": "trace receipts after nomination that changed the executed path between decision and first failure",
+    "baseline_clock": "fixed half-hour decisions; offline future boundaries never become an observable"
+  },
+  "classification": [
+    "known violation in the pending hour, already constrained by previous commitments",
+    "known violation during the newly nominated delivery slot",
+    "predicted prefix safe, actual violation after later receipts or revisions",
+    "unresolved trace discrepancy, kept separate"
+  ],
+  "validation": "traced success flags and first failing minutes must exactly reproduce the saved V3 rows before interpreting labels",
+  "accounting": {
+    "new_data_requests": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false,
+    "predicted_diagnostic_window_evaluations": 4745
+  },
+  "next_action": "use the labels to choose between enforcing known inventory/path constraints at nomination and improving reserve response to later instructions; freeze any revised controller before testing it",
+  "limitations": "development-only retrospective diagnosis; labels do not prove online impossibility, source benefit, or independent confirmation"
+}

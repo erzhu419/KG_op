@@ -62,6 +62,7 @@ class OPSDForecastIndexedStorageProblem(CumulativeRiskFeatureProvider):
         minimum_windows=32,
         required_splits=("search", "audit", "verification"),
         outcome_access=True,
+        initial_soc_fraction=0.5,
     ):
         self.data_path = str(Path(data_path))
         self.outcome_access = bool(outcome_access)
@@ -80,6 +81,9 @@ class OPSDForecastIndexedStorageProblem(CumulativeRiskFeatureProvider):
         self.sigma_level = float(sigma)
         self.heteroscedastic = bool(heteroscedastic)
         self.physics = physics or StoragePhysics()
+        self.initial_soc_fraction = float(initial_soc_fraction)
+        if not 0.0 <= self.initial_soc_fraction <= 1.0:
+            raise ValueError("initial SOC fraction must lie in [0, 1]")
         self.tau = 0.0
         self.ref_point = None
         self.nodes = regular_profile_nodes(self.d)
@@ -186,6 +190,13 @@ class OPSDForecastIndexedStorageProblem(CumulativeRiskFeatureProvider):
             "stress_weights_tuned_from_target_outcomes": False,
             "policy_grid_dimension": int(self.d),
             "simulation_horizon_hours": int(self.horizon),
+            "initial_soc_fraction": self.initial_soc_fraction,
+            "initial_soc_policy_dependent": False,
+            "initial_inventory": "common_service_endowment",
+            "cost_scope": "finite_horizon_service_cost",
+            "terminal_energy_value": 0.0,
+            "hourly_power_budget": "shared across all reserve-adjustment and balancing flows",
+            "power_budget_measure": "sum of external charging and discharging energy within one hour",
             "decision_dimension_changes_simulation_horizon": False,
             "actual_target_error_used_by_observable_coordinate": False,
             "actual_target_error_used_by_simulator": True,
@@ -257,17 +268,17 @@ class OPSDForecastIndexedStorageProblem(CumulativeRiskFeatureProvider):
         power = float(physics.power_capacity)
         efficiency = float(physics.efficiency)
         count = len(starts)
-        first_stress = self._forecast_stress[starts]
-        first_target = self._policy_target_soc(x, first_stress)
-        soc = np.clip(first_target * capacity, 0.0, capacity)
+        soc = np.full(count, self.initial_soc_fraction * capacity, dtype=float)
         grid_charge = np.zeros(count, dtype=float)
         throughput = np.zeros(count, dtype=float)
         unserved = np.zeros(count, dtype=float)
         spill = np.zeros(count, dtype=float)
         positive_error = np.zeros(count, dtype=float)
         target_sum = np.zeros(count, dtype=float)
+        maximum_hourly_exchange = np.zeros(count, dtype=float)
 
         for offset in range(self.horizon):
+            remaining_power = np.full(count, power, dtype=float)
             rows = starts + offset
             target = self._policy_target_soc(x, self._forecast_stress[rows])
             target_sum += target
@@ -275,7 +286,8 @@ class OPSDForecastIndexedStorageProblem(CumulativeRiskFeatureProvider):
             delta = desired - soc
             charging = delta > 0.0
             if np.any(charging):
-                charge = np.minimum(delta[charging] / efficiency, power)
+                charge = np.minimum(delta[charging] / efficiency, remaining_power[charging])
+                remaining_power[charging] = np.maximum(0.0, remaining_power[charging] - charge)
                 soc[charging] = np.minimum(
                     capacity, soc[charging] + efficiency * charge)
                 prices = self._normalized_price[rows[charging]]
@@ -285,12 +297,13 @@ class OPSDForecastIndexedStorageProblem(CumulativeRiskFeatureProvider):
             if np.any(releasing):
                 release = np.minimum.reduce([
                     -delta[releasing] * efficiency,
-                    np.full(np.sum(releasing), power, dtype=float),
+                    remaining_power[releasing],
                     soc[releasing] * efficiency,
                 ])
                 soc[releasing] = np.maximum(
                     0.0, soc[releasing] - release / efficiency)
                 throughput[releasing] += release
+                remaining_power[releasing] = np.maximum(0.0, remaining_power[releasing] - release)
 
             shock = self._net_error[rows]
             shortage = shock >= 0.0
@@ -299,25 +312,28 @@ class OPSDForecastIndexedStorageProblem(CumulativeRiskFeatureProvider):
                 positive_error[shortage] += positive
                 discharge = np.minimum.reduce([
                     positive,
-                    np.full(np.sum(shortage), power, dtype=float),
+                    remaining_power[shortage],
                     soc[shortage] * efficiency,
                 ])
                 soc[shortage] = np.maximum(
                     0.0, soc[shortage] - discharge / efficiency)
                 throughput[shortage] += discharge
+                remaining_power[shortage] = np.maximum(0.0, remaining_power[shortage] - discharge)
                 unserved[shortage] += positive - discharge
             surplus_mask = ~shortage
             if np.any(surplus_mask):
                 surplus = -shock[surplus_mask]
                 charge = np.minimum.reduce([
                     surplus,
-                    np.full(np.sum(surplus_mask), power, dtype=float),
+                    remaining_power[surplus_mask],
                     np.maximum(capacity - soc[surplus_mask], 0.0) / efficiency,
                 ])
                 soc[surplus_mask] = np.minimum(
                     capacity, soc[surplus_mask] + efficiency * charge)
                 throughput[surplus_mask] += charge
+                remaining_power[surplus_mask] = np.maximum(0.0, remaining_power[surplus_mask] - charge)
                 spill[surplus_mask] += surplus - charge
+            maximum_hourly_exchange = np.maximum(maximum_hourly_exchange, power - remaining_power)
 
         horizon = float(self.horizon)
         reserve = target_sum / horizon
@@ -342,6 +358,10 @@ class OPSDForecastIndexedStorageProblem(CumulativeRiskFeatureProvider):
             "spill_energy": spill,
             "throughput": throughput,
             "mean_target_soc": reserve,
+            "initial_energy": np.full(count, self.initial_soc_fraction * capacity),
+            "terminal_energy": soc.copy(),
+            "grid_charge_cost": grid_charge,
+            "maximum_hourly_energy_exchange": maximum_hourly_exchange,
         }
 
     def _evaluate_start(self, x, start):

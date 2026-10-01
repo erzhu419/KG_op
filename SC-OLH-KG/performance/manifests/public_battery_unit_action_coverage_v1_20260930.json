@@ -1,0 +1,45 @@
+{
+  "protocol_id": "public_battery_unit_action_coverage_v1_20260930",
+  "frozen_at_utc": "2026-09-30T08:47:27+00:00",
+  "role": "local nomination-action coverage of the original library at recoverable reference states",
+  "registration_context": "recoverability labels observed; candidate-action suffix outcomes unobserved",
+  "controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "physical_oracle_protocol": "performance/manifests/public_battery_unit_physical_oracle_v1_20260930.json",
+  "basis_recoverability_outputs": "paper_artifacts/public_battery_unit_recoverability_v1_20260930",
+  "roster": {
+    "reference_profile": "constant_0.50",
+    "period": "2024-04-15",
+    "reference_windows": 73,
+    "snapshot_selection": "for every V3 April failed reference window, use current if its suffix is replayed feasible; otherwise use previous, which is replayed feasible",
+    "selected_current_snapshots": 23,
+    "selected_previous_snapshots": 50,
+    "library_candidates_per_snapshot": 64,
+    "candidate_action_evaluations": 4672,
+    "reference_action_negative_controls": 73,
+    "maximum_diagnostic_LP_calls": 4745
+  },
+  "candidate_action": {
+    "state": "retain actual reference stocks and the two locked pending nominations at the selected snapshot",
+    "inputs": "original available delivery forecast, original calibrated stress and received-only 90-minute BOA plan at that nomination time",
+    "profile": "each of the same 64 original integer profiles; no new profiles, target levels, scoring, seed or parameter search",
+    "nomination": "recompute only this new nomination using the frozen V3 control rule at the reference state"
+  },
+  "suffix_test": {
+    "initial_state": "actual reference two-unit stocks",
+    "locked_commitments": "fix the first three half-hours to the two original pending nominations plus the recomputed candidate nomination",
+    "continuation": "all later half-hour nominations are free with full future BOA information, through the original window end",
+    "physical_model": "unchanged original unit capacities, efficiencies, gross shared power and BOA priority",
+    "negative_control": "also fix the reference's actual new nomination; it must be infeasible because the selected recoverability result and realized failure already imply this",
+    "replay": "independently replay every distinct feasible witness, including all three locked nominations",
+    "reuse": "within a single snapshot only, exactly identical signed nomination pairs may reuse their LP and replay result; report unique LP calls and reuse counts separately, without hashes"
+  },
+  "analysis": "report the number and IDs of candidate actions permitting a feasible suffix at every snapshot; retain zero-coverage states and all negative controls; LP or replay failures remain unresolved",
+  "decision": "zero-coverage snapshots identify gaps in this 64-candidate action set; complete local coverage instead directs attention to causal selection and cross-window policy coherence; neither result opens the full source-comparison gate",
+  "accounting": {
+    "new_data_requests": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "limitations": "counterfactual actions at reference-policy states, not whole-window candidate rollouts; perfect-information continuations do not establish a shared causal policy, source benefit or independent confirmation"
+}

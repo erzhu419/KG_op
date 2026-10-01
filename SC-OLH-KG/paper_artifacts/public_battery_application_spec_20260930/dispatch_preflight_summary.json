@@ -1,0 +1,40 @@
+{
+  "protocol_id": "public_battery_dispatch_preflight_20260930",
+  "saved_response_bytes": 50317,
+  "input_segments": 140,
+  "evaluated_segments": 59,
+  "evaluated_acceptances": 22,
+  "ledger_intervals": 90,
+  "source_availability": [
+    {
+      "file": "pillswood_acceptances_20230715.json",
+      "segments": 39,
+      "acceptances": 12
+    },
+    {
+      "file": "pillswood_acceptances_20231015.json",
+      "segments": 17,
+      "acceptances": 6
+    }
+  ],
+  "active_BOA_hours": 3.433333333333331,
+  "overlapping_BOA_hours": 0.4166666666666667,
+  "peak_requested_MW": 49.0,
+  "naive_sum_peak_MW": 111.0,
+  "gross_export_MWh": 61.266666666666666,
+  "gross_import_MWh": 7.6,
+  "idle_gap_envelope": {
+    "minimum_capacity_MWh": 59.60220289855072,
+    "initial_inventory_lower_MWh": 59.60220289855072,
+    "initial_inventory_upper_MWh": 98.0,
+    "initial_inventory_interval_nonempty": true,
+    "common_initial_inventory_MWh": 49.0,
+    "common_initial_inventory_within_energy_bounds": false,
+    "terminal_inventory_change_MWh": -59.60220289855072
+  },
+  "power_within_reference_limit": true,
+  "scope": "assume idle only in BOA gaps for this instruction-only calculation; find initial inventories that could follow all requests without additional replenishment",
+  "optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false
+}

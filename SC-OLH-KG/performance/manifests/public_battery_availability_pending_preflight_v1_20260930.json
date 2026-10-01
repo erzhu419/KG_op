@@ -1,0 +1,46 @@
+{
+  "protocol_id": "public_battery_availability_pending_preflight_v1_20260930",
+  "frozen_at_utc": "2026-09-30T15:38:22+00:00",
+  "role": "six nonzero-baseline component fixtures with locked half-hours; no historical controller pilot",
+  "registration_context": "zero-baseline component replays complete: four physically feasible, two service successes and two retained service failures; nonzero-baseline fixture outcomes not evaluated",
+  "basis": "paper_artifacts/public_battery_availability_contract_preflight_v1_20260930/summary.json",
+  "retained_asset_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "information_and_time": {
+    "clock": "minute zero precedes request observation; own inventory and two previously locked baseline half-hours are known",
+    "baseline_lead": "retain the one-hour baseline lead through immutable current and following half-hour inputs; do not renegotiate them",
+    "declaration": "compute sustainable signed availability before the proposal, using the entire known 60-minute commitment path",
+    "execution": "an issued BOA starts at minute zero, ramps for one minute from current PN to its absolute peak, holds 30 minutes, returns in one minute to the PN at minute 32; the remaining locked baseline then resumes",
+    "no_instruction": "request=null executes the original baseline, whereas a zero-MW BOA overrides it during the pulse",
+    "future_receipts": "none admitted as planning inputs; no realized price, historical publication-vintage limits or measured plant SOC used"
+  },
+  "service_and_physics": [
+    "Keep 49 MW per-unit service capacity fixed as an analyst fixture obligation, not a historical converter rating or measured reserve contract",
+    "For nonzero PN distinguish service headroom/footroom from absolute MEL/MIL and BOA endpoints; service capacity must be sustainable relative to the known baseline throughout the offered hold",
+    "Constrain total absolute unit power and independent inventory continuously, including zero-crossing extrema, the PN change at minute 30 and the locked tail after minute 32",
+    "Both requested and admitted profiles are absolute MW; do not add a historical absolute BOA to PN",
+    "Retain availability shortfall separately from gross directional request shortfall; reducing declarations, partial dispatch or absent activation cannot waive the fixed availability obligation",
+    "An unsafe no-activation baseline is a known commitment failure; do not hide it by assuming a rescuing future request or altering the locked plan",
+    "Any admission/rationing rule is a simulation assumption, not an identified market response; physical feasibility and service success remain separate"
+  ],
+  "fixtures": [
+    {"id": "steady_export", "initial_SOC_MWh": [49, 49], "locked_baseline_MW": [[-13, -13], [-13, -13]], "service_capacity_MW": [49, 49], "direction": "export", "request": {"peak_MW": [36, 36]}},
+    {"id": "steady_import", "initial_SOC_MWh": [49, 49], "locked_baseline_MW": [[-13, -13], [-13, -13]], "service_capacity_MW": [49, 49], "direction": "import", "request": {"peak_MW": [-62, -62]}},
+    {"id": "changing_export", "initial_SOC_MWh": [49, 49], "locked_baseline_MW": [[-13, -13], [13, 13]], "service_capacity_MW": [49, 49], "direction": "export", "request": {"peak_MW": [62, 62]}},
+    {"id": "changing_import", "initial_SOC_MWh": [49, 49], "locked_baseline_MW": [[-13, -13], [13, 13]], "service_capacity_MW": [49, 49], "direction": "import", "request": {"peak_MW": [-62, -62]}},
+    {"id": "unequal_no_instruction", "initial_SOC_MWh": [1, 97], "locked_baseline_MW": [[-13, -13], [-13, -13]], "service_capacity_MW": [49, 49], "direction": "export", "request": null},
+    {"id": "absolute_zero_instruction", "initial_SOC_MWh": [49, 49], "locked_baseline_MW": [[-13, -13], [-13, -13]], "service_capacity_MW": [49, 49], "direction": "export", "request": {"peak_MW": [0, 0]}}
+  ],
+  "fixture_basis": "explicit component cases, not field histories; +/-13 MW exercise a nonzero changing baseline, 49 MW obligations are retained, and stock scenarios match the prior preflight",
+  "deliverable": "extend the minimal contract, check independent physical traces and retain every service or commitment failure; report only six fixture results",
+  "decision": "repair any physics or service-accounting discrepancy before integration; after component validation define already received BOA commitments and register a bounded causal pilot before reading its outcomes; no library matrix or source promotion on fixture completion",
+  "accounting": {
+    "new_historical_controller_window_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "full_experiment_launch": false
+}

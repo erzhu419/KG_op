@@ -2,6 +2,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+TRANSPORT=(python3 "$ROOT/../scheduleurm/skill/transport_exec.py")
 DEPLOY="${DEPLOY:-/home/erzhu419/mine_code/KG_op_scheduler_deploy}"
 REMOTE="${REMOTE:-zhengliang01@202.197.46.16}"
 PROXY="${PROXY:-jtl110gpu}"
@@ -28,13 +29,13 @@ rsync -a "$SOURCE" "$LOCAL_PARENT/"
 
 for host in $GPU_HOSTS; do
   remote_path="/home/erzhu419/mine_code/KG_op_scheduler_deploy/$RELATIVE"
-  ssh -o BatchMode=yes -o ConnectTimeout=30 "$host" \
+  "${TRANSPORT[@]}" -- ssh -o BatchMode=yes -o ConnectTimeout=30 "$host" \
     "mkdir -p '$(dirname "$remote_path")'"
-  rsync -a \
+  "${TRANSPORT[@]}" --bulk -- rsync -a \
     -e "ssh -o BatchMode=yes -o ConnectTimeout=30" \
     "$SOURCE" "$host:$(dirname "$remote_path")/"
   remote_hash="$(
-    ssh -o BatchMode=yes -o ConnectTimeout=30 "$host" \
+    "${TRANSPORT[@]}" -- ssh -o BatchMode=yes -o ConnectTimeout=30 "$host" \
       "sha256sum '$remote_path'" | awk '{print $1}'
   )"
   if [[ "$remote_hash" != "$EXPECTED_SHA256" ]]; then
@@ -44,13 +45,13 @@ for host in $GPU_HOSTS; do
 done
 
 hpc_path="$REMOTE_ROOT/$RELATIVE"
-ssh -o BatchMode=yes -o ConnectTimeout=30 -J "$PROXY" "$REMOTE" \
+"${TRANSPORT[@]}" -- ssh -o BatchMode=yes -o ConnectTimeout=30 -J "$PROXY" "$REMOTE" \
   "mkdir -p '$(dirname "$hpc_path")'"
-rsync -a \
+"${TRANSPORT[@]}" --bulk -- rsync -a \
   -e "ssh -o BatchMode=yes -o ConnectTimeout=30 -J $PROXY" \
   "$SOURCE" "$REMOTE:$(dirname "$hpc_path")/"
 hpc_hash="$(
-  ssh -o BatchMode=yes -o ConnectTimeout=30 -J "$PROXY" "$REMOTE" \
+  "${TRANSPORT[@]}" -- ssh -o BatchMode=yes -o ConnectTimeout=30 -J "$PROXY" "$REMOTE" \
     "sha256sum '$hpc_path'" | awk '{print $1}'
 )"
 if [[ "$hpc_hash" != "$EXPECTED_SHA256" ]]; then

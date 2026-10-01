@@ -60,8 +60,8 @@ from problems.randomized_profiles import (  # noqa: E402
 )
 
 
-CONTRACT_ID = "opsd_forecast_indexed_region_holdout_v3"
-DESIGN_CONTRACT_ID = "opsd_forecast_indexed_source_atlas_design_v3"
+CONTRACT_ID = "opsd_forecast_indexed_region_holdout_v5_shared_hourly_power"
+DESIGN_CONTRACT_ID = "opsd_forecast_indexed_source_atlas_design_v5_shared_hourly_power"
 ARMS = (
     "source_atlas",
     "generic_dct_maximin",

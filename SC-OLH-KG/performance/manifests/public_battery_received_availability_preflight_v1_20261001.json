@@ -1,0 +1,55 @@
+{
+  "protocol_id": "public_battery_received_availability_preflight_v1_20261001",
+  "frozen_at_utc": "2026-09-30T16:03:37+00:00",
+  "role": "received-BOA component validation followed by retained-state availability diagnosis; no historical controller rollout",
+  "registration_context": "six pending-PN fixtures observed: five physically feasible, two service successes, one known commitment failure; received-BOA availability outcomes at V5 saved states unobserved",
+  "basis_component": "paper_artifacts/public_battery_availability_pending_preflight_v1_20260930/summary.json",
+  "retained_asset_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "historical_basis": "performance/manifests/public_battery_unit_targets_failure_visibility_v1_20260930.json",
+  "information_contract": [
+    "Build the mandatory reference from latest already received covering BOAs, otherwise the two locked PN half-hours; no future receipt used",
+    "Preserve already accepted power outside an explicitly replacing new BOA; no instruction follows the mandatory reference",
+    "A new hypothetical BOA uses absolute endpoints, starts at current reference power and returns to the reference power at minute 32; replacement during its own interval is explicit, not an added power increment",
+    "Service capacity remains relative to the locked PN, not an extra reserve stacked on top of an already accepted activation",
+    "Use exact continuous stock bounds and gross site power through the whole known 60-minute prefix, including accepted commitments after pulse expiry",
+    "A known unsafe mandatory reference remains a commitment failure; request rejection or under-declaration does not become service success",
+    "The pulse admission rectangle and common scaling remain conservative simulation assumptions, not market-dispatch identification"
+  ],
+  "component_fixtures": {
+    "locked_baseline_MW": [[-13, -13], [-13, -13]],
+    "service_capacity_MW": [49, 49],
+    "direction": "export",
+    "known_BOA": {"unit": 1, "received_minute": -1, "start_minute": 0, "stop_minute": 60, "power_MW": 20},
+    "cases": [
+      {"id": "known_BOA_no_new_instruction", "initial_SOC_MWh": [49, 49], "new_request": null},
+      {"id": "explicit_zero_revision_then_restore", "initial_SOC_MWh": [49, 49], "new_request": {"peak_MW": [0, 0]}},
+      {"id": "future_BOA_not_visible", "initial_SOC_MWh": [49, 49], "new_request": null, "future_BOA": {"unit": 1, "received_minute": 10, "start_minute": 10, "stop_minute": 60, "power_MW": 40}},
+      {"id": "unsafe_received_commitment", "initial_SOC_MWh": [1, 97], "new_request": null}
+    ],
+    "scope": "four explicit fixtures; neither their powers nor inventories are represented as historical plant measurements"
+  },
+  "retained_state_diagnosis": {
+    "period": "2024-04-15",
+    "profiles": ["constant_pair_0003_0007", "constant_pair_0004_0007"],
+    "contexts": 146,
+    "window_start_minutes": "all original 0,60,...,4320 for each profile",
+    "state": "original decision_SOC_MWh and pending_MW from retained V5 contexts; no state fitting or new controller rollout",
+    "directions": ["export", "import"],
+    "service_probe_MW": [49, 49],
+    "probe_scope": "292 fixed capacity stress probes at dependent nomination states; 49 MW is an analyst diagnostic input, not a measured obligation imposed on the historical plant",
+    "procedure": "reconstruct the already received mandatory 60-minute reference, verify it, then compute capacity and replay each requested full-service pulse from that saved state",
+    "report": "retain all component cases and all 292 probe rows, distinguishing unsafe reference, physical feasibility, capacity shortfall and request shortfall; report correlated state/event counts",
+    "storage": "only component fixtures retain full short traces; historical probes retain compact metrics and provenance, not new weekly trajectories"
+  },
+  "decision": "repair reference or revision discrepancies before historical-state interpretation; after diagnosis decide whether this contract supports a bounded causal pilot. No source comparison or universal policy-impossibility claim follows from a conservative capacity shortfall",
+  "accounting": {
+    "new_historical_controller_window_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "full_experiment_launch": false
+}

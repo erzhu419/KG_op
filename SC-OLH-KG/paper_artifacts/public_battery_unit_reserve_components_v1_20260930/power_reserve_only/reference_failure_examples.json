@@ -1,0 +1,142 @@
+[
+  {
+    "period": "2024-04-15",
+    "profile_id": "constant_0.50",
+    "window_start_minute": 0,
+    "submission_context": {
+      "policy_index": 65,
+      "window_index": 0,
+      "failure_minute": 1465,
+      "failure_piece_stop_fraction": 1.0,
+      "nomination_decision_minute": 1380,
+      "decision_SOC_MWh": [
+        51.34642028985506,
+        44.35137004830918
+      ],
+      "pending_MW": [
+        [
+          0.07053333333330841,
+          8.605066666666646
+        ],
+        [
+          0.0,
+          -3.089316242435218e-14
+        ]
+      ],
+      "nomination_MW": [
+        4.246880000000004,
+        -20.272383952951007
+      ]
+    },
+    "reconstruction": {
+      "classification": "later_receipt_path_change",
+      "decision_absolute_minute": 1380,
+      "predicted_prefix_minutes": 86.0,
+      "known_prefix": {
+        "minimum_SOC_MWh": [
+          49.307744927536234,
+          39.67470338164252
+        ],
+        "maximum_SOC_MWh": [
+          51.34642028985506,
+          47.756627117552355
+        ],
+        "final_SOC_MWh": [
+          49.307744927536234,
+          47.756627117552355
+        ],
+        "unit_bound_violation_MWh": [
+          0.0,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "known_pending_hour": {
+        "minimum_SOC_MWh": [
+          51.30808695652174,
+          39.67470338164252
+        ],
+        "maximum_SOC_MWh": [
+          51.34642028985506,
+          44.35137004830918
+        ],
+        "final_SOC_MWh": [
+          51.30808695652174,
+          39.67470338164255
+        ],
+        "unit_bound_violation_MWh": [
+          0.0,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "actual_prefix": {
+        "minimum_SOC_MWh": [
+          24.940843478260884,
+          -0.3173058293075428
+        ],
+        "maximum_SOC_MWh": [
+          51.407753623188405,
+          44.35137004830918
+        ],
+        "final_SOC_MWh": [
+          24.940843478260884,
+          -0.3173058293075428
+        ],
+        "unit_bound_violation_MWh": [
+          0.0,
+          0.3173058293075428
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "changed_power_minutes": 54,
+      "later_changed_receipts": [
+        {
+          "unit": 1,
+          "acceptance_number": 6788,
+          "received_minute": 1402
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6789,
+          "received_minute": 1409
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6790,
+          "received_minute": 1415
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6791,
+          "received_minute": 1423
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6792,
+          "received_minute": 1448
+        },
+        {
+          "unit": 2,
+          "acceptance_number": 6714,
+          "received_minute": 1408
+        },
+        {
+          "unit": 2,
+          "acceptance_number": 6715,
+          "received_minute": 1414
+        },
+        {
+          "unit": 2,
+          "acceptance_number": 6716,
+          "received_minute": 1422
+        },
+        {
+          "unit": 2,
+          "acceptance_number": 6717,
+          "received_minute": 1448
+        }
+      ]
+    }
+  }
+]

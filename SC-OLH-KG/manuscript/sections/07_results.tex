@@ -5,21 +5,18 @@
 Table \ref{tab:primary-results} and Figure \ref{fig:primary-results} report the
 primary randomized task law.  The source-scored design contains a truly
 feasible policy in 91.7\% of task--resolution cells and yields a certified
-true-feasible deployment in 47.3\%.  Generic DCT maximin reaches 37.5\% and
-10.6\%; raw Sobol
-reaches 80.2\% and 30.0\%.  Penalized loss is 0.163 for source scoring, 0.746
-for generic DCT, and 0.337 for Sobol.  Thus source outcomes add value beyond
-the shared structural library on this declared task mixture.
+true-feasible deployment in 47.3\%.  In the supplementary comparisons,
+standardized DCT maximin reaches 81.0\% and 31.5\%, and the source-greedy
+portfolio reaches 87.1\% and 37.1\%.  Penalized losses are 0.163, 0.274, and
+0.178, respectively.  Source scoring retains an aggregate advantage over
+matched structural scaling and a simple alternative source-selection rule.
 
-\begin{table}[t]
-\centering
-\small
-\caption{Primary randomized profile results.  Each row contains 480 paired
-task--resolution cells: 160 independently seeded latent tasks crossed with
-three grid resolutions.}
-\label{tab:primary-results}
-\resizebox{\textwidth}{!}{\input{tables/review_stress_primary.tex}}
-\end{table}
+The original unstandardized DCT control reaches only 37.5\% coverage and
+10.6\% certification.  Its difference from the standardized control shows
+that the original comparison combined source scoring with a change of metric;
+it cannot isolate the value of source outcomes.  Raw Sobol reaches 80.2\%
+coverage and 30.0\% certification with penalized loss 0.337.
+
 
 \begin{figure}[t]
   \centering
@@ -30,13 +27,77 @@ three grid resolutions.}
   \label{fig:primary-results}
 \end{figure}
 
-The paired source-minus-generic-DCT differences in certified success are 0.406
-(bootstrap 95\% CI $[.325,.488]$) at $d=200$, 0.356
-($[.275,.438]$) at $d=1000$, and 0.338 ($[.256,.419]$) at $d=10000$.
-The similar differences across grids show that the result survives profile
-refinement under this task law.  They do not show increasing difficulty with
-$d$: the $d=10000$ experiment changes resolution, not the underlying policy
-class.
+Paired source-minus-standardized-DCT certification differences are 0.163
+(stratified bootstrap 95\% CI $[.119,.206]$) at $d=200$ and 0.156
+($[.113,.200]$) at both $d=1000$ and $d=10000$.  Against the source-greedy
+portfolio they are 0.113 ($[.044,.181]$) at $d=200$ and $d=1000$, and 0.081
+($[.012,.150]$) at $d=10000$.  Each interval resamples the 20 paired tasks
+within each of the eight fixed regimes; the resolutions are analyzed
+separately.  The Online Supplement reports paired wins, losses, and ties.
+These supplementary estimates describe corrected comparisons on reused tasks.
+Grid refinement preserves the aggregate advantage under this task law.
+
+\subsection{First-center attribution and prospective confirmation}
+
+The diagnostic factorial comparison isolates the source-selected first center.
+At $d=1000$, source-best with structural distance alone certifies 75/160
+true-feasible deployments, compared with 74/160 for the full atlas and 49/160
+for either medoid design.  Appending ranks to a fixed medoid does not recover
+the gain.  Structural-only and augmented source-best designs have the same
+feasible coverage at every resolution; the certification difference is one
+task per resolution.  The Online Supplement gives the complete factorial and
+raw-profile-distance controls.
+
+Table \ref{tab:confirmation} reports the separate prospective experiment on
+240 new latent tasks, three new source families and three new public libraries.
+The atlas certifies 56/240 true-feasible deployments, compared with 24/240 for
+standardized generic maximin: a paired difference of 13.3 percentage points
+(95\% stratified bootstrap interval $[9.6,17.1]$).  The three family-specific
+differences are 26.3, 10.0 and 3.8 points.  Source-best with structural distance
+alone certifies 54/240, so the rank-distance increment is only 0.8 points
+($[0,2.1]$).  The atlas exceeds the matched raw-$L^2$ design by 4.2 points
+($[1.7,6.7]$), supporting a limited role for the structural metric.
+
+The same-source portfolio certifies 49/240; the atlas-minus-portfolio
+difference is 2.9 points ($[-2.1,7.9]$).  Its feasible coverage is 212/240,
+compared with 155/240 for the atlas, and its mean penalized loss is 0.156
+versus 0.414.  Each of the six designs records one false certificate.  Thus
+the new experiment confirms a source-initialization advantage over generic
+maximin, but does not confirm atlas superiority over a portfolio.  The
+postdecision first-center audit finds 106/240 truly feasible source-best
+centers and 83/240 medoids; it is a diagnostic, not an input to selection.
+The predefined 32- and 128-profile sensitivities preserve positive paired
+certification differences on the first new family (15.0 and 13.8 points),
+without establishing a monotone library-size effect.
+
+\subsection{Does structural coverage improve the remaining nine policies?}
+
+A postdecision diagnostic fixes the same source-selected first policy and
+replaces the other nine by a uniform sample without replacement from the
+remaining 63 library members.  It retains all 240 tasks, original target
+observation streams, ten-point budget, shortlist and verifier.  The random
+remainder certifies 53/240 true-feasible deployments, versus 54/240 for
+source-first structural coverage and 56/240 for the full atlas.
+The paired certification differences are 0.4 percentage points
+(95\% stratified bootstrap interval $[-3.3,4.2]$) and 1.3 points
+($[-2.5,5.0]$), respectively.  This diagnostic does not establish a
+certification advantage of structural coverage over random remainder
+selection.  Initial feasible coverage is 167/240 for the random remainder
+and 155/240 for either geometric design.
+
+A fixed-first-center portfolio control changes ten ordered designs and
+reuses 230 identical ordered designs.  It retains 212/240 feasible coverage
+and 49/240 true certificates.  A decision-chain reconstruction explains why
+these endpoints disagree: the portfolio's three-member shortlist contains a
+truly feasible policy in 177 tasks, losing 35 design hits, whereas the atlas
+retains all 155 hits.  Conditional on the original noisy shortlists, analytic
+expectations over fresh verification streams are 54.07 true certificates for
+the fixed-first portfolio and 49.72 for the atlas.  These expectations explain
+verification variability; they do not replace observed outcomes.
+The evidence supports source initialization over generic selection, while
+leaving the incremental value of the covering rule unresolved.  The Online
+Supplement reports this later diagnostic separately from the prospective
+confirmation.
 
 \subsection{Where source scoring fails}
 
@@ -45,56 +106,49 @@ Figure \ref{fig:regime-results} preserve every adverse regime.  Raw Sobol
 outperforms source scoring in aligned low frequency and irregular grids;
 natural structure is slightly better under sparse high-frequency activity;
 and neither method certifies useful policies under full misspecification.
-Source scoring is strongest for permutation, piecewise smoothness, growing
-rank, and the registered frequency shift.  In the sparse-high-frequency regime
+The matched comparisons localize that advantage.  At $d=1000$, 24 of the
+25 net certificates gained over standardized DCT come from coordinate
+permutation (18) and growing rank (6).  Piecewise smoothness ties at 19/20,
+and frequency shift slightly favors standardized DCT, 13/20 versus 12/20.
+Against the portfolio, the largest gains occur in frequency shift and growing
+rank.  In the sparse-high-frequency regime
 its feasible coverage falls from 20/20 tasks at $d=200$ to 0/20 at $d=10000$,
-despite unchanged target budget.  This is direct evidence against a generic
-high-dimensional claim.
+despite unchanged target budget.  The portfolio covers 20/20 and certifies
+6/20 of these $d=10000$ tasks, whereas both source-scored and standardized
+maximin cover and certify none.  Geometric diversity is useful on the mixture
+without being uniformly preferable to source-based greedy selection.
 
-\begin{table}[t]
-\centering
-\small
-\caption{Rates aggregated over three grid resolutions within each regime.
-The comparator is the best source-free design in that row.}
-\label{tab:regime-results}
-\resizebox{\textwidth}{!}{\input{tables/review_stress_regimes.tex}}
-\end{table}
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.92\textwidth]{review_regime.pdf}
-  \caption{Source-minus-generic-DCT certified-success differences by regime
-  and grid resolution.  Positive aggregate performance coexists with clear
-  reversals.}
+  \caption{Source-scored atlas minus each supplementary control in certified
+  success, by regime and grid resolution.  Entries are percentage-point
+  differences over 20 paired tasks.}
   \label{fig:regime-results}
 \end{figure}
 
-The source arm records no false certificates in 480 task--resolution cells.  Generic DCT and
-raw Sobol record three and two, respectively.  Target-only functional SCBO at
+The source-scored and standardized DCT arms record no false certificates in
+480 task--resolution cells each.  Unstandardized DCT, the source-greedy
+portfolio, and raw Sobol record three, three, and two, respectively.
+Target-only functional SCBO at
 $N=13$ certifies 15 of 480 primary cells with three false certificates, all in
 the frequency-support-shift regime.  Increasing its cosine rank does not remove
 the general coverage deficit.
 
 The aligned-low-frequency reversal has a concrete geometric explanation.
-Figure \ref{fig:aligned-geometry} reconstructs each fixed design and accesses
+The supplementary geometry diagnostic reconstructs each fixed design and accesses
 the hidden target safe center only afterward.  Across the 600 design points
 per arm, raw Sobol has median latent-center distance 0.0343 and median non-DC
 low-frequency energy 0.0258, compared with 0.0813 and 0.2292 for source
 scoring.  Its pointwise true-feasible rate is 94.7\%, versus 10.0\% for both
-source and generic DCT.  High-dimensional independent coordinates average
+source and the original unstandardized DCT.  High-dimensional independent coordinates average
 toward a near-constant profile with DC coefficient .5; the aligned generator's
 safe center happens to occupy that region.  This after-the-fact diagnostic
 explains the reversal, but it uses hidden geometry and cannot be used to
 choose a method or change an outcome.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.90\textwidth]{review_aligned_geometry.pdf}
-  \caption{After-the-fact geometry diagnostic for the aligned regime.  Points
-  show medians and bars show 10th--90th percentiles over fixed design points.
-  The hidden safe center was unavailable to every algorithm.}
-  \label{fig:aligned-geometry}
-\end{figure}
+
 
 \subsection{Schema and sensitivity}
 
@@ -106,13 +160,6 @@ final method.
 Source scoring therefore does not need the target family label, but it does
 rely on an interpretable ordered profile map.
 
-\begin{table}[t]
-\centering
-\small
-\caption{Controls for the information available at $d=1000$.}
-\label{tab:schema-results}
-\resizebox{0.88\textwidth}{!}{\input{tables/review_schema_controls.tex}}
-\end{table}
 
 Sensitivity is nonmonotone, which argues against treating source volume as a
 free advantage.  Raising profiles per source task from 64 to 128 reduces
@@ -122,23 +169,21 @@ two.  Retaining 16 frequencies reaches 48.1\%, while four reaches 43.1\%.
 Increasing $n_0$ from 10 to 20 yields only 46.9\% certification, while $n_0=5$
 yields 42.5\%.  The first-center safety weight is more consequential: .25
 reduces certification to 32.5\%, whereas .5 and .75 give 46.2\% and 45.0\%.
-Figure \ref{fig:source-budget} summarizes the source-budget axes.
+The Online Supplement displays the source-budget axes.  The
+frequency-penalty sweep is algebraically redundant because column
+standardization cancels positive frequency scaling; it does not demonstrate
+robustness to an effective tuning parameter.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.92\textwidth]{review_source_budget.pdf}
-  \caption{Source-budget sensitivity.  More tasks, profiles, or replications
-  do not monotonically improve the frozen design.}
-  \label{fig:source-budget}
-\end{figure}
+
 
 \subsection{Cost changes the ranking}
 
 At the source method's primary budget, mean unamortized all-in calls are about
 559 across the randomized law, while amortization over 20 targets reduces the
-source contribution from 384 to 19.2 calls per target.  Comparable primary
-source-free designs use roughly 213--233 calls because verification dominates
-their ten search calls.  Figure \ref{fig:cost-results} makes both accounting
+source contribution from 384 to 19.2 calls per target.  Standardized DCT uses
+201.2 all-in calls and the portfolio uses 592.0 before amortization or 227.2
+at 20 targets.  Verification dominates their ten target-search calls.
+Figure \ref{fig:cost-results} makes both accounting
 views explicit.
 
 \begin{figure}[t]
@@ -151,70 +196,77 @@ views explicit.
 
 When the 384 source calls are instead given to target-only search, the source
 method is not best (Table \ref{tab:equal-cost}).  It certifies 46.2\% of 160
-tasks.  Generic DCT and raw Sobol each certify 53.8\%, natural structure 53.1\%,
+tasks.  Unstandardized DCT and raw Sobol each certify 53.8\%, natural structure 53.1\%,
 and target-only functional SCBO 58.1\%.  The latter includes one failed cell as
 an unsuccessful outcome.  Mean realized all-in costs are already close because
 methods consume different verification effort.  The source archive is thus an
 amortized multi-target investment, not a one-target total-cost win.
 
-\begin{table}[t]
-\centering
-\scriptsize
-\caption{Equal preverification cost at $d=1000$: 384 source plus 10 target
-calls versus 394 target-only calls.  Verification remains additional and is
-included in the final column.}
-\label{tab:equal-cost}
-\resizebox{\textwidth}{!}{\input{tables/review_equal_cost.tex}}
-\end{table}
 
-Using primary mean call counts, the source archive breaks even in simulator
-calls after roughly 7 target deployments versus generic DCT, 9 versus natural
-structure, and 11 versus raw Sobol.  These are cost thresholds, not guarantees
-of outcome dominance; Energy demonstrates why the distinction matters.
+Using primary mean call counts, the archive breaks even against standardized
+DCT at 15 targets when aggregating resolutions, or 15, 16, and 16 targets
+at the individual resolutions.  The earlier thresholds of 7 against
+unstandardized DCT, 9 against natural structure, and 11 against raw Sobol
+depend on those comparators.  Both source-based rules pay 384 archive calls;
+the atlas consumes less verification effort than the portfolio on average.
+These are descriptive cost thresholds.
 
 Table \ref{tab:outcome-adjusted-cost} converts amortized calls into calls per
 true-feasible certificate.  With the archive shared by 20 targets, source
-scoring uses 411.3 calls per certificate, versus 2192.9 for generic DCT,
-1143.2 for natural structure, and 709.4 for raw Sobol.  This descriptive ratio
+scoring uses 411.3 calls per certificate, versus 639.5 for standardized DCT,
+612.7 for the portfolio, 1143.2 for natural structure, and 709.4 for raw
+Sobol.  This descriptive ratio
 does not price unsafe deployment, abstention, or objective quality.
 
-\begin{table}[t]
-\centering
-\scriptsize
-\caption{Outcome-adjusted simulator cost.  Calls per success equal mean
-amortized all-in calls divided by the observed true-feasible certification
-rate.  Break-even compares source scoring with each source-free row.}
-\label{tab:outcome-adjusted-cost}
-\resizebox{\textwidth}{!}{\input{tables/review_outcome_adjusted_cost.tex}}
-\end{table}
 
 \subsection{External Energy result}
 
-Energy is a negative external control for source learning.  Table
-\ref{tab:energy-results} shows that source scoring certifies 60/90 runs, while
-generic DCT maximin certifies 70/90.  Random low frequency, natural constants,
-raw Sobol, and functional SCBO certify 61, 57, 52, and 58.  No arm records a
-false certificate.  Across five regions, the source-minus-generic safe-rate
-difference is $-0.079$ with bootstrap 95\% CI $[-.137,-.020]$: zero region
-wins, three losses, and two ties.  Source scoring is not rescued by a favorable
-objective comparison; median objective is 0.0345 for source scoring and 0.0455
-for generic DCT among certified summaries, but the sets of certified runs
-differ and conditional medians cannot override the coverage reversal.
+Energy does not establish a robust certification or archive cost advantage
+under the corrected physical model.  Table \ref{tab:energy-results} reports
+57/90 certified source runs and 54/90 for unstandardized DCT maximin.  Standardized DCT, the
+same-source portfolio, random low frequency, natural constants, raw Sobol
+and functional SCBO certify 49, 59, 56, 52, 43 and 51 runs.  All eight designs
+record zero false certificates.  The source-minus-unstandardized-DCT
+region-balanced difference is $0.027$ (descriptive bootstrap 95\%
+interval $[-.040,.120]$).  Against standardized DCT it is 0.060
+($[.000,.140]$), and against the portfolio $-0.013$ ($[-.040,.000]$).
+The small aggregate certification gain is unresolved across geographic
+regions and does not establish superiority over the portfolio.
 
-\begin{table}[t]
-\centering
-\small
-\caption{Energy V3 region-held-out results over 18 markets and five seeds per
-market.  Source scoring does not beat the generic structured control.}
-\label{tab:energy-results}
-\resizebox{0.94\textwidth}{!}{\input{tables/review_energy_v3.tex}}
-\end{table}
+Of 421 certificates in the corrected eight-arm matrix, 374 satisfy the
+chronological-block criterion, all 421 satisfy the nonoverlapping-window
+criterion, and 374 satisfy both.  These are descriptive calendar-stability
+results.  The Online Supplement reports each design separately.
 
-The temporal audit preserves 312 of 358 V3 certificates under both block and
-nonoverlap conditions.  It is descriptive, not an iid future-calendar
-certificate.  The external conclusion is consequently narrow but useful:
-ordered low-frequency structure helps relative to raw Sobol, while source
-outcomes can mis-rank that structure under geographic and temporal shift.
+Actual archive reuse across the 18 markets does not rescue the external
+cost comparison.  Averaging the five repeats within each market, the source
+arm consumes 6842 cumulative calls, including 3840 source calls charged once
+across five regional archives, and yields 11.4 expected certified deployments.
+Unstandardized DCT consumes 3258 calls and yields 10.8.  Calls per certified
+success are therefore 600.2 and 301.7.  These observed reuse counts replace a
+hypothetical twenty-deployment allocation for this comparison.
+
+\subsection{Public-battery development diagnostic}
+
+A separate retrospective replay on three 2024 seasonal tasks tests whether
+source initialization survives simple policy controls.  Source-first
+structural search and source-free constant-only structural search both
+certify 15/15 runs across five algorithm repeats per season, with zero
+finite-population false certificates and the same target query count.
+Averaging repeats within each season gives 279 target queries over the three
+tasks.  The source design additionally pays 44,968 source-window queries;
+the constant-only design pays none.  Testing only the source-selected first
+policy also certifies 15/15, using 243 target queries but retaining the same
+source cost.
+
+Paid enumeration of all 154 library policies over all 73 windows per task
+requires 33,726 queries, below the source design's 45,247 source-inclusive
+queries.  Restricting enumeration to the 100 constant pairs requires 21,900
+queries and selects the same complete-cost optimum in each season.  This
+diagnostic closes the development query-efficiency claim for source
+initialization in this case.  It reports a finite-library adaptation rather
+than a run of the full rank-augmented atlas.  The Online Supplement gives the
+sampling law, accounting and policy selections.
 
 \subsection{Verifier power and native transfer}
 
@@ -236,9 +288,11 @@ rule is reported as sensitivity, not substituted after observing outcomes.
 
 In the native transfer matrix, RGPE certifies 30/60 tasks and MetaBO 28/60;
 the other six methods range from 0/60 to 14/60 (Online Supplement,
-Table EC.4).  All eight certify 0/20 Queue tasks.  These
+subsection ``Native end-to-end transfer'').  All eight certify 0/20 Queue tasks.  These
 results show that ordinary end-to-end transfer remains difficult, but they do
 not establish a broad SOTA ranking from three historical synthetic families.
+Their v69 verification protocol differs from the primary exact-binomial
+protocol, so certification totals should not be compared across these matrices.
 
 Finally, cumulative factor-HVD substantially improves held-out log-variance
 RMSE and variance-shape correlation relative to pooled variance, yet does not

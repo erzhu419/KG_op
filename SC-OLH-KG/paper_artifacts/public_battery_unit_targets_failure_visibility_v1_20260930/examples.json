@@ -1,0 +1,359 @@
+[
+  {
+    "row": {
+      "period": "2024-04-15",
+      "profile_id": "constant_pair_0003_0007",
+      "window_start_minute": 0,
+      "first_failure_minute": 418,
+      "failure_absolute_minute": 418,
+      "decision_absolute_minute": 330,
+      "classification": "later_receipt_path_change",
+      "first_failure_piece_reproduced": true,
+      "later_changed_receipts": 3,
+      "changed_power_minutes": 41,
+      "power_failure": false,
+      "unit_1_inventory_failure": true,
+      "unit_2_inventory_failure": false,
+      "known_power_bound_violation_MW": 0.0,
+      "actual_power_bound_violation_MW": 0.0,
+      "known_unit_1_bound_violation_MWh": 0.0,
+      "actual_unit_1_bound_violation_MWh": 0.5351449275362228,
+      "known_unit_2_bound_violation_MWh": 0.0,
+      "actual_unit_2_bound_violation_MWh": 0.0
+    },
+    "submission_context": {
+      "period": "2024-04-15",
+      "profile_id": "constant_pair_0003_0007",
+      "window_start_minute": 0,
+      "policy_index": 33,
+      "window_index": 0,
+      "failure_minute": 418,
+      "failure_piece_stop_fraction": 1.0,
+      "nomination_decision_minute": 330,
+      "previous_nomination": {
+        "nomination_decision_minute": 300,
+        "decision_SOC_MWh": [
+          34.29999999999994,
+          73.50000000000013
+        ],
+        "pending_MW": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            -1.2357264969740872e-13,
+            2.353317540837452e-13
+          ]
+        ],
+        "nomination_MW": [
+          0.0,
+          0.0
+        ]
+      },
+      "decision_SOC_MWh": [
+        34.26376811594197,
+        73.50000000000013
+      ],
+      "pending_MW": [
+        [
+          -1.2357264969740872e-13,
+          2.353317540837452e-13
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "nomination_MW": [
+        -0.07876496534341076,
+        0.0
+      ]
+    },
+    "first_piece_match": {
+      "safe_before_failing_piece": true,
+      "piece_stop_is_reconstruction_boundary": true,
+      "inventory_failure": [
+        true,
+        false
+      ],
+      "power_failure": false
+    },
+    "reconstruction": {
+      "classification": "later_receipt_path_change",
+      "decision_absolute_minute": 330,
+      "predicted_prefix_minutes": 89.0,
+      "known_prefix": {
+        "minimum_SOC_MWh": [
+          34.26376811594197,
+          73.5
+        ],
+        "maximum_SOC_MWh": [
+          34.2987922705314,
+          73.50000000000013
+        ],
+        "final_SOC_MWh": [
+          34.2987922705314,
+          73.5
+        ],
+        "unit_bound_violation_MWh": [
+          0.0,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "known_pending_hour": {
+        "minimum_SOC_MWh": [
+          34.26376811594197,
+          73.5
+        ],
+        "maximum_SOC_MWh": [
+          34.26376811594203,
+          73.50000000000013
+        ],
+        "final_SOC_MWh": [
+          34.26376811594203,
+          73.5
+        ],
+        "unit_bound_violation_MWh": [
+          0.0,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "actual_prefix": {
+        "minimum_SOC_MWh": [
+          -0.5351449275362228,
+          73.5
+        ],
+        "maximum_SOC_MWh": [
+          34.263768115942014,
+          73.50000000000013
+        ],
+        "final_SOC_MWh": [
+          -0.5351449275362228,
+          73.5
+        ],
+        "unit_bound_violation_MWh": [
+          0.5351449275362228,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "changed_power_minutes": 41,
+      "later_changed_receipts": [
+        {
+          "unit": 1,
+          "acceptance_number": 6771,
+          "received_minute": 349
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6772,
+          "received_minute": 374
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6773,
+          "received_minute": 397
+        }
+      ]
+    }
+  },
+  {
+    "row": {
+      "period": "2024-04-15",
+      "profile_id": "constant_pair_0004_0007",
+      "window_start_minute": 0,
+      "first_failure_minute": 5334,
+      "failure_absolute_minute": 5334,
+      "decision_absolute_minute": 5250,
+      "classification": "later_receipt_path_change",
+      "first_failure_piece_reproduced": true,
+      "later_changed_receipts": 10,
+      "changed_power_minutes": 54,
+      "power_failure": false,
+      "unit_1_inventory_failure": true,
+      "unit_2_inventory_failure": false,
+      "known_power_bound_violation_MW": 0.0,
+      "actual_power_bound_violation_MW": 0.0,
+      "known_unit_1_bound_violation_MWh": 0.0,
+      "actual_unit_1_bound_violation_MWh": 0.35652173913047847,
+      "known_unit_2_bound_violation_MWh": 0.0,
+      "actual_unit_2_bound_violation_MWh": 0.0
+    },
+    "submission_context": {
+      "period": "2024-04-15",
+      "profile_id": "constant_pair_0004_0007",
+      "window_start_minute": 0,
+      "policy_index": 42,
+      "window_index": 0,
+      "failure_minute": 5334,
+      "failure_piece_stop_fraction": 1.0,
+      "nomination_decision_minute": 5250,
+      "previous_nomination": {
+        "nomination_decision_minute": 5220,
+        "decision_SOC_MWh": [
+          44.099999999999966,
+          73.49999999999983
+        ],
+        "pending_MW": [
+          [
+            -1.544658121217609e-14,
+            -3.089316242435218e-14
+          ],
+          [
+            6.536993168992922e-14,
+            -4.0161111151657836e-13
+          ]
+        ],
+        "nomination_MW": [
+          -1.3901923090958482e-13,
+          5.2295945351943376e-14
+        ]
+      },
+      "decision_SOC_MWh": [
+        44.099999999999966,
+        73.49999999999983
+      ],
+      "pending_MW": [
+        [
+          6.536993168992922e-14,
+          -4.0161111151657836e-13
+        ],
+        [
+          -1.3901923090958482e-13,
+          5.2295945351943376e-14
+        ]
+      ],
+      "nomination_MW": [
+        -3.032451165721515,
+        -3.089316242435218e-14
+      ]
+    },
+    "first_piece_match": {
+      "safe_before_failing_piece": true,
+      "piece_stop_is_reconstruction_boundary": true,
+      "inventory_failure": [
+        true,
+        false
+      ],
+      "power_failure": false
+    },
+    "reconstruction": {
+      "classification": "later_receipt_path_change",
+      "decision_absolute_minute": 5250,
+      "predicted_prefix_minutes": 85.0,
+      "known_prefix": {
+        "minimum_SOC_MWh": [
+          42.70507246376805,
+          73.49999999999983
+        ],
+        "maximum_SOC_MWh": [
+          44.099999999999966,
+          73.50000000000001
+        ],
+        "final_SOC_MWh": [
+          43.867512077294684,
+          73.5
+        ],
+        "unit_bound_violation_MWh": [
+          0.0,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "known_pending_hour": {
+        "minimum_SOC_MWh": [
+          42.70507246376805,
+          73.49999999999983
+        ],
+        "maximum_SOC_MWh": [
+          44.099999999999966,
+          73.50000000000001
+        ],
+        "final_SOC_MWh": [
+          42.705072463768104,
+          73.49999999999999
+        ],
+        "unit_bound_violation_MWh": [
+          0.0,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "actual_prefix": {
+        "minimum_SOC_MWh": [
+          -0.35652173913047847,
+          73.49999999999983
+        ],
+        "maximum_SOC_MWh": [
+          44.099999999999966,
+          73.50000000000001
+        ],
+        "final_SOC_MWh": [
+          -0.35652173913047847,
+          73.5
+        ],
+        "unit_bound_violation_MWh": [
+          0.35652173913047847,
+          0.0
+        ],
+        "power_bound_violation_MW": 0.0
+      },
+      "changed_power_minutes": 54,
+      "later_changed_receipts": [
+        {
+          "unit": 1,
+          "acceptance_number": 6918,
+          "received_minute": 5272
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6919,
+          "received_minute": 5291
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6920,
+          "received_minute": 5292
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6921,
+          "received_minute": 5293
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6922,
+          "received_minute": 5294
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6923,
+          "received_minute": 5295
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6924,
+          "received_minute": 5296
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6925,
+          "received_minute": 5297
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6926,
+          "received_minute": 5298
+        },
+        {
+          "unit": 1,
+          "acceptance_number": 6927,
+          "received_minute": 5299
+        }
+      ]
+    }
+  }
+]

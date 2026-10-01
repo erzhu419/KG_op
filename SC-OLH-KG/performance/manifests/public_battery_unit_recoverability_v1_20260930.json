@@ -1,0 +1,47 @@
+{
+  "protocol_id": "public_battery_unit_recoverability_v1_20260930",
+  "frozen_at_utc": "2026-09-30T08:23:10+00:00",
+  "role": "perfect-information suffix feasibility under actual stocks and locked nominations; no new controller",
+  "registration_context": "V3, V4 and both reserve-component outcomes known; suffix LP outcomes unobserved",
+  "physical_oracle_protocol": "performance/manifests/public_battery_unit_physical_oracle_v1_20260930.json",
+  "controller_protocols": {
+    "V3": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+    "V4": "performance/manifests/public_battery_unit_reserve_development_v4_20260930.json"
+  },
+  "saved_controller_outputs": {
+    "V3": "paper_artifacts/public_battery_unit_controller_development_v3_20260930",
+    "V4": "paper_artifacts/public_battery_unit_reserve_development_v4_20260930"
+  },
+  "roster": {
+    "profile_id": "constant_0.50",
+    "selection_basis": "original fixed reference, avoiding changes in forecast-profile shape; all its windows retained",
+    "development": "original April/July/October 2024 samples and all 73 complete windows per sample",
+    "controller_reference_window_evaluations": 438,
+    "saved_failed_reference_windows": {"V3": 73, "V4": 80},
+    "maximum_suffix_LP_probes": 306
+  },
+  "trace_validation": "only add snapshot metadata; each reference success flag and first failing minute must reproduce its saved V3/V4 row before any LP interpretation",
+  "probes": {
+    "current": "for each failed reference window, use the nomination decision associated with its first failure: floor(failure_minute/30)*30-60",
+    "previous": "also use the immediately preceding decision 30 minutes earlier; if current is the initial decision, retain an explicit no_previous_decision label",
+    "initial_state": "actual two-unit stocks at the probed decision, not a new half-full reset",
+    "locked_commitments": "fix the first two half-hour unit nominations to the already submitted pending powers; the nomination being considered at the probed decision and all later nominations are free",
+    "horizon": "from the probed decision to the same original window end, with all original future BOAs known to the diagnostic LP",
+    "physical_contract": "unchanged capacities, efficiencies, per-unit inventory bounds, shared gross execution power, signed nominations and BOA precedence",
+    "solver": "inherit the original physical oracle's HiGHS tolerances and 20-second per-probe limit",
+    "replay": "every feasible suffix must pass independent signed-power replay from the actual initial stocks, including equality to both locked pending nominations"
+  },
+  "interpretation": {
+    "current_feasible": "a different new nomination and later schedule could still recover with perfect information; this does not show an observable causal correction",
+    "previous_feasible_current_infeasible": "recoverability was lost between these two snapshots under the realized workload and locked commitments",
+    "both_infeasible": "recovery was already unavailable at the preceding probe; this does not locate its earliest loss",
+    "unresolved": "retain LP timeout/failure and replay discrepancies separately; never relabel them as infeasibility"
+  },
+  "accounting": {
+    "new_data_requests": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "limitations": "reference-policy development diagnosis only; full future information never enters the tested controls; no global online-impossibility, candidate-library coverage, measured battery or source-benefit claim"
+}

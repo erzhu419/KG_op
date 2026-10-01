@@ -1,0 +1,20 @@
+{
+  "contract_id": "submission_revision_energy_controls_20260907",
+  "study_role": "post-review supplemental comparisons on the existing Energy V3 markets and seeds",
+  "original_results_retained": true,
+  "independent_confirmation_claimed": false,
+  "target_markets": "the 18 markets in or_review_energy_forecast_indexed_v3.json",
+  "target_seeds": [0, 1, 2, 3, 4],
+  "new_arms": ["standardized_generic_dct_maximin", "source_greedy_portfolio"],
+  "new_cell_count": 180,
+  "control_definitions": "submission_revision_controls_20260907.json",
+  "target_search_calls": 13,
+  "initial_design_size": 10,
+  "verification_budgets": [80, 80, 80],
+  "familywise_delta": 0.05,
+  "source_archive": "the same four region-held-out source markets, 64 profiles, three replications and source seed streams as Energy V3",
+  "source_calls": {"standardized_generic_dct_maximin": 0, "source_greedy_portfolio": 768},
+  "library_seed": 20261799,
+  "analysis": "paired market-seed outcomes; descriptive equal-region average and bootstrap over five geographic regions; conditional empirical-window safety only",
+  "target_outcomes_used_to_change_design": false
+}

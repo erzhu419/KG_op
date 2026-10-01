@@ -1,0 +1,85 @@
+{
+  "basis": "public_battery_causal_service_pilot_v1_20261001",
+  "status": "first_service_failure_diagnosed",
+  "profiles": [
+    {
+      "profile_id": "constant_pair_0003_0007",
+      "minute": 60,
+      "actual_request_direction": null,
+      "locked_PN_MW": [
+        [
+          27.048000000000005,
+          -53.26086956521739
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "baseline_peak_gross_MW": 80.30886956521739,
+      "full_export_absolute_peak_MW": [
+        76.048,
+        49.0
+      ],
+      "full_import_absolute_peak_MW": [
+        -49.0,
+        -102.26086956521739
+      ],
+      "full_joint_export_gross_MW": 125.048,
+      "full_joint_import_gross_MW": 151.26086956521738,
+      "available_export_capacity_MW": [
+        17.691130444782544,
+        17.691130444782544
+      ],
+      "available_import_capacity_MW": [
+        17.691130444782544,
+        17.691130444782544
+      ],
+      "shared_gross_power_limit_MW": 98.0,
+      "explanation": "both full directional joint peaks exceed the unchanged gross site limit; power alone excludes the fixed service at this state even without activation"
+    },
+    {
+      "profile_id": "constant_pair_0004_0007",
+      "minute": 60,
+      "actual_request_direction": null,
+      "locked_PN_MW": [
+        [
+          9.015999999999998,
+          -53.26086956521739
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "baseline_peak_gross_MW": 62.27686956521739,
+      "full_export_absolute_peak_MW": [
+        58.016,
+        49.0
+      ],
+      "full_import_absolute_peak_MW": [
+        -49.0,
+        -102.26086956521739
+      ],
+      "full_joint_export_gross_MW": 107.01599999999999,
+      "full_joint_import_gross_MW": 151.26086956521738,
+      "available_export_capacity_MW": [
+        35.72313044478247,
+        35.72313044478247
+      ],
+      "available_import_capacity_MW": [
+        22.369565222391262,
+        22.369565222391262
+      ],
+      "shared_gross_power_limit_MW": 98.0,
+      "explanation": "both full directional joint peaks exceed the unchanged gross site limit; power alone excludes the fixed service at this state even without activation"
+    }
+  ],
+  "new_controller_window_evaluations": 0,
+  "new_data_requests": 0,
+  "diagnostic_LP_calls": 0,
+  "algorithm_optimizer_calls": 0,
+  "confirmation_year_access": false,
+  "source_comparison_gate": "HOLD",
+  "limitations": "explains the first two saved-state failures; does not establish every policy's infeasibility or a historical business obligation"
+}

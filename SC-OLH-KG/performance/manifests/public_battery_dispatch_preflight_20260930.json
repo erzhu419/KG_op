@@ -1,0 +1,58 @@
+{
+  "protocol_id": "public_battery_dispatch_preflight_20260930",
+  "role": "offline causal dispatch reconstruction and instruction-only energy diagnostic; no method comparison",
+  "registration_context": "unit identity, empty Contego sample, Pillswood counts and overlapping instructions inspected; energy envelope not yet computed",
+  "asset": {
+    "name": "public two-hour reference battery",
+    "power_MW": 49.0,
+    "energy_MWh": 98.0,
+    "capacity_source": "https://harmonyenergy.co.uk/projects/",
+    "capacity_basis": "published Jamesfield site is 49 MW/98 MWh; Pillswood site is 98 MW/196 MWh",
+    "workload_bm_unit": "E_PILLB-1",
+    "workload_power_basis": "historical 2024-04-15 unit MEL reaches 49 MW",
+    "asset_scope": "reference asset with recorded unit workload; 98 MWh is not a measured E_PILLB-1 energy capacity",
+    "charge_efficiency": 0.92,
+    "discharge_efficiency": 0.92,
+    "efficiency_basis": "simulation assumption, not manufacturer data"
+  },
+  "task": "inventory planning for a reference battery subject to recorded dispatcher power requests",
+  "data": {
+    "input": "pillswood_acceptances_20240414_15.json",
+    "retrieval_interval_utc": ["2024-04-14T00:00:00Z", "2024-04-16T00:00:00Z"],
+    "evaluation_interval_utc": ["2024-04-15T00:00:00Z", "2024-04-16T00:00:00Z"],
+    "prior_context": "previous day retained to cover instructions crossing the start boundary",
+    "source_availability_probes": ["pillswood_acceptances_20230715.json", "pillswood_acceptances_20231015.json"],
+    "source_candidate_periods": [["2023-07-15", "2023-07-25"], ["2023-10-15", "2023-10-25"]],
+    "development_candidate_periods": [["2024-04-15", "2024-04-25"], ["2024-07-15", "2024-07-25"], ["2024-10-15", "2024-10-25"]],
+    "period_scope": "fixed candidates for the next development pilot, not completed archives or an independent comparison registration",
+    "confirmation_year": 2025,
+    "confirmation_year_access": false
+  },
+  "instruction_semantics": {
+    "levels": "absolute export-positive MW from zero import/export; linear interpolation inside each published segment",
+    "visibility": "participant receives the instruction at acceptanceTime; this is not the public API publication time",
+    "revision": "latest received covering acceptance by acceptanceTime then acceptanceNumber replaces older absolute levels",
+    "intervals": "UTC half-open intervals; preserve minute-scale changes and integrate import/export separately",
+    "gaps": "no active recorded BOA; actual plant power is unknown here, not inferred to be zero",
+    "basis": ["https://www.elexon.co.uk/bsc/glossary/acceptance-data/", "https://assets.elexon.co.uk/wp-content/uploads/sites/11/2018/11/28160209/SAA_SD_v26.2_P369.pdf"],
+    "basis_scope": "Elexon definitions and legacy settlement description establish absolute levels, interpolation and successive acceptance changes; this diagnostic is not a settlement calculator"
+  },
+  "information_contract": {
+    "national_forecast": "candidate predictor when publishTime is no later than the decision; national forecast errors are not dispatched to this plant",
+    "planned_instruction": "future points in an already received acceptance may be observed; later acceptances may not be observed",
+    "historical_PN_MEL_MIL": "ex-post reference only until a publication-vintage archive is established; dynamic limits are not fixed hardware limits",
+    "realized_prices": "ex-post accounting only; not advance policy inputs",
+    "historical_SOC": "unobserved"
+  },
+  "diagnostic": {
+    "energy_envelope": "assume idle only in BOA gaps for this instruction-only calculation; find initial inventories that could follow all requests without additional replenishment",
+    "initial_inventory": "report feasible interval and the common 50 percent reference; historical initial inventory is not estimated",
+    "criterion": "energy remains in [0,98] MWh and absolute requested power is at most 49 MW",
+    "legacy_unserved_fraction_0_11": "not used; not a published BM service requirement",
+    "readiness_use": "identify whether replenishment is necessary; no policy certification, profit or deployment claim"
+  },
+  "next_model_work": "define a causal replenishment action, energy-purchase timing and terminal inventory valuation before running candidate-library feasibility or optimizer comparisons",
+  "optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "full_experiment_launch": false
+}

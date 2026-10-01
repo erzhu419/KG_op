@@ -1,0 +1,22 @@
+{"method": "V3", "period": "2024-04-15", "reference_windows_reproduced": 73, "failed_windows": 73}
+{"method": "V4", "period": "2024-04-15", "reference_windows_reproduced": 73, "failed_windows": 73}
+{"method": "V3", "period": "2024-07-15", "reference_windows_reproduced": 73, "failed_windows": 0}
+{"method": "V4", "period": "2024-07-15", "reference_windows_reproduced": 73, "failed_windows": 7}
+{"method": "V3", "period": "2024-10-15", "reference_windows_reproduced": 73, "failed_windows": 0}
+{"method": "V4", "period": "2024-10-15", "reference_windows_reproduced": 73, "failed_windows": 0}
+{"suffix_probes_completed": 20, "statuses": {"replayed_feasible": 19, "energy_or_commitment_infeasible": 1}}
+{"suffix_probes_completed": 40, "statuses": {"replayed_feasible": 39, "energy_or_commitment_infeasible": 1}}
+{"suffix_probes_completed": 60, "statuses": {"replayed_feasible": 53, "energy_or_commitment_infeasible": 7}}
+{"suffix_probes_completed": 80, "statuses": {"replayed_feasible": 63, "energy_or_commitment_infeasible": 17}}
+{"suffix_probes_completed": 100, "statuses": {"replayed_feasible": 73, "energy_or_commitment_infeasible": 27}}
+{"suffix_probes_completed": 120, "statuses": {"replayed_feasible": 83, "energy_or_commitment_infeasible": 37}}
+{"suffix_probes_completed": 140, "statuses": {"replayed_feasible": 93, "energy_or_commitment_infeasible": 47}}
+{"suffix_probes_completed": 160, "statuses": {"replayed_feasible": 96, "energy_or_commitment_infeasible": 64}}
+{"suffix_probes_completed": 180, "statuses": {"replayed_feasible": 96, "energy_or_commitment_infeasible": 84}}
+{"suffix_probes_completed": 200, "statuses": {"replayed_feasible": 100, "energy_or_commitment_infeasible": 100}}
+{"suffix_probes_completed": 220, "statuses": {"replayed_feasible": 110, "energy_or_commitment_infeasible": 110}}
+{"suffix_probes_completed": 240, "statuses": {"replayed_feasible": 120, "energy_or_commitment_infeasible": 120}}
+{"suffix_probes_completed": 260, "statuses": {"replayed_feasible": 130, "energy_or_commitment_infeasible": 130}}
+{"suffix_probes_completed": 280, "statuses": {"replayed_feasible": 140, "energy_or_commitment_infeasible": 140}}
+{"suffix_probes_completed": 300, "statuses": {"replayed_feasible": 154, "energy_or_commitment_infeasible": 146}}
+{"protocol_id": "public_battery_unit_recoverability_v1_20260930", "status": "recoverability_diagnostic_complete", "reference_window_evaluations": 438, "saved_reference_results_reproduced": true, "failed_reference_windows": 153, "cases": [{"method": "V3", "period": "2024-04-15", "failed_reference_windows": 73, "classification_counts": {"current_feasible": 23, "lost_between_snapshots": 50}}, {"method": "V3", "period": "2024-07-15", "failed_reference_windows": 0, "classification_counts": {}}, {"method": "V3", "period": "2024-10-15", "failed_reference_windows": 0, "classification_counts": {}}, {"method": "V4", "period": "2024-04-15", "failed_reference_windows": 73, "classification_counts": {"already_infeasible_at_previous": 23, "lost_between_snapshots": 50}}, {"method": "V4", "period": "2024-07-15", "failed_reference_windows": 7, "classification_counts": {"current_feasible": 7}}, {"method": "V4", "period": "2024-10-15", "failed_reference_windows": 0, "classification_counts": {}}], "classification_counts": {"current_feasible": 30, "lost_between_snapshots": 100, "already_infeasible_at_previous": 23}, "suffix_probe_statuses": {"replayed_feasible": 160, "energy_or_commitment_infeasible": 146}, "diagnostic_LP_solves": 306, "diagnostic_physical_witness_replays": 160, "no_previous_decision_windows": 0, "unresolved_windows": 0, "scipy_version": "1.15.3", "decision": "use_recovery_labels_before_any_new_controller", "new_data_requests": 0, "algorithm_optimizer_calls": 0, "terminal_verifier_calls": 0, "confirmation_year_access": false, "limitations": "reference-policy development diagnosis only; full future information never enters the tested controls; no global online-impossibility, candidate-library coverage, measured battery or source-benefit claim"}

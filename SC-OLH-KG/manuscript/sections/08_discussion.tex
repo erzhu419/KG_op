@@ -2,11 +2,24 @@
 
 \subsection{What the evidence supports}
 
-Source outcomes help when source and target tasks organize safety around
-similar policy shapes.  That is the central empirical claim, and the adverse
-regimes make it testable rather than automatic.  Source scoring improves
-coverage on the full randomized mixture, but the regime table and Energy
-study show concrete cases in which it loses.
+Source outcomes improve certification relative to standardized generic
+maximin on both the original mixture and new family instances.  The factorial
+comparison identifies the source-best first center as the main effective
+component.  Rank augmentation has little additional effect at the frozen
+weights.  Structural coordinates improve certification over matched raw
+profile distance, but geometric coverage is not uniformly preferable to
+source-based portfolio selection: the prospective portfolio comparison does
+not reproduce the original aggregate certification advantage and favors the
+portfolio in coverage and penalized loss.  Which mechanism benefits also
+changes with the family and public library.  In particular, coordinate
+permutation contributes to the original gain but reverses in the new study.
+
+Fixing the source-selected first policy also exposes the distinction between
+design quality and deployment certification.  A random nine-policy remainder
+produces similar certification to structural coverage.  The portfolio has
+better feasible coverage but loses feasible candidates during noisy shortlist
+selection.  Certification therefore measures the whole selection-and-testing
+pipeline; it does not by itself establish a superior initial point set.
 
 This interpretation differs from claiming a generic high-dimensional
 optimizer.  The raw vector may contain $10^4$ coordinates, but the decision is
@@ -18,25 +31,28 @@ resolution under shared profile structure.
 
 \subsection{What Energy teaches us}
 
-The Energy reversal shows that a generic structural design can beat source
-scoring when rankings from held-out regions do not transfer.  Because V3 was
-fixed before its outcomes, changing the score now would turn a test case into
-development data.  We keep the result as a negative control and as a practical
-boundary on when the method should be used.
+Energy shows that a small aggregate certification gain need not repay the
+source archive.  The corrected V5 model gives an unresolved region-balanced
+gain over unstandardized maximin and about twice its calls per certificate.
+Its finite seven-day service objective uses a common initial inventory,
+shared hourly power and zero terminal salvage value.  This is a practical
+boundary on archive use.  The public-battery diagnostic strengthens this
+lesson: an outcome-free constant-policy search matches certification, and
+paid target enumeration fits within the source-inclusive query budget.
+For these development tasks, the archive is unnecessary to obtain the
+reported certification outcome.
 
-The practical implication is a diagnostic choice.  If historical tasks and a
-new target share an ordered policy semantics and source rank stability can be
-validated on genuinely held-out tasks, source scoring is reasonable.  If the
-target is temporally or geographically shifted and generic low-frequency
-structure already has a credible physical basis, the generic maximin design is
-the safer default.  The method should abstain from a transfer claim when these
-conditions cannot be assessed.
+The practical implication is to compare source-scored and outcome-free
+designs on held-out tasks with the same ordered semantics before committing
+to archive reuse.  Energy alone cannot identify a universally preferable
+scaling or a rule for detecting transfer failure before target outcomes.
 
 The current method begins after this assessment: a source archive has already
 been supplied, and the algorithm ranks profiles inside it.  It does not
 retrieve related tasks from an unrestricted historical database.  Regime-matched
 synthetic sources therefore identify the value of scoring a relevant archive,
-whereas Energy shows the cost of archive mismatch.  Source retrieval and its
+whereas Energy shows an archive investment that does not pay off over the
+observed deployments.  Source retrieval and its
 own data-acquisition cost remain separate research and operational decisions.
 
 \subsection{When the source archive pays for itself}
@@ -50,9 +66,11 @@ break-even number of deployments is
  M_{\rm break}=\left\lceil\frac{S}{C_0-C_A}\right\rceil,
  \qquad C_0>C_A.
 \end{equation}
-In the randomized primary experiment, mean-call estimates give thresholds of
-about 7, 9, and 11 targets relative to generic DCT, natural structure, and raw
-Sobol.  This arithmetic does not include differences in simulator setup,
+In the randomized primary experiment, the matched standardized control gives
+a threshold of 15 targets using aggregate mean calls, and 15--16 targets when
+each resolution is analyzed separately.  Both source-based designs pay the
+same archive cost; lower verification effort favors the atlas over the
+portfolio on average.  This arithmetic does not include differences in simulator setup,
 wall-clock parallelism, or policy quality, and Energy shows that paying the
 archive can still be inferior.  It is a planning threshold, not a dominance
 theorem.
@@ -76,18 +94,35 @@ feasible coverage exceeds certified deployment.  Future studies should fix a
 more efficient exact or sequential test in advance and use block-aware
 verification when temporal replications are not iid.
 
-\subsection{Benchmark fit and remaining threats}
+\subsection{Limitations}
 
-Fixing the generator before confirmatory runs reduces development overfitting
-but cannot erase it: the task law, library, and stress axes were created within
-the project.  Ordered semantics are a strong prior.  Energy covers only five
-regions, and the native transfer study has only three historical families.
+The task law, library, and stress axes were created within the project.
+The matched standardization and greedy-portfolio controls were added after
+reviewing the original outcomes and reuse the same target seeds.  The fixed-first random-remainder and portfolio controls were likewise
+proposed after observing confirmation results.  Their intervals describe
+task variation within the existing families, not independent confirmation
+or a guarantee of equivalence.  Positive intervals quantify sampling variation within the specified task law;
+they do not remove development selection.  The separate prospective study
+uses new family instances, source archives, public libraries and target tasks;
+its intervals describe task variation conditional on those three fixed
+families, rather than a population of all source libraries.
+Ordered semantics are a strong prior.  Energy uses counterfactual storage
+simulations on historical data from five regions, and the native transfer
+study has only three historical families.
+The public-battery controls were proposed after observing development
+outcomes and use overlapping windows from one market.  Their certificates
+refer to iid draws of window indices from a fixed uniform finite law, not
+independent calendar observations or future deployment.  No sealed 2025
+data are used.  Complete costs are ranked only for policies succeeding on
+every window; failed full costs remain undefined.  Query accounting does
+not establish wall-clock or monetary efficiency.
 The archive is assumed to have been supplied; source retrieval is unsolved.
 Three replications cannot order near ties, source aggregation can hide task
 disagreement, and a finite library can miss the safe region entirely.  Regret
 uses a finite evaluation library rather than the unknown continuous optimum,
 and one functional-SCBO failure remains in the denominator.  The theory is
 conditional on alignment, independence within each regime, and the declared
-replication law.  Finally, the same target seeds appear at all three grid
+replication law.  Its finite geometric and sampling guarantees do not prove
+superiority to either comparison design.  Finally, the same target seeds appear at all three grid
 resolutions, so 480-cell totals are descriptive rather than 480 independent
 tasks.

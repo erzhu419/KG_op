@@ -1,0 +1,77 @@
+{
+  "protocol_id": "public_battery_physical_oracle_v1_20260930",
+  "status": "offline_physical_diagnostic_complete",
+  "cases": [
+    {
+      "period": "2024-04-15",
+      "windows": 73,
+      "statuses": {
+        "replayed_feasible": 55,
+        "power_infeasible": 18
+      },
+      "LP_solves": 55,
+      "physical_witness_replays": 55,
+      "unresolved_windows": 0,
+      "oracle_feasible_fraction": 0.7534246575342466,
+      "max_feasible_witness_undelivered_MWh": 4.21379597881355e-12,
+      "max_feasible_witness_energy_balance_error_MWh": 9.688960744824726e-11
+    },
+    {
+      "period": "2024-07-15",
+      "windows": 73,
+      "statuses": {
+        "replayed_feasible": 73
+      },
+      "LP_solves": 73,
+      "physical_witness_replays": 73,
+      "unresolved_windows": 0,
+      "oracle_feasible_fraction": 1.0,
+      "max_feasible_witness_undelivered_MWh": 3.3629765638920617e-12,
+      "max_feasible_witness_energy_balance_error_MWh": 7.995459849752251e-11
+    },
+    {
+      "period": "2024-10-15",
+      "windows": 73,
+      "statuses": {
+        "replayed_feasible": 73
+      },
+      "LP_solves": 73,
+      "physical_witness_replays": 73,
+      "unresolved_windows": 0,
+      "oracle_feasible_fraction": 1.0,
+      "max_feasible_witness_undelivered_MWh": 3.5001723741601154e-12,
+      "max_feasible_witness_energy_balance_error_MWh": 6.59987620110769e-11
+    }
+  ],
+  "diagnostic_windows": 219,
+  "diagnostic_LP_solves": 201,
+  "diagnostic_physical_witness_replays": 201,
+  "new_data_requests": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "scope": "perfect-information physical feasibility; replayed witnesses are not causal policies or source-effect evidence",
+  "controller_comparison": [
+    {
+      "period": "2024-04-15",
+      "oracle_replayed_feasible_windows": 55,
+      "any_library_policy_successful_windows": 0,
+      "oracle_feasible_windows_missed_by_entire_library": 55,
+      "already_successful_control_windows_included": true
+    },
+    {
+      "period": "2024-07-15",
+      "oracle_replayed_feasible_windows": 73,
+      "any_library_policy_successful_windows": 73,
+      "oracle_feasible_windows_missed_by_entire_library": 0,
+      "already_successful_control_windows_included": true
+    },
+    {
+      "period": "2024-10-15",
+      "oracle_replayed_feasible_windows": 73,
+      "any_library_policy_successful_windows": 73,
+      "oracle_feasible_windows_missed_by_entire_library": 0,
+      "already_successful_control_windows_included": true
+    }
+  ]
+}

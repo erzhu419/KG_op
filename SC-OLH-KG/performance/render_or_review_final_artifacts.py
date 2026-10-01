@@ -22,11 +22,15 @@ import numpy as np
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_EVIDENCE = PROJECT_ROOT / "paper_artifacts/or_review"
+DEFAULT_REVISION = PROJECT_ROOT / "paper_artifacts/submission_revision_20260907"
 DEFAULT_MANUSCRIPT = PROJECT_ROOT / "manuscript"
+SUPPLEMENTAL_ARMS = {"standardized_generic_dct_maximin", "source_greedy_portfolio"}
 
 ARM_LABELS = {
     "source_atlas": "Source-scored atlas",
-    "generic_dct_maximin": "Generic DCT maximin",
+    "generic_dct_maximin": "Unstandardized DCT maximin",
+    "standardized_generic_dct_maximin": "Standardized DCT maximin",
+    "source_greedy_portfolio": "Source-greedy portfolio",
     "random_low_frequency": "Random low frequency",
     "natural_blockwise": "Natural blockwise",
     "natural_constant_grid": "Natural constant grid",
@@ -170,6 +174,8 @@ def _aggregate_by_arm(rows):
                 selected, "mean_all_in_calls_amortized"
             ),
             "target_calls": int(selected[0]["N"]),
+            "source_calls": _weighted(selected, "mean_all_in_calls_unamortized")
+            - _weighted(selected, "mean_verification_calls") - int(selected[0]["N"]),
         })
     return output
 
@@ -189,7 +195,7 @@ def _energy_by_arm(rows):
             "count": count,
             "certified": sum(int(row["certified_safe_count"]) for row in selected),
             "false": sum(int(row["false_certificate_count"]) for row in selected),
-            "median_objective": float(np.median(objectives)),
+            "median_objective": float(np.median(objectives)) if objectives else None,
             "mean_verification": float(np.mean([
                 row["mean_verification_calls"] for row in selected
             ])),
@@ -237,7 +243,8 @@ def _write_regime_table(analysis, path):
         source = _aggregate_by_arm(by_arm["source_atlas"])[0]
         controls = []
         for arm, rows in by_arm.items():
-            if arm not in {"source_atlas", "oracle_library_upper_bound"}:
+            if arm not in {"source_atlas", "source_greedy_portfolio",
+                           "oracle_library_upper_bound"}:
                 controls.append(_aggregate_by_arm(rows)[0])
         best = max(controls, key=lambda row: row["certified_rate"])
         difference = source["certified_rate"] - best["certified_rate"]
@@ -248,6 +255,30 @@ def _write_regime_table(analysis, path):
             f"{_latex(ARM_LABELS[best['arm']])}: "
             f"{100 * best['certified_rate']:.1f} & "
             f"{100 * difference:+.1f} \\\\"
+        )
+    lines.extend(["\\bottomrule", "\\end{tabular}"])
+    _write(path, lines)
+
+
+def _write_matched_comparison_table(analysis, path):
+    lines = [
+        "\\begin{tabular}{rlrrrrr}", "\\toprule",
+        "$d$ & Comparator & Difference (pp) & Stratified 95\\% CI & "
+        "Wins & Losses & Ties \\\\", "\\midrule",
+    ]
+    rows = [row for row in analysis["paired_comparisons"]
+            if row["regime"] == "all_fixed_regimes"
+            and row["control_arm"] in SUPPLEMENTAL_ARMS]
+    for row in rows:
+        endpoint = row["endpoints"]["certified_true_feasible"]
+        lower, upper = endpoint["paired_bootstrap_95ci"]
+        lines.append(
+            f"{row['nominal_dimension']} & "
+            f"{_latex(ARM_LABELS[row['control_arm']])} & "
+            f"{100 * endpoint['source_minus_control_mean']:+.2f} & "
+            f"[{100 * lower:.2f}, {100 * upper:.2f}] & "
+            f"{endpoint['source_only_count']} & {endpoint['control_only_count']} & "
+            f"{endpoint['tie_count']} \\\\"
         )
     lines.extend(["\\bottomrule", "\\end{tabular}"])
     _write(path, lines)
@@ -387,15 +418,18 @@ def _write_energy_table(analysis, path):
         "\\midrule",
     ]
     order = [
-        "source_atlas", "generic_dct_maximin", "random_low_frequency",
+        "source_atlas", "standardized_generic_dct_maximin", "source_greedy_portfolio",
+        "generic_dct_maximin", "random_low_frequency",
         "natural_constant_grid", "raw_sobol", "target_only_dct_space_scbo",
     ]
     indexed = {row["arm"]: row for row in rows}
-    for arm in order:
+    for arm in (arm for arm in order if arm in indexed):
         row = indexed[arm]
+        objective = ("--" if row["median_objective"] is None
+                     else f"{row['median_objective']:.4f}")
         lines.append(
             f"{_latex(ARM_LABELS[arm])} & {row['certified']}/{row['count']} & "
-            f"{row['false']} & {row['median_objective']:.4f} & "
+            f"{row['false']} & {objective} & "
             f"{row['mean_verification']:.1f} \\\\"
         )
     lines.extend(["\\bottomrule", "\\end{tabular}"])
@@ -515,6 +549,48 @@ def _write_outcome_adjusted_cost_table(analysis, path):
     _write(path, lines)
 
 
+def _primary_outcome_cost_matrix(primary):
+    """Pool task-resolution counts before forming cost per certificate."""
+    aggregates = _aggregate_by_arm(primary["summaries"])
+    rows = []
+    for row in aggregates:
+        probability = row["certified_rate"]
+        rows.append({
+            "arm": row["arm"],
+            "certified_success_probability": probability,
+            "source_archive_calls": row["source_calls"],
+            "mean_target_search_plus_verification_calls": (
+                row["target_calls"] + row["verification_calls"]),
+            "amortization": {
+                "1": {"expected_calls_per_certified_success": (
+                    row["all_in_calls"] / probability if probability else None)},
+                "20": {"expected_calls_per_certified_success": (
+                    row["amortized_calls"] / probability if probability else None)},
+            },
+        })
+    source = next(row for row in rows if row["arm"] == "source_atlas")
+    p_source = source["certified_success_probability"]
+    crossings = {}
+    for control in rows:
+        if control["arm"] == "source_atlas":
+            continue
+        p_control = control["certified_success_probability"]
+        if not p_source or not p_control:
+            crossings[control["arm"]] = None
+            continue
+        archive_gap = (source["source_archive_calls"] / p_source
+                       - control["source_archive_calls"] / p_control)
+        operational_gain = (
+            control["mean_target_search_plus_verification_calls"] / p_control
+            - source["mean_target_search_plus_verification_calls"] / p_source)
+        crossings[control["arm"]] = (
+            max(1, math.ceil(archive_gap / operational_gain))
+            if operational_gain > 0 else None
+        )
+    return {"rows": rows,
+            "source_outcome_adjusted_break_even_deployments": crossings}
+
+
 def _write_task_seed_strata_table(analysis, path):
     lines = [
         "\\begin{tabular}{lrrrrrr}",
@@ -631,13 +707,15 @@ def _plot_primary(analysis, stem):
         if row["arm"] != "oracle_library_upper_bound"
     ])
     order = [
-        "source_atlas", "natural_blockwise", "raw_sobol",
+        "source_atlas", "standardized_generic_dct_maximin", "source_greedy_portfolio",
+        "natural_blockwise", "raw_sobol",
         "random_low_frequency", "generic_dct_maximin",
     ]
     indexed = {row["arm"]: row for row in rows}
+    order = [arm for arm in order if arm in indexed]
     labels = [ARM_LABELS[arm] for arm in order]
     y = np.arange(len(order))
-    fig, ax = plt.subplots(figsize=(5.8, 2.7))
+    fig, ax = plt.subplots(figsize=(6.0, 3.4))
     ax.barh(
         y + 0.17, [100 * indexed[a]["feasible_rate"] for a in order],
         height=0.32, color=COLORS["light"], edgecolor=COLORS["source"],
@@ -658,68 +736,77 @@ def _plot_primary(analysis, stem):
 
 
 def _plot_regime(analysis, stem):
-    """Scope heatmap: source-minus-generic certification by regime and d."""
+    """Scope heatmaps: matched selection comparisons by regime and resolution."""
     import matplotlib.pyplot as plt
 
     summaries = analysis["summaries"]
     dimensions = [200, 1000, 10000]
     regimes = list(REGIME_LABELS)
-    values = np.zeros((len(regimes), len(dimensions)))
-    for i, regime in enumerate(regimes):
-        for j, dimension in enumerate(dimensions):
-            pair = [
-                row for row in summaries
-                if row["regime"] == regime
-                and row["nominal_dimension"] == dimension
-                and row["arm"] in {"source_atlas", "generic_dct_maximin"}
-            ]
-            rates = {
-                row["arm"]: row["certified_true_feasible_deployment_rate"]
-                for row in pair
-            }
-            values[i, j] = rates["source_atlas"] - rates["generic_dct_maximin"]
-    fig, ax = plt.subplots(figsize=(4.6, 3.3))
-    image = ax.imshow(values, cmap="RdBu", vmin=-1, vmax=1, aspect="auto")
-    ax.set_xticks(np.arange(3), ["d=200", "d=1,000", "d=10,000"])
-    ax.set_yticks(np.arange(len(regimes)), [REGIME_LABELS[r] for r in regimes])
-    for i in range(values.shape[0]):
-        for j in range(values.shape[1]):
-            ax.text(j, i, f"{100 * values[i, j]:+.0f}", ha="center", va="center",
-                    color="white" if abs(values[i, j]) > 0.45 else COLORS["ink"])
-    colorbar = fig.colorbar(image, ax=ax, fraction=0.035, pad=0.03)
-    colorbar.set_label("Source - generic DCT certified rate")
+    available = {row["arm"] for row in summaries}
+    controls = [arm for arm in ("standardized_generic_dct_maximin",
+                                "source_greedy_portfolio") if arm in available]
+    if not controls:
+        controls = ["generic_dct_maximin"]
+    indexed = {(row["regime"], row["nominal_dimension"], row["arm"]):
+               row["certified_true_feasible_deployment_rate"] for row in summaries}
+    fig, axes = plt.subplots(1, len(controls), figsize=(7.2, 3.35),
+                             sharey=True, squeeze=False, layout="constrained")
+    for panel, (ax, control) in enumerate(zip(axes[0], controls)):
+        values = np.array([
+            [100 * (indexed[regime, dimension, "source_atlas"]
+                    - indexed[regime, dimension, control]) for dimension in dimensions]
+            for regime in regimes])
+        image = ax.imshow(values, cmap="RdBu", vmin=-100, vmax=100, aspect="auto")
+        ax.set_title(f"{chr(97 + panel)}  Source-scored atlas minus\n{ARM_LABELS[control]}",
+                     loc="left")
+        ax.set_xticks(np.arange(3), ["200", "1,000", "10,000"])
+        ax.set_xlabel("Grid dimension")
+        ax.set_yticks(np.arange(len(regimes)), [REGIME_LABELS[r] for r in regimes])
+        for i in range(values.shape[0]):
+            for j in range(values.shape[1]):
+                ax.text(j, i, f"{values[i, j]:+.0f}", ha="center", va="center",
+                        color="white" if abs(values[i, j]) > 45 else COLORS["ink"])
+    colorbar = fig.colorbar(image, ax=list(axes[0]), fraction=0.035, pad=0.03)
+    colorbar.set_label("Certified-rate difference (percentage points)")
     _save(fig, stem)
     plt.close(fig)
 
 
-def _plot_cost(primary, equal_cost, stem):
+def _plot_cost(primary, stem):
     """Cost decomposition: offline archive is visible and amortized separately."""
     import matplotlib.pyplot as plt
 
     primary_rows = {row["arm"]: row for row in _aggregate_by_arm(
         primary["summaries"]
     )}
-    equal_rows = {row["arm"]: row for row in _aggregate_by_arm(
-        equal_cost["summaries"]
-    )}
-    labels = ["Source atlas\nN=10", "Generic DCT\nN=10", "Raw Sobol\nN=394"]
-    source = np.array([384.0, 0.0, 0.0])
-    search = np.array([10.0, 10.0, 394.0])
-    verify = np.array([
-        primary_rows["source_atlas"]["verification_calls"],
-        primary_rows["generic_dct_maximin"]["verification_calls"],
-        equal_rows["raw_sobol"]["verification_calls"],
-    ])
-    x = np.arange(3)
-    fig, ax = plt.subplots(figsize=(4.8, 2.8))
-    ax.bar(x, source, color=COLORS["source"], label="Source archive")
-    ax.bar(x, search, bottom=source, color=COLORS["generic"], label="Target search")
-    ax.bar(x, verify, bottom=source + search, color=COLORS["certified"],
-           label="Independent verification")
-    ax.set_xticks(x, labels)
-    ax.set_ylabel("Mean simulator calls per target")
-    ax.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.18))
-    ax.grid(axis="y", color="#E5E5E5", lw=0.5)
+    control = ("standardized_generic_dct_maximin"
+               if "standardized_generic_dct_maximin" in primary_rows
+               else "generic_dct_maximin")
+    order = [arm for arm in ("source_atlas", control, "source_greedy_portfolio",
+                             "raw_sobol") if arm in primary_rows]
+    labels = [ARM_LABELS[arm].replace(" DCT maximin", "\nDCT maximin")
+              .replace("Source-scored atlas", "Source-scored\natlas")
+              .replace("Source-greedy portfolio", "Source-greedy\nportfolio")
+              for arm in order]
+    source = np.array([primary_rows[arm]["source_calls"] for arm in order])
+    search = np.array([primary_rows[arm]["target_calls"] for arm in order])
+    verify = np.array([primary_rows[arm]["verification_calls"] for arm in order])
+    x = np.arange(len(order))
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.0), sharey=True)
+    for panel, (ax, deployments) in enumerate(zip(axes, (1, 20))):
+        archive_share = source / deployments
+        ax.bar(x, archive_share, color=COLORS["source"], label="Source archive")
+        ax.bar(x, search, bottom=archive_share, color=COLORS["generic"], label="Target search")
+        ax.bar(x, verify, bottom=archive_share + search, color=COLORS["certified"],
+               label="Independent verification")
+        ax.set_xticks(x, labels)
+        ax.set_title(f"{chr(97 + panel)}  M = {deployments}; N = 10", loc="left")
+        ax.grid(axis="y", color="#E5E5E5", lw=0.5)
+        ax.set_axisbelow(True)
+    axes[0].set_ylabel("Mean simulator calls per target")
+    handles, legend_labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, legend_labels, ncol=3, loc="upper center")
+    fig.tight_layout(rect=(0, 0, 1, 0.90))
     _save(fig, stem)
     plt.close(fig)
 
@@ -840,7 +927,7 @@ def _plot_aligned_geometry(analysis, stem):
     plt.close(fig)
 
 
-def render(evidence, manuscript, *, skip_figures=False):
+def render(evidence, manuscript, *, skip_figures=False, revision=None):
     evidence = Path(evidence)
     manuscript = Path(manuscript)
     registry = _read_json(evidence / "final_evidence_registry_v1.json")
@@ -873,6 +960,38 @@ def render(evidence, manuscript, *, skip_figures=False):
         "base_evidence_registry_sha256"
     ) != expected_registry_hash:
         raise RuntimeError("review-v2 diagnostics do not bind the evidence registry")
+
+    revision_analysis = None
+    energy_revision = None
+    if revision is not None:
+        revision = Path(revision)
+        revision_path = revision / "analysis.json"
+        energy_path = revision / "energy_analysis.json"
+        revision_analysis = _read_json(revision_path)
+        energy_revision = _read_json(energy_path)
+        if (revision_analysis["status"] != "complete"
+                or energy_revision["status"] != "complete"):
+            raise RuntimeError("supplementary control analyses are not complete")
+        # Reference-arm rows in the supplement validate pairing; the original
+        # compact summaries remain the rendering authority for those arms.
+        for name, field, supplement in (
+            ("randomized_profile_primary", "summaries", revision_analysis),
+            ("energy_v3", "market_summaries", energy_revision),
+        ):
+            loaded[name] = {**loaded[name], field: [
+                *loaded[name][field],
+                *(row for row in supplement[field] if row["arm"] in SUPPLEMENTAL_ARMS),
+            ]}
+        old_cost = loaded["review_v2_supplemental_diagnostics"]["outcome_adjusted_cost"]
+        loaded["review_v2_supplemental_diagnostics"] = {
+            **loaded["review_v2_supplemental_diagnostics"],
+            "outcome_adjusted_cost": {**old_cost, "matrices": {
+                **old_cost["matrices"],
+                "primary_n10": _primary_outcome_cost_matrix(
+                    loaded["randomized_profile_primary"]),
+            }},
+        }
+        inputs.extend([revision_path, energy_path])
 
     tables = manuscript / "tables"
     figures = manuscript / "figures"
@@ -915,6 +1034,9 @@ def render(evidence, manuscript, *, skip_figures=False):
                 path,
             ),
     }
+    if revision_analysis is not None:
+        table_calls["review_matched_comparisons.tex"] = (
+            lambda path: _write_matched_comparison_table(revision_analysis, path))
     for name, writer in table_calls.items():
         path = tables / name
         writer(path)
@@ -929,8 +1051,7 @@ def render(evidence, manuscript, *, skip_figures=False):
             "review_regime": lambda stem: _plot_regime(
                 loaded["randomized_profile_primary"], stem),
             "review_cost": lambda stem: _plot_cost(
-                loaded["randomized_profile_primary"],
-                loaded["randomized_profile_equal_preverification"], stem),
+                loaded["randomized_profile_primary"], stem),
             "review_verifier_power": lambda stem: _plot_verifier(
                 loaded["verifier_power"], stem),
             "review_source_budget": lambda stem: _plot_source_budget(
@@ -972,6 +1093,11 @@ def render(evidence, manuscript, *, skip_figures=False):
             for path in outputs
         ],
     }
+    if revision_analysis is not None:
+        manifest["supplement_study_role"] = {
+            "synthetic": revision_analysis["interpretation"],
+            "energy": energy_revision["study_role"],
+        }
     manifest_path = manuscript / "review_artifact_manifest.json"
     manifest_path.write_text(
         json.dumps(manifest, indent=2, sort_keys=True) + "\n",
@@ -984,10 +1110,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--evidence", default=str(DEFAULT_EVIDENCE))
     parser.add_argument("--manuscript", default=str(DEFAULT_MANUSCRIPT))
+    parser.add_argument("--revision", default=str(DEFAULT_REVISION))
     parser.add_argument("--skip-figures", action="store_true")
     args = parser.parse_args()
     manifest = render(
-        args.evidence, args.manuscript, skip_figures=args.skip_figures
+        args.evidence, args.manuscript, skip_figures=args.skip_figures,
+        revision=args.revision,
     )
     print(json.dumps({
         "status": manifest["status"],

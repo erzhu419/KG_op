@@ -1,0 +1,7 @@
+{
+  "reason": "the actual minute-3690 accepted pulse was declared and executed from its hour origin, but nomination safety recomputed it from a rounded half-hour SOC; the strict 1e-8 criterion then produced one false known-reference failure",
+  "repair": "pass the already executed current-hour power prefix and hour-origin SOC to nomination safety; retain the unchanged physical tolerance and model",
+  "retained_controller_window_evaluations": 4,
+  "retained_nomination_probes": 4,
+  "diagnosis": "../numerical_origin_diagnosis.json"
+}

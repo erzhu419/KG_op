@@ -1,0 +1,145 @@
+ℹ [8577/8577] Replayed SCOLHKG.PaperProofInterface
+info: SCOLHKG/PaperProofInterface.lean:20:0: SCOLHKG.Real.sourceOnlyProposal_targetLabel_invariant {α β γ : Type} (fitProposal : α → β) (sourceRecords : α)
+  (leftTargetLabels rightTargetLabels : γ) :
+  SCOLHKG.Real.sourceOnlyProposal fitProposal sourceRecords leftTargetLabels =
+    SCOLHKG.Real.sourceOnlyProposal fitProposal sourceRecords rightTargetLabels
+info: SCOLHKG/PaperProofInterface.lean:22:0: SCOLHKG.Real.continuousProfileCoefficient_error_le {first second basis : ℝ → ℝ} {epsilon basisBound : ℝ}
+  (hFirst : IntervalIntegrable (fun x => first x * basis x) MeasureTheory.volume 0 1)
+  (hSecond : IntervalIntegrable (fun x => second x * basis x) MeasureTheory.volume 0 1)
+  (hError : ∀ x ∈ Set.uIoc 0 1, |first x - second x| ≤ epsilon) (hBasis : ∀ x ∈ Set.uIoc 0 1, |basis x| ≤ basisBound)
+  (hEpsilon : 0 ≤ epsilon) :
+  |SCOLHKG.Real.continuousProfileCoefficient first basis - SCOLHKG.Real.continuousProfileCoefficient second basis| ≤
+    epsilon * basisBound
+info: SCOLHKG/PaperProofInterface.lean:23:0: SCOLHKG.Real.lipschitz_voronoi_coefficient_inverse_grid_rate {profile reconstruction basis node : ℝ → ℝ}
+  {L basisBound : ℝ} {dimension : ℕ} (hDimension : 0 < dimension) (hL : 0 ≤ L)
+  (hProfile : IntervalIntegrable (fun x => profile x * basis x) MeasureTheory.volume 0 1)
+  (hReconstructionIntegrable : IntervalIntegrable (fun x => reconstruction x * basis x) MeasureTheory.volume 0 1)
+  (hReconstruction : ∀ x ∈ Set.uIoc 0 1, reconstruction x = profile (node x))
+  (hLipschitz : ∀ x ∈ Set.uIoc 0 1, |profile x - profile (node x)| ≤ L * |x - node x|)
+  (hVoronoiRadius : ∀ x ∈ Set.uIoc 0 1, |x - node x| ≤ 1 / (2 * ↑dimension))
+  (hBasis : ∀ x ∈ Set.uIoc 0 1, |basis x| ≤ basisBound) :
+  |SCOLHKG.Real.continuousProfileCoefficient profile basis -
+        SCOLHKG.Real.continuousProfileCoefficient reconstruction basis| ≤
+    L * basisBound / (2 * ↑dimension)
+info: SCOLHKG/PaperProofInterface.lean:24:0: SCOLHKG.Real.lipschitz_linear_interpolation_inverse_grid_rate {profile : ℝ → ℝ}
+  {x left right theta L reconstruction : ℝ} {referenceDimension : ℕ} (hReferenceDimension : 0 < referenceDimension)
+  (hThetaLower : 0 ≤ theta) (hThetaUpper : theta ≤ 1) (hL : 0 ≤ L)
+  (hReconstruction : reconstruction = (1 - theta) * profile left + theta * profile right)
+  (hLeft : |profile x - profile left| ≤ L * |x - left|) (hRight : |profile x - profile right| ≤ L * |x - right|)
+  (hRegularInterpolationRadius : (1 - theta) * |x - left| + theta * |x - right| ≤ 1 / (2 * ↑referenceDimension)) :
+  |profile x - reconstruction| ≤ L / (2 * ↑referenceDimension)
+info: SCOLHKG/PaperProofInterface.lean:25:0: SCOLHKG.Real.frequency_penalty_cannot_increase_coefficient_error {first second penalty : ℝ} (hPenalty : 1 ≤ penalty) :
+  |first / penalty - second / penalty| ≤ |first - second|
+info: SCOLHKG/PaperProofInterface.lean:27:0: SCOLHKG.Real.GonzalezWitnessCertificate.two_approx_every_k_center.{u_1} {X : Type u_1} [PseudoMetricSpace X]
+  [DecidableEq X] {centers optimalCenters : Finset X} {assign : X → X} {greedyRadius optimalRadius : ℝ}
+  (certificate : SCOLHKG.Real.GonzalezWitnessCertificate centers greedyRadius)
+  (hOptimalBudget : optimalCenters.card ≤ centers.card)
+  (hOptimalCover : SCOLHKG.Real.FiniteRadiusAssignment certificate.witnessSet optimalCenters assign optimalRadius) :
+  greedyRadius ≤ 2 * optimalRadius
+info: SCOLHKG/PaperProofInterface.lean:28:0: SCOLHKG.Real.projected_coordinate_atlas_covers.{u_1, u_2, u_3} {X : Type u_1} {Augmented : Type u_2}
+  {Structural : Type u_3} [DecidableEq X] [PseudoMetricSpace Augmented] [PseudoMetricSpace Structural]
+  {augmented : X → Augmented} {structural : X → Structural} {project : Augmented → Structural}
+  {atlas support : Finset X} {radius : ℝ} (hCover : SCOLHKG.Real.CoordinateAtlasCovers augmented atlas support radius)
+  (hCompatible : SCOLHKG.Real.CoordinateProjectionCompatible augmented structural project)
+  (hNonexpansive : SCOLHKG.Real.CoordinateProjectionNonexpansive project) :
+  SCOLHKG.Real.CoordinateAtlasCovers structural atlas support radius
+info: SCOLHKG/PaperProofInterface.lean:30:0: SCOLHKG.Measure.finite_source_profile_mean_bad_event_le_sum.{u_1, u_2, u_3} {Omega : Type u_1} {Rep : Type u_2}
+  {Profile : Type u_3} {mOmega : MeasurableSpace Omega} {mu : MeasureTheory.Measure Omega} [Fintype Rep]
+  [MeasureTheory.IsFiniteMeasure mu] (profiles : Finset Profile) (noise : Profile → Rep → Omega → ℝ)
+  (proxy : Profile → Rep → NNReal) (radius delta : Profile → ℝ)
+  (hindep : ∀ profile ∈ profiles, ProbabilityTheory.iIndepFun (noise profile) mu)
+  (hnoise :
+    ∀ profile ∈ profiles,
+      ∀ (replication : Rep),
+        ProbabilityTheory.HasSubgaussianMGF (noise profile replication) (proxy profile replication) mu)
+  (hradius : ∀ profile ∈ profiles, 0 ≤ radius profile)
+  (htail :
+    ∀ profile ∈ profiles,
+      2 * Real.exp (-radius profile ^ 2 / (2 * ↑(SCOLHKG.Measure.replicatedSourceMeanProxy (proxy profile)))) ≤
+        delta profile) :
+  mu.real
+      (⋃ profile ∈ profiles,
+        SCOLHKG.Measure.CenteredSubGaussianBadEvent (SCOLHKG.Measure.replicatedSourceMeanError (noise profile))
+          (radius profile)) ≤
+    ∑ profile ∈ profiles, delta profile
+info: SCOLHKG/PaperProofInterface.lean:31:0: SCOLHKG.Measure.floored_margin_bad_event_measure_le.{u_1} {Omega : Type u_1} {mOmega : MeasurableSpace Omega}
+  {mu : MeasureTheory.Measure Omega} [MeasureTheory.IsFiniteMeasure mu]
+  (estimatedMean trueMean estimatedScale trueScale : Omega → ℝ)
+  (meanRadius scaleRadius scaleFloor z tau deltaMean deltaScale : ℝ)
+  (hFloor : ∀ (omega : Omega), scaleFloor ≤ trueScale omega) (hZ : 0 ≤ z)
+  (hMeanTail : mu.real {omega | meanRadius < |estimatedMean omega - trueMean omega|} ≤ deltaMean)
+  (hScaleTail : mu.real {omega | scaleRadius < |estimatedScale omega - trueScale omega|} ≤ deltaScale) :
+  mu.real
+      {omega |
+        meanRadius + z * scaleRadius <
+          |estimatedMean omega + z * max (estimatedScale omega) scaleFloor - tau -
+              (trueMean omega + z * trueScale omega - tau)|} ≤
+    deltaMean + deltaScale
+info: SCOLHKG/PaperProofInterface.lean:32:0: SCOLHKG.Real.floored_empirical_chance_margin_error_le
+  {estimatedMean trueMean estimatedScale trueScale scaleFloor z tau meanRadius scaleRadius : ℝ}
+  (hMean : |estimatedMean - trueMean| ≤ meanRadius) (hScale : |estimatedScale - trueScale| ≤ scaleRadius)
+  (hFloor : scaleFloor ≤ trueScale) (hZ : 0 ≤ z) :
+  |estimatedMean + z * max estimatedScale scaleFloor - tau - (trueMean + z * trueScale - tau)| ≤
+    meanRadius + z * scaleRadius
+info: SCOLHKG/PaperProofInterface.lean:33:0: SCOLHKG.Real.separated_source_pair_order_recovered.{u_1} {X : Type u_1} {estimate truth : X → ℝ} {radius : ℝ} {x y : X}
+  (hUniform : SCOLHKG.Real.UniformFiniteScoreError estimate truth radius) (hGap : truth x + 2 * radius < truth y) :
+  estimate x < estimate y
+info: SCOLHKG/PaperProofInterface.lean:35:0: SCOLHKG.Real.finite_projected_aligned_geometric_lipschitz_atlas_coverage.{u_1, u_2, u_3} {X : Type u_1}
+  {Augmented : Type u_2} {Structural : Type u_3} [DecidableEq X] [PseudoMetricSpace Augmented]
+  [PseudoMetricSpace Structural] {augmented : X → Augmented} {structural truth : X → Structural}
+  {project : Augmented → Structural} {atlas support : Finset X} {margin : X → ℝ} {center : X}
+  {coverRadius domainShift coordinateError L safeDepth : ℝ} {n0 : ℕ} (hAtlasSize : atlas.card ≤ n0)
+  (hCover : SCOLHKG.Real.CoordinateAtlasCovers augmented atlas support coverRadius)
+  (hCompatible : SCOLHKG.Real.CoordinateProjectionCompatible augmented structural project)
+  (hNonexpansive : SCOLHKG.Real.CoordinateProjectionNonexpansive project)
+  (hApproximation : SCOLHKG.Real.UniformCoordinateApproximation structural truth coordinateError)
+  (hTruthProxy : SCOLHKG.Real.TruthCoordinateSupportProxy truth support center domainShift)
+  (hLipschitz : SCOLHKG.Real.CoordinateMarginOneSidedLipschitz truth margin L) (hLNonnegative : 0 ≤ L)
+  (hCenterDepth : margin center + safeDepth ≤ 0)
+  (hDepth : L * (coverRadius + domainShift + 2 * coordinateError) ≤ safeDepth) :
+  atlas.card ≤ n0 ∧ ∃ candidate ∈ atlas, margin candidate ≤ 0
+info: SCOLHKG/PaperProofInterface.lean:37:0: SCOLHKG.Measure.weightedTaskCoverageError_subGaussian.{u_1, u_2} {Omega : Type u_1} {mOmega : MeasurableSpace Omega}
+  {mu : MeasureTheory.Measure Omega} {Task : Type u_2} [Fintype Task] [MeasureTheory.IsProbabilityMeasure mu]
+  (weight : Task → ℝ) (hit : Task → Omega → ℝ) (hIndependent : ProbabilityTheory.iIndepFun hit mu)
+  (hMeasurable : ∀ (task : Task), AEMeasurable (hit task) mu)
+  (hUnit : ∀ (task : Task), ∀ᵐ (omega : Omega) ∂mu, hit task omega ∈ Set.Icc 0 1) :
+  ProbabilityTheory.HasSubgaussianMGF (SCOLHKG.Measure.weightedTaskCoverageError weight hit)
+    (SCOLHKG.Measure.weightedTaskCoverageProxy weight) mu
+info: SCOLHKG/PaperProofInterface.lean:38:0: SCOLHKG.Measure.weightedTaskCoverageError_abs_tail_le.{u_1, u_2} {Omega : Type u_1} {mOmega : MeasurableSpace Omega}
+  {mu : MeasureTheory.Measure Omega} {Task : Type u_2} [Fintype Task] [MeasureTheory.IsProbabilityMeasure mu]
+  (weight : Task → ℝ) (hit : Task → Omega → ℝ) (radius : ℝ) (hIndependent : ProbabilityTheory.iIndepFun hit mu)
+  (hMeasurable : ∀ (task : Task), AEMeasurable (hit task) mu)
+  (hUnit : ∀ (task : Task), ∀ᵐ (omega : Omega) ∂mu, hit task omega ∈ Set.Icc 0 1) (hRadius : 0 ≤ radius) :
+  mu.real {omega | radius ≤ |SCOLHKG.Measure.weightedTaskCoverageError weight hit omega|} ≤
+    2 * Real.exp (-radius ^ 2 / (2 * ↑(SCOLHKG.Measure.weightedTaskCoverageProxy weight)))
+info: SCOLHKG/PaperProofInterface.lean:40:0: SCOLHKG.Measure.unsafe_all_success_certificate_probability_le.{u_1} {Omega : Type u_1} {mOmega : MeasurableSpace Omega}
+  {mu : MeasureTheory.Measure Omega} (successCount : Omega → ℕ) (n : ℕ)
+  (trueProbability requiredProbability : ↑unitInterval)
+  (hLaw : ProbabilityTheory.HasLaw successCount (ProbabilityTheory.binomial n trueProbability) mu)
+  (hUnsafe : trueProbability ≤ requiredProbability) :
+  mu.real {omega | successCount omega = n} ≤ ↑requiredProbability ^ n
+info: SCOLHKG/PaperProofInterface.lean:41:0: SCOLHKG.Measure.finite_all_success_certificates_familywise.{u_1, u_2} {Omega : Type u_1}
+  {mOmega : MeasurableSpace Omega} {mu : MeasureTheory.Measure Omega} {Candidate : Type u_2} [DecidableEq Candidate]
+  [MeasureTheory.IsFiniteMeasure mu] (shortlist : Finset Candidate) (successCount : Candidate → Omega → ℕ)
+  (replications : Candidate → ℕ) (trueProbability : Candidate → ↑unitInterval) (requiredProbability : ↑unitInterval)
+  (delta : Candidate → ℝ) (familywiseDelta : ℝ)
+  (hLaw :
+    ∀ candidate ∈ shortlist,
+      ProbabilityTheory.HasLaw (successCount candidate)
+        (ProbabilityTheory.binomial (replications candidate) (trueProbability candidate)) mu)
+  (hUnsafe : ∀ candidate ∈ shortlist, trueProbability candidate ≤ requiredProbability)
+  (hCandidateSpend : ∀ candidate ∈ shortlist, ↑requiredProbability ^ replications candidate ≤ delta candidate)
+  (hFamilySpend : ∑ candidate ∈ shortlist, delta candidate ≤ familywiseDelta) :
+  mu.real (⋃ candidate ∈ shortlist, {omega | successCount candidate omega = replications candidate}) ≤ familywiseDelta
+info: SCOLHKG/PaperProofInterface.lean:43:0: SCOLHKG.Real.paper_grade_budget_exact_decomposition (budget : SCOLHKG.Real.PaperGradeBudget) :
+  budget.totalCalls = budget.sourceCalls + budget.searchCalls + budget.verificationCalls
+info: SCOLHKG/PaperProofInterface.lean:44:0: SCOLHKG.Real.paper_grade_budget_amortized_decomposition (budget : SCOLHKG.Real.PaperGradeBudget) (targetCount : ℕ) :
+  budget.amortizedCalls targetCount =
+    ↑budget.sourceCalls / ↑targetCount + ↑budget.searchCalls + ↑budget.verificationCalls
+info: SCOLHKG/PaperProofInterface.lean:46:0: SCOLHKG.Real.proper_finite_atlas_misses_some_nonempty_feasible_set.{u_1} {X : Type u_1} [Fintype X] [DecidableEq X]
+  (atlas : Finset X) (hProper : atlas ≠ Finset.univ) :
+  ∃ feasible, (∃ x, feasible x) ∧ ¬∃ candidate ∈ atlas, feasible candidate
+info: SCOLHKG/PaperProofInterface.lean:47:0: SCOLHKG.Real.finite_budget_no_unconditional_target_coverage.{u_1} {X : Type u_1} [Fintype X] [DecidableEq X]
+  (atlas : Finset X) (n0 : ℕ) (hBudget : atlas.card ≤ n0) (hSpaceLarger : n0 < Fintype.card X) :
+  atlas.card ≤ n0 ∧ ∃ feasible, (∃ x, feasible x) ∧ ¬∃ candidate ∈ atlas, feasible candidate
+Build completed successfully (8577 jobs).

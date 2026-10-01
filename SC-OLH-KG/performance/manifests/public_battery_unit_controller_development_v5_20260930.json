@@ -1,0 +1,61 @@
+{
+  "protocol_id": "public_battery_unit_controller_development_v5_20260930",
+  "frozen_at_utc": "2026-09-30T11:06:46+00:00",
+  "role": "causal development with independent unit target profiles",
+  "registration_context": "V3, V4, component and local action diagnostics observed; all 23 inverse-target reconstructions succeed; no V5 whole-window rollout outcomes observed",
+  "basis_controller_protocol": "performance/manifests/public_battery_unit_controller_development_v3_20260930.json",
+  "basis_controller_outputs": "paper_artifacts/public_battery_unit_controller_development_v3_20260930",
+  "basis_reconstruction_outputs": "paper_artifacts/public_battery_unit_target_decoupling_v1_20260930",
+  "unchanged_contract": "inherit V3 asset, independent unit capacity, efficiency, common initial stocks, forecast calibration, receipt priority, lead time, physical execution, failure event and cost accounting; V4 empirical reserve rules remain unused",
+  "candidate_mapping": {
+    "component_library": "the exact original 64 V3 component profiles, seed 20261799, 128 generator nodes, maximum frequency 40, 1000 interpolated nodes and 100 integer levels",
+    "constant_pairs": "all 10x10 ordered pairs of original constant components profile_0000 through profile_0009",
+    "functional_pairs": "for each i=10,...,63, use original component i for unit 1 and component 10+((i-10+27) mod 54) for unit 2; this includes the swapped partner of every pair",
+    "ordering": "100 constant pairs in unit-1-major row order, followed by 54 functional pairs in original component index order",
+    "roster_csv": "performance/manifests/public_battery_unit_controller_development_v5_candidates_20260930.csv",
+    "representation": "two separate ordered 1000-node integer channels, concatenated as a 2000-coordinate policy; interpolate each unit's channel only on its own forecast stress input",
+    "no_witness_targets": "inverse-target fractions and perfect-information schedules do not enter the library or any controller decision",
+    "selection": "fixed structural mapping; no pairing score, random seed change, target-level addition, outcome-based profile pruning or parameter search"
+  },
+  "control": {
+    "target": "each unit independently evaluates its assigned original component at the same available delivery forecast stress and targets its resulting fraction times 98 MWh",
+    "projection": "unchanged V3 actual stocks, two pending nominations and received-only 90-minute BOA projection",
+    "nomination": "unchanged nominate_units with a two-component target; retain known future headroom clipping and joint 98 MW absolute nomination normalization",
+    "information": "delivery and preceding forecasts published by nomination time; only BOAs already received, actual stocks and already pending plans; prices and future receipts remain unavailable",
+    "engine": "extend simulate_units to accept independent per-unit target arrays; existing shared-target callers continue to represent equal channels"
+  },
+  "roster": {
+    "joint_library_profiles": 154,
+    "constant_pairs": 100,
+    "functional_pairs": 54,
+    "extra_shared_reference_profiles": [0.0, 0.5, 1.0],
+    "development_samples": "all original April, July and October 2024 ten-day samples",
+    "complete_windows_per_sample": 73,
+    "window_hours": 168,
+    "window_stride_hours": 1,
+    "reported_joint_library_window_evaluations": 33726,
+    "reported_extra_reference_window_evaluations": 657,
+    "reported_total_window_evaluations": 34383,
+    "new_joint_library_profiles": 144,
+    "new_window_evaluations": 31536,
+    "reused_diagonal_constant_window_evaluations": 2190,
+    "reused_extra_reference_window_evaluations": 657,
+    "reuse": "diagonal constant pairs reproduce original V3 constant profiles; reuse their 10x219 saved rows and the three shared reference rows, with explicit provenance. Do not rerun the V3 controller matrix"
+  },
+  "validation": [
+    "verify that equal target channels preserve the existing shared-target engine behavior and that unequal channels reach the correct units without shifting nomination timing",
+    "a future unreceived BOA must not alter an earlier two-unit nomination",
+    "evaluate all new profiles and every original complete window, preserving stopped-window failures",
+    "report new and reused window counts separately, April/July/October feasibility and the common feasible library set"
+  ],
+  "gate": "retain the original 95% finite-window criterion: at least one joint library candidate succeeds in at least 70/73 windows in each sample, and at least one joint library candidate is unsafe. A pass directs only registration of a source-archive pilot; full source comparison remains HOLD",
+  "comparison_scope": "V5 enlarges the joint candidate set from 64 to 154 while preserving all original component profiles; any whole-window feasibility gain cannot be attributed solely to target decoupling using the old 64-profile matrix",
+  "cost_scope": "use inherited metered procurement and terminal adjustment only on completed windows; conditional completed-window cost does not rank methods with different failure sets",
+  "accounting": {
+    "new_data_requests": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "limitations": "development-selected control and library repair, overlapping windows and fixed historical BOAs; local representability does not establish whole-window success, source benefit, measured battery performance or independent confirmation"
+}

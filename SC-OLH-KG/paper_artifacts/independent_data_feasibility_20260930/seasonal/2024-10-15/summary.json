@@ -1,0 +1,632 @@
+{
+  "protocol_id": "independent_energy_seasonal_preflight_20260930",
+  "status": "development_preflight_complete",
+  "physics": {
+    "energy_capacity": 0.4,
+    "power_capacity": 0.4,
+    "efficiency": 0.92,
+    "reserve_floor": 0.1,
+    "reserve_span": 0.85,
+    "reserve_cost": 0.018,
+    "cycle_cost": 0.03,
+    "unserved_cost": 8.0,
+    "spill_cost": 0.08,
+    "maximum_unserved_fraction": 0.11
+  },
+  "normalization_load_scale_MW": 35082.75,
+  "policy_count": 67,
+  "feasible_policy_count": 66,
+  "development_window_starts": 73,
+  "diagnostic_window_evaluations": 4891,
+  "optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_accessed": false,
+  "certification_comparison_gate": "proceed",
+  "request_logs": {
+    "calibration": {
+      "forecast": {
+        "url": "https://data.elexon.co.uk/bmrs/api/v1/forecast/demand/day-ahead/earliest/stream?from=2022-01-14T23%3A00%3A00%2B00%3A00&to=2022-01-25T00%3A00%3A00%2B00%3A00",
+        "response_bytes": 95061,
+        "retrieved_at": "2026-09-30T03:40:24.913303+00:00",
+        "returned_rows": 483,
+        "retained_rows": 482
+      },
+      "actual": {
+        "url": "https://data.elexon.co.uk/bmrs/api/v1/demand/outturn/stream?settlementDateFrom=2022-01-14&settlementDateTo=2022-01-24",
+        "response_bytes": 106558,
+        "retrieved_at": "2026-09-30T03:40:25.180601+00:00",
+        "returned_rows": 528,
+        "retained_rows": 482
+      },
+      "price": {
+        "parts": [
+          {
+            "url": "https://data.elexon.co.uk/bmrs/api/v1/balancing/pricing/market-index?from=2022-01-14T23%3A00%3A00%2B00%3A00&to=2022-01-20T23%3A00%3A00%2B00%3A00&dataProviders=APXMIDP&format=json",
+            "response_bytes": 42363,
+            "retrieved_at": "2026-09-30T03:43:01.152706+00:00"
+          },
+          {
+            "url": "https://data.elexon.co.uk/bmrs/api/v1/balancing/pricing/market-index?from=2022-01-20T23%3A00%3A00%2B00%3A00&to=2022-01-25T00%3A00%3A00%2B00%3A00&dataProviders=APXMIDP&format=json",
+            "response_bytes": 28593,
+            "retrieved_at": "2026-09-30T03:43:01.439754+00:00"
+          }
+        ],
+        "response_bytes": 70956,
+        "returned_rows": 482,
+        "retained_rows": 482
+      }
+    },
+    "development": {
+      "forecast": {
+        "url": "https://data.elexon.co.uk/bmrs/api/v1/forecast/demand/day-ahead/earliest/stream?from=2024-10-14T23%3A00%3A00%2B00%3A00&to=2024-10-25T00%3A00%3A00%2B00%3A00",
+        "response_bytes": 95059,
+        "retrieved_at": "2026-09-30T03:51:59.059665+00:00",
+        "returned_rows": 483,
+        "retained_rows": 482
+      },
+      "actual": {
+        "url": "https://data.elexon.co.uk/bmrs/api/v1/demand/outturn/stream?settlementDateFrom=2024-10-15&settlementDateTo=2024-10-25",
+        "response_bytes": 106558,
+        "retrieved_at": "2026-09-30T03:51:59.415348+00:00",
+        "returned_rows": 528,
+        "retained_rows": 482
+      },
+      "price": {
+        "parts": [
+          {
+            "url": "https://data.elexon.co.uk/bmrs/api/v1/balancing/pricing/market-index?from=2024-10-14T23%3A00%3A00%2B00%3A00&to=2024-10-20T23%3A00%3A00%2B00%3A00&dataProviders=APXMIDP&format=json",
+            "response_bytes": 42188,
+            "retrieved_at": "2026-09-30T03:51:59.703768+00:00"
+          },
+          {
+            "url": "https://data.elexon.co.uk/bmrs/api/v1/balancing/pricing/market-index?from=2024-10-20T23%3A00%3A00%2B00%3A00&to=2024-10-25T00%3A00%3A00%2B00%3A00&dataProviders=APXMIDP&format=json",
+            "response_bytes": 28501,
+            "retrieved_at": "2026-09-30T03:51:59.992286+00:00"
+          }
+        ],
+        "response_bytes": 70689,
+        "returned_rows": 482,
+        "retained_rows": 482
+      }
+    }
+  },
+  "profiles": [
+    {
+      "profile_id": "profile_0000",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.007445149128840579,
+      "max_unserved_fraction": 0.023963711965673908,
+      "max_hourly_exchange": 0.20066803742580044
+    },
+    {
+      "profile_id": "profile_0001",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.00852779340619357,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.16938803742580047
+    },
+    {
+      "profile_id": "profile_0002",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.010052207691907868,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.13810803742580047
+    },
+    {
+      "profile_id": "profile_0003",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.011576621977622159,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.13543951763302692
+    },
+    {
+      "profile_id": "profile_0004",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.013101036263336462,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.13543951763302692
+    },
+    {
+      "profile_id": "profile_0005",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.014729738868676689,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.13543951763302692
+    },
+    {
+      "profile_id": "profile_0006",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.01638547918651264,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.13543951763302692
+    },
+    {
+      "profile_id": "profile_0007",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.018041219504348456,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.17236890699101778
+    },
+    {
+      "profile_id": "profile_0008",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.019696959822184404,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.20932542873014817
+    },
+    {
+      "profile_id": "profile_0009",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.021387854800364633,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.24133650006986584
+    },
+    {
+      "profile_id": "profile_0010",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.01998069435243494,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.3341378152234764
+    },
+    {
+      "profile_id": "profile_0011",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.023136678092341958,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2641422877054963
+    },
+    {
+      "profile_id": "profile_0012",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.017495745438791805,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2323289941325464
+    },
+    {
+      "profile_id": "profile_0013",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.019621491662600556,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.18302195771302196
+    },
+    {
+      "profile_id": "profile_0014",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.015362554876537043,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.13791826946291275
+    },
+    {
+      "profile_id": "profile_0015",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.016311548730712364,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.14052461497459573
+    },
+    {
+      "profile_id": "profile_0016",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.0140487676251909,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.21628282727823936
+    },
+    {
+      "profile_id": "profile_0017",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.03077002905739067,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.3421682529448233
+    },
+    {
+      "profile_id": "profile_0018",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02060777918259458,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.19639158102625043
+    },
+    {
+      "profile_id": "profile_0019",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.021859739217322535,
+      "max_unserved_fraction": 0.0809722801142191,
+      "max_hourly_exchange": 0.2666689454404849
+    },
+    {
+      "profile_id": "profile_0020",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.019629063096370476,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.190801789825484
+    },
+    {
+      "profile_id": "profile_0021",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.0200394719023404,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.16932176077245706
+    },
+    {
+      "profile_id": "profile_0022",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.018506360480282178,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.17883039619186067
+    },
+    {
+      "profile_id": "profile_0023",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.021812028889546888,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.31052922658571525
+    },
+    {
+      "profile_id": "profile_0024",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.01459495530778907,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.1710562505654728
+    },
+    {
+      "profile_id": "profile_0025",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.015934270772606472,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.17963232889742475
+    },
+    {
+      "profile_id": "profile_0026",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02531681192479283,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.27480291384807065
+    },
+    {
+      "profile_id": "profile_0027",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02506711216696235,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.26347638061236844
+    },
+    {
+      "profile_id": "profile_0028",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02216050254159119,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.19563111544696382
+    },
+    {
+      "profile_id": "profile_0029",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02066695545009917,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2218526149745958
+    },
+    {
+      "profile_id": "profile_0030",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.016052398845422585,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.1800093537707278
+    },
+    {
+      "profile_id": "profile_0031",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.012964934927800214,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.13543951763302692
+    },
+    {
+      "profile_id": "profile_0032",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.0274278153414161,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2905242855249375
+    },
+    {
+      "profile_id": "profile_0033",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.018271875257927575,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.20360626946291266
+    },
+    {
+      "profile_id": "profile_0034",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.01722487086135218,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.1551097383866895
+    },
+    {
+      "profile_id": "profile_0035",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.028547634350026215,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.361780567999943
+    },
+    {
+      "profile_id": "profile_0036",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02054741809274838,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.18495670484658472
+    },
+    {
+      "profile_id": "profile_0037",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02114377787541037,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2843052240692775
+    },
+    {
+      "profile_id": "profile_0038",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.023977954929335472,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.298387009032405
+    },
+    {
+      "profile_id": "profile_0039",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.023132467840531332,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.23369487401202524
+    },
+    {
+      "profile_id": "profile_0040",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02289173964527822,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2645683671816751
+    },
+    {
+      "profile_id": "profile_0041",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02370617562692966,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2880622694629127
+    },
+    {
+      "profile_id": "profile_0042",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.024072028354538866,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.23353069310780097
+    },
+    {
+      "profile_id": "profile_0043",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.017956031808417133,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.18248176916959452
+    },
+    {
+      "profile_id": "profile_0044",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02447035806750097,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.32768821782784985
+    },
+    {
+      "profile_id": "profile_0045",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.020598227536915377,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.26346851872788557
+    },
+    {
+      "profile_id": "profile_0046",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.019598029571899662,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.18786300278255164
+    },
+    {
+      "profile_id": "profile_0047",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.0277702243231424,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.27488428552493743
+    },
+    {
+      "profile_id": "profile_0048",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02024685329351569,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.19995661497459583
+    },
+    {
+      "profile_id": "profile_0049",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.018768122098217967,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.18126105267267173
+    },
+    {
+      "profile_id": "profile_0050",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.023043395434725507,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.24118050081673628
+    },
+    {
+      "profile_id": "profile_0051",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.024767988886202633,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.21367512651520504
+    },
+    {
+      "profile_id": "profile_0052",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.01958384193740287,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.20562977655623518
+    },
+    {
+      "profile_id": "profile_0053",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02200180261156528,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2434159506542855
+    },
+    {
+      "profile_id": "profile_0054",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.020584998278179407,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2155966149745958
+    },
+    {
+      "profile_id": "profile_0055",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.012576868389387123,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.13663147751712434
+    },
+    {
+      "profile_id": "profile_0056",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.02363022998612477,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.26877261497459576
+    },
+    {
+      "profile_id": "profile_0057",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.024111568530445014,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.23123285795000043
+    },
+    {
+      "profile_id": "profile_0058",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.018082587561089117,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.202763776741242
+    },
+    {
+      "profile_id": "profile_0059",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.022351032058915858,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.31032712969103743
+    },
+    {
+      "profile_id": "profile_0060",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.021963021314507718,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.18380021782784992
+    },
+    {
+      "profile_id": "profile_0061",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.017972235536603574,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2421523924956307
+    },
+    {
+      "profile_id": "profile_0062",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.021474587547158936,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.2725514911753536
+    },
+    {
+      "profile_id": "profile_0063",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.017595371651858094,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.17831242128706468
+    },
+    {
+      "profile_id": "constant_0.00",
+      "window_success_fraction": 0.589041095890411,
+      "empirically_feasible": false,
+      "median_service_cost": 0.010467545849316948,
+      "max_unserved_fraction": 0.13598299488134008,
+      "max_hourly_exchange": 0.21630803742580043
+    },
+    {
+      "profile_id": "constant_0.50",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.013901868709758774,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.13543951763302692
+    },
+    {
+      "profile_id": "constant_1.00",
+      "window_success_fraction": 1.0,
+      "empirically_feasible": true,
+      "median_service_cost": 0.022284930284121426,
+      "max_unserved_fraction": 0.0,
+      "max_hourly_exchange": 0.25981476093943107
+    }
+  ],
+  "interpretation": "finite overlapping development windows; no independent confirmation or method-effect estimate"
+}

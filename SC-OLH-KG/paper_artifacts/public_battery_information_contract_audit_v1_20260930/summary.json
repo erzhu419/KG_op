@@ -1,0 +1,36 @@
+{
+  "protocol_id": "public_battery_information_contract_audit_v1_20260930",
+  "status": "information_contract_review_complete",
+  "findings": {
+    "one_hour_gate_closed_baseline": "supported; fixed half-hour commands and ideal receipt remain discretization assumptions",
+    "absolute_BOA_levels": "correct; recorded levels are measured from zero, not increments to add to a changed baseline",
+    "historical_BOA_with_changed_baseline": "valid as an explicitly imposed dispatch-trace stress test; unsupported as an identified counterfactual market dispatch",
+    "availability_feedback": "omitted in V1-V5; actual dispatch uses baseline, bids/offers, updated export/import limits and dynamic parameters",
+    "predictive_input": "no new predictor admitted; a national-demand or unit-history predictor cannot by itself identify the missing counterfactual dispatch response",
+    "receipt_time": "acceptanceTime is instruction issue time; immediate participant observation is a simulation assumption, not a measured receipt log"
+  },
+  "primary_sources": [
+    {"url": "https://www.neso.energy/document/33881/download", "version": "Grid Code BC2, Issue 6 Revision 22, 2024-04-02", "locators": "BC2.4.1; BC2.5.1; BC2.5.3 and 5.3.2; BC2.7.1-7.3", "use": "gate-closed PN and dispatch dependence on submitted capability"},
+    {"url": "https://www.elexon.co.uk/bsc/documents/groups/isg/2023-meeting/268-august/isg268-04-cp1581-assessment-report/", "version": "CP1581 assessment report, 2023-07-25, version 1.0", "locators": "page 4", "use": "one-hour Gate Closure definition; emergency-specific corrections are not generalized"},
+    {"url": "https://www.elexon.co.uk/bsc/glossary/acceptance-data/", "version": "current online definition; historical project reconstruction basis retained", "locators": "Acceptance Data (a)(i)-(ii)", "use": "absolute MW and whole-minute instruction data"},
+    {"url": "https://www.neso.energy/document/304631/download", "version": "2024 OTF material; transition paragraph explicitly dated March 2024", "locators": "Enhancing the use of storage assets in our balancing activities", "use": "transition from 11 to 25 March 2024; 30-minute instruction plus two minutes ramping"},
+    {"url": "https://www.neso.energy/document/300231/download", "version": "current retrieved guidance; not treated as a frozen 2024 version", "locators": "Guidance for EDT/EDL Submissions (updated with 30-min rule)", "use": "energy-aware redeclaration mechanism as supporting context"},
+    {"url": "https://bscdocs.elexon.co.uk/simple-guides/section-q-balancing-services-activities/v-39-0/id-624ee591564fec000758c356", "version": "Section Q simple guide, version 39.0 online", "locators": "Acceptances: Bid-Offer Acceptance Time", "use": "instruction issue time distinguished from measured participant receipt"}
+  ],
+  "cached_metadata": {
+    "path": "paper_artifacts/public_battery_application_spec_20260930/pillswood_physical_20240415.json",
+    "bm_unit": "E_PILLB-1",
+    "row_counts": {"PN": 245, "MELS": 119, "MILS": 119, "QPN": 50},
+    "missing_inputs": "no publication/receipt vintage in physical rows; no measured SOC; not admitted as causal policy inputs"
+  },
+  "decision": "retain fixed-request outcomes and narrow their business interpretation; define causal availability with an independent service obligation before any historical rerun",
+  "next_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "source_comparison_gate": "HOLD",
+  "new_historical_controller_window_evaluations": 0,
+  "new_business_data_requests": 0,
+  "diagnostic_LP_calls": 0,
+  "algorithm_optimizer_calls": 0,
+  "terminal_verifier_calls": 0,
+  "confirmation_year_access": false,
+  "limitations": "audit establishes rule support and missing feedback, not the performance of a corrected simulation or real market strategy; current guidance is distinguished from dated historical documents"
+}

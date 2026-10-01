@@ -15,8 +15,10 @@ enough to a sufficiently deep target safe region.  Finally, Theorem
 This chain also makes the limitation visible.  A fine grid does not hurt if it
 describes the same ordered profile, but no theorem can rescue a target whose
 safe region is absent from, or badly distorted relative to, the structural
-library.  The results are finite and conditional; they are not a guarantee for
-arbitrary high-dimensional black boxes.
+library.  The results are finite and conditional.  The covering guarantee
+holds for any first center, and source-rank recovery concerns source tasks
+alone.  Neither implies that source scoring outperforms a source-free design
+or a source-greedy portfolio; that comparison is empirical.
 
 \subsection{Profile-grid consistency}
 
@@ -115,6 +117,50 @@ of treating the source order as known.  The normal and chi-square sampling
 laws supply the probability bounds \citep{Cochran1934}; Lean checks the finite
 variance identity, the effect of the variance floor, the union of bad events,
 and the final rank implication.
+
+\subsection{From uncertain ranks to the selected design}
+
+The source information has two distinct roles: it selects the first profile
+and perturbs the covering metric.  The following finite statement separates
+them.  For a score head on a $J$-profile source library, $J\ge2$, let
+$U_{qj}(r_q)$ count other profiles whose true scores differ from $s_{qj}$ by
+at most $2r_q$.
+
+\begin{proposition}[Rank and design stability]\label{prop:design-stability}
+On the simultaneous score-error event of Proposition
+\ref{prop:rank-recovery}, the normalized average-tie rank satisfies
+\[
+ |\widehat r_{qj}-r_{qj}|\le U_{qj}(r_q)/(J-1).
+\]
+Let $\epsilon_g,\epsilon_f$ bound the resulting aggregate rank errors under
+nonnegative source weights summing to one.  For $\omega\in[0,1]$ and
+$b_j=\omega r_j^g+(1-\omega)r_j^f$, put
+$\epsilon_b=\omega\epsilon_g+(1-\omega)\epsilon_f$ and
+$\epsilon_{\rm aug}=(\epsilon_g^2+\epsilon_f^2)^{1/2}$.
+The estimated first center $\widehat j$ satisfies
+\[
+ b_{\widehat j}-\min_j b_j\le2\epsilon_b.
+\]
+It equals the unique population-score first center if the score gap exceeds
+$2\epsilon_b$.  Conditional on this equality, the complete farthest-first
+sequence is unchanged if, at every remaining selection step, the population
+distance-to-selected-set gap between its winner and runner-up exceeds
+$4\epsilon_{\rm aug}$.
+\end{proposition}
+
+The proof in the Online Supplement counts unresolved pairwise comparisons
+and propagates coordinate perturbations through Euclidean distances.  The
+first-center guarantee concerns source score quality; the sequence guarantee
+concerns sensitivity to source noise.  Both permit nearly tied rankings and
+cover choices to remain uncertain.  When the sequence is unchanged, its
+mapped target design and paired evaluation law are unchanged as well.
+Target benefit still requires the alignment condition below.  These analytic
+implications supplement the existing Lean-checked components.
+
+The Online Supplement examines a further condition linking first-center
+score uncertainty to target safety.  Its hidden-truth diagnostic satisfies
+the sufficient condition on 0/240 confirmation tasks.  It therefore remains
+a boundary statement, rather than an explanation of the observed gain.
 
 \subsection{When library coverage reaches a target safe region}
 
@@ -245,9 +291,11 @@ proof of the familywise statement appears in the Online Supplement.
 The Online Supplement gives ordinary mathematical proofs of every named result
 in this section, the task-law bound, the finite-atlas limitation, and the call
 accounting identities.  A bidirectional closure table maps each manuscript
-statement to exact Lean declarations in the frozen paper-facing interface.
+original statement to exact Lean declarations in the frozen paper-facing interface.
 These declarations build in Lean 4 without \texttt{sorry}, \texttt{admit}, or a
-project-defined \texttt{axiom}.  Machine checking confirms that the stated
+project-defined \texttt{axiom}.  Proposition \ref{prop:design-stability} and the supplementary
+first-center margin-transfer proposition have analytic proofs and are
+outside this original interface.  Machine checking confirms that the formalized
 conclusions follow from the stated premises.  It cannot establish that
 Assumption \ref{ass:alignment} holds in Energy or in an unspecified future
 domain, nor can it replace the declared Gaussian, bounded-task, and binomial

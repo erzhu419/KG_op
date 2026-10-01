@@ -1,0 +1,82 @@
+{
+  "protocol_id": "public_battery_announced_controller_pilot_v1_20261001",
+  "frozen_at_utc": "2026-10-01T02:39:04+00:00",
+  "role": "complete announced-task nomination rule, gated components and four bounded development pilots",
+  "registration_context": "eight active-pair automatic probes and paths observed safe; inactive-slot extension, own-pulse-prefix integration and complete announced-task controller outcomes remain unobserved",
+  "basis_protocol": "performance/manifests/public_battery_announced_nomination_preflight_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_announced_nomination_preflight_v1_20261001",
+  "task_protocol": "performance/manifests/public_battery_announced_task_contract_v1_20261001.json",
+  "task_outputs": "paper_artifacts/public_battery_announced_task_contract_v1_20261001",
+  "retained_asset_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "inputs": {
+    "announcements": "reuse the 168 binding announcements and all 95 obligations; expose only release_minute<=decision to the controller",
+    "dispatcher": "reuse the 170 delivery clock roster, including two inactive startup slots; it is not a controller input",
+    "own_state": "actual SOC, current/following PN, own admitted pulse, its actual execution origin and already executed prefix, original target fractions",
+    "fixed_parameters": "retain 98 MW shared gross power, two 98 MWh units, 0.92 efficiencies, 30-minute PN clock, 60-minute nomination lead, 120-minute announcements and 1/30/1 pulses"
+  },
+  "nomination_rule": {
+    "whole_hour": "at decision mod 60=0 nominate [0,0] for the slot starting decision+60, so each future hourly pulse starts from zero PN",
+    "half_hour": "at decision mod 60=30 choose the tail slot starting decision+60 using the released delivery slots at decision+30 and decision+90; active and explicitly inactive slots are both known information",
+    "startup_terminal": "startup delivery slots 0 and 60 are predefined inactive; slots at or after the execution horizon have no further service duty. A missing in-horizon announcement is an interface discrepancy, not an inactive request",
+    "pending_inventory": "replace g(current)/2 by exact inventory change over the next 30 minutes of current PN overlaid with the own already admitted pulse's remaining endpoints",
+    "active_first_projection": "retain the frozen active-pair F, with the exact pending-inventory contribution; first ramp begins at following PN, hold is 30 minutes, return reaches the candidate PN, then 28 minutes of tail",
+    "inactive_first_projection": "F(q)=actual_SOC+pending_inventory+g(following)/2+g(q)/2; the whole next hour follows PN",
+    "second_band": "announced export uses [abs(peak)*31/60/eta_d,C], announced import [0,C-eta_c*abs(peak)*31/60], announced inactivity or terminal uses [0,C]. These zero-reference bands guide planning; actual pulse and tail physics decide success",
+    "target_and_allocation": "retain original target fractions, attainable-band intersection, 48-step inverse brackets and minimum-power-first common-fraction allocation from basis_protocol; at most 300 scalar F calls per half-hour nomination",
+    "infeasible_interval": "record the empty or jointly infeasible band and nominate zero PN; do not count this as fulfilled service or tune commands",
+    "known_reference_safety": "test zero PN, the minimum feasible band command and the chosen command against actual known references over the next 90 minutes, without overlaying future proposals. Own already admitted pulse endpoints remain mandatory",
+    "execution_origin": "when a current pulse has already partly executed, use its hour-origin SOC and already executed endpoints for safety accumulation, followed by the next 90-minute reference; retain original tolerances",
+    "safety_fallback": "if zero reference is unsafe, retain zero and a known commitment failure. If intervals are infeasible or the minimum band command is unsafe while zero is safe, keep zero and record planning infeasibility. If minimum is safe and chosen is unsafe, use the largest safe common interpolation from minimum toward chosen with 48 bisections",
+    "safety_budget": "at most 51 reference trajectory evaluations per half-hour nomination, including zero, minimum, chosen and 48 interpolation evaluations; count actual calls and any tests/replays separately"
+  },
+  "execution_contract": {
+    "event_order": "shift PN slots; release current announcements before a decision; declare causal absolute envelopes and admit the current prescribed call; nominate PN using own actual admitted pulse; execute exact minute physics",
+    "declaration": "retain the causal absolute-peak declarations and both existing dispatch rules; announcements enter nomination planning, while accepted pulses enter mandatory references only after actual admission",
+    "service_accounting": "all 95 requests remain in each denominator. Partial or rejected requests are failures; inactive and startup slots create no delivered observations. Physical interruption retains executed-prefix errors and unassessed requests"
+  },
+  "component_preflight": {
+    "base_contexts": "reuse both saved nomination inputs from basis_outputs/components.json, without changing targets, SOC or current/following PN",
+    "base_sign_pairs": ["export_export", "export_import", "export_none", "import_export", "import_import", "import_none", "none_export", "none_import", "none_none"],
+    "base_probes": 18,
+    "base_paths": "each begins at the saved nomination clock and lasts 150 minutes, with both second-hour PN rows stipulated zero; only active pulses count as requests",
+    "own_prefix_probes": 4,
+    "own_prefix_cases": "for each profile use its safe export_export and import_import automatic component. Regenerate the first full pulse and its nominated tail, advance 30 actual minutes from that pulse's hour origin, then nominate with the already admitted two-minute suffix and two future announced calls of the same sign",
+    "own_prefix_paths": "keep each original hour-origin SOC and executed 30-minute prefix; append current suffix/tail and the two future calls. One 180-minute execution path per probe, with zero second-hour PN for the final call",
+    "planned_half_hour_nomination_probes": 22,
+    "maximum_execution_trajectory_evaluations": 22,
+    "maximum_reference_safety_trajectory_evaluations": 1122,
+    "required_behavior": "all probes have safe known references and physically deliver every activated fixture pulse; projection matches actual next-call stock. Check inactive-slot accounting, own-prefix consistency and whole-hour event order. Any discrepancy blocks pilots",
+    "tests": "meaningful release-prefix isolation in the new policy, correct own-pulse pending inventory, safety fallback and retained failure accounting; record test calls separately"
+  },
+  "sequential_pilot": {
+    "period": "2024-04-15",
+    "window_start_minutes": [0],
+    "execution_minutes": 10200,
+    "service_clock_span_minutes": 10080,
+    "warmup_minutes": 120,
+    "initial_SOC_MWh": [49, 49],
+    "initial_locked_PN_MW": [[0, 0], [0, 0]],
+    "profiles": [
+      {"id": "constant_pair_0003_0007", "target_fractions": [0.35, 0.75]},
+      {"id": "constant_pair_0004_0007", "target_fractions": [0.45, 0.75]}
+    ],
+    "dispatch_rules": ["conservative_admission", "full_request_reference"],
+    "planned_controller_window_evaluations": 4,
+    "window_success": "all 10200 physical minutes safely completed, all 95 requests fulfilled and no known unsafe commitment",
+    "chance_criterion": "retain original 0.05 development failure criterion for any later broader population; these four runs do not pass that reliability gate",
+    "comparison_scope": "physical admission versus full execution within this announced task; earlier unannounced runs remain separate task results",
+    "storage": "compact hourly declarations, nominations, counts and first failure; no full-week minute traces or monetary outcome"
+  },
+  "decision": "run the four pilots only after all 22 components and required tests pass. If any complete window fulfills all 95 safely, register broader announced-task development before source comparison. Otherwise retain all negatives and diagnose the first mechanism from saved inputs; no matrix, retuning or 2025 access follows automatically",
+  "accounting_constraints": {
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "preservation": "retain the original tasks, all announcement and component artifacts, and every negative. Write complete announced-controller results separately and count implementation replays explicitly",
+  "limitations": "development of an analyst-defined announced service after inspecting earlier failures; zero-reference stock bands are planning approximations and future admitted tails remain endogenous. Components and four pilots cannot establish historical BM validity, 95-percent reliability, source benefit or OR submission readiness"
+}

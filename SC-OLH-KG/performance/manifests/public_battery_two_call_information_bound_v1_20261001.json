@@ -1,0 +1,108 @@
+{
+  "protocol_id": "public_battery_two_call_information_bound_v1_20261001",
+  "frozen_at_utc": "2026-10-01T01:35:57+00:00",
+  "role": "conditional two-call information necessity bound, not a new service obligation or an impossibility claim for the actual 95-call history",
+  "registration_context": "receipt-forecast pilots and their initial numerical-origin replays observed; first import deficit follows a correct forecast whose corrective PN starts too late. The analytic lower-span argument is proposed; no bound artifact or optimistic pulse-band kernel evaluation has been generated",
+  "basis_protocol": "performance/manifests/public_battery_receipt_forecast_pilot_v1_20261001.json",
+  "basis_outputs": "paper_artifacts/public_battery_receipt_forecast_pilot_v1_20261001",
+  "basis_diagnosis": "paper_artifacts/public_battery_receipt_forecast_pilot_v1_20261001/first_failure_diagnosis.json",
+  "retained_asset_protocol": "performance/manifests/public_battery_availability_contract_preflight_v1_20260930.json",
+  "conditional_support": {
+    "directions": "at a nomination before the first call both import and export remain possible; after either first direction both signs of the second call remain possible. All four active sign pairs are diagnostic support branches, not new observed service samples",
+    "clock": "first call at an hourly clock, second call 60 minutes later; each pulse ramps for one minute, holds for 30 and returns for one. Thirty-minute PN and a 60-minute nomination lead leave the first return/tail PN fixed before observing the first sign",
+    "nonanticipation": "the same starting inventory, first ramp reference and return/tail PN must be used for both possible first signs; later PN may depend on the first observed sign",
+    "relaxations": "for the second pulse permit each unit alone the entire 98 MW gross bound, allow its ramp references to know the second sign, and ignore other-unit coupling, no-activation reference safety and the post-pulse tail. Failure of this optimistic necessary band rules out a uniform two-call guarantee under the stated support",
+    "scope": "no new permanent bidirectional reserve duty; the actual task still only assesses activated requests"
+  },
+  "analytic_work": {
+    "inventory_rate": "g(p)=eta_c*max(-p,0)-max(p,0)/eta_d, with decreasing slope magnitude at least kappa=min(eta_c,1/eta_d)",
+    "first_call_stock_separation_lower_bound_MWh": "B=A*(eta_c+1/eta_d)*(30/60)+2*kappa*A*(1/60). The common reference tail cancels between first-import and first-export outcomes",
+    "optimistic_second_band": "L=-min_delta for a full export pulse whose start and return reference are both -98 MW; U=C-max_delta for a full import pulse whose start and return reference are both +98 MW. Continuous extrema are required over the 32-minute pulse",
+    "certificate": "if B>U-L with the original physical tolerance allowed at both stock edges, the two possible first outcomes cannot both lie in the necessary band for serving either second sign",
+    "proof_requirement": "derive the ramp gap from the inventory-rate slope bound and show the extreme second-pulse references are optimistic by pointwise monotonicity; no controller-policy or probability inference"
+  },
+  "component_probes": {
+    "contexts": [
+      {
+        "profile_id": "constant_pair_0003_0007",
+        "first_call_minute": 960,
+        "second_call_minute": 1020,
+        "first_nomination_minute": 930,
+        "current_cue": {
+          "minute": 930,
+          "direction": null,
+          "source": null
+        },
+        "first_call_initial_SOC_MWh": [
+          34.30000000000001,
+          73.49999999999997
+        ],
+        "first_hour_locked_PN_MW": [
+          [
+            2.6147972675971688e-14,
+            -6.178632484870436e-14
+          ],
+          [
+            0.0,
+            0.0
+          ]
+        ],
+        "target_fractions": [
+          0.35,
+          0.75
+        ]
+      },
+      {
+        "profile_id": "constant_pair_0004_0007",
+        "first_call_minute": 960,
+        "second_call_minute": 1020,
+        "first_nomination_minute": 930,
+        "current_cue": {
+          "minute": 930,
+          "direction": null,
+          "source": null
+        },
+        "first_call_initial_SOC_MWh": [
+          44.10000000000003,
+          73.50000000000001
+        ],
+        "first_hour_locked_PN_MW": [
+          [
+            3.9221959013957534e-14,
+            2.6147972675971688e-14
+          ],
+          [
+            1.3073986337985844e-14,
+            0.0
+          ]
+        ],
+        "target_fractions": [
+          0.45,
+          0.75
+        ]
+      }
+    ],
+    "first_call_branches": [
+      "export",
+      "import"
+    ],
+    "first_prefix_duration_minutes": 60,
+    "planned_saved_context_prefix_paths": 4,
+    "planned_optimistic_second_pulse_paths": 2,
+    "unit_for_bound": 2,
+    "purpose": "compare saved-context first-call stock separation with the analytic lower bound and the optimistic second-call stock-band width",
+    "storage": "compact metrics and proof explanation only; no controller rollout or weekly trace"
+  },
+  "decision": "a positive gap establishes only the stated uniform-support impossibility; retain the actual pilot negatives and reassess the task and nomination-time information before another controller change. A nonpositive gap is inconclusive and does not certify feasibility. Do not estimate the original 0.05 chance criterion from this bound",
+  "accounting_constraints": {
+    "new_controller_window_evaluations": 0,
+    "new_business_data_requests": 0,
+    "diagnostic_LP_calls": 0,
+    "algorithm_optimizer_calls": 0,
+    "terminal_verifier_calls": 0,
+    "confirmation_year_access": false
+  },
+  "source_comparison_gate": "HOLD",
+  "library_matrix_launch": false,
+  "limitations": "the bound concerns serving all four possible active sign pairs under a specific information schedule. It does not establish that every causal policy fails on the retained deterministic history, quantify a stochastic failure probability, identify real BM dispatch, or demonstrate OR submission readiness"
+}

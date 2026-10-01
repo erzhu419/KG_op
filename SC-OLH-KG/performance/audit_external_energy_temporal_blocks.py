@@ -31,7 +31,7 @@ from problems.energy_reliability import OPSDStorageReliabilityProblem  # noqa: E
 SOURCE_CONTRACTS = {
     "opsd_region_heldout_profile_design_v2",
     "opsd_region_heldout_functional_scbo_v1",
-    "opsd_forecast_indexed_region_holdout_v3",
+    "opsd_forecast_indexed_region_holdout_v5_shared_hourly_power",
 }
 AUDIT_CONTRACT = "opsd_postdecision_temporal_block_audit_v1"
 
@@ -168,7 +168,7 @@ def audit_result(
     point = tuple(int(value) for value in shortlist[int(selected_rank) - 1]["point"])
     problem_class = (
         OPSDForecastIndexedStorageProblem
-        if row["contract_id"] == "opsd_forecast_indexed_region_holdout_v3"
+        if row["contract_id"] == "opsd_forecast_indexed_region_holdout_v5_shared_hourly_power"
         else OPSDStorageReliabilityProblem
     )
     problem_kwargs = {

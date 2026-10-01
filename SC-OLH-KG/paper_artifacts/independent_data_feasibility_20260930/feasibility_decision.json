@@ -1,0 +1,57 @@
+{
+  "status": "data_available_initializer_certification_contrast_inadequate",
+  "seasons": [
+    {
+      "case": "paper_artifacts/independent_data_feasibility_20260930/development",
+      "library_profiles": 64,
+      "library_feasible_profiles": 64,
+      "library_minimum_window_success_fraction": 1.0,
+      "development_window_starts": 73,
+      "infeasible_reference_ids": [],
+      "maximum_hourly_exchange": 0.3820242402451703
+    },
+    {
+      "case": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-04-15",
+      "library_profiles": 64,
+      "library_feasible_profiles": 64,
+      "library_minimum_window_success_fraction": 1.0,
+      "development_window_starts": 73,
+      "infeasible_reference_ids": [
+        "constant_0.00"
+      ],
+      "maximum_hourly_exchange": 0.35260910152487307
+    },
+    {
+      "case": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-07-15",
+      "library_profiles": 64,
+      "library_feasible_profiles": 64,
+      "library_minimum_window_success_fraction": 1.0,
+      "development_window_starts": 73,
+      "infeasible_reference_ids": [],
+      "maximum_hourly_exchange": 0.337456050203422
+    },
+    {
+      "case": "paper_artifacts/independent_data_feasibility_20260930/seasonal/2024-10-15",
+      "library_profiles": 64,
+      "library_feasible_profiles": 64,
+      "library_minimum_window_success_fraction": 1.0,
+      "development_window_starts": 73,
+      "infeasible_reference_ids": [
+        "constant_0.00"
+      ],
+      "maximum_hourly_exchange": 0.361780567999943
+    }
+  ],
+  "accepted_preflight_response_bytes": 1361727,
+  "diagnostic_window_evaluations": 19564,
+  "physical_pool_gate": "active through additional zero-response reference",
+  "full_comparison_decision": "defer; all frozen library candidates succeed in every sampled window",
+  "implied_hypothetical_asset": {
+    "energy_MWh": 14033.1,
+    "power_MW": 14033.1
+  },
+  "confirmation_year_accessed": false,
+  "algorithm_effect_estimated": false,
+  "next_step": "establish public operational task and asset parameters before registering a new comparison",
+  "limitations": "short source calibration; four overlapping-window development samples; one national market; no annual coverage or deployment evidence"
+}

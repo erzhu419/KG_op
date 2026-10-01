@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "contract_id": "submission_revision_controls_20260907",
+  "status": "supplemental_rules_fixed_before_new_evaluation",
+  "interpretation": "Post-review supplemental comparisons on previously used task seeds; not new independent confirmatory evidence. The standardized d=1000 control was already observed in the submission review and is reused unchanged.",
+  "historical_seed_freeze_commit": "da8f1e5c594dace1cc667a2e4b87956b1001b67b",
+  "family_seed": 20260808,
+  "library_seed": 20261799,
+  "runner": "performance/submission_revision_controls.py",
+  "original_target_evaluation": "performance/benchmark_profile_stress_suite.py:run_task",
+  "matrix": {
+    "dimensions": [200, 1000, 10000],
+    "regimes": ["aligned_low_frequency", "growing_effective_rank", "frequency_support_shift", "coordinate_permutation", "irregular_grid", "piecewise_smooth", "sparse_high_frequency", "misspecified_target"],
+    "tasks_per_regime": 20,
+    "new_arms": ["standardized_generic_dct_maximin", "source_greedy_portfolio"],
+    "previous_arms_read_without_rerunning": ["source_atlas", "generic_dct_maximin"],
+    "independent_latent_tasks": 160,
+    "correlated_task_resolution_cells_per_arm": 480,
+    "n0": 10,
+    "N": 10,
+    "schema_mode": "declared",
+    "descriptor_mode": "domain_blind",
+    "verification_budgets": [80, 80, 80],
+    "familywise_delta": 0.05,
+    "amortization_targets": 20
+  },
+  "standardized_generic_dct_maximin": {
+    "coordinate": "Exactly the source atlas 18 cosine and diagonal-square coordinates; K=8, kappa=0.25, shared library nodes.",
+    "standardization": "Subtract each library-column mean and divide by its population standard deviation; replace scales <=1e-10 by 1, exactly as the existing source atlas.",
+    "first_center": "Minimum mean Euclidean distance to the standardized finite library; stable library index tie break.",
+    "remaining_centers": "Existing deterministic Gonzalez farthest-first until ten distinct profiles.",
+    "source_outcomes_used": false,
+    "target_outcomes_used": false,
+    "previous_d1000_results": "docs/submission_review_20260907/kg_standardized_generic_diagnostic.json"
+  },
+  "source_greedy_portfolio": {
+    "description": "A simple source-greedy portfolio control adapted to this ordered-policy, chance-constrained archive; not a reproduction of Auto-sklearn 2.0.",
+    "archive": "The same two source tasks, 64 profiles and three paired simulator replications as source_atlas; 384 source calls, source task and sample seeds unchanged.",
+    "profile_order": "Lexicographically sorted common profile IDs, as in source_atlas.",
+    "objective_statistic": "Mean source objective samples.",
+    "safety_statistic": "Mean source constraint samples + NormalQuantile(1-alpha) * sqrt(max(unbiased sample variance,1e-6)) - tau; exactly source_atlas.",
+    "ranks": "Average-tie percentile ranks in [0,1], separately within each source task, using existing percentile_ranks.",
+    "single_profile_score": "s[t,j] = 0.5 * safety_rank[t,j] + 0.5 * objective_rank[t,j] (lower is better).",
+    "greedy_rule": "At each step select the unselected profile j minimizing mean_t min_{k in selected union {j}} s[t,k]. Start with the empty set; first step minimizes mean_t s[t,j].",
+    "tie_break": "First lower overall mean_t s[t,j], then stable profile index. Continue to exactly ten profiles, including after the archive objective stops improving.",
+    "source_weights": "Uniform, no target descriptor weighting.",
+    "target_outcomes_used": false,
+    "target_oracle_used": false
+  },
+  "analysis": {
+    "endpoint": "Independently certified deployment whose post-run audit is truly feasible; also report initial feasible coverage, false certificates, penalized loss and all-in calls.",
+    "pairing": "Exact regime, dimension, target_seed and design_seed; no pairing inferred from a filename substring.",
+    "uncertainty": "For each dimension, 10000 paired bootstrap replicates resample 20 tasks separately within each of the fixed eight regimes; report percentile 95% intervals. Per-regime intervals resample its 20 paired tasks. The three resolutions are never treated as 480 independent tasks.",
+    "bootstrap_seed": 20260907,
+    "cost": "Source calls divided by M plus observed target search and verification calls; report total calls and calls per true safe certificate at M=1,20,100, and the amortization crossing.",
+    "raw_reference_validation": "Check compact original summaries against local source/legacy scalar rows before combining them.",
+    "output": "Compact scalar rows and selected profile IDs; no full policy vectors or checkpoints."
+  },
+  "frozen_materials": "Do not change the existing core, runner, historical protocols or historical results."
+}

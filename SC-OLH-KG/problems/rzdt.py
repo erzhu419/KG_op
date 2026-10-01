@@ -571,6 +571,22 @@ class StatePolicyMetaFeatureMap:
         return np.vstack([self.features(x) for x in X])
 
 
+class FourStatePolicyMetaFeatureMap(StatePolicyMetaFeatureMap):
+    """Keep all four operational summaries in Inventory and Queue surrogates."""
+
+    feature_dim = 16
+
+    def features(self, x):
+        u, q, control, spread = self.problem._policy_summary(x)
+        return np.array([
+            u, q, control, spread,
+            u ** 2, q ** 2, control ** 2, spread ** 2,
+            u * q, u * control, u * spread,
+            q * control, q * spread, control * spread,
+            np.sin(np.pi * u), abs(q - 0.5),
+        ], dtype=float)
+
+
 class HighDimStatePolicyRZDT1(TestProblem):
     """High-dimensional raw policy with a low-dimensional state optimum.
 
@@ -1134,7 +1150,7 @@ class InventorySupplyChainProblem(CumulativeRiskFeatureProvider, TestProblem):
         ], dtype=float)
 
     def gpr_basis_map(self):
-        return StatePolicyMetaFeatureMap(_SummaryAdapter(self, self._policy_summary))
+        return FourStatePolicyMetaFeatureMap(self)
 
     def surrogate_basis_map(self):
         return self.gpr_basis_map()
@@ -1486,7 +1502,7 @@ class QueueResourceControlProblem(CumulativeRiskFeatureProvider, TestProblem):
         ], dtype=float)
 
     def gpr_basis_map(self):
-        return StatePolicyMetaFeatureMap(_SummaryAdapter(self, self._policy_summary))
+        return FourStatePolicyMetaFeatureMap(self)
 
     def surrogate_basis_map(self):
         return self.gpr_basis_map()
@@ -1694,20 +1710,6 @@ class QueueResourceControlProblem(CumulativeRiskFeatureProvider, TestProblem):
         if int(output_index) in (1, 2):
             return float(8.0 * self.sigma_level ** 2)
         return float(2.0 * self.sigma_level ** 2)
-
-
-class _SummaryAdapter:
-    """Adapter exposing ``policy_state`` to the existing meta feature map."""
-
-    reference_q = 0.5
-
-    def __init__(self, problem, summary_fn):
-        self.problem = problem
-        self.summary_fn = summary_fn
-
-    def policy_state(self, x):
-        values = self.summary_fn(x)
-        return float(values[0]), float(values[1]), float(values[3])
 
 
 PROBLEM_REGISTRY = {
