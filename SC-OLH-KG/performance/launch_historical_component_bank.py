@@ -18,14 +18,14 @@ REMOTE='/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy
 PILOT_MODES={'pilot':'refine','pilot-resolution':'resolution','pilot-cheaper':'cheaper'}
 TRANSFER_STAGES={'transfer-screen':'screen','transfer-adaptive':'adaptive','transfer-resolution':'resolution'}
 BANK_STAGES={'label-bank-coarse':'coarse','label-bank-fine':'fine','label-bank-independent':'independent',
-    'label-bank-gh-pilot':'gh_pilot','label-bank-gh-full':'gh_full'}
+    'label-bank-gh-pilot':'gh_pilot','label-bank-gh-full':'gh_full','cdf-bank-coarse':'coarse'}
 LABEL_MODES={'label-control':('label_control','resolution'),
     'label-groups':('label_groups','resolution'),'label-groups-refine':('label_groups','adaptive'),
-    'label-groups-direct':('label_groups','direct')}
+    'label-groups-direct':('label_groups','direct'),'cdf-bank-pilot':('cdf_bank','pilot')}
 
 
 def launch(stage):
-    manifest=('historical_label_bank_v1.json' if stage in BANK_STAGES else
+    manifest=('historical_cdf_bank_v1.json' if stage=='cdf-bank-coarse' else 'historical_label_bank_v1.json' if stage in BANK_STAGES else
         'historical_'+LABEL_MODES[stage][0]+'_v1.json' if stage in LABEL_MODES else
         'historical_component_transfer_v1.json' if stage in TRANSFER_STAGES else 'historical_component_bank_v1.json')
     spec=json.loads((ROOT/'performance/manifests'/manifest).read_text())
@@ -84,7 +84,7 @@ def launch(stage):
             for _ in range(min(slots,len(pending))):
                 job=pending.pop(0);h,k,s=job['identity'],job['kind'],job['shard']
                 worker=(['performance.validate_historical_label_bank','run','--identity',str(h),'--kind',k,
-                    '--shard',str(s),'--stage',short] if stage in BANK_STAGES else
+                    '--shard',str(s),'--stage',short,'--plan','performance/manifests/'+manifest] if stage in BANK_STAGES else
                     ['performance.validate_historical_component_transfer','run','--identity',str(h),'--kind',k,
                     '--shard',str(s),'--stage',short,'--plan','performance/manifests/'+manifest]
                     if stage in TRANSFER_STAGES or stage in LABEL_MODES else
@@ -121,7 +121,8 @@ def collect_remote(stage,out):
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
     worker=(['performance.probe_historical_label_gh','collect','--stage',BANK_STAGES[stage]] if stage in ('label-bank-gh-pilot','label-bank-gh-full') else
-        ['performance.validate_historical_label_bank','collect','--stage',BANK_STAGES[stage]] if stage in BANK_STAGES else
+        ['performance.validate_historical_label_bank','collect','--stage',BANK_STAGES[stage],
+            '--plan','performance/manifests/historical_cdf_bank_v1.json' if stage=='cdf-bank-coarse' else 'performance/manifests/historical_label_bank_v1.json'] if stage in BANK_STAGES else
         ['performance.validate_historical_'+LABEL_MODES[stage][0],'collect','--stage',LABEL_MODES[stage][1]]
         if stage in ('label-groups-refine','label-groups-direct') else
         ['performance.validate_historical_'+LABEL_MODES[stage][0],'collect'] if stage in LABEL_MODES else
@@ -345,7 +346,7 @@ if __name__=='__main__':
     elif args.stage=='continue-transfer':continue_transfer()
     elif args.stage=='continue-label-bank':continue_label_bank()
     elif args.stage in BANK_STAGES:
-        launch(args.stage);collect_remote(args.stage,ROOT/'paper_artifacts/historical_label_bank_v1')
+        launch(args.stage);collect_remote(args.stage,ROOT/'paper_artifacts'/('historical_cdf_bank_v1' if args.stage=='cdf-bank-coarse' else 'historical_label_bank_v1'))
     elif args.stage in LABEL_MODES:
         launch(args.stage)
         collect_remote(args.stage,ROOT/'paper_artifacts'/('historical_'+LABEL_MODES[args.stage][0]+'_v1'))

@@ -1,0 +1,41 @@
+{
+  "stages": {
+    "coarse": {
+      "estimated_cpu_seconds": 2080.5993873552006,
+      "new_integral_cpu_seconds": 1695.0063639550006,
+      "successful_task_cpu_seconds": 1770.773638523,
+      "maximum_task_peak_rss_mb": 246.0625
+    },
+    "pilot_including_decision_references": {
+      "estimated_cpu_seconds": 3227.341709326801,
+      "new_integral_cpu_seconds": 1697.8517547360002,
+      "successful_task_cpu_seconds": 1698.5659304939998,
+      "maximum_task_peak_rss_mb": 514.33984375
+    }
+  },
+  "successful_preparation_cpu_seconds": 43.845602324,
+  "coarse_collection_cpu_seconds": 2.635213116,
+  "total_new_integral_cpu_seconds": 3392.8581186910005,
+  "total_successful_worker_cpu_seconds": 3469.339569017,
+  "decision_reference_additional_integral_cpu_seconds": 2.0355628610000167,
+  "worker_count": 48,
+  "maximum_live_workers": 8,
+  "worker_single_core": true,
+  "priority": "low",
+  "allowed_nodes": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "maximum_estimated_cpu_seconds_per_stage": 3600,
+  "maximum_job_cpu_seconds": 600,
+  "tests_passed": 45,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "scope": "Two separately priced stages. Pilot includes all six initial groups and both later winner/runner-up groups under one cumulative estimated cap, including20 percent headroom. Integral timers count each new rule once; cached E5 and historical source anchors excluded. Worker timers exclude module imports. Initial preparation and coarse collection measured separately; metadata probes, decision pricing/collection and cached rank analysis excluded. Banks/posteriors/marginals remain on server."
+}

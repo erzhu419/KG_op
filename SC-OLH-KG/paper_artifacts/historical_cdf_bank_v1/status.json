@@ -1,0 +1,48 @@
+{
+  "state": "interior_coarse_and_selected_references_complete",
+  "live_workers": 0,
+  "records": [
+    {
+      "name": "source_n1_o4_h1_p202",
+      "cdf": 0.22189504098049675,
+      "label": -0.19863555076600076
+    },
+    {
+      "name": "source_n1_o4_h1_p213",
+      "cdf": 0.6781049590195033,
+      "label": -0.11685392989782593
+    }
+  ],
+  "actions": 365,
+  "source_components": {
+    "4": 512,
+    "5": 1024
+  },
+  "all_selected_references_admitted": true,
+  "target_precision_actions_admitted": {
+    "source_n1_o4_h1_p202": {
+      "raw": 7,
+      "projected": 149
+    },
+    "source_n1_o4_h1_p213": {
+      "raw": 7,
+      "projected": 149
+    }
+  },
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "remaining_fine_plans": {
+    "source_n1_o4_h1_p202": {
+      "estimated_cpu_seconds": 3731.325388519197,
+      "estimated_cost_admitted": false,
+      "dispatched": false
+    },
+    "source_n1_o4_h1_p213": {
+      "estimated_cpu_seconds": 3733.291998973198,
+      "estimated_cost_admitted": false,
+      "dispatched": false
+    }
+  },
+  "next_step": "Use already opened development caches to inspect action competition across queries/tasks and risk observations. Prioritize precision checks that can affect action selection, retain all365 formal actions, then complete predictive integration where decision relevant. Do not infer zero KG or independent gains from the three fixed CDF probes.",
+  "preserved_contract": "Original source meta-prior, all8 identity scores/weights,512/1024 positive utility components, full joint covariance, all365 actions, remaining359 budget and original verifier."
+}

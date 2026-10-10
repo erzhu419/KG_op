@@ -27,6 +27,10 @@ def tables(bundle, rows):
     s, c = np.zeros((identities, actions, 4)), np.zeros((identities, actions))
     for h, row in rows.items():
         s[h], c[h] = row['statistics'], row['costs']
+    # A direct action spends its fixed budget exactly, including in a direct
+    # quadrature reference or after subtracting unnormalized control numerators.
+    for i,action in enumerate(bundle['actions']):
+        if action.get('kind')=='direct':c[list(rows),i]=action['budgets'][0]
     return s, c
 
 

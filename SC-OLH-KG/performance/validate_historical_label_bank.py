@@ -24,10 +24,6 @@ def anchor_part_path(out,row,identity):
 def anchor_tables(bundle, anchor, target, rule, selected):
     data=tables(bundle, {h:controlled_row(anchor[h][selected], target[h][rule], anchor[h][rule])
         for h in bundle['utility_identities']})
-    # Direct deployment always spends its fixed budget, independently of eta
-    # or label. Preserve this analytic constant through numerator subtraction.
-    for i,action in enumerate(bundle['actions']):
-        if action['kind']=='direct':data[1][bundle['utility_identities'],i]=action['budgets'][0]
     return data
 
 
@@ -143,7 +139,7 @@ def prepare(plan=PLAN):
                         assert previous['groups'][str(gid)]==context['groups'][str(gid)]
                         cached.update(read(str(oldpath))['rows'])
                     if path.exists():cached.update(read(str(path))['rows'])
-                    reused+=sum(n in cached for n in STAGES.values())
+                    reused+=sum(n in cached for n in set(STAGES.values()))
                     save(path,dict(record=name,group=gid,kind=kind,identity=h,rows=cached))
     known=validated_selections(spec,contexts,out)
     save(out/'validated_groups.json',known)
@@ -247,6 +243,9 @@ def collect(stage,plan=PLAN):
                         norm=max(norm,independent['maximum_log_evidence_error'])
                         if not independent['passed']:method='HOLD_independent_disagreement'
                 groups.append(dict(record=name,group=gid,kind=kind,action_indices=ix,selected_method=method,
+                    baseline_maximum_action_difference=float(abs(mixed_values(bundle,*chosen,kind)-
+                        mixed_values(bundle,local['baseline'][kind]['statistics'],local['baseline'][kind]['costs'],kind)).max()),
+                    minimum_selected_statistic=float(chosen[0][identities].min()),
                     coarse_fine_maximum_difference=delta,coarse_fine_comparison_passed=bool(passed),
                     maximum_log_evidence_error=norm,valid_unclipped_ranges=valid_tables(bundle,chosen),
                     independent_check=independent,
@@ -286,7 +285,7 @@ def collect(stage,plan=PLAN):
         previous_stage_new_integral_cpu_seconds=previous['new_integral_cpu_seconds'] if previous else 0.,
         new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,independent_confirmation=False,
         full_predictive_integration_admitted=False,
-        scope='All original365 actions at one additional opened development label and32 fixed opposite heads. Coarse/fine comparisons are not independent/GH precision admission; only reused validated target groups and native direct references are admitted. No full KG or independent decision claim.')
+        scope='All original365 actions at each listed opened development label and32 fixed opposite heads. Coarse/fine comparisons are not independent/GH precision admission; only reused validated target groups and native direct references are admitted. No full KG or independent decision claim.')
     save(out/(stage+'_risk_bank.json'),banks);save(out/(stage+'_groups.json'),groups);save(out/(stage+'_summary.json'),result)
     print('SCHEDULEURM_DONE '+json.dumps(result),flush=True);return result
 

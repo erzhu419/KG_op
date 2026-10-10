@@ -1,0 +1,14 @@
+{
+  "parent_plan": "performance/manifests/historical_component_bank_v1.json",
+  "output": "paper_artifacts/historical_cdf_bank_v1",
+  "records": ["source_n1_o4_h1_p202", "source_n1_o4_h1_p213"],
+  "groups": [],
+  "cache_outputs": ["paper_artifacts/historical_component_transfer_v1", "paper_artifacts/historical_label_control_v1", "paper_artifacts/historical_label_groups_v1", "paper_artifacts/historical_label_bank_v1"],
+  "validated_groups": "paper_artifacts/historical_label_groups_v1/summary.json",
+  "validated_direct_groups": "paper_artifacts/historical_label_control_v1/summary.json",
+  "shards_per_identity_kind": 8,
+  "maximum_action_difference": 0.0001,
+  "maximum_estimated_cpu_seconds_per_stage": 3600,
+  "maximum_job_cpu_seconds": 600,
+  "scope": "Two frozen grid observations nearest the midpoints of the gaps between the historical low/middle/upper CDF probes:0.221895 and0.678105. All365 original actions, fixed opposite heads, identity scores/weights, full positive components and covariance. Reuse original admitted anchors and historical reference machinery. Coarse screen then direct-reference pilot chosen from the screen, each capped at3600 estimated CPU seconds. At most8 low-priority single-core workers; no physical/source-fit/verifier calls or independent confirmation. No full-bank precision or full KG admission."
+}

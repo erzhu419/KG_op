@@ -240,3 +240,13 @@ native57／64／69组的独立差分对照产生近零负概率，最小−2.23e
 重放先在服务器依次准备`performance.validate_historical_label_bank prepare-independent`、`performance.probe_historical_label_gh prepare`、`prepare-full`；每个准备后，在本地运行`performance.launch_historical_component_bank label-bank-independent|label-bank-gh-pilot|label-bank-gh-full`，完成该阶段再准备下一阶段。均使用`python -m`、既定环境及单线程配置；逐片完整命令在同目录`*_specs.jsonl`，银行和边际留服务器。
 
 下一步复用历史低／中／上端直接参考与本轮锚点，先计价再扩大CDF主体覆盖。当前仅一条近邻开发观测，规则差非严格误差界，完整CDF、224个外层节点、完整KG和独立决策收益仍待验证。原source meta-prior、全部身份／正分量、联合协方差、动作和验证预算保持，无新增物理、拟合或验证调用，独立确认块未读取。
+
+## 两个CDF内部位置与决策相关性（2026-10-10）
+
+按历史低／中／上端间隙中点预先选定o4/p202、p213（CDF网格约0.222／0.678），两条观测均完成365动作粗筛。六组直接参考及随后补充的赢家／第二名组全部通过；实际选用5组32点复用、2组128点复用、1组直接256点回退。raw12的32点复用不足，p213下128点独立／GH比较也失败；native67的32点复用出现−7.39e−9概率，128点有效，原失败保留。每条观测的直接目标精度覆盖为raw7／native149动作，其余仍是未完成精度验证的粗筛。[结果](../paper_artifacts/historical_cdf_bank_v1/summary.json)。
+
+与o4/p207匹配同32条目标头、身份权重及全部365动作，三处CDF位置都选择动作355（策略63、预算359），第二名为同策略的128预算；当前领先差约0.00097–0.00694，精度替换未改变推荐。赢家／第二名组的直接参考也通过，补算仅2.04 CPU秒：历史积分器已对查询即部署的单点动作使用零维Sobol规则，本轮直接复用。[缓存比较](../paper_artifacts/historical_cdf_bank_v1/decision_relevance.json)；其他竞争动作尚未完整验证，这不是完整最大化或零KG的证明。
+
+48片全部结束，最多8个低优先级单核。粗筛预计2080.60、实耗1695.01 CPU秒；小试连同竞争动作补算累计预计3227.34、实耗1697.85 CPU秒，分别遵守3600秒上限。45项相关测试通过；完整银行及边际留服务器。[运行账](../paper_artifacts/historical_cdf_bank_v1/execution_account.json)。服务器依次运行`performance.validate_historical_label_bank prepare --plan performance/manifests/historical_cdf_bank_v1.json`、`performance.validate_historical_cdf_bank prepare-pilot`、artifact目录内`compare_label_decisions.py`、`performance.validate_historical_cdf_bank prepare-decision`；各准备后本地分别调度`performance.launch_historical_component_bank cdf-bank-coarse|cdf-bank-pilot`，最后重跑缓存比较。模块均用`python -m`，逐片环境与完整命令见`*_specs.jsonl`。
+
+下一步先用已打开开发缓存检查其他查询／任务的动作竞争，再优先给会影响动作选择的组补参考；保留全部365正式动作。两条观测的剩余全量128点比较各预计3731／3733秒，均超过阶段上限，未派发。局限：当前是开发块的选定数值参考与条件推荐诊断，尚未覆盖完整CDF、外层KG或独立决策收益。原source meta-prior、全部8身份／512与1024正分量、联合协方差、359预算及验证器保持，无新增物理、source-fit或verifier调用，独立确认块未读取。

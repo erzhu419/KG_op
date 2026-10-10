@@ -207,7 +207,7 @@ def collect(stage,plan=PLAN):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','run','collect'])
-    parser.add_argument('--stage',choices=(*STAGES,'direct'),default='screen');parser.add_argument('--identity',type=int)
+    parser.add_argument('--stage',choices=(*STAGES,'direct','pilot'),default='screen');parser.add_argument('--identity',type=int)
     parser.add_argument('--kind',choices=['raw','projected']);parser.add_argument('--shard',type=int)
     parser.add_argument('--plan',default=PLAN);args=parser.parse_args()
     if args.mode=='prepare':prepare(args.plan)
