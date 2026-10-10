@@ -14,7 +14,11 @@ from performance.validate_historical_component_transfer import prepare_contexts,
 from performance.validate_historical_label_control import controlled_row, tables
 
 PLAN = 'performance/manifests/historical_label_bank_v1.json'
-STAGES = {'coarse':'E5', 'fine':'E7'}
+STAGES = {'coarse':'E5', 'fine':'E7', 'independent':'F7', 'gh_pilot':'G5', 'gh_full':'G5'}
+
+
+def anchor_part_path(out,row,identity):
+    return out/'anchor_parts'/f'{row["group"]:03d}_{identity}_{row["kind"]}.json'
 
 
 def anchor_tables(bundle, anchor, target, rule, selected):
@@ -74,6 +78,43 @@ def make_plan(selected, contexts, out, base, stage, spec):
         pricing_scope='Missing target integrals plus one CPU second per worker and20 percent headroom; cached anchor/target work excluded. Preparation and collection measured separately.')
 
 
+def prepare_independent(plan=PLAN):
+    spec=read(plan);out=ROOT/spec['output'];base=ROOT/read(spec['parent_plan'])['output']
+    previous=read(str(out/'fine_summary.json'));assert previous['complete']
+    groups=read(str(out/'fine_groups.json'));pending={(g['record'],g['group'],g['kind'])
+        for g in groups if not g['target_precision_admitted']}
+    selected=[r for r in read(str(out/'fine_plan.json'))['selected']
+        if (r['record'],r['group'],r['kind']) in pending]
+    work=make_plan(selected,read(str(out/'contexts.json')),out,base,'independent',spec)
+    save(out/'independent_plan.json',work)
+    print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in work.items() if k!='selected'}),flush=True)
+    return work
+
+
+def independent_reference(bundle,anchor,target,selected):
+    controlled=anchor_tables(bundle,anchor,target,'F7',selected)
+    valid=valid_tables(bundle,controlled)
+    # Subtraction can produce a negative near-zero probability even when each
+    # positive quadrature is valid. Use the already computed direct independent
+    # target rule as reference; never clip the control or alter the selected bank.
+    reference=controlled if valid else tables(bundle,{h:target[h]['F7'] for h in bundle['utility_identities']})
+    return reference,dict(method='control_F7' if valid else 'direct_F7',
+        controlled_valid_unclipped_ranges=valid,controlled_minimum_statistic=float(controlled[0].min()),
+        reference_valid_unclipped_ranges=valid_tables(bundle,reference))
+
+
+def independent_check(bundle,anchor,target,selected,kind,tolerance):
+    variants={r:anchor_tables(bundle,anchor,target,r,selected) for r in ('E5','E7')}
+    variants['F7'],reference=independent_reference(bundle,anchor,target,selected)
+    values={r:mixed_values(bundle,*v,kind) for r,v in variants.items()}
+    differences={r:float(abs(values[r]-values['F7']).max()) for r in ('E5','E7')}
+    normalization=max(abs(rows[h][r]['diagnostics']['predictive_log_evidence_error'])
+        for rows in (anchor,target) for h in bundle['utility_identities'] for r in variants)
+    return dict(passed=bool(all(valid_tables(bundle,v) for v in variants.values()) and
+        normalization<=tolerance and max(differences.values())<=tolerance),
+        differences=differences,maximum_log_evidence_error=normalization,reference=reference)
+
+
 def prepare(plan=PLAN):
     spec=read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
     base=ROOT/read(spec['parent_plan'])['output'];started=time.process_time()
@@ -107,7 +148,7 @@ def prepare(plan=PLAN):
     known=validated_selections(spec,contexts,out)
     save(out/'validated_groups.json',known)
     save(out/'bank_layout.json',dict(actions=original['actions'],groups=original['groups']))
-    plans={s:make_plan(selected,contexts,out,base,s,spec) for s in STAGES}
+    plans={s:make_plan(selected,contexts,out,base,s,spec) for s in ('coarse','fine')}
     for stage,work in plans.items():save(out/(stage+'_plan.json'),work)
     result=dict(complete=True,records=list(contexts),actions=len(original['actions']),
         source_components={str(h):len(shared['fields'][h]['means']) for h in original['utility_identities']},
@@ -127,6 +168,9 @@ def run(identity,kind,shard,stage,plan=PLAN):
     work=read(str(out/(stage+'_plan.json')));assert work['estimated_cost_admitted']
     (out/'tasks'/stage).mkdir(parents=True,exist_ok=True)
     if stage=='fine':assert read(str(out/'coarse_summary.json'))['complete']
+    if stage=='independent':assert read(str(out/'fine_summary.json'))['complete']
+    if stage=='gh_pilot':assert read(str(out/'independent_summary.json'))['complete']
+    if stage=='gh_full':assert read(str(out/'gh_pilot_summary.json'))['pilot_passed']
     rows=[r for r in work['selected'] if r['kind']==kind][shard::spec['shards_per_identity_kind']]
     contexts=read(str(out/'contexts.json'));started=time.process_time();new_integral=0.
     handler=signal.signal(signal.SIGPROF,cpu_timeout);signal.setitimer(signal.ITIMER_PROF,spec['maximum_job_cpu_seconds'])
@@ -134,8 +178,16 @@ def run(identity,kind,shard,stage,plan=PLAN):
     try:
         for row in rows:
             path=part_path(out,row,identity);part=read(str(path));rule=STAGES[stage]
+            original=None
+            if stage in ('gh_pilot','gh_full'):
+                original=compressed_read(base/'marginals'/f'{row["group"]:03d}.json.gz')
+                anchor_path=anchor_part_path(out,row,identity);anchor_path.parent.mkdir(parents=True,exist_ok=True)
+                extra=read(str(anchor_path)) if anchor_path.exists() else dict(rows={})
+                if rule not in extra['rows']:
+                    for name,value in evaluate_group_rules(original,identity,kind,[rule]):
+                        extra['rows'][name]=value;new_integral+=value['cpu_seconds'];save(anchor_path,extra)
             if rule not in part['rows']:
-                bundle=record_bundle(compressed_read(base/'marginals'/f'{row["group"]:03d}.json.gz'),contexts[row['record']])
+                bundle=record_bundle(original or compressed_read(base/'marginals'/f'{row["group"]:03d}.json.gz'),contexts[row['record']])
                 for name,value in evaluate_group_rules(bundle,identity,kind,[rule]):
                     part['rows'][name]=value;new_integral+=value['cpu_seconds'];save(path,part)
             result['completed_groups']+=1
@@ -155,7 +207,8 @@ def collect(stage,plan=PLAN):
     work=read(str(out/(stage+'_plan.json')));contexts=read(str(out/'contexts.json'));layout=read(str(out/'bank_layout.json'))
     validated=validated_selections(spec,contexts,out);save(out/'validated_groups.json',validated)
     known={(r['record'],r['group'],r['kind']):r for r in validated}
-    selected={(r['record'],r['group'],r['kind']):r for r in work['selected']};groups=[];banks={};comparisons={}
+    assembly=read(str(out/'fine_plan.json')) if stage=='independent' else work
+    selected={(r['record'],r['group'],r['kind']):r for r in assembly['selected']};groups=[];banks={};comparisons={}
     for name,context in contexts.items():
         identities=context['utility_identities'];n=len(context['prior_weights']);a=len(layout['actions'])
         bank={k:np.zeros((n,a,4)) for k in ('raw','projected')};costs={k:np.zeros((n,a)) for k in bank}
@@ -169,7 +222,7 @@ def collect(stage,plan=PLAN):
                 baseline[kind][:,ix]=local['baseline'][kind]['statistics'];baseline_costs[kind][:,ix]=local['baseline'][kind]['costs']
                 opposite[kind][:,:,ix]=np.asarray([r[kind] for r in local['opposite']])
                 native=kind=='projected' and group['kind']=='direct'
-                key=(name,gid,kind);reference=known.get(key);delta=None;norm=0.
+                key=(name,gid,kind);reference=known.get(key);delta=None;norm=0.;independent=None
                 if native:
                     chosen=low=(np.asarray(local['baseline'][kind]['statistics']),np.asarray(local['baseline'][kind]['costs']))
                     method='native_reference';passed=True;admitted=True
@@ -180,7 +233,7 @@ def collect(stage,plan=PLAN):
                     low=anchor_tables(bundle,anchor,target,'E5',row['anchor_rule']);chosen=low;method='control32';passed=False
                     rules=['E5'] if stage=='coarse' else ['E5','E7']
                     norm=max(abs(target[h][r]['diagnostics']['predictive_log_evidence_error']) for h in identities for r in rules)
-                    if stage=='fine':
+                    if stage in ('fine','independent'):
                         high=anchor_tables(bundle,anchor,target,'E7',row['anchor_rule'])
                         delta=float(abs(mixed_values(bundle,*low,kind)-mixed_values(bundle,*high,kind)).max())
                         passed=valid_tables(bundle,low) and valid_tables(bundle,high) and norm<=spec['maximum_action_difference'] and delta<=spec['maximum_action_difference']
@@ -189,9 +242,15 @@ def collect(stage,plan=PLAN):
                     if reference:
                         chosen=(np.asarray(reference['selected_statistics']),np.asarray(reference['selected_costs']))
                         method=reference['selected_method']+'_validated_cache'
+                    elif stage=='independent':
+                        independent=independent_check(bundle,anchor,target,row['anchor_rule'],kind,spec['maximum_action_difference'])
+                        norm=max(norm,independent['maximum_log_evidence_error'])
+                        if not independent['passed']:method='HOLD_independent_disagreement'
                 groups.append(dict(record=name,group=gid,kind=kind,action_indices=ix,selected_method=method,
                     coarse_fine_maximum_difference=delta,coarse_fine_comparison_passed=bool(passed),
                     maximum_log_evidence_error=norm,valid_unclipped_ranges=valid_tables(bundle,chosen),
+                    independent_check=independent,
+                    independent_comparison_passed=bool(admitted or independent and independent['passed']) if stage=='independent' else None,
                     target_precision_admitted=admitted))
                 bank[kind][:,ix],costs[kind][:,ix]=chosen;coarse[kind][:,ix],coarse_costs[kind][:,ix]=low
         full=dict(context,actions=layout['actions'],opposite=[dict(head_log_scores=r['head_log_scores'],
@@ -205,13 +264,19 @@ def collect(stage,plan=PLAN):
         banks[name]=dict(statistics={k:v.tolist() for k,v in bank.items()},costs={k:v.tolist() for k,v in costs.items()})
     tasks=[read(str(out/'tasks'/stage/f'{h}_{k}_{s}.json')) for h in identities for k in ('raw','projected')
         for s in range(spec['shards_per_identity_kind']) if s<sum(r['kind']==k for r in work['selected'])]
-    previous=read(str(out/'coarse_summary.json')) if stage=='fine' else None
+    previous=read(str(out/('fine_summary.json' if stage=='independent' else 'coarse_summary.json'))) if stage!='coarse' else None
     complete=all(t['complete'] for t in tasks)
     result=dict(stage=stage,complete=complete,records=list(contexts),actions=len(layout['actions']),
         reused_validated_groups=len(known),
         coarse_fine_actions_passed={k:sum(len(r['action_indices']) for r in groups if r['kind']==k and r['coarse_fine_comparison_passed']) for k in ('raw','projected')},
         target_precision_actions_admitted={k:sum(len(r['action_indices']) for r in groups if r['kind']==k and r['target_precision_admitted']) for k in ('raw','projected')},
-        coarse_fine_failed_groups={k:[r['group'] for r in groups if r['kind']==k and not r['coarse_fine_comparison_passed']] for k in ('raw','projected')} if stage=='fine' else None,
+        independent_actions_passed={k:sum(len(r['action_indices']) for r in groups if r['kind']==k and r['independent_comparison_passed']) for k in ('raw','projected')} if stage=='independent' else None,
+        independent_failed_groups={k:[r['group'] for r in groups if r['kind']==k and not r['independent_comparison_passed']] for k in ('raw','projected')} if stage=='independent' else None,
+        maximum_independent_difference={k:max((max(r['independent_check']['differences'].values()) if r['independent_check'] else 0.) for r in groups if r['kind']==k) for k in ('raw','projected')} if stage=='independent' else None,
+        independent_reference_substitutions=[dict(record=r['record'],group=r['group'],kind=r['kind'],
+            **r['independent_check']) for r in groups if r['independent_check'] and
+            r['independent_check']['reference']['method']=='direct_F7'],
+        coarse_fine_failed_groups={k:[r['group'] for r in groups if r['kind']==k and not r['coarse_fine_comparison_passed']] for k in ('raw','projected')} if stage!='coarse' else None,
         maximum_coarse_fine_difference={k:max((r['coarse_fine_maximum_difference'] or 0.) for r in groups if r['kind']==k) for k in ('raw','projected')},
         invalid_selected_groups=[dict(record=r['record'],group=r['group'],kind=r['kind']) for r in groups if not r['valid_unclipped_ranges']],
         recommendation_comparisons=comparisons,estimated_cpu_seconds=work['estimated_cpu_seconds'],
@@ -227,10 +292,13 @@ def collect(stage,plan=PLAN):
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','run','collect'])
+    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','prepare-independent','run','collect'])
     parser.add_argument('--stage',choices=list(STAGES),default='coarse');parser.add_argument('--identity',type=int)
     parser.add_argument('--kind',choices=['raw','projected']);parser.add_argument('--shard',type=int)
     parser.add_argument('--plan',default=PLAN);args=parser.parse_args()
     if args.mode=='prepare':prepare(args.plan)
+    elif args.mode=='prepare-independent':prepare_independent(args.plan)
     elif args.mode=='run':run(args.identity,args.kind,args.shard,args.stage,args.plan)
-    else:collect(args.stage,args.plan)
+    else:
+        if args.stage in ('gh_pilot','gh_full'):parser.error('GH collection uses performance.probe_historical_label_gh')
+        collect(args.stage,args.plan)

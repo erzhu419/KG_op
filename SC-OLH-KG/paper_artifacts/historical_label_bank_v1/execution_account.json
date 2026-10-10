@@ -13,16 +13,38 @@
       "successful_task_cpu_seconds": 2975.642035125,
       "collection_cpu_seconds": 1.223196641,
       "maximum_task_peak_rss_mb": 227.59375
+    },
+    "independent": {
+      "estimated_cpu_seconds": 3580.6744818444,
+      "new_integral_cpu_seconds": 2935.374526909,
+      "successful_task_cpu_seconds": 2974.8693010500006,
+      "maximum_task_peak_rss_mb": 228.73046875,
+      "collection_cpu_seconds": 1.6150383199999998
+    },
+    "gh_pilot": {
+      "estimated_cpu_seconds": 260.0060555759993,
+      "new_integral_cpu_seconds": 179.07128096200003,
+      "successful_task_cpu_seconds": 183.77157297799997,
+      "maximum_task_peak_rss_mb": 181.6015625
+    },
+    "gh_full": {
+      "estimated_cpu_seconds": 3517.890927630878,
+      "new_integral_cpu_seconds": 2866.977959057001,
+      "successful_task_cpu_seconds": 2919.6225594410002,
+      "maximum_task_peak_rss_mb": 190.31640625
     }
   },
   "successful_preparation_cpu_seconds": 29.42275998,
-  "worker_count": 64,
+  "worker_count": 150,
   "maximum_live_workers": 8,
   "maximum_estimated_cpu_seconds_per_stage": 3600,
   "worker_single_core": true,
   "priority": "low",
-  "total_new_integral_cpu_seconds": 3738.7163081629997,
-  "total_successful_worker_cpu_seconds": 3817.013619326,
-  "scope": "Incremental CPU timers for these two separately priced stages. Historical anchor/cache work, imports, interrupted first preparation and earlier experiments excluded. Coarse collection was repeated after the analytic direct-cost correction without new integration.",
-  "tests_passed": 33
+  "total_new_integral_cpu_seconds": 9720.140075091002,
+  "total_successful_worker_cpu_seconds": 9895.277052795002,
+  "scope": "Incremental timers for five separately priced stages, each capped at3600 estimated CPU seconds. GH full includes both missing anchor and target integrals in one combined stage. Historical high-order anchors and earlier experiments excluded. Worker timers cover the worker body, excluding module imports; metadata probes and GH preparation/collection are not included. Original preparation and measured coarse/fine/independent collection timers are separate. Recollection after reference substitution added no integrations; initial native control failures remain archived.",
+  "tests_passed": 39,
+  "new_stages_worker_count": 86,
+  "new_stages_new_integral_cpu_seconds": 5981.423766928001,
+  "new_stages_successful_worker_cpu_seconds": 6078.263433469001
 }

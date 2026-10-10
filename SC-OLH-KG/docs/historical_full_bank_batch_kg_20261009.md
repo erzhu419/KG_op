@@ -229,3 +229,14 @@ o4/p207距锚点标签约7.69e−5。沿用各组G7／E8／E9，原365动作的r
 两个单独受3600预计CPU秒限制的阶段分别预计1007.25／3586.36秒，新增积分实耗802.24／2936.48秒，成功worker总计3817.01秒，准备另计29.42秒。64片全部结束，最多8个低优先级单核，峰值228MB。完整银行／边际留服务器，本地仅274KB计划、日志与汇总。direct固定359预算曾因浮点运算变成359.0000000000001，已按解析固定成本修复、用缓存重汇总；原汇总留档。33项相关测试通过。[运行账](../paper_artifacts/historical_label_bank_v1/execution_account.json)。服务器入口`python -m performance.validate_historical_label_bank prepare`及`collect --stage coarse|fine`；本地`python -m performance.launch_historical_component_bank continue-label-bank`，逐片命令在同名artifact目录。
 
 局限与下一步：32→128比较未替代独立／GH检查，已有完整目标精度证据仍仅raw15／native158动作；近邻标签未解决整个CDF主体覆盖、完整KG或独立决策收益。其余raw350／native207动作的独立128点检查预计3580.67秒，可接续；统一GH64／128点预计7583.09秒，超过阶段限制，应先降低残差积分成本再派发。这两项均尚未派发。[定价与重放脚本](../paper_artifacts/historical_label_bank_v1/next_precision_cost.json)及同目录`price_next_precision.py`。无新增物理、拟合或验证调用，独立确认块未读取；旧60/60前端证据保持原边界。
+
+
+## 完整近邻银行的独立与GH残差比较（2026-10-10）
+
+raw／native各365动作均通过分辨率、独立128点与GH64／32点残差比较，最大动作差约8.96e−7／4.48e−6，低于1e−4；32条固定目标头下推荐不变。已有直接参考及native direct解析缓存参与覆盖，直接目标精度计数仍为raw15／native158。[最终汇总](../paper_artifacts/historical_label_bank_v1/gh_full_summary.json)。
+
+native57／64／69组的独立差分对照产生近零负概率，最小−2.23e−9，选定银行本身有效。已改用缓存的有效直接F7对照，保留原失败，无裁剪或放宽门槛；三组均进入GH小试。独立／小试／完整GH新增积分2935.37／179.07／2866.98 CPU秒，共1.66单核小时。86片全部结束，最多8个低优先级单核，峰值229MB；完整GH阶段同时计入锚点与目标成本。39项相关测试通过。[运行账与范围](../paper_artifacts/historical_label_bank_v1/execution_account.json)。
+
+重放先在服务器依次准备`performance.validate_historical_label_bank prepare-independent`、`performance.probe_historical_label_gh prepare`、`prepare-full`；每个准备后，在本地运行`performance.launch_historical_component_bank label-bank-independent|label-bank-gh-pilot|label-bank-gh-full`，完成该阶段再准备下一阶段。均使用`python -m`、既定环境及单线程配置；逐片完整命令在同目录`*_specs.jsonl`，银行和边际留服务器。
+
+下一步复用历史低／中／上端直接参考与本轮锚点，先计价再扩大CDF主体覆盖。当前仅一条近邻开发观测，规则差非严格误差界，完整CDF、224个外层节点、完整KG和独立决策收益仍待验证。原source meta-prior、全部身份／正分量、联合协方差、动作和验证预算保持，无新增物理、拟合或验证调用，独立确认块未读取。

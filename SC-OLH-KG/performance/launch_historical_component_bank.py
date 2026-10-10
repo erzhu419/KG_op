@@ -17,7 +17,8 @@ QUEUE=Path('/home/erzhu419/.claude/scheduler/queue.json')
 REMOTE='/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG'
 PILOT_MODES={'pilot':'refine','pilot-resolution':'resolution','pilot-cheaper':'cheaper'}
 TRANSFER_STAGES={'transfer-screen':'screen','transfer-adaptive':'adaptive','transfer-resolution':'resolution'}
-BANK_STAGES={'label-bank-coarse':'coarse','label-bank-fine':'fine'}
+BANK_STAGES={'label-bank-coarse':'coarse','label-bank-fine':'fine','label-bank-independent':'independent',
+    'label-bank-gh-pilot':'gh_pilot','label-bank-gh-full':'gh_full'}
 LABEL_MODES={'label-control':('label_control','resolution'),
     'label-groups':('label_groups','resolution'),'label-groups-refine':('label_groups','adaptive'),
     'label-groups-direct':('label_groups','direct')}
@@ -119,7 +120,8 @@ def launch(stage):
 def collect_remote(stage,out):
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
-    worker=(['performance.validate_historical_label_bank','collect','--stage',BANK_STAGES[stage]] if stage in BANK_STAGES else
+    worker=(['performance.probe_historical_label_gh','collect','--stage',BANK_STAGES[stage]] if stage in ('label-bank-gh-pilot','label-bank-gh-full') else
+        ['performance.validate_historical_label_bank','collect','--stage',BANK_STAGES[stage]] if stage in BANK_STAGES else
         ['performance.validate_historical_'+LABEL_MODES[stage][0],'collect','--stage',LABEL_MODES[stage][1]]
         if stage in ('label-groups-refine','label-groups-direct') else
         ['performance.validate_historical_'+LABEL_MODES[stage][0],'collect'] if stage in LABEL_MODES else
@@ -180,7 +182,8 @@ def continue_transfer():
 def continue_label_bank():
     spec=json.loads((ROOT/'performance/manifests/historical_label_bank_v1.json').read_text())
     out=ROOT/spec['output'];status=dict(state='running',maximum_live_workers=8,stages={})
-    for stage,short in BANK_STAGES.items():
+    for stage in ('label-bank-coarse','label-bank-fine'):
+        short=BANK_STAGES[stage]
         plan=json.loads((out/(short+'_plan.json')).read_text())
         if not plan['estimated_cost_admitted']:
             status.update(state='cost_hold',held_stage=short);break

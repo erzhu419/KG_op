@@ -1,0 +1,19 @@
+{
+  "estimated_cpu_seconds": 3517.8909276308764,
+  "estimated_missing_integral_cpu_seconds": {
+    "raw": 1879.7412138049565,
+    "projected": 1019.8345592207739
+  },
+  "maximum_estimated_cpu_seconds": 3600,
+  "estimated_cost_admitted": true,
+  "estimated_separate_stage_cpu_seconds": {
+    "anchor": 1795.260434080841,
+    "target": 1761.030493550036
+  },
+  "separate_stage_pricing_scope": "Anchor G5 is prepared once for reuse by later labels; target G5 checks the current label. Separate estimates include32 worker CPU seconds each. Their sum must be reported if these stages are dispatched.",
+  "pilot_passed": true,
+  "dispatched": true,
+  "pending_groups": 204,
+  "scope": "Remaining groups with no direct target reference or passing pilot GH check. Cost uses the largest pilot G5/E5 timer ratio for each valuation/action kind, identity and anchor/target role, plus32 worker CPU seconds and20 percent headroom. Numerical differences remain diagnostics.",
+  "dispatch_stage": "gh_full"
+}
