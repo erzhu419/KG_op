@@ -15,18 +15,28 @@ DEPLOY='/home/erzhu419/mine_code/KG_op_independent_kg_parallel_deploy/SC-OLH-KG'
 PYTHON='/home/zhengliang01/scheduleurm_work/conda_envs/scomp-py310/bin/python'
 QUEUE=Path('/home/erzhu419/.claude/scheduler/queue.json')
 REMOTE='/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy/SC-OLH-KG'
+PILOT_MODES={'pilot':'refine','pilot-resolution':'resolution','pilot-cheaper':'cheaper'}
 
 
 def launch(stage):
     spec=json.loads((ROOT/'performance/manifests/historical_component_bank_v1.json').read_text())
     out=ROOT/spec['output'];prep=json.loads((out/'preparation.json').read_text());assert prep['complete']
     identities=sorted(map(int,prep['source_components']))
-    if stage=='screen':counts=dict(raw=prep['guarded_groups']+prep['direct_groups'],projected=prep['guarded_groups'])
+    if stage in PILOT_MODES:
+        out=out/'failure_pilot';pilot=json.loads((out/'selection.json').read_text());assert pilot['estimated_cost_admitted']
+        selected=list(range(len(pilot['selected'])))
+        if stage=='pilot-resolution':
+            resolution=json.loads((out/'resolution_plan.json').read_text());assert resolution['estimated_cost_admitted']
+            selected=resolution['selected']
+        elif stage=='pilot-cheaper':assert json.loads((out/'cheaper_plan.json').read_text())['estimated_cost_admitted']
+        pending=[dict(identity=h,kind=r['kind'],shard=i) for i,r in enumerate(pilot['selected']) if i in selected for h in identities]
+    elif stage=='screen':counts=dict(raw=prep['guarded_groups']+prep['direct_groups'],projected=prep['guarded_groups'])
     else:
         old=json.loads((out/('screen_summary.json' if stage=='refine' else 'refined_summary.json')).read_text())
         assert old['complete'];counts={k:len(v) for k,v in old['failed_groups'].items()}
-    pending=[dict(identity=h,kind=k,shard=s) for s in range(spec['shards_per_identity_kind'])
-        for h in identities for k in ('raw','projected') if s<counts[k]]
+    if stage not in PILOT_MODES:
+        pending=[dict(identity=h,kind=k,shard=s) for s in range(spec['shards_per_identity_kind'])
+            for h in identities for k in ('raw','projected') if s<counts[k]]
     jobs=[];specs=[];last=None
     jobs_path=out/(stage+'_jobs.json');specs_path=out/(stage+'_specs.jsonl')
     if jobs_path.exists():
@@ -44,8 +54,10 @@ def launch(stage):
             new_ids=[]
             for _ in range(min(slots,len(pending))):
                 job=pending.pop(0);h,k,s=job['identity'],job['kind'],job['shard']
-                cmd=shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','PYTHONPATH=.',PYTHON,'-u','-m',
-                    'performance.validate_historical_component_bank','run','--stage',stage,'--identity',str(h),'--kind',k,'--shard',str(s)])
+                worker=(['performance.diagnose_historical_bank_failures','run','--identity',str(h),'--selection',str(s),
+                    '--stage',PILOT_MODES[stage]] if stage in PILOT_MODES
+                    else ['performance.validate_historical_component_bank','run','--stage',stage,'--identity',str(h),'--kind',k,'--shard',str(s)])
+                cmd=shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','PYTHONPATH=.',PYTHON,'-u','-m']+worker)
                 args=[sys.executable,CLI,'submit','--description',f'KG one record bank {stage} H{h} {k} shard{s}',
                     '--cmd',cmd,'--cwd',DEPLOY,'--signature',f'KG_op/component_bank_v1/{stage}/{h}/{k}/{s}',
                     '--project','KG_op','--vram','0','--ram-mb','2000','--cpu','1','--priority','low',
@@ -74,13 +86,18 @@ def launch(stage):
 def collect_remote(stage,out):
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
+    worker=(['performance.diagnose_historical_bank_failures','collect','--stage',PILOT_MODES[stage]]
+        if stage in PILOT_MODES
+        else ['performance.validate_historical_component_bank','collect','--stage',stage])
     command='cd '+shlex.quote(REMOTE)+' && '+shlex.join(['env','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1',
-        'PYTHONPATH=.',PYTHON,'-u','-m','performance.validate_historical_component_bank','collect','--stage',stage])
+        'PYTHONPATH=.',PYTHON,'-u','-m']+worker)
     rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
     (out/(stage+'_collection.log')).write_text(body+err)
     if rc:raise RuntimeError(err or body)
-    name={'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json'}[stage]
-    code='from pathlib import Path;print(Path('+repr('paper_artifacts/historical_component_bank_v1/'+name)+').read_text())'
+    name={'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
+        'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
+    relative='paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name
+    code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
     rc,body,err=scheduler.run_on('node005','cd '+shlex.quote(REMOTE)+' && '+shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
     if rc:raise RuntimeError(err or body)
     result=json.loads(body);(out/name).write_text(json.dumps(result,indent=2)+'\n')
@@ -130,7 +147,7 @@ def continue_pipeline():
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue'])
+    parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue']+list(PILOT_MODES))
     args=parser.parse_args()
     if args.stage=='continue':continue_pipeline()
     else:launch(args.stage)

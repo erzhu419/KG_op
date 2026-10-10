@@ -20,6 +20,7 @@ from representation.vectorized_joint_function_risk import update_raw_observation
 
 PLAN = 'performance/manifests/historical_component_bank_v1.json'
 RULES = {'E5': (32,5,0), 'E7': (32,7,0), 'F7': (32,7,101), 'G7': (64,7,0),
+    'E8': (32,8,0), 'F8': (32,8,101),
     'H8': (64,8,0), 'I8': (64,8,101), 'J8': (128,8,0), 'K9': (64,9,0)}
 
 

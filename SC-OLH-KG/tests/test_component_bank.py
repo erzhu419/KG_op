@@ -14,9 +14,22 @@ from core.raw_terminal_head_grid import compose_head_grid
 from performance.validate_historical_component_bank import action_groups, group_checks, collect
 from performance.diagnose_historical_component_guarded import compressed_write
 from performance import launch_historical_component_bank as launcher
+from performance.diagnose_historical_bank_failures import select_failures
 
 
 class ComponentBankTests(unittest.TestCase):
+    def test_failure_pilot_selects_observed_worst_cases_and_deduplicates(self):
+        groups=[]
+        for gid,(coarse,independent,gh) in enumerate([(2e-4,3e-4,0.),(4e-4,5e-4,2e-4),(1e-5,1e-5,1e-5)]):
+            checks=dict(comparisons=[dict(low=a,high=b,maximum_difference=d)
+                for (a,b),d in zip([('E5','E7'),('E7','F7'),('E7','G7')],(coarse,independent,gh))])
+            groups.append(dict(group=gid,checks=dict(raw=checks,projected=dict(comparisons=[]))))
+        selected=select_failures(dict(groups=groups),1e-4)
+        self.assertEqual(len(selected),1)
+        self.assertEqual((selected[0]['kind'],selected[0]['group']),('raw',1))
+        self.assertEqual(len(selected[0]['reasons']),3)
+        self.assertEqual(select_failures(dict(groups=groups),1e-3),[])
+
     def test_allocation_groups_keep_original_action_indices(self):
         terminal=BudgetedTerminalActions([[0,2,3],[1,2,3]],[1,1],dict(comparison_budget=8))
         actions=[dict(kind=k,shortlist=s.tolist(),incumbent_position=int(i),budgets=b)

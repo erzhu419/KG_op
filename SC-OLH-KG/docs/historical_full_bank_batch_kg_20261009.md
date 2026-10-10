@@ -149,10 +149,14 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 
 局限与下一步：按两个已打开shortlist计时，96条记录／73组guarded动作的低阶／加密成本粗估68／339单核小时，不含direct和目标积分；这是成本外推，不能证明全部预算变体收敛，完整KG仍HOLD。剖析显示共享后主要成本是条件验证通过概率。下一阶段先接一条观测的完整银行，以共享的低阶规则检查各组，只对精度未通过的组局部加密，避免全体升阶；验证三组预算的独立规则与升阶一致性后才扩到96条。重放入口为`python -m performance.benchmark_historical_risk_allocations collect`及`collect-compact`；基准缓存版本为本节首次提交f0dd5c75，随后提交加入紧凑协方差。逐片命令和运行账在同名artifact目录。
 
-## 单条观测的完整银行接续（2026-10-10，运行中）
+## 单条观测的完整银行接续（2026-10-10，初筛完成）
 
 已恢复o5/p207原365动作：73组guarded各三种预算、73组direct各两种预算。原生direct的146动作复用历史参考，缓存规则差2.22e−16；另复用两个guarded组的低阶／加密结果。全部8个身份权重／似然、原计值身份的512／1024正分量和联合协方差保持。准备耗时59.86 CPU秒，峰值内存2805MB；75.5MB联合边际留服务器，本地只取准备结果。四项新增测试通过，覆盖预算索引、混合权重、只加密失败组及成本限制时停止派发。
 
-16个初筛分片最多8个低优先级单核滚动运行，逐作业CPU上限1800秒。初筛比较连续32→128点、独立128点和GH32→64；后续只对失败组比较256点、独立256点及GH64→128，再按需检查512点。控制器用已测匹配计时限制后续加密的累计预计CPU成本至3600秒，超过则保留失败结果并停止；这是预计成本限制，非全局实耗硬上限。依次在本地运行`PYTHONPATH=. python -m performance.launch_historical_component_bank screen`和同模块`continue`即可调度、在服务器汇总并只拉小JSON。当前自动接续控制器已排在初筛之后，进度与逐片命令在[artifact目录](../paper_artifacts/historical_component_bank_v1)。
+16个初筛分片最多8个低优先级单核滚动运行，逐作业CPU上限1800秒。初筛比较连续32→128点、独立128点和GH32→64；后续只对失败组比较256点、独立256点及GH64→128，再按需检查512点。控制器用已测匹配计时限制后续加密的累计预计CPU成本至3600秒，超过则保留失败结果并停止；这是预计成本限制，非全局实耗硬上限。依次在本地运行`PYTHONPATH=. python -m performance.launch_historical_component_bank screen`和同模块`continue`即可调度、在服务器汇总并只拉小JSON。进度与逐片命令在[artifact目录](../paper_artifacts/historical_component_bank_v1)。
 
-局限与下一步：本轮尚在运行，不能宣称完整银行通过；即使通过，也只覆盖一条开发观测及固定32条目标头缓存，规则差不是严格误差界。完整96条／外层KG和独立决策收益仍待验证，未读取独立确认块，也未增加物理、拟合或验证调用。先根据完整银行的实际失败组和计时决定下一轮规模。
+16片全部完成，初筛实耗3.807单核小时、峰值内存296MB（准备另计59.86 CPU秒）。raw／native通过动作数263／293，共34／24组失败；raw连续32→128、独立128、GH32→64失败组数分别23／28／1，native为19／6／0。归一化误差最高8.88e−16。新旧银行最大动作值差1.09e−3／4.14e−4，32条固定目标头下的推荐动作均未变化。全部失败组加密预计7.26单核小时，超过原3600秒预计成本限制，自动流程停止，未扩大派发。[结果与归因](../paper_artifacts/historical_component_bank_v1/failure_diagnosis.json)。
+
+接续选每类比较的实际最大失败，去重得到raw组68／32／28、native组40／66。五组的独立256点、GH64→128全部通过；三组128→256变化仍超门槛，另做512点确认，最大256→512差7.62e−5，五组均通过。随后GH32／256点及独立规则也与已验证高规则一致，单套规则实测加速2.29倍。[高规则确认](../paper_artifacts/historical_component_bank_v1/failure_pilot/resolution_summary.json)、[较低GH阶数检查](../paper_artifacts/historical_component_bank_v1/failure_pilot/cheaper_summary.json)。26个任务共0.809单核小时，最多8核滚动、峰值内存671MB；三轮累计预计3472秒，未超过3600秒限制。五项相关测试通过。入口为`python -m performance.diagnose_historical_bank_failures prepare`／`prepare-resolution`／`prepare-cheaper`和`python -m performance.launch_historical_component_bank pilot`／`pilot-resolution`／`pilot-cheaper`；服务器端前一模块`collect --stage refine|resolution|cheaper`汇总，逐片命令在`failure_pilot`子目录。
+
+局限与下一步：通过覆盖现为raw272／native299个动作，还剩31／22组。按实测计时，剩余组采用GH32／256点、独立规则及GH64／256对照的初始加密预计2.74单核小时；该计划已保存但未派发，512确认另计。继续按失败类型加密，保持1e−4门槛和最多8个低优先级核心。这里只覆盖一条开发观测及固定32条目标头缓存，规则差不是严格误差界；完整银行、96条／外层KG和独立决策收益仍待验证。未读取独立确认块，也未增加物理、拟合或验证调用。来源meta-prior及原身份／分量、协方差和预算不变。
