@@ -7,3 +7,29 @@ SUBMITTED {"identity": 4, "kind": "projected", "shard": 1, "id": "t141009"}
 SUBMITTED {"identity": 5, "kind": "raw", "shard": 1, "id": "t141010"}
 SUBMITTED {"identity": 5, "kind": "projected", "shard": 1, "id": "t141011"}
 PROGRESS {"stage": "adaptive", "submitted": 8, "pending": 8, "live": 8, "done": 0}
+SUBMITTED {"identity": 4, "kind": "raw", "shard": 2, "id": "t141014"}
+PROGRESS {"stage": "adaptive", "submitted": 9, "pending": 7, "live": 8, "done": 1}
+SUBMITTED {"identity": 4, "kind": "projected", "shard": 2, "id": "t141015"}
+PROGRESS {"stage": "adaptive", "submitted": 10, "pending": 6, "live": 8, "done": 2}
+SUBMITTED {"identity": 5, "kind": "raw", "shard": 2, "id": "t141016"}
+PROGRESS {"stage": "adaptive", "submitted": 11, "pending": 5, "live": 8, "done": 3}
+SUBMITTED {"identity": 5, "kind": "projected", "shard": 2, "id": "t141017"}
+PROGRESS {"stage": "adaptive", "submitted": 12, "pending": 4, "live": 8, "done": 4}
+SUBMITTED {"identity": 4, "kind": "raw", "shard": 3, "id": "t141018"}
+PROGRESS {"stage": "adaptive", "submitted": 13, "pending": 3, "live": 8, "done": 5}
+SUBMITTED {"identity": 4, "kind": "projected", "shard": 3, "id": "t141020"}
+PROGRESS {"stage": "adaptive", "submitted": 14, "pending": 2, "live": 8, "done": 6}
+SUBMITTED {"identity": 5, "kind": "raw", "shard": 3, "id": "t141022"}
+PROGRESS {"stage": "adaptive", "submitted": 15, "pending": 1, "live": 8, "done": 7}
+SUBMITTED {"identity": 5, "kind": "projected", "shard": 3, "id": "t141023"}
+PROGRESS {"stage": "adaptive", "submitted": 16, "pending": 0, "live": 7, "done": 9}
+PROGRESS {"stage": "adaptive", "submitted": 16, "pending": 0, "live": 6, "done": 10}
+PROGRESS {"stage": "adaptive", "submitted": 16, "pending": 0, "live": 5, "done": 11}
+PROGRESS {"stage": "adaptive", "submitted": 16, "pending": 0, "live": 4, "done": 12}
+PROGRESS {"stage": "adaptive", "submitted": 16, "pending": 0, "live": 3, "done": 13}
+PROGRESS {"stage": "adaptive", "submitted": 16, "pending": 0, "live": 2, "done": 14}
+PROGRESS {"stage": "adaptive", "submitted": 16, "pending": 0, "live": 1, "done": 15}
+PROGRESS {"stage": "adaptive", "submitted": 16, "pending": 0, "live": 0, "done": 16}
+COMPLETE {"stage": "adaptive", "submitted": 16, "pending": 0, "live": 0, "done": 16}
+COLLECTED {"complete": true, "record": "source_n1_o5_h1_p207", "stage": "adaptive", "failed_groups": {"raw": [1, 2, 3, 5, 6, 8, 14, 23, 24, 27, 38, 52, 53, 58, 60, 66, 70], "projected": [20, 23, 50, 52, 58, 59, 68]}, "actions": 365, "actions_checked": {"raw": 314, "projected": 344}, "single_record_risk_bank_precision_passed": false, "old_new_maximum_action_difference": {"raw": 0.0009340051080455308, "projected": 0.00041378544155074026}, "changed_recommendation_count": {"raw": 0, "projected": 0}, "maximum_best_value_change": {"raw": 0.000222753209567772, "projected": 0.0}, "cpu_seconds": 8677.217826768001, "maximum_task_peak_rss_mb": 462.8046875, "next_resolution_estimates": {"raw": {"1": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "2": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "3": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "5": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "6": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "8": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "14": {"rules": ["I8", "J8", "K9"], "estimated_cpu_seconds": 564.3906399780001}, "23": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "24": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "27": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "38": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "52": {"rules": ["I8", "J8", "K9"], "estimated_cpu_seconds": 564.3906399780001}, "53": {"rules": ["I8", "J8", "K9"], "estimated_cpu_seconds": 564.3906399780001}, "58": {"rules": ["I8", "J8", "K9"], "estimated_cpu_seconds": 564.3906399780001}, "60": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "66": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}, "70": {"rules": ["K9"], "estimated_cpu_seconds": 256.54119999000005}}, "projected": {"20": {"rules": ["I8", "J8", "K9"], "estimated_cpu_seconds": 625.6758266605001}, "23": {"rules": ["I8", "J8", "K9"], "estimated_cpu_seconds": 625.6758266605001}, "50": {"rules": ["I8", "J8", "K9"], "estimated_cpu_seconds": 625.6758266605001}, "52": {"rules": ["I8", "J8", "K9"], "estimated_cpu_seconds": 625.6758266605001}, "58": {"rules": ["K9"], "estimated_cpu_seconds": 284.39810302750004}, "59": {"rules": ["I8", "J8", "K9"], "estimated_cpu_seconds": 625.6758266605001}, "68": {"rules": ["K9"], "estimated_cpu_seconds": 284.39810302750004}}}, "full_predictive_integration_admitted": false, "independent_confirmation": false, "new_physical_calls": 0, "new_source_fits": 0, "new_verifier_calls": 0, "scope": "One opened development risk observation, all 365 actions, fixed cached opposite head. Rule differences are diagnostics, not strict error bounds."}
+ADAPTIVE_DONE {"state": "resolution_cost_hold", "maximum_live_workers": 8, "estimated_initial_cpu_seconds": 9849.337668488, "maximum_estimated_resolution_cpu_seconds": 3600.0, "full_predictive_integration_admitted": false, "independent_confirmation": false, "measured_cpu_seconds_by_stage": {"adaptive": 8677.217826768001}, "estimated_resolution_cpu_seconds": 9289.773499139501, "last_stage": "adaptive", "failed_groups": {"raw": [1, 2, 3, 5, 6, 8, 14, 23, 24, 27, 38, 52, 53, 58, 60, 66, 70], "projected": [20, 23, 50, 52, 58, 59, 68]}, "actions_checked": {"raw": 314, "projected": 344}, "single_record_risk_bank_precision_passed": false, "measured_cpu_seconds": 8677.217826768001}

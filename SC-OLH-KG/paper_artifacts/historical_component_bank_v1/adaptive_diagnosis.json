@@ -1,0 +1,86 @@
+{
+  "complete": true,
+  "scheduler_done_count": 16,
+  "actions_checked": {
+    "raw": 314,
+    "projected": 344
+  },
+  "failed_groups": {
+    "raw": [
+      1,
+      2,
+      3,
+      5,
+      6,
+      8,
+      14,
+      23,
+      24,
+      27,
+      38,
+      52,
+      53,
+      58,
+      60,
+      66,
+      70
+    ],
+    "projected": [
+      20,
+      23,
+      50,
+      52,
+      58,
+      59,
+      68
+    ]
+  },
+  "failure_comparison_counts": {
+    "raw": {
+      "E7->E8": 13,
+      "E8->F8": 4
+    },
+    "projected": {
+      "E8->F8": 5,
+      "E7->E8": 2
+    }
+  },
+  "comparison_maxima": {
+    "raw": {
+      "E7->E8": 0.0004680416561881895,
+      "E8->F8": 0.00018869952067886164,
+      "E8->H8": 4.6665134587009494e-05
+    },
+    "projected": {
+      "E7->E8": 0.00017532135594141435,
+      "E8->F8": 0.00020245533083468846,
+      "E8->H8": 9.586500112290786e-06
+    }
+  },
+  "cpu_hours": 2.4103382852133337,
+  "maximum_task_peak_rss_mb": 462.8046875,
+  "old_new_maximum_action_difference": {
+    "raw": 0.0009340051080455308,
+    "projected": 0.00041378544155074026
+  },
+  "changed_recommendation_count": {
+    "raw": 0,
+    "projected": 0
+  },
+  "maximum_log_evidence_error": 8.881784197001256e-16,
+  "full_resolution_estimate_cpu_hours": 2.5804926386498614,
+  "full_resolution_not_submitted": true,
+  "discovered_resolution_plan_issue": "The former H8/I8/J8/K9 path kept the independent comparison and selected H8 rule at 256 continuous points despite the GH-stable independent-rule failures.",
+  "implemented_resolution_rules": [
+    "E9 (GH32,512)",
+    "F9 (independent GH32,512)",
+    "K9 (GH64,512)"
+  ],
+  "next_stage_plan": "bank_resolution_plan.json",
+  "local_tests_passed": 8,
+  "full_predictive_integration_admitted": false,
+  "independent_confirmation": false,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0
+}

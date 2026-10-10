@@ -1,0 +1,79 @@
+{
+  "record": "source_n1_o5_h1_p207",
+  "selected": [
+    {
+      "group": 8,
+      "kind": "raw",
+      "reasons": [
+        {
+          "low": "E7",
+          "high": "E8",
+          "maximum_difference": 0.0004680416561881895
+        }
+      ],
+      "rules": [
+        "K9"
+      ],
+      "estimated_cpu_seconds": 256.54119999000005
+    },
+    {
+      "group": 58,
+      "kind": "raw",
+      "reasons": [
+        {
+          "low": "E8",
+          "high": "F8",
+          "maximum_difference": 0.00018869952067886164
+        }
+      ],
+      "rules": [
+        "E9",
+        "F9",
+        "K9"
+      ],
+      "estimated_cpu_seconds": 513.08239998
+    },
+    {
+      "group": 68,
+      "kind": "projected",
+      "reasons": [
+        {
+          "low": "E7",
+          "high": "E8",
+          "maximum_difference": 0.00017532135594141435
+        }
+      ],
+      "rules": [
+        "K9"
+      ],
+      "estimated_cpu_seconds": 284.39810302750004
+    },
+    {
+      "group": 50,
+      "kind": "projected",
+      "reasons": [
+        {
+          "low": "E8",
+          "high": "F8",
+          "maximum_difference": 0.00020245533083468846
+        }
+      ],
+      "rules": [
+        "E9",
+        "F9",
+        "K9"
+      ],
+      "estimated_cpu_seconds": 568.7962060550001
+    }
+  ],
+  "estimated_cpu_seconds": 1622.8179090525002,
+  "maximum_estimated_cpu_seconds": 3600.0,
+  "estimated_cost_admitted": true,
+  "maximum_live_workers": 8,
+  "priority": "low",
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "scope": "Current worst group of each failed comparison and kind; continuous 512-point rules replace redundant GH escalation. Other failed groups remain unadmitted."
+}

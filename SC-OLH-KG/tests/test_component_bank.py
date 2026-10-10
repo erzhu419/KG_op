@@ -11,7 +11,8 @@ import numpy as np
 
 from core.budgeted_guarded_kg import BudgetedTerminalActions
 from core.raw_terminal_head_grid import compose_head_grid
-from performance.validate_historical_component_bank import action_groups, group_checks, collect, adaptive_resolution_rules
+from performance.validate_historical_component_bank import (action_groups, group_checks, collect,
+    adaptive_resolution_rules, prepare_resolution_pilot, RULES)
 from performance.diagnose_historical_component_guarded import compressed_write
 from performance import launch_historical_component_bank as launcher
 from performance.diagnose_historical_bank_failures import select_failures
@@ -156,15 +157,83 @@ class ComponentBankTests(unittest.TestCase):
             table=json.loads((out/'adaptive-resolution_risk_bank.json').read_text())
             for kind in ('raw','projected'):np.testing.assert_array_equal(table['statistics'][kind],g)
 
+            # A GH increase cannot fix an unstable independent continuous rule.
+            # Check both independent 512-point rules and preserve unselected failures.
+            hard=copy.deepcopy(adaptive)
+            hard['groups'][0]['checks']['raw']['passed']=False
+            hard['groups'][1]['checks']['raw']['comparisons'][1]['maximum_difference']=2e-4
+            (out/'adaptive_summary.json').write_text(json.dumps(hard))
+            (out/'bank_resolution_plan.json').write_text(json.dumps(dict(estimated_cost_admitted=True,
+                selected=[dict(group=1,kind='raw')])))
+            for h in range(3):
+                path=out/f'parts/001_{h}_raw.json';part=json.loads(path.read_text())
+                part['rows'].update({n:copy.deepcopy(part['rows']['H8']) for n in ('E9','F9')})
+                path.write_text(json.dumps(part))
+            (out/'tasks/bank-resolution').mkdir()
+            for h in range(3):
+                (out/f'tasks/bank-resolution/{h}_raw_0.json').write_text(json.dumps(dict(complete=True,cpu_seconds=1.,peak_rss_mb=0.)))
+            with contextlib.redirect_stdout(io.StringIO()):partial=collect('bank-resolution',str(plan))
+            self.assertEqual(partial['failed_groups'],dict(raw=[0],projected=[]))
+            self.assertEqual(partial['groups'][1]['selected_rules']['raw'],'E9')
+            self.assertFalse(partial['single_record_risk_bank_precision_passed'])
+            path=out/'parts/001_2_raw.json';part=json.loads(path.read_text())
+            part['rows']['F9']['statistics'][1][0]+=.01;path.write_text(json.dumps(part))
+            with contextlib.redirect_stdout(io.StringIO()):partial=collect('bank-resolution',str(plan))
+            self.assertEqual(partial['failed_groups']['raw'],[0,1])
+
+            coarse=copy.deepcopy(adaptive)
+            coarse['groups'][0]['checks']['raw']=copy.deepcopy(coarse['groups'][1]['checks']['raw'])
+            coarse['groups'][0]['checks']['raw']['comparisons'][0]['maximum_difference']=0.
+            coarse['groups'][0]['checks']['raw']['comparisons'][1]['maximum_difference']=2e-4
+            (out/'bank_resolution_summary.json').write_text(json.dumps(coarse))
+            (out/'tasks/bank-coarse').mkdir()
+            for h in range(3):
+                (out/f'tasks/bank-coarse/{h}_raw_0.json').write_text(json.dumps(dict(complete=True,cpu_seconds=1.,peak_rss_mb=0.)))
+            with contextlib.redirect_stdout(io.StringIO()):partial=collect('bank-coarse',str(plan))
+            self.assertEqual(partial['failed_groups'],dict(raw=[0],projected=[]))
+            self.assertEqual(partial['groups'][1]['selected_rules']['raw'],'E8')
+            self.assertEqual([(c['low'],c['high']) for c in partial['groups'][1]['checks']['raw']['comparisons']],
+                [('E8','F8'),('E8','H8'),('E8','E9')])
+            progress=json.loads((out/'partial_bank_progress.json').read_text())
+            self.assertEqual(progress['stage'],'bank-coarse')
+            self.assertEqual(progress['remaining_failed_groups'],dict(raw=[0],projected=[]))
+
     def test_resolution_keeps_failed_independent_and_gh_checks(self):
         checks=dict(maximum_log_evidence_error=0.,comparisons=[dict(low=a,high=b,maximum_difference=d)
             for a,b,d in [('E7','E8',2e-4),('E8','F8',1e-5),('E8','H8',1e-5)]])
         self.assertEqual(adaptive_resolution_rules(checks,1e-4),['K9'])
         for i in (1,2):
             failed=copy.deepcopy(checks);failed['comparisons'][i]['maximum_difference']=2e-4
-            self.assertEqual(adaptive_resolution_rules(failed,1e-4),['I8','J8','K9'])
+            self.assertEqual(adaptive_resolution_rules(failed,1e-4),['E9','F9','K9'])
         checks['maximum_log_evidence_error']=2e-4
-        self.assertEqual(adaptive_resolution_rules(checks,1e-4),['I8','J8','K9'])
+        self.assertEqual(adaptive_resolution_rules(checks,1e-4),['E9','F9','K9'])
+        self.assertEqual(RULES['E9'][:2],(32,9))
+        self.assertEqual(RULES['F9'][:2],(32,9))
+        self.assertNotEqual(RULES['E9'][2],RULES['F9'][2])
+
+    def test_resolution_pilot_uses_current_worst_comparisons_and_budget(self):
+        groups=[];estimates={k:{} for k in ('raw','projected')}
+        for gid in range(2):
+            checks={}
+            for kind in estimates:
+                differences=[3e-4,5e-5,0.] if gid==0 else [5e-5,2e-4,0.]
+                checks[kind]=dict(passed=False,maximum_log_evidence_error=0.,comparisons=[
+                    dict(low=a,high=b,maximum_difference=d) for (a,b),d in
+                    zip([('E7','E8'),('E8','F8'),('E8','H8')],differences)])
+                estimates[kind][str(gid)]=dict(rules=['K9'] if gid==0 else ['I8','J8','K9'],
+                    estimated_cpu_seconds=250. if gid==0 else 550.)
+            groups.append(dict(group=gid,checks=checks))
+        with tempfile.TemporaryDirectory() as tmp:
+            out=Path(tmp);plan=out/'plan.json'
+            plan.write_text(json.dumps(dict(output=str(out),record='toy',maximum_action_difference=1e-4)))
+            (out/'adaptive_summary.json').write_text(json.dumps(dict(complete=True,groups=groups,next_resolution_estimates=estimates)))
+            for limit in (1600.,1400.):
+                (out/'next_bank_plan.json').write_text(json.dumps(dict(maximum_estimated_resolution_cpu_seconds=limit)))
+                with contextlib.redirect_stdout(io.StringIO()):selected=prepare_resolution_pilot(str(plan))
+                self.assertEqual(len(selected['selected']),4)
+                self.assertEqual(selected['estimated_cpu_seconds'],1500.)
+                self.assertEqual(selected['estimated_cost_admitted'],limit>=1500.)
+                self.assertEqual(selected['selected'][1]['rules'],['E9','F9','K9'])
 
     def test_adaptive_controller_respects_resolution_budget(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -186,6 +255,31 @@ class ComponentBankTests(unittest.TestCase):
                 status=json.loads((out/'adaptive_status.json').read_text());self.assertEqual(status['state'],expected)
                 self.assertEqual(status['measured_cpu_seconds'],3. if estimate>10. else 5.)
                 self.assertFalse(status['full_predictive_integration_admitted'])
+
+    def test_coarse_controller_counts_the_already_budgeted_pilot(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'performance/manifests').mkdir(parents=True);out=root/'out';out.mkdir()
+            (root/'performance/manifests/historical_component_bank_v1.json').write_text(json.dumps(dict(
+                output='out',maximum_action_difference=1e-4)))
+            (out/'bank_resolution_status.json').write_text(json.dumps(dict(state='selected_resolution_passed')))
+            groups=[dict(group=0,checks={k:dict(passed=True) for k in ('raw','projected')}),
+                dict(group=1,checks={k:dict(passed=False,maximum_log_evidence_error=0.,comparisons=[
+                    dict(low=a,high=b,maximum_difference=d) for a,b,d in
+                    [('E7','E8',2e-4),('E8','F8',1e-5),('E8','H8',1e-5)]]) for k in ('raw','projected')})]
+            (out/'bank_resolution_summary.json').write_text(json.dumps(dict(complete=True,groups=groups)))
+            (out/'adaptive_summary.json').write_text(json.dumps(dict(next_resolution_estimates={
+                k:{'1':dict(estimated_cpu_seconds=250.)} for k in ('raw','projected')})))
+            for limit in (1200.,1300.):
+                (out/'bank_resolution_plan.json').write_text(json.dumps(dict(estimated_cpu_seconds=1000.,
+                    maximum_estimated_cpu_seconds=limit,selected=[dict(group=0,kind=k,rules=['K9']) for k in ('raw','projected')])))
+                collected=dict(actions_checked=dict(raw=10,projected=10),failed_groups=dict(raw=[],projected=[]),
+                    cpu_seconds=240.,single_record_risk_bank_precision_passed=True)
+                with patch.object(launcher,'ROOT',root),patch.object(launcher,'launch') as launch,\
+                    patch.object(launcher,'collect_remote',return_value=collected),\
+                    contextlib.redirect_stdout(io.StringIO()):launcher.continue_coarse_resolution()
+                plan=json.loads((out/'bank_coarse_plan.json').read_text())
+                self.assertEqual(plan['cumulative_estimated_cpu_seconds'],1250.)
+                self.assertEqual(launch.call_count,int(limit>=1250.))
 
     def test_pipeline_stops_without_submitting_passed_or_over_budget_groups(self):
         with tempfile.TemporaryDirectory() as tmp:

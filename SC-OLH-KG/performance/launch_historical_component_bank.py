@@ -36,6 +36,12 @@ def launch(stage):
     elif stage=='adaptive-resolution':
         old=json.loads((out/'adaptive_summary.json').read_text());assert old['complete']
         counts={k:len(v) for k,v in old['failed_groups'].items()}
+    elif stage=='bank-resolution':
+        plan=json.loads((out/'bank_resolution_plan.json').read_text());assert plan['estimated_cost_admitted']
+        counts={k:sum(r['kind']==k for r in plan['selected']) for k in ('raw','projected')}
+    elif stage=='bank-coarse':
+        plan=json.loads((out/'bank_coarse_plan.json').read_text());assert plan['estimated_cost_admitted']
+        counts={k:len(v) for k,v in plan['selected_groups'].items()}
     else:
         old=json.loads((out/('screen_summary.json' if stage=='refine' else 'refined_summary.json')).read_text())
         assert old['complete'];counts={k:len(v) for k,v in old['failed_groups'].items()}
@@ -101,12 +107,17 @@ def collect_remote(stage,out):
     if rc:raise RuntimeError(err or body)
     name={'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
         'adaptive':'adaptive_summary.json','adaptive-resolution':'adaptive_resolution_summary.json',
+        'bank-resolution':'bank_resolution_summary.json',
+        'bank-coarse':'bank_coarse_summary.json',
         'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
     relative='paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name
     code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
     rc,body,err=scheduler.run_on('node005','cd '+shlex.quote(REMOTE)+' && '+shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
     if rc:raise RuntimeError(err or body)
     result=json.loads(body);(out/name).write_text(json.dumps(result,indent=2)+'\n')
+    if stage in ('adaptive','bank-resolution','bank-coarse'):
+        from performance.validate_historical_component_bank import save_progress
+        save_progress(result,out)
     print('COLLECTED '+json.dumps({k:v for k,v in result.items() if k!='groups'}),flush=True)
     return result
 
@@ -135,6 +146,55 @@ def continue_adaptive():
         single_record_risk_bank_precision_passed=summary['single_record_risk_bank_precision_passed'],
         measured_cpu_seconds=sum(status['measured_cpu_seconds_by_stage'].values()))
     path.write_text(json.dumps(status,indent=2)+'\n');print('ADAPTIVE_DONE '+json.dumps(status),flush=True)
+
+
+def continue_resolution_pilot():
+    spec=json.loads((ROOT/'performance/manifests/historical_component_bank_v1.json').read_text());out=ROOT/spec['output']
+    plan=json.loads((out/'bank_resolution_plan.json').read_text());assert plan['estimated_cost_admitted']
+    path=out/'bank_resolution_status.json'
+    status=dict(state='running',estimated_cpu_seconds=plan['estimated_cpu_seconds'],maximum_live_workers=8,
+        full_predictive_integration_admitted=False,independent_confirmation=False)
+    path.write_text(json.dumps(status,indent=2)+'\n')
+    launch('bank-resolution');summary=collect_remote('bank-resolution',out)
+    passed=summary['complete'] and all(summary['groups'][r['group']]['checks'][r['kind']]['passed'] for r in plan['selected'])
+    status.update(state='selected_resolution_passed' if passed else 'precision_hold',
+        selected_resolution_precision_passed=passed,actions_checked=summary['actions_checked'],
+        failed_groups=summary['failed_groups'],measured_cpu_seconds=summary['cpu_seconds'],
+        single_record_risk_bank_precision_passed=summary['single_record_risk_bank_precision_passed'])
+    path.write_text(json.dumps(status,indent=2)+'\n');print('BANK_RESOLUTION_DONE '+json.dumps(status),flush=True)
+
+
+def continue_coarse_resolution():
+    from performance.validate_historical_component_bank import adaptive_resolution_rules
+    spec=json.loads((ROOT/'performance/manifests/historical_component_bank_v1.json').read_text());out=ROOT/spec['output']
+    while json.loads((out/'bank_resolution_status.json').read_text())['state']=='running':time.sleep(20)
+    summary=json.loads((out/'bank_resolution_summary.json').read_text())
+    pilot=json.loads((out/'bank_resolution_plan.json').read_text())
+    # Both observed worst coarse failures must pass the GH64/512 check first.
+    admitted=summary['complete'] and all(summary['groups'][r['group']]['checks'][r['kind']]['passed']
+        for r in pilot['selected'] if r['rules']==['K9'])
+    selected={k:[g['group'] for g in summary['groups'] if not g['checks'][k]['passed']
+        and adaptive_resolution_rules(g['checks'][k],spec['maximum_action_difference'])==['K9']]
+        for k in ('raw','projected')}
+    initial=json.loads((out/'adaptive_summary.json').read_text())
+    estimate=.5*sum(initial['next_resolution_estimates'][k][str(g)]['estimated_cpu_seconds'] for k,ids in selected.items() for g in ids)
+    total=pilot['estimated_cpu_seconds']+estimate
+    plan=dict(selected_groups=selected,rules=['E9'],estimated_cpu_seconds=estimate,
+        cumulative_estimated_cpu_seconds=total,maximum_estimated_cpu_seconds=pilot['maximum_estimated_cpu_seconds'],
+        estimated_cost_admitted=admitted and total<=pilot['maximum_estimated_cpu_seconds'],
+        scope='Only coarse-only failures: keep E8/F8 independent and E8/H8 GH checks, add E8/E9 continuous resolution. Worst coarse groups already checked against GH64/512.')
+    (out/'bank_coarse_plan.json').write_text(json.dumps(plan,indent=2)+'\n')
+    path=out/'bank_coarse_status.json'
+    status=dict(state='running' if plan['estimated_cost_admitted'] else 'coarse_or_cost_hold',
+        cumulative_estimated_cpu_seconds=total,maximum_live_workers=8,
+        full_predictive_integration_admitted=False,independent_confirmation=False)
+    path.write_text(json.dumps(status,indent=2)+'\n')
+    if plan['estimated_cost_admitted']:
+        launch('bank-coarse');summary=collect_remote('bank-coarse',out)
+        status.update(state='collected',actions_checked=summary['actions_checked'],failed_groups=summary['failed_groups'],
+            measured_cpu_seconds=summary['cpu_seconds'],single_record_risk_bank_precision_passed=summary['single_record_risk_bank_precision_passed'])
+        path.write_text(json.dumps(status,indent=2)+'\n')
+    print('BANK_COARSE_DONE '+json.dumps(status),flush=True)
 
 
 def continue_pipeline():
@@ -180,8 +240,11 @@ def continue_pipeline():
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue',
-        'adaptive','adaptive-resolution','continue-adaptive']+list(PILOT_MODES))
+        'adaptive','adaptive-resolution','continue-adaptive','bank-resolution','continue-bank-resolution',
+        'bank-coarse','continue-bank-coarse']+list(PILOT_MODES))
     args=parser.parse_args()
     if args.stage=='continue':continue_pipeline()
     elif args.stage=='continue-adaptive':continue_adaptive()
+    elif args.stage=='continue-bank-resolution':continue_resolution_pilot()
+    elif args.stage=='continue-bank-coarse':continue_coarse_resolution()
     else:launch(args.stage)

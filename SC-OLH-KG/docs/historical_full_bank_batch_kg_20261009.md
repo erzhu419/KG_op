@@ -167,3 +167,10 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 剩余raw31／native22组已接入GH32／256点、独立256点及GH64／256比较，复用五个已通过最差组和原生direct缓存。16个分片最多8个低优先级单核滚动，允许node001–node006；初始预计2.74单核小时。完成后自动在服务器汇总，只拉取小JSON。若仅128→256比较失败，保留已通过的独立／GH检查，再对E8检查512点；若独立或GH检查失败，另接GH64的独立256点、GH128／256点和GH64／512点。只有后续加密总预计成本不超过3600 CPU秒才派发，否则保留失败并停止；不是实耗硬上限。
 
 7项相关测试通过，覆盖已通过组的复用、三种非连续预算索引、原始失败文件保留及预计成本限制。入口为`PYTHONPATH=. python -m performance.launch_historical_component_bank continue-adaptive`，状态与命令在同名artifact目录的`adaptive_status.json`、`adaptive_controller.log`和`adaptive_specs.jsonl`。本节记录启动状态，尚无新增通过结论；来源meta-prior、全身份权重／似然、原计值身份的全部正分量、联合协方差和365动作保持，无新增物理、拟合或验证调用。完整KG与独立决策收益仍待验证。
+
+
+## 256点接续完成与512点纠偏（2026-10-10）
+
+16片完整完成，实耗2.410单核小时，raw／native覆盖314／344个动作，推荐未变，归一化误差最高8.88e−16。剩余15组只差分辨率确认、9组为独立规则差异，GH检查均通过。原后续方案仍选256点规则H8，提高GH阶数未针对连续误差；已改为独立512点E9／F9和GH64／512点K9对照。当前四个最差组全部通过，实耗1108.61 CPU秒，覆盖320／350个动作。[归因与结果](../paper_artifacts/historical_component_bank_v1/adaptive_diagnosis.json)、同目录`bank_resolution_summary.json`。
+
+下一步13个仅分辨率失败组只补E9，保留候选E8的独立F8和GH64的H8检查；两轮累计预计3304秒，仍在3600秒限制内，最多8个低优先级单核。9项测试通过，命令及自动汇总在`bank_coarse_*`和`bank-coarse_*`文件。另用缓存核对已通过组的较低GH规则，动作差最高1.22e−5／2.80e−5，推荐未变；匹配guarded规则计算快2.12／2.13倍，非完整KG加速。[诊断](../paper_artifacts/historical_component_bank_v1/cheaper_rule_diagnostic.json)。仍限一条开发观测，规则差非严格误差界；完整银行、96条外层KG及独立决策收益待验证，来源先验、全部身份／分量、协方差与预算保持，无新增物理、拟合或验证调用。

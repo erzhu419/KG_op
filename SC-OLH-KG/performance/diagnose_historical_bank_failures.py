@@ -15,10 +15,10 @@ REFINED_PAIRS=[('G7','H8'),('H8','I8'),('H8','J8')]
 RESOLUTION_PAIRS=[('H8','I8'),('H8','J8'),('H8','K9')]
 
 
-def select_failures(summary,tolerance):
+def select_failures(summary,tolerance,*,pairs=PAIRS):
     selected={}
     for kind in ('raw','projected'):
-        for low,high in PAIRS:
+        for low,high in pairs:
             candidates=[(c['maximum_difference'],g['group']) for g in summary['groups']
                 for c in g['checks'][kind].get('comparisons',[]) if (c['low'],c['high'])==(low,high)]
             if not candidates:continue

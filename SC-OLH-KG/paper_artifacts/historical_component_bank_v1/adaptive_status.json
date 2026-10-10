@@ -1,8 +1,49 @@
 {
-  "state": "running_adaptive",
+  "state": "resolution_cost_hold",
   "maximum_live_workers": 8,
   "estimated_initial_cpu_seconds": 9849.337668488,
   "maximum_estimated_resolution_cpu_seconds": 3600.0,
   "full_predictive_integration_admitted": false,
-  "independent_confirmation": false
+  "independent_confirmation": false,
+  "measured_cpu_seconds_by_stage": {
+    "adaptive": 8677.217826768001
+  },
+  "estimated_resolution_cpu_seconds": 9289.773499139501,
+  "last_stage": "adaptive",
+  "failed_groups": {
+    "raw": [
+      1,
+      2,
+      3,
+      5,
+      6,
+      8,
+      14,
+      23,
+      24,
+      27,
+      38,
+      52,
+      53,
+      58,
+      60,
+      66,
+      70
+    ],
+    "projected": [
+      20,
+      23,
+      50,
+      52,
+      58,
+      59,
+      68
+    ]
+  },
+  "actions_checked": {
+    "raw": 314,
+    "projected": 344
+  },
+  "single_record_risk_bank_precision_passed": false,
+  "measured_cpu_seconds": 8677.217826768001
 }
