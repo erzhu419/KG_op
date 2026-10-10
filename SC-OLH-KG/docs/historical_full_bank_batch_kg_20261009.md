@@ -193,3 +193,11 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 仅用缓存再检验跨标签控制变量：沿用历史未归一化分子差值方法，以已验证o5/p207高规则积分为锚，加入目标与锚点的配对低规则差，最后除以目标归一化质量。三条观测的raw组52均保留原分量、身份分数、目标头和三种预算；升阶／独立／GH规则最大动作差分别6.17e−5／8.80e−5／1.50e−9，概率和成本均在有效范围，无裁剪。[缓存诊断](../paper_artifacts/historical_component_transfer_v1/cross_label_anchor_diagnostic.json)；服务器重放：`OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python paper_artifacts/historical_component_transfer_v1/diagnose_nearby_anchor.py`。下一步先以目标标签的直接高规则积分交叉验证，再测实际节省；本轮未证明加速，未改动正式通过计数。
 
 局限：仅一个冻结开发任务的选定动作，规则差不是严格误差界；未新增物理、拟合或验证调用，未读独立确认块。原source meta-prior与旧60/60证据保留，完整365动作跨观测、96条主体观测、224个外层节点、完整KG及独立决策收益仍待验证。
+
+## 跨标签复用的直接高精度对照（2026-10-10）
+
+上轮剩余5个组合全部通过；三个观测的两组guarded动作、三种预算现在raw／native均为18／18个动作-观测检查通过。组52补齐直接512／1024点、独立512点及GH16／32比较，低端raw组12保留原256点独立／GH检查并补512点确认。组52的raw跨标签复用结果与直接512／1024点的最大动作差分别3.06e−5／1.47e−5，三条观测全部通过，重复128点规则与旧缓存差0。[结果与计时](../paper_artifacts/historical_label_control_v1/summary.json)。
+
+同一worker中测量全部正分量的128／512点积分：三条目标观测合计60.02／289.39 CPU秒，复用锚点后的候选积分提速4.82倍；计入一次锚点候选积分94.32秒后，三条合计提速1.87倍。此比较只计候选积分与混合计值，准备和精度验证另计。本轮12片积分合计2389.59 CPU秒，预计2819.67秒，单独受3600秒预计成本限制；上轮cost_hold及其2491.77秒记录保留。最多8个低优先级单核，全部结束，峰值666MB；20项不同回归测试通过。服务器准备入口为`python -m performance.validate_historical_label_control prepare`，本地调度／拉小JSON入口为`python -m performance.launch_historical_component_bank label-control`。
+
+下一步将复用公式接入其他已验证guarded组，先覆盖历史最差组，再接完整365动作银行。局限：以上是三个开发观测的选定动作及固定32条目标头，规则差不是严格误差界，局部候选提速尚不是完整KG提速；96条主体观测、224个外层节点及独立决策收益待验证。来源meta-prior、全身份权重／似然、全部正分量、联合协方差及预算保持，无新增物理、拟合或验证调用，独立确认块未读取。

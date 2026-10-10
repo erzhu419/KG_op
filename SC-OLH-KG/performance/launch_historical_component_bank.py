@@ -20,12 +20,14 @@ TRANSFER_STAGES={'transfer-screen':'screen','transfer-adaptive':'adaptive','tran
 
 
 def launch(stage):
-    manifest='historical_component_transfer_v1.json' if stage in TRANSFER_STAGES else 'historical_component_bank_v1.json'
+    manifest=('historical_label_control_v1.json' if stage=='label-control' else
+        'historical_component_transfer_v1.json' if stage in TRANSFER_STAGES else 'historical_component_bank_v1.json')
     spec=json.loads((ROOT/'performance/manifests'/manifest).read_text())
     out=ROOT/spec['output'];prep=json.loads((out/'preparation.json').read_text());assert prep['complete']
     identities=sorted(map(int,prep['source_components']))
-    if stage in TRANSFER_STAGES:
-        plan=json.loads((out/(TRANSFER_STAGES[stage]+'_plan.json')).read_text());assert plan['estimated_cost_admitted']
+    if stage in TRANSFER_STAGES or stage=='label-control':
+        short='resolution' if stage=='label-control' else TRANSFER_STAGES[stage]
+        plan=json.loads((out/(short+'_plan.json')).read_text());assert plan['estimated_cost_admitted']
         counts={k:sum(r['kind']==k for r in plan['selected']) for k in ('raw','projected')}
     elif stage in PILOT_MODES:
         out=out/'failure_pilot';pilot=json.loads((out/'selection.json').read_text());assert pilot['estimated_cost_admitted']
@@ -54,7 +56,7 @@ def launch(stage):
         old=json.loads((out/('screen_summary.json' if stage=='refine' else 'refined_summary.json')).read_text())
         assert old['complete'];counts={k:len(v) for k,v in old['failed_groups'].items()}
     if stage not in PILOT_MODES:
-        shards=max(counts.values()) if stage in TRANSFER_STAGES else spec['shards_per_identity_kind']
+        shards=max(counts.values()) if stage in TRANSFER_STAGES or stage=='label-control' else spec['shards_per_identity_kind']
         pending=[dict(identity=h,kind=k,shard=s) for s in range(shards)
             for h in identities for k in ('raw','projected') if s<counts[k]]
     jobs=[];specs=[];last=None
@@ -75,7 +77,8 @@ def launch(stage):
             for _ in range(min(slots,len(pending))):
                 job=pending.pop(0);h,k,s=job['identity'],job['kind'],job['shard']
                 worker=(['performance.validate_historical_component_transfer','run','--identity',str(h),'--kind',k,
-                    '--shard',str(s),'--stage',TRANSFER_STAGES[stage]] if stage in TRANSFER_STAGES else
+                    '--shard',str(s),'--stage',short,'--plan','performance/manifests/'+manifest]
+                    if stage in TRANSFER_STAGES or stage=='label-control' else
                     ['performance.diagnose_historical_bank_failures','run','--identity',str(h),'--selection',str(s),
                     '--stage',PILOT_MODES[stage]] if stage in PILOT_MODES
                     else ['performance.validate_historical_component_bank','run','--stage',stage,'--identity',str(h),'--kind',k,'--shard',str(s)])
@@ -108,7 +111,8 @@ def launch(stage):
 def collect_remote(stage,out):
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
-    worker=(['performance.validate_historical_component_transfer','collect','--stage',TRANSFER_STAGES[stage]]
+    worker=(['performance.validate_historical_label_control','collect'] if stage=='label-control' else
+        ['performance.validate_historical_component_transfer','collect','--stage',TRANSFER_STAGES[stage]]
         if stage in TRANSFER_STAGES else ['performance.diagnose_historical_bank_failures','collect','--stage',PILOT_MODES[stage]]
         if stage in PILOT_MODES
         else ['performance.validate_historical_component_bank','collect','--stage',stage])
@@ -117,7 +121,7 @@ def collect_remote(stage,out):
     rc,body,err=scheduler.run_on('node005',command,timeout=35,check=False)
     (out/(stage+'_collection.log')).write_text(body+err)
     if rc:raise RuntimeError(err or body)
-    name=TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
+    name='summary.json' if stage=='label-control' else TRANSFER_STAGES[stage]+'_summary.json' if stage in TRANSFER_STAGES else {
         'screen':'screen_summary.json','refine':'refined_summary.json','resolution':'admitted_summary.json',
         'adaptive':'adaptive_summary.json','adaptive-resolution':'adaptive_resolution_summary.json',
         'bank-resolution':'bank_resolution_summary.json',
@@ -125,7 +129,7 @@ def collect_remote(stage,out):
         'bank-tail':'bank_tail_summary.json',
         'bank-tail-resolution':'bank_tail_resolution_summary.json',
         'pilot':'summary.json','pilot-resolution':'resolution_summary.json','pilot-cheaper':'cheaper_summary.json'}[stage]
-    relative=(str((out/name).relative_to(ROOT)) if stage in TRANSFER_STAGES else
+    relative=(str((out/name).relative_to(ROOT)) if stage in TRANSFER_STAGES or stage=='label-control' else
         'paper_artifacts/historical_component_bank_v1/'+('failure_pilot/' if stage in PILOT_MODES else '')+name)
     code='from pathlib import Path;print(Path('+repr(relative)+').read_text())'
     rc,body,err=scheduler.run_on('node005','cd '+shlex.quote(REMOTE)+' && '+shlex.join([PYTHON,'-c',code]),timeout=35,check=False)
@@ -300,7 +304,7 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['screen','refine','resolution','continue',
         'adaptive','adaptive-resolution','continue-adaptive','bank-resolution','continue-bank-resolution',
         'bank-coarse','continue-bank-coarse','bank-tail','continue-bank-tail',
-        'bank-tail-resolution','continue-bank-tail-resolution','continue-transfer']+list(PILOT_MODES)+list(TRANSFER_STAGES))
+        'bank-tail-resolution','continue-bank-tail-resolution','continue-transfer','label-control']+list(PILOT_MODES)+list(TRANSFER_STAGES))
     args=parser.parse_args()
     if args.stage=='continue':continue_pipeline()
     elif args.stage=='continue-adaptive':continue_adaptive()
@@ -309,4 +313,7 @@ if __name__=='__main__':
     elif args.stage=='continue-bank-tail':continue_tail()
     elif args.stage=='continue-bank-tail-resolution':continue_tail('bank-tail-resolution')
     elif args.stage=='continue-transfer':continue_transfer()
+    elif args.stage=='label-control':
+        launch(args.stage)
+        collect_remote(args.stage,ROOT/'paper_artifacts/historical_label_control_v1')
     else:launch(args.stage)
