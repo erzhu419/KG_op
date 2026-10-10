@@ -1,0 +1,221 @@
+{
+  "complete": true,
+  "scheduler_states": {
+    "t141735": "done",
+    "t141736": "done",
+    "t141737": "done",
+    "t141738": "done",
+    "t141739": "done",
+    "t141740": "done",
+    "t141741": "done",
+    "t141742": "done",
+    "t141743": "done",
+    "t141744": "done",
+    "t141745": "done",
+    "t141746": "done",
+    "t141752": "done"
+  },
+  "worker_count": 13,
+  "maximum_concurrent_workers": 8,
+  "priority": "low",
+  "cpus_per_worker": 1,
+  "allowed_nodes": [
+    "node001",
+    "node002",
+    "node003",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "actual_integral_nodes": [
+    "node001",
+    "node004",
+    "node005",
+    "node006"
+  ],
+  "cumulative_estimated_cpu_seconds": 3184.8866882232,
+  "maximum_estimated_cpu_seconds": 3600,
+  "new_integral_cpu_seconds": 1651.7279744,
+  "integral_worker_cpu_seconds": 1652.2522498829999,
+  "cache_process_cpu_seconds": 86.973448646,
+  "reported_successful_worker_cpu_seconds": 1739.2256985289998,
+  "measured_successful_preparation_cpu_seconds": 3.561600154,
+  "measured_collection_cpu_seconds": 2.076249752,
+  "measured_remaining_pricing_cpu_seconds": 6.486458965000001,
+  "measured_next_pricing_cpu_seconds": 0.09825054999999994,
+  "cpu_measurement_scope": "Cache worker reports process CPU including imports; integral workers use existing work timers after loading joint marginals. Preparation,collection and pricing use work timers. Small metadata transfers and local tests are not fully timed; they share the fixed120 CPU-second preparation/collection reserve. The240 cached-analysis reserve was unused. Selected32-point timers cover target E5 only and exclude source-anchor acquisition and fine-reference validation.",
+  "peak_cache_rss_mb": 4679.55859375,
+  "peak_integral_rss_mb": 390.8828125,
+  "unique_opened_body_labels": 6,
+  "selected_group_kind_record_checks": 6,
+  "selected_action_checks": 18,
+  "all_target_references_admitted": true,
+  "selected_method": "control32",
+  "maximum_candidate_direct_difference": 5.569583651499066e-05,
+  "selected_target_rule_cpu_seconds": 29.096176778000004,
+  "selected_reference_decisions": [
+    {
+      "record": "source_n1_o5_h1_p206",
+      "kind": "projected",
+      "previous_minimum_gap": 0.0020823056751438918,
+      "group": 63,
+      "action_indices": [
+        63,
+        136,
+        209
+      ],
+      "minimum_gap": 0.0022914220255986217,
+      "action_at_minimum_gap": 209,
+      "objective_position": 2,
+      "winner_at_minimum_gap": 355,
+      "risk_rule_difference_at_minimum_gap": 0.0005572577406570689,
+      "maximum_risk_rule_difference": 0.0008658885039306563,
+      "eligible_action_head_pairs": 96,
+      "empirical_overlap_action_head_pairs": 0
+    },
+    {
+      "record": "source_n1_o4_h1_p206",
+      "kind": "projected",
+      "previous_minimum_gap": 0.0020988098605904115,
+      "group": 63,
+      "action_indices": [
+        63,
+        136,
+        209
+      ],
+      "minimum_gap": 0.0022834605985712075,
+      "action_at_minimum_gap": 209,
+      "objective_position": 2,
+      "winner_at_minimum_gap": 355,
+      "risk_rule_difference_at_minimum_gap": 0.0004599875657593788,
+      "maximum_risk_rule_difference": 0.0007420776274544849,
+      "eligible_action_head_pairs": 96,
+      "empirical_overlap_action_head_pairs": 0
+    },
+    {
+      "record": "source_n1_o4_h1_p193",
+      "kind": "raw",
+      "previous_minimum_gap": 0.0021520608095232374,
+      "group": 63,
+      "action_indices": [
+        63,
+        136,
+        209
+      ],
+      "minimum_gap": 0.0019268385748976158,
+      "action_at_minimum_gap": 209,
+      "objective_position": 2,
+      "winner_at_minimum_gap": 355,
+      "risk_rule_difference_at_minimum_gap": 0.0008116406656236697,
+      "maximum_risk_rule_difference": 0.0009593011977732102,
+      "eligible_action_head_pairs": 96,
+      "empirical_overlap_action_head_pairs": 0
+    },
+    {
+      "record": "source_n1_o4_h1_p204",
+      "kind": "raw",
+      "previous_minimum_gap": 0.0022428858043196387,
+      "group": 63,
+      "action_indices": [
+        63,
+        136,
+        209
+      ],
+      "minimum_gap": 0.0021254893042316203,
+      "action_at_minimum_gap": 209,
+      "objective_position": 2,
+      "winner_at_minimum_gap": 355,
+      "risk_rule_difference_at_minimum_gap": 0.00015718658947860842,
+      "maximum_risk_rule_difference": 0.0002835307545044907,
+      "eligible_action_head_pairs": 96,
+      "empirical_overlap_action_head_pairs": 0
+    },
+    {
+      "record": "source_n1_o5_h1_p204",
+      "kind": "raw",
+      "previous_minimum_gap": 0.002259883626570147,
+      "group": 63,
+      "action_indices": [
+        63,
+        136,
+        209
+      ],
+      "minimum_gap": 0.0021428594274753854,
+      "action_at_minimum_gap": 209,
+      "objective_position": 2,
+      "winner_at_minimum_gap": 355,
+      "risk_rule_difference_at_minimum_gap": 0.00016555746805801963,
+      "maximum_risk_rule_difference": 0.0002958660149516845,
+      "eligible_action_head_pairs": 96,
+      "empirical_overlap_action_head_pairs": 0
+    },
+    {
+      "record": "source_n1_o4_h1_p205",
+      "kind": "raw",
+      "previous_minimum_gap": 0.0025875705765699974,
+      "group": 63,
+      "action_indices": [
+        63,
+        136,
+        209
+      ],
+      "minimum_gap": 0.002484509036756455,
+      "action_at_minimum_gap": 209,
+      "objective_position": 2,
+      "winner_at_minimum_gap": 355,
+      "risk_rule_difference_at_minimum_gap": 3.171699127957339e-05,
+      "maximum_risk_rule_difference": 0.00015134665212879206,
+      "eligible_action_head_pairs": 96,
+      "empirical_overlap_action_head_pairs": 0
+    }
+  ],
+  "reference_group_entries": 909,
+  "reference_group_scopes": {
+    "direct_target": 407,
+    "native_analytic": 292,
+    "paired_residual": 210
+  },
+  "compared_recommendation_records": 128,
+  "changed_recommendation_records": [],
+  "model_net_preview": 0.01357641652258601,
+  "model_preview_change_from_baseline": 0.0,
+  "remaining_unreferenced_empirical_overlap_action_head_pairs": {
+    "raw": 0,
+    "projected": 0
+  },
+  "remaining_missing_group_kind_record_checks": {
+    "raw": 8945,
+    "projected": 4484
+  },
+  "closest_other_unreferenced_group_gap": {
+    "raw": 0.05695236260072978,
+    "projected": 0.056409610154234624
+  },
+  "remaining_guarded63_group_kind_record_checks": 71,
+  "full_guarded63_reference_estimated_cpu_hours": 8.763754401387335,
+  "full_matrix_comparison_estimated_cpu_hours": 180.3205572639613,
+  "next_phase_budgeted_combinations": 6,
+  "next_phase_budgeted_workers": 12,
+  "next_phase_estimated_cpu_seconds": 3221.4226127172,
+  "next_phase_dispatched": false,
+  "tests": {
+    "passed": 55,
+    "command": "env OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python3 -m unittest tests.test_risk_competition tests.test_reference_upgrade tests.test_nearby_anchor tests.test_risk_reference_assembly tests.test_decision_regions tests.test_upper_decisions tests.test_component_bank tests.test_label_groups tests.test_component_transfer"
+  },
+  "contract": "Original source prior,all8 identity scores/weights,all512/1024 positive utility components,full covariance,365 actions and359 budget. Positive body/tail weights and verifier unchanged. The frozen6-combination batch was executed without reranking after seeing its references; all six target rules were missing at both utility identities and were computed with the existing integrator and source anchor.",
+  "replay": {
+    "prepare": "python -m performance.validate_historical_risk_competition prepare --plan performance/manifests/historical_risk_competition_batch_v7.json",
+    "launch": "python -m performance.launch_historical_component_bank risk-competition-batch --plan performance/manifests/historical_risk_competition_batch_v7.json",
+    "collect": "python -m performance.validate_historical_risk_competition collect --plan performance/manifests/historical_risk_competition_batch_v7.json",
+    "cache": "python -m performance.diagnose_historical_decision_regions integrated",
+    "price_remaining": "python paper_artifacts/historical_body_reference_assembly_v1/price_remaining.py --plan performance/manifests/historical_risk_competition_batch_v7.json",
+    "price_next": "python paper_artifacts/historical_risk_competition_v1/price_next.py --plan performance/manifests/historical_risk_competition_batch_v7.json",
+    "commands": "Exact scheduler commands/resources in risk-competition-batch_specs.jsonl and assembly_scheduler_spec.json. Run preparation,launcher,cache assembly and pricing in order in the existing deployed environment with OMP/OPENBLAS=1 and PYTHONPATH=.; launcher runs locally,other commands on the server. Frozen batch_input.json is preserved. Large contexts,banks,marginals and posterior remain server-side."
+  },
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "independent_confirmation": false,
+  "full_predictive_integration_admitted": false,
+  "limitations": "One development state,frozen query63,conditional32 objective heads and finite numerical comparisons. All6 newly validated competitors still lose to355; 4 corrected gaps decreased and 2 increased. Old low-rule differences remain separate. Other groups remain unvalidated and empirical separation is not a rigorous bound. FullCDF/outerKG and stable independent deployment advantage remain open. The71 remaining guarded63 comparisons and full matrix have different validation scopes; neither was dispatched."
+}
