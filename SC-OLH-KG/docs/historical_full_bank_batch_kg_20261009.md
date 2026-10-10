@@ -145,4 +145,6 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 
 复用历史shortlist坐标／证书概率缓存，显式分量积分的三组原验证预算现在共享联合坐标和六个不同的策略／预算概率。最坏已打开记录的两个shortlist、两个计值身份、raw／native共8片，GH32／128和GH64／256分别提速1.96／1.91倍；三组分支值和成本与分开计算差0，原保存计值差0、成本差1.71e−13，全身份混合动作差0。29项相关测试通过。[计时与数值](../paper_artifacts/historical_risk_allocations_v1/summary.json)。
 
-8个低优先级单核任务计量0.374单核小时，峰值内存470MB；仅取39.7KB小JSON，联合边际继续留服务器。按两组实际计时粗估，96条记录的73组guarded动作需要约74／374单核小时，未含direct和目标积分，因此不据此派发完整银行。三组预算共享只证明计算等价，未证明新增预算变体的积分收敛；完整KG仍HOLD。局部剖析的条件均值坐标占约14%，接续复用历史紧凑协方差索引。重放入口为`python -m performance.benchmark_historical_risk_allocations collect`；逐片命令和运行账在同名artifact目录。
+接续复用历史紧凑协方差索引：同一分量／query-eta GH节点的协方差只分解一次，不再对连续节点重复求逆。4个raw分片与上述缓存结果的三组分支值／成本差0；总计低阶／加密规则提速2.11／2.10倍。raw协方差复用平均另提速1.14／1.22倍，一个加密分片计时慢约11%，逐片结果保留。18项回归检查通过，两组汇总在本地小包重放一致。[最终结果](../paper_artifacts/historical_risk_allocations_v1/compact_summary.json)。12个任务全部完成，各轮最多8／4个低优先级单核，累计0.431单核小时、峰值内存470MB；仅取59.6KB小JSON，未拉完整后验。
+
+局限与下一步：按两个已打开shortlist计时，96条记录／73组guarded动作的低阶／加密成本粗估68／339单核小时，不含direct和目标积分；这是成本外推，不能证明全部预算变体收敛，完整KG仍HOLD。剖析显示共享后主要成本是条件验证通过概率。下一阶段先接一条观测的完整银行，以共享的低阶规则检查各组，只对精度未通过的组局部加密，避免全体升阶；验证三组预算的独立规则与升阶一致性后才扩到96条。重放入口为`python -m performance.benchmark_historical_risk_allocations collect`及`collect-compact`；基准缓存版本为本节首次提交f0dd5c75，随后提交加入紧凑协方差。逐片命令和运行账在同名artifact目录。

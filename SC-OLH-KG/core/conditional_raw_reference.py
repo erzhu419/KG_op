@@ -179,6 +179,13 @@ def component_risk_allocations(field, updated, actions, label, score, protocol, 
             node_weights=np.exp(updated.log_weights[components]+log_nodes)
             block_mass=float(node_weights.sum());weights=node_weights/block_mass
         if action['kind']=='guarded':
+            if raw:
+                # Given eta_query, the raw Gaussian covariance does not
+                # depend on the other eta or mean draws. Each component/GH
+                # node repeats it count times; reuse the historical compact
+                # covariance/position interface for its factors and inverses.
+                covariance=covariance[::count]
+                position=np.repeat(np.arange(len(selected)*order),count)
             coordinates=risk_coordinates_from_moments(eta,mean,covariance,position,nodes,
                 mean_normals=ndtri(nodes[:,len(points)+1:len(points)+n]) if raw else None,
                 integrated_position=integrated_position)

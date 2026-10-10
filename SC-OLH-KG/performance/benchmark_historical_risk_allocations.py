@@ -19,14 +19,7 @@ from representation.vectorized_joint_function_risk import update_raw_observation
 PLAN = 'performance/manifests/historical_risk_allocations_v1.json'
 
 
-def run(identity, action_index, kind, plan=PLAN):
-    spec = read(plan)
-    output = ROOT / spec['output']
-    path = output / 'parts' / f'{identity}_{action_index}_{kind}.json'
-    path.parent.mkdir(parents=True, exist_ok=True)
-    started = time.process_time()
-    resource.setrlimit(resource.RLIMIT_CPU, (spec['maximum_task_cpu_seconds'],
-        spec['maximum_task_cpu_seconds'] + 5))
+def load_case(identity, action_index, spec):
     bundle = compressed_read(BASE / 'marginals' / (spec['record'] + '.json.gz'))
     assert identity in bundle['utility_identities'] and bundle['replicates'] == 1
     block = bundle['blocks'][action_index]
@@ -41,6 +34,18 @@ def run(identity, action_index, kind, plan=PLAN):
         if k == 'guarded']
     original = next(i for i, a in enumerate(actions) if a['budgets'] == action['budgets'])
     _, rank = np.unique(prior.means, axis=0, return_inverse=True)
+    return bundle, action, prior, future, score, actions, original, rank
+
+
+def run(identity, action_index, kind, plan=PLAN):
+    spec = read(plan)
+    output = ROOT / spec['output']
+    path = output / 'parts' / f'{identity}_{action_index}_{kind}.json'
+    path.parent.mkdir(parents=True, exist_ok=True)
+    started = time.process_time()
+    resource.setrlimit(resource.RLIMIT_CPU, (spec['maximum_task_cpu_seconds'],
+        spec['maximum_task_cpu_seconds'] + 5))
+    bundle, action, prior, future, score, actions, original, rank = load_case(identity, action_index, spec)
     anchor = read(str(OUT / 'coordinate_parts' / f'{identity}_{action_index}_{kind}.json'))['rows']['E7']
     rows = {}
     for rule in spec['rules']:
@@ -78,6 +83,40 @@ def run(identity, action_index, kind, plan=PLAN):
         new_physical_calls=0, new_source_fits=0, new_verifier_calls=0)
     save(path, result)
     print('SCHEDULEURM_DONE ' + json.dumps({k:v for k,v in result.items() if k not in ('rows','actions')}), flush=True)
+    return result
+
+
+def compact(identity, action_index, plan=PLAN):
+    spec = read(plan)
+    output = ROOT / spec['output']
+    baseline = read(str(output / 'parts' / f'{identity}_{action_index}_raw.json'))
+    assert baseline['complete']
+    started = time.process_time()
+    resource.setrlimit(resource.RLIMIT_CPU, (spec['maximum_task_cpu_seconds'],spec['maximum_task_cpu_seconds']+5))
+    bundle, action, prior, future, score, actions, original, rank = load_case(identity, action_index, spec)
+    rows = {}
+    for rule in spec['rules']:
+        tick = time.process_time()
+        statistics, costs, diagnostics = component_risk_allocations(prior,future,actions,bundle['label'],score,
+            bundle['protocol'],query=0,raw=True,order=rule['order'],power=rule['power'],
+            seed=bundle['seed']+rank*104729,integrated_position=action['incumbent_position'])
+        cpu = time.process_time()-tick
+        reference = baseline['rows'][rule['name']]
+        difference = float(np.max(abs(statistics-reference['statistics'])))
+        cost_difference = float(np.max(abs(costs-reference['costs'])))
+        assert difference <= 1e-12 and cost_difference <= 1e-10
+        rows[rule['name']] = dict(statistics=statistics.tolist(),costs=costs.tolist(),diagnostics=diagnostics,
+            cpu_seconds=cpu,shared_covariance_speedup=reference['shared_cpu_seconds']/cpu,
+            separate_allocation_speedup=reference['separate_cpu_seconds']/cpu,
+            maximum_value_difference=difference,maximum_cost_difference=cost_difference)
+        print('SCHEDULEURM_PROGRESS '+json.dumps(dict(current=len(rows),total=len(spec['rules']),
+            unit='compact_covariance_rules',identity=identity,action=action_index)),flush=True)
+    result = dict(complete=True,record=spec['record'],identity=identity,action=action_index,kind='raw',rows=rows,
+        cpu_seconds=time.process_time()-started,peak_rss_mb=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1024,
+        new_physical_calls=0,new_source_fits=0,new_verifier_calls=0)
+    (output/'compact_parts').mkdir(parents=True,exist_ok=True)
+    save(output/'compact_parts'/f'{identity}_{action_index}_raw.json',result)
+    print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='rows'}),flush=True)
     return result
 
 
@@ -126,14 +165,48 @@ def collect(plan=PLAN):
     return result
 
 
+def collect_compact(plan=PLAN):
+    spec = read(plan)
+    output = ROOT/spec['output']
+    baseline = read(str(output/'summary.json'))
+    assert baseline['complete']
+    parts = [read(str(output/'compact_parts'/f'{h}_{a}_raw.json')) for h in spec['identities'] for a in spec['guarded_actions']]
+    assert all(p['complete'] for p in parts)
+    ordinary = [read(str(output/'parts'/f'{p["identity"]}_{p["action"]}_raw.json')) for p in parts]
+    rules = {}
+    for rule in spec['rules']:
+        name = rule['name']
+        compact_cpu = sum(p['rows'][name]['cpu_seconds'] for p in parts)
+        old_raw_cpu = sum(p['rows'][name]['shared_cpu_seconds'] for p in ordinary)
+        total_cpu = baseline['rules'][name]['shared_cpu_seconds']-old_raw_cpu+compact_cpu
+        group_cpu = total_cpu/len(spec['guarded_actions'])
+        rules[name] = dict(shared_cpu_seconds=total_cpu,cpu_speedup=baseline['rules'][name]['separate_cpu_seconds']/total_cpu,
+            raw_covariance_cpu_speedup=old_raw_cpu/compact_cpu,
+            mean_cpu_seconds_per_three_allocation_group=group_cpu,
+            estimated_73_groups_96_records_guarded_core_hours=group_cpu*73*96/3600,
+            maximum_value_difference=max(p['rows'][name]['maximum_value_difference'] for p in parts),
+            maximum_cost_difference=max(p['rows'][name]['maximum_cost_difference'] for p in parts))
+    result = dict(complete=True,record=spec['record'],rules=rules,parts=len(parts),
+        cpu_seconds=sum(p['cpu_seconds'] for p in parts),maximum_task_peak_rss_mb=max(p['peak_rss_mb'] for p in parts),
+        full_predictive_integration_admitted=False,independent_confirmation=False,
+        new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,scope=spec['scope'])
+    save(output/'compact_summary.json',result)
+    print('SCHEDULEURM_DONE '+json.dumps(result),flush=True)
+    return result
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode', choices=['run','collect'])
+    parser.add_argument('mode', choices=['run','collect','compact','collect-compact'])
     parser.add_argument('--identity', type=int)
     parser.add_argument('--action', type=int)
     parser.add_argument('--kind', choices=['raw','projected'])
     args = parser.parse_args()
     if args.mode == 'run':
         run(args.identity,args.action,args.kind)
+    elif args.mode == 'compact':
+        compact(args.identity,args.action)
+    elif args.mode == 'collect-compact':
+        collect_compact()
     else:
         collect()

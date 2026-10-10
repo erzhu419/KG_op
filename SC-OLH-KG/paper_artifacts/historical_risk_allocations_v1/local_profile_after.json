@@ -1,0 +1,135 @@
+{
+  "complete": true,
+  "record": "source_n1_o5_h1_p207",
+  "identity": 5,
+  "action": 0,
+  "kind": "raw",
+  "order": 32,
+  "power": 7,
+  "cpu_seconds": 7.698306229,
+  "profile": [
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_raw_reference.py",
+      "line": 137,
+      "name": "component_risk_allocations",
+      "calls": 1,
+      "self_seconds": 0.174385011,
+      "cumulative_seconds": 8.023552996000001
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_terminal_kg.py",
+      "line": 128,
+      "name": "guarded_risk_allocation_values",
+      "calls": 256,
+      "self_seconds": 2.00777934,
+      "cumulative_seconds": 5.100956709
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/guarded_deployment_kg.py",
+      "line": 36,
+      "name": "conditional_safety_power",
+      "calls": 256,
+      "self_seconds": 2.8515541900000003,
+      "cumulative_seconds": 2.8534219430000003
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_raw_reference.py",
+      "line": 21,
+      "name": "conditional_raw_coordinates",
+      "calls": 64,
+      "self_seconds": 1.477570905,
+      "cumulative_seconds": 2.138497466
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/scipy/_lib/_util.py",
+      "line": 366,
+      "name": "wrapper",
+      "calls": 1025,
+      "self_seconds": 0.0035819330000000003,
+      "cumulative_seconds": 0.32835763
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/scipy/stats/_qmc.py",
+      "line": 1756,
+      "name": "__init__",
+      "calls": 1025,
+      "self_seconds": 0.014147332,
+      "cumulative_seconds": 0.324606306
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_terminal_kg.py",
+      "line": 100,
+      "name": "risk_coordinates_from_moments",
+      "calls": 64,
+      "self_seconds": 0.153043594,
+      "cumulative_seconds": 0.224466184
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/raw_likelihood_lookahead.py",
+      "line": 98,
+      "name": "risk_branch_statistics",
+      "calls": 192,
+      "self_seconds": 0.130351833,
+      "cumulative_seconds": 0.19094949900000002
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/scipy/stats/_qmc.py",
+      "line": 1808,
+      "name": "_scramble",
+      "calls": 1025,
+      "self_seconds": 0.12639951800000002,
+      "cumulative_seconds": 0.17795253700000002
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/numpy/_core/einsumfunc.py",
+      "line": 1057,
+      "name": "einsum",
+      "calls": 512,
+      "self_seconds": 0.0007709860000000001,
+      "cumulative_seconds": 0.166717372
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "name": "<built-in method numpy._core._multiarray_umath.c_einsum>",
+      "calls": 512,
+      "self_seconds": 0.165946386,
+      "cumulative_seconds": 0.165946386
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/conditional_raw_reference.py",
+      "line": 69,
+      "name": "<listcomp>",
+      "calls": 64,
+      "self_seconds": 0.053361874000000004,
+      "cumulative_seconds": 0.158173417
+    },
+    {
+      "file": "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/core/positive_mixture_lookahead.py",
+      "line": 183,
+      "name": "raw_eta_proposal",
+      "calls": 64,
+      "self_seconds": 0.156235392,
+      "cumulative_seconds": 0.156235392
+    },
+    {
+      "file": "~",
+      "line": 0,
+      "name": "<method 'reduce' of 'numpy.ufunc' objects>",
+      "calls": 7476,
+      "self_seconds": 0.123435815,
+      "cumulative_seconds": 0.123435815
+    },
+    {
+      "file": "/home/erzhu419/.local/lib/python3.10/site-packages/scipy/special/_logsumexp.py",
+      "line": 17,
+      "name": "logsumexp",
+      "calls": 1088,
+      "self_seconds": 0.008054057,
+      "cumulative_seconds": 0.12330712
+    }
+  ],
+  "anchor_value_difference": 4.440892098500626e-16,
+  "anchor_cost_difference": 1.7053025658242404e-13,
+  "host": "local WSL; profile overhead included"
+}
