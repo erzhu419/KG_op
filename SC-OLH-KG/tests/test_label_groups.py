@@ -1,8 +1,13 @@
 import unittest
+import json
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 
-from performance.validate_historical_label_groups import check
+from performance.validate_historical_label_groups import check, prepare_direct
+from performance.validate_historical_component_transfer import part_path
 
 
 def row(value):
@@ -27,6 +32,7 @@ class LabelGroupsTests(unittest.TestCase):
         self.assertTrue(r['control_rule_diagnostics_passed'])
         self.assertFalse(r['direct_control_admitted'])
         self.assertIsNone(r['direct_reference_checks'])
+        self.assertEqual(r['selected_method'],'control128')
 
     def test_direct_reference_supersedes_a_failed_coarse_rule(self):
         b,a,t=self.fixture();t[4]['E5']['statistics'][1][0]+=.1
@@ -46,9 +52,12 @@ class LabelGroupsTests(unittest.TestCase):
         self.assertFalse(r['direct_control_admitted'])
 
     def test_coarse_rule_requires_its_own_direct_comparison(self):
-        b,a,t=self.fixture();r=check(b,a,t,'raw',1e-4,True)
+        b,a,t=self.fixture();t[4]['E5']['statistics'][0][0]+=1e-5
+        r=check(b,a,t,'raw',1e-4,True)
         self.assertTrue(r['coarse_direct_control_admitted'])
         self.assertEqual(set(r['coarse_direct_differences']),{'E8','E9'})
+        self.assertEqual(r['selected_method'],'control32')
+        np.testing.assert_allclose(r['selected_statistics'][4],t[4]['E5']['statistics'],rtol=0,atol=1e-15)
 
     def test_direct_disagreement_or_negative_probability_is_not_admitted(self):
         b,a,t=self.fixture();t[5]['E9']['statistics'][0][0]+=.05
@@ -78,6 +87,31 @@ class LabelGroupsTests(unittest.TestCase):
         self.assertEqual(set(r['direct_differences']),{'E8'})
         t[4]['E8']['diagnostics']['predictive_log_evidence_error']=.01
         self.assertFalse(check(b,a,t,'raw',1e-4,False,True)['control_rule_diagnostics_passed'])
+
+    def test_direct_stage_reuses_previous_finer_rule_and_keeps_its_own_cost_limit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory);out=root/'out';out.mkdir()
+            def write(path,data):
+                path.parent.mkdir(parents=True,exist_ok=True);path.write_text(json.dumps(data))
+            spec=dict(output='out',direct_record='low',maximum_estimated_direct_cpu_seconds=74.)
+            write(root/'plan.json',spec)
+            entry=dict(record='upper',group=40,kind='projected',direct_reference_available=False)
+            write(out/'summary.json',dict(complete=True,cpu_seconds=100.,groups=[entry]))
+            write(out/'contexts.json',dict(upper=dict(utility_identities=[4,5])))
+            work={k:entry[k] for k in ('record','group','kind')}
+            write(out/'resolution_plan.json',dict(selected=[dict(work,rules=['E5','E7','F7','G7'])]))
+            write(out/'adaptive_plan.json',dict(selected=[dict(work,rules=['E8'])]))
+            for h in (4,5):
+                write(part_path(out,work,h),dict(rows=dict(E8=dict(cpu_seconds=9.))))
+                write(part_path(out,dict(work,record='low'),h),dict(rows={n:dict(cpu_seconds=10.) for n in ('E8','F8','H8','E9')}))
+            with patch('performance.validate_historical_label_groups.ROOT',root),patch('builtins.print'):
+                result=prepare_direct(str(root/'plan.json'))
+                self.assertEqual(result['selected'][0]['rules'],['F8','H8','E9'])
+                self.assertFalse(result['estimated_cost_admitted'])
+                self.assertAlmostEqual(result['estimated_cpu_seconds'],74.4)
+                self.assertAlmostEqual(result['cumulative_estimated_cpu_seconds'],174.4)
+                spec['maximum_estimated_direct_cpu_seconds']=75.;write(root/'plan.json',spec)
+                self.assertTrue(prepare_direct(str(root/'plan.json'))['estimated_cost_admitted'])
 
 
 if __name__=='__main__':unittest.main()

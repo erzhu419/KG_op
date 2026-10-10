@@ -18,7 +18,8 @@ REMOTE='/home/zhengliang01/scheduleurm_work/KG_op_independent_kg_parallel_deploy
 PILOT_MODES={'pilot':'refine','pilot-resolution':'resolution','pilot-cheaper':'cheaper'}
 TRANSFER_STAGES={'transfer-screen':'screen','transfer-adaptive':'adaptive','transfer-resolution':'resolution'}
 LABEL_MODES={'label-control':('label_control','resolution'),
-    'label-groups':('label_groups','resolution'),'label-groups-refine':('label_groups','adaptive')}
+    'label-groups':('label_groups','resolution'),'label-groups-refine':('label_groups','adaptive'),
+    'label-groups-direct':('label_groups','direct')}
 
 
 def launch(stage):
@@ -114,7 +115,7 @@ def collect_remote(stage,out):
     sys.path.insert(0,str(Path(CLI).parent))
     import scheduler
     worker=(['performance.validate_historical_'+LABEL_MODES[stage][0],'collect','--stage',LABEL_MODES[stage][1]]
-        if stage=='label-groups-refine' else
+        if stage in ('label-groups-refine','label-groups-direct') else
         ['performance.validate_historical_'+LABEL_MODES[stage][0],'collect'] if stage in LABEL_MODES else
         ['performance.validate_historical_component_transfer','collect','--stage',TRANSFER_STAGES[stage]]
         if stage in TRANSFER_STAGES else ['performance.diagnose_historical_bank_failures','collect','--stage',PILOT_MODES[stage]]

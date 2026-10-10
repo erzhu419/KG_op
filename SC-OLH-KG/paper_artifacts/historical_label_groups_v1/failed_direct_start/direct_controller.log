@@ -1,0 +1,19 @@
+SUBMITTED {"identity": 4, "kind": "raw", "shard": 0, "id": "t141200"}
+SUBMITTED {"identity": 4, "kind": "projected", "shard": 0, "id": "t141201"}
+SUBMITTED {"identity": 5, "kind": "raw", "shard": 0, "id": "t141202"}
+SUBMITTED {"identity": 5, "kind": "projected", "shard": 0, "id": "t141203"}
+SUBMITTED {"identity": 4, "kind": "raw", "shard": 1, "id": "t141204"}
+SUBMITTED {"identity": 4, "kind": "projected", "shard": 1, "id": "t141205"}
+SUBMITTED {"identity": 5, "kind": "raw", "shard": 1, "id": "t141206"}
+SUBMITTED {"identity": 5, "kind": "projected", "shard": 1, "id": "t141207"}
+PROGRESS {"stage": "label-groups-direct", "submitted": 8, "pending": 8, "live": 8, "done": 0}
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/usr/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/launch_historical_component_bank.py", line 322, in <module>
+    launch(args.stage)
+  File "/home/erzhu419/mine_code/KG_op/SC-OLH-KG/performance/launch_historical_component_bank.py", line 76, in launch
+    if failures:raise RuntimeError('Scheduler tasks stopped: '+','.join(failures))
+RuntimeError: Scheduler tasks stopped: t141200,t141201,t141202,t141203,t141204,t141205,t141206,t141207

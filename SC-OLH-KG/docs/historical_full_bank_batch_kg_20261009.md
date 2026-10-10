@@ -212,3 +212,12 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 入口：服务器`python -m performance.validate_historical_label_groups prepare`、`prepare-refinement`；本地`python -m performance.launch_historical_component_bank label-groups`、`label-groups-refine`；服务器`python -m performance.validate_historical_label_groups collect --stage adaptive`。27项相关测试通过，覆盖失败复用的实际回退、仅加密对照不冒充直接准入、预算与身份索引及成本限制。只拉小JSON与日志，联合边际留服务器。
 
 局限与下一步：单锚点固定低阶复用不能统一用于远标签；本轮直接参考只覆盖明确标记的组合，其他组合只有比较诊断。历史71／73个guarded组有非零计时，128点相对原选定规则的预计候选积分降本约2.36倍，这是不同运行的计时外推，未计直接动作、锚点准备及精度检查。下一步先给其余24个仅比较诊断的检查补齐直接高阶对照，再接完整银行的按组自适应规则并实测总成本；随后决定主体观测扩展。来源meta-prior、全部原分量／身份权重、联合协方差、预算与验证器保持，无新增物理、拟合或验证调用；完整KG和独立决策收益仍待验证。
+
+
+## 剩余直接对照补齐（2026-10-10）
+
+剩余24个检查的完整直接参考全部通过，冻结五组／三条观测的45个检查现均通过高阶对照。已实际选取18个32点复用、15个128点复用及12个直接256点回退；与直接参考的最大差9.37e−5，原复用失败标记保留。[最终结果](../paper_artifacts/historical_label_groups_v1/summary.json)。
+
+16片新增积分计时2203.51 CPU秒，低于本阶段预计2663.43秒；与前轮累计5580.87秒，全部结束，最多8个低优先级单核。28项测试通过，旧E8复用且不重复计费。首批8片在积分前因CLI参数退出，修复后重派，记录在`failed_direct_start`。选用32点的六个组合，原同worker的32／128点计时28.97／117.31秒，局部积分快4.05倍；不含锚点准备、混合计值和精度检查，[缓存计时分析](../paper_artifacts/historical_label_groups_v1/direct_cost_analysis.json)，未新增积分测速。重放入口：服务器`python -m performance.validate_historical_label_groups prepare-direct`、`collect --stage direct`，本地`python -m performance.launch_historical_component_bank label-groups-direct`。
+
+下一步按各组历史G7／E8／E9及其已通过对照接入完整银行，避免统一升阶，再测总成本。原source meta-prior、全部分量／身份权重、联合协方差和验证预算保持。本轮仍限选定开发动作的数值诊断；完整银行跨观测、完整KG和独立决策收益待验证。

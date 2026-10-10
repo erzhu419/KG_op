@@ -45,8 +45,13 @@ def check(bundle,anchor,target,kind,tolerance,direct,finer=False):
     coarse_passed=bool(all(valid.values()) and normalization<=tolerance and
         max(coarse_differences.values())<=tolerance and (not (direct or finer) or max(coarse_refs.values())<=tolerance))
     reference_passed=bool(direct and reference['passed'])
-    method='control128' if passed else 'direct256' if reference_passed else 'HOLD'
-    selected=variants['candidate'] if passed else tables(bundle,{h:target[h]['E8'] for h in bundle['utility_identities']}) if reference_passed else None
+    if reference_passed and coarse_passed:
+        method,selected='control32',variants['coarse']
+    elif passed:
+        method,selected='control128',variants['candidate']
+    elif reference_passed:
+        method,selected='direct256',tables(bundle,{h:target[h]['E8'] for h in bundle['utility_identities']})
+    else:method,selected='HOLD',None
     return dict(comparisons=differences,direct_differences=refs,direct_reference_checks=reference,
         valid_unclipped_ranges=bool(primary_valid),maximum_log_evidence_error=normalization,
         control_rule_diagnostics_passed=passed,
@@ -132,34 +137,71 @@ def prepare_refinement(plan=PLAN):
     return work
 
 
+def prepare_direct(plan=PLAN):
+    spec=read(plan);out=ROOT/spec['output'];snapshot=out/'before_direct_summary.json'
+    if not snapshot.exists():save(snapshot,read(str(out/'summary.json')))
+    previous=read(str(snapshot));assert previous['complete']
+    contexts=read(str(out/'contexts.json'));prior={}
+    for stage in ('resolution','adaptive'):
+        for r in read(str(out/(stage+'_plan.json')))['selected']:
+            prior.setdefault((r['record'],r['group'],r['kind']),set()).update(r['rules'])
+    selected=[];estimate=0.;spent=0.
+    for r in previous['groups']:
+        if r['direct_reference_available']:continue
+        row={k:r[k] for k in ('record','group','kind')};key=tuple(row[k] for k in ('record','group','kind'))
+        row.update(rules=[n for n in ('E8','F8','H8','E9') if n not in prior[key]],direct_reference=True)
+        missing=0.;done=0.
+        for h in contexts[row['record']]['utility_identities']:
+            cache=read(str(part_path(out,row,h)))['rows']
+            reference=read(str(part_path(out,dict(row,record=spec['direct_record']),h)))['rows']
+            for n in row['rules']:
+                if n in cache:done+=cache[n]['cpu_seconds']
+                else:missing+=reference[n]['cpu_seconds']
+            missing+=1.
+        row.update(cached_cpu_seconds=done,estimated_new_cpu_seconds=1.2*missing,
+            estimated_cpu_seconds=done+1.2*missing)
+        selected.append(row);estimate+=row['estimated_new_cpu_seconds'];spent+=done
+    work=dict(selected=selected,previous_measured_cpu_seconds=previous['cpu_seconds'],
+        estimated_cpu_seconds=spent+estimate,cumulative_estimated_cpu_seconds=previous['cpu_seconds']+spent+estimate,
+        maximum_estimated_cpu_seconds=spec['maximum_estimated_direct_cpu_seconds'],
+        estimated_cost_admitted=spent+estimate<=spec['maximum_estimated_direct_cpu_seconds'])
+    save(out/'direct_plan.json',work);print('SCHEDULEURM_DONE '+json.dumps(work),flush=True)
+    return work
+
+
 def collect(plan=PLAN,stage='resolution'):
     spec=read(plan);out=ROOT/spec['output'];base=ROOT/read(spec['parent_plan'])['output']
-    contexts=read(str(out/'contexts.json'));work=read(str(out/'resolution_plan.json'))
-    extra=read(str(out/'adaptive_plan.json')) if stage=='adaptive' else None
-    refinements={(r['record'],r['group'],r['kind']):r for r in extra['selected']} if extra else {}
-    rows=[];tasks=[];cpu=0.
+    contexts=read(str(out/'contexts.json'))
+    stages=['resolution']+(['adaptive'] if stage in ('adaptive','direct') else [])+(['direct'] if stage=='direct' else [])
+    plans={s:read(str(out/(s+'_plan.json'))) for s in stages};work=plans['resolution']
+    refinements={};tasks=[];phase_cpu={s:0. for s in stages}
+    for s,p in plans.items():
+        for kind in ('raw','projected'):
+            for shard,row in enumerate(r for r in p['selected'] if r['kind']==kind):
+                key=(row['record'],row['group'],kind)
+                if s!='resolution':refinements.setdefault(key,[]).append(row)
+                for h in contexts[row['record']]['utility_identities']:
+                    part=read(str(part_path(out,row,h)))['rows']
+                    phase_cpu[s]+=sum(part[n]['cpu_seconds'] for n in row['rules'])
+                    tasks.append(read(str(out/'tasks'/s/f'{h}_{kind}_{shard}.json')))
+    rows=[]
     for kind in ('raw','projected'):
-        for shard,row in enumerate(r for r in work['selected'] if r['kind']==kind):
+        for row in (r for r in work['selected'] if r['kind']==kind):
             context=contexts[row['record']];gid=row['group']
             bundle=record_bundle(compressed_read(base/'marginals'/f'{gid:03d}.json.gz'),context)
             anchor={};target={}
             for h in context['utility_identities']:
                 anchor[h]=read(str(base/'parts'/f'{gid:03d}_{h}_{kind}.json'))['rows']
                 target[h]=read(str(part_path(out,row,h)))['rows']
-                cpu+=sum(target[h][n]['cpu_seconds'] for n in row['rules'])
-                tasks.append(read(str(out/'tasks/resolution'/f'{h}_{kind}_{shard}.json')))
-            refinement=refinements.get((row['record'],gid,kind))
+            refinement=refinements.get((row['record'],gid,kind),[])
             result=check(bundle,anchor,target,kind,spec['maximum_action_difference'],
-                row['direct_reference'] or bool(refinement and refinement['direct_reference']),bool(refinement))
+                row['direct_reference'] or any(r['direct_reference'] for r in refinement),bool(refinement))
             rows.append(dict(record=row['record'],group=gid,kind=kind,**result))
-    if extra:
-        for kind in ('raw','projected'):
-            for shard,row in enumerate(r for r in extra['selected'] if r['kind']==kind):
-                for h in contexts[row['record']]['utility_identities']:
-                    part=read(str(part_path(out,row,h)))['rows'];cpu+=sum(part[n]['cpu_seconds'] for n in row['rules'])
-                    tasks.append(read(str(out/'tasks/adaptive'/f'{h}_{kind}_{shard}.json')))
-    result=dict(complete=all(t['complete'] for t in tasks),groups=rows,cpu_seconds=cpu,
-        estimated_cpu_seconds=extra['cumulative_estimated_cpu_seconds'] if extra else work['estimated_cpu_seconds'],
+    result=dict(complete=all(t['complete'] for t in tasks),groups=rows,cpu_seconds=sum(phase_cpu.values()),
+        measured_cpu_seconds_by_stage=phase_cpu,
+        estimated_cpu_seconds=plans[stage]['cumulative_estimated_cpu_seconds'],
+        selected_actions_by_method={m:{k:3*sum(r['selected_method']==m for r in rows if r['kind']==k)
+            for k in ('raw','projected')} for m in ('control32','control128','direct256','HOLD')},
         comparative_actions_passed={k:3*sum(r['control_rule_diagnostics_passed'] for r in rows if r['kind']==k) for k in ('raw','projected')},
         comparative_actions_total={k:3*sum(r['kind']==k for r in rows) for k in ('raw','projected')},
         direct_control_actions_admitted={k:3*sum(r['direct_control_admitted'] for r in rows if r['kind']==k) for k in ('raw','projected')},
@@ -171,13 +213,13 @@ def collect(plan=PLAN,stage='resolution'):
         maximum_task_peak_rss_mb=max(t['peak_rss_mb'] for t in tasks),
         new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
         independent_confirmation=False,full_predictive_integration_admitted=False,
-        scope='Frozen five historical worst group-kind pairs and three development labels. Direct 256/512 references only for explicitly marked combinations; other labels have comparative diagnostics. Failed low-order controls remain recorded, with validated direct256 fallback where available. All original budgets and identity mixture retained; no full-bank/full-KG or independent-decision admission.')
+        scope='Frozen five historical worst group-kind pairs and three development labels. Direct reference availability and admission are recorded per combination. Failed low-order controls remain recorded, with validated direct256 fallback where available. All original budgets and identity mixture retained; no full-bank/full-KG or independent-decision admission.')
     save(out/'summary.json',result);print('SCHEDULEURM_DONE '+json.dumps({k:v for k,v in result.items() if k!='groups'}),flush=True)
     return result
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','prepare-refinement','collect'])
-    parser.add_argument('--stage',choices=['resolution','adaptive'],default='resolution');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','prepare-refinement','prepare-direct','collect'])
+    parser.add_argument('--stage',choices=['resolution','adaptive','direct'],default='resolution');args=parser.parse_args()
     if args.mode=='collect':collect(stage=args.stage)
-    else:(prepare if args.mode=='prepare' else prepare_refinement)()
+    else:{'prepare':prepare,'prepare-refinement':prepare_refinement,'prepare-direct':prepare_direct}[args.mode]()
