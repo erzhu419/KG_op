@@ -50,14 +50,13 @@ def priced_plan(selected, contexts, probe, output, previous=0.):
         cumulative_estimated_cpu_seconds=previous+estimate)
 
 
-def prepare(plan=PLAN):
-    spec = read(plan); parent = read(spec['parent_plan']); base = ROOT/parent['output']
+def prepare_contexts(spec):
+    """Reuse the frozen joint bank with selected observations and action groups."""
+    parent = read(spec['parent_plan']); base = ROOT/parent['output']
     full = read(parent['parent_plan']); precision = read(full['precision_plan'])
-    out = ROOT/spec['output']; out.mkdir(parents=True, exist_ok=True)
     assert read(str(base/'bank_tail_resolution_summary.json'))['single_record_risk_bank_precision_passed']
     original = read(str(base/'context.json')); contexts = {}; opposite = {}
     rules = read(full['output']+'/risk_rules.json')
-    started = time.process_time()
     for name in spec['records']+[original['name']]:
         origin = int(name.split('_o')[1].split('_')[0])
         data = read(precision['output']+'/shards/'+name+'/head_records.json'); row = data['records'][0]
@@ -88,6 +87,13 @@ def prepare(plan=PLAN):
         context['predictive_cdf'] = float(.9*(x[i]+1)/2)
         contexts[name] = context
     contexts.pop(original['name'])
+    return contexts, shared, original
+
+
+def prepare(plan=PLAN):
+    spec = read(plan);out=ROOT/spec['output'];out.mkdir(parents=True,exist_ok=True)
+    started=time.process_time()
+    contexts,shared,original=prepare_contexts(spec)
     save(out/'contexts.json', contexts)
     probe = read(str(out/'cost_probe.json'))
     selected = [dict(record=name, group=gid, kind=kind, rules=['E5','E7','F7','G7'],

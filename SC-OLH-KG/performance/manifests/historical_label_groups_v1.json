@@ -1,0 +1,12 @@
+{
+  "parent_plan": "performance/manifests/historical_component_bank_v1.json",
+  "output": "paper_artifacts/historical_label_groups_v1",
+  "records": ["source_n1_o4_h1_p192", "source_n1_o4_h1_p207", "source_n1_o5_h1_p223"],
+  "groups": [28, 32, 40, 66, 68],
+  "selection": "paper_artifacts/historical_component_bank_v1/failure_pilot/selection.json",
+  "direct_record": "source_n1_o4_h1_p192",
+  "maximum_action_difference": 0.0001,
+  "maximum_estimated_cpu_seconds": 3600,
+  "maximum_job_cpu_seconds": 600,
+  "scope": "Five frozen historical worst group-kind pairs across three existing development labels. Use admitted E8/F8/H8 anchors and paired E5/E7/F7/G7 differences. Direct E8/F8/H8/E9 checks only for the farthest, low-CDF label; other labels have comparative diagnostics only. At most8 low-priority single-core workers, all original identities/components/covariances/budgets, no new physical/fitting/verifier calls or independent confirmation."
+}

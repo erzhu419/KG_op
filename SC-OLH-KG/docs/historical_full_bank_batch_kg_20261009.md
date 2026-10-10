@@ -201,3 +201,14 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diag
 同一worker中测量全部正分量的128／512点积分：三条目标观测合计60.02／289.39 CPU秒，复用锚点后的候选积分提速4.82倍；计入一次锚点候选积分94.32秒后，三条合计提速1.87倍。此比较只计候选积分与混合计值，准备和精度验证另计。本轮12片积分合计2389.59 CPU秒，预计2819.67秒，单独受3600秒预计成本限制；上轮cost_hold及其2491.77秒记录保留。最多8个低优先级单核，全部结束，峰值666MB；20项不同回归测试通过。服务器准备入口为`python -m performance.validate_historical_label_control prepare`，本地调度／拉小JSON入口为`python -m performance.launch_historical_component_bank label-control`。
 
 下一步将复用公式接入其他已验证guarded组，先覆盖历史最差组，再接完整365动作银行。局限：以上是三个开发观测的选定动作及固定32条目标头，规则差不是严格误差界，局部候选提速尚不是完整KG提速；96条主体观测、224个外层节点及独立决策收益待验证。来源meta-prior、全身份权重／似然、全部正分量、联合协方差及预算保持，无新增物理、拟合或验证调用，独立确认块未读取。
+
+
+## 历史最差组的跨标签扩展（2026-10-10）
+
+冻结复用历史最差raw68／32／28、native40／66组，在CDF约0.0012／0.4283／0.8988的三条开发观测上保留各组三种原预算。初轮30片实耗2742.71 CPU秒：128点复用比较通过raw12／27、native15／18个动作-观测检查。低端raw32／28与直接512点差1.42e−4／1.60e−4，确有残差积分不足；其直接256点规则均通过独立256、GH64／256及512点对照。中部近邻标签五组均通过。原失败结果保存在[initial_summary.json](../paper_artifacts/historical_label_groups_v1/initial_summary.json)。
+
+已接入按组回退：复用失败且直接规则通过时，实际选取直接256点统计／成本，保留原复用失败标记。上端剩余四个组合只补必要规则；新增预计792.16 CPU秒，连同已计量成本累计预计3534.87秒，低于本轮3600秒限制。最多8个低优先级单核，允许node001–node006，使用scheduler；38片全部完成，累计积分计时3377.36 CPU秒、峰值423MB，当前无存活作业。复用或直接回退后的比较诊断raw27／27、native18／18通过；128点复用本身仅raw15／27、native18／18通过，另12个raw检查采用直接256点回退。21个检查有完整直接高阶对照，其他24个仍仅有比较诊断。[最终结果](../paper_artifacts/historical_label_groups_v1/summary.json)。
+
+入口：服务器`python -m performance.validate_historical_label_groups prepare`、`prepare-refinement`；本地`python -m performance.launch_historical_component_bank label-groups`、`label-groups-refine`；服务器`python -m performance.validate_historical_label_groups collect --stage adaptive`。27项相关测试通过，覆盖失败复用的实际回退、仅加密对照不冒充直接准入、预算与身份索引及成本限制。只拉小JSON与日志，联合边际留服务器。
+
+局限与下一步：单锚点固定低阶复用不能统一用于远标签；本轮直接参考只覆盖明确标记的组合，其他组合只有比较诊断。历史71／73个guarded组有非零计时，128点相对原选定规则的预计候选积分降本约2.36倍，这是不同运行的计时外推，未计直接动作、锚点准备及精度检查。下一步先给其余24个仅比较诊断的检查补齐直接高阶对照，再接完整银行的按组自适应规则并实测总成本；随后决定主体观测扩展。来源meta-prior、全部原分量／身份权重、联合协方差、预算与验证器保持，无新增物理、拟合或验证调用；完整KG和独立决策收益仍待验证。
