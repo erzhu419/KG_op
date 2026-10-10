@@ -1,0 +1,40 @@
+{
+  "complete": true,
+  "rows": [
+    {
+      "origin": 4,
+      "raw_historical_difference": 6.661338147750939e-16,
+      "native_fixed_rule_difference": 1.1102230246251565e-16,
+      "native_adaptive_difference": 2.1679462169910124e-07,
+      "diagnostics": {
+        "predictive_log_evidence_error": 1.5321077739827044e-14,
+        "components": 512,
+        "continuous_points_per_component": 32,
+        "total_points": 16384,
+        "all_positive_components_retained": true,
+        "maximum_component_log_evidence_error": 2.3783197633520103e-12,
+        "weighted_component_absolute_evidence_error": 5.291652234267486e-13
+      }
+    },
+    {
+      "origin": 5,
+      "raw_historical_difference": 1.1102230246251565e-15,
+      "native_fixed_rule_difference": 0.0,
+      "native_adaptive_difference": 2.179667557555831e-11,
+      "diagnostics": {
+        "predictive_log_evidence_error": -3.33066907387547e-16,
+        "components": 1024,
+        "continuous_points_per_component": 32,
+        "total_points": 32768,
+        "all_positive_components_retained": true,
+        "maximum_component_log_evidence_error": 1.9984014443252818e-15,
+        "weighted_component_absolute_evidence_error": 5.457448730379146e-16
+      }
+    }
+  ],
+  "cpu_seconds": 0.358294189,
+  "new_physical_calls": 0,
+  "new_source_fits": 0,
+  "new_verifier_calls": 0,
+  "preliminary_check": "GH32 native versus adaptive differed by2.17e-7; quadrature difference retained against frozen1e-4 diagnostic, with same-rule algebra separately verified."
+}

@@ -92,3 +92,33 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.exte
 本地小型重放用时9.76 CPU秒，六个固定动作结果与服务器逐项一致，最大差0；新增主体归因与分量诊断入口也与保存结果完全一致。此前59项相关测试通过。
 
 局限：外层通过仅对应冻结的task02／layout6／query63／n1开发案例，规则间差异不是严格误差界；分量总变差诊断尚不能证明其是全部guarded动作误差的主因。完整KG数值门仍未通过，四次批次、算法选查询和独立部署确认尚未完成；旧60/60前端证据保留，不与本例拼接成普适优势。
+
+## GPT diagnosis v3核对（2026-10-10）
+
+采纳“显式分量权重＋分量内部条件积分”的局部修复方向。三层对象必须分开：结构身份H、身份内后验分量J、分量内连续变量Z。显式权重消除分量抽样频数误差，不能替代连续积分；有效分量数约1024表示后验质量分散，不表示策略维度1024。低频响应经过验证阈值、回退与动作最大化后，KG被积函数仍可能有陡峭区间。
+
+两处代码限定：原生direct已复用`direct_terminal_reference.py`，解析积分目标／条件风险均值并显式加权全部正分量；尚需改的是guarded风险及配对目标的联合积分。raw已有归一化前的`logsumexp(logs)-log(N)` evidence检查，未通过记录没有被强行归一化误报通过；新增逐分量R_j检查用于归因。raw只对冻结信念的下一次更新避免eta矩投影，前两次付费矩滤波仍保留。
+
+新增`diagnose-sd`重放入口，用实际query63风险边际、所有正分量、32个eta GH节点及本例全部验证预算81／83／128／130／132／359，对照独立非中心t条件通过概率。最大逐点差1.3712e−14，最大加权差6.98e−16，0.35 CPU秒，无新增物理／拟合／验证调用；这些已测边际的SD16不是主要瓶颈。[结果](../paper_artifacts/historical_predictive_positive_body_v7/sample_sd_reference_diagnostic.json)。
+
+```bash
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.extend_historical_upper_risk diagnose-sd --plan performance/manifests/historical_predictive_positive_body_v7.json
+```
+
+下一步局部试验选六条已失败记录：o4/p192（最大raw变化）、o4/p198（该身份最大native变化）、o4/p193（最大evidence误差）、o5/p197（该身份最大raw／native变化）、o5/p176（该身份最大evidence误差）、o5/p207（主体中部对照），均为source_n1风险头。先从服务器缓存确定各自最差guarded动作，导出查询＋最多三条策略的联合边际及相应缓存值；正式365动作不变。比较旧categorical、仅质量纠偏诊断、全部分量条件求积及独立积分参照，同时记录CPU与逐分量evidence贡献。复用历史`query_direct_value`和现有条件均值／协方差计算，保留跨策略联合分布、重要性比率与负收益；局部有效后再扩展96条、重新核对外层并回到批次／查询选择。本轮未派发新服务器任务。
+
+局限：本次SD检查只覆盖冻结查询边际，不是guarded联合误差界；v3所附sandbox小实验未提供本地文件，其数字不作为已重放证据。当前meta-prior学习与消费路径仍在，四项结构先验各自的必要性、完整KG可靠性与新任务独立部署优势尚未证明。
+
+## 六条guarded联合边际局部试验（2026-10-10）
+
+六条记录均完成。只加载一次服务器后验，选每条最差raw／native guarded动作及query63直接动作，保留跨策略协方差、原来源权重、全部身份似然与原计值身份的全部正分量。旧10／12阶缓存复现最大差0。原生direct继续使用已有解析／自适应参考；B只纠正已覆盖分量的频数，用于归因。A12→B12最大混合动作变化为raw6.62e−4／native2.59e−3，质量纠偏不能代替连续积分。
+
+显式分量GH32使本轮evidence误差降到1.55e−14；共用32个连续QMC节点的独立规则差仍达raw6.69e−4／native1.49e−2。改为每分量独立scramble、按均值规范排序保持重排／拆分不变后，每分量128点的两组独立规则差降为raw1.04e−4／native3.34e−4；32→128变化仍达raw6.63e−4／native6.21e−4。原1e−4局部门未全过，六例均不能据此替换完整银行。[汇总](../paper_artifacts/historical_component_guarded_v1/summary.json)。
+
+21项不同相关测试通过。服务器计量CPU1241.64秒（0.345单核小时），仅六个低优先级单核任务并行；两个快照恢复启动失败留档、未计时，不含本地测试和控制器开销。历史单策略快照恢复已扩展到实际四策略联合块。约50MB全身份小边际留服务器；本地仅取最差独立规则记录o5/p207的1.68MB重放包和0.41MB参考结果，原合同未计值身份的权重／似然保留，其完整协方差仍在服务器。该包24项旧头／动作积分本地复现最大差2.22e−16，用时0.48 CPU秒。[重放验证](../paper_artifacts/historical_component_guarded_v1/small_joint_replay_validation.json)。单例入口如下，完整六例汇总在服务器运行同模块`collect`；命令和运行账在同目录。
+
+```bash
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=. python -m performance.diagnose_historical_component_guarded run --name source_n1_o5_h1_p207
+```
+
+局限与下一步：本轮确认连续积分覆盖仍是独立瓶颈；规则差不是误差界，未读独立确认块，未增加物理／拟合／验证调用，完整KG仍HOLD。下一步计划在这一小联合块上复用固定动作控制变量思想，计算高精度共享参考及各分量相对参考的差值，检验是否能降低连续求积成本；该接续尚未实现或派发。保持模型和合同，先验证局部效率，再决定是否扩展96条。

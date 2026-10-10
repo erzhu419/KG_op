@@ -1,0 +1,13 @@
+{
+  "distinct_related_tests_passed": 21,
+  "combined_regression_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=.:tests python3 -m pytest -q tests/test_conditional_raw_reference.py tests/test_raw_terminal_head_grid.py tests/test_conditional_terminal_kg.py",
+  "combined_passed_before_joint_restore_test": 20,
+  "updated_raw_reference_tests": 5,
+  "updated_raw_tests_passed": true,
+  "new_checks": [
+    "component permutation and splitting under shared and component-specific scrambles",
+    "GH64 normals passed directly and compared to the historical scalar raw reference",
+    "joint snapshot recovery preserves all policy means and cross covariance"
+  ],
+  "scope": "Related integrator and old terminal path checks; not full-bank or independent deployment confirmation."
+}

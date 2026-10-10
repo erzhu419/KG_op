@@ -403,8 +403,48 @@ def diagnose_components(plan=PLAN):
     save(ROOT/spec['output']/'component_resolution_diagnostic.json',result);print(json.dumps(result),flush=True)
 
 
+def diagnose_sample_sd(plan=PLAN):
+    """Check the fixed SD16 rule against the conditional noncentral-t identity."""
+    from scipy.special import ndtr, roots_hermitenorm
+    from scipy.stats import nct
+    from core.budgeted_guarded_kg import BudgetedTerminalActions
+    from core.guarded_deployment_kg import _sd_quadrature, _tolerance_factor
+    from performance.refine_historical_observed_prediction import field_from_snapshot
+    started=time.process_time();spec=read(plan)
+    previous=read('performance/manifests/historical_observed_prediction_v1.json')
+    state=read(previous['output']+'/state.json');assert state['query']==spec['query']
+    protocol=state['protocol'];remaining=360-spec['cases'][0]['n']
+    terminal=BudgetedTerminalActions([[0,1,2]],[0],protocol)
+    budgets=sorted({(int(b),protocol['familywise_delta']/len(bs))
+        for _,_,_,bs in terminal.allocations(remaining) for b in bs})
+    z,eta_weights=roots_hermitenorm(32);eta_weights/=np.sqrt(2*np.pi);rows=[]
+    for origin in sorted(map(int,state['fields'])):
+        field=field_from_snapshot(state['fields'][str(origin)][1])
+        g,eta=field.means.T;covariance=field.covariances;eta_sd=np.sqrt(covariance[:,1,1])
+        loading=np.divide(covariance[:,0,1],eta_sd,out=np.zeros_like(g),where=eta_sd>0.)
+        variance=np.maximum(covariance[:,0,0]-loading**2,0.)
+        mean=g[:,None]+loading[:,None]*z;sigma=np.exp(.5*(eta[:,None]+eta_sd[:,None]*z))
+        for budget,delta in budgets:
+            sd,weights=_sd_quadrature(budget);k=_tolerance_factor(budget,protocol['chance_alpha'],delta)
+            total_sd=np.sqrt(variance[:,None]+sigma**2/budget)
+            old=ndtr(-(mean[:,:,None]+k*sigma[:,:,None]*sd)/total_sd[:,:,None])@weights
+            reference=nct.cdf(-k*sigma/total_sd,budget-1,mean/total_sd)
+            difference=old-reference
+            rows.append(dict(origin=origin,budget=budget,family_delta=delta,conditional_points=old.size,
+                all_conditional_values_finite=bool(np.isfinite(old).all() and np.isfinite(reference).all()),
+                maximum_conditional_probability_difference=float(np.max(abs(difference))),
+                weighted_certificate_difference=abs(float(np.exp(field.log_weights)@(difference@eta_weights)))))
+    result=dict(complete=True,rows=rows,query=state['query'],remaining_verification_calls=remaining,
+        all_sample_sd_checks_passed=all(r['all_conditional_values_finite'] and
+            r['maximum_conditional_probability_difference']<=spec['maximum_numerical_adaptation_difference'] for r in rows),
+        cpu_seconds=time.process_time()-started,new_physical_calls=0,new_source_fits=0,new_verifier_calls=0,
+        scope='Existing frozen query risk marginals, all positive components and eta GH32 nodes; '
+            'SD16 versus independent noncentral-t identity, not a full guarded-action error bound.')
+    save(ROOT/spec['output']/'sample_sd_reference_diagnostic.json',result);print(json.dumps(result),flush=True)
+
+
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','group','stage','collect','finish','validate-bulk','diagnose-fixed','diagnose-body','diagnose-sampling','diagnose-components'])
+    parser=argparse.ArgumentParser();parser.add_argument('mode',choices=['prepare','group','stage','collect','finish','validate-bulk','diagnose-fixed','diagnose-body','diagnose-sampling','diagnose-components','diagnose-sd'])
     parser.add_argument('--name');parser.add_argument('--workers',type=int,default=12)
     parser.add_argument('--power',type=int)
     parser.add_argument('--plan',default=PLAN);args=parser.parse_args()
@@ -417,4 +457,5 @@ if __name__=='__main__':
     elif args.mode=='diagnose-fixed':diagnose_fixed(args.plan)
     elif args.mode=='diagnose-body':diagnose_body(args.plan)
     elif args.mode=='diagnose-sampling':diagnose_sampling(args.plan)
-    else:diagnose_components(args.plan)
+    elif args.mode=='diagnose-components':diagnose_components(args.plan)
+    else:diagnose_sample_sd(args.plan)

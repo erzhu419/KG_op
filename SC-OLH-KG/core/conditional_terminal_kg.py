@@ -43,10 +43,10 @@ def conditional_covariance_inverse(covariance):
     return inverse
 
 
-def condition_eta_components(field, indices, nodes):
+def condition_eta_components(field, indices, nodes, *, components=None, eta_normals=None):
     """Factor each sampled source component once instead of once per node."""
-    component = np.minimum(np.searchsorted(np.cumsum(np.exp(field.log_weights)),
-        nodes[:, 0]), len(field.means) - 1)
+    component = (np.minimum(np.searchsorted(np.cumsum(np.exp(field.log_weights)),
+        nodes[:, 0]), len(field.means) - 1) if components is None else np.asarray(components))
     selected, position = np.unique(component, return_inverse=True)
     indices = np.asarray(indices); ix = (2 * indices[:, None] + np.arange(2)).reshape(-1)
     mean = field.means[:, ix][selected]
@@ -54,8 +54,8 @@ def condition_eta_components(field, indices, nodes):
     eta_covariance = covariance[:, 1::2, 1::2]
     cross = covariance[:, ::2, 1::2]
     gain = cross @ conditional_covariance_inverse(eta_covariance)
-    eta = mean[position, 1::2] + np.einsum('nij,nj->ni', roots(eta_covariance)[position],
-        ndtri(nodes[:, 1:1 + len(indices)]))
+    normals = ndtri(nodes[:, 1:1 + len(indices)]) if eta_normals is None else eta_normals
+    eta = mean[position, 1::2] + np.einsum('nij,nj->ni', roots(eta_covariance)[position], normals)
     conditional_mean = mean[position, ::2] + np.einsum('nij,nj->ni', gain[position], eta - mean[position, 1::2])
     conditional_covariance = covariance[:, ::2, ::2] - gain @ cross.transpose(0, 2, 1)
     conditional_covariance = .5 * (conditional_covariance + conditional_covariance.transpose(0, 2, 1))

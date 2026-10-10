@@ -47,7 +47,8 @@ def prepare(plan=PLAN):
 
 def field_from_snapshot(payload):
     means=np.asarray(payload['means']);covariance=np.asarray(payload['covariances'])
-    field=JointFunctionRiskPosterior.from_moments(means[:1],covariance[0].reshape(1,2,1,2))
+    count=means.shape[1]//2
+    field=JointFunctionRiskPosterior.from_moments(means[0].reshape(count,2),covariance[0].reshape(count,2,count,2))
     field.means=means;field.covariances=covariance;field.log_weights=np.asarray(payload['log_weights'])
     field.paid_batches=payload['paid_batches'];field.paid_episodes=payload['paid_episodes'];return field
 

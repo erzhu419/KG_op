@@ -1,0 +1,17 @@
+{
+  "parent_plan": "performance/manifests/historical_predictive_positive_body_v7.json",
+  "output": "paper_artifacts/historical_component_guarded_v1",
+  "records": ["source_n1_o4_h1_p192", "source_n1_o4_h1_p198", "source_n1_o4_h1_p193", "source_n1_o5_h1_p197", "source_n1_o5_h1_p176", "source_n1_o5_h1_p207"],
+  "component_rules": [
+    {"name": "C16_8", "order": 16, "power": 3},
+    {"name": "C32_8", "order": 32, "power": 3},
+    {"name": "C32_32", "order": 32, "power": 5},
+    {"name": "D32_32", "order": 32, "power": 5, "seed_offset": 101},
+    {"name": "E32_32", "order": 32, "power": 5, "scramble_scope": "component"},
+    {"name": "F32_32", "order": 32, "power": 5, "scramble_scope": "component", "seed_offset": 101},
+    {"name": "E32_128", "order": 32, "power": 7, "scramble_scope": "component"},
+    {"name": "F32_128", "order": 32, "power": 7, "scramble_scope": "component", "seed_offset": 101}
+  ],
+  "maximum_action_resolution_difference": 0.0001,
+  "scope": "Six actual failure records; frozen source prior, query63, n1, full365 formal actions and budget359. All identities exported; original bounded utility identities retained. No new physical observations, source fit or independent confirmation."
+}

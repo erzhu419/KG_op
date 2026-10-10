@@ -7,26 +7,30 @@ paid updates remain the frozen moment fields; only this next update is exact.
 """
 
 import numpy as np
-from scipy.special import logsumexp, ndtri
+from scipy.special import logsumexp, ndtri, ndtr, roots_hermitenorm
+from scipy.stats import qmc
 
 from core.conditional_terminal_kg import (roots, paired_quality_from_moments,
-    risk_coordinates_from_moments, guarded_risk_statistics, conditional_covariance_inverse)
+    risk_coordinates_from_moments, guarded_risk_statistics, conditional_covariance_inverse,
+    condition_eta_components)
+from core.guarded_deployment_kg import _sd_quadrature, _tolerance_factor
 from core.legacy_joint_kg import clipped_objective_quality
 from core.positive_mixture_lookahead import raw_eta_proposal
 
 
 def conditional_raw_coordinates(field, updated, indices, nodes, label, head_log_evidence, *, query=None,
-        replicates=1, eta_label=None):
+        replicates=1, eta_label=None, components=None, log_node_weights=None, query_eta_normals=None):
     """Condition query eta first, including queries outside deployment support."""
     query = indices[0] if query is None else query
     points = list(dict.fromkeys([query]+list(indices))); n = len(points)
     positions = [points.index(i) for i in indices]
-    component = np.minimum(np.searchsorted(np.cumsum(np.exp(updated.log_weights)), nodes[:, 0]),
-        len(field.means)-1)
+    component = (np.minimum(np.searchsorted(np.cumsum(np.exp(updated.log_weights)), nodes[:, 0]),
+        len(field.means)-1) if components is None else np.asarray(components))
     selected, position = np.unique(component, return_inverse=True)
     ix = (2*np.asarray(points)[:, None]+np.arange(2)).reshape(-1)
     mean = field.means[:, ix][selected]; C = field.covariances[:, ix][:, :, ix][selected]
-    eta_query, logs = raw_eta_proposal(field, updated, query, component, ndtri(nodes[:, 1]),
+    eta_query, logs = raw_eta_proposal(field, updated, query, component,
+        ndtri(nodes[:, 1]) if query_eta_normals is None else query_eta_normals,
         label, head_log_evidence, replicates=replicates, eta_label=eta_label)
     rest = np.r_[np.arange(0, 2*n, 2), np.arange(3, 2*n, 2)]
     ev = C[:, 1, 1]; cross = C[:, rest, 1]
@@ -61,9 +65,14 @@ def conditional_raw_coordinates(field, updated, indices, nodes, label, head_log_
     conditional_mean = mean_given_eta+gain*(label-mean_given_eta[:, 0])[:, None]
     conditional_covariance = covariance_given_eta[position]-gain[:, :, None]*covariance_given_eta[position, None, 0, :]
     conditional_covariance = .5*(conditional_covariance+conditional_covariance.transpose(0, 2, 1))
+    if log_node_weights is not None:
+        component_errors = [float(logsumexp(logs[component==j]+log_node_weights[component==j])) for j in selected]
+        logs = logs+updated.log_weights[component]+log_node_weights
     normalizer = logsumexp(logs); weights = np.exp(logs-normalizer)
-    diagnostics = {'predictive_log_evidence_error': float(normalizer-np.log(len(nodes))),
+    diagnostics = {'predictive_log_evidence_error': float(normalizer-(np.log(len(nodes)) if log_node_weights is None else 0.)),
         'effective_sample_size': float(1/(weights @ weights))}
+    if log_node_weights is not None:
+        diagnostics.update(component_indices=selected.tolist(),component_log_evidence_errors=component_errors)
     return (np.column_stack([eta_query, other_eta])[:, positions], conditional_mean[:, positions],
         conditional_covariance[:, positions][:, :, positions], weights, diagnostics)
 
@@ -85,3 +94,80 @@ def raw_guarded_head_statistics(field, updated, action, nodes, label, head_log_e
         statistics = guarded_risk_statistics(coordinates, action['incumbent_position'], action['budgets'],
             protocol, weights)[0]
     return statistics, diagnostics
+
+
+def conditional_risk_action_statistics(eta, mean, covariance, position, nodes, action, protocol,
+        weights, *, raw, query_points, integrated_position=0):
+    """Reuse the original direct/guarded branches for a weighted joint rule."""
+    if action['kind']=='direct':
+        budget=action['budgets'][0];sd,chi_weights=_sd_quadrature(budget)
+        sigma=np.exp(.5*eta[:,0]);variance=covariance[:,0,0] if raw else covariance[position,0,0]
+        total=np.sqrt(np.maximum(variance,0.)+sigma**2/budget)
+        threshold=_tolerance_factor(budget,protocol['chance_alpha'],protocol['familywise_delta'])*sd
+        value=weights@(ndtr(-(mean[:,0,None]+sigma[:,None]*threshold)/total[:,None])@chi_weights)
+        return np.r_[value,0.,0.,0.],float(budget)
+    n=len(action['shortlist'])
+    coordinates=risk_coordinates_from_moments(eta,mean,covariance,position,nodes,
+        mean_normals=ndtri(nodes[:,query_points+1:query_points+n]) if raw else None,
+        integrated_position=integrated_position)
+    return guarded_risk_statistics(coordinates,action['incumbent_position'],action['budgets'],protocol,
+        weights,integrated_position=integrated_position)
+
+
+def component_risk_statistics(field, updated, action, label, score, protocol, *, query,
+        raw, order, power, seed, block_size=16):
+    """Enumerate all positive components, GH one eta and conditionally QMC the rest.
+
+    Blocks accumulate unnormalized integrals before the single final raw
+    normalization. GH normals are passed directly, avoiding a lossy CDF/PPF
+    round trip at the actual high-order tail nodes.
+    """
+    points=list(dict.fromkeys([query]+action['shortlist']));n=len(action['shortlist'])
+    dimensions=(len(points)+n if raw else 2*n)
+    z,gh_weights=roots_hermitenorm(order);gh_weights/=np.sqrt(2*np.pi)
+    count=2**power
+    separate=np.ndim(seed)>0
+    rest=qmc.Sobol(max(1,dimensions-2),scramble=True,seed=int(seed[0]) if separate else seed).random_base2(power)
+    one=np.full((order*count,dimensions),.5)
+    if dimensions>2:one[:,2:]=np.tile(rest[:,:dimensions-2],(order,1))
+    normal=np.repeat(z,count);log_one=np.repeat(np.log(gh_weights),count)-np.log(count)
+    total_statistics=np.zeros(4);total_cost=0.;mass=0.;component_errors=[]
+    active=np.flatnonzero(np.isfinite(updated.log_weights))
+    for start in range(0,len(active),block_size):
+        selected=active[start:start+block_size]
+        components=np.repeat(selected,len(one));nodes=np.tile(one,(len(selected),1))
+        if separate and dimensions>2:
+            for k,j in enumerate(selected):
+                rest=qmc.Sobol(dimensions-2,scramble=True,seed=int(seed[j])).random_base2(power)
+                nodes[k*len(one):(k+1)*len(one),2:]=np.tile(rest,(order,1))
+        normals=np.tile(normal,len(selected));log_nodes=np.tile(log_one,len(selected))
+        if raw:
+            eta,mean,covariance,weights,diagnostics=conditional_raw_coordinates(field,updated,
+                action['shortlist'],nodes,label,score,query=query,components=components,
+                log_node_weights=log_nodes,query_eta_normals=normals)
+            block_mass=float(np.exp(diagnostics['predictive_log_evidence_error']))
+            component_errors.extend(zip(diagnostics['component_indices'],diagnostics['component_log_evidence_errors']))
+            position=np.arange(len(nodes))
+        else:
+            eta_normals=np.column_stack([normals,ndtri(nodes[:,2:n+1])])
+            eta,mean,covariance,position=condition_eta_components(updated,action['shortlist'],nodes,
+                components=components,eta_normals=eta_normals)
+            node_weights=np.exp(updated.log_weights[components]+log_nodes)
+            block_mass=float(node_weights.sum());weights=node_weights/block_mass
+        statistics,cost=conditional_risk_action_statistics(eta,mean,covariance,position,nodes,action,protocol,
+            weights,raw=raw,query_points=len(points))
+        total_statistics+=block_mass*statistics;total_cost+=block_mass*cost;mass+=block_mass
+    diagnostics=dict(predictive_log_evidence_error=float(np.log(mass)),
+        components=len(active),continuous_points_per_component=len(one),
+        total_points=len(active)*len(one),all_positive_components_retained=True,
+        continuous_scramble_scope='component' if separate else 'shared',
+        distinct_continuous_scrambles=int(len(np.unique(seed[active]))) if separate else 1)
+    if raw:
+        errors=np.asarray([error for _,error in component_errors]);ids=np.asarray([i for i,_ in component_errors])
+        contributions=np.exp(updated.log_weights[ids])*abs(np.expm1(errors))
+        largest=np.argsort(contributions)[-3:][::-1]
+        diagnostics.update(maximum_component_log_evidence_error=float(np.max(abs(errors))),
+            weighted_component_absolute_evidence_error=float(contributions.sum()),
+            largest_component_evidence_contributions=[dict(component=int(ids[k]),
+                log_evidence_error=float(errors[k]),weighted_absolute_evidence_error=float(contributions[k])) for k in largest])
+    return total_statistics/mass,total_cost/mass,diagnostics
